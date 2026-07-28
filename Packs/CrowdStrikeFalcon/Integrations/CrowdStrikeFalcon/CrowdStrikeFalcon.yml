@@ -355,9 +355,6 @@ configuration:
   - xpanse
   supportedModules:
   - "xsiam"
-  - "edr"
-  - "cloud"
-  - "cloud_runtime_security"
 - display: 'Advanced: Time in minutes to look back when fetching events and detections'
   additionalinfo: Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created.
   defaultvalue: 2
@@ -374,6 +371,17 @@ configuration:
   - "edr"
   - "cloud"
   - "cloud_runtime_security"
+- display: Fetch assets and vulnerabilities
+  name: isFetchAssets
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - xsoar
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
 - display: 'Fetch Asset types'
   name: fetch_assets_type
   defaultvalue: 'Spotlight,CNAPP Alerts'
@@ -399,6 +407,9 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
