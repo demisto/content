@@ -2943,6 +2943,10 @@ script:
     - name: entry_id
       description: 'War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Explicit command arguments take precedence over values in the file.'
       required: false
+    - name: extended_output
+      description: Determine whether the output will be in verbose format or not.
+      required: false
+      defaultValue: false
     outputs:
     - contextPath: EWS.MailFlowRule.Size
       description: The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule.

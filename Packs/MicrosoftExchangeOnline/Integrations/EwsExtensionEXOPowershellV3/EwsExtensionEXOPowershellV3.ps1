@@ -233,7 +233,7 @@ class ExchangeOnlinePowershellV3Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Get-MessageTraceV2,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule,Export-QuarantineMessage,Get-QuarantineMessage,Release-QuarantineMessage,Disable-InboxRule,Enable-InboxRule,Get-TransportRule,New-TransportRule,Set-TransportRule,Remove-TransportRule,Disable-TransportRule,Enable-TransportRule,Set-Mailbox -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession()
     {
@@ -1807,6 +1807,66 @@ class ExchangeOnlinePowershellV3Client
         #>
     }
 
+    [PSObject]CreateMailFlowRule([hashtable]$cmd_params)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $response = New-TransportRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Create a mail flow rule (transport rule) in the organization.
+
+        .PARAMETER cmd_params
+        A hashtable of parameters (already mapped to the New-TransportRule parameter names) to create the rule with.
+
+        .EXAMPLE
+        New-TransportRule -Name "Ethical Wall" -RejectMessageReasonText "Not allowed"
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/new-transportrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]UpdateMailFlowRule([hashtable]$cmd_params)
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $response = Set-TransportRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Modify an existing mail flow rule (transport rule) in the organization.
+
+        .PARAMETER cmd_params
+        A hashtable of parameters (already mapped to the Set-TransportRule parameter names) to modify the rule with. Must include the Identity of the rule to modify.
+
+        .EXAMPLE
+        Set-TransportRule -Identity "Sales Team Disclaimer" -Priority 1
+
+        .OUTPUTS
+        PSObject - Raw response (Set-TransportRule returns no output on success)
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/set-transportrule?view=exchange-ps
+        #>
+    }
+
     [PSObject]RemoveMailFlowRule([string]$identity)
     {
         $response = ""
@@ -2568,6 +2628,179 @@ function EnableRuleCommand {
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
 }
+function GetMailFlowRuleParamsFromEntryId([ExchangeOnlinePowershellV3Client]$client, [string]$entry_id) {
+    $file_path = ($client.GetFilePath($entry_id)).path
+    if (-not $file_path) {
+        throw "Could not resolve the file path for entry ID '$entry_id'."
+    }
+    $file_content = Get-Content -Path $file_path -Raw
+    $params_from_file = @{}
+    ($file_content | ConvertFrom-Json).PSObject.Properties | ForEach-Object {
+        $params_from_file[$_.Name] = $_.Value
+    }
+    return $params_from_file
+    <#
+        .DESCRIPTION
+        Reads a JSON file (referenced by a War Room entry ID) and returns its parameters as a hashtable.
+        The JSON is expected to be a map of PowerShell parameter names to values.
+
+        .PARAMETER client
+        The Exchange Online client, used to resolve the entry ID to a file path.
+
+        .PARAMETER entry_id
+        The War Room entry ID of the JSON file.
+
+        .OUTPUTS
+        Hashtable - The parameters parsed from the file.
+    #>
+}
+
+function BuildMailFlowRuleParams([hashtable]$kwargs) {
+    # Maps the content (snake_case) arguments to the PowerShell (PascalCase) parameter names.
+    # Only arguments that were actually provided are added, with the correct type cast.
+    $cmd_params = @{}
+
+    # String conditions / metadata (passed as-is).
+    $string_args = @{
+        "name"                             = "Name"
+        "identity"                         = "Identity"
+        "mode"                             = "Mode"
+        "subject_contains_words"           = "SubjectContainsWords"
+        "except_if_subject_contains_words" = "ExceptIfSubjectContainsWords"
+        "reject_message_reason_text"       = "RejectMessageReasonText"
+        "comments"                         = "Comments"
+    }
+    foreach ($arg in $string_args.Keys) {
+        if (-not [string]::IsNullOrEmpty($kwargs.$arg)) {
+            $cmd_params[$string_args.$arg] = $kwargs.$arg
+        }
+    }
+
+    # Integer arguments.
+    if (-not [string]::IsNullOrEmpty($kwargs.priority)) {
+        $cmd_params["Priority"] = $kwargs.priority -as [int]
+    }
+
+    # Array arguments.
+    $array_args = @{
+        "from"    = "From"
+        "sent_to" = "SentTo"
+    }
+    foreach ($arg in $array_args.Keys) {
+        if (-not [string]::IsNullOrEmpty($kwargs.$arg)) {
+            $cmd_params[$array_args.$arg] = ArgToList $kwargs.$arg
+        }
+    }
+
+    # Boolean action arguments.
+    $bool_args = @{
+        "quarantine"     = "Quarantine"
+        "delete_message" = "DeleteMessage"
+    }
+    foreach ($arg in $bool_args.Keys) {
+        if (-not [string]::IsNullOrEmpty($kwargs.$arg)) {
+            $cmd_params[$bool_args.$arg] = ConvertTo-Boolean $kwargs.$arg
+        }
+    }
+
+    return $cmd_params
+    <#
+        .DESCRIPTION
+        Builds the hashtable of parameters (mapped to the New-/Set-TransportRule parameter names)
+        from the raw command arguments. Only provided arguments are included, cast to the proper type.
+
+        .PARAMETER kwargs
+        The raw command arguments.
+
+        .OUTPUTS
+        Hashtable - Parameters ready to be splatted to New-TransportRule / Set-TransportRule.
+    #>
+}
+
+function MergeEntryIdParams([hashtable]$cmd_params, [hashtable]$params_from_file) {
+    # Merges parameters read from the entry_id file into cmd_params.
+    # Explicit command arguments (already in cmd_params) take precedence over file values.
+    foreach ($key in $params_from_file.Keys) {
+        if (-not $cmd_params.ContainsKey($key)) {
+            $cmd_params[$key] = $params_from_file[$key]
+        }
+    }
+    return $cmd_params
+    <#
+        .DESCRIPTION
+        Merges file-provided parameters into the existing cmd_params, without overriding values
+        that were already set from explicit command arguments.
+
+        .PARAMETER cmd_params
+        The parameters built from explicit command arguments.
+
+        .PARAMETER params_from_file
+        The parameters parsed from the entry_id JSON file.
+
+        .OUTPUTS
+        Hashtable - The merged parameters.
+    #>
+}
+
+function NewMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    # At least one action must be provided (Exchange rejects rules with no action).
+    $action_args = @("reject_message_reason_text", "quarantine", "delete_message")
+    $has_action = $false
+    foreach ($action in $action_args) {
+        if (-not [string]::IsNullOrEmpty($kwargs.$action)) {
+            $has_action = $true
+            break
+        }
+    }
+    if (-not $has_action) {
+        ReturnError "At least one action must be provided. Please specify one of: reject_message_reason_text, quarantine, or delete_message."
+        return
+    }
+
+    $cmd_params = BuildMailFlowRuleParams $kwargs
+    if (-not [string]::IsNullOrEmpty($kwargs.entry_id)) {
+        $params_from_file = GetMailFlowRuleParamsFromEntryId $client $kwargs.entry_id
+        $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
+    }
+
+    $extended_output = $kwargs.extended_output
+    $raw_response = $client.CreateMailFlowRule($cmd_params)
+    $parsed_raw_response = ParseRawResponse $raw_response
+    # if "extended_output" is set to false (default) the output context is just the rule object selected fields
+    # if "extended_output" is set to true the output context is the full response
+    $entry_context = if ($extended_output -eq "false") {
+        MailFlowRuleCreateEntryContext $parsed_raw_response
+    } else {
+        @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response}
+    }
+    $md_columns = $raw_response | Select-Object -Property Name, State, Mode, Priority, IsRuleConfigurationSupported, Comments
+    $human_readable = TableToMarkdown $md_columns "Mail flow rule '$($kwargs.name)' was created successfully"
+    Write-Output $human_readable, $entry_context, $parsed_raw_response
+}
+
+function SetMailFlowRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $cmd_params = BuildMailFlowRuleParams $kwargs
+    if (-not [string]::IsNullOrEmpty($kwargs.entry_id)) {
+        $params_from_file = GetMailFlowRuleParamsFromEntryId $client $kwargs.entry_id
+        $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
+    }
+
+    $raw_response = $client.UpdateMailFlowRule($cmd_params)
+    $human_readable = "Mail flow rule $($kwargs.identity) has been updated successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+
 function ListMailFlowRulesCommand {
     [CmdletBinding()]
     param (
@@ -2784,6 +3017,12 @@ function Main
             }
             "$script:COMMAND_PREFIX-mail-flow-rules-list" {
                 ($human_readable, $entry_context, $raw_response) = ListMailFlowRulesCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-create" {
+                ($human_readable, $entry_context, $raw_response) = NewMailFlowRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-mail-flow-rule-update" {
+                ($human_readable, $entry_context, $raw_response) = SetMailFlowRuleCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-mail-flow-rule-get" {
                 ($human_readable, $entry_context, $raw_response) = GetMailFlowRuleCommand $exo_client $command_arguments
