@@ -787,17 +787,35 @@ def main():
 
             # Setup Demisto SDK's logging.
             # logging_setup's signature differs across demisto-sdk / Docker image
-            # versions: some versions accept `calling_function`, `console_threshold`
-            # and `propagate`, while others accept none of them. Introspect the
-            # signature and only pass the keyword arguments that are supported,
+            # versions. Some versions accept `calling_function`, `console_threshold`
+            # and `propagate`, while others (notably the pinned xsoar-tools image)
+            # require a positional `verbose` argument that has no default. Introspect
+            # the runtime signature and (1) pass only the supported keyword arguments
+            # and (2) supply a value for every required parameter that has no default,
             # keeping the script compatible across SDK/Docker image versions.
+            debug_mode = is_debug_mode()
             supported_params = inspect.signature(logging_setup).parameters
+            # Preferred values for parameters we explicitly care about, keyed by name.
             desired_kwargs: dict = {
                 "calling_function": "ValidateContent",
-                "console_threshold": "DEBUG" if is_debug_mode() else "ERROR",
+                "console_threshold": "DEBUG" if debug_mode else "ERROR",
                 "propagate": True,
+                # Older SDK signatures expose `verbose` (int/bool verbosity level).
+                "verbose": 3 if debug_mode else 0,
             }
             logging_setup_kwargs = {key: value for key, value in desired_kwargs.items() if key in supported_params}
+            # Ensure every REQUIRED parameter (no default value) is provided, even if
+            # it is not one of the parameters we explicitly track above. This prevents
+            # "missing required positional argument" errors on SDK versions that add
+            # new mandatory parameters we are not yet aware of.
+            for name, param in supported_params.items():
+                if (
+                    name not in logging_setup_kwargs
+                    and param.default is inspect.Parameter.empty
+                    and param.kind in (inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY)
+                ):
+                    # Fall back to a debug-aware default for any unknown required arg.
+                    logging_setup_kwargs[name] = 3 if debug_mode else 0
             # Call through an indirect reference so pylint does not statically validate
             # the keyword arguments against the pinned lint image's signature (which
             # would otherwise raise a false E1123). The kwargs are already filtered to
