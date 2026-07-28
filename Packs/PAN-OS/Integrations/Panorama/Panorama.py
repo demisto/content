@@ -6813,6 +6813,8 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
     job_id = args.get("job_id")
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
     polling = argToBoolean(args.get("polling", "true"))
+    timeout_in_seconds = arg_to_number(args.get("timeout_in_seconds")) or 3600
+    interval_in_seconds = arg_to_number(args.get("interval_in_seconds")) or 30
 
     # Map update type to command name
     command_map = {
@@ -6848,9 +6850,9 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
                 args["job_id"] = job_id
                 scheduled_command = ScheduledCommand(
                     command=command_to_run,
-                    next_run_in_seconds=10,
+                    next_run_in_seconds=interval_in_seconds,
                     args=args,
-                    timeout_in_seconds=300,
+                    timeout_in_seconds=timeout_in_seconds,
                 )
 
                 command_results = CommandResults(
@@ -6891,9 +6893,9 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
             args["job_id"] = job_id
             scheduled_command = ScheduledCommand(
                 command=command_to_run,
-                next_run_in_seconds=10,
+                next_run_in_seconds=interval_in_seconds,
                 args=args,
-                timeout_in_seconds=300,
+                timeout_in_seconds=timeout_in_seconds,
             )
 
             command_results = CommandResults(
@@ -7012,6 +7014,8 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
     job_id = args.get("job_id")
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
     polling = argToBoolean(args.get("polling", "true"))
+    timeout_in_seconds = arg_to_number(args.get("timeout_in_seconds")) or 3600
+    interval_in_seconds = arg_to_number(args.get("interval_in_seconds")) or 30
 
     # Map update type to command name
     command_map = {
@@ -7048,9 +7052,9 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
                 args["job_id"] = job_id
                 scheduled_command = ScheduledCommand(
                     command=command_to_run,
-                    next_run_in_seconds=10,
+                    next_run_in_seconds=interval_in_seconds,
                     args=args,
-                    timeout_in_seconds=300,
+                    timeout_in_seconds=timeout_in_seconds,
                 )
 
                 command_results = CommandResults(
@@ -7091,9 +7095,9 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
             args["job_id"] = job_id
             scheduled_command = ScheduledCommand(
                 command=command_to_run,
-                next_run_in_seconds=10,
+                next_run_in_seconds=interval_in_seconds,
                 args=args,
-                timeout_in_seconds=300,
+                timeout_in_seconds=timeout_in_seconds,
             )
 
             command_results = CommandResults(

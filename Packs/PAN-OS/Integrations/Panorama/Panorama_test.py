@@ -9222,21 +9222,35 @@ class TestDynamicUpdateCommands:
         elif update_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
-            Verify that the response contains a ScheduledCommand object to poll for job status.
+            Verify that the response contains a ScheduledCommand object to poll for job status and that the
+            default polling timeout/interval are applied when not provided.
             """
             panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "3600"
+            assert returned_results.scheduled_command._next_run == "30"
 
         elif update_phase == "check":
             """
             Run the command as if a download has been started and check for the status of it.
             Verify that when the API response shows that the job is still pending that a ScheduledCommand
-            object is returned to continue to poll for the download to complete.
+            object is returned to continue to poll for the download to complete, honoring custom
+            timeout_in_seconds/interval_in_seconds when provided.
             """
-            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            panorama_download_latest_dynamic_update_command(
+                DynamicUpdateType.ANTIVIRUS,
+                {
+                    "target": "1337",
+                    "job_id": job_id,
+                    "timeout_in_seconds": "1200",
+                    "interval_in_seconds": "45",
+                },
+            )
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "1200"
+            assert returned_results.scheduled_command._next_run == "45"
 
         elif update_phase == "finished":
             """
@@ -9423,21 +9437,35 @@ class TestDynamicUpdateCommands:
         elif install_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
-            Verify that the response contains a ScheduledCommand object to poll for job status.
+            Verify that the response contains a ScheduledCommand object to poll for job status and that the
+            default polling timeout/interval are applied when not provided.
             """
             panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "3600"
+            assert returned_results.scheduled_command._next_run == "30"
 
         elif install_phase == "check":
             """
             Run the command as if an install has been started and check for the status of it.
             Verify that when the API response shows that the job is still pending that a ScheduledCommand
-            object is returned to continue to poll for the install to complete.
+            object is returned to continue to poll for the install to complete, honoring custom
+            timeout_in_seconds/interval_in_seconds when provided.
             """
-            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            panorama_install_latest_dynamic_update_command(
+                DynamicUpdateType.ANTIVIRUS,
+                {
+                    "target": "1337",
+                    "job_id": job_id,
+                    "timeout_in_seconds": "1200",
+                    "interval_in_seconds": "45",
+                },
+            )
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "1200"
+            assert returned_results.scheduled_command._next_run == "45"
 
         elif install_phase == "finished":
             """

@@ -7285,6 +7285,12 @@ script:
       - "false"
       defaultValue: false
       name: polling
+    - description: The polling timeout in seconds. When polling is enabled, the command will keep checking the download status until this timeout is reached.
+      name: timeout_in_seconds
+      defaultValue: '3600'
+    - description: The polling interval in seconds. Controls how often the download status is checked.
+      name: interval_in_seconds
+      defaultValue: '30'
     description: Downloads the latest app/threat dynamic update.
     name: pan-os-download-latest-content-update
     outputs:
@@ -7304,6 +7310,19 @@ script:
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
       hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the download job.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+      name: polling
+    - description: The polling timeout in seconds. When polling is enabled, the command will keep checking the download status until this timeout is reached.
+      name: timeout_in_seconds
+      defaultValue: '3600'
+    - description: The polling interval in seconds. Controls how often the download status is checked.
+      name: interval_in_seconds
+      defaultValue: '30'
     description: Downloads the latest antivirus dynamic update.
     name: pan-os-download-latest-antivirus-update
     outputs:
@@ -7323,6 +7342,19 @@ script:
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
       hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the download job.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+      name: polling
+    - description: The polling timeout in seconds. When polling is enabled, the command will keep checking the download status until this timeout is reached.
+      name: timeout_in_seconds
+      defaultValue: '3600'
+    - description: The polling interval in seconds. Controls how often the download status is checked.
+      name: interval_in_seconds
+      defaultValue: '30'
     description: Downloads the latest WildFire dynamic update.
     name: pan-os-download-latest-wildfire-update
     outputs:
@@ -7342,6 +7374,19 @@ script:
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
       hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the download job.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+      name: polling
+    - description: The polling timeout in seconds. When polling is enabled, the command will keep checking the download status until this timeout is reached.
+      name: timeout_in_seconds
+      defaultValue: '3600'
+    - description: The polling interval in seconds. Controls how often the download status is checked.
+      name: interval_in_seconds
+      defaultValue: '30'
     description: Downloads the latest GlobalProtect Clientless VPN dynamic update.
     name: pan-os-download-latest-gp-update
     outputs:
@@ -7387,6 +7432,12 @@ script:
       - "false"
       defaultValue: false
       name: polling
+    - description: The polling timeout in seconds. When polling is enabled, the command will keep checking the install status until this timeout is reached.
+      name: timeout_in_seconds
+      defaultValue: '3600'
+    - description: The polling interval in seconds. Controls how often the install status is checked.
+      name: interval_in_seconds
+      defaultValue: '30'
     description: Installs the latest app/threat dynamic update.
     name: pan-os-install-latest-content-update
     outputs:
@@ -7406,6 +7457,19 @@ script:
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
       hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the install job.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+      name: polling
+    - description: The polling timeout in seconds. When polling is enabled, the command will keep checking the install status until this timeout is reached.
+      name: timeout_in_seconds
+      defaultValue: '3600'
+    - description: The polling interval in seconds. Controls how often the install status is checked.
+      name: interval_in_seconds
+      defaultValue: '30'
     description: Installs the latest Antivirus update.
     name: pan-os-install-latest-antivirus-update
     outputs:
@@ -7425,6 +7489,19 @@ script:
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
       hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the install job.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+      name: polling
+    - description: The polling timeout in seconds. When polling is enabled, the command will keep checking the install status until this timeout is reached.
+      name: timeout_in_seconds
+      defaultValue: '3600'
+    - description: The polling interval in seconds. Controls how often the install status is checked.
+      name: interval_in_seconds
+      defaultValue: '30'
     description: Installs the latest WildFire dynamic update.
     name: pan-os-install-latest-wildfire-update
     outputs:
@@ -7444,6 +7521,19 @@ script:
     - description: Job ID for a running download process. Used for status polling.
       name: job_id
       hidden: true
+    - description: When set to false, the function will not use polling and will immediately return the ID of the install job.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: false
+      name: polling
+    - description: The polling timeout in seconds. When polling is enabled, the command will keep checking the install status until this timeout is reached.
+      name: timeout_in_seconds
+      defaultValue: '3600'
+    - description: The polling interval in seconds. Controls how often the install status is checked.
+      name: interval_in_seconds
+      defaultValue: '30'
     description: Installs the latest GlobalProtect Clientless VPN dynamic update.
     name: pan-os-install-latest-gp-update
     polling: true
