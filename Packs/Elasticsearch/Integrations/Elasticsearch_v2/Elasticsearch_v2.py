@@ -3493,6 +3493,9 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                         }
                     )
         except Exception as e:
+            if _is_rate_limit_error(e):
+                # Return an error with "API rate limit" so the sync loop restarts from this incident.
+                return_error(f"API rate limit reached while fetching case {remote_id}. Error: {e}")
             demisto.debug(f"Failed to fetch case {remote_id}: {e}")
 
     return GetRemoteDataResponse(mirrored_object=updated_incident, entries=entries)
@@ -3515,6 +3518,7 @@ def update_remote_system_command(args: Dict[str, Any], proxies) -> str:
     incident_type = (parsed_args.data or {}).get("type", "")
     delta = parsed_args.delta or {}
     inc_status = parsed_args.inc_status
+    entries = parsed_args.entries or []
 
     demisto.debug(f"update-remote-system called for id={remote_id}, type={incident_type}, status={inc_status}")
 
@@ -3523,12 +3527,51 @@ def update_remote_system_command(args: Dict[str, Any], proxies) -> str:
         return remote_id or ""
 
     if incident_type == INCIDENT_TYPE_SECURITY_ALERT:
-        _mirror_out_security_alert(remote_id, delta, inc_status, proxies)
+        if parsed_args.incident_changed:
+            _mirror_out_security_alert(remote_id, delta, inc_status, proxies)
 
     elif incident_type == INCIDENT_TYPE_CASE:
-        _mirror_out_case(remote_id, delta, inc_status, proxies, parsed_args.data or {})
+        if parsed_args.incident_changed:
+            _mirror_out_case(remote_id, delta, inc_status, proxies, parsed_args.data or {})
+        _mirror_out_case_entries(remote_id, entries, proxies)
 
     return remote_id
+
+
+def _mirror_out_case_entries(remote_id: str, entries: List[dict], proxies) -> None:
+    """Mirrors tagged War Room entries out to Elasticsearch as Kibana case comments.
+
+    Only entries tagged "comment" are mirrored out (all mirrored entries are
+    pushed to the same Kibana case comments endpoint, so a single tag is used).
+    This prevents every War Room entry from being pushed to the remote system.
+
+    Args:
+        remote_id: The remote Kibana case ID.
+        entries: The list of War Room entries from the local incident.
+        proxies: Proxy configuration.
+    """
+    for entry in entries:
+        tags = entry.get("Tags") or []
+        if "comment" not in tags:
+            demisto.debug(f"Entry {entry.get('ID')} has no mirror tag, skipping.")
+            continue
+
+        contents = entry.get("Contents", "")
+        comment = contents if isinstance(contents, str) else json.dumps(contents)
+        if not comment:
+            demisto.debug(f"Entry {entry.get('ID')} has empty contents, skipping.")
+            continue
+
+        try:
+            kibana_http_request(
+                "POST",
+                f"/api/cases/{remote_id}/comments",
+                json_data={"type": "user", "comment": comment, "owner": "cases"},
+                proxies=proxies,
+            )
+            demisto.debug(f"Mirrored entry {entry.get('ID')} to case {remote_id} as a comment.")
+        except Exception as e:
+            demisto.error(f"Failed to mirror entry {entry.get('ID')} to case {remote_id}: {e}")
 
 
 def _mirror_out_security_alert(
@@ -3689,6 +3732,12 @@ def _mirror_out_case(
             demisto.debug(f"Failed to close alerts for case {remote_id}: {e}")
 
 
+def _is_rate_limit_error(error: Exception) -> bool:
+    """Returns True if the given error represents an API rate limit (HTTP 429)."""
+    message = str(error).lower()
+    return "429" in message or "rate limit" in message or "too many requests" in message
+
+
 def get_modified_remote_data_command(args: Dict[str, Any], proxies) -> GetModifiedRemoteDataResponse:
     """Implements the get-modified-remote-data command.
 
@@ -3733,6 +3782,9 @@ def get_modified_remote_data_command(args: Dict[str, Any], proxies) -> GetModifi
             if alert_uuid:
                 modified_ids.append(str(alert_uuid))
     except Exception as e:
+        if _is_rate_limit_error(e):
+            # Signal the server to stop the sync loop and skip the get-remote-data run.
+            return_error(f"API rate limit reached while fetching modified alerts, skip update. Error: {e}")
         demisto.debug(f"Failed to fetch modified security alerts: {e}")
 
     # Check for modified cases
@@ -3757,6 +3809,9 @@ def get_modified_remote_data_command(args: Dict[str, Any], proxies) -> GetModifi
                 except Exception:
                     pass
     except Exception as e:
+        if _is_rate_limit_error(e):
+            # Signal the server to stop the sync loop and skip the get-remote-data run.
+            return_error(f"API rate limit reached while fetching modified cases, skip update. Error: {e}")
         demisto.debug(f"Failed to fetch modified cases: {e}")
 
     demisto.debug(f"get-modified-remote-data returning {len(modified_ids)} modified IDs")

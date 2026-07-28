@@ -408,6 +408,34 @@ script:
       type: Number
   - name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
+  - name: get-remote-data
+    description: Gets remote data of a specific incident. This command is used for mirroring in and should be used for debugging purposes.
+    arguments:
+    - name: id
+      required: true
+      description: The remote incident ID.
+    - name: lastUpdate
+      description: ISO format date with timezone. Retrieve entries that were created after lastUpdate.
+  - name: get-modified-remote-data
+    description: Gets the list of incidents that were modified since the last update time. This command is used for mirroring in and should be used for debugging purposes.
+    arguments:
+    - name: lastUpdate
+      description: ISO format date with timezone. Retrieve entries that were modified after lastUpdate.
+  - name: update-remote-system
+    description: Updates the remote system with local incident changes. This command is used for mirroring out and should be used for debugging purposes.
+    arguments:
+    - name: remoteId
+      description: The remote incident ID.
+    - name: data
+      description: The data of the incident to update in the remote system.
+    - name: entries
+      description: The entries to update in the remote system.
+    - name: incidentChanged
+      description: Whether the incident has changed.
+    - name: delta
+      description: The fields that changed in the incident.
+    - name: status
+      description: The status of the incident.
   - name: es-integration-health-check
     description: Returns the health status of the integration. This commmand should be used for debugging purposes.
   - name: es-get-indices-statistics
@@ -2309,7 +2337,8 @@ script:
   subtype: python3
   type: python
   ismappable: true
-  ismirror: true
+  isremotesyncin: true
+  isremotesyncout: true
 autoUpdateDockerImage: false
 fromversion: 5.0.0
 defaultmapperin: Elasticsearch - Incoming Mapper
