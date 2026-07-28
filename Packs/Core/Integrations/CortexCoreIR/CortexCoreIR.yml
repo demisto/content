@@ -1744,7 +1744,7 @@ script:
       name: generic_file_path
     - description: 'The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path itself contains a comma.'
       name: paths_separator
-      defaultvalue: ','
+      defaultValue: ','
     - description: For polling use.
       isArray: true
       name: action_id
@@ -1821,7 +1821,7 @@ script:
         Issue CGO file path: ${issue.cgopath}
     - description: 'The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path itself contains a comma.'
       name: paths_separator
-      defaultvalue: ','
+      defaultValue: ','
     - description: For polling use.
       isArray: true
       name: action_id
