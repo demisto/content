@@ -65,7 +65,7 @@ BRACKETS_URL_TO_FORMAT = [
 ]
 
 # URLs containing spaces (literal or percent-encoded). A space is not a valid URL character and must be
-# percent-encoded as %20 rather than decoded back to a literal space (which produces an invalid URL). See XSUP-73627.
+# percent-encoded as %20 rather than decoded back to a literal space (which produces an invalid URL).
 SPACE_ENCODING = [
     # Percent-encoded spaces must be preserved, not decoded to literal spaces.
     (
@@ -515,7 +515,7 @@ class TestFormatURL:
 
         Then:
         - Ensure literal spaces are encoded to %20 and existing %20 sequences are preserved,
-          so the resulting URL remains valid (XSUP-73627).
+          so the resulting URL remains valid.
         """
 
         assert URLFormatter(url_).__str__() == expected

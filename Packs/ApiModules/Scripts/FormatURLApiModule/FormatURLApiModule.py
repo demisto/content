@@ -132,8 +132,6 @@ class URLCheck:
             else:
                 break
 
-        # A space is not a valid URL character. Any literal space here originated from a decoded %20
-        # (or was encoded earlier by the parser), so keep it percent-encoded to preserve a valid URL (XSUP-73627).
         self.output = self.output.replace(" ", "%20")
 
     def __str__(self):
@@ -495,7 +493,7 @@ class URLCheck:
             return len(self.modified_url), part
 
         elif char == " ":
-            # A space is not a valid URL character, encode it to %20 instead of failing (XSUP-73627)
+            # A space is not a valid URL character, encode it to %20 instead of failing
             part += "%20"
             index += 1
 
