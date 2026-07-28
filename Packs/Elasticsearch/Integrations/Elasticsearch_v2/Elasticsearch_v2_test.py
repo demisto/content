@@ -3282,3 +3282,26 @@ class TestEsKibanaValueListItemImportCommand:
 
         with pytest.raises(DemistoException):
             Elasticsearch_v2.es_kibana_value_list_item_import_command({}, {})
+
+
+class TestBuildFetchExtraParams:
+    """ Tests for build_fetch_extra_params.
+    A blank "Fields to Fetch" parameter must not add an empty "fields": [] entry to the
+    fetch request body, otherwise Elasticsearch fails with:
+    ParsingException 400 'Unknown key for a START_ARRAY in [fields]'.
+    """
+
+    def test_empty_fields_list_omits_fields_key(self):
+        import Elasticsearch_v2
+
+        extra_params = Elasticsearch_v2.build_fetch_extra_params([])
+
+        assert "fields" not in extra_params
+        assert extra_params == {"_source": True}
+
+    def test_populated_fields_list_includes_fields_key(self):
+        import Elasticsearch_v2
+
+        extra_params = Elasticsearch_v2.build_fetch_extra_params(["field_a", "field_b"])
+
+        assert extra_params == {"_source": True, "fields": ["field_a", "field_b"]}
