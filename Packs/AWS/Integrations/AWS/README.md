@@ -264,8 +264,8 @@ Retrieves the website configuration for a bucket. Required IAM permission: s3:Ge
 | --- | --- | --- |
 | AWS.S3.Buckets.BucketWebsite.ErrorDocument | Object | The object key name of the website error document to use for 4XX class errors. |
 | AWS.S3.Buckets.BucketWebsite.IndexDocument | Object | The name of the index document for the website \(for example index.html\). |
-| AWS.S3.Buckets.BucketWebsite.RedirectAllRequestsTo | Object | Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket. |
-| AWS.S3.Buckets.BucketWebsite.RoutingRules | Array | Rules that define when a redirect is applied and the redirect behavior. |
+| AWS.S3.Buckets.BucketWebsite.RedirectAllRequestsTo | Object | The redirect behavior of all requests to a website endpoint of an Amazon S3 bucket. |
+| AWS.S3.Buckets.BucketWebsite.RoutingRules | Array | The rules that define when a redirect is applied and the redirect behavior. |
 
 ### aws-s3-bucket-acl-get
 
@@ -288,8 +288,8 @@ Retrieves the access control list (ACL) of a bucket. Required IAM permission: s3
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3.Buckets.BucketAcl.Grants | Array | A list of grants. |
-| AWS.S3.Buckets.BucketAcl.Owner | Object | Container for the bucket owner's display name and ID. |
+| AWS.S3.Buckets.BucketAcl.Grants | Array | The list of grants. |
+| AWS.S3.Buckets.BucketAcl.Owner | Object | The container for the bucket owner's display name and ID. |
 
 ### aws-iam-account-password-policy-get
 
@@ -2238,7 +2238,7 @@ Retrieves the public access block configuration for an Amazon S3 bucket. Shows t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3.Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3.Buckets.BucketName | string | The name of the S3 bucket. |
 | AWS.S3.Buckets.PublicAccessBlock.BlockPublicAcls | boolean | Whether Amazon S3 blocks public access control lists \(ACLs\) for this bucket and objects in this bucket. |
 | AWS.S3.Buckets.PublicAccessBlock.IgnorePublicAcls | boolean | Whether Amazon S3 ignores public ACLs for this bucket and objects in this bucket. |
 | AWS.S3.Buckets.PublicAccessBlock.BlockPublicPolicy | boolean | Whether Amazon S3 blocks public bucket policies for this bucket. |
@@ -2573,8 +2573,8 @@ Retrieves the default encryption configuration for an Amazon S3 bucket. Shows th
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3.Buckets.BucketName | string | Name of the S3 bucket. |
-| AWS.S3.Buckets.ServerSideEncryptionConfiguration.Rules | array | Container for information about a particular server-side encryption configuration rule. |
+| AWS.S3.Buckets.BucketName | string | The name of the S3 bucket. |
+| AWS.S3.Buckets.ServerSideEncryptionConfiguration.Rules | array | The container for information about a particular server-side encryption configuration rule. |
 
 ### aws-s3-bucket-policy-get
 
@@ -2598,15 +2598,15 @@ Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3.Buckets.BucketName | string | Name of the S3 bucket. |
+| AWS.S3.Buckets.BucketName | string | The name of the S3 bucket. |
 | AWS.S3.Buckets.Policy.Version | string | The version of the policy. |
 | AWS.S3.Buckets.Policy.Id | string | The id of the policy. |
-| AWS.S3.Buckets.Policy.Statement.Sid | string | Identifier of the policy statement. |
-| AWS.S3.Buckets.Policy.Statement.Effect | string | Specifies whether the statement results in an allow or an explicit deny. |
-| AWS.S3.Buckets.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
-| AWS.S3.Buckets.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
-| AWS.S3.Buckets.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
-| AWS.S3.Buckets.Policy.Statement.Condition | string | Specify conditions for when a policy is in effect. |
+| AWS.S3.Buckets.Policy.Statement.Sid | string | The identifier of the policy statement. |
+| AWS.S3.Buckets.Policy.Statement.Effect | string | The specification of whether the statement results in an allow or an explicit deny. |
+| AWS.S3.Buckets.Policy.Statement.Principal | Unknown | The principal that is allowed or denied access to a resource. |
+| AWS.S3.Buckets.Policy.Statement.Action | Unknown | The specific action or actions that will be allowed or denied. |
+| AWS.S3.Buckets.Policy.Statement.Resource | Unknown | The object or objects that the statement applies to. |
+| AWS.S3.Buckets.Policy.Statement.Condition | string | The conditions for when a policy is in effect. |
 
 ### aws-lambda-function-configuration-get
 

@@ -960,10 +960,10 @@ script:
         description: The name of the index document for the website (for example index.html).
         type: Object
       - contextPath: AWS.S3.Buckets.BucketWebsite.RedirectAllRequestsTo
-        description: Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket.
+        description: The redirect behavior of all requests to a website endpoint of an Amazon S3 bucket.
         type: Object
       - contextPath: AWS.S3.Buckets.BucketWebsite.RoutingRules
-        description: Rules that define when a redirect is applied and the redirect behavior.
+        description: The rules that define when a redirect is applied and the redirect behavior.
         type: Array
 
   - name: aws-s3-bucket-acl-get
@@ -1018,10 +1018,10 @@ script:
         required: true
     outputs:
       - contextPath: AWS.S3.Buckets.BucketAcl.Grants
-        description: A list of grants.
+        description: The list of grants.
         type: Array
       - contextPath: AWS.S3.Buckets.BucketAcl.Owner
-        description: Container for the bucket owner's display name and ID.
+        description: The container for the bucket owner's display name and ID.
         type: Object
 
   - name: aws-iam-account-password-policy-get
@@ -7117,7 +7117,7 @@ script:
       name: expected_bucket_owner
     outputs:
     - contextPath: AWS.S3.Buckets.BucketName
-      description: Name of the S3 bucket.
+      description: The name of the S3 bucket.
       type: string
     - contextPath: AWS.S3.Buckets.PublicAccessBlock.BlockPublicAcls
       description: Whether Amazon S3 blocks public access control lists (ACLs) for this bucket and objects in this bucket.
@@ -8013,10 +8013,10 @@ script:
       required: true
     outputs:
     - contextPath: AWS.S3.Buckets.BucketName
-      description: Name of the S3 bucket.
+      description: The name of the S3 bucket.
       type: string
     - contextPath: AWS.S3.Buckets.ServerSideEncryptionConfiguration.Rules
-      description: Container for information about a particular server-side encryption configuration rule.
+      description: The container for information about a particular server-side encryption configuration rule.
       type: array
 
   - name: aws-s3-bucket-policy-get
@@ -8073,7 +8073,7 @@ script:
       name: expected_bucket_owner
     outputs:
     - contextPath: AWS.S3.Buckets.BucketName
-      description: Name of the S3 bucket.
+      description: The name of the S3 bucket.
       type: string
     - contextPath: AWS.S3.Buckets.Policy.Version
       description: The version of the policy.
@@ -8082,19 +8082,22 @@ script:
       description: The id of the policy.
       type: string
     - contextPath: AWS.S3.Buckets.Policy.Statement.Sid
-      description: Identifier of the policy statement.
+      description: The identifier of the policy statement.
       type: string
     - contextPath: AWS.S3.Buckets.Policy.Statement.Effect
-      description: Specifies whether the statement results in an allow or an explicit deny.
+      description: The specification of whether the statement results in an allow or an explicit deny.
       type: string
     - contextPath: AWS.S3.Buckets.Policy.Statement.Principal
-      description: Specify the principal that is allowed or denied access to a resource.
+      description: The principal that is allowed or denied access to a resource.
+      type: Unknown
     - contextPath: AWS.S3.Buckets.Policy.Statement.Action
-      description: Describes the specific action or actions that will be allowed or denied.
+      description: The specific action or actions that will be allowed or denied.
+      type: Unknown
     - contextPath: AWS.S3.Buckets.Policy.Statement.Resource
-      description: Defines the object or objects that the statement applies to.
+      description: The object or objects that the statement applies to.
+      type: Unknown
     - contextPath: AWS.S3.Buckets.Policy.Statement.Condition
-      description: Specify conditions for when a policy is in effect.
+      description: The conditions for when a policy is in effect.
       type: string
 
   - name: aws-lambda-function-configuration-get
