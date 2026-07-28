@@ -1378,6 +1378,56 @@ def test_mark_item_as_read(mocker, client):
     assert result.outputs == expected_output
 
 
+def test_mark_item_as_read_retries_on_change_key_conflict(mocker, client):
+    """
+    Given:
+        - An item whose first save() raises ErrorIrresolvableConflict (stale change key)
+    When:
+        - Calling mark_item_as_read
+    Then:
+        - save() is retried after a short delay and the item is reported as marked
+    """
+    from exchangelib.errors import ErrorIrresolvableConflict
+
+    item = MagicMock(spec=Message, id="item1", is_read=False, message_id="msg1")
+    item.save.side_effect = [ErrorIrresolvableConflict("stale change key"), None]
+    mocker.patch.object(EWSClient, "get_items_from_mailbox", return_value=[item])
+    sleep_mock = mocker.patch.object(EWSApiModule.time, "sleep")
+
+    result = mark_item_as_read(client, {"item_ids": "item1", "operation": "read"})
+
+    assert item.save.call_count == 2
+    sleep_mock.assert_called_once_with(EWSApiModule.MARK_AS_READ_RETRY_DELAY)
+    assert result.outputs == [{"itemId": "item1", "messageId": "msg1", "action": "marked-as-read"}]
+
+
+def test_mark_item_as_read_skips_item_on_persistent_conflict(mocker, client):
+    """
+    Given:
+        - An item whose save() raises ErrorIrresolvableConflict on both the initial call and the retry
+    When:
+        - Calling mark_item_as_read
+    Then:
+        - The item is skipped (not included in the outputs) instead of failing the whole command
+    """
+    from exchangelib.errors import ErrorIrresolvableConflict
+
+    conflicting = MagicMock(spec=Message, id="item1", is_read=False, message_id="msg1")
+    conflicting.save.side_effect = ErrorIrresolvableConflict("stale change key")
+    ok_item = MagicMock(spec=Message, id="item2", is_read=False, message_id="msg2")
+    ok_item.save.return_value = None
+    mock_items = [conflicting, ok_item]
+    mocker.patch.object(
+        EWSClient, "get_items_from_mailbox", side_effect=lambda _target, ids: [item for item in mock_items if item.id in ids]
+    )
+    mocker.patch.object(EWSApiModule.time, "sleep")
+
+    result = mark_item_as_read(client, {"item_ids": "item1, item2", "operation": "read"})
+
+    assert conflicting.save.call_count == 2
+    assert result.outputs == [{"itemId": "item2", "messageId": "msg2", "action": "marked-as-read"}]
+
+
 def test_escape_hr_item_ids():
     """
     Given:

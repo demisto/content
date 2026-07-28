@@ -1,3 +1,4 @@
+import time
 import uuid
 from enum import Enum
 from urllib.parse import urlparse
@@ -22,6 +23,7 @@ from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCred
 from exchangelib.errors import (
     AutoDiscoverFailed,
     ErrorInvalidIdMalformed,
+    ErrorIrresolvableConflict,
     ErrorItemNotFound,
     ErrorNameResolutionNoResults,
     ResponseMessageError,
@@ -57,6 +59,8 @@ SUPPORTED_ON_PREM_BUILDS = {
     "2016": EXCHANGE_2016,
     "2019": EXCHANGE_2019,
 }
+
+MARK_AS_READ_RETRY_DELAY = 0.1
 
 """ Context Keys """
 ATTACHMENT_ID = "attachmentId"
@@ -1401,7 +1405,17 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
 
     for item in items:
         item.is_read = operation == "read"
-        item.save()
+
+        try:
+            item.save()
+        except ErrorIrresolvableConflict:
+            demisto.debug(f"Change key conflict while marking item {item.id} as {operation}. Retrying once.")
+            time.sleep(MARK_AS_READ_RETRY_DELAY)
+            try:
+                item.save()
+            except ErrorIrresolvableConflict as e:
+                demisto.error(f"Skipping item {item.id}, failed to mark as {operation} after retry: {e}")
+                continue
 
         marked_items.append(
             {
