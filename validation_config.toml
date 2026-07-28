@@ -17,8 +17,8 @@ ignorable_errors = [
     "TR101",
     "VC100", "VC101",
     "AS103",
-    "AG112", "AG117"
-    
+    "AG112", "AG117",
+    "CO104"
 ]
 
 
@@ -104,7 +104,18 @@ warning = []
 
 [connectors_use_git]
 select = [
-  "CO100"
+  "CO100",
+  "CO101",
+  "CO102",
+  "CO103",
+  "CO104",
+  "CO105",
+  "CO106",
+  "CO118",
+  "CO157",
+  "CO177",
+  "CO164",
+  "CO190"
 ]
 
 
