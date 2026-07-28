@@ -3336,9 +3336,7 @@ def fetch_cases(proxies) -> List[Dict[str, Any]]:
         alerts_data: List[Dict[str, Any]] = []
         if FETCH_ALERTS_FOR_CASE and case_id:
             try:
-                alerts_resp = kibana_http_request(
-                    "GET", f"/api/cases/{case_id}/alerts", proxies=proxies, allow_not_found=True
-                )
+                alerts_resp = kibana_http_request("GET", f"/api/cases/{case_id}/alerts", proxies=proxies, allow_not_found=True)
                 alerts_data = alerts_resp if isinstance(alerts_resp, list) else []
             except Exception as e:
                 demisto.debug(f"Failed to fetch alerts for case {case_id}: {e}")
@@ -3417,13 +3415,9 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                 workflow_status = get_value_by_dot_notation(source, "kibana.alert.workflow_status") or "open"
                 updated_incident = {
                     "elasticsearchworkflowalertstatus": workflow_status,
-                    "elasticsearchworkflowalertstatusreason": get_value_by_dot_notation(
-                        source, "kibana.alert.workflow_reason"
-                    ),
+                    "elasticsearchworkflowalertstatusreason": get_value_by_dot_notation(source, "kibana.alert.workflow_reason"),
                     "elasticsearchalertreason": get_value_by_dot_notation(source, "kibana.alert.reason"),
-                    "elasticsearchstatusupdatedate": get_value_by_dot_notation(
-                        source, "kibana.alert.workflow_status_updated_at"
-                    ),
+                    "elasticsearchstatusupdatedate": get_value_by_dot_notation(source, "kibana.alert.workflow_status_updated_at"),
                     "tags": get_value_by_dot_notation(source, "kibana.alert.workflow_tags"),
                     "rawJSON": json.dumps(hit),
                 }
@@ -3449,9 +3443,7 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
     elif incident_type == INCIDENT_TYPE_CASE:
         # Fetch the case by ID
         try:
-            response = kibana_http_request(
-                "GET", f"/api/cases/{remote_id}", proxies=proxies, allow_not_found=True
-            )
+            response = kibana_http_request("GET", f"/api/cases/{remote_id}", proxies=proxies, allow_not_found=True)
             if response:
                 case_status = response.get("status", "open")
                 updated_incident = {
@@ -3716,9 +3708,7 @@ def _mirror_out_case(
     # Close related alerts if case is being closed
     if CLOSE_ELASTIC_INCIDENT and inc_status == IncidentStatus.DONE:
         try:
-            alerts_resp = kibana_http_request(
-                "GET", f"/api/cases/{remote_id}/alerts", proxies=proxies, allow_not_found=True
-            )
+            alerts_resp = kibana_http_request("GET", f"/api/cases/{remote_id}/alerts", proxies=proxies, allow_not_found=True)
             alert_ids = [a.get("id") for a in (alerts_resp or []) if a.get("id")]
             if alert_ids:
                 kibana_http_request(
