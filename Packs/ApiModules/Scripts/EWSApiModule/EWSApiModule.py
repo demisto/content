@@ -1399,22 +1399,35 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
     operation = args.get("operation", "read")
     target_mailbox = args.get("target_mailbox")
     marked_items = []
+    skipped_items = []
     item_ids = argToList(item_ids)
+    demisto.debug(f"mark_item_as_read: {operation=} | {target_mailbox=} | requested {len(item_ids)} item(s): {item_ids}")
+
     items = client.get_items_from_mailbox(target_mailbox, item_ids)
     items = [x for x in items if isinstance(x, Message)]
+    demisto.debug(f"mark_item_as_read: resolved {len(items)} message(s) out of {len(item_ids)} requested id(s).")
 
     for item in items:
         item.is_read = operation == "read"
+        demisto.debug(f"mark_item_as_read: saving {item.id=} | {item.message_id=} | {item.changekey=}")
 
         try:
             item.save()
-        except ErrorIrresolvableConflict:
-            demisto.debug(f"Change key conflict while marking item {item.id} as {operation}. Retrying once.")
+        except ErrorIrresolvableConflict as e:
+            demisto.error(
+                f"mark_item_as_read: change key conflict for {item.id=} | {item.message_id=} | {item.changekey=}: {e}. "
+                f"Retrying in {MARK_AS_READ_RETRY_DELAY} seconds."
+            )
             time.sleep(MARK_AS_READ_RETRY_DELAY)
             try:
                 item.save()
-            except ErrorIrresolvableConflict as e:
-                demisto.error(f"Skipping item {item.id}, failed to mark as {operation} after retry: {e}")
+                demisto.debug(f"mark_item_as_read: retry succeeded for {item.id=}")
+            except ErrorIrresolvableConflict as retry_error:
+                demisto.error(
+                    f"mark_item_as_read: skipping {item.id=} | {item.message_id=}, "
+                    f"still conflicting after retry: {retry_error}"
+                )
+                skipped_items.append(item.id)
                 continue
 
         marked_items.append(
@@ -1424,6 +1437,11 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
                 ACTION: f"marked-as-{operation}",
             }
         )
+
+    demisto.debug(
+        f"mark_item_as_read: marked {len(marked_items)} item(s) as {operation}, "
+        f"skipped {len(skipped_items)}: {skipped_items}"
+    )
 
     return get_entry_for_object(
         f"Marked items ({operation} marked operation)",
