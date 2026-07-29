@@ -55,6 +55,7 @@ def mock_instance_params(mocker, fetch_networking: bool = False):
         "params",
         return_value={
             "url": BASE_URL,
+            "auth_method": "Username & Password",
             "credentials": {
                 "identifier": CLIENT_ID,
                 "password": CLIENT_SECRET,
