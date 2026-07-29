@@ -600,7 +600,7 @@ def status_filter(statuses):
     return status_filter
 
 
-def not_any_filter(filter_property, filter_property_values):
+def not_any_filter(filter_property: str, filter_property_values: list) -> str:
     """
     Create a 'not properties/filter_property/any(x:x eq {})' Filter string,
     when filter_property and filter_property_values are not empty.
@@ -612,7 +612,7 @@ def not_any_filter(filter_property, filter_property_values):
     return _na_filter
 
 
-def not_contains_filter(filter_property, filter_property_values):
+def not_contains_filter(filter_property: str, filter_property_values: list) -> str:
     """
     Create a '(contains(properties/filter_property, '{}') ne true)' Filter string,
     when filter_property and filter_property_values are not empty.
@@ -1503,9 +1503,9 @@ def fetch_incidents_lookback(
     client: AzureSentinelClient,
     lookback_start_time: str,
     min_severity: str,
-    statuses_to_fetch: list,
-    titles_to_not_fetch: list = [],
-    alert_product_names_to_not_fetch: list = [],
+    statuses_to_fetch: list | None,
+    titles_to_not_fetch: list | None = None,
+    alert_product_names_to_not_fetch: list | None = None,
 ) -> list:
     """Fetch incidents that were modified within the lookback window.
 
@@ -1610,9 +1610,9 @@ def fetch_incidents(
     last_run: dict,
     first_fetch_time: str,
     min_severity: str,
-    statuses_to_fetch: list = [],
-    titles_to_not_fetch: list = [],
-    alert_product_names_to_not_fetch: list = [],
+    statuses_to_fetch: list | None = None,
+    titles_to_not_fetch: list | None = None,
+    alert_product_names_to_not_fetch: list | None = None,
     look_back: int = 0,
 ) -> tuple:
     """Fetching incidents.
