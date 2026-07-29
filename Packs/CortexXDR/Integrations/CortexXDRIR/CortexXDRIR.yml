@@ -5536,6 +5536,7 @@ script:
       description: The resolve comment.
   dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
+  incidentFetchInterval: 1
   isfetch:xpanse: false
   script: ''
   subtype: python3
