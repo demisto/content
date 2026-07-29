@@ -1,5 +1,74 @@
 import inspect
 import io
+
+# ---------------------------------------------------------------------------
+# Python 3.11+ compatibility shim for `inspect.formatargspec`.
+#
+# `inspect.formatargspec` was deprecated in Python 3.5 and REMOVED in Python
+# 3.11. The pinned validation Docker image (demisto/xsoar-tools) runs Python
+# 3.12, but some transitive dependency invoked during the demisto-sdk
+# validate / pre-commit run still does `from inspect import formatargspec`,
+# which raises: "cannot import name 'formatargspec' from 'inspect'".
+#
+# We cannot pip-install or patch that dependency at runtime, so we restore a
+# backward-compatible implementation onto the `inspect` module BEFORE any of
+# those lazy imports execute (they happen inside validate_content()). This is
+# the reference reimplementation adapted from CPython 3.10's inspect module.
+if not hasattr(inspect, "formatargspec"):
+
+    def _formatargspec(  # noqa: ANN202
+        args,
+        varargs=None,
+        varkw=None,
+        defaults=None,
+        kwonlyargs=(),
+        kwonlydefaults=None,
+        annotations=None,
+        formatarg=str,
+        formatvarargs=lambda name: "*" + name,
+        formatvarkw=lambda name: "**" + name,
+        formatvalue=lambda value: "=" + repr(value),
+        formatreturns=lambda text: " -> " + text,
+        formatannotation=inspect.formatannotation,
+    ):
+        """Backport of the pre-3.11 ``inspect.formatargspec``."""
+        annotations = annotations or {}
+
+        def formatargandannotation(arg):  # noqa: ANN202
+            result = formatarg(arg)
+            if arg in annotations:
+                result += ": " + formatannotation(annotations[arg])
+            return result
+
+        specs = []
+        if defaults:
+            firstdefault = len(args) - len(defaults)
+        else:
+            firstdefault = len(args)
+        for i, arg in enumerate(args):
+            spec = formatargandannotation(arg)
+            if defaults and i >= firstdefault:
+                spec = spec + formatvalue(defaults[i - firstdefault])
+            specs.append(spec)
+        if varargs is not None:
+            specs.append(formatvarargs(formatargandannotation(varargs)))
+        elif kwonlyargs:
+            specs.append("*")
+        if kwonlyargs:
+            for kwonlyarg in kwonlyargs:
+                spec = formatargandannotation(kwonlyarg)
+                if kwonlydefaults and kwonlyarg in kwonlydefaults:
+                    spec += formatvalue(kwonlydefaults[kwonlyarg])
+                specs.append(spec)
+        if varkw is not None:
+            specs.append(formatvarkw(formatargandannotation(varkw)))
+        result = "(" + ", ".join(specs) + ")"
+        if "return" in annotations:
+            result += formatreturns(formatannotation(annotations["return"]))
+        return result
+
+    inspect.formatargspec = _formatargspec  # type: ignore[attr-defined]
+# ---------------------------------------------------------------------------
 import json
 import os
 import re
