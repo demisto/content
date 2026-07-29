@@ -6,7 +6,7 @@ from CommonServerPython import *
 
 urllib3.disable_warnings()
 
-INTEGRATION_NAME = "Intel 471 Credentials"
+INTEGRATION_NAME = "Intel471 Credentials"
 API_BASE_URL = "https://api.intel471.cloud"
 FEED_CREDENTIALS_PATH = "/integrations/creds/v1/credentials/stream"
 FEED_URL_CREDENTIALS = f"{API_BASE_URL}{FEED_CREDENTIALS_PATH}"
@@ -16,7 +16,7 @@ USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"
 MAX_PAGE_SIZE = 1000
 DEFAULT_MAX_INCIDENTS = 200
 REQUEST_TIMEOUT = 60
-INCIDENT_TYPE = "Intel 471 Leaked Credential"
+INCIDENT_TYPE = "Intel471 Leaked Credential"
 INFO_STEALER_FIELDS = (
     "antivirus_software",
     "computer_username",
@@ -36,7 +36,7 @@ CLI_NAME_OVERRIDES = {"infection_ts": "intel471infostealerinfectiontimestamp"}
 
 
 class Client(BaseClient):
-    """Client for the Intel 471 Credentials API."""
+    """Client for the Intel471 Credentials API."""
 
     def __init__(
         self,
@@ -246,7 +246,7 @@ def _first_info_stealer_value(raw: Any) -> str:
 
 
 def compose_incident_details(credential: dict[str, Any]) -> str:
-    """Builds a human-readable ``details`` blob for an Intel 471 leaked-credential incident.
+    """Builds a human-readable ``details`` blob for an Intel471 leaked-credential incident.
 
     Mirrors ``compose_incident_details`` in the Intel471WatcherAlerts integration so leaked-credential
     incidents render the same shape of summary as the watcher-alert credential adapter — but extended
@@ -307,7 +307,7 @@ def build_incident(credential: dict[str, Any]) -> dict[str, Any]:
     occurred = credential.get("last_updated_ts", "")
     info_stealer = data.get("info_stealer", {}) or {}
 
-    name = f"Intel 471 Leaked Credential: {login}"
+    name = f"Intel471 Leaked Credential: {login}"
     if domain:
         name = f"{name} @ {domain}"
 
@@ -376,7 +376,7 @@ def get_indicators_command(client: Client, args: dict[str, str], feed_tags: list
 
     hr = [{"Value": i.get("value"), "Type": i.get("type"), "fields": i.get("fields")} for i in indicators]
     human_readable = tableToMarkdown(
-        "Indicators from Intel 471 Credentials:", hr, headers=["Value", "Type", "fields"], removeNull=True
+        "Indicators from Intel471 Credentials:", hr, headers=["Value", "Type", "fields"], removeNull=True
     )
     return CommandResults(
         readable_output=human_readable,

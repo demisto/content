@@ -1,6 +1,6 @@
-# Intel 471 Credentials
+# Intel471 Credentials
 
-Fetches leaked credentials from the Intel 471 Credentials API (`/credentials/stream`).
+Fetches leaked credentials from the Intel471 Credentials API (`/credentials/stream`).
 
 The primary command is `fetch-indicators`: each credential is converted into one Cortex indicator (`Email` if the login contains `@`, otherwise `Account`). While iterating the indicator-creation loop, the integration also creates an associated Cortex incident for the same credential and links it back via the indicator's `relatedIncidents` field.
 
@@ -11,26 +11,26 @@ The primary command is `fetch-indicators`: each credential is converted into one
 
 ## Prerequisites
 
-The integration authenticates to the Intel 471 Credentials API with HTTP Basic auth (**Username** = API username, **Password** = API key). To obtain these credentials:
+The integration authenticates to the Intel471 Credentials API with HTTP Basic auth (**Username** = API username, **Password** = API key). To obtain these credentials:
 
-1. Sign in to the [Intel 471 Developer Portal](https://developer.intel471.com/) using your organization SSO account (or sign up if this is your first visit).
-2. Confirm that your organization has an active subscription that grants access to the Credentials Intelligence product. If it does not, contact your Intel 471 account manager to enable it.
+1. Sign in to the [Intel471 Developer Portal](https://developer.intel471.com/) using your organization SSO account (or sign up if this is your first visit).
+2. Confirm that your organization has an active subscription that grants access to the Credentials Intelligence product. If it does not, contact your Intel471 account manager to enable it.
 3. In the portal, open **API Keys** (under your account menu) and click **Create new API key**.
 4. Copy the generated **username** and **API key** — the API key is shown only once.
 5. Use these values in the **Username** and **Password** fields of the configuration below.
 
-## Configure Intel 471 Credentials in Cortex
+## Configure Intel471 Credentials in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Username | HTTP Basic auth credentials for the Intel 471 Credentials API — enter your API username and API key. | True |
-| Password | HTTP Basic auth credentials for the Intel 471 Credentials API — enter your API username and API key. | True |
+| Username | HTTP Basic auth credentials for the Intel471 Credentials API — enter your API username and API key. | True |
+| Password | HTTP Basic auth credentials for the Intel471 Credentials API — enter your API username and API key. | True |
 | Use system proxy settings | When enabled, requests are routed through the system proxy configured on the Cortex engine. | False |
 | Trust any certificate (not secure) | When enabled, SSL certificate verification is skipped. Not recommended for production use. | False |
 | Fetch indicators |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The time to go back when performing the first fetch. | False |
 | Maximum items per fetch | The maximum number of credentials to pull per fetch \(each one becomes one indicator and one incident\). | False |
-| Feed Fetch Interval | How often \(in minutes\) the integration polls the Intel 471 API for new credentials. | False |
+| Feed Fetch Interval | How often \(in minutes\) the integration polls the Intel471 API for new credentials. | False |
 | Indicator Reputation | The reputation to apply to indicators from this integration instance. | False |
 | Source Reliability | The reliability of the source providing the intelligence data. | True |
 | Tags | A comma-separated list of tags. | False |
@@ -69,8 +69,8 @@ Gets a preview of indicators that the feed would pull on the next run (no state 
 | --- | --- | --- |
 | Intel471Credentials.Indicators.value | String | The credential login value (email address or account username). |
 | Intel471Credentials.Indicators.type | String | The indicator type — Email or Account. |
-| Intel471Credentials.Indicators.fields.firstseenbysource | Date | Timestamp when the credential was first observed by Intel 471. |
-| Intel471Credentials.Indicators.fields.lastseenbysource | Date | Timestamp when the credential was last observed by Intel 471. |
+| Intel471Credentials.Indicators.fields.firstseenbysource | Date | Timestamp when the credential was first observed by Intel471. |
+| Intel471Credentials.Indicators.fields.lastseenbysource | Date | Timestamp when the credential was last observed by Intel471. |
 | Intel471Credentials.Indicators.fields.tags | Unknown | Aggregated tags — malware families, affiliations, and configured feed tags. |
 | Intel471Credentials.Indicators.fields.intel471infostealerantivirussoftware | String | Antivirus software detected on the machine infected by the info stealer. |
 | Intel471Credentials.Indicators.fields.intel471infostealercomputerusername | String | Operating-system username logged in on the infected machine. |
@@ -123,7 +123,7 @@ Gets a preview of indicators that the feed would pull on the next run (no state 
 
 #### Human Readable Output
 
->### Indicators from Intel 471 Credentials
+>### Indicators from Intel471 Credentials
 >
 >|Value|Type|fields|
 >|---|---|---|
