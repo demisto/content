@@ -12,17 +12,12 @@
         "Endpoint"
     ],
     "tags": [
-        "forensics",
-        "incident-response",
-        "endpoint",
-        "triage",
-        "automation"
+        "Forensics",
+        "Incident Response"
     ],
     "useCases": [
         "Incident Response",
-        "Malware Investigation",
-        "Endpoint Forensics",
-        "Threat Hunting"
+        "Malware"
     ],
     "keywords": [
         "Binalyze",

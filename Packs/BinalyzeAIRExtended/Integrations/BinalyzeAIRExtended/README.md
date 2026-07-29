@@ -1,5 +1,5 @@
 Manage Binalyze AIR forensic acquisition, endpoint isolation, triage, cases, tasks, assets, repositories, and evidence artifacts from Cortex XSOAR.
-This integration was integrated and tested with version xx of Binalyze AIR Extended.
+This integration was integrated and tested with Binalyze AIR Extended.
 
 ## Configure Binalyze AIR Extended in Cortex
 
