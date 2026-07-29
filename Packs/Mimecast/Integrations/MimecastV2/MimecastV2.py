@@ -284,9 +284,11 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             return res
         return res.json()
 
-    except HTTPError as e:
+    except (HTTPError, requests.exceptions.HTTPError) as e:
         LOG(e)
-        if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
+        response = getattr(e, "response", None)
+        status_code = getattr(response, "status_code", None)
+        if status_code == 418:
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
                 raise Exception(
                     "Credentials provided are expired, could not automatically refresh tokens."
@@ -294,6 +296,14 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
                     "+ Password are required."
                 )
         else:
+            # Attempt to parse v2 error envelope: {"error": [{"code": ..., "message": ...}]}
+            try:
+                error_body = response.json() if response is not None else None
+                if error_body and (errors := error_body.get("error")):
+                    messages = "; ".join(err.get("message", str(err)) for err in errors)
+                    raise DemistoException(messages) from e
+            except (ValueError, AttributeError):
+                pass
             raise
 
     except Exception as e:
