@@ -477,7 +477,7 @@ def http_get_json(url: str, timeout: int = 30) -> Any:
 DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json"
 
 
-def resolve_catalog_url(explicit: str) -> str:
+def resolve_catalog_url(explicit: Any) -> str:
     """Catalog location, in precedence order.
 
     An explicit argument wins, then the catalog_url configured on the
@@ -1103,7 +1103,7 @@ def install_marketplace_packs(
     debug: bool,
     upgrade: bool = False,
 ) -> dict[str, Any]:
-    requested_ids = {p.get("id") for p in marketplace_packs if p.get("id")}
+    requested_ids = {str(p["id"]) for p in marketplace_packs if p.get("id")}
     installed = fetch_installed_packs(using)
     try:
         closure = resolve_install_closure(marketplace_packs, using, installed, upgrade=upgrade)
