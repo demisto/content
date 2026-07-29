@@ -59,8 +59,8 @@ class TestNtdsDitFileWrittenByARareExecutable:
 
         """
         # consts
-        alert_name = "shirtestname"
-        playbook_name = "shirtestname"
+        alert_name = "shirtest"
+        playbook_name = "shirtest"
 
         with capfd.disabled():
             print(f"[diag] test_feature_two START — alert_name={alert_name!r} playbook_name={playbook_name!r}")

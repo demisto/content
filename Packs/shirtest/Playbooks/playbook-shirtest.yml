@@ -1,6 +1,6 @@
-id: shirtestname
+id: shirtest
 version: -1
-name: shirtestname
+name: shirtest
 description: |-
   This playbook addresses the following alerts:
   - NTDS.dit file written by an uncommon executable
