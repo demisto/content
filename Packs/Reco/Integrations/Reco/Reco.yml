@@ -39,12 +39,18 @@ configuration:
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The option to enable automatic incident fetching.
   display: Fetch incidents
   name: isFetch
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The maximum number of incidents to fetch per run (up to 500).
   defaultvalue: '200'
   display: Max fetch
@@ -52,30 +58,45 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Incidents SaaS Source
   display: Source
   name: source
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Created At time before which incidents will be fetched
   display: Before
   name: before
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Created At time after which incidents will be fetched
   display: After
   name: after
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'The minimum severity threshold for fetched incidents. Accepts a single value: LOW, MEDIUM, HIGH, or CRITICAL (or numeric equivalents 10, 20, 30, 40). Alerts at or above this severity are fetched. For example, "MEDIUM" fetches medium, high, and critical severity alerts.'
   display: Minimum risk level (e.g. MEDIUM fetches medium and higher)
   name: risk_level
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The amount of time to look back on the first fetch run (e.g. `7 days`, `12 hours`).
   defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -83,6 +104,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Interval in minutes between two consecutive fetch incidents runs.
   defaultvalue: '1'
   display: Incidents Fetch Interval
@@ -90,6 +114,9 @@ configuration:
   type: 19
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Reco is the leader in SaaS & AI Security, providing full visibility and control across your SaaS ecosystem and AI agents.
 display: Reco
 name: Reco
