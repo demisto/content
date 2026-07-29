@@ -45,14 +45,24 @@ def item_to_incidents(item_info, sixgill_alerts_client):
     incident: Dict[str, Any] = {}
     incidents = []
     items = []
+    org = demisto.params().get("org_id", "")
     # get fields that are shared in case of sub alerts
     add_sub_alerts_shared_fields(incident, item_info)
     sub_alerts = item_info.pop("sub_alerts", None)
     if sub_alerts:
+        alert_id = item_info.get("id", "")
         # add any sub alert as incident
         for sub_alert in sub_alerts:
+            aggregate_alert_id = sub_alert.get("aggregate_alert_id", "")
             sub_item = copy.deepcopy(item_info)
             sub_item.update(sub_alert)
+            alert_post_url = (
+                f"https://portal.cybersixgill.com/#/alerts?actionable_alert_content_id={alert_id}"
+                f"&aggregatedIndex={aggregate_alert_id}&filters.alert_id={alert_id}"
+            )
+            if org:
+                alert_post_url += f"&org={org}"
+            sub_item["alert_post_url"] = alert_post_url
             items.append(sub_item)
     else:
         items.append(item_info)
@@ -72,12 +82,17 @@ def add_sub_alerts_shared_fields(incident, item_info):
     incident["occurred"] = incident_date.strftime(DEMISTO_DATETIME_FORMAT)
     incident["severity"] = THREAT_LEVEL_TO_SEVERITY[item_info.get("threat_level", "unknown")]
     org = demisto.params().get("org_id", "")
+    alert_id = item_info.get("id", "")
+    incident_link = f"https://portal.cybersixgill.com/#/alerts?filters.alert_id={alert_id}"
+    if org:
+        incident_link += f"&org={org}"
+
     incident["CustomFields"] = {
         "cybersixgillthreatlevel": item_info.get("threat_level", "unknown"),
         "cybersixgillthreattype": item_info.get("threats", []),
         "cybersixgillassessment": item_info.get("assessment", None),
         "cybersixgillrecommendations": "\n\n-----------\n\n".join(item_info.get("recommendations", [])),
-        "incidentlink": f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}&org={org}",
+        "incidentlink": incident_link,
         "cve": None,
         "cybersixgillattributes": None,
     }
