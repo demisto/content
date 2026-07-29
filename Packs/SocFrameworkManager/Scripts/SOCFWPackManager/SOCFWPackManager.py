@@ -693,35 +693,70 @@ def do_list(args: dict[str, Any]):
             value = value[:45].rstrip() + "…"
         return value
 
-    def render_lines(subset: list[dict[str, Any]]) -> str:
-        """One line per pack.
+    # The war room renders neither HTML nor colored markdown, so status is
+    # carried by an emoji. Every status has one, including the healthy ones, so
+    # each line starts with a marker and the markers form a column the eye can
+    # scan down. Bold on the pack id makes the id the anchor rather than the
+    # status text, which is why the status word is not repeated per line -- the
+    # header states the counts once.
+    #
+    # Nothing here is red. "not installed" is a legitimate end state -- most
+    # tenants only ever want a few of these packs -- so it gets a neutral marker
+    # rather than one that reads as a fault. Amber is reserved for the genuine
+    # anomaly, a tenant running ahead of the catalog.
+    status_markers = {
+        "not installed": "⚪",
+        "update available": "🔵",
+        "ahead of catalog": "🟠",
+        "up to date": "🟢",
+        "unknown": "⚫",
+    }
 
-        Deliberately not a markdown list: a bold category heading placed
-        directly after a list item is absorbed into that list as a lazy
-        continuation, which indents every heading after the first. Separating
-        them with blank lines instead would push the entry past the war room's
-        line cap. Tables are avoided for the same reason, plus a single-row
-        table gets transposed into a vertical key/value block.
+    def emphasize(text: str, status: str) -> str:
+        marker = status_markers.get(status)
+        return f"{marker} **{text}**" if marker else text
+
+    def render_lines(subset: list[dict[str, Any]], id_width: int = 0) -> str:
+        """One line per pack, as `<marker> **id** <versions> · docs`.
+
+        The war room preserves whitespace in a monospace face, so padding the id
+        to a common width puts the versions in a column. Deliberately not a
+        markdown list: a bold category heading placed directly after a list item
+        is absorbed into that list as a lazy continuation, which indents every
+        heading after the first. Tables are avoided because a single-row table
+        gets transposed into a vertical key/value block.
         """
         out = []
         for r in subset:
             status = r["status"]
+            marker = status_markers.get(status, "⚫")
             if status == "not installed":
-                detail = f"not installed · {r['version']} available"
+                versions = f"{r['version']} available"
             elif status == "update available":
-                detail = f"{r['installed']} → {r['version']} · update available"
+                versions = f"{r['installed']} → {r['version']}"
             elif status == "ahead of catalog":
-                detail = f"{r['installed']} · ahead of catalog ({r['version']})"
+                versions = f"{r['installed']} installed · catalog {r['version']}"
             elif status == "unknown":
-                detail = f"{r['version']} · install state unknown"
+                versions = f"{r['version']} · install state unknown"
             else:
-                detail = f"{r['version']} · up to date"
+                versions = r["version"]
             # Pack id stays unlinked so it can be copied into pack_id=.
-            line = f"{r['id']} — {detail}"
+            pad = " " * max(0, id_width - len(r["id"]))
+            line = f"{marker} **{r['id']}**{pad}  {versions}"
             if r.get("docs"):
                 line += f" · [docs]({r['docs']})"
             out.append(line)
         return "\n".join(out)
+
+    def render_category(category: str) -> str:
+        """Category as a plain uppercase label.
+
+        No rule and no emoji: a drawn line across every section is more ink than
+        the content it separates, and the first column belongs to the status
+        markers, so a glyph there would break that scan. Separation comes from a
+        blank line when the line budget allows one.
+        """
+        return f"**{category.upper()}**"
 
     def render_table(subset: list[dict[str, Any]], cols: list[str]) -> str:
         out = "| " + " | ".join(cols) + " |\n"
@@ -737,8 +772,15 @@ def do_list(args: dict[str, Any]):
         counts: dict[str, int] = {}
         for r in rows:
             counts[r["status"]] = counts.get(r["status"], 0) + 1
-        if counts:
-            headline += " · " + " · ".join(f"{v} {k}" for k, v in sorted(counts.items()))
+        # Needs-action first, healthy last, so the header reads as a worklist and
+        # doubles as the legend for the markers used on each line.
+        # Actionable first, informational last. "not installed" sits low because
+        # it usually needs no action at all.
+        order = ["update available", "ahead of catalog", "unknown", "not installed", "up to date"]
+        parts = [emphasize(f"{counts[s]} {s}", s) for s in order if counts.get(s)]
+        parts += [emphasize(f"{v} {k}", k) for k, v in sorted(counts.items()) if k not in order]
+        if parts:
+            headline += " · " + " · ".join(parts)
     else:
         headline += " · install state unknown"
     if show_total and (offset or end < total):
@@ -767,13 +809,19 @@ def do_list(args: dict[str, Any]):
         else:
             body = render_table(page, fields)
     elif group_by_category:
+        categories = sorted({r["category"] for r in page}, key=lambda c: c.lower())
+        # A blank line between sections is the lightest separator there is, but
+        # it costs a line and the war room truncates a long entry. Spend them
+        # only when the whole listing still fits.
+        id_width = max((len(r["id"]) for r in page), default=0)
+        airy = (len(page) + 2 * len(categories)) <= 30
         sections = []
-        for category in sorted({r["category"] for r in page}, key=lambda c: c.lower()):
+        for category in categories:
             subset = [r for r in page if r["category"] == category]
-            sections.append(f"**{category}**\n" + render_lines(subset))
-        body = "\n".join(sections)
+            sections.append(render_category(category) + "\n" + render_lines(subset, id_width))
+        body = ("\n\n" if airy else "\n").join(sections)
     else:
-        body = render_lines(page)
+        body = render_lines(page, max((len(r["id"]) for r in page), default=0))
 
     emit_progress("\n".join(summary_lines) + "\n\n" + body, stage="list")
 

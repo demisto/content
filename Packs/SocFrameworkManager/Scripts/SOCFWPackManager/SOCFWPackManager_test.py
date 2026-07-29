@@ -728,8 +728,8 @@ def test_do_list_groups_by_category_and_drops_visible_and_path(mocker):
     script.do_list({})
     out = "\n".join(str(r.get("Contents", "")) for r in demisto_mock._results if isinstance(r, dict))
 
-    assert "**Endpoint**" in out
-    assert "**Identity**" in out
+    assert "**ENDPOINT**" in out
+    assert "**IDENTITY**" in out
     # visible/path are not rendered; "visible_only" in the summary line is fine.
     assert "| visible" not in out
     assert "Packs/soc-a" not in out
@@ -745,8 +745,8 @@ def test_do_list_defaults_to_list_not_table(mocker):
 
     # A markdown table gets transposed when a category has a single pack.
     assert "| --- |" not in out
-    assert "\nsoc-a — " in out
-    assert "1.0.4 → 1.0.5 · update available" in out
+    assert "**soc-a**" in out
+    assert "🔵 **soc-a**  1.0.4 → 1.0.5" in out
 
 
 def test_do_list_table_format_still_available(mocker):
@@ -773,9 +773,9 @@ def test_do_list_line_wording_per_status(mocker):
     script.do_list({})
     out = "\n".join(str(r.get("Contents", "")) for r in demisto_mock._results if isinstance(r, dict))
 
-    assert "1.0.5 · up to date" in out
-    assert "ahead of catalog (2.0.0)" in out
-    assert "not installed · 1.0.0 available" in out
+    assert "🟢 **soc-a**  1.0.5" in out
+    assert "🟠 **soc-b**  9.9.9 installed · catalog 2.0.0" in out
+    assert "⚪ **soc-c**  1.0.0 available" in out
 
 
 def test_do_list_flat_when_grouping_disabled(mocker):
@@ -851,7 +851,7 @@ def test_do_list_links_pack_id_to_docs(mocker):
     script.do_list({})
     out = "\n".join(str(r.get("Contents", "")) for r in demisto_mock._results if isinstance(r, dict))
 
-    assert "\nsoc-a — " in out
+    assert "**soc-a**" in out
     assert "[docs](https://palo-cortex.github.io/secops-framework/soc-a/overview/)" in out
     # Never emit a relative href -- XSIAM resolves it against the tenant host.
     assert "](/" not in out
@@ -896,7 +896,7 @@ def test_do_list_leaves_pack_id_unlinked_for_copy_paste(mocker):
     out = "\n".join(str(r.get("Contents", "")) for r in demisto_mock._results if isinstance(r, dict))
 
     # The id has to be plain text so it can be pasted into pack_id=.
-    assert "\nsoc-a — " in out
+    assert "**soc-a**" in out
     assert "[soc-a](" not in out
     assert "[docs](https://palo-cortex.github.io/secops-framework/soc-a/overview/)" in out
 

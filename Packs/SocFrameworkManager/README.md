@@ -5,10 +5,11 @@ Playground. No manual ZIP uploads, no separate REST API tooling.
 
 ## What does this pack do?
 
-- Browses the SOC Framework pack catalog from the XSIAM Playground
+- Browses the SOC Framework pack catalog from the XSIAM Playground, showing which packs are installed and which have updates available
 - Installs and updates SOC Framework content packs as system content
 - Applies integration instances, jobs, and lookup datasets from each pack's `xsoar_config.json`
 - Re-runs configuration without reinstalling, for recovery or config changes
+- Diagnoses the platform endpoints the install path depends on, to identify the cause when an install misbehaves
 - Synchronizes the legacy `value_tags` lookup for older deployments still using it
 
 ## Quick Start
@@ -17,6 +18,7 @@ Playground. No manual ZIP uploads, no separate REST API tooling.
 !SOCFWPackManager action=list
 !SOCFWPackManager action=apply pack_id=soc-optimization-unified
 !SOCFWPackManager action=configure pack_id=SocFrameworkTrendMicroVisionOne
+!SOCFWPackManager action=diagnose
 ```
 
 ## Prerequisites
@@ -43,8 +45,19 @@ passed as command arguments.
 !SOCFWPackManager action=list filter=crowdstrike
 ```
 
-Lists all available SOC Framework packs with ID, version, and path. Use
-`filter=` to narrow results.
+Lists all available SOC Framework packs grouped by catalog category, showing
+the installed version, whether an update is available, and a link to each
+pack's documentation. Use `filter=` to narrow results.
+
+### `action=diagnose` — Check the install path
+
+```
+!SOCFWPackManager action=diagnose
+```
+
+Probes each platform endpoint the install path depends on and reports which
+one fails. Read-only; nothing is installed or modified. Run this first when an
+install misbehaves.
 
 ### `action=apply` — Install or update a pack
 

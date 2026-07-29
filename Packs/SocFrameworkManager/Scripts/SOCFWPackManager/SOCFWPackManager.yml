@@ -41,7 +41,7 @@ args:
   description: diagnose probes every platform endpoint the marketplace install path depends on and reports which one fails; run it first when an install misbehaves. list shows the catalog. apply installs and configures a pack. configure re-runs configuration only (no pack install). sync-tags is a backward-compat action that updates the legacy value_tags lookup; modern SOC Framework deployments use SOCActionTimeMap_V3 and do not need it.
 - name: probe_pack
   defaultValue: Whois
-  description: action=diagnose only. Pack id used to probe the marketplace metadata and dependency endpoints. Falls back to an installed pack if this one is absent.
+  description: action=diagnose only. Pack id used to probe the marketplace metadata and dependency endpoints. Defaults to Whois because it is a stock Marketplace pack present on effectively every tenant, which makes it a dependable read-only probe target; nothing is installed or modified. Falls back to an installed pack if this one is absent.
 - name: pack_id
   description: The pack ID from pack_catalog.json (for example, soc-optimization-unified). Required for action=apply.
 - name: catalog_url
