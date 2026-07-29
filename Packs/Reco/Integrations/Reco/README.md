@@ -325,6 +325,9 @@ List sensitive assets exposed via a public link.
 | Reco.Assets.asset_id | String | Asset ID |
 | Reco.Assets.asset | Unknown | Asset metadata |
 | Reco.Assets.data_category | String | Primary data category |
+| Reco.Assets.data_categories | String | Data categories of the asset |
+| Reco.SensitiveAssets.location | String | Path of the asset |
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset |
 | Reco.Assets.last_access_date | String | Last access date |
 
 ### reco-get-files-shared-with-3rd-parties
@@ -350,6 +353,9 @@ List files shared with a specific third-party domain.
 | Reco.Assets.asset_id | String | Asset ID |
 | Reco.Assets.location | String | File location |
 | Reco.Assets.file_owner | String | File owner |
+| Reco.Assets.asset | Unknown | Asset metadata |
+| Reco.Assets.data_category | String | Data category of the asset |
+| Reco.Assets.users | String | Users the file is shared with |
 | Reco.Assets.domain | String | Third-party domain |
 | Reco.Assets.last_access_date | String | Last access date |
 
@@ -424,7 +430,12 @@ List files accessible to a specific email address.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Reco.Assets.asset_id | String | Asset ID |
+| Reco.Assets.asset | Unknown | Asset metadata |
+| Reco.Assets.data_category | String | Data category of the asset |
+| Reco.Assets.data_categories | String | Data categories of the asset |
 | Reco.Assets.location | String | File location |
+| Reco.Assets.source | String | SaaS tool source of the asset |
+| Reco.Assets.last_access_date | String | Last access date |
 | Reco.Assets.email_account | String | Email account with access |
 | Reco.Assets.file_owner | String | File owner |
 
@@ -448,8 +459,13 @@ List files an owner has shared outside the organization.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Reco.Assets.asset_id | String | Asset ID |
-| Reco.Assets.file_owner | String | File owner |
+| Reco.Assets.asset | Unknown | Asset metadata |
+| Reco.Assets.data_category | String | Data category of the asset |
+| Reco.Assets.data_categories | String | Data categories of the asset |
+| Reco.SensitiveAssets.location | String | Path of the asset |
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset |
 | Reco.Assets.last_access_date | String | Last access date |
+| Reco.Assets.file_owner | String | File owner |
 
 ### reco-get-private-email-list-with-access
 
