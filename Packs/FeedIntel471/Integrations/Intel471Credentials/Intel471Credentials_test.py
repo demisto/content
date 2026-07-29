@@ -68,6 +68,38 @@ def test_build_indicator_returns_empty_when_no_login():
     assert build_indicator(cred) == {}
 
 
+def test_build_indicator_includes_info_stealer_fields():
+    from Intel471Credentials import build_indicator
+
+    fields = build_indicator(_sample_credential())["fields"]
+
+    # infection_ts uses the CLI_NAME_OVERRIDES mapping and is kept as a single ISO string.
+    assert fields["intel471infostealerinfectiontimestamp"] == "2026-06-19T12:00:00Z"
+    # Multi-value fields are comma-joined.
+    assert fields["intel471infostealerip"] == "1.2.3.4, 5.6.7.8"
+    # Single-value fields come through unchanged.
+    assert fields["intel471infostealerantivirussoftware"] == "Defender"
+    assert fields["intel471infostealercomputerusername"] == "jdoe"
+    assert fields["intel471infostealerisp"] == "ExampleISP"
+    assert fields["intel471infostealermachineid"] == "m-1"
+    assert fields["intel471infostealermalwarefamily"] == "lumma"
+    assert fields["intel471infostealermalwareinstallpath"] == "C:/Users/jdoe/AppData/Roaming"
+    assert fields["intel471infostealeros"] == "Windows 11"
+    assert fields["intel471infostealerpcname"] == "DESKTOP-XYZ"
+    assert fields["intel471infostealerscreenshotpath"] == "screens/abc.png"
+    assert fields["intel471infostealerversion"] == "1.2.3"
+
+
+def test_build_indicator_omits_info_stealer_fields_when_absent():
+    from Intel471Credentials import build_indicator
+
+    cred = _sample_credential()
+    cred["data"]["info_stealer"] = {}
+    fields = build_indicator(cred)["fields"]
+
+    assert not any(key.startswith("intel471infostealer") for key in fields)
+
+
 def test_build_incident_name_includes_login_and_domain():
     from Intel471Credentials import build_incident
 
