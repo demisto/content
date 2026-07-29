@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import traceback
 from copy import deepcopy
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
@@ -7069,10 +7070,12 @@ async def stream_report(
 
         log(event_type, f"Finished streaming report. Received {total_lines} lines.")
 
-    except Exception as e:
+    except (Exception, asyncio.CancelledError) as e:
         # Log how far the download got before failing so a stalled/cut-off stream is diagnosable.
-        # asyncio.CancelledError (raised on timeout cancellation) has an empty str(), so log the type too.
+        # asyncio.CancelledError (raised on timeout cancellation) derives from BaseException and has an
+        # empty str(), so it must be caught explicitly and its type logged, or the failure vanishes.
         log(event_type, f"Report download stream stopped after {total_lines} lines with {type(e).__name__}: {e}")
+        demisto.error(traceback.format_exc())
         raise
     finally:
         # Crucial: Always ensure the response object is released/closed
@@ -7148,9 +7151,10 @@ async def stream_and_parse_report(
         else:
             log(event_type, "No data rows to process.")
 
-    except Exception as e:
+    except (Exception, asyncio.CancelledError) as e:
         error_message = f"Error during streaming or sending events ({type(e).__name__}): {e}"
         log(event_type, error_message)
+        demisto.error(traceback.format_exc())
         raise DemistoException(error_message) from e
 
 

@@ -2743,6 +2743,7 @@ async def test_stream_and_parse_report_error(mocker):
     # Mock other dependencies
     mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
     mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.demisto.error")
 
     # Create test parameters
     event_integration_context = {"last_sent_line": 0, "total_records_ingested": 0, "snapshot_id": "test-snapshot-id"}
@@ -3149,8 +3150,9 @@ async def test_stream_report_error_handling(mocker):
     # Mock the client's http_request method to return our mock response
     mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
 
-    # Mock demisto.debug to avoid debug output during tests
+    # Mock demisto.debug/demisto.error to avoid debug/traceback output during tests
     mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.demisto.error")
 
     # Call the function under test and expect an exception
     with pytest.raises(Exception) as excinfo:
@@ -3555,6 +3557,7 @@ async def test_stream_report_logs_line_count_and_type_on_failure(mocker):
     mock_client = mocker.AsyncMock()
     mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
     debug = mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.demisto.error")
 
     with pytest.raises(asyncio.CancelledError):
         async for _ in stream_report(mock_client, "r", "i", "vulnerability"):
@@ -3594,6 +3597,7 @@ async def test_stream_and_parse_report_error_includes_exception_type(mocker):
 
     mocker.patch("Rapid7_Nexpose.stream_report", return_value=MockStreamHeaderThenError())
     mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.demisto.error")
 
     mock_client = mocker.AsyncMock()
 
