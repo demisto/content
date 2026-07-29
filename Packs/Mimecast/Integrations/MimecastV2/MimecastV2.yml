@@ -2617,6 +2617,12 @@ script:
       - envelope_from
       - header_from
       - both
+    - description: "Must be 'true' when fromType is 'everyone'. Prevents accidental blocking of all senders."
+      name: confirm_block_all
+    - description: Policy start date in ISO 8601 format.
+      name: from_date
+    - description: Policy end date in ISO 8601 format.
+      name: to_date
   - name: mimecast-list-policies
     description: List all existing Mimecast blocked sender policies.
     arguments:
