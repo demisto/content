@@ -2590,8 +2590,6 @@ script:
       - profile_group
       - address_attribute_value
       - individual_email_address
-      - free_mail_domains
-      - header_display_name
     - auto: PREDEFINED
       description: The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email_domain.
       name: toType
