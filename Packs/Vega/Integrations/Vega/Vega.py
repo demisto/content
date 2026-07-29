@@ -1756,7 +1756,7 @@ def _format_recommended_actions_for_grid(actions: Any) -> Any:
             continue
 
         formatted_action = dict(action)
-        if "description" in formatted_action and formatted_action.get("description") is not None:
+        if formatted_action.get("description") is not None:
             formatted_description = _ensure_recommended_action_description_newline(formatted_action.get("description"))
             formatted_action["description"] = formatted_description
         formatted_actions.append(formatted_action)

@@ -1,122 +1,260 @@
-# Vega
+Vega integration for fetching alerts and incidents from the Vega platform.
+This integration was integrated and tested with version xx of Vega.
 
-## Overview
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-The Vega Content Pack enables seamless integration between the Vega security platform and Cortex XSOAR, allowing security teams to centralise alert management, automate investigations, and orchestrate incident response from a single operational workspace.
+## Configure Vega in Cortex
 
-By synchronising Vega alerts and incidents with Cortex XSOAR, analysts can investigate, triage, and remediate security events using XSOAR playbooks while maintaining bidirectional synchronisation with the Vega platform. This reduces manual effort, improves operational efficiency, and ensures both platforms remain consistently updated throughout the incident lifecycle.
 
----
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL | The Base URL of the Vega API. | True |
+| Access Key ID | The Access Key ID used to authenticate with the Vega API. | True |
+| Access Key | The Access Key used to authenticate with the Vega API. | True |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | True |
+| Maximum incidents per fetch | The Maximum number of Vega alerts and incidents to fetch per cycle, combined. Valid range is 1-50. Invalid values default to 50 during fetch. | True |
+| Fetch Lookback (minutes) | The number of minutes the query window is shifted backwards on each fetch cycle to catch  alerts and incidents that were indexed late on the Vega side. Deduplication prevents re- ingestion. Valid range is 1-60. | True |
+| Vega Entities to fetch | The Vega entities to fetch as Cortex XSOAR incidents. | True |
+| Backfill Days | The number of days before today to fetch alerts and incidents on the first run. Use 0 for today only. Valid range is 0–365. | True |
+| Enable Cortex XSOAR to Vega mirroring | Whether to enable Cortex XSOAR to Vega mirroring. When enabled, changes made in Cortex  XSOAR investigations are mirrored to Vega for status, verdict, verdict reasoning, severity, and comments. Requires the Vega Outgoing Mapper on this  instance. When disabled, Vega to Cortex XSOAR mirroring remains enabled. | False |
+| Outgoing fields to mirror | The investigation fields that are mirrored from Cortex XSOAR to Vega when outgoing  mirroring is enabled. If empty, all fields are mirrored. War Room comments are included when Comments is  selected. Any custom values entered outside the available options are ignored. | False |
+| Alert Severities to fetch | The severities by which to filter alerts. If empty, all severities are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
+| Alert Statuses to fetch | The statuses by which to filter alerts. If empty, all statuses are fetched. Any custom values entered outside the available options are ignored and will not affect  the fetch cycle. | False |
+| Alert Verdicts to fetch | The verdicts by which to filter alerts. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
+| Has related incidents | The filter for alerts based on whether they have related incidents. Select Yes to fetch alerts with related incidents, No to fetch alerts without related incidents, or both to fetch all alerts. At least one option must be selected. Filter alerts by whether they have related incidents. Select Yes to fetch alerts with related incidents, No to fetch alerts without related incidents, or both to fetch all alerts. At least one option must be selected. | True |
+| Incident Severities to fetch | The severities by which to filter incidents. If empty, all severities are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. Filter incidents by severity. If empty, all severities are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
+| Incident Statuses to fetch | The statuses by which to filter incidents. If empty, all statuses are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. Filter incidents by status. If empty, all statuses are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
+| Incident Verdicts to fetch | The verdicts by which to filter incidents. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. Filter incidents by verdict. If empty, all verdicts are fetched. Any custom values entered outside the available options are ignored and will not affect the fetch cycle. | False |
+| Incident type |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-## About Vega
+## Commands
 
-Vega is an AI-powered security operations platform that correlates security telemetry across identity, endpoint, network, cloud, email, and application environments to detect sophisticated threats. By combining advanced analytics with actionable recommendations, Vega enables security teams to rapidly investigate, prioritise, and respond to security incidents.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
----
+### vega-get-alert-events
 
-## Key Capabilities
+***
+Fetch all aggregated alert events for a Vega alert using internal API pagination, then return the requested display page as a markdown table and CustomFields for the Alert Events layout section.
 
-The Vega Content Pack extends Cortex XSOAR with native integration capabilities that enable organisations to automate their Vega-driven security operations.
+#### Base Command
 
-### Alert and Incident Ingestion
+`vega-get-alert-events`
 
-Automatically retrieve Vega alerts and incidents into Cortex XSOAR, where they are converted into native XSOAR incidents for investigation and response.
+#### Input
 
-### Bidirectional Incident Synchronisation
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id | The Vega alert API id (UUID). When omitted, resolves the alert id from the current Vega Alert incident. | Optional | 
+| limit | The number of alert events to display per page. Also used as the Vega API batch size when fetching all events. Default is 200. | Optional | 
+| offset | The pagination offset for alert events. Default is 0. | Optional | 
 
-Keep Vega and Cortex XSOAR synchronised throughout the incident lifecycle. Comments, investigation updates, status changes, verdicts, and reasoning can be mirrored between both platforms, ensuring analysts always work with the latest information regardless of where updates originate.
+#### Context Output
 
-### Investigation Enrichment
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vega.AlertEvents.AlertId | String | Vega alert ID. | 
+| Vega.AlertEvents.Total | Number | Total number of alert events reported by Vega. | 
+| Vega.AlertEvents.Offset | Number | Pagination offset used for the current page. | 
+| Vega.AlertEvents.Limit | Number | Page size used for the current fetch. | 
+| Vega.AlertEvents.Count | Number | Number of alert events returned in the current page. | 
+| Vega.AlertEvents.HasAlertEvents | Boolean | Whether the alert returned real alert events instead of aggregated parse-field summary rows. | 
+| Vega.AlertEvents.Cached | Boolean | Whether the response was served from cached incident data. | 
+| Vega.AlertEvents.CustomFields | Unknown | Incident custom fields to persist for the Alert Events layout section. | 
 
-Retrieve detailed alert events directly from Vega to provide analysts with rich contextual information during investigations. This enables deeper understanding of the affected assets, attack techniques, and event timelines without leaving Cortex XSOAR.
+### vega-set-detections-state
 
-### Automated Response
+***
+Set the state for one or more Vega detections.
 
-Leverage Cortex XSOAR playbooks together with Vega's recommended actions to automate common remediation tasks across identity, endpoint, network, cloud, email, and application security technologies.
+#### Base Command
 
-### Native Vega Commands
+`vega-set-detections-state`
 
-The integration provides commands that allow playbooks and analysts to interact directly with the Vega platform, including:
+#### Input
 
-- Update Vega alerts
-- Update Vega incidents
-- Retrieve alert events
-- Synchronise investigation status
-- Manage incident lifecycle from Cortex XSOAR
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of Vega detection IDs to update. | Required | 
+| state | The target detection state. Possible values are: ENABLED, DISABLED, TEST_MODE. | Required | 
 
-### Custom Incident Experience
+#### Context Output
 
-The pack includes custom incident layouts that present Vega-specific information in a structured and intuitive format, including:
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vega.DetectionsState.State | String | The state applied to the detections. | 
+| Vega.DetectionsState.IDs | String | Detection IDs updated by Vega. | 
+| Vega.DetectionsState.Count | Number | Number of detection IDs updated. | 
 
-- Alert and Incident Details
-- Severity and Status
-- MITRE ATT&CK Techniques
-- Verdict and Investigation Reasoning
-- Recommended Actions
-- Associated Alert Events
-- Additional Vega Context
+### vega-update-detections
 
----
+***
+Update severity, status, state, and/or tags for one or more Vega detections using the updateDetections GraphQL mutation.
 
-## Typical SOC Workflow
+#### Base Command
 
-1. Vega detects suspicious activity and generates an alert or incident.
-2. Cortex XSOAR automatically ingests the event.
-3. Analysts investigate the incident using enriched Vega context.
-4. Cortex XSOAR playbooks execute automated investigation and remediation workflows.
-5. Investigation progress, comments, verdicts, and status changes are synchronised back to Vega.
-6. Both platforms remain aligned throughout the incident lifecycle.
+`vega-update-detections`
 
----
+#### Input
 
-## Included Content
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detection_id | A comma-separated list of Vega detection IDs to update. | Required | 
+| severity | The target Vega detection severity. Possible values are: LOW, MEDIUM, HIGH, CRITICAL. | Optional | 
+| state | The target Vega detection state. Possible values are: ENABLED, DISABLED, TEST_MODE. | Optional | 
+| tags | A comma-separated list of tags to apply to the Vega detection. | Optional | 
 
-This Content Pack includes:
+#### Context Output
 
-- Vega Integration
-- Incident Fetching
-- Alert Fetching
-- Bidirectional Mirroring
-- Custom Incident Layouts
-- Investigation Commands
-- Sample Automation Playbooks
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vega.Detection.ID | String | Updated Vega detection ID. | 
+| Vega.Detection.Name | String | Updated Vega detection name. | 
+| Vega.Detection.Severity | String | Updated Vega detection severity. | 
+| Vega.Detection.Status | String | Updated Vega detection status. | 
+| Vega.Detection.State | String | Updated Vega detection state. | 
+| Vega.Detection.Tags | String | Updated Vega detection tags. | 
+| Vega.Detection.ValidationStatus | String | Vega validation status for the detection update. | 
 
----
+### vega-update-alert
 
-## Customer Benefits
+***
+Immediately update Vega alert status, severity, verdict, verdict reasoning, assignees, and/or comment on the Vega platform and sync the open Cortex XSOAR investigation when run from a Vega Alert investigation.
 
-Using the Vega Content Pack helps security teams:
+#### Base Command
 
-- Reduce manual investigation effort
-- Eliminate duplicate updates across platforms
-- Accelerate incident triage and response
-- Improve analyst productivity
-- Standardise automated response workflows
-- Maintain consistent incident state across Vega and Cortex XSOAR
-- Leverage Vega intelligence directly within Cortex XSOAR investigations
+`vega-update-alert`
 
----
+#### Input
 
-The Vega Content Pack enables organisations to combine Vega's advanced threat detection capabilities with Cortex XSOAR's powerful orchestration and automation platform, helping Security Operations Centers respond to threats faster while reducing operational overhead.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | A comma-separated list of Vega alert IDs to update. Accepts a comma-separated list or repeated values (for example, alert_ids=alert-1,alert-2). Use this to update alerts directly from the war room without opening an investigation. When omitted, the alert ID is resolved from the current Vega Alert investigation. One or more Vega alert IDs to update. Accepts a comma-separated list or repeated values (for example, alert_ids=alert-1,alert-2). Use this to update alerts directly from the war room without opening an investigation. When omitted, the alert ID is resolved from the current Vega Alert investigation. | Optional | 
+| status | The target Vega alert status. Possible values are: OPEN, IN PROGRESS, PEER REVIEW, RESOLVED. | Optional | 
+| verdict | The target Vega alert verdict. Possible values are: MALICIOUS, SUSPICIOUS, BENIGN, INCONCLUSIVE, NA. | Optional | 
+| severity | The target Vega alert severity. Possible values are: LOW, MEDIUM, HIGH, CRITICAL. | Optional | 
+| verdict_reasoning | The target Vega alert verdict reasoning. | Optional | 
+| comment | The comment to add on the Vega alert. | Optional | 
+| assignees | A comma-separated list of Vega user IDs to assign to the alert. | Optional | 
 
-## Documentation
+#### Context Output
 
-Comprehensive documentation is available to help you configure, deploy, and use the Vega Content Pack.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vega.Alert.id | String | Updated Vega alert ID. | 
+| Vega.Alert.status | String | Updated Vega alert status. | 
+| Vega.Alert.severity | String | Updated Vega alert severity. | 
+| Vega.Alert.verdict | String | Updated Vega alert verdict. | 
+| Vega.Alert.assignee | String | Updated Vega alert assignee email, display name, or user ID. | 
 
-The documentation includes:
+### vega-update-incident
 
-- Installation prerequisites
-- Application configuration
-- Authentication and API credentials
-- Incident fetching configuration
-- Bidirectional mirroring setup
-- Available automation commands
-- Playbook usage
-- Troubleshooting guidance
-- Best practices
+***
+Immediately update Vega incident status, verdict, verdict reasoning, severity, assignee emails, and/or comment on the Vega platform and sync the open Cortex XSOAR investigation when run from a Vega Incident investigation.
 
-For the complete configuration and user guide, please visit:
+#### Base Command
 
-**[Cortex XSOAR App](https://docs.vega.io/connectors/external-connectors/cortex_xsoar_app)**
+`vega-update-incident`
 
-> **Note:** We recommend reviewing the documentation before deploying the integration to ensure the application is configured according to your organization's security and operational requirements.
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_ids | A comma-separated list of Vega incident IDs to update. Accepts a comma-separated list or repeated values (for example, incident_ids=inc-1,inc-2). Use this to update incidents directly from the war room without opening an investigation. When omitted, the incident ID is resolved from the current Vega Incident investigation. One or more Vega incident IDs to update. Accepts a comma-separated list or repeated values (for example, incident_ids=inc-1,inc-2). Use this to update incidents directly from the war room without opening an investigation. When omitted, the incident ID is resolved from the current Vega Incident investigation. | Optional | 
+| status | The target Vega incident status. Possible values are: NEW, INVESTIGATING, ON HOLD, EXTERNAL ESCALATION, RESOLVED, REOPENED, REVIEW RECOMMENDED, RESPONSE REQUIRED, UNDER REVIEW. | Optional | 
+| verdict | The target Vega incident verdict. Possible values are: MALICIOUS, SUSPICIOUS, BENIGN, INCONCLUSIVE, NA. | Optional | 
+| severity | The target Vega incident severity. Possible values are: LOW, MEDIUM, HIGH, CRITICAL. | Optional | 
+| verdict_reasoning | The target Vega incident verdict reasoning. | Optional | 
+| comment | The comment to add on the Vega incident. | Optional | 
+| assignee_emails | A comma-separated list of email addresses to assign to the Vega incident. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Vega.Incident.id | String | Updated Vega incident ID. | 
+| Vega.Incident.status | String | Updated Vega incident status. | 
+| Vega.Incident.verdict | String | Updated Vega incident verdict. | 
+| Vega.Incident.severity | String | Updated Vega incident severity. | 
+| Vega.Incident.assignee | String | Updated Vega incident assignee email, display name, or user ID. | 
+
+### get-remote-data
+
+***
+Gets remote data from a remote Vega alert or incident. Used for debugging incoming mirroring.
+
+#### Base Command
+
+`get-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The remote Vega alert or incident ID. | Required | 
+| lastUpdate | The UTC timestamp in seconds (e.g., 1672531200). The incident is only updated if it was modified after the last update time. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### get-modified-remote-data
+
+***
+Gets Vega alert and incident IDs modified since the last update time. Used for debugging incoming mirroring.
+
+#### Base Command
+
+`get-modified-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | The UTC timestamp in seconds (e.g., 1672531200). Returns Vega alert and incident IDs updated since this time. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### update-remote-system
+
+***
+Pushes Cortex XSOAR investigation changes to Vega when outgoing mirroring is enabled.
+
+#### Base Command
+
+`update-remote-system`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### get-mapping-fields
+
+***
+Returns the outgoing mirroring fields for Vega Alert and Vega Incident investigations.
+
+#### Base Command
+
+`get-mapping-fields`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Vega corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Vega.
