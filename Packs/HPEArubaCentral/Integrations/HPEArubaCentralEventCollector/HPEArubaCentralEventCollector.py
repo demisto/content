@@ -839,40 +839,50 @@ def fetch_events(
 
 
 def validate_authentication_params(
+    auth_method: str,
     downloaded_token: str | None,
     user_name: str | None,
     user_password: str | None,
     customer_id: str | None,
 ) -> None:
     """
-    Validates that the configuration provides a usable set of credentials, based on which fields are populated.
-    Authentication is token-based when a Download Token is provided; otherwise it falls back to Username/Password.
+    Validates that the configuration provides a usable set of credentials for the selected authentication method.
     Raises a clear DemistoException instead of letting the integration attempt a doomed authentication.
 
+    Note: The Authentication Method selector drives the UI triggers (which show/hide the relevant fields), but the
+    UI triggers may not evaluate on initial page load on all server versions, so the actual validation is enforced
+    here in Python based on the selected method.
+
     Args:
-        downloaded_token (str | None): The refresh token pasted from the Aruba Central UI.
+        auth_method (str): The selected authentication method ("Download Token" or "Username & Password").
+        downloaded_token (str | None): The Download Token JSON pasted from the Aruba Central UI.
         user_name (str | None): The configured username.
         user_password (str | None): The configured password.
         customer_id (str | None): The configured customer ID.
     """
-    if downloaded_token:
-        # Token-based authentication: validate the bundle format now so a bad paste fails fast
-        # with a clear message instead of mid-fetch. Raises if the JSON has no 'refresh_token'.
-        Client.parse_download_token(downloaded_token)
+    if auth_method == "Username & Password":
+        if not (user_name and user_password):
+            raise DemistoException(
+                "Authentication Method is 'Username & Password', but a Username and/or Password is missing. "
+                "Provide both (non-SSO accounts only), or switch the Authentication Method to 'Download Token'."
+            )
+        if not customer_id:
+            raise DemistoException(
+                "Authentication Method is 'Username & Password', but the Customer ID is missing. "
+                "Provide a Customer ID, or switch the Authentication Method to 'Download Token'."
+            )
         return
 
-    # No Download Token -> fall back to the Username/Password OAuth flow.
-    if not (user_name and user_password):
+    # Default / "Download Token" method.
+    if not downloaded_token:
         raise DemistoException(
-            "No authentication credentials provided. Either paste a Download Token from the "
-            "Aruba Central UI (works for SSO users), or provide a Username and Password "
-            "(non-SSO accounts only)."
+            "Authentication Method is 'Download Token', but no Download Token was provided. "
+            "Paste the Download Token JSON from the Aruba Central UI (works for SSO users), or switch the "
+            "Authentication Method to 'Username & Password' (non-SSO accounts only)."
         )
-    if not customer_id:
-        raise DemistoException(
-            "A Customer ID is required when authenticating with Username and Password. "
-            "Provide a Customer ID, or paste a Download Token instead."
-        )
+    # Validate the bundle format now so a bad paste fails fast with a clear message instead of mid-fetch.
+    # Raises if the JSON has no 'refresh_token'.
+    Client.parse_download_token(downloaded_token)
 
 
 def main() -> None:  # pragma: no cover
@@ -885,10 +895,14 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     client_id = params.get("credentials", {}).get("identifier")
     client_secret = params.get("credentials", {}).get("password")
+    auth_method = params.get("auth_method") or "Download Token"
     user_name = params.get("user", {}).get("identifier")
     user_password = params.get("user", {}).get("password")
     customer_id = params.get("customer_id", {}).get("password")
     downloaded_token = params.get("token", {}).get("password")
+    # Honor the selected authentication method: ignore a stale Download Token when the user chose Username & Password.
+    if auth_method == "Username & Password":
+        downloaded_token = ""
     base_url = params.get("url", "")
     fetch_networking_events = params.get("fetch_networking_events", False)
     max_audit_events_per_fetch = arg_to_number(params.get("max_audit_events_per_fetch")) or 0
@@ -900,7 +914,7 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
     try:
-        validate_authentication_params(downloaded_token, user_name, user_password, customer_id)
+        validate_authentication_params(auth_method, downloaded_token, user_name, user_password, customer_id)
         client = Client(
             base_url=base_url,
             client_id=client_id,

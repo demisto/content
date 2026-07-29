@@ -747,10 +747,10 @@ def test_get_access_token_no_credentials_and_no_token_raises(mocker):
         client.get_access_token()
 
 
-def test_validate_authentication_params_no_credentials_at_all():
+def test_validate_authentication_params_download_token_missing_token():
     """
     Given:
-    - Neither a Download Token nor Username/Password is provided.
+    - Authentication Method is "Download Token" but no Download Token is provided.
 
     When:
     - validate_authentication_params is called.
@@ -758,14 +758,29 @@ def test_validate_authentication_params_no_credentials_at_all():
     Then:
     - A DemistoException is raised.
     """
-    with pytest.raises(DemistoException, match="No authentication credentials provided"):
-        validate_authentication_params("", "", "", "")
+    with pytest.raises(DemistoException, match="no Download Token was provided"):
+        validate_authentication_params("Download Token", "", "", "", "")
+
+
+def test_validate_authentication_params_userpass_missing_user():
+    """
+    Given:
+    - Authentication Method is "Username & Password" but Username/Password are missing.
+
+    When:
+    - validate_authentication_params is called.
+
+    Then:
+    - A DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match="Username and/or Password is missing"):
+        validate_authentication_params("Username & Password", "", "", "", CUSTOMER_ID)
 
 
 def test_validate_authentication_params_userpass_missing_customer_id():
     """
     Given:
-    - No Download Token, Username/Password provided, but no Customer ID.
+    - Authentication Method is "Username & Password", Username/Password provided, but no Customer ID.
 
     When:
     - validate_authentication_params is called.
@@ -773,14 +788,14 @@ def test_validate_authentication_params_userpass_missing_customer_id():
     Then:
     - A DemistoException is raised.
     """
-    with pytest.raises(DemistoException, match="Customer ID is required"):
-        validate_authentication_params("", USER_NAME, USER_PASSWORD, "")
+    with pytest.raises(DemistoException, match="Customer ID is missing"):
+        validate_authentication_params("Username & Password", "", USER_NAME, USER_PASSWORD, "")
 
 
 def test_validate_authentication_params_valid_configs():
     """
     Given:
-    - Valid configurations: token-based, or Username/Password with Customer ID.
+    - Valid configurations: Download Token method with a token, or Username & Password method with a Customer ID.
 
     When:
     - validate_authentication_params is called.
@@ -788,10 +803,10 @@ def test_validate_authentication_params_valid_configs():
     Then:
     - No exception is raised.
     """
-    # Token-based: no other credentials needed (even if user/pass/customer_id are empty).
-    validate_authentication_params(DOWNLOAD_TOKEN_REFRESH_ONLY, "", "", "")
-    # Username/Password fallback with a Customer ID.
-    validate_authentication_params("", USER_NAME, USER_PASSWORD, CUSTOMER_ID)
+    # Download Token method: only the token is needed.
+    validate_authentication_params("Download Token", DOWNLOAD_TOKEN_REFRESH_ONLY, "", "", "")
+    # Username & Password method with a Customer ID.
+    validate_authentication_params("Username & Password", "", USER_NAME, USER_PASSWORD, CUSTOMER_ID)
 
 
 def test_parse_download_token_full_json():

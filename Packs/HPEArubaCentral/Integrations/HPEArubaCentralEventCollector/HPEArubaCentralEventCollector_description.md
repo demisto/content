@@ -17,10 +17,10 @@ See [Creating Application & Token](https://developer.arubanetworks.com/hpe-aruba
 
 ### Authentication
 
-This integration supports two ways to obtain the initial token:
+Use the **Authentication Method** selector to choose how to authenticate:
 
 - **Download Token (works for SSO users):** Paste the **Download Token** copied from the Aruba Central UI into the **Download Token** parameter. The integration uses it to obtain and refresh access tokens automatically, so **no Username, Password, or Customer ID is required**. This is the only option for SSO-only accounts.
-- **Username & Password (non-SSO accounts only):** Leave the **Download Token** empty and provide a **Username**, **Password**, and **Customer ID**. The integration then performs the full OAuth login. Not supported for SSO users.
+- **Username & Password (non-SSO accounts only):** Provide a **Username**, **Password**, and **Customer ID**. The integration then performs the full OAuth login. Not supported for SSO users.
 
 #### How to get a Download Token
 
