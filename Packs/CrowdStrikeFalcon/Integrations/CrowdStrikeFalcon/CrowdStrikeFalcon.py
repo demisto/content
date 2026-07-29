@@ -4459,6 +4459,152 @@ def create_task_send_batch_to_xsiam_and_save_context(
     return task
 
 
+async def send_spotlight_batch_and_count_stored(
+    data: list,
+    product: str,
+    snapshot_id: str,
+    items_count: int,
+    batch_number: int,
+    last_saved_batch_number: int,
+    context_store: ContentClientContextStore,
+    state: ContentClientState,
+    save_state_callback: Callable[[ContentClientContextStore, ContentClientState], None],
+    data_type: str = "assets",
+) -> tuple[int, int]:
+    """Send a Spotlight batch to XSIAM and report exactly how many records were stored.
+
+    This is a Spotlight-specific variant of ``send_batch_to_xsiam_and_save_context``. It exists as a
+    separate function so the shared helper (still used by the assets/CNAPP paths) keeps its current
+    behaviour and ``-> int`` contract.
+
+    The difference is per-chunk accounting. A batch is compressed and sent as several independent
+    chunks, each one its own HTTP request with its own retries, so a chunk either stores completely
+    or not at all. ``send_batch_to_xsiam_and_save_context`` uses ``asyncio.gather(*tasks)``, which
+    raises on the first failing chunk and discards every chunk's return value, so a partially stored
+    batch is indistinguishable from a fully failed one. Here the chunks are awaited with
+    ``return_exceptions=True`` and the record counts of the chunks that succeeded are summed. The
+    caller can therefore add exactly the number of records XSIAM stored to its declared total, which
+    keeps ``declared == stored`` even when a batch only partially succeeds.
+
+    Args:
+        data: List of records to send.
+        product: Product name for XSIAM headers.
+        snapshot_id: Snapshot ID for asset collection tracking.
+        items_count: Total items count - final count when sealing, 1 while in-progress.
+        batch_number: Current batch number being processed.
+        last_saved_batch_number: Highest batch number that has successfully saved context.
+        context_store: ContentClientContextStore for thread-safe context operations.
+        state: ContentClientState containing cursor and metadata.
+        save_state_callback: Callback used to persist the state.
+        data_type: Type of data for the XSIAM collector-type header. Defaults to "assets".
+
+    Returns:
+        Tuple of (batch_number_for_context_save, records_stored). ``records_stored`` is the number
+        of records in the chunks that were successfully stored — 0 if every chunk failed, and less
+        than ``len(data)`` on a partial failure.
+    """
+    log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
+
+    total_records = len(data)
+
+    # 1. Compress and create one async task per chunk. Each task returns its own record count.
+    tasks = send_data_to_xsiam_async(
+        data=data,
+        vendor=VENDOR,
+        product=product,
+        data_format="json",
+        url_key="url",
+        num_of_attempts=3,
+        chunk_size=XSIAM_EVENT_CHUNK_SIZE,
+        data_type=data_type,
+        snapshot_id=snapshot_id,
+        items_count=items_count,
+    )
+    # Release raw data — compression already done synchronously, async tasks hold only compressed bytes
+    del data
+
+    # 2. Await every chunk. return_exceptions=True keeps the successful chunks' counts even when a
+    #    sibling chunk fails, which is what makes exact per-chunk accounting possible.
+    chunk_results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    records_stored = 0
+    chunk_errors: list[BaseException] = []
+    for chunk_result in chunk_results:
+        if isinstance(chunk_result, BaseException):
+            chunk_errors.append(chunk_result)
+        elif isinstance(chunk_result, int):
+            records_stored += chunk_result
+
+    if chunk_errors:
+        log_falcon_assets(
+            f"[Batch {batch_number}] for {product=} Partially sent to XSIAM: "
+            f"{len(chunk_errors)}/{len(chunk_results)} chunk(s) failed. "
+            f"{records_stored}/{total_records} records stored and counted. First error: {chunk_errors[0]}",
+            "error",
+        )
+        # Do not advance the saved batch number on a partial failure: the batch is not fully stored.
+        return last_saved_batch_number, records_stored
+
+    log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
+
+    # 3. Save context ONLY if this is the latest batch using the provided callback
+    if batch_number > last_saved_batch_number:
+        save_state_callback(context_store, state)
+        log_falcon_assets(f"[Batch {batch_number}] Context saved")
+        return batch_number, records_stored
+
+    log_falcon_assets(f"[Batch {batch_number}] for {product=} Skipped save (batch {last_saved_batch_number} already saved)")
+    return last_saved_batch_number, records_stored
+
+
+def create_task_send_spotlight_batch_and_count_stored(
+    data,
+    product,
+    snapshot_id,
+    items_count,
+    batch_number,
+    last_saved_batch_number,
+    context_store,
+    state,
+    save_state_callback,
+    data_type,
+) -> asyncio.Task:
+    """Create an async task running ``send_spotlight_batch_and_count_stored``.
+
+    Spotlight-specific counterpart of ``create_task_send_batch_to_xsiam_and_save_context``; the
+    resulting task resolves to ``(batch_number, records_stored)`` instead of just ``batch_number``.
+
+    Args:
+        data: List of records to send.
+        product: The product name.
+        snapshot_id: Snapshot ID for tracking.
+        items_count: Total items count - final count when sealing, 1 while in-progress.
+        batch_number: Current batch number being processed.
+        last_saved_batch_number: Highest batch number that has successfully saved context.
+        context_store: ContentClientContextStore for thread-safe context operations.
+        state: ContentClientState containing cursor and metadata.
+        save_state_callback: Callback used to persist the state.
+        data_type: Type of data for the XSIAM collector-type header.
+
+    Returns:
+        asyncio.Task resolving to (batch_number_for_context_save, records_stored).
+    """
+    return asyncio.create_task(
+        send_spotlight_batch_and_count_stored(
+            data=data,
+            product=product,
+            snapshot_id=snapshot_id,
+            items_count=items_count,
+            batch_number=batch_number,
+            last_saved_batch_number=last_saved_batch_number,
+            context_store=context_store,
+            state=state,
+            save_state_callback=save_state_callback,
+            data_type=data_type,
+        )
+    )
+
+
 def create_spotlight_client(context_store: ContentClientContextStore) -> ContentClient:
     """
     Create and configure ContentClient for Spotlight API with OAuth2 authentication.
@@ -4760,42 +4906,57 @@ async def fetch_vulnerabilities_by_severity(
     last_saved_batch_number = 0
     # The first fetched record is withheld from the data batches to be sent in the seal.
     withheld_records: list[dict] = []
-    # Fix 1 (P0): a failed XSIAM send must not be counted-but-dropped. When a send task is reaped
-    # (during backpressure or the final drain), the first failure is captured here; the severity
-    # fetch then raises so it is marked failed (never completed) and its records are not counted.
-    # This keeps declared == stored so the snapshot can seal.
-    send_failure: BaseException | None = None
-    # Fix 1 (P0): maps each in-flight send task to the number of records it is sending. Counting is
-    # done deterministically at reap time (not in a done_callback), so only records confirmed stored
-    # in XSIAM are added to total_fetched. The dict is bounded by MAX_PENDING_TASKS_PER_SEVERITY.
+    # Fix 1 (P0): a failed XSIAM send must not be counted-but-dropped. Each send task reports how
+    # many records XSIAM actually stored (per-chunk accounting, see
+    # send_spotlight_batch_and_count_stored), and only that number is added to total_fetched. This
+    # keeps declared == stored even when a batch is only partially stored. A send failure is
+    # non-fatal: the severity keeps fetching and sending the remaining pages; only the records that
+    # were not stored are skipped. These counters drive the summary log below.
+    lost_send_batches = 0
+    lost_send_records = 0
+    first_send_error: BaseException | None = None
+    # Maps each in-flight send task to the number of records it was asked to send. Used only to
+    # report how many records were lost when a batch is partially/fully rejected — the counting
+    # itself uses the records_stored value returned by the task. Bounded by
+    # MAX_PENDING_TASKS_PER_SEVERITY, so it cannot grow without limit.
     batch_items_sent: dict[asyncio.Task, int] = {}
 
     def reap_completed_send_tasks(completed_tasks) -> None:
-        """Count successful sends, capture the first failure, and update last_saved_batch_number."""
-        nonlocal last_saved_batch_number, total_fetched, send_failure
+        """Add each task's actually-stored record count, and report any records that were lost."""
+        nonlocal last_saved_batch_number, total_fetched
+        nonlocal lost_send_batches, lost_send_records, first_send_error
         for completed_task in completed_tasks:
-            items = batch_items_sent.pop(completed_task, 0)
+            items_attempted = batch_items_sent.pop(completed_task, 0)
             try:
-                result = completed_task.result()
-                if isinstance(result, int) and result > last_saved_batch_number:
-                    last_saved_batch_number = result
-                # Count-on-success: only records confirmed sent to XSIAM are counted.
-                total_fetched += items
+                saved_batch_number, records_stored = completed_task.result()
+                if isinstance(saved_batch_number, int) and saved_batch_number > last_saved_batch_number:
+                    last_saved_batch_number = saved_batch_number
+                # Count-on-success: only records XSIAM confirmed storing are counted, so a partially
+                # stored batch contributes exactly the number of records it actually stored.
+                total_fetched += records_stored
+
+                records_lost = items_attempted - records_stored
+                if records_lost > 0:
+                    lost_send_batches += 1
+                    lost_send_records += records_lost
+                    log_falcon_assets(
+                        f"[{severity}] Batch partially stored: {records_stored}/{items_attempted} records counted, "
+                        f"{records_lost} lost (continuing with the next pages).",
+                        "error",
+                    )
             except Exception as e:
-                # Count-but-dropped is the sealing blocker: do NOT count, record the failure.
+                # Whole batch rejected: nothing is counted, so declared == stored still holds.
+                lost_send_batches += 1
+                lost_send_records += items_attempted
+                first_send_error = first_send_error or e
                 log_falcon_assets(
                     f"[{severity}] Background vulnerability send task failed; "
-                    f"{items} records NOT counted so declared == stored: {e}",
+                    f"{items_attempted} records NOT counted and skipped (continuing with the next pages): {e}",
                     "error",
                 )
-                send_failure = send_failure or e
 
     try:
         while True:
-            # If a background send has already failed, stop fetching more pages for this severity.
-            if send_failure:
-                break
-
             # BACKPRESSURE: before fetching next page, wait if too many send tasks are pending.
             # This prevents unbounded memory growth from fire-and-forget vulnerability batches.
             while len(pending_tasks) >= MAX_PENDING_TASKS_PER_SEVERITY:
@@ -4805,10 +4966,8 @@ async def fetch_vulnerabilities_by_severity(
                 )
                 done, pending_tasks_updated = await asyncio.wait(pending_tasks, return_when=asyncio.FIRST_COMPLETED)
                 pending_tasks = pending_tasks_updated
-                # Reap completed tasks: count successful sends, capture failures (Fix 1, P0).
+                # Reap completed tasks: count successful sends, skip failed ones (Fix 1, P0).
                 reap_completed_send_tasks(done)
-                if send_failure:
-                    break
                 log_falcon_assets(
                     f"[{severity}] Backpressure released: {len(done)} tasks completed, " f"{len(pending_tasks)} still pending"
                 )
@@ -4871,8 +5030,10 @@ async def fetch_vulnerabilities_by_severity(
             # The final sealing happens in the orchestrator after all severities complete
             items_count = 1
 
-            # Create task to send batch to XSIAM (without the withheld first record)
-            task = create_task_send_batch_to_xsiam_and_save_context(
+            # Create task to send batch to XSIAM (without the withheld first record).
+            # This Spotlight-specific sender reports how many records were actually stored, so a
+            # partially stored batch is counted exactly (see send_spotlight_batch_and_count_stored).
+            task = create_task_send_spotlight_batch_and_count_stored(
                 data=records_to_send,
                 product=SPOTLIGHT_VULN_PRODUCT,
                 snapshot_id=snapshot_id,
@@ -4885,11 +5046,10 @@ async def fetch_vulnerabilities_by_severity(
                 data_type="assets",
             )
 
-            # Fix 1 (P0): count on successful send only. The number of records in this batch is
-            # remembered so that when the task is reaped (either during backpressure or the final
-            # drain) it is added to total_fetched ONLY if the send succeeded. On failure the count
-            # is dropped and the failure recorded, so the severity fails (declared == stored).
-            # Counting is done deterministically at reap time (not in a done_callback) to avoid any
+            # Fix 1 (P0): remember how many records this batch attempted to send, so that when the
+            # task is reaped (during backpressure or the final drain) we can report how many were
+            # lost. The counted amount comes from the task's records_stored result, never from this
+            # value. Reaping is done deterministically (not in a done_callback) to avoid any
             # dependency on callback scheduling order.
             batch_items_sent[task] = len(records_to_send)
             pending_tasks.add(task)
@@ -4920,24 +5080,26 @@ async def fetch_vulnerabilities_by_severity(
             log_falcon_assets(f"[{severity}] More pages available. Fetched so far: {total_fetched}")
             after_token = new_after_token
 
-        # Fix 1 (P0): drain this severity's send tasks so count-on-success settles and any send
-        # failure surfaces here. Draining now guarantees total_fetched reflects only records
-        # actually stored in XSIAM (declared == stored). Reaping counts successful sends and records
-        # the first failure in send_failure; failed sends are NOT counted.
+        # Fix 1 (P0): drain this severity's send tasks so count-on-success settles before the total
+        # is returned. Draining now guarantees total_fetched reflects only records XSIAM actually
+        # stored (declared == stored). Records that were not stored are skipped, not counted.
         if pending_tasks:
             log_falcon_assets(f"[{severity}] Draining {len(pending_tasks)} send tasks before finalizing count", "info")
             await asyncio.gather(*pending_tasks, return_exceptions=True)
             reap_completed_send_tasks(pending_tasks)
             pending_tasks.clear()
 
-        if send_failure:
-            error_msg = (
-                f"One or more XSIAM send tasks failed for {severity} severity vulnerabilities. "
-                f"The severity is marked failed so its records are not counted (declared == stored) "
-                f"and it will be retried next cycle. Error: {send_failure}"
+        if lost_send_batches:
+            # Non-fatal: the severity still completes with the records that were actually stored.
+            # Per-chunk accounting means declared == stored still holds; the lost records are simply
+            # absent from this snapshot and are picked up on the next full fetch cycle.
+            log_falcon_assets(
+                f"[{severity}] Completed with partial data: {lost_send_batches} batch(es) lost "
+                f"{lost_send_records} record(s) that XSIAM did not store; they were not counted. "
+                f"Counted {total_fetched} records. The missing records will be picked up on the next "
+                f"full fetch cycle. First error: {first_send_error}",
+                "error",
             )
-            log_falcon_assets(f"[{severity}] {error_msg}", "error")
-            raise Exception(error_msg) from send_failure
 
     except ContentClientError as e:
         # Check if this is an authentication error (HTTP 401)

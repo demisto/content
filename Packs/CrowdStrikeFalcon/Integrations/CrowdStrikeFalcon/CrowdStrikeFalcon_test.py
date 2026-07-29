@@ -9045,11 +9045,11 @@ class TestSpotlightSeverityBasedFetch:
         # Mock task creation
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)
+            f.set_result((1, len(kwargs.get("data", []))))
             return f
 
         mock_create_task = mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
@@ -9134,11 +9134,11 @@ class TestSpotlightSeverityBasedFetch:
         # Mock task creation
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)
+            f.set_result((1, len(kwargs.get("data", []))))
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
@@ -9215,11 +9215,11 @@ class TestSpotlightSeverityBasedFetch:
         # Mock final sealing task
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)
+            f.set_result((1, len(kwargs.get("data", []))))
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
@@ -9299,11 +9299,11 @@ class TestSpotlightSeverityBasedFetch:
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)
+            f.set_result((1, len(kwargs.get("data", []))))
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
@@ -9376,11 +9376,11 @@ class TestSpotlightSeverityBasedFetch:
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)
+            f.set_result((1, len(kwargs.get("data", []))))
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
@@ -9432,11 +9432,11 @@ class TestSpotlightSeverityBasedFetch:
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)
+            f.set_result((1, len(kwargs.get("data", []))))
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
@@ -9606,11 +9606,11 @@ class TestSpotlightSeverityBasedFetch:
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)
+            f.set_result((1, len(kwargs.get("data", []))))
             return f
 
         mock_create_task = mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
@@ -9675,11 +9675,11 @@ class TestSpotlightSeverityBasedFetch:
         def create_task_side_effect(*args, **kwargs):
             sent_batches.append(kwargs["data"])
             f = asyncio.Future()
-            f.set_result(1)
+            f.set_result((1, len(kwargs.get("data", []))))
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
@@ -9725,11 +9725,11 @@ class TestSpotlightSeverityBasedFetch:
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)
+            f.set_result((1, len(kwargs.get("data", []))))
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
@@ -9888,7 +9888,7 @@ class TestSpotlightSeverityBasedFetch:
         _ = original_log
 
     @pytest.mark.asyncio
-    async def test_fetch_vulnerabilities_by_severity_send_failure_raises_and_does_not_count(self, mocker, capfd):
+    async def test_fetch_vulnerabilities_by_severity_send_failure_is_skipped_not_counted(self, mocker, capfd):
         """
         Tests Fix 1 (P0): a failed XSIAM send must NOT be counted-but-dropped.
 
@@ -9898,9 +9898,9 @@ class TestSpotlightSeverityBasedFetch:
         When:
             - fetch_vulnerabilities_by_severity is called.
         Then:
-            - The severity fetch raises (so the severity is marked failed, not completed).
-            - Records from the failed send are NOT added to the returned total,
-              guaranteeing declared == stored (the snapshot can still seal).
+            - The fetch does NOT raise: a send failure is non-fatal and the severity completes.
+            - Records from the failed send are NOT added to the returned total, so
+              declared == stored (only the withheld record, which ships in the seal, is counted).
         """
         from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
 
@@ -9927,12 +9927,12 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
-        with capfd.disabled(), pytest.raises(Exception, match="Bad Gateway"):
-            await fetch_vulnerabilities_by_severity(
+        with capfd.disabled():
+            total, _aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
                 client=mock_client,
                 severity="CRITICAL",
                 context_store=mocker.Mock(),
@@ -9940,6 +9940,66 @@ class TestSpotlightSeverityBasedFetch:
                 snapshot_id="snap123",
                 asset_handler=mock_handler,
             )
+
+        # The 2 records in the failed batch are NOT counted; only the withheld record is,
+        # because the withheld record is guaranteed to ship in the seal batch.
+        assert total == 1
+        assert withheld == [{"id": "v1", "aid": "aid1"}]
+        assert len(tasks) == 0
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_counts_partially_stored_batch(self, mocker, capfd):
+        """
+        Tests Fix 1 (P0): a partially stored batch is counted by what XSIAM actually stored.
+
+        Given:
+            - API returns 5 vulnerabilities (1 withheld, 4 sent in one batch).
+            - The send task reports that only 3 of those 4 records were stored
+              (one chunk of the batch failed).
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - total == withheld(1) + actually-stored(3) == 4, NOT 5.
+            - This keeps declared == stored even on a partial failure.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        vulnerabilities = [{"id": f"v{i}", "aid": f"aid{i}"} for i in range(1, 6)]
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": vulnerabilities,
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        # 4 records were sent, but XSIAM only stored 3 of them (one chunk failed).
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result((1, 3))
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            side_effect=create_task_side_effect,
+        )
+
+        with capfd.disabled():
+            total, _aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="CRITICAL",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        # 1 withheld (always in the seal) + 3 actually stored = 4. The 1 lost record is not counted.
+        assert total == 4
+        assert withheld == [vulnerabilities[0]]
 
     @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_counts_only_successful_sends(self, mocker):
@@ -9974,11 +10034,11 @@ class TestSpotlightSeverityBasedFetch:
 
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
-            f.set_result(1)  # batch_number result of a successful send
+            f.set_result((1, len(kwargs.get("data", []))))  # batch_number result of a successful send
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
         )
 
