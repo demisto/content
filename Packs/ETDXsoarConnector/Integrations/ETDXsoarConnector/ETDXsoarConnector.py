@@ -263,7 +263,7 @@ def fetch_incidents(client: ETDClient, params: dict):
                     "rawJSON": json.dumps(event),
                     "severity": IncidentSeverity.MEDIUM,
                     "type": "ETD Malicious Email",
-                    "CustomFields": {"etdmessageid": msg.get("id")},
+                    "CustomFields": {"etdxsoarconnectormessageid": msg.get("id")},
                 }
                 incidents.append(incident)
                 if len(incidents) >= max_fetch:

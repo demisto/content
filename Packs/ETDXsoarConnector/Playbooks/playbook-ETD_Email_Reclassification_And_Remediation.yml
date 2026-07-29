@@ -165,7 +165,7 @@ tasks:
       description: |-
         Review the ETD email before remediation.
         Message ID:
-        ${incident.etdmessageid}
+        ${incident.etdxsoarconnectormessageid}
         Verify the email details and decide:
         Reclassification:
         - bec
@@ -213,7 +213,7 @@ tasks:
       folder:
         simple: ${ETD Email Reclassification And Remediation.Answers.1}
       message_id:
-        simple: ${incident.etdmessageid}
+        simple: ${incident.etdxsoarconnectormessageid}
       verdict:
         simple: ${ETD Email Reclassification And Remediation.Answers.0}
     separatecontext: false

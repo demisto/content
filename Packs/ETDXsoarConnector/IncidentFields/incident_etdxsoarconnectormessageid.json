@@ -1,9 +1,9 @@
 {
-    "id": "incident_etdmessageid",
+    "id": "incident_etdxsoarconnectormessageid",
     "version": -1,
-    "name": "ETD Message ID",
+    "name": "ETD XSOAR Connector Message ID",
     "ownerOnly": false,
-    "cliName": "etdmessageid",
+    "cliName": "etdxsoarconnectormessageid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

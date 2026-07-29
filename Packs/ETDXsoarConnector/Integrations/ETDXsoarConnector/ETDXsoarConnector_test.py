@@ -111,7 +111,7 @@ def test_fetch_incidents(mocker):
     mocker.patch("ETDXsoarConnector.demisto.incidents")
     incidents = fetch_incidents(client, {"max_fetch": 10})
     assert len(incidents) == 1
-    assert incidents[0]["CustomFields"]["etdmessageid"] == "123"
+    assert incidents[0]["CustomFields"]["etdxsoarconnectormessageid"] == "123"
 
 
 class MockResponse:
