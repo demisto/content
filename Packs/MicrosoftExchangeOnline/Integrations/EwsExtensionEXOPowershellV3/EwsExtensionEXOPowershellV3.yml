@@ -2893,10 +2893,10 @@ script:
   - name: ews-mail-flow-rule-create
     arguments:
     - name: name
-      description: Specifies the unique name of the rule. The maximum length is 64 characters. If the value contains spaces, enclose the value in quotation marks (").
+      description: The unique name of the rule. The maximum length is 64 characters. If the value contains spaces, enclose the value in quotation marks (").
       required: true
     - name: mode
-      description: Specifies how the rule operates.
+      description: How the rule operates.
       required: false
       auto: PREDEFINED
       predefined:
@@ -2904,47 +2904,47 @@ script:
       - AuditAndNotify
       - Enforce
     - name: priority
-      description: Specifies a priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value.
+      description: The priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value.
       required: false
     - name: from
-      description: 'A condition that looks for messages from specific senders. You can use any value that uniquely identifies the sender. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID.'
+      description: 'A comma-separated list of senders to look for in messages. You can use any value that uniquely identifies the sender. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID.'
       required: false
       isArray: true
     - name: sent_to
-      description: 'A condition that looks for recipients in messages. You can use any value that uniquely identifies the recipient. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID.'
+      description: 'A comma-separated list of recipients to look for in messages. You can use any value that uniquely identifies the recipient. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID.'
       required: false
       isArray: true
     - name: subject_contains_words
-      description: 'A condition that looks for words in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN.'
+      description: 'The words to look for in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN.'
       required: false
     - name: except_if_subject_contains_words
-      description: 'An exception that looks for words in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN.'
+      description: 'The words that, when found in the Subject field of messages, exempt the message from the rule. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN.'
       required: false
     - name: reject_message_reason_text
-      description: An action that specifies the explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
+      description: The explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
       required: false
     - name: quarantine
-      description: An action that quarantines messages. At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
+      description: Whether to quarantine messages that match the rule. At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: delete_message
-      description: An action that silently drops messages without an NDR. At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
+      description: Whether to silently drop messages without an NDR. At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: comments
-      description: Optional descriptive text for the rule (for example, what the rule is used for, or how it has changed over time).
+      description: The descriptive text for the rule (for example, what the rule is used for, or how it has changed over time).
       required: false
     - name: entry_id
-      description: 'War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Explicit command arguments take precedence over values in the file.'
+      description: 'The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Explicit command arguments take precedence over values in the file.'
       required: false
     - name: extended_output
-      description: Determine whether the output will be in verbose format or not.
+      description: Whether the output will be in verbose format.
       required: false
       defaultValue: false
     description: Create a transport rule (mail flow rule) in the organization. At least one action (reject_message_reason_text, quarantine, or delete_message) must be provided.
@@ -2953,7 +2953,7 @@ script:
       description: The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule.
       type: Number
     - contextPath: EWS.MailFlowRule.ExpiryDate
-      description: The date and time when the mail flow rule is set to expire and no longer apply.
+      description: The date and time when the mail flow rule is set to expire and no longer apply (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: EWS.MailFlowRule.Mode
       description: The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled.
@@ -2980,7 +2980,7 @@ script:
       description: Free-form text field for adding comments or notes about the rule, typically used for documentation.
       type: Unknown
     - contextPath: EWS.MailFlowRule.WhenChanged
-      description: The date and time when the mail flow rule was last modified.
+      description: The date and time when the mail flow rule was last modified (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: EWS.MailFlowRule.Description
       description: A brief description of the mail flow rule's purpose or functionality.
@@ -3006,10 +3006,10 @@ script:
   - name: ews-mail-flow-rule-update
     arguments:
     - name: identity
-      description: 'Specifies the rule that you want to modify. You can use any value that uniquely identifies the rule. For example: Name, Distinguished name, or GUID.'
+      description: 'The rule that you want to modify. You can use any value that uniquely identifies the rule. For example: Name, Distinguished name, or GUID.'
       required: true
     - name: mode
-      description: Specifies how the rule operates.
+      description: How the rule operates.
       required: false
       auto: PREDEFINED
       predefined:
@@ -3017,44 +3017,44 @@ script:
       - AuditAndNotify
       - Enforce
     - name: priority
-      description: Specifies a priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value.
+      description: The priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value.
       required: false
     - name: from
-      description: 'A condition that looks for messages from specific senders. You can use any value that uniquely identifies the sender. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID.'
+      description: 'A comma-separated list of senders to look for in messages. You can use any value that uniquely identifies the sender. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID.'
       required: false
       isArray: true
     - name: sent_to
-      description: 'A condition that looks for recipients in messages. You can use any value that uniquely identifies the recipient. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID.'
+      description: 'A comma-separated list of recipients to look for in messages. You can use any value that uniquely identifies the recipient. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID.'
       required: false
       isArray: true
     - name: subject_contains_words
-      description: 'A condition that looks for words in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN.'
+      description: 'The words to look for in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN.'
       required: false
     - name: except_if_subject_contains_words
-      description: 'An exception that looks for words in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN.'
+      description: 'The words that, when found in the Subject field of messages, exempt the message from the rule. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN.'
       required: false
     - name: reject_message_reason_text
-      description: An action that specifies the explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks (").
+      description: The explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks (").
       required: false
     - name: quarantine
-      description: An action that quarantines messages.
+      description: Whether to quarantine messages that match the rule.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: delete_message
-      description: An action that silently drops messages without an NDR.
+      description: Whether to silently drop messages without an NDR.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: comments
-      description: Optional descriptive text for the rule (for example, what the rule is used for, or how it has changed over time).
+      description: The descriptive text for the rule (for example, what the rule is used for, or how it has changed over time).
       required: false
     - name: entry_id
-      description: 'War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Explicit command arguments take precedence over values in the file.'
+      description: 'The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Explicit command arguments take precedence over values in the file.'
       required: false
     description: Modify an existing transport rule (mail flow rule) in the organization.
   - name: ews-mail-forwarding-disable

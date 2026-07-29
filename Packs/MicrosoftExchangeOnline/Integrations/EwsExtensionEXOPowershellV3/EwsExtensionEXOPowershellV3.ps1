@@ -2765,15 +2765,15 @@ function NewMailFlowRuleCommand {
         $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
     }
 
-    $extended_output = $kwargs.extended_output
+    $extended_output = ConvertTo-Boolean $kwargs.extended_output
     $raw_response = $client.CreateMailFlowRule($cmd_params)
     $parsed_raw_response = ParseRawResponse $raw_response
     # if "extended_output" is set to false (default) the output context is just the rule object selected fields
     # if "extended_output" is set to true the output context is the full response
-    $entry_context = if ($extended_output -eq "false") {
-        MailFlowRuleCreateEntryContext $parsed_raw_response
-    } else {
+    $entry_context = if ($extended_output) {
         @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response}
+    } else {
+        MailFlowRuleCreateEntryContext $parsed_raw_response
     }
     $md_columns = $raw_response | Select-Object -Property Identity, Name, State, Mode, Priority, IsRuleConfigurationSupported, Comments
     $human_readable = TableToMarkdown $md_columns "Mail flow rule '$($kwargs.name)' was created successfully"

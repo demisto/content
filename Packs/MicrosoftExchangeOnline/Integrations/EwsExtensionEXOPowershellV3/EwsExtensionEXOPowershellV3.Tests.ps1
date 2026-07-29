@@ -61,6 +61,7 @@ BeforeAll {
                 Quarantine                   = $cmd_params.Quarantine
                 DeleteMessage                = $cmd_params.DeleteMessage
                 RejectMessageReasonText      = $cmd_params.RejectMessageReasonText
+                StopRuleProcessing           = $cmd_params.StopRuleProcessing
             }
         }
 
@@ -330,6 +331,84 @@ Describe 'SetMailFlowRuleCommand' {
 
             $result | Should -HaveCount 3
             $result[2].Mode | Should -Be "Enforce"
+        }
+    }
+}
+
+Describe 'Entry ID parameter loading and merging' {
+    Context "MergeEntryIdParams" {
+        It "Adds file parameters that are not already present in cmd_params" {
+            $cmd_params = @{ Name = "My Rule" }
+            $params_from_file = @{ Comments = "From file"; StopRuleProcessing = $true }
+
+            $merged = MergeEntryIdParams $cmd_params $params_from_file
+
+            $merged.Name | Should -Be "My Rule"
+            $merged.Comments | Should -Be "From file"
+            $merged.StopRuleProcessing | Should -Be $true
+        }
+
+        It "Gives precedence to explicit command arguments over file values" {
+            $cmd_params = @{ Comments = "Explicit comment" }
+            $params_from_file = @{ Comments = "From file" }
+
+            $merged = MergeEntryIdParams $cmd_params $params_from_file
+
+            # The explicit argument value must win.
+            $merged.Comments | Should -Be "Explicit comment"
+        }
+
+        It "Returns cmd_params unchanged when the file map is empty" {
+            $cmd_params = @{ Name = "My Rule" }
+            $params_from_file = @{}
+
+            $merged = MergeEntryIdParams $cmd_params $params_from_file
+
+            $merged.Keys | Should -HaveCount 1
+            $merged.Name | Should -Be "My Rule"
+        }
+    }
+
+    Context "GetMailFlowRuleParamsFromEntryId" {
+        It "Loads and parses the JSON file referenced by the entry ID" {
+            # Back the mocked GetFilePath with a real temporary JSON file.
+            $temp_file = Join-Path $TestDrive "entry_id.json"
+            '{"Comments":"From file","StopRuleProcessing":true}' | Set-Content -Path $temp_file
+
+            # GetFilePath is a method on the global $demisto object; override it for the test.
+            $demisto = [PSCustomObject]@{}
+            $demisto | Add-Member -MemberType ScriptMethod -Name GetFilePath -Value {
+                param($entry_id)
+                return @{ path = $using:temp_file }
+            }.GetNewClosure()
+
+            $params = GetMailFlowRuleParamsFromEntryId "12@34"
+
+            $params.Comments | Should -Be "From file"
+            $params.StopRuleProcessing | Should -Be $true
+        }
+    }
+
+    Context "End-to-end entry_id merging via NewMailFlowRuleCommand" {
+        It "Merges file parameters into the client call, with explicit args winning" {
+            $temp_file = Join-Path $TestDrive "entry_id_e2e.json"
+            '{"Comments":"From file","StopRuleProcessing":true}' | Set-Content -Path $temp_file
+
+            $demisto = [PSCustomObject]@{}
+            $demisto | Add-Member -MemberType ScriptMethod -Name GetFilePath -Value {
+                param($entry_id)
+                return @{ path = $using:temp_file }
+            }.GetNewClosure()
+
+            # Explicit comments should win over the file value; StopRuleProcessing comes from the file.
+            $kwargs = @{ name = "Merged Rule"; quarantine = "true"; comments = "Explicit comment"; entry_id = "12@34" }
+
+            $result = NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs
+
+            $result | Should -HaveCount 3
+            # raw_response echoes the params sent to the client (MockClient.CreateMailFlowRule).
+            $result[2].Comments | Should -Be "Explicit comment"
+            $result[2].StopRuleProcessing | Should -Be $true
         }
     }
 }
