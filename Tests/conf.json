@@ -5922,6 +5922,7 @@
         }
     ],
     "skipped_tests": {
+        "Test - Netcraft": "Netcraft tenant is out of takedown credits, causing the test playbook to fail.",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "ThreatCrowd - Test": "The pack is deprecated",
