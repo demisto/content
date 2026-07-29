@@ -14881,6 +14881,116 @@ def test_update_function_configuration_command_error(mocker):
         Lambda.update_function_configuration_command(mock_client, args)
 
 
+def test_get_function_concurrency_command(mocker):
+    """
+    Given:
+        - A mock Boto3 client for AWS Lambda.
+        - Arguments containing the function name.
+    When:
+        - Calling get_function_concurrency_command.
+    Then:
+        - Ensure the command returns the expected reserved concurrency outputs.
+        - Ensure the Boto3 client is called with the correct parameters.
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_client.get_function_concurrency.return_value = {
+        "ReservedConcurrentExecutions": 10,
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+
+    args = {"function_name": "test-function"}
+
+    result = Lambda.get_function_concurrency_command(mock_client, args)
+
+    assert result.outputs.get("FunctionName") == "test-function"
+    assert result.outputs.get("ReservedConcurrentExecutions") == 10
+    assert result.outputs_prefix == "AWS.Lambda.FunctionConcurrency"
+    mock_client.get_function_concurrency.assert_called_once_with(FunctionName="test-function")
+
+
+def test_put_function_concurrency_command(mocker):
+    """
+    Given:
+        - A mock Boto3 client for AWS Lambda.
+        - Arguments containing the function name and reserved concurrent executions.
+    When:
+        - Calling put_function_concurrency_command.
+    Then:
+        - Ensure the command returns the expected reserved concurrency outputs.
+        - Ensure the Boto3 client is called with the correct parameters.
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_client.put_function_concurrency.return_value = {
+        "ReservedConcurrentExecutions": 5,
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+
+    args = {"function_name": "test-function", "reserved_concurrent_executions": "5"}
+
+    result = Lambda.put_function_concurrency_command(mock_client, args)
+
+    assert result.outputs.get("FunctionName") == "test-function"
+    assert result.outputs.get("ReservedConcurrentExecutions") == 5
+    assert result.outputs_prefix == "AWS.Lambda.FunctionConcurrency"
+    mock_client.put_function_concurrency.assert_called_once_with(FunctionName="test-function", ReservedConcurrentExecutions=5)
+
+
+def test_put_function_concurrency_command_disable(mocker):
+    """
+    Given:
+        - A mock Boto3 client for AWS Lambda.
+        - Arguments setting reserved concurrent executions to 0 (disabling the function).
+    When:
+        - Calling put_function_concurrency_command.
+    Then:
+        - Ensure the value 0 is passed through and not dropped as an empty value.
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_client.put_function_concurrency.return_value = {
+        "ReservedConcurrentExecutions": 0,
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+    }
+
+    args = {"function_name": "test-function", "reserved_concurrent_executions": "0"}
+
+    result = Lambda.put_function_concurrency_command(mock_client, args)
+
+    assert result.outputs.get("ReservedConcurrentExecutions") == 0
+    mock_client.put_function_concurrency.assert_called_once_with(FunctionName="test-function", ReservedConcurrentExecutions=0)
+
+
+def test_put_function_concurrency_command_error(mocker):
+    """
+    Given:
+        - A mock Boto3 client for AWS Lambda that returns an error response.
+        - Arguments containing the function name and reserved concurrent executions.
+    When:
+        - Calling put_function_concurrency_command.
+    Then:
+        - Ensure the command raises an exception with the expected error message.
+    """
+    from AWS import Lambda
+
+    mock_client = mocker.Mock()
+    mock_client.put_function_concurrency.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": 400},
+        "Error": {"Message": "Bad Request"},
+    }
+
+    args = {"function_name": "test-function", "reserved_concurrent_executions": "5"}
+
+    mocker.patch("AWS.AWSErrorHandler.handle_response_error", side_effect=Exception("Bad Request"))
+
+    with pytest.raises(Exception, match="Bad Request"):
+        Lambda.put_function_concurrency_command(mock_client, args)
+
+
 def test_eks_create_access_entry_command_success(mocker):
     """
     Given: A mocked boto3 EKS client and valid access entry creation arguments.

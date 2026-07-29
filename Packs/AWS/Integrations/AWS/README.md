@@ -3153,6 +3153,55 @@ Lists the versions of an Lambda layer. Required IAM Permission: lambda:ListLayer
 | AWS.Lambda.LayerVersions.LicenseInfo | string | The layer's open-source license. |
 | AWS.Lambda.LayerVersions.CompatibleArchitectures | array | A list of compatible instruction set architectures. |
 
+### aws-lambda-function-concurrency-get
+
+***
+Returns details about the reserved concurrency configuration for a Lambda function. Required IAM Permission: lambda:GetFunctionConcurrency.
+
+#### Base Command
+
+`aws-lambda-function-concurrency-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| function_name | The name or ARN of the Lambda function. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionConcurrency.FunctionName | String | The name or ARN of the Lambda function. |
+| AWS.Lambda.FunctionConcurrency.ReservedConcurrentExecutions | Number | The number of simultaneous executions that are reserved for the function. |
+
+### aws-lambda-function-concurrency-put
+
+***
+Sets the maximum number of simultaneous executions for a Lambda function, and reserves capacity for that concurrency level. Set the value to 0 to throttle (effectively disable) the function so it stops processing invocations. Required IAM Permission: lambda:PutFunctionConcurrency.
+
+#### Base Command
+
+`aws-lambda-function-concurrency-put`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| function_name | The name or ARN of the Lambda function. | Required |
+| reserved_concurrent_executions | The number of simultaneous executions to reserve for the function. Set to 0 to throttle (effectively disable) the function so it stops processing invocations. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Lambda.FunctionConcurrency.FunctionName | String | The name or ARN of the Lambda function. |
+| AWS.Lambda.FunctionConcurrency.ReservedConcurrentExecutions | Number | The number of simultaneous executions that are reserved for the function. |
+
 ### aws-lambda-function-delete
 
 ***
