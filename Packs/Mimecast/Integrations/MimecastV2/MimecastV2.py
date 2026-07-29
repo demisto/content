@@ -1442,6 +1442,42 @@ def update_policy_command():
     return results
 
 
+def build_policy_v2_patch_body(args: dict) -> dict:
+    """Build a partial-update body for v2 blocked-senders PATCH endpoint."""
+    from_date_str = arg_to_datetime(args["from_date"]).strftime(DATE_FORMAT) if args.get("from_date") else None  # type: ignore
+    to_date_str = arg_to_datetime(args["to_date"]).strftime(DATE_FORMAT) if args.get("to_date") else None  # type: ignore
+
+    body: dict = assign_params(
+        description=args.get("description"),
+        option=args.get("option"),
+        fromPart=args.get("fromPart"),
+        fromDateTime=from_date_str,
+        toDateTime=to_date_str,
+    )
+
+    from_type = args.get("fromType")
+    if from_type is not None:
+        from_value = args.get("fromValue")
+        body["from"] = assign_params(
+            type=from_type,
+            domain=from_value if from_type == "email_domain" else None,
+            emailAddress=from_value if from_type == "individual_email_address" else None,
+            groupId=from_value if from_type == "profile_group" else None,
+        )
+
+    to_type = args.get("toType")
+    if to_type is not None:
+        to_value = args.get("toValue")
+        body["to"] = assign_params(
+            type=to_type,
+            domain=to_value if to_type == "email_domain" else None,
+            emailAddress=to_value if to_type == "individual_email_address" else None,
+            groupId=to_value if to_type == "profile_group" else None,
+        )
+
+    return body
+
+
 def update_block_sender_policy_command(policy_args):
     """
     Update policy according to policy ID
