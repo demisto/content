@@ -1,5 +1,12 @@
 from CommonServerPython import DemistoException
-from HPEArubaCentralEventCollector import main, Client, NUM_OF_RETRIES, RATE_LIMIT_STATUS_CODE, BACKOFF_FACTOR
+from HPEArubaCentralEventCollector import (
+    main,
+    Client,
+    NUM_OF_RETRIES,
+    RATE_LIMIT_STATUS_CODE,
+    BACKOFF_FACTOR,
+    validate_authentication_params,
+)
 import pytest
 import demistomock as demisto
 from CommonServerPython import date_to_timestamp
@@ -25,6 +32,9 @@ AUTH_CODE = "testauthcode"
 FETCH_DATE = "2024-09-12T03:21:33"
 FETCH_TIME = int(date_to_timestamp(FETCH_DATE, DATE_FORMAT) / 1000)
 FETCH_LIMIT = 10
+# A Download Token bundle that contains only a refresh token (no usable access token),
+# so seeding it forces a refresh call.
+DOWNLOAD_TOKEN_REFRESH_ONLY = json.dumps({"refresh_token": TEST_REFRESH_TOKEN, "token_type": "bearer"})
 
 
 def util_load_json(path):
@@ -380,21 +390,64 @@ def test_aruba_auth_test(mocker, should_fail):
         assert return_results_mock.call_args[0][0].readable_output == "Authentication was successful."
 
 
-def test_test_module():
+def test_test_module_with_download_token_passes(mocker):
     """
     Given:
-    - test-module command
+    - test-module command and a client configured with a Download Token.
 
     When:
-    - Pressing test button
+    - Pressing the Test button.
 
     Then:
-    - Demisto Exception should be raised
+    - test_module validates via the refresh flow (get_access_token) and returns "ok".
     """
     from HPEArubaCentralEventCollector import test_module
 
-    with pytest.raises(DemistoException):
-        test_module()
+    client = Client(
+        base_url=BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        user_name="",
+        user_password="",
+        customer_id="",
+        downloaded_token=DOWNLOAD_TOKEN_REFRESH_ONLY,
+        verify=False,
+        proxy=False,
+    )
+    get_token = mocker.patch.object(client, "get_access_token", return_value="an-access-token")
+
+    assert test_module(client) == "ok"
+    get_token.assert_called_once()
+
+
+def test_test_module_userpass_only_raises():
+    """
+    Given:
+    - test-module command and a client configured with only Username/Password (no Download Token).
+
+    When:
+    - Pressing the Test button.
+
+    Then:
+    - A DemistoException is raised directing the user to the aruba-auth-test command,
+      because a full OAuth login would burn Aruba's 30-minute new-token quota.
+    """
+    from HPEArubaCentralEventCollector import test_module
+
+    client = Client(
+        base_url=BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        user_name=USER_NAME,
+        user_password=USER_PASSWORD,
+        customer_id=CUSTOMER_ID,
+        downloaded_token="",
+        verify=False,
+        proxy=False,
+    )
+
+    with pytest.raises(DemistoException, match="aruba-auth-test"):
+        test_module(client)
 
 
 @freeze_time(FETCH_DATE)
@@ -607,3 +660,251 @@ def test_http_request_passes_retry_params_on_initial_and_refresh(mocker):
     assert second_kwargs["headers"]["authorization"] == f"Bearer {refreshed_token}"
     for key, value in expected_retry_kwargs.items():
         assert second_kwargs[key] == value, f"Retry request missing or wrong retry param '{key}': {second_kwargs.get(key)}"
+
+
+@freeze_time(FETCH_DATE)
+def test_get_access_token_seeds_from_downloaded_token(mocker, requests_mock):
+    """
+    Given:
+    - An instance configured with a pasted Download Token JSON (refresh token only) and no username/password.
+
+    When:
+    - get_access_token is called with an empty integration context.
+
+    Then:
+    - The refresh token from the bundle is used to obtain an access token, and the context is
+      seeded with 'seeded_token' so it is not re-seeded on subsequent runs.
+    """
+    mocker.patch("HPEArubaCentralEventCollector.get_integration_context", return_value={})
+
+    new_token = f"seeded_{TEST_TOKEN}"
+    new_refresh_token = f"rotated_{TEST_REFRESH_TOKEN}"
+
+    def match_refresh_request(request):
+        return request.qs.get("refresh_token") == [TEST_REFRESH_TOKEN]
+
+    requests_mock.post(
+        f"{BASE_URL}/oauth2/token",
+        additional_matcher=match_refresh_request,
+        json={
+            "refresh_token": new_refresh_token,
+            "token_type": "bearer",
+            "access_token": new_token,
+            "expires_in": 7200,
+        },
+    )
+
+    mocked_set_integration_context = mocker.patch("HPEArubaCentralEventCollector.set_integration_context")
+
+    client = Client(
+        base_url=BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        user_name="",
+        user_password="",
+        customer_id="",
+        downloaded_token=DOWNLOAD_TOKEN_REFRESH_ONLY,
+    )
+
+    assert client.get_access_token() == new_token
+
+    # The context is persisted twice: once when seeding, and again after the refresh.
+    mocked_set_integration_context.assert_called_with(
+        {
+            "seeded_token": DOWNLOAD_TOKEN_REFRESH_ONLY,
+            "access_token": new_token,
+            "expiry_time": FETCH_TIME + 7200,
+            "refresh_token": new_refresh_token,
+        }
+    )
+
+
+@freeze_time(FETCH_DATE)
+def test_get_access_token_no_credentials_and_no_token_raises(mocker):
+    """
+    Given:
+    - An instance with no cached/refresh token, no downloaded token, and no username/password.
+
+    When:
+    - get_access_token is called.
+
+    Then:
+    - A DemistoException is raised instead of attempting a doomed login (prevents the 401/429 loop).
+    """
+    mocker.patch("HPEArubaCentralEventCollector.get_integration_context", return_value={})
+
+    client = Client(
+        base_url=BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        user_name="",
+        user_password="",
+        customer_id="",
+        downloaded_token="",
+    )
+
+    with pytest.raises(DemistoException, match="Unable to authenticate"):
+        client.get_access_token()
+
+
+def test_validate_authentication_params_no_credentials_at_all():
+    """
+    Given:
+    - Neither a Download Token nor Username/Password is provided.
+
+    When:
+    - validate_authentication_params is called.
+
+    Then:
+    - A DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match="No authentication credentials provided"):
+        validate_authentication_params("", "", "", "")
+
+
+def test_validate_authentication_params_userpass_missing_customer_id():
+    """
+    Given:
+    - No Download Token, Username/Password provided, but no Customer ID.
+
+    When:
+    - validate_authentication_params is called.
+
+    Then:
+    - A DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match="Customer ID is required"):
+        validate_authentication_params("", USER_NAME, USER_PASSWORD, "")
+
+
+def test_validate_authentication_params_valid_configs():
+    """
+    Given:
+    - Valid configurations: token-based, or Username/Password with Customer ID.
+
+    When:
+    - validate_authentication_params is called.
+
+    Then:
+    - No exception is raised.
+    """
+    # Token-based: no other credentials needed (even if user/pass/customer_id are empty).
+    validate_authentication_params(DOWNLOAD_TOKEN_REFRESH_ONLY, "", "", "")
+    # Username/Password fallback with a Customer ID.
+    validate_authentication_params("", USER_NAME, USER_PASSWORD, CUSTOMER_ID)
+
+
+def test_parse_download_token_full_json():
+    """
+    Given:
+    - A full Download Token JSON bundle (as downloaded from the Aruba Central UI).
+
+    When:
+    - Client.parse_download_token is called.
+
+    Then:
+    - The refresh_token, access_token, and expires_in are extracted.
+    """
+    bundle = {
+        "access_token": TEST_TOKEN,
+        "refresh_token": TEST_REFRESH_TOKEN,
+        "expires_in": 7200,
+        "token_type": "bearer",
+        "scope": "all",
+    }
+    refresh_token, access_token, expires_in = Client.parse_download_token(json.dumps(bundle))
+    assert refresh_token == TEST_REFRESH_TOKEN
+    assert access_token == TEST_TOKEN
+    assert expires_in == 7200
+
+
+def test_parse_download_token_bare_string_rejected():
+    """
+    Given:
+    - A bare refresh-token string instead of the full Download Token JSON.
+
+    When:
+    - Client.parse_download_token is called.
+
+    Then:
+    - A DemistoException is raised (the full JSON bundle is required).
+    """
+    with pytest.raises(DemistoException, match="not valid JSON"):
+        Client.parse_download_token(TEST_REFRESH_TOKEN)
+
+
+def test_parse_download_token_invalid_json():
+    """
+    Given:
+    - A value that looks like JSON but is malformed.
+
+    When:
+    - Client.parse_download_token is called.
+
+    Then:
+    - A DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match="not valid JSON"):
+        Client.parse_download_token('{"refresh_token": ')
+
+
+def test_parse_download_token_json_missing_refresh_token():
+    """
+    Given:
+    - A JSON bundle without a refresh_token field.
+
+    When:
+    - Client.parse_download_token is called.
+
+    Then:
+    - A DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match="missing the required 'refresh_token' field"):
+        Client.parse_download_token(json.dumps({"access_token": TEST_TOKEN, "expires_in": 7200}))
+
+
+@freeze_time(FETCH_DATE)
+def test_get_access_token_seeds_access_token_from_json_bundle(mocker):
+    """
+    Given:
+    - A Download Token pasted as a full JSON bundle that includes a still-valid access_token.
+
+    When:
+    - get_access_token is called with an empty integration context.
+
+    Then:
+    - The access_token from the bundle is used directly (no refresh call) and the context is seeded.
+    """
+    mocker.patch("HPEArubaCentralEventCollector.get_integration_context", return_value={})
+    mocked_set_integration_context = mocker.patch("HPEArubaCentralEventCollector.set_integration_context")
+
+    bundle = json.dumps(
+        {
+            "access_token": TEST_TOKEN,
+            "refresh_token": TEST_REFRESH_TOKEN,
+            "expires_in": 7200,
+            "token_type": "bearer",
+        }
+    )
+
+    client = Client(
+        base_url=BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        user_name="",
+        user_password="",
+        customer_id="",
+        downloaded_token=bundle,
+    )
+
+    # No requests_mock is set up: if the code tried to refresh, it would fail. It should use the seeded token.
+    assert client.get_access_token() == TEST_TOKEN
+
+    mocked_set_integration_context.assert_called_once_with(
+        {
+            "seeded_token": bundle,
+            "refresh_token": TEST_REFRESH_TOKEN,
+            "access_token": TEST_TOKEN,
+            "expiry_time": FETCH_TIME + 7200,
+        }
+    )

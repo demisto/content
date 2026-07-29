@@ -21,6 +21,7 @@ MAX_EVENT_API_REQS = 5
 AUDIT_TS = "ts"
 NETWORKING_TS = "timestamp"
 
+
 """ CLIENT CLASS """
 
 
@@ -29,13 +30,69 @@ class Client(BaseClient):
     Client class to interact with the Aruba Central API
     """
 
-    def __init__(self, base_url, client_id, client_secret, user_name, user_password, customer_id, verify=True, proxy=False):
+    def __init__(
+        self,
+        base_url,
+        client_id,
+        client_secret,
+        user_name,
+        user_password,
+        customer_id,
+        downloaded_token="",
+        verify=True,
+        proxy=False,
+    ):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self.client_id = client_id
         self.client_secret = client_secret
         self.user_name = user_name
         self.user_password = user_password
         self.customer_id = customer_id
+        # The "Download Token" bundle pasted by the user from the Aruba Central UI.
+        # This is the full JSON bundle (containing access_token, refresh_token, expires_in, ...).
+        # Used only to seed the integration context on the first run; afterwards the
+        # rotating refresh token stored in the context is used.
+        self.downloaded_token = downloaded_token
+
+    @staticmethod
+    def parse_download_token(downloaded_token: str) -> tuple[str, str, int]:
+        """
+        Parses the "Download Token" JSON bundle pasted from the Aruba Central UI.
+
+        The expected value is the full JSON bundle downloaded from the UI, e.g.:
+            {"access_token": "...", "refresh_token": "...", "expires_in": 7200, ...}
+
+        Args:
+            downloaded_token (str): The raw value from the Download Token parameter.
+
+        Returns:
+            tuple[str, str, int]: (refresh_token, access_token, expires_in) extracted from the bundle.
+
+        Raises:
+            DemistoException: If the value is empty, not valid JSON, or missing required fields.
+        """
+        raw = (downloaded_token or "").strip()
+        if not raw:
+            return "", "", 0
+
+        try:
+            bundle = json.loads(raw)
+        except (json.JSONDecodeError, ValueError) as e:
+            raise DemistoException(
+                "The Download Token is not valid JSON. Paste the full token bundle copied from the "
+                "Aruba Central UI (Download Token)."
+            ) from e
+
+        if not isinstance(bundle, dict) or not bundle.get("refresh_token"):
+            raise DemistoException(
+                "The Download Token JSON is missing the required 'refresh_token' field. Paste the full token "
+                "bundle copied from the Aruba Central UI (Download Token)."
+            )
+
+        refresh_token = bundle["refresh_token"]
+        access_token = bundle.get("access_token", "")
+        expires_in = arg_to_number(bundle.get("expires_in")) or 0
+        return refresh_token, access_token, expires_in
 
     def get_access_token(self, use_cached_token=True) -> str:
         """
@@ -55,18 +112,68 @@ class Client(BaseClient):
         expiry_time = integration_context.get("expiry_time", 0)
         refresh_token = integration_context.get("refresh_token")
 
-        if use_cached_token and access_token and expiry_time > int(time.time()):
-            demisto.debug("Returning cached access token")
-            return access_token
-        elif isinstance(refresh_token, str):
-            demisto.debug("Refreshing access token.")
-            access_token, refresh_token, validity_duration = self.refresh_access_token(refresh_token)
-        else:
-            demisto.debug("Acquiring new access token via oauth.")
-            access_token, refresh_token, validity_duration = self.oauth_sequence()
+        now = int(time.time())
+        demisto.debug(
+            f"get_access_token: use_cached_token={use_cached_token}, "
+            f"has_cached_access_token={bool(access_token)}, has_refresh_token={bool(refresh_token)}, "
+            f"expiry_time={expiry_time}, now={now}, seconds_until_expiry={expiry_time - now}, "
+            f"has_downloaded_token={bool(self.downloaded_token)}, "
+            f"has_user_pass={bool(self.user_name and self.user_password)}"
+        )
 
+        # Seed the context from the user-pasted "Download Token" bundle on the first run
+        # (or if the user pasted a new one), so we can refresh without a username/password.
+        if self.downloaded_token and integration_context.get("seeded_token") != self.downloaded_token:
+            demisto.debug("Seeding tokens from the pasted Download Token bundle.")
+            seeded_refresh_token, seeded_access_token, seeded_expires_in = self.parse_download_token(self.downloaded_token)
+            refresh_token = seeded_refresh_token
+            integration_context["seeded_token"] = self.downloaded_token
+            integration_context["refresh_token"] = refresh_token
+            # If the bundle also included a still-valid access token, seed it too so we avoid an
+            # immediate refresh call on the first run.
+            if seeded_access_token and seeded_expires_in:
+                demisto.debug(
+                    "Download Token bundle included an access token; seeding it to avoid an "
+                    f"immediate refresh (expires_in={seeded_expires_in}s)."
+                )
+                access_token = seeded_access_token
+                expiry_time = int(time.time()) + seeded_expires_in
+                integration_context["access_token"] = access_token
+                integration_context["expiry_time"] = expiry_time
+            else:
+                demisto.debug(
+                    "Download Token bundle contained a refresh token only; an access token "
+                    "will be obtained via refresh on this run."
+                )
+            # Persist the seed now so it survives even if we return the cached token below.
+            set_integration_context(integration_context)
+
+        if use_cached_token and access_token and expiry_time > int(time.time()):
+            demisto.debug("Auth path: using cached access token " f"(valid for {expiry_time - int(time.time())}s).")
+            return access_token
+        elif isinstance(refresh_token, str) and refresh_token:
+            demisto.debug("Auth path: refreshing access token using the stored refresh token.")
+            access_token, refresh_token, validity_duration = self.refresh_access_token(refresh_token)
+        elif self.user_name and self.user_password:
+            demisto.debug("Auth path: acquiring a new access token via the full OAuth sequence (username/password).")
+            access_token, refresh_token, validity_duration = self.oauth_sequence()
+        else:
+            raise DemistoException(
+                "Unable to authenticate: no valid token is stored and no credentials were provided. "
+                "Either paste a Download Token (refresh token) from the Aruba Central UI, or provide a "
+                "Username and Password (non-SSO accounts only) to perform the initial OAuth authentication."
+            )
+
+        new_expiry_time = int(time.time()) + validity_duration
+        demisto.debug(
+            f"Obtained new access token (validity_duration={validity_duration}s, " f"new_expiry_time={new_expiry_time})."
+        )
         integration_context.update(
-            {"access_token": access_token, "expiry_time": int(time.time()) + validity_duration, "refresh_token": refresh_token}
+            {
+                "access_token": access_token,
+                "expiry_time": new_expiry_time,
+                "refresh_token": refresh_token,
+            }
         )
         set_integration_context(integration_context)
 
@@ -107,7 +214,16 @@ class Client(BaseClient):
 
             raise e
 
-        return token_resp["access_token"], token_resp["refresh_token"], token_resp["expires_in"]
+        # TODO: [testing version only] Redact these secrets before releasing to production.
+        demisto.debug(
+            f"Refresh access token succeeded: access_token={token_resp.get('access_token')}, "
+            f"refresh_token={token_resp.get('refresh_token')}, expires_in={token_resp.get('expires_in')}"
+        )
+        return (
+            token_resp["access_token"],
+            token_resp["refresh_token"],
+            token_resp["expires_in"],
+        )
 
     def oauth_sequence(self) -> tuple[str, str, int]:
         """
@@ -155,7 +271,8 @@ class Client(BaseClient):
             raise DemistoException(
                 "Failed to acquire CSRF token and session from login request. Check if the credentials are valid."
             )
-        demisto.debug(f"Login request response: {csrf_token=}, {session=}")
+        # TODO: [testing version only] Redact these secrets before releasing to production.
+        demisto.debug(f"Login request succeeded: {csrf_token=}, {session=}")
         return csrf_token, session
 
     def request_auth_code(self, csrf_token: str, session: str) -> str:
@@ -189,7 +306,8 @@ class Client(BaseClient):
             params=params,
             json_data=json_data,
         )
-        demisto.debug(f"Auth code request response: {response}")
+        # TODO: [testing version only] Redact this secret before releasing to production.
+        demisto.debug(f"Auth code request succeeded: auth_code={response.get('auth_code')}")
         return response.get("auth_code")
 
     def request_access_token(self, auth_code: str) -> tuple[str, str, int]:
@@ -219,8 +337,16 @@ class Client(BaseClient):
             headers=headers,
             json_data=json_data,
         )
-        demisto.debug(f"Access token request response: {response}")
-        return response.get("access_token"), response.get("refresh_token"), response.get("expires_in")
+        # TODO: [testing version only] Redact access_token/refresh_token before releasing to production.
+        demisto.debug(
+            f"Access token request succeeded: access_token={response.get('access_token')}, "
+            f"refresh_token={response.get('refresh_token')}, expires_in={response.get('expires_in')}"
+        )
+        return (
+            response.get("access_token"),
+            response.get("refresh_token"),
+            response.get("expires_in"),
+        )
 
     def http_request(self, method: str, url_suffix: str = "", params: dict = {}):
         """
@@ -514,15 +640,33 @@ def push_events(audit_events: list | None, networking_events: list | None):
 """ COMMAND FUNCTIONS """
 
 
-def test_module():
+def test_module(client: Client) -> str:
     """
-    Aurba's API limitations only allow one access token to be generated every 30 minutes.
-    In this collector, we use an alternative command referred to as 'aruba-auth-test', which allows us to keep the access token
-    generated just in the integration context when testing the connection and have access for it if it already exists.
+    Validates the integration configuration when the user clicks "Test".
+
+    Aruba's API only allows one NEW access token to be generated every 30 minutes, and the platform's
+    test-module run cannot persist the token to the integration context. Therefore:
+      - When a Download Token is configured, we validate by retrieving an access token via the
+        REFRESH flow (refresh is not subject to the 30-minute new-token limit), so the test is safe.
+      - When only a Username/Password is configured, retrieving a token would require a full OAuth
+        login, which would burn the 30-minute quota with a token we cannot save. In that case we keep
+        directing the user to the 'aruba-auth-test' command, which is able to persist the token.
+
+    Args:
+        client (Client): Aruba Central client to use.
+
+    Returns:
+        str: "ok" if authentication via the Download Token (refresh flow) succeeded.
     """
+    if client.downloaded_token:
+        # Refresh-based validation: does not consume the 30-minute new-token quota.
+        client.get_access_token()
+        return "ok"
+
     raise DemistoException(
-        "Test module is not available for HPE Aruba Central Event Collector due to Aruba's API limitations."
-        " Use the aruba-auth-test command instead."
+        "Test button is not supported when authenticating with Username and Password due to Aruba's "
+        "API limitation of one new access token every 30 minutes. Use the 'aruba-auth-test' command "
+        "to validate this configuration, or paste a Download Token to enable the Test button."
     )
 
 
@@ -593,7 +737,10 @@ def get_events(
         results (list[CommandResults]): List of CommandResults objects to be returned to the war-room.
     """
     limit = arg_to_number(args.get("limit"), required=True)
-    max_limit = max(MAX_GET_AUDIT_LIMIT * MAX_AUDIT_API_REQS, MAX_GET_EVENTS_LIMIT * MAX_EVENT_API_REQS)
+    max_limit = max(
+        MAX_GET_AUDIT_LIMIT * MAX_AUDIT_API_REQS,
+        MAX_GET_EVENTS_LIMIT * MAX_EVENT_API_REQS,
+    )
     if not limit or limit > max_limit:
         raise DemistoException(f"Requested limit ({limit}) exceeds maximum allowed limit of {max_limit}")
 
@@ -661,7 +808,10 @@ def fetch_events(
     end_time = int(time.time())
     demisto.debug(f"[Fetch] Fetching {num_audit_events_to_fetch} audit events from {audit_start_time} to {end_time}.")
     audit_events = client.fetch_audit_events(
-        start_time=audit_start_time, end_time=end_time, amount_to_fetch=num_audit_events_to_fetch, last_run=last_run
+        start_time=audit_start_time,
+        end_time=end_time,
+        amount_to_fetch=num_audit_events_to_fetch,
+        last_run=last_run,
     )
     demisto.debug(f"[Fetch] Got {len(audit_events)} audit events.")
 
@@ -669,16 +819,60 @@ def fetch_events(
     if fetch_networking_events:
         demisto.debug(f"Fetching {num_networking_events_to_fetch} networking events from {networking_start_time} to {end_time}.")
         networking_events = client.fetch_networking_events(
-            start_time=networking_start_time, end_time=end_time, amount_to_fetch=num_networking_events_to_fetch, last_run=last_run
+            start_time=networking_start_time,
+            end_time=end_time,
+            amount_to_fetch=num_networking_events_to_fetch,
+            last_run=last_run,
         )
         demisto.debug(f"Got {len(networking_events)} networking events.")
 
-    next_run = create_next_run(audit_events=audit_events, networking_events=networking_events, end_time=end_time)
+    next_run = create_next_run(
+        audit_events=audit_events,
+        networking_events=networking_events,
+        end_time=end_time,
+    )
     demisto.debug(f"Returning {next_run=}.")
     return next_run, audit_events, networking_events
 
 
 """ MAIN FUNCTION """
+
+
+def validate_authentication_params(
+    downloaded_token: str | None,
+    user_name: str | None,
+    user_password: str | None,
+    customer_id: str | None,
+) -> None:
+    """
+    Validates that the configuration provides a usable set of credentials, based on which fields are populated.
+    Authentication is token-based when a Download Token is provided; otherwise it falls back to Username/Password.
+    Raises a clear DemistoException instead of letting the integration attempt a doomed authentication.
+
+    Args:
+        downloaded_token (str | None): The refresh token pasted from the Aruba Central UI.
+        user_name (str | None): The configured username.
+        user_password (str | None): The configured password.
+        customer_id (str | None): The configured customer ID.
+    """
+    if downloaded_token:
+        # Token-based authentication: validate the bundle format now so a bad paste fails fast
+        # with a clear message instead of mid-fetch. Raises if the JSON has no 'refresh_token'.
+        Client.parse_download_token(downloaded_token)
+        return
+
+    # No Download Token -> fall back to the Username/Password OAuth flow.
+    if not (user_name and user_password):
+        raise DemistoException(
+            "No authentication credentials provided. Either paste a Download Token from the "
+            "Aruba Central UI (works for SSO users), or provide a Username and Password "
+            "(non-SSO accounts only)."
+        )
+    if not customer_id:
+        raise DemistoException(
+            "A Customer ID is required when authenticating with Username and Password. "
+            "Provide a Customer ID, or paste a Download Token instead."
+        )
 
 
 def main() -> None:  # pragma: no cover
@@ -694,6 +888,7 @@ def main() -> None:  # pragma: no cover
     user_name = params.get("user", {}).get("identifier")
     user_password = params.get("user", {}).get("password")
     customer_id = params.get("customer_id", {}).get("password")
+    downloaded_token = params.get("token", {}).get("password")
     base_url = params.get("url", "")
     fetch_networking_events = params.get("fetch_networking_events", False)
     max_audit_events_per_fetch = arg_to_number(params.get("max_audit_events_per_fetch")) or 0
@@ -705,6 +900,7 @@ def main() -> None:  # pragma: no cover
 
     demisto.debug(f"Command being called is {command}")
     try:
+        validate_authentication_params(downloaded_token, user_name, user_password, customer_id)
         client = Client(
             base_url=base_url,
             client_id=client_id,
@@ -712,12 +908,13 @@ def main() -> None:  # pragma: no cover
             user_name=user_name,
             user_password=user_password,
             customer_id=customer_id,
+            downloaded_token=downloaded_token,
             verify=verify_certificate,
             proxy=proxy,
         )
 
         if command == "test-module":
-            test_module()
+            return_results(test_module(client))
 
         if command == "aruba-auth-test":
             result = aruba_auth_test(

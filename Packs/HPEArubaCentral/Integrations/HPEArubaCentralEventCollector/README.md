@@ -5,12 +5,12 @@ This is the Aruba Central event collector integration for Cortex XSIAM.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | **Server URL** | The region-specific Base URL for the Aruba Central API Gateway. | True |
-| **Access Token URL** | The full, region-specific URL for the OAuth2 token retrieval endpoint. | True |
 | **Client ID** | The unique identifier for your API application registered in Aruba Central. | True |
 | **Client Secret** | The secret key associated with your Client ID for API authentication. | True |
-| **Customer ID** | The unique identifier for your Aruba Central account. | True |
-| **Username** | The username of an Aruba Central account with at least read-only privileges. | True |
-| **Password** | The password associated with the specified Aruba Central username. | True |
+| **Download Token (JSON)** | Works for SSO users. Paste the full Download Token JSON copied from the Aruba Central UI. The integration reads the refresh_token from it and refreshes access tokens automatically with no username/password. Leave empty to use Username & Password instead. | False |
+| **Customer ID** | The unique identifier for your Aruba Central account. Required only when authenticating with Username & Password (Download Token empty). | False |
+| **Username** | The username of an Aruba Central account with at least read-only privileges. Required only when no Download Token is provided. | False |
+| **Password** | The password associated with the specified Aruba Central username. Required only when no Download Token is provided. | False |
 | **Fetch networking events** | Select this to fetch networking events in addition to audit logs. If cleared, the collector will only fetch audit logs. | False |
 | **The maximum number of audit events per fetch** | The maximum number of audit events to pull in a single fetch. The default is `100`. | False |
 | **The maximum number of networking events per fetch** | The maximum number of networking events to pull in a single fetch. The default is `5000`. | False |
