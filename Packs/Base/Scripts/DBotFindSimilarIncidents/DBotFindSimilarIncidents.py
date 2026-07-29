@@ -1,6 +1,7 @@
 import json
 import re
 import warnings
+from collections.abc import Callable
 from copy import deepcopy
 from types import UnionType
 from typing import Any
@@ -79,18 +80,31 @@ CONST_PARAMETERS_INDICATORS_SCRIPT = {
 KEYS_ARGS_INDICATORS = ["indicatorsTypes", "maxIncidentsInIndicatorsForWhiteList", "minNumberOfIndicators", "incidentId"]
 
 
-def create_incident_link(incident_id: Any) -> str:
-    """Build a markdown link to an incident details page.
+def get_incident_link_creator() -> Callable[[Any], str]:
+    """Returns a function to build a markdown link to an incident details page.
 
-    Uses a path-based URL (``/Details/{id}``) for Cortex XSOAR 8.x and later, and the
-    legacy hash-based URL (``#/Details/{id}``) for Cortex XSOAR 6.x. This ensures the
-    generated hyperlinks navigate directly to the incident on both platforms.
+    The URL format depends on the platform:
 
-    :param incident_id: The incident ID.
-    :return: A markdown-formatted link to the incident details page.
+    - Unified Cortex platform (XSIAM v3 / XSOAR on platform): ``/issue-view/{id}``
+    - Cortex XSOAR 8.x (SaaS, non-platform): ``/Details/{id}``
+    - Cortex XSOAR 6.x (on-prem, legacy): ``#/Details/{id}``
+
+    This ensures the generated hyperlinks navigate directly to the incident/issue on
+    every supported platform.
+
+    :return: A function that takes an incident_id and returns a markdown-formatted link.
     """
-    prefix = "" if is_demisto_version_ge("8.4.0") else "#"
-    return f"[{incident_id}]({prefix}/Details/{incident_id})"
+    if is_platform():
+        template = "[{id}](/issue-view/{id})"
+    elif is_demisto_version_ge("8.4.0"):
+        template = "[{id}](/Details/{id})"
+    else:
+        template = "[{id}](#/Details/{id})"
+
+    def create_incident_link(incident_id: Any) -> str:
+        return template.format(id=incident_id)
+
+    return create_incident_link
 
 
 REGEX_DATE_PATTERN = [
@@ -601,7 +615,7 @@ def prepare_incidents_for_display(
     :return: Clean Dataframe
     """
     if "id" in similar_incidents.columns.tolist():
-        similar_incidents[COLUMN_ID] = similar_incidents["id"].apply(create_incident_link)
+        similar_incidents[COLUMN_ID] = similar_incidents["id"].apply(get_incident_link_creator())
     if COLUMN_TIME in similar_incidents.columns:
         similar_incidents[COLUMN_TIME] = similar_incidents[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if aggregate == "True":
@@ -961,7 +975,7 @@ def prepare_current_incident(
     if COLUMN_TIME in incident_filter.columns.tolist():
         incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if "id" in incident_filter.columns.tolist():
-        incident_filter[COLUMN_ID] = incident_filter["id"].apply(create_incident_link)
+        incident_filter[COLUMN_ID] = incident_filter["id"].apply(get_incident_link_creator())
     return incident_filter
 
 
