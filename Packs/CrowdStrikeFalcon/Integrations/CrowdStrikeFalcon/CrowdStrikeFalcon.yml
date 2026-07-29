@@ -396,6 +396,9 @@ configuration:
   - CNAPP Alerts
   hidden:
   - xsoar
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
 - additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour.
   defaultvalue: 60
   display: Assets Fetch Interval
