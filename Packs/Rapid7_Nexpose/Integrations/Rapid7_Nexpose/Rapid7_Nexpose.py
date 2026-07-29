@@ -40,6 +40,10 @@ MAX_IN_FLIGHT_BATCH_TASKS = 10
 # Total timeout (seconds) for a single send-to-XSIAM HTTP request, so a stuck upload fails fast and is
 # retried instead of hanging until the engine's control-channel timeout trips.
 XSIAM_SEND_TIMEOUT_SECONDS = 60
+# Idle-read timeout (seconds) for streaming the Rapid7 report download. No overall cap, so large reports
+# can finish in a single fetch; fails only if the connection stalls for this long.
+RAPID7_STREAM_SOCK_READ_TIMEOUT_SECONDS = 120
+RAPID7_STREAM_SOCK_CONNECT_TIMEOUT_SECONDS = 30
 BASE_QUERY_FOR_ASSETS = """WITH asset_tags AS (
     SELECT
         dta.asset_id,
@@ -2629,8 +2633,15 @@ class InsightVMClient:
 
     async def __aenter__(self):
         """Asynchronous context manager entry: creates the aiohttp session."""
-        # Create a single session that persists for the client's lifespan
-        self._session = aiohttp.ClientSession()
+        # Create a single session that persists for the client's lifespan.
+        # total=None removes aiohttp's default 300s overall deadline so large report downloads
+        # can stream in a single fetch; sock_read still fails fast if the connection stalls.
+        timeout = aiohttp.ClientTimeout(
+            total=None,
+            sock_read=RAPID7_STREAM_SOCK_READ_TIMEOUT_SECONDS,
+            sock_connect=RAPID7_STREAM_SOCK_CONNECT_TIMEOUT_SECONDS,
+        )
+        self._session = aiohttp.ClientSession(timeout=timeout)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -7024,6 +7035,7 @@ async def stream_report(
     response = await client.http_request("GET", endpoint, headers={"Accept": "text/csv, */*"})
 
     buffer = b""  # Buffer to hold partial lines across chunks
+    total_lines = 0
 
     try:
         content_stream = response.content
@@ -7044,6 +7056,7 @@ async def stream_report(
 
             # Yield all complete lines found
             for line_bytes in lines:
+                total_lines += 1
                 # CRITICAL: Decode the byte string (bytes) into a text string (str).
                 # The .strip() is REMOVED to preserve any trailing whitespace/newlines
                 # for the CSV parser (though newlines are usually handled by splitlines).
@@ -7051,10 +7064,16 @@ async def stream_report(
 
         # Process any final content left in the buffer
         if buffer:
+            total_lines += 1
             yield buffer.decode("utf-8")
 
-        log(event_type, "Finished streaming report.")
+        log(event_type, f"Finished streaming report. Received {total_lines} lines.")
 
+    except Exception as e:
+        # Log how far the download got before failing so a stalled/cut-off stream is diagnosable.
+        # asyncio.CancelledError (raised on timeout cancellation) has an empty str(), so log the type too.
+        log(event_type, f"Report download stream stopped after {total_lines} lines with {type(e).__name__}: {e}")
+        raise
     finally:
         # Crucial: Always ensure the response object is released/closed
         await response.release()
@@ -7130,7 +7149,9 @@ async def stream_and_parse_report(
             log(event_type, "No data rows to process.")
 
     except Exception as e:
-        raise DemistoException(f"\nFATAL ERROR during streaming or sending events: {e}")
+        error_message = f"Error during streaming or sending events ({type(e).__name__}): {e}"
+        log(event_type, error_message)
+        raise DemistoException(error_message) from e
 
 
 async def process_data_stream(
