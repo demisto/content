@@ -1,0 +1,14 @@
+!ip ip=2.56.188.34
+!ip ip=8.8.8.8,1.1.1.1
+!ipgeolocation-ip-lookup ip=8.8.8.8
+!ipgeolocation-ip-lookup ip=91.128.103.196 include=security,abuse
+!ipgeolocation-ip-lookup ip=107.161.145.197 include=geo_accuracy,dma_code,liveHostname
+!ipgeolocation-ip-lookup ip=91.128.103.196 fields=location.country_name,asn.organization
+!ipgeolocation-ip-lookup ip=91.128.103.196 excludes=currency,location.continent_code
+!ipgeolocation-ip-lookup ip=ipgeolocation.io
+!ipgeolocation-ip-security ip=2.56.188.34
+!ipgeolocation-ip-security ip=2.56.188.34 fields=security.threat_score,security.is_vpn
+!ipgeolocation-abuse-contact ip=1.0.0.0
+!ipgeolocation-asn asn=AS24940
+!ipgeolocation-asn asn=12 include=peers,upstreams,downstreams,routes,whois_response
+!ipgeolocation-asn ip=49.12.0.0

@@ -1,0 +1,53 @@
+{
+    "name": "IPGeolocation.io",
+    "description": "Enrich IP addresses with geolocation, network, ASN, abuse contact and threat intelligence data from the IPGeolocation.io v3 APIs.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "IPGeolocation.io",
+    "url": "https://ipgeolocation.io",
+    "email": "support@ipgeolocation.io",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "IP Geolocation",
+        "IP Reputation",
+        "IP Security",
+        "VPN Detection",
+        "Proxy Detection",
+        "ASN Lookup",
+        "Abuse Contact",
+        "Threat Intelligence"
+    ],
+    "keywords": [
+        "IP geolocation",
+        "IP reputation",
+        "IP intelligence",
+        "IP lookup",
+        "IP security",
+        "ASN lookup",
+        "abuse contact",
+        "VPN detection",
+        "proxy detection",
+        "residential proxy",
+        "Tor exit node",
+        "threat score",
+        "threat investigation",
+        "SOC automation",
+        "security automation"
+    ],
+    "useCases": [],
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "created": "2026-07-29T00:00:00Z",
+    "certification": "",
+    "githubUser": [],
+    "devEmail": [
+        "support@ipgeolocation.io"
+    ],
+    "hidden": false
+}

@@ -1,0 +1,48 @@
+{
+  "ip": "8.8.8.8",
+  "location": {
+    "continent_code": "NA",
+    "continent_name": "North America",
+    "country_code2": "US",
+    "country_code3": "USA",
+    "country_name": "United States",
+    "country_name_official": "United States of America",
+    "country_capital": "Washington, D.C.",
+    "state_prov": "California",
+    "state_code": "US-CA",
+    "district": "Santa Clara",
+    "city": "Mountain View",
+    "zipcode": "94043",
+    "latitude": "37.42240",
+    "longitude": "-122.08421",
+    "is_eu": false,
+    "country_flag": "https://ipgeolocation.io/static/flags/us_64.png",
+    "geoname_id": "5375481",
+    "country_emoji": "\ud83c\uddfa\ud83c\uddf8"
+  },
+  "country_metadata": {
+    "calling_code": "+1",
+    "tld": ".us",
+    "languages": ["en-US", "es-US", "haw", "fr"]
+  },
+  "currency": {"code": "USD", "name": "US Dollar", "symbol": "$"},
+  "asn": {"as_number": "AS15169", "organization": "Google LLC", "country": "US"},
+  "time_zone": {
+    "name": "America/Los_Angeles",
+    "offset": -8,
+    "offset_with_dst": -8,
+    "current_time": "2026-03-07 01:37:39.506-0800",
+    "current_time_unix": 1772876259.506,
+    "current_tz_abbreviation": "PST",
+    "current_tz_full_name": "Pacific Standard Time",
+    "standard_tz_abbreviation": "PST",
+    "standard_tz_full_name": "Pacific Standard Time",
+    "is_dst": false,
+    "dst_savings": 0,
+    "dst_exists": true,
+    "dst_tz_abbreviation": "PDT",
+    "dst_tz_full_name": "Pacific Daylight Time",
+    "dst_start": {},
+    "dst_end": {}
+  }
+}
