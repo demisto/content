@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: EWS Extension Online Powershell v3 test_exo_ver
+  id: EWS Extension Online Powershell v3
   version: -1
 configuration:
 - defaultvalue: https://outlook.office365.com
@@ -37,8 +37,8 @@ configuration:
   type: 0
   section: Connect
 description: Use the EWS Extension Online Powershell v3 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
-display: EWS Extension Online Powershell v3 test_exo_ver
-name: EWS Extension Online Powershell v3 test_exo_ver
+display: EWS Extension Online Powershell v3
+name: EWS Extension Online Powershell v3
 script:
   commands:
   - arguments:
@@ -2898,7 +2898,7 @@ script:
     description: Disable mail forwarding for a given user.
   script: ''
   type: powershell
-  dockerimage: devdemisto/pwsh-exchangev3:1.0.0.11280974
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.10133006
 fromversion: 5.5.0
 supportsquickactions: true
 tests:
