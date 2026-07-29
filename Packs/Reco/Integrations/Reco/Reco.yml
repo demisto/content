@@ -83,6 +83,13 @@ configuration:
   type: 0
   section: Collect
   required: false
+- additionalinfo: Interval in minutes between two consecutive fetch incidents runs.
+  defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  section: Collect
 description: Reco is the leader in SaaS & AI Security, providing full visibility and control across your SaaS ecosystem and AI agents.
 display: Reco
 name: Reco
