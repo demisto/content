@@ -3436,3 +3436,178 @@ async def test_xsiam_send_semaphore_caps_concurrency(mocker):
         f"In-flight requests ({max_in_flight}) exceeded the cap "
         f"({Rapid7_Nexpose.MAX_CONCURRENT_XSIAM_SENDS}) — semaphore not throttling."
     )
+
+
+@pytest.mark.asyncio
+async def test_insightvm_client_aenter_sets_stream_timeout(mocker):
+    """
+    Given:
+      - An InsightVMClient used as an async context manager.
+    When:
+      - Entering the context (__aenter__), which creates the aiohttp session.
+    Then:
+      - The session is created with an explicit ClientTimeout that removes the
+        overall deadline (total=None) so large report downloads are not cut off
+        after aiohttp's default 300s, while keeping a sock_read idle timeout and
+        a sock_connect timeout to fail fast on a stalled/unreachable connection.
+    """
+    import Rapid7_Nexpose
+
+    captured = {}
+
+    def fake_session(*args, **kwargs):
+        captured["timeout"] = kwargs.get("timeout")
+        return mocker.MagicMock()
+
+    mocker.patch("Rapid7_Nexpose.aiohttp.ClientSession", side_effect=fake_session)
+
+    client = Rapid7_Nexpose.InsightVMClient(base_url="https://nexpose.example.com", username="u", password="p", verify=False)
+    await client.__aenter__()
+
+    timeout = captured["timeout"]
+    assert isinstance(timeout, aiohttp.ClientTimeout)
+    assert timeout.total is None, "total must be None to remove aiohttp's default 300s overall deadline"
+    assert timeout.sock_read == Rapid7_Nexpose.RAPID7_STREAM_SOCK_READ_TIMEOUT_SECONDS
+    assert timeout.sock_connect == Rapid7_Nexpose.RAPID7_STREAM_SOCK_CONNECT_TIMEOUT_SECONDS
+
+
+def _make_stream_response(mocker, chunks):
+    """Build a mock aiohttp response whose content.iter_any() yields the given byte chunks."""
+
+    class MockAsyncIterator:
+        def __init__(self, items):
+            self.items = items
+            self.index = 0
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            if self.index < len(self.items):
+                item = self.items[self.index]
+                self.index += 1
+                return item
+            raise StopAsyncIteration
+
+    mock_response = mocker.AsyncMock()
+    mock_response.release = mocker.AsyncMock()
+    mock_content = mocker.AsyncMock()
+    mock_content.iter_any = lambda: MockAsyncIterator(chunks)
+    mock_response.content = mock_content
+    return mock_response
+
+
+@pytest.mark.asyncio
+async def test_stream_report_logs_received_line_count(mocker):
+    """
+    Given:
+      - A report download that streams three complete lines across chunks.
+    When:
+      - Calling stream_report and consuming the generator to completion.
+    Then:
+      - On success it logs the number of lines received, so a completed download
+        is observable and diagnosable from the logs.
+    """
+    mock_client = mocker.AsyncMock()
+    mock_client.http_request = mocker.AsyncMock(
+        return_value=_make_stream_response(mocker, [b"id,name\n1,serv", b"er1\n2,server2\n"])
+    )
+    debug = mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    lines = [line async for line in stream_report(mock_client, "r", "i", "vulnerability")]
+
+    assert len(lines) == 3
+    logged = " ".join(str(c.args[0]) for c in debug.call_args_list)
+    assert "Finished streaming report. Received 3 lines." in logged
+
+
+@pytest.mark.asyncio
+async def test_stream_report_logs_line_count_and_type_on_failure(mocker):
+    """
+    Given:
+      - A report download that yields one line and then the connection fails
+        (mirrors a stalled download surfacing as an exception mid-stream).
+    When:
+      - Calling stream_report and consuming the generator.
+    Then:
+      - It logs how far the download got (line count) and the exception TYPE
+        (so an empty-message exception like CancelledError is still diagnosable),
+        then re-raises the original error, and still releases the response.
+    """
+
+    class MockPartialThenErrorIterator:
+        def __init__(self):
+            self.index = 0
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            self.index += 1
+            if self.index == 1:
+                return b"id,name\n"
+            raise asyncio.CancelledError
+
+    mock_response = mocker.AsyncMock()
+    mock_response.release = mocker.AsyncMock()
+    mock_content = mocker.AsyncMock()
+    mock_content.iter_any = lambda: MockPartialThenErrorIterator()
+    mock_response.content = mock_content
+
+    mock_client = mocker.AsyncMock()
+    mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
+    debug = mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    with pytest.raises(asyncio.CancelledError):
+        async for _ in stream_report(mock_client, "r", "i", "vulnerability"):
+            pass
+
+    logged = " ".join(str(c.args[0]) for c in debug.call_args_list)
+    assert "Report download stream stopped after 1 lines" in logged
+    assert "CancelledError" in logged, "the exception type must be logged (empty-message exceptions otherwise vanish)"
+    mock_response.release.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_stream_and_parse_report_error_includes_exception_type(mocker):
+    """
+    Given:
+      - stream_report fails while streaming with an exception whose str() is empty
+        (e.g. asyncio.CancelledError from a timed-out download).
+    When:
+      - Calling stream_and_parse_report.
+    Then:
+      - The raised DemistoException includes the exception TYPE name, so the
+        failure is no longer reported with a blank, undiagnosable message.
+    """
+
+    class MockStreamHeaderThenError:
+        def __init__(self):
+            self.index = 0
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            self.index += 1
+            if self.index == 1:
+                return "id,name\n"
+            raise asyncio.CancelledError
+
+    mocker.patch("Rapid7_Nexpose.stream_report", return_value=MockStreamHeaderThenError())
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    mock_client = mocker.AsyncMock()
+
+    with pytest.raises(DemistoException) as excinfo:
+        await stream_and_parse_report(
+            client=mock_client,
+            report_id="r",
+            instance_id="i",
+            event_integration_context={},
+            event_type="vulnerability",
+        )
+
+    message = str(excinfo.value)
+    assert "CancelledError" in message, "error message must include the exception type name"
+    assert "streaming or sending events" in message
