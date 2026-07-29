@@ -19,6 +19,11 @@ from CommonServerUserPython import *  # noqa
 DEFAULT_LIMIT = 1000
 MAX_LIMIT = 1000
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
+# XSUP-72224 CUSTOM VERSION (Wipro tenant 3306856535933): hardcoded first-fetch lookback.
+# This forces a 1-minute lookback on a fresh fetch (e.g. after an instance/watermark reset),
+# overriding the instance "First fetch timestamp" parameter, so a reset resumes at ~now
+# instead of replaying up to 3 days of history. Remove this override before merging upstream.
+HARDCODED_FROM_FETCH_OVERRIDE = "1 minute"
 
 
 class EventFilter(NamedTuple):
@@ -422,7 +427,10 @@ def main(command: str, demisto_params: dict):
         else:
             event_filters = ALL_EVENT_FILTERS
 
-        after = demisto_params.get("after") or DEFAULT_FROM_FETCH_PARAMETER
+        # XSUP-72224 CUSTOM VERSION: ignore the configured "after" param and hardcode a 1-minute
+        # lookback so that a fresh fetch after a reset starts at ~now (not 3 days / not the UI value).
+        after = HARDCODED_FROM_FETCH_OVERRIDE
+        demisto.debug(f"MD: CUSTOM VERSION - using hardcoded first-fetch lookback: {after}")
 
         if after and not isinstance(after, int):
             demisto.debug(f"MD: Got after argument: {after}")
