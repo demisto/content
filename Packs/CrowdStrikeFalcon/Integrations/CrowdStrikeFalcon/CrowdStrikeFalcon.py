@@ -93,6 +93,11 @@ MAX_FETCH_DETECTION_PER_API_CALL_ENTITY = 1000  # fetch limit for get entities c
 MAX_FETCH_SPOTLIGHT_ASSETS = 5000
 # Below the 5000 server-side maximum to keep payloads under XSOAR's auto-file threshold.
 MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
+# Fix 2 (P1): shrink ladder for oversized-page JSON truncation recovery. The /combined endpoint
+# with facets can return 10-16 MB pages that are occasionally truncated (json.JSONDecodeError).
+# When that happens we re-request the SAME page (same after token) with progressively smaller
+# limits. If the smallest limit still fails, the severity fetch fails with a clear error.
+SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER = [MAX_FETCH_SPOTLIGHT_ASSETS, 2500, 1000, 500]
 MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
 SPOTLIGHT_LOOKBACK_DAYS = 100  # Only fetch vulnerabilities updated within this many days (bounds dataset size)
 RECON_API_LIMIT = 100
@@ -4602,7 +4607,7 @@ def update_spotlight_state_and_metadata(
 
 
 async def fetch_spotlight_vulnerabilities_page(
-    client: ContentClient, after_token: str | None, filter_query: str
+    client: ContentClient, after_token: str | None, filter_query: str, limit: int = MAX_FETCH_SPOTLIGHT_ASSETS
 ) -> tuple[list, dict]:
     """
     Fetch a single page of Spotlight vulnerabilities with custom filter.
@@ -4611,20 +4616,20 @@ async def fetch_spotlight_vulnerabilities_page(
         client: ContentClient instance
         after_token: Pagination token (None for first request)
         filter_query: FQL filter query (e.g., "status:['open','reopen']" or "status:['open','reopen']+cve.severity:['CRITICAL']")
+        limit: Page size to request. Defaults to MAX_FETCH_SPOTLIGHT_ASSETS. Callers may shrink this
+            to recover from oversized-page JSON truncation (see fetch_vulnerabilities_by_severity).
 
     Returns:
         Tuple of (vulnerabilities_list, response_data)
     """
     # Build request parameters
-    params = {"limit": MAX_FETCH_SPOTLIGHT_ASSETS, "filter": filter_query, "facet": ["host_info", "cve"]}
+    params = {"limit": limit, "filter": filter_query, "facet": ["host_info", "cve"]}
 
     # Add pagination token if provided
     if after_token:
         params["after"] = after_token
 
-    log_falcon_assets(
-        f"Fetching Spotlight page with limit={MAX_FETCH_SPOTLIGHT_ASSETS}, after_token={'present' if after_token else 'none'}"
-    )
+    log_falcon_assets(f"Fetching Spotlight page with limit={limit}, after_token={'present' if after_token else 'none'}")
 
     # Make ASYNC API request
     response = await client._request(method="GET", url_suffix="/spotlight/combined/vulnerabilities/v1", params=params)
@@ -4662,6 +4667,56 @@ async def wait_for_background_tasks(pending_tasks: set[asyncio.Task], task_descr
     log_falcon_assets(f"All {task_description} tasks completed successfully", "info")
 
 
+async def fetch_spotlight_page_with_shrink(
+    client: ContentClient, after_token: str | None, filter_query: str, severity: str
+) -> tuple[list, dict]:
+    """Fetch a single Spotlight page, recovering from oversized-page JSON truncation (Fix 2, P1).
+
+    The ``/spotlight/combined/vulnerabilities/v1`` endpoint with the ``cve`` facet can return
+    10-16 MB pages that are occasionally truncated mid-stream, raising ``json.JSONDecodeError``
+    ("Unterminated string"). Historically this aborted the entire severity fetch. Instead, this
+    helper retries the SAME page (same ``after_token``) with progressively smaller page sizes from
+    ``SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER`` (5000 -> 2500 -> 1000 -> 500). The next page (a new
+    ``after_token``) automatically reverts to the default limit because each call starts the ladder
+    from the top.
+
+    Args:
+        client: ContentClient instance for API calls.
+        after_token: Pagination token for the page being fetched (None for the first page).
+        filter_query: FQL filter query for the request.
+        severity: Severity label, used only for logging.
+
+    Returns:
+        Tuple of (vulnerabilities_list, response_data) for the successfully fetched page.
+
+    Raises:
+        json.JSONDecodeError: If even the smallest page size in the ladder is still truncated.
+    """
+    last_error: json.JSONDecodeError | None = None
+    for attempt_limit in SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER:
+        try:
+            return await fetch_spotlight_vulnerabilities_page(
+                client=client, after_token=after_token, filter_query=filter_query, limit=attempt_limit
+            )
+        except json.JSONDecodeError as e:
+            last_error = e
+            log_falcon_assets(
+                f"[{severity}] Oversized-page JSON truncation at limit={attempt_limit} "
+                f"(same after token). Shrinking and retrying the same page. Error: {e}",
+                "warning",
+            )
+
+    # Exhausted the shrink ladder — the smallest page size is still truncated.
+    log_falcon_assets(
+        f"[{severity}] Failed to fetch Spotlight page after shrinking to the smallest limit "
+        f"({SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[-1]}); response is still truncated (Unterminated string).",
+        "error",
+    )
+    # The ladder is non-empty, so last_error is always set once the loop exits without returning.
+    assert last_error is not None
+    raise last_error
+
+
 async def fetch_vulnerabilities_by_severity(
     client: ContentClient,
     severity: str,
@@ -4696,9 +4751,42 @@ async def fetch_vulnerabilities_by_severity(
     last_saved_batch_number = 0
     # The first fetched record is withheld from the data batches to be sent in the seal.
     withheld_records: list[dict] = []
+    # Fix 1 (P0): a failed XSIAM send must not be counted-but-dropped. When a send task is reaped
+    # (during backpressure or the final drain), the first failure is captured here; the severity
+    # fetch then raises so it is marked failed (never completed) and its records are not counted.
+    # This keeps declared == stored so the snapshot can seal.
+    send_failure: BaseException | None = None
+    # Fix 1 (P0): maps each in-flight send task to the number of records it is sending. Counting is
+    # done deterministically at reap time (not in a done_callback), so only records confirmed stored
+    # in XSIAM are added to total_fetched. The dict is bounded by MAX_PENDING_TASKS_PER_SEVERITY.
+    batch_items_sent: dict[asyncio.Task, int] = {}
+
+    def reap_completed_send_tasks(completed_tasks) -> None:
+        """Count successful sends, capture the first failure, and update last_saved_batch_number."""
+        nonlocal last_saved_batch_number, total_fetched, send_failure
+        for completed_task in completed_tasks:
+            items = batch_items_sent.pop(completed_task, 0)
+            try:
+                result = completed_task.result()
+                if isinstance(result, int) and result > last_saved_batch_number:
+                    last_saved_batch_number = result
+                # Count-on-success: only records confirmed sent to XSIAM are counted.
+                total_fetched += items
+            except Exception as e:
+                # Count-but-dropped is the sealing blocker: do NOT count, record the failure.
+                log_falcon_assets(
+                    f"[{severity}] Background vulnerability send task failed; "
+                    f"{items} records NOT counted so declared == stored: {e}",
+                    "error",
+                )
+                send_failure = send_failure or e
 
     try:
         while True:
+            # If a background send has already failed, stop fetching more pages for this severity.
+            if send_failure:
+                break
+
             # BACKPRESSURE: before fetching next page, wait if too many send tasks are pending.
             # This prevents unbounded memory growth from fire-and-forget vulnerability batches.
             while len(pending_tasks) >= MAX_PENDING_TASKS_PER_SEVERITY:
@@ -4708,14 +4796,10 @@ async def fetch_vulnerabilities_by_severity(
                 )
                 done, pending_tasks_updated = await asyncio.wait(pending_tasks, return_when=asyncio.FIRST_COMPLETED)
                 pending_tasks = pending_tasks_updated
-                # Process completed tasks to update last_saved_batch_number
-                for completed_task in done:
-                    try:
-                        result = completed_task.result()
-                        if isinstance(result, int) and result > last_saved_batch_number:
-                            last_saved_batch_number = result
-                    except Exception as e:
-                        log_falcon_assets(f"[{severity}] Background send task failed: {e}", "error")
+                # Reap completed tasks: count successful sends, capture failures (Fix 1, P0).
+                reap_completed_send_tasks(done)
+                if send_failure:
+                    break
                 log_falcon_assets(
                     f"[{severity}] Backpressure released: {len(done)} tasks completed, " f"{len(pending_tasks)} still pending"
                 )
@@ -4732,8 +4816,13 @@ async def fetch_vulnerabilities_by_severity(
                 f"after_token={'present' if after_token else 'none'}"
             )
 
-            vulnerabilities, response_data = await fetch_spotlight_vulnerabilities_page(
-                client=client, after_token=after_token, filter_query=filter_query
+            # Fix 2 (P1): Adaptive shrink-then-recover for oversized-page JSON truncation.
+            # The /combined/vulnerabilities/v1 endpoint with facets can return 10-16 MB pages that
+            # are sometimes truncated, raising json.JSONDecodeError. Instead of aborting the whole
+            # severity, retry the SAME page (same after_token) with progressively smaller limits.
+            # The next page (new after_token) automatically reverts to the default limit.
+            vulnerabilities, response_data = await fetch_spotlight_page_with_shrink(
+                client=client, after_token=after_token, filter_query=filter_query, severity=severity
             )
 
             log_falcon_assets(f"[{severity}] Fetched {len(vulnerabilities)} vulnerabilities in batch {batch_counter + 1}")
@@ -4745,17 +4834,18 @@ async def fetch_vulnerabilities_by_severity(
             batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
             await asset_handler.receive_new_aids(batch_aids)
 
-            # Count every fetched record, including the withheld one, so the count stays exact.
-            total_fetched += len(vulnerabilities)
             batch_counter += 1
 
             # Withhold the first record of this severity from the data batches; it is sent later
-            # in the sealing batch. It is already counted and AID-enriched above, so it is still
-            # sent exactly once.
+            # in the sealing batch. It is AID-enriched above and counted here exactly once (the
+            # seal is guaranteed to carry it), so counting it now keeps the total exact even
+            # though it does not go through a fire-and-forget send task.
             records_to_send = vulnerabilities
             if not withheld_records and vulnerabilities:
                 withheld_records.append(vulnerabilities[0])
                 records_to_send = vulnerabilities[1:]
+                # Count the withheld record once, up front: it is always included in the seal batch.
+                total_fetched += 1
                 log_falcon_assets(
                     f"[{severity}] Withholding first record for the sealing batch "
                     f"(id={vulnerabilities[0].get('id')}); sending {len(records_to_send)} records in this batch.",
@@ -4786,18 +4876,14 @@ async def fetch_vulnerabilities_by_severity(
                 data_type="assets",
             )
 
-            # Track task and update last_saved_batch_number when task completes
-            def update_last_saved(future, _pending=pending_tasks):
-                nonlocal last_saved_batch_number
-                try:
-                    last_saved_batch_number = future.result()
-                except Exception as e:
-                    log_falcon_assets(f"[{severity}] Background vulnerability task failed: {e}", "error")
-                finally:
-                    _pending.discard(future)
-
+            # Fix 1 (P0): count on successful send only. The number of records in this batch is
+            # remembered so that when the task is reaped (either during backpressure or the final
+            # drain) it is added to total_fetched ONLY if the send succeeded. On failure the count
+            # is dropped and the failure recorded, so the severity fails (declared == stored).
+            # Counting is done deterministically at reap time (not in a done_callback) to avoid any
+            # dependency on callback scheduling order.
+            batch_items_sent[task] = len(records_to_send)
             pending_tasks.add(task)
-            task.add_done_callback(update_last_saved)
             log_falcon_assets(
                 f"[{severity}] Created send task for batch {batch_counter} "
                 f"(pending: {len(pending_tasks)}/{MAX_PENDING_TASKS_PER_SEVERITY})"
@@ -4824,6 +4910,25 @@ async def fetch_vulnerabilities_by_severity(
             # More pages exist - continue to next batch
             log_falcon_assets(f"[{severity}] More pages available. Fetched so far: {total_fetched}")
             after_token = new_after_token
+
+        # Fix 1 (P0): drain this severity's send tasks so count-on-success settles and any send
+        # failure surfaces here. Draining now guarantees total_fetched reflects only records
+        # actually stored in XSIAM (declared == stored). Reaping counts successful sends and records
+        # the first failure in send_failure; failed sends are NOT counted.
+        if pending_tasks:
+            log_falcon_assets(f"[{severity}] Draining {len(pending_tasks)} send tasks before finalizing count", "info")
+            await asyncio.gather(*pending_tasks, return_exceptions=True)
+            reap_completed_send_tasks(pending_tasks)
+            pending_tasks.clear()
+
+        if send_failure:
+            error_msg = (
+                f"One or more XSIAM send tasks failed for {severity} severity vulnerabilities. "
+                f"The severity is marked failed so its records are not counted (declared == stored) "
+                f"and it will be retried next cycle. Error: {send_failure}"
+            )
+            log_falcon_assets(f"[{severity}] {error_msg}", "error")
+            raise Exception(error_msg) from send_failure
 
     except ContentClientError as e:
         # Check if this is an authentication error (HTTP 401)
@@ -4894,45 +4999,56 @@ async def await_and_aggregate_severity_results(
     # Seed with records withheld in previous cycles so the seal isn't missing earlier severities.
     all_withheld_records: list[dict] = list(prior_withheld_records or [])
 
-    for severity, task in severity_tasks:
+    # Fix 3 (P2): process severities in COMPLETION order, not the fixed SPOTLIGHT_SEVERITIES order.
+    # Previously a fast severity (e.g. LOW) that finished early was not checkpointed until all
+    # preceding severities (e.g. CRITICAL, HIGH) completed (head-of-line blocking). asyncio.as_completed
+    # lets us persist each severity's completion the moment it finishes. Because as_completed yields
+    # wrapper futures (not the original tasks), each task is wrapped so its severity label travels with
+    # the result and is available even when the task raises.
+    # Await each task while keeping its severity label attached, so a failing task can still be
+    # attributed to the right severity in logs (the label survives the exception).
+    async def await_with_severity(sev: str, task: asyncio.Task) -> tuple[str, tuple | BaseException]:
         try:
-            log_falcon_assets(f"Waiting for {severity} severity task to complete...", "info")
-            severity_total, severity_aids, severity_tasks_result, severity_withheld = await task
-            total_vulnerabilities += severity_total
-            all_unique_aids.update(severity_aids)
-            all_pending_tasks.update(severity_tasks_result)
-            all_withheld_records.extend(severity_withheld)
-            log_falcon_assets(
-                f"[{severity}] Completed: {severity_total} vulnerabilities, {len(severity_aids)} unique hosts", "info"
-            )
+            return sev, await task
+        except Exception as exc:  # noqa: BLE001 - one severity's failure must not abort the others
+            return sev, exc
 
-            # Mark this severity as completed
-            if severity not in current_completed_severities:
-                current_completed_severities.append(severity)
-                log_falcon_assets(f"[{severity}] Marked as completed. Total completed: {current_completed_severities}", "info")
-
-                # Persist completed severities and the accumulated withheld records after each
-                # severity completes, so a resumed run does not lose earlier severities' records.
-                update_spotlight_state_and_metadata(
-                    spotlight_state=spotlight_state,
-                    cursor=None,  # No cursor needed for severity-based fetching
-                    snapshot_id=snapshot_id,
-                    total_fetched=0,  # Reset for next cycle
-                    unique_aids=set(),  # Reset for next cycle
-                    processed_aids=set(),  # Reset for next cycle
-                    completed_severities=current_completed_severities,
-                    withheld_records=all_withheld_records,
-                )
-                save_spotlight_state(context_store, spotlight_state)
-                log_falcon_assets(
-                    f"[{severity}] Saved completion state to context (withheld_records so far: {len(all_withheld_records)})",
-                    "info",
-                )
-
-        except Exception as e:
-            log_falcon_assets(f"[{severity}] Failed with error: {e}", "error")
+    for finished in asyncio.as_completed([await_with_severity(sev, t) for sev, t in severity_tasks]):
+        severity, result = await finished
+        if isinstance(result, BaseException):
+            log_falcon_assets(f"[{severity}] Failed with error: {result}", "error")
             # Don't mark as completed if it failed - will retry next cycle
             continue
+
+        severity_total, severity_aids, severity_tasks_result, severity_withheld = result
+        total_vulnerabilities += severity_total
+        all_unique_aids.update(severity_aids)
+        all_pending_tasks.update(severity_tasks_result)
+        all_withheld_records.extend(severity_withheld)
+        log_falcon_assets(f"[{severity}] Completed: {severity_total} vulnerabilities, {len(severity_aids)} unique hosts", "info")
+
+        # Mark this severity as completed
+        if severity not in current_completed_severities:
+            current_completed_severities.append(severity)
+            log_falcon_assets(f"[{severity}] Marked as completed. Total completed: {current_completed_severities}", "info")
+
+            # Persist completed severities and the accumulated withheld records after each
+            # severity completes, so a resumed run does not lose earlier severities' records.
+            update_spotlight_state_and_metadata(
+                spotlight_state=spotlight_state,
+                cursor=None,  # No cursor needed for severity-based fetching
+                snapshot_id=snapshot_id,
+                total_fetched=0,  # Reset for next cycle
+                unique_aids=set(),  # Reset for next cycle
+                processed_aids=set(),  # Reset for next cycle
+                completed_severities=current_completed_severities,
+                withheld_records=all_withheld_records,
+            )
+            save_spotlight_state(context_store, spotlight_state)
+            log_falcon_assets(
+                f"[{severity}] Saved completion state to context (withheld_records so far: {len(all_withheld_records)})",
+                "info",
+            )
 
     log_falcon_assets(
         f"All severity queries completed. Total vulnerabilities: {total_vulnerabilities}, "

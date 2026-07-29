@@ -9066,7 +9066,9 @@ class TestSpotlightSeverityBasedFetch:
         # Verify
         assert total == 2
         assert aids == {"aid1", "aid2"}
-        assert len(tasks) == 1
+        # Fix 1 (P0): send tasks are drained inside the severity fetch (count-on-success),
+        # so the returned pending set is empty once all sends complete.
+        assert len(tasks) == 0
         # First record is withheld for the seal
         assert withheld == [vulnerabilities[0]]
 
@@ -9153,7 +9155,8 @@ class TestSpotlightSeverityBasedFetch:
         # Verify
         assert total == 3  # 2 from page1 + 1 from page2
         assert aids == {"aid1", "aid2", "aid3"}
-        assert len(tasks) == 2  # One task per page
+        # Fix 1 (P0): tasks are drained inside the fetch, so the returned pending set is empty.
+        assert len(tasks) == 0
         assert withheld == [page1_vulns[0]]
         assert mock_client._request.call_count == 2
 
@@ -9450,7 +9453,8 @@ class TestSpotlightSeverityBasedFetch:
         # Verify
         assert total == 0
         assert aids == set()
-        assert len(tasks) == 1  # Task still created (empty data batch)
+        # Fix 1 (P0): the empty-data-batch task is created then drained, so nothing is returned.
+        assert len(tasks) == 0
         assert withheld == []  # Nothing to withhold from an empty severity
 
         # Verify handler received empty set
@@ -9740,6 +9744,256 @@ class TestSpotlightSeverityBasedFetch:
 
         assert total == 0
         assert withheld == []
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_page_with_shrink_recovers_after_truncation(self, mocker, capfd):
+        """
+        Tests Fix 2 (P1): a truncated oversized page is retried with a smaller limit and recovers.
+
+        Given:
+            - The first attempt (limit=5000) raises json.JSONDecodeError (Unterminated string).
+            - The retry at the next smaller limit (2500) succeeds.
+        When:
+            - fetch_spotlight_page_with_shrink is called.
+        Then:
+            - The same after_token is reused for the retry (not advanced).
+            - The successfully fetched page is returned.
+        """
+        import json as _json
+        from CrowdStrikeFalcon import fetch_spotlight_page_with_shrink
+
+        mock_client = mocker.AsyncMock()
+
+        good_vulns = [{"id": "v1", "aid": "aid1"}]
+        good_response = ({"resources": good_vulns}, good_vulns)
+
+        calls = []
+
+        async def page_side_effect(client, after_token, filter_query, limit):
+            calls.append({"after_token": after_token, "limit": limit})
+            if limit == 5000:
+                raise _json.JSONDecodeError("Unterminated string", doc="{", pos=0)
+            return good_vulns, {"resources": good_vulns, "meta": {"pagination": {"after": None}}}
+
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page",
+            side_effect=page_side_effect,
+        )
+
+        # Disable stdout capture since this test intentionally triggers a shrink warning log.
+        with capfd.disabled():
+            vulns, response_data = await fetch_spotlight_page_with_shrink(
+                client=mock_client,
+                after_token="tok_same",
+                filter_query="filter",
+                severity="CRITICAL",
+            )
+
+        assert vulns == good_vulns
+        # First attempt used the default 5000 and failed; retry shrank to 2500 and succeeded.
+        assert calls[0]["limit"] == 5000
+        assert calls[1]["limit"] == 2500
+        # The SAME after_token was reused for the retry (page not advanced).
+        assert calls[0]["after_token"] == "tok_same"
+        assert calls[1]["after_token"] == "tok_same"
+        _ = good_response  # silence unused
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_page_with_shrink_fails_at_smallest_limit(self, mocker, capfd):
+        """
+        Tests Fix 2 (P1): if even the smallest page size is still truncated, the fetch fails.
+
+        Given:
+            - Every attempt across the whole shrink ladder raises json.JSONDecodeError.
+        When:
+            - fetch_spotlight_page_with_shrink is called.
+        Then:
+            - json.JSONDecodeError is raised after the smallest limit is exhausted.
+        """
+        import json as _json
+        from CrowdStrikeFalcon import fetch_spotlight_page_with_shrink
+
+        mock_client = mocker.AsyncMock()
+
+        async def always_truncated(client, after_token, filter_query, limit):
+            raise _json.JSONDecodeError("Unterminated string", doc="{", pos=0)
+
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page",
+            side_effect=always_truncated,
+        )
+
+        with capfd.disabled(), pytest.raises(_json.JSONDecodeError):
+            await fetch_spotlight_page_with_shrink(
+                client=mock_client,
+                after_token="tok",
+                filter_query="filter",
+                severity="HIGH",
+            )
+
+    @pytest.mark.asyncio
+    async def test_await_and_aggregate_checkpoints_in_completion_order(self, mocker):
+        """
+        Tests Fix 3 (P2): a fast severity is checkpointed as soon as it completes.
+
+        Given:
+            - A slow CRITICAL task and a fast LOW task.
+        When:
+            - await_and_aggregate_severity_results is called.
+        Then:
+            - LOW is marked completed BEFORE CRITICAL (completion order, not list order),
+              removing head-of-line blocking.
+        """
+        from CrowdStrikeFalcon import await_and_aggregate_severity_results
+
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        completion_order = []
+        original_log = None
+
+        async def slow_critical():
+            await asyncio.sleep(0.05)
+            return (10, {"aid1"}, set(), [{"id": "c1", "aid": "aid1"}])
+
+        async def fast_low():
+            await asyncio.sleep(0.0)
+            return (5, {"aid2"}, set(), [{"id": "l1", "aid": "aid2"}])
+
+        # Order the list CRITICAL-first to prove completion order (LOW) wins over list order.
+        severity_tasks = [
+            ("CRITICAL", asyncio.ensure_future(slow_critical())),
+            ("LOW", asyncio.ensure_future(fast_low())),
+        ]
+
+        # Capture the order severities are marked completed via the completed_severities list.
+        (
+            total,
+            all_aids,
+            all_tasks,
+            completed,
+            withheld,
+        ) = await await_and_aggregate_severity_results(
+            severity_tasks=severity_tasks,
+            current_completed_severities=completion_order,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+        )
+
+        assert total == 15
+        # LOW finished first, so it must be checkpointed first (no head-of-line blocking).
+        assert completed[0] == "LOW"
+        assert completed[1] == "CRITICAL"
+        _ = original_log
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_send_failure_raises_and_does_not_count(self, mocker, capfd):
+        """
+        Tests Fix 1 (P0): a failed XSIAM send must NOT be counted-but-dropped.
+
+        Given:
+            - API returns vulnerabilities for CRITICAL severity.
+            - The background send task fails (raises) after all retries.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - The severity fetch raises (so the severity is marked failed, not completed).
+            - Records from the failed send are NOT added to the returned total,
+              guaranteeing declared == stored (the snapshot can still seal).
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        vulnerabilities = [
+            {"id": "v1", "aid": "aid1"},
+            {"id": "v2", "aid": "aid2"},
+            {"id": "v3", "aid": "aid3"},
+        ]
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": vulnerabilities,
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        # Simulate a send that fails after all retries (e.g. Bad Gateway / connection timeout)
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_exception(Exception("Bad Gateway"))
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        with capfd.disabled(), pytest.raises(Exception, match="Bad Gateway"):
+            await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="CRITICAL",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_counts_only_successful_sends(self, mocker):
+        """
+        Tests Fix 1 (P0): total is counted on successful send, plus the withheld record.
+
+        Given:
+            - API returns 3 vulnerabilities in a single page (1 withheld, 2 sent).
+            - The background send succeeds.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - total == withheld(1) + successfully-sent(2) == 3.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        vulnerabilities = [
+            {"id": "v1", "aid": "aid1"},
+            {"id": "v2", "aid": "aid2"},
+            {"id": "v3", "aid": "aid3"},
+        ]
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": vulnerabilities,
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)  # batch_number result of a successful send
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        total, aids, tasks, withheld = await fetch_vulnerabilities_by_severity(
+            client=mock_client,
+            severity="CRITICAL",
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            asset_handler=mock_handler,
+        )
+
+        # 1 withheld (guaranteed sent in the seal) + 2 successfully sent = 3
+        assert total == 3
+        assert withheld == [{"id": "v1", "aid": "aid1"}]
 
     @pytest.mark.asyncio
     async def test_finalize_seals_with_real_withheld_records(self, mocker):
