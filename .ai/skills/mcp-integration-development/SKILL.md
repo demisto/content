@@ -146,7 +146,7 @@ Include ONLY:
 1. Mandatory commands match specification; `test-module` does NOT appear in YAML commands (it is a built-in)
 2. YAML review: Configuration parameters match auth type requirements, `script.mcp: true` is set, docker image and fromversion are correct, descriptions are clear and don't include "Options:" when using `auto: PREDEFINED`
 3. Python↔YAML parameter parity (CRITICAL): List every `params.get("X")` call in Python — each MUST have a matching `configuration` entry with `name: X` in YAML. List every `configuration` entry in YAML — each MUST be read by Python via `params.get()`. No orphan parameters. Parameter types in YAML MUST match how Python uses them.
-4. Python↔YAML command argument parity (CRITICAL): For each command, list every `args["X"]` or `args.get("X")` call in Python — each MUST have a matching `arguments` entry with `name: X` in YAML. For each command, list every `arguments` entry in YAML — each MUST be accessed by Python. `required: true` in YAML MUST match `args["X"]` in Python; optional args MUST use `args.get("X", default)`. No orphan arguments.
+4. Python↔YAML command argument parity (CRITICAL): For each command, list every `args.get("X")` call in Python — each MUST have a matching `arguments` entry with `name: X` in YAML. For each command, list every `arguments` entry in YAML — each MUST be accessed by Python. `required: true` in YAML MUST match `args.get("X")` in Python; optional args MUST use `args.get("X", default)`. No orphan arguments.
 5. Cross-file consistency: COMMAND_PREFIX in Python matches command names in YAML, integration name matches between `commonfields.id`, `display`, and `name`, all commands in YAML have handlers in Python, all handlers in Python have command definitions in YAML (except `test-module` which is built-in)
 6. Implementation consistency: Configuration parameters are complete and consistent with Python implementation, descriptions are clear and accurately reflect the integration's purpose
 7. Present review results
@@ -256,7 +256,7 @@ See implementation in `Packs/GenericMCP/Integrations/GenericMCP/GenericMCP.yml` 
 - Arguments: `name` (required) — The name of the tool to call; `arguments` (optional) — Parameters for the tool execution (JSON string)
 - Hidden: true
 - Outputs: None
-- Python handler calls `await client.call_tool(args["name"], args.get("arguments", ""))`
+- Python handler calls `await client.call_tool(args.get("name"), args.get("arguments", ""))`
 
 #### 4. `<prefix>-auth-test` (OAuth only)
 
