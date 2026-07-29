@@ -388,7 +388,10 @@ def test_command_install_pack_calls_download_and_sdk(tmp_path):
         os.chdir(orig)
 
     assert sdk_calls, "upload_pack_as_system_content should be called"
-    assert "Pack-v1.0.0" in sdk_calls[0]["pack_path"]
+    # The pack directory name becomes the pack ID on the tenant, so the release
+    # version must not survive into it.
+    assert sdk_calls[0]["pack_path"].endswith(os.sep + "Pack")
+    assert "Pack-v1.0.0" not in os.path.basename(sdk_calls[0]["pack_path"])
     assert sdk_calls[0]["verify"] is True
     # CommandResults stub returns kwargs; outputs include the filename.
     assert result.get("outputs", {}).get("filename") == "Pack-v1.0.0.zip"
@@ -494,3 +497,36 @@ def test_command_install_pack_appends_zip_if_missing(monkeypatch):
 
     assert derived
     assert derived[0].endswith(".zip")
+
+
+def test_pack_dir_name_strips_release_version():
+    """Regression: the pack directory name becomes the pack ID on the tenant,
+    so leaving the version on installed every release as a separate pack --
+    soc-optimization-unified-v3.11.2 alongside soc-optimization-unified --
+    rather than upgrading in place.
+    """
+    integration, _ = load_integration()
+    cases = {
+        "soc-optimization-unified.zip": "soc-optimization-unified",
+        "soc-optimization-unified-v3.11.2.zip": "soc-optimization-unified",
+        "soc-optimization-unified-v3.11.1-pr1008.zip": "soc-optimization-unified",
+        "soc-optimization-unified-v3.11.2": "soc-optimization-unified",
+        "SocFrameworkAbnormalSecurity-v1.0.4.zip": "SocFrameworkAbnormalSecurity",
+        "soc-vendor-thing.zip": "soc-vendor-thing",
+    }
+    for given, expected in cases.items():
+        assert integration.pack_dir_name(given) == expected, given
+
+
+def test_prepare_pack_dir_uses_version_stripped_directory(tmp_path, monkeypatch):
+    integration, _ = load_integration()
+    monkeypatch.chdir(tmp_path)
+
+    zip_path = tmp_path / "soc-optimization-unified-v3.11.2.zip"
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        zf.writestr("soc-optimization-unified/pack_metadata.json", '{"name": "SOC Framework Unified"}')
+
+    pack_path = integration._prepare_pack_dir(str(zip_path), "soc-optimization-unified-v3.11.2.zip")
+
+    assert os.path.basename(pack_path) == "soc-optimization-unified"
+    assert not os.path.exists(tmp_path / "Packs" / "soc-optimization-unified-v3.11.2")

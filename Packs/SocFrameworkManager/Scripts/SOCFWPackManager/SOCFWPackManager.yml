@@ -37,7 +37,11 @@ args:
   - apply
   - configure
   - sync-tags
-  description: list shows the catalog. apply installs and configures a pack. configure re-runs configuration only (no pack install). sync-tags is a backward-compat action that updates the legacy value_tags lookup; modern SOC Framework deployments use SOCActionTimeMap_V3 and do not need it.
+  - diagnose
+  description: diagnose probes every platform endpoint the marketplace install path depends on and reports which one fails; run it first when an install misbehaves. list shows the catalog. apply installs and configures a pack. configure re-runs configuration only (no pack install). sync-tags is a backward-compat action that updates the legacy value_tags lookup; modern SOC Framework deployments use SOCActionTimeMap_V3 and do not need it.
+- name: probe_pack
+  defaultValue: Whois
+  description: action=diagnose only. Pack id used to probe the marketplace metadata and dependency endpoints. Falls back to an installed pack if this one is absent.
 - name: pack_id
   description: The pack ID from pack_catalog.json (for example, soc-optimization-unified). Required for action=apply.
 - name: catalog_url
@@ -139,6 +143,13 @@ args:
   - 'True'
   - 'False'
   description: Continue with configuration steps if a custom-pack install times out and polling does not confirm installation.
+- name: upgrade_marketplace
+  auto: PREDEFINED
+  defaultValue: 'False'
+  predefined:
+  - 'True'
+  - 'False'
+  description: action=apply only. Controls what a marketplace_packs entry of "latest" means. False (default) means ensure present - an already-installed pack keeps its current version. True means bring each requested pack to the newest published version. Mandatory dependencies are never force-upgraded either way; they move only when a minVersion requires it. Upgrading resolves versions from the marketplace, which returns large responses, so it is slower than the default.
 - name: fail_on_marketplace_errors
   auto: PREDEFINED
   defaultValue: 'False'
@@ -167,10 +178,13 @@ args:
   predefined:
   - id
   - display_name
+  - category
   - version
+  - installed
+  - status
   - visible
   - path
-  description: action=list only. Column to sort by.
+  description: action=list only. Column to sort by. Ignored for ordering between categories when group_by_category is true.
 - name: sort_dir
   auto: PREDEFINED
   defaultValue: asc
@@ -186,8 +200,25 @@ args:
   - 'False'
   description: action=list only. Hide packs marked visible=false in the catalog. Implied false when include_hidden=true.
 - name: fields
-  defaultValue: id,display_name,version,visible,path
-  description: action=list only. Comma-separated list of columns to show. Unknown fields are ignored.
+  defaultValue: id,version,installed,status,docs
+  description: action=list only. Comma-separated list of columns to show. Available columns are id, display_name, category, version, installed, status, docs, visible and path. Unknown fields are ignored.
+- name: group_by_category
+  auto: PREDEFINED
+  defaultValue: 'True'
+  predefined:
+  - 'True'
+  - 'False'
+  description: action=list only. Group packs under their catalog category, one table per category. Set to false for a single flat table.
+- name: docs_base_url
+  defaultValue: https://palo-cortex.github.io/secops-framework
+  description: action=list only. Absolute base URL of the documentation site. Each pack id is rendered as a link to its overview page. Must be absolute, otherwise the link resolves against the tenant host. Set to an empty value to disable linking.
+- name: output_format
+  auto: PREDEFINED
+  defaultValue: list
+  predefined:
+  - list
+  - table
+  description: action=list only. list renders one line per pack and is the default because the war room transposes single-row tables and truncates long ones. table renders the columns named in fields.
 - name: show_total
   auto: PREDEFINED
   defaultValue: 'True'

@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 
 import json
+import re
 import time
 from typing import Any
 from urllib.parse import urlparse
@@ -12,7 +13,8 @@ import requests
 # SOCFWPackManager (bootloader)
 # - list: shows SOC Framework pack catalog (paging/filtering)
 # - apply: resolves pack_id via secops-framework pack_catalog.json
-# - marketplace install: uses XSIAMContentPackInstaller (when available)
+# - marketplace install: resolves the transitive mandatory-dependency set and
+#   installs it via core-api-* against the platform marketplace endpoints
 # - custom ZIP install: socfw-install-pack (SOCFWPackManager integration instance)
 #   credentials stored masked in integration params
 # - configure: integrations/jobs/lookups from xsoar_config.json (via core-api-*)
@@ -52,23 +54,26 @@ def _safe_sort_key(row: dict[str, Any], key: str) -> str:
 
 
 def _guess_pack_id_from_label(label: str) -> str:
-    """
+    """Pack ID for a release asset filename or label.
+
     Convert:
       - soc-common-playbooks-unified.zip               -> soc-common-playbooks-unified
       - soc-common-playbooks-unified-v2.7.53.zip       -> soc-common-playbooks-unified
       - soc-common-playbooks-unified-v2.7.53           -> soc-common-playbooks-unified
+      - soc-optimization-unified-v3.11.1-pr1008.zip    -> soc-optimization-unified
       - soc-common-playbooks-unified                   -> soc-common-playbooks-unified
-    Used ONLY for polling detection (timeout fallback).
+
+    Must agree with pack_dir_name() in the integration: that decides the pack
+    ID written to the tenant, and this decides the ID polled for afterwards.
+    Only a trailing "-v<version>" is stripped, so a pack whose own name
+    contains "-v" is left intact.
     """
     s = _norm(label)
     if not s:
         return s
-    if s.endswith(".zip"):
+    if s.lower().endswith(".zip"):
         s = s[:-4]
-    # Strip release suffix "-vX.Y.Z" if present
-    if "-v" in s:
-        s = s.split("-v")[0]
-    return s.strip()
+    return re.sub(r"-v\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?$", "", s).strip()
 
 
 def _extract_custom_packs_from_xsoar_cfg(xsoar_cfg: dict[str, Any]) -> list[dict[str, str]]:
@@ -536,6 +541,30 @@ def resolve_manifest(pack_id: str, include_hidden: bool, catalog_url: str) -> di
 # ---------------------------
 
 
+DEFAULT_DOCS_BASE_URL = "https://palo-cortex.github.io/secops-framework"
+
+
+def _pack_docs_url(pack: dict[str, Any], docs_base_url: str) -> str:
+    """Absolute URL to a pack's documentation.
+
+    Prefers an explicit `docs` URL from the catalog entry; otherwise derives one
+    from `docs_path` against the docs site. Must be absolute -- a relative href
+    is resolved against the tenant host and lands the analyst back in XSIAM.
+    """
+    explicit = _norm(pack.get("docs"))
+    if explicit.startswith("http://") or explicit.startswith("https://"):
+        return explicit
+
+    base = (docs_base_url or "").rstrip("/")
+    if not base:
+        return ""
+    docs_path = explicit or _norm(pack.get("docs_path")) or ""
+    slug = docs_path.rstrip("/").split("/")[-1] if docs_path else _norm(pack.get("id"))
+    if not slug:
+        return ""
+    return f"{base}/{slug}/overview/"
+
+
 def do_list(args: dict[str, Any]):
     using = _norm(args.get("using") or "")
     include_hidden = arg_to_bool(args.get("include_hidden"), False)
@@ -548,10 +577,17 @@ def do_list(args: dict[str, Any]):
     offset = max(0, to_int(args.get("offset"), 0))
     sort_by = (_norm(args.get("sort_by")) or "id").strip()
     sort_dir = (_norm(args.get("sort_dir")) or "asc").strip().lower()
-    fields = argToList(args.get("fields")) or ["id", "display_name", "version", "visible", "path"]
+    fields = argToList(args.get("fields")) or ["id", "version", "installed", "status", "docs"]
     show_total = arg_to_bool(args.get("show_total"), True)
+    group_by_category = arg_to_bool(args.get("group_by_category"), True)
+    output_format = (_norm(args.get("output_format")) or "list").strip().lower()
+    debug = arg_to_bool(args.get("debug"), False)
 
     catalog_url = _norm(args.get("catalog_url") or DEFAULT_CATALOG_URL)
+    # An explicitly empty docs_base_url disables linking, so distinguish it
+    # from the argument being absent.
+    docs_base_arg = args.get("docs_base_url")
+    docs_base_url = _norm(DEFAULT_DOCS_BASE_URL if docs_base_arg is None else docs_base_arg)
 
     emit_progress("Fetching catalog…", stage="list")
 
@@ -559,6 +595,11 @@ def do_list(args: dict[str, Any]):
     packs = catalog.get("packs") or catalog.get("Packs") or catalog.get("items") or []
     if not isinstance(packs, list):
         raise Exception("pack_catalog.json is missing 'packs' list")
+
+    # An empty map means the lookup failed rather than a tenant with no packs,
+    # so report unknown instead of claiming everything is missing.
+    installed = fetch_installed_packs(using)
+    installed_known = bool(installed)
 
     rows: list[dict[str, Any]] = []
     for p in packs:
@@ -572,12 +613,31 @@ def do_list(args: dict[str, Any]):
         if visible_only and (not visible):
             continue
 
+        pack_id = p.get("id", "")
+        catalog_version = p.get("version", "")
+        installed_version = (installed.get(pack_id) or {}).get("version") or ""
+
+        if not installed_known:
+            status = "unknown"
+        elif not installed_version:
+            status = "not installed"
+        elif _ver_key(catalog_version) > _ver_key(installed_version):
+            status = "update available"
+        elif _ver_key(catalog_version) < _ver_key(installed_version):
+            status = "ahead of catalog"
+        else:
+            status = "up to date"
+
         row = {
-            "id": p.get("id", ""),
+            "id": pack_id,
             "display_name": p.get("display_name") or p.get("name") or "",
-            "version": p.get("version", ""),
+            "category": p.get("category") or "Uncategorized",
+            "version": catalog_version,
+            "installed": installed_version or "-",
+            "status": status,
+            "docs": _pack_docs_url(p, docs_base_url),
             "visible": str(visible).lower(),
-            "path": p.get("path") or f"Packs/{p.get('id','')}",
+            "path": p.get("path") or f"Packs/{pack_id}",
         }
 
         if text_filter:
@@ -589,44 +649,383 @@ def do_list(args: dict[str, Any]):
 
     total = len(rows)
 
-    allowed_sort = {"id", "display_name", "version", "visible", "path"}
+    allowed_sort = {"id", "display_name", "category", "version", "installed", "status", "visible", "path"}
     if sort_by not in allowed_sort:
         sort_by = "id"
     reverse = sort_dir == "desc"
     rows.sort(key=lambda r: _safe_sort_key(r, sort_by), reverse=reverse)
+    if group_by_category:
+        rows.sort(key=lambda r: _to_lower(r.get("category")))
 
     page = rows[offset : offset + limit]
     start = offset + 1 if page else 0
     end = offset + len(page)
 
-    allowed_fields = ["id", "display_name", "version", "visible", "path"]
-    fields = [f for f in fields if f in allowed_fields] or ["id", "display_name", "version", "visible", "path"]
+    allowed_fields = ["id", "display_name", "category", "version", "installed", "status", "docs", "visible", "path"]
+    fields = [f for f in fields if f in allowed_fields] or ["id", "version", "installed", "status", "docs"]
 
-    header_line = "| " + " | ".join(fields) + " |\n"
-    sep_line = "| " + " | ".join(["---"] * len(fields)) + " |\n"
-    table = header_line + sep_line
-    for r in page:
-        table += "| " + " | ".join([_norm(r.get(f, "")) for f in fields]) + " |\n"
+    def cell(row: dict[str, Any], col: str) -> str:
+        value = _norm(row.get(col, ""))
+        # The docs link is its own column rather than wrapping the id, which
+        # has to stay plain text so it can be copied into pack_id=.
+        if col == "docs":
+            return f"[docs]({value})" if value else ""
+        if col == "display_name" and len(value) > 46:
+            value = value[:45].rstrip() + "…"
+        return value
 
-    summary_lines = [
-        f"using: {(using or '(default)')}",
-        f"catalog_url: {catalog_url}",
-        f"include_hidden: {include_hidden}",
-        f"visible_only: {visible_only}",
-    ]
+    def render_lines(subset: list[dict[str, Any]]) -> str:
+        """One line per pack.
+
+        Deliberately not a markdown list: a bold category heading placed
+        directly after a list item is absorbed into that list as a lazy
+        continuation, which indents every heading after the first. Separating
+        them with blank lines instead would push the entry past the war room's
+        line cap. Tables are avoided for the same reason, plus a single-row
+        table gets transposed into a vertical key/value block.
+        """
+        out = []
+        for r in subset:
+            status = r["status"]
+            if status == "not installed":
+                detail = f"not installed · {r['version']} available"
+            elif status == "update available":
+                detail = f"{r['installed']} → {r['version']} · update available"
+            elif status == "ahead of catalog":
+                detail = f"{r['installed']} · ahead of catalog ({r['version']})"
+            elif status == "unknown":
+                detail = f"{r['version']} · install state unknown"
+            else:
+                detail = f"{r['version']} · up to date"
+            # Pack id stays unlinked so it can be copied into pack_id=.
+            line = f"{r['id']} — {detail}"
+            if r.get("docs"):
+                line += f" · [docs]({r['docs']})"
+            out.append(line)
+        return "\n".join(out)
+
+    def render_table(subset: list[dict[str, Any]], cols: list[str]) -> str:
+        out = "| " + " | ".join(cols) + " |\n"
+        out += "| " + " | ".join(["---"] * len(cols)) + " |\n"
+        for r in subset:
+            out += "| " + " | ".join([cell(r, c) for c in cols]) + " |\n"
+        return out
+
+    # The war room truncates an entry past roughly 25-30 rendered lines, so the
+    # header is one line and the diagnostics only appear when asked for.
+    headline = f"{total} pack(s)"
+    if installed_known:
+        counts: dict[str, int] = {}
+        for r in rows:
+            counts[r["status"]] = counts.get(r["status"], 0) + 1
+        if counts:
+            headline += " · " + " · ".join(f"{v} {k}" for k, v in sorted(counts.items()))
+    else:
+        headline += " · install state unknown"
+    if show_total and (offset or end < total):
+        headline += f" · showing {start}-{end}"
+
+    summary_lines = [headline]
+    if debug:
+        summary_lines += [
+            f"using: {(using or '(default)')}",
+            f"catalog_url: {catalog_url}",
+            f"docs_base_url: {docs_base_url or '(disabled)'}",
+            f"include_hidden: {include_hidden}, visible_only: {visible_only}",
+            f"sort: {sort_by} {sort_dir}, limit: {limit}, offset: {offset}",
+        ]
     if text_filter:
         summary_lines.append(f"filter: `{text_filter}`")
-    summary_lines.append(f"sort: {sort_by} {sort_dir}")
-    summary_lines.append(f"page: limit={limit}, offset={offset}")
-    if show_total:
-        summary_lines.append(f"showing: {start}-{end} of {total}")
 
-    emit_progress("\n".join(summary_lines) + "\n\n" + table, stage="list")
+    if output_format == "table":
+        if group_by_category:
+            cols = [f for f in fields if f != "category"]
+            sections = []
+            for category in sorted({r["category"] for r in page}, key=lambda c: c.lower()):
+                subset = [r for r in page if r["category"] == category]
+                sections.append(f"**{category}**\n\n" + render_table(subset, cols))
+            body = "\n".join(sections)
+        else:
+            body = render_table(page, fields)
+    elif group_by_category:
+        sections = []
+        for category in sorted({r["category"] for r in page}, key=lambda c: c.lower()):
+            subset = [r for r in page if r["category"] == category]
+            sections.append(f"**{category}**\n" + render_lines(subset))
+        body = "\n".join(sections)
+    else:
+        body = render_lines(page)
+
+    emit_progress("\n".join(summary_lines) + "\n\n" + body, stage="list")
 
 
 # ---------------------------
 # Marketplace install
 # ---------------------------
+
+
+MARKETPLACE_API_ROOT = "/contentpacks"
+MAX_DEPENDENCY_ROUNDS = 8
+
+
+CORE_REST_API_BRANDS = ("Core REST API", "DemistoRESTAPI", "Demisto REST API")
+
+
+def find_core_rest_api_instances() -> list[dict[str, str]]:
+    """Enabled Core REST API instances, read from the module list.
+
+    Uses demisto.getModules() rather than an API call, so it still answers when
+    the Core REST API instance is the thing that is missing.
+    """
+    try:
+        modules = demisto.getModules() or {}
+    except Exception as e:
+        demisto.debug(f"getModules unavailable: {e}")
+        return []
+    found = []
+    for name, meta in modules.items():
+        if not isinstance(meta, dict):
+            continue
+        if (meta.get("brand") or "") in CORE_REST_API_BRANDS:
+            found.append({"name": name, "brand": meta.get("brand", ""), "state": meta.get("state", "")})
+    return found
+
+
+def _core_rest_api_hint() -> str:
+    """Points at the missing instance when one is the likely cause."""
+    if find_core_rest_api_instances():
+        return "A Core REST API instance is configured, so this is a route or payload problem."
+    return (
+        "No Core REST API instance is configured on this tenant — that is almost certainly "
+        "the cause. It is this pack's only external dependency."
+    )
+
+
+class DependencyLookupError(Exception):
+    """Raised when the marketplace dependency endpoint is unusable.
+
+    Distinct from a generic failure because the install endpoint requires a
+    complete dependency closure -- without this lookup any install request is
+    guaranteed to be rejected, and the rejection names the install endpoint
+    rather than the real cause.
+    """
+
+
+def _ver_key(value: Any) -> tuple:
+    """Comparable key for an X.Y.Z pack version; non-numeric parts sort as 0."""
+    parts = []
+    for chunk in str(value or "").split("."):
+        digits = "".join(ch for ch in chunk if ch.isdigit())
+        parts.append(int(digits) if digits else 0)
+    while len(parts) < 3:
+        parts.append(0)
+    return tuple(parts[:3])
+
+
+def fetch_installed_packs(using: str) -> dict[str, dict[str, Any]]:
+    """Installed pack id -> {version, update_available}."""
+    out: dict[str, dict[str, Any]] = {}
+    try:
+        res = core_api_get(f"{MARKETPLACE_API_ROOT}/metadata/installed", using=using)
+    except Exception as e:
+        # Degrading quietly here makes every pack look uninstalled, so say so.
+        emit_progress(
+            "\n".join(
+                [
+                    "⚠️ Could not read installed packs.",
+                    f"- endpoint: `GET {MARKETPLACE_API_ROOT}/metadata/installed`",
+                    f"- error: {e}",
+                    "Install state and version comparisons below are unreliable.",
+                ]
+            ),
+            stage="packs.marketplace.warning",
+        )
+        return out
+    packs = (res.get("response") or []) if isinstance(res, dict) else []
+    for pack in packs:
+        pid = pack.get("id")
+        if pid:
+            out[pid] = {
+                "version": pack.get("currentVersion") or "",
+                "update_available": bool(pack.get("updateAvailable")),
+            }
+    return out
+
+
+def fetch_installed_marketplace_pack_ids(using: str) -> list[str]:
+    return sorted(fetch_installed_packs(using).keys())
+
+
+def resolve_latest_version(pack_id: str, using: str) -> str:
+    """Latest published version of a pack.
+
+    The marketplace metadata response embeds the pack's entire content listing
+    and can run to tens of megabytes, so callers should fall back to the
+    installed version wherever that is acceptable.
+    """
+    res = core_api_get(f"{MARKETPLACE_API_ROOT}/marketplace/{pack_id}", using=using)
+    body = (res.get("response") or {}) if isinstance(res, dict) else {}
+    version = body.get("currentVersion")
+    if not version:
+        raise Exception(
+            f"Could not resolve the latest version of '{pack_id}' from the marketplace. "
+            f"Check that the Core REST API instance is configured and the pack exists."
+        )
+    return version
+
+
+def fetch_mandatory_dependencies(packs: list[dict[str, str]], using: str) -> dict[str, dict[str, str]]:
+    """Direct mandatory dependencies per pack, as {pack_id: {dep_id: min_version}}.
+
+    The body must be a bare JSON array; this endpoint rejects an object wrapper,
+    unlike the install endpoint which requires one.
+    """
+    out: dict[str, dict[str, str]] = {}
+    try:
+        res = core_api_post(f"{MARKETPLACE_API_ROOT}/marketplace/search/dependencies", body=packs, using=using)
+    except Exception as e:
+        # A quiet failure here collapses the closure to just the requested
+        # packs, and the install endpoint then rejects it for missing
+        # dependencies -- which points at the wrong endpoint entirely.
+        emit_progress(
+            "\n".join(
+                [
+                    "⚠️ Dependency lookup failed — the install set will be incomplete.",
+                    f"- endpoint: `POST {MARKETPLACE_API_ROOT}/marketplace/search/dependencies`",
+                    f"- requested: {', '.join(p.get('id', '?') for p in packs)}",
+                    f"- error: {e}",
+                    "If the install below reports missing dependencies, this is the cause,",
+                    "not the install endpoint.",
+                    _core_rest_api_hint(),
+                ]
+            ),
+            stage="packs.marketplace.warning",
+        )
+        raise DependencyLookupError(str(e)) from e
+    body = (res.get("response") or {}) if isinstance(res, dict) else {}
+    for entry in body.get("packs") or []:
+        deps = ((entry.get("extras") or {}).get("pack") or {}).get("dependencies") or {}
+        out[entry.get("id")] = {
+            dep_id: (meta.get("minVersion") or "1.0.0") for dep_id, meta in deps.items() if meta.get("mandatory")
+        }
+    return out
+
+
+def resolve_install_closure(
+    seed_packs: list[dict[str, str]],
+    using: str,
+    installed: dict[str, dict[str, Any]],
+    upgrade: bool = False,
+) -> dict[str, str]:
+    """Expand the requested packs into their full transitive mandatory set.
+
+    The install endpoint validates the request as a self-contained graph: every
+    pack listed must also list its mandatory dependencies, whether or not those
+    are already on the tenant. A partial set is rejected outright, so the whole
+    closure has to be resolved before installing anything.
+
+    A requested version of "latest" means "ensure present" by default, so an
+    installed pack keeps the version it has. With upgrade=True it instead means
+    "bring to the newest published version", which is what actually moves a
+    pack forward. Dependencies are never force-upgraded either way -- they only
+    move when a mandatory minVersion demands it.
+    """
+    wanted: dict[str, str] = {}
+    frontier: list[dict[str, str]] = []
+
+    for pack in seed_packs:
+        pid = pack.get("id")
+        if not pid:
+            continue
+        version = _norm(pack.get("version"))
+        if version in ("", "latest", "*"):
+            current = installed.get(pid, {}).get("version") or ""
+            # The marketplace lookup returns the pack's whole content listing
+            # and can be tens of megabytes, so only pay for it when the answer
+            # can actually differ from what is already on the tenant.
+            needs_lookup = not current or (upgrade and installed.get(pid, {}).get("update_available"))
+            version = resolve_latest_version(pid, using) if needs_lookup else current
+        wanted[pid] = version
+        frontier.append({"id": pid, "version": version})
+
+    # Highest minVersion demanded for each dependency so far. Several packs
+    # commonly require the same dependency at different minimums -- Base and
+    # CommonScripts may want Core >= 3.5.75 while CommonPlaybooks only wants
+    # 3.5.73 -- and the install is rejected unless the highest one is used.
+    # Taking the first value seen silently loses the stricter requirement.
+    required_min: dict[str, str] = {}
+    for _ in range(MAX_DEPENDENCY_ROUNDS):
+        if not frontier:
+            break
+        deps_by_pack = fetch_mandatory_dependencies(frontier, using)
+        frontier = []
+        for mandatory in deps_by_pack.values():
+            for dep_id, min_version in mandatory.items():
+                prior = required_min.get(dep_id)
+                if prior is not None and _ver_key(prior) >= _ver_key(min_version):
+                    continue
+                required_min[dep_id] = min_version
+                current = installed.get(dep_id, {}).get("version") or ""
+                version = current if _ver_key(current) >= _ver_key(min_version) else min_version
+                if wanted.get(dep_id) == version:
+                    continue
+                wanted[dep_id] = version
+                # Re-queued because raising a version can change what that
+                # version itself depends on.
+                frontier.append({"id": dep_id, "version": version})
+
+    return wanted
+
+
+def _marketplace_context_rows(
+    requested_ids: set,
+    installed_now: dict[str, str],
+    already_present: dict[str, str],
+    failed: dict[str, str],
+) -> list[dict[str, str]]:
+    """Rows for the ConfigurationSetup.MarketplacePacks context key.
+
+    Field names and status strings intentionally match what
+    XSIAMContentPackInstaller produced, so existing consumers of this key --
+    notably the PoV Companion -- keep working unchanged.
+    """
+    rows = []
+    for pack_id, version in sorted(installed_now.items()):
+        rows.append(
+            {
+                "packid": pack_id,
+                "packversion": str(version),
+                "installationstatus": "Success." if pack_id in requested_ids else "Installed as requirement.",
+            }
+        )
+    for pack_id in sorted(requested_ids):
+        if pack_id in already_present:
+            rows.append(
+                {
+                    "packid": pack_id,
+                    "packversion": str(already_present[pack_id]),
+                    "installationstatus": "Already Installed on the machine.",
+                }
+            )
+        if pack_id in failed:
+            rows.append(
+                {
+                    "packid": pack_id,
+                    "packversion": str(failed[pack_id]),
+                    "installationstatus": "Failed to install.",
+                }
+            )
+    return rows
+
+
+def _emit_marketplace_context(rows: list[dict[str, str]]) -> None:
+    return_results(
+        CommandResults(
+            outputs_prefix="ConfigurationSetup.MarketplacePacks",
+            outputs_key_field="packid",
+            outputs=rows,
+        )
+    )
 
 
 def install_marketplace_packs(
@@ -635,55 +1034,84 @@ def install_marketplace_packs(
     retry_count: int,
     retry_sleep_seconds: int,
     debug: bool,
+    upgrade: bool = False,
 ) -> dict[str, Any]:
+    requested_ids = {p.get("id") for p in marketplace_packs if p.get("id")}
+    installed = fetch_installed_packs(using)
+    try:
+        closure = resolve_install_closure(marketplace_packs, using, installed, upgrade=upgrade)
+    except DependencyLookupError as e:
+        # Sending a knowingly-incomplete set produces a "missing dependencies"
+        # rejection that blames the install endpoint. Stop here instead.
+        failed = {pid: "" for pid in requested_ids}
+        _emit_marketplace_context(_marketplace_context_rows(requested_ids, {}, {}, failed))
+        raise Exception(
+            "Cannot resolve the marketplace dependency set, so the install was not attempted. "
+            "The install endpoint requires every mandatory dependency in one request and would "
+            f"reject an incomplete set. Underlying error: {e}"
+        ) from e
+
+    pending = {
+        pid: ver for pid, ver in closure.items() if _ver_key(ver) > _ver_key(installed.get(pid, {}).get("version"))
+    }
+
     if debug:
         emit_progress(
-            "Installing marketplace packs via **XSIAMContentPackInstaller**…\n"
-            + "\n".join([f'{p.get("id")} @ {p.get("version")}' for p in marketplace_packs]),
+            "\n".join(
+                ["Marketplace install plan:"]
+                + [
+                    f'- {pid} @ {ver}{"" if pid in pending else "  (already satisfied)"}'
+                    for pid, ver in sorted(closure.items())
+                ]
+            ),
             stage="packs.marketplace",
         )
-    else:
+
+    if not pending:
         emit_progress(
-            f"Installing marketplace packs via **XSIAMContentPackInstaller**… ({len(marketplace_packs)} pack(s))",
+            f"Marketplace packs already satisfied ({len(closure)} in dependency set); nothing to install.",
             stage="packs.marketplace",
         )
+        _emit_marketplace_context(_marketplace_context_rows(requested_ids, {}, closure, {}))
+        return {"installed": {}, "already_present": closure, "dependency_set": closure}
 
-    args = {
-        "packs_data": marketplace_packs,
-        "pack_id_key": "id",
-        "pack_version_key": "version",
-        "install_dependencies": "true",
-    }
-    if using:
-        args["using"] = using
-
-    res = exec_with_retry(
-        "XSIAMContentPackInstaller",
-        args,
-        retry_count=retry_count,
-        retry_sleep_seconds=retry_sleep_seconds,
-        context_for_error="Failed installing marketplace packs via XSIAMContentPackInstaller",
-        fail_on_error=True,
+    emit_progress(
+        f"Installing marketplace packs… ({len(pending)} to change, {len(closure)} in dependency set)",
+        stage="packs.marketplace",
     )
-    return get_contents(res) if res else {}
 
-
-def fetch_installed_marketplace_pack_ids(using: str) -> list[str]:
-    """
-    Note: This endpoint returns installed content pack IDs.
-    We'll also use it for custom zip installs polling (best-effort).
-    """
+    payload = [{"id": pid, "version": ver} for pid, ver in sorted(closure.items())]
     try:
-        r = core_api_get("/public/v1/contentpacks/metadata/installed", using=using)
-        packs = (r.get("response") or []) if isinstance(r, dict) else []
-        ids = []
-        for p in packs:
-            pid = p.get("id")
-            if pid:
-                ids.append(pid)
-        return ids
+        exec_with_retry(
+            "core-api-post",
+            {
+                "uri": f"{MARKETPLACE_API_ROOT}/marketplace/install",
+                # ignoreWarnings is required on any tenant that already has
+                # content: an upgrade that re-declares an existing incident
+                # field is otherwise rejected outright ("Field with name X
+                # already exists", possibleResolutions skip/replace). Without
+                # it a single pre-existing field fails the whole install.
+                "body": json.dumps({"packs": payload, "ignoreWarnings": True}),
+                "execution-timeout": "600",
+            },
+            retry_count=retry_count,
+            retry_sleep_seconds=retry_sleep_seconds,
+            context_for_error="Failed installing marketplace packs",
+            fail_on_error=True,
+        )
     except Exception:
-        return []
+        failed = {pid: closure[pid] for pid in requested_ids if pid in closure}
+        _emit_marketplace_context(_marketplace_context_rows(requested_ids, {}, {}, failed))
+        raise
+
+    already = {k: v for k, v in closure.items() if k not in pending}
+    _emit_marketplace_context(_marketplace_context_rows(requested_ids, pending, already, {}))
+
+    emit_progress(
+        "Marketplace packs installed: " + ", ".join(f"{k}@{v}" for k, v in sorted(pending.items())),
+        stage="packs.marketplace.result",
+    )
+    return {"installed": pending, "already_present": already, "dependency_set": closure}
 
 
 # ---------------------------
@@ -749,6 +1177,8 @@ def install_custom_pack_zip(
     retry_count: int,
     retry_sleep_seconds: int,
     debug: bool,
+    poll_seconds: int = 0,
+    poll_interval_seconds: int = 60,
 ):
     """
     Install a custom pack ZIP via the SOCFWPackManager integration instance.
@@ -779,14 +1209,28 @@ def install_custom_pack_zip(
         "filename": asset_filename,
     }
 
-    exec_with_retry(
-        "socfw-install-pack",
-        args,
-        retry_count=retry_count,
-        retry_sleep_seconds=retry_sleep_seconds,
-        context_for_error=f"Failed installing {asset_filename}",
-        fail_on_error=True,
-    )
+    try:
+        exec_with_retry(
+            "socfw-install-pack",
+            args,
+            retry_count=retry_count,
+            retry_sleep_seconds=retry_sleep_seconds,
+            context_for_error=f"Failed installing {asset_filename}",
+            fail_on_error=True,
+        )
+    except Exception:
+        # The system content-bundle endpoint returns 500 on some tenants even
+        # when the bundle was accepted, so an error here is inconclusive.
+        # Confirm against the installed-pack list before reporting a failure.
+        pack_id = _guess_pack_id_from_label(asset_filename)
+        if poll_seconds <= 0 or not pack_id:
+            raise
+        emit_progress(
+            f"Install of **{asset_filename}** reported an error; verifying against installed packs.",
+            stage="packs.custom.verify",
+        )
+        if not wait_for_pack_installed(pack_id, using, poll_seconds, poll_interval_seconds, debug):
+            raise
 
     emit_progress(
         f"Pack **{asset_filename}** installed.",
@@ -1109,7 +1553,9 @@ def configure_lookups_from_xsoar_config(
                 _xql_create_dataset_direct(ds, using=using, debug=debug)
             except Exception as e:
                 summary["failed"] += 1  # type: ignore[operator]
-                summary["failed_items"].append({"name": name, "error": f"Direct create failed: {e}"})  # type: ignore[attr-defined]
+                summary["failed_items"].append(  # type: ignore[attr-defined]
+                    {"name": name, "error": f"Direct create failed: {e}"}
+                )
                 emit_progress(f"Failed creating lookup dataset **{name}**.\nError: {e}", stage="configure.lookups.error")
                 continue
 
@@ -1789,16 +2235,20 @@ def _run_main():
     continue_on_install_timeout = arg_to_bool(args.get("continue_on_install_timeout"), False)
 
     fail_on_marketplace_errors = arg_to_bool(args.get("fail_on_marketplace_errors"), False)
+    upgrade_marketplace = arg_to_bool(args.get("upgrade_marketplace"), False)
 
     debug = arg_to_bool(args.get("debug"), False)
 
     catalog_url = _norm(args.get("catalog_url") or DEFAULT_CATALOG_URL)
 
-    if action not in ("apply", "list", "configure", "sync-tags"):
+    if action not in ("apply", "list", "configure", "sync-tags", "diagnose"):
         raise Exception(f"Unsupported action: {action}")
 
     if action == "list":
         return do_list(args)
+
+    if action == "diagnose":
+        return do_diagnose(args)
 
     if action == "configure":
         return do_configure(args)
@@ -1830,6 +2280,7 @@ def _run_main():
                 f"- post_install_poll_interval_seconds={post_install_poll_interval_seconds}",
                 f"- continue_on_install_timeout={continue_on_install_timeout}",
                 f"- fail_on_marketplace_errors={fail_on_marketplace_errors}",
+                f"- upgrade_marketplace={upgrade_marketplace}",
                 f"- include_doc_content={include_doc_content} "
                 f"(max_chars={doc_content_max_chars}, max_lines={doc_content_max_lines})",
                 f"- pre_config_gate={pre_config_gate}",
@@ -1945,7 +2396,9 @@ def _run_main():
                 mp.append({"id": p.get("id"), "version": p.get("version", "latest")})
 
         try:
-            _ = install_marketplace_packs(mp, using, retry_count, retry_sleep_seconds, debug=debug)
+            _ = install_marketplace_packs(
+                mp, using, retry_count, retry_sleep_seconds, debug=debug, upgrade=upgrade_marketplace
+            )
         except Exception as e:
             marketplace_errors.append(str(e))
             emit_progress(f"Marketplace install failed.\nError: {e}", stage="packs.marketplace.error")
@@ -1976,6 +2429,8 @@ def _run_main():
                 retry_count=retry_count,
                 retry_sleep_seconds=retry_sleep_seconds,
                 debug=debug,
+                poll_seconds=post_install_poll_seconds,
+                poll_interval_seconds=post_install_poll_interval_seconds,
             )
 
     integration_summary = None
@@ -2062,6 +2517,114 @@ def _run_main():
         )
         return None
     return None
+
+
+    main()
+
+
+# ---------------------------
+# diagnose action
+# ---------------------------
+
+
+def do_diagnose(args: dict[str, Any]):
+    """Probe every platform endpoint the marketplace install path depends on.
+
+    Read-only. Exists because a failure in any one of these surfaces later as a
+    confusing error attributed to a different endpoint -- most often a
+    dependency-lookup failure reported as a rejected install.
+    """
+    using = _norm(args.get("using") or "")
+    probe_pack = _norm(args.get("probe_pack")) or "Whois"
+
+    results: list[dict[str, str]] = []
+
+    def record(name: str, endpoint: str, ok: bool, detail: str):
+        results.append({"check": name, "endpoint": endpoint, "result": "pass" if ok else "FAIL", "detail": detail})
+
+    # Checked first and without an API call: every endpoint below runs through
+    # core-api-*, so a missing instance would otherwise surface as an opaque
+    # transport error on each of them.
+    instances = find_core_rest_api_instances()
+    record(
+        "Core REST API instance",
+        "demisto.getModules()",
+        bool(instances),
+        ", ".join(f"{i['name']} ({i['state'] or 'unknown state'})" for i in instances)
+        if instances
+        else "none configured — core-api-* cannot run. Configure the Core REST API "
+        "integration (DemistoRESTAPI pack); it is this pack's only external dependency.",
+    )
+
+    installed: dict[str, dict[str, Any]] = {}
+    endpoint = f"GET {MARKETPLACE_API_ROOT}/metadata/installed"
+    try:
+        res = core_api_get(f"{MARKETPLACE_API_ROOT}/metadata/installed", using=using)
+        packs = (res.get("response") or []) if isinstance(res, dict) else []
+        installed = {p["id"]: p for p in packs if p.get("id")}
+        has_version = any(p.get("currentVersion") for p in packs)
+        record(
+            "installed packs",
+            endpoint,
+            bool(packs) and has_version,
+            f"{len(packs)} pack(s)" + ("" if has_version else " — no currentVersion field present"),
+        )
+    except Exception as e:
+        record("installed packs", endpoint, False, str(e)[:300])
+
+    # Use a version the tenant actually has; the endpoints reject unknown ones.
+    probe_version = (installed.get(probe_pack) or {}).get("currentVersion") or ""
+    if not probe_version and installed:
+        probe_pack = sorted(installed)[0]
+        probe_version = (installed.get(probe_pack) or {}).get("currentVersion") or ""
+
+    endpoint = f"GET {MARKETPLACE_API_ROOT}/marketplace/{probe_pack}"
+    try:
+        res = core_api_get(f"{MARKETPLACE_API_ROOT}/marketplace/{probe_pack}", using=using)
+        latest = ((res.get("response") or {}) if isinstance(res, dict) else {}).get("currentVersion")
+        record(
+            "marketplace metadata (resolves 'latest')",
+            endpoint,
+            bool(latest),
+            f"latest={latest}" if latest else "no currentVersion in response",
+        )
+    except Exception as e:
+        record("marketplace metadata (resolves 'latest')", endpoint, False, str(e)[:300])
+
+    endpoint = f"POST {MARKETPLACE_API_ROOT}/marketplace/search/dependencies"
+    if not probe_version:
+        record("dependency lookup", endpoint, False, "skipped — no installed version available to probe with")
+    else:
+        try:
+            deps = fetch_mandatory_dependencies([{"id": probe_pack, "version": probe_version}], using)
+            found = deps.get(probe_pack) or {}
+            record("dependency lookup", endpoint, True, f"{probe_pack}@{probe_version} → {len(found)} mandatory")
+        except Exception as e:
+            record("dependency lookup", endpoint, False, str(e)[:300])
+
+    header = "| check | result | detail |\n| --- | --- | --- |\n"
+    table = header + "".join(
+        "| {} | {} | {} |\n".format(r["check"], r["result"], r["detail"].replace("|", "/")) for r in results
+    )
+    failed = [r for r in results if r["result"] == "FAIL"]
+    verdict = (
+        "All checks passed — the marketplace install path is usable on this tenant."
+        if not failed
+        else "FAILED: " + ", ".join(r["check"] for r in failed)
+    )
+
+    emit_progress(
+        f"{verdict}\n\nprobe pack: {probe_pack}@{probe_version or 'unknown'}\n\n" + table,
+        stage="diagnose",
+    )
+    return_results(
+        CommandResults(
+            outputs_prefix="SOCFramework.PackManager.Diagnose",
+            outputs_key_field="check",
+            outputs=results,
+        )
+    )
+
 
 
 def main():

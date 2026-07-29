@@ -8,6 +8,7 @@ invokes ``socfw-install-pack`` on this integration.
 """
 
 import os
+import re
 import shutil
 import tempfile
 import zipfile
@@ -19,6 +20,23 @@ from CommonServerPython import *  # noqa: F401,F403
 
 
 INTEGRATION_NAME = "SOCFWPackManager"
+
+# Trailing release-version suffix on a pack asset filename, e.g. the
+# "-v3.11.2" in soc-optimization-unified-v3.11.2.zip, optionally followed by a
+# pre-release tag such as "-pr1008".
+PACK_VERSION_SUFFIX = re.compile(r"-v\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?$")
+
+
+def pack_dir_name(filename: str) -> str:
+    """Pack directory name for a release asset filename.
+
+    The directory name becomes the pack ID on the tenant, so the version
+    suffix has to be stripped. Keeping it installs every release as a separate
+    pack -- soc-optimization-unified-v3.11.2 alongside soc-optimization-unified
+    -- instead of upgrading the existing one in place.
+    """
+    name = filename[:-4] if filename.lower().endswith(".zip") else filename
+    return PACK_VERSION_SUFFIX.sub("", name).strip()
 
 # Hard cap on the size of a pack ZIP we will download or extract.
 # SOC Framework packs are small (a few MB); 500 MB leaves plenty of headroom
@@ -140,7 +158,14 @@ class ContentClient(BaseClient):
         from demisto_sdk.commands.common.logger import logging_setup
         from demisto_sdk.commands.upload.upload import upload_content_entity
 
-        logging_setup(INTEGRATION_NAME, console_threshold="CRITICAL", propagate=True)
+        # A CRITICAL console threshold suppresses the SDK's FAILED-UPLOADS
+        # report, which is the only place the real reason for a failed upload
+        # appears. Keep errors visible, and raise to DEBUG on demand.
+        logging_setup(
+            INTEGRATION_NAME,
+            console_threshold="DEBUG" if is_debug_mode() else "ERROR",
+            propagate=True,
+        )
 
         try:
             upload_content_entity(
@@ -248,7 +273,7 @@ def _prepare_pack_dir(zip_path: str, filename: str) -> str:
     Creates ``Tests/Marketplace/landingPage_sections.json`` to suppress SDK
     warnings during upload.
     """
-    pack_name = filename[:-4] if filename.endswith(".zip") else filename
+    pack_name = pack_dir_name(filename)
     packs_path = os.path.join(os.getcwd(), "Packs")
     pack_path = os.path.join(packs_path, pack_name)
     os.makedirs(pack_path, exist_ok=True)
