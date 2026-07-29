@@ -4638,6 +4638,15 @@ async def fetch_spotlight_vulnerabilities_page(
     response_data = response.json()
     vulnerabilities = response_data.get("resources", [])
 
+    # Diagnostic (XSUP-71944): log the full pagination object to determine whether the Spotlight
+    # combined endpoint returns a usable `total` under cursor (`after`) pagination. If `total` is
+    # populated with a meaningful non-zero value, it can be used as an expected-count guardrail for
+    # snapshot sealing; if it is always 0/absent, the seal must rely solely on the confirmed-stored count.
+    # Only log on the first page of each severity (no `after` cursor yet) to avoid per-page log noise.
+    if not after_token:
+        pagination_meta = response_data.get("meta", {}).get("pagination", {})
+        log_falcon_assets(f"Spotlight first-page pagination meta: {pagination_meta}", "info")
+
     log_falcon_assets(f"Fetched {len(vulnerabilities)} vulnerabilities in this page")
 
     return vulnerabilities, response_data
