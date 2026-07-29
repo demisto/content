@@ -67,7 +67,7 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
-  - platform
+  - exposure_management
 - defaultvalue: 7 days
   display: Events first fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -112,7 +112,7 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
-  - platform
+  - exposure_management
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 display: Tenable Vulnerability Management (formerly Tenable.io)
 name: Tenable.io
