@@ -1480,65 +1480,29 @@ def build_policy_v2_patch_body(args: dict) -> dict:
 
 def update_block_sender_policy_command(policy_args):
     """
-    Update policy according to policy ID
+    Update an existing Blocked Senders policy using the v2 PATCH API.
+    Only fields explicitly provided are sent (partial update semantics).
     """
-    headers = ["Policy ID", "Description", "Sender", "Receiver", "Bidirectional", "Start", "End"]
-    policy_obj, option = get_arguments_for_policy_command(policy_args)
     policy_id = str(policy_args.get("policy_id", ""))
     if not policy_id:
-        raise Exception("You need to enter policy ID")
-    policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
-    response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
-    policy = response.get("policy")
-    title = "Mimecast Update Policy: \n Policy Was Updated Successfully!"
-    sender = policy.get("from")
-    receiver = policy.get("to")
-    description = policy.get("description")
-    contents = {
-        "Policy ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Email Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "Start": policy.get("fromDate"),
-        "End": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
-    policies_context = {
-        "ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "FromDate": policy.get("fromDate"),
-        "ToDate": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
+        raise DemistoException("You need to enter policy ID")
 
-    return CommandResults(
-        outputs_prefix="Mimecast.BlockedSendersPolicy",
-        outputs=policies_context,
-        readable_output=tableToMarkdown(title, contents, headers),
-        outputs_key_field="id",
-    )
+    from_type = policy_args.get("fromType")
+    confirm_block_all = policy_args.get("confirm_block_all")
+
+    if from_type == "everyone" and not (confirm_block_all and argToBoolean(confirm_block_all)):
+        raise DemistoException("Blocking all senders requires confirm_block_all=true")
+
+    body = build_policy_v2_patch_body(policy_args)
+
+    api_endpoint = f"/policy-management/cloud-gateway/v1/blocked-senders/policies/{policy_id}"
+    try:
+        http_request("PATCH", api_endpoint, payload=body)
+    except ValueError:
+        # 204 returns an empty body, treat as success
+        pass
+
+    return CommandResults(readable_output=f"Policy {policy_id} was updated successfully!")
 
 
 def create_or_update_policy_request(policy, option, policy_id=None, policy_type="blockedsenders"):
