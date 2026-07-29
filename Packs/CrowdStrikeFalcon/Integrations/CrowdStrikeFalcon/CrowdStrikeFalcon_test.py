@@ -9212,7 +9212,7 @@ class TestSpotlightSeverityBasedFetch:
         # Mock background task waiter
         mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
 
-        # Mock final sealing task
+        # Mock the per-severity data batch sender, which reports (batch_number, records_stored).
         def create_task_side_effect(*args, **kwargs):
             f = asyncio.Future()
             f.set_result((1, len(kwargs.get("data", []))))
@@ -9221,6 +9221,18 @@ class TestSpotlightSeverityBasedFetch:
         mocker.patch(
             "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
             side_effect=create_task_side_effect,
+        )
+
+        # Mock the final sealing task, which still uses the shared sender returning just the
+        # batch number. Without this the seal batch would attempt a real network call.
+        def create_seal_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_seal_task_side_effect,
         )
 
         # Mock save functions
