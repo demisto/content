@@ -1,4 +1,4 @@
-Syncs the latest case information, related alerts and alert entities from Google SecOps and updates the XSOAR incident data.
+Syncs the latest case information, related alerts and alert entities from Google SecOps and updates the Cortex XSOAR incident data.
 
 ## Script Data
 

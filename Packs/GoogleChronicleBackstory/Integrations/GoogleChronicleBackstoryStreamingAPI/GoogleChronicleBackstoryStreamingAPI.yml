@@ -105,6 +105,20 @@ configuration:
   type: 0
   section: Collect
   required: false
+- additionalinfo: Maximum number of detections to fetch in a single batch. Available options are 100, 75, 50, 25 and 10 (If not selected, defaults to 100).
+  display: Max Fetch
+  name: max_fetch
+  type: 15
+  section: Collect
+  defaultvalue: '100'
+  advanced: true
+  options:
+  - '100'
+  - '75'
+  - '50'
+  - '25'
+  - '10'
+  required: false
 - defaultvalue: 'true'
   display: Long running instance
   hidden: true
@@ -193,7 +207,7 @@ description: Use the Google SecOps Streaming API integration to ingest detection
 display: Google SecOps Streaming API
 name: Google Chronicle Backstory Streaming API
 script:
-  dockerimage: demisto/googleapi-python3:1.0.0.10182333
+  dockerimage: demisto/googleapi-python3:1.0.0.11185775
   longRunning: true
   isFetchSamples: true
   runonce: false
