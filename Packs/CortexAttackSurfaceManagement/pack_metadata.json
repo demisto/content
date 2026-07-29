@@ -100,11 +100,7 @@
     },
     "marketplaces": [
         "marketplacev2",
-        "xpanse",
-        "platform"
-    ],
-    "supportedModules": [
-        "xsiam"
+        "xpanse"
     ],
     "itemPrefix": [
         "ASM"

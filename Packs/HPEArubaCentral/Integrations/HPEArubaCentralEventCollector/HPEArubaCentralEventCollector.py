@@ -11,6 +11,9 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "aruba"
 PRODUCT = "central"
+RATE_LIMIT_STATUS_CODE = 429
+NUM_OF_RETRIES = 3
+BACKOFF_FACTOR = 5  # Sleep for: {backoff_factor} * (2 ** ({number of retries} - 1)) seconds between retries.
 MAX_GET_AUDIT_LIMIT = 100  # Maximum limit accepted by get audit events API
 MAX_AUDIT_API_REQS = 10
 MAX_GET_EVENTS_LIMIT = 1000  # Maximum limit accepted by get events API
@@ -242,6 +245,9 @@ class Client(BaseClient):
                 url_suffix=url_suffix,
                 params=params,
                 headers=headers,
+                retries=NUM_OF_RETRIES,
+                status_list_to_retry=[RATE_LIMIT_STATUS_CODE],
+                backoff_factor=BACKOFF_FACTOR,
             )
         except DemistoException as e:
             if "access token is invalid" in str(e):
@@ -252,6 +258,9 @@ class Client(BaseClient):
                     url_suffix=url_suffix,
                     params=params,
                     headers=headers,
+                    retries=NUM_OF_RETRIES,
+                    status_list_to_retry=[RATE_LIMIT_STATUS_CODE],
+                    backoff_factor=BACKOFF_FACTOR,
                 )
             else:
                 raise e
@@ -305,6 +314,7 @@ class Client(BaseClient):
             if not response.get("remaining_records"):
                 break
 
+        demisto.debug(f"[Fetch] Audit events fetched {len(events)} event(s).")
         return events
 
     def fetch_networking_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict) -> list[dict]:
@@ -326,7 +336,7 @@ class Client(BaseClient):
         events = []
         offset = 0
 
-        demisto.debug(f"{amount_to_fetch=}")
+        demisto.debug(f"[Fetch] Networking events: starting fetch with {amount_to_fetch=}")
         while amount_to_fetch > 0:
             response = self.http_request(
                 method="GET",
@@ -649,11 +659,11 @@ def fetch_events(
     audit_start_time = int(last_run.get("last_audit_ts", first_fetch_time))
     networking_start_time = int(last_run.get("last_networking_ts", first_fetch_time))
     end_time = int(time.time())
-    demisto.debug(f"Fetching {num_audit_events_to_fetch} audit events from {audit_start_time} to {end_time}.")
+    demisto.debug(f"[Fetch] Fetching {num_audit_events_to_fetch} audit events from {audit_start_time} to {end_time}.")
     audit_events = client.fetch_audit_events(
         start_time=audit_start_time, end_time=end_time, amount_to_fetch=num_audit_events_to_fetch, last_run=last_run
     )
-    demisto.debug(f"Got {len(audit_events)} audit events.")
+    demisto.debug(f"[Fetch] Got {len(audit_events)} audit events.")
 
     networking_events = None
     if fetch_networking_events:

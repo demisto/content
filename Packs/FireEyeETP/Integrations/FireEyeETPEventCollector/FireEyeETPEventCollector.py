@@ -23,6 +23,8 @@ DEFAULT_MAX_FETCH = 1000
 CALCULATED_MAX_FETCH = 5000
 DEFAULT_LIMIT = 10
 DEFAULT_URL = "https://etp.us.fireeye.com"
+DEFAULT_TOKEN_URL = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
+TOKEN_URL_SUFFIX = "/iam/v1.0/token"
 DATEPARSER_SETTINGS = {
     "RETURN_AS_TIMEZONE_AWARE": True,
     "TIMEZONE": "UTC",
@@ -73,6 +75,7 @@ class Client(BaseClient):  # pragma: no cover
         api_key: str = "",
         outbound_traffic: bool = False,
         hide_sensitive: bool = False,
+        token_url: str = "",
     ) -> None:
         super().__init__(base_url, verify_certificate, proxy)
         self.client_id = client_id
@@ -81,6 +84,7 @@ class Client(BaseClient):  # pragma: no cover
         self.api_key = api_key
         self.outbound_traffic = outbound_traffic
         self.hide_sensitive = hide_sensitive
+        self.token_url = urljoin(token_url, TOKEN_URL_SUFFIX) if token_url else DEFAULT_TOKEN_URL
         self.access_token = ""
 
         # Set up headers based on authentication method
@@ -122,8 +126,7 @@ class Client(BaseClient):  # pragma: no cover
         Returns the access token or raises ValueError if authentication fails.
         """
         try:
-            # Trellix OAuth2 endpoint
-            token_url = "https://auth.trellix.com/auth/realms/IAM/protocol/openid-connect/token"
+            token_url = self.token_url
 
             credentials = f"{self.client_id}:{self.client_secret}"
             encoded_credentials = base64.b64encode(credentials.encode()).decode()
@@ -801,6 +804,7 @@ def main() -> None:  # pragma: no cover
     client_secret = params.get("oauth_credentials", {}).get("password", "")
     scope = params.get("oauth_scopes", "etp.conf.ro etp.rprt.ro").strip()
     api_key = params.get("credentials", {}).get("password", "")
+    token_url = params.get("token_url", "").strip()
     base_url = params.get("url", "").rstrip("/")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -845,6 +849,7 @@ def main() -> None:  # pragma: no cover
             api_key=api_key,
             outbound_traffic=outbound_traffic,
             hide_sensitive=hide_sensitive,
+            token_url=token_url,
         )
 
         events_to_run_on = EVENT_TYPES + OUTBOUND_EVENT_TYPES if outbound_traffic else EVENT_TYPES
