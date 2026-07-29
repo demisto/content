@@ -3451,8 +3451,6 @@ async def test_insightvm_client_aenter_sets_stream_timeout(mocker):
         after aiohttp's default 300s, while keeping a sock_read idle timeout and
         a sock_connect timeout to fail fast on a stalled/unreachable connection.
     """
-    import Rapid7_Nexpose
-
     captured = {}
 
     def fake_session(*args, **kwargs):
@@ -3461,14 +3459,14 @@ async def test_insightvm_client_aenter_sets_stream_timeout(mocker):
 
     mocker.patch("Rapid7_Nexpose.aiohttp.ClientSession", side_effect=fake_session)
 
-    client = Rapid7_Nexpose.InsightVMClient(base_url="https://nexpose.example.com", username="u", password="p", verify=False)
+    client = InsightVMClient(base_url="https://nexpose.example.com", username="u", password="p", verify=False)
     await client.__aenter__()
 
     timeout = captured["timeout"]
     assert isinstance(timeout, aiohttp.ClientTimeout)
     assert timeout.total is None, "total must be None to remove aiohttp's default 300s overall deadline"
-    assert timeout.sock_read == Rapid7_Nexpose.RAPID7_STREAM_SOCK_READ_TIMEOUT_SECONDS
-    assert timeout.sock_connect == Rapid7_Nexpose.RAPID7_STREAM_SOCK_CONNECT_TIMEOUT_SECONDS
+    assert timeout.sock_read == RAPID7_STREAM_SOCK_READ_TIMEOUT_SECONDS
+    assert timeout.sock_connect == RAPID7_STREAM_SOCK_CONNECT_TIMEOUT_SECONDS
 
 
 def _make_stream_response(mocker, chunks):
