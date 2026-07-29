@@ -675,7 +675,7 @@ def attack_report_command(args: dict, client: Client) -> CommandResults:
             file = None
 
         return args | {
-            "type":  args.pop("attack_type", "phishing_url") ,
+            "type": args.pop("attack_type", "phishing_url"),
             "suspected_fraudulent_domain": argToBoolean(args.pop("suspected_fraud_domain")),
             "region": args.get("region") or PARAMS["region"],
             "malware": json.loads(args.get("malware", "null")),
