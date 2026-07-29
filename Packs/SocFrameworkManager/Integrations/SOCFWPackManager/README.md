@@ -9,10 +9,12 @@ pack. The script reads the SOC Framework pack catalog, sequences pack
 installs, configures integration instances and jobs, and synchronizes the
 `value_tags` lookup. Because XSIAM scripts can call `demisto.executeCommand`,
 all orchestration lives there. This integration stores the tenant URL,
-credentials, and TLS verification setting, and exposes a single command,
-`socfw-install-pack`, that downloads a pack ZIP and uploads it as system
-content. XSIAM integrations cannot call `demisto.executeCommand`, so the
-integration deliberately performs only the work that needs raw HTTP.
+credentials, TLS verification setting, and the pack catalog location, and
+exposes two commands: `socfw-install-pack`, which downloads a pack ZIP and
+uploads it as system content, and `socfw-get-catalog-url`, which returns the
+configured catalog location so the script can read it. XSIAM integrations
+cannot call `demisto.executeCommand`, so the integration deliberately performs
+only the work that needs raw HTTP.
 
 End users run `!SOCFWPackManager action=apply pack_id=...` from the XSIAM
 Playground. The script invokes `socfw-install-pack` on this integration
@@ -35,6 +37,7 @@ internally.
    | API Key | Secret value of the Standard API key. Stored masked. | True |
    | Trust any certificate (not secure) | Disable TLS certificate validation. Off by default. | False |
    | Use system proxy settings | Route HTTP traffic through the system proxy. Off by default. | False |
+   | Pack catalog URL | Location of the SOC Framework `pack_catalog.json`. Override to point at a fork or branch. Leave empty to use the SOC Framework repository default. | False |
 
 6. Click **Test** to validate the URL and credentials, then **Done**.
 
@@ -96,3 +99,45 @@ invoke directly.
 #### Human Readable Output
 
 > Pack **soc-optimization-unified-v3.6.3.zip** installed successfully.
+
+### socfw-get-catalog-url
+
+***
+Returns the SOC Framework pack catalog URL configured on this instance, or the
+SOC Framework default when the field is left empty. Called by the
+SOCFWPackManager script so the catalog location is set once on the instance
+instead of passed as an argument on every run.
+
+#### Base Command
+
+`socfw-get-catalog-url`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SOCFramework.PackManager.CatalogURL | String | Pack catalog URL configured on this instance, or the SOC Framework default when the field is empty. |
+
+#### Command example
+
+```!socfw-get-catalog-url```
+
+#### Context Example
+
+```json
+{
+    "SOCFramework": {
+        "PackManager": {
+            "CatalogURL": "https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> Pack catalog URL: <https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json>

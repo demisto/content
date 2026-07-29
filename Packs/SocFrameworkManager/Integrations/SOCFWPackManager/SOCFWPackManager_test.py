@@ -530,3 +530,20 @@ def test_prepare_pack_dir_uses_version_stripped_directory(tmp_path, monkeypatch)
 
     assert os.path.basename(pack_path) == "soc-optimization-unified"
     assert not os.path.exists(tmp_path / "Packs" / "soc-optimization-unified-v3.11.2")
+
+
+def test_get_catalog_url_command_returns_configured_value():
+    """A script cannot read another integration instance's parameters, so the
+    configured catalog location is surfaced through this command instead.
+    """
+    integration, _ = load_integration()
+    res = integration.get_catalog_url_command({"catalog_url": "https://fork.example/pack_catalog.json"})
+    assert res["outputs"] == {"CatalogURL": "https://fork.example/pack_catalog.json"}
+    assert res["raw_response"] == {"catalog_url": "https://fork.example/pack_catalog.json"}
+
+
+def test_get_catalog_url_command_defaults_when_unset():
+    integration, _ = load_integration()
+    for params in ({}, {"catalog_url": ""}, {"catalog_url": "   "}, {"catalog_url": None}):
+        res = integration.get_catalog_url_command(params)
+        assert res["outputs"]["CatalogURL"] == integration.DEFAULT_CATALOG_URL, params

@@ -21,6 +21,11 @@ from CommonServerPython import *  # noqa: F401,F403
 
 INTEGRATION_NAME = "SOCFWPackManager"
 
+# Location of the SOC Framework pack catalog. Set on the instance so a fork or
+# branch can be used without editing the pack or passing an argument on every
+# run; this value is the fallback when the instance leaves the field empty.
+DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json"
+
 # Trailing release-version suffix on a pack asset filename, e.g. the
 # "-v3.11.2" in soc-optimization-unified-v3.11.2.zip, optionally followed by a
 # pre-release tag such as "-pr1008".
@@ -374,6 +379,23 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
 # ---------------------------------------------------------------------------
 
 
+def get_catalog_url_command(params: dict[str, Any]) -> CommandResults:
+    """Return the pack catalog URL configured on this instance.
+
+    The SOCFWPackManager script cannot read another integration's instance
+    parameters, so it reads the configured location through this command. That
+    keeps the catalog location set once on the instance rather than passed as an
+    argument on every run.
+    """
+    catalog_url = (params.get("catalog_url") or "").strip() or DEFAULT_CATALOG_URL
+    return CommandResults(
+        outputs_prefix="SOCFramework.PackManager",
+        outputs={"CatalogURL": catalog_url},
+        raw_response={"catalog_url": catalog_url},
+        readable_output=f"Pack catalog URL: {catalog_url}",
+    )
+
+
 def main() -> None:
     params = demisto.params()
     args = demisto.args()
@@ -399,6 +421,8 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "socfw-install-pack":
             return_results(install_pack_command(client, args))
+        elif command == "socfw-get-catalog-url":
+            return_results(get_catalog_url_command(params))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")
     except Exception as exc:

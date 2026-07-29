@@ -1292,3 +1292,41 @@ def test_guess_pack_id_leaves_embedded_dash_v_alone():
     script, _ = load_script()
     assert script._guess_pack_id_from_label("soc-vendor-thing.zip") == "soc-vendor-thing"
     assert script._guess_pack_id_from_label("soc-vendor-thing-v1.2.3.zip") == "soc-vendor-thing"
+
+
+# ---------------------------
+# catalog URL resolution
+# ---------------------------
+
+
+def test_resolve_catalog_url_explicit_arg_wins():
+    script, demisto_mock = load_script()
+    demisto_mock._command_responses["socfw-get-catalog-url"] = [
+        {"Type": 1, "Contents": {"catalog_url": "https://instance.example/catalog.json"}}
+    ]
+
+    assert script.resolve_catalog_url("https://explicit.example/catalog.json") == "https://explicit.example/catalog.json"
+    # The instance is not consulted when an explicit value is supplied.
+    assert not [c for c in demisto_mock._commands if c[0] == "socfw-get-catalog-url"]
+
+
+def test_resolve_catalog_url_uses_instance_value():
+    script, demisto_mock = load_script()
+    demisto_mock._command_responses["socfw-get-catalog-url"] = [
+        {"Type": 1, "Contents": {"catalog_url": "https://instance.example/catalog.json"}}
+    ]
+
+    assert script.resolve_catalog_url("") == "https://instance.example/catalog.json"
+
+
+def test_resolve_catalog_url_falls_back_when_command_missing():
+    script, _ = load_script()
+    # No response registered: the command does not exist on this tenant.
+    assert script.resolve_catalog_url("") == script.DEFAULT_CATALOG_URL
+
+
+def test_resolve_catalog_url_falls_back_on_error_entry():
+    script, demisto_mock = load_script()
+    demisto_mock._command_responses["socfw-get-catalog-url"] = [{"Type": 4, "Contents": "Unsupported command (23)"}]
+
+    assert script.resolve_catalog_url("") == script.DEFAULT_CATALOG_URL

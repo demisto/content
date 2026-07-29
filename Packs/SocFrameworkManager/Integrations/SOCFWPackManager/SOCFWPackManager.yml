@@ -31,6 +31,14 @@ configuration:
   name: proxy
   type: 8
   required: false
+- section: Connect
+  advanced: true
+  display: Pack catalog URL
+  name: catalog_url
+  defaultvalue: https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json
+  type: 0
+  required: false
+  additionalinfo: Location of the SOC Framework pack_catalog.json. Override to point at a fork or branch. Leave empty to use the SOC Framework repository default.
 script:
   script: ''
   type: python
@@ -62,6 +70,13 @@ script:
     - contextPath: SOCFramework.PackInstall.response
       description: Raw response from demisto-sdk upload_content_entity.
       type: Unknown
+  - name: socfw-get-catalog-url
+    description: Return the SOC Framework pack catalog URL configured on this instance. Called by the SOCFWPackManager script so the catalog location is set once on the instance instead of passed as an argument on every run.
+    arguments: []
+    outputs:
+    - contextPath: SOCFramework.PackManager.CatalogURL
+      description: Pack catalog URL configured on this instance, or the SOC Framework default when the field is empty.
+      type: String
 commonfields:
   id: SOCFWPackManager
   version: -1

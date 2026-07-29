@@ -477,6 +477,25 @@ def http_get_json(url: str, timeout: int = 30) -> Any:
 DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json"
 
 
+def resolve_catalog_url(explicit: str) -> str:
+    """Catalog location, in precedence order.
+
+    An explicit argument wins, then the catalog_url configured on the
+    SOCFWPackManager integration instance, then the SOC Framework default. A
+    script cannot read another integration's instance parameters, so the
+    configured value is read through socfw-get-catalog-url. That command is
+    absent on older versions of the integration, so a failure here falls back to
+    the default rather than stopping the run.
+    """
+    explicit = _norm(explicit)
+    if explicit:
+        return explicit
+    res = exec_cmd("socfw-get-catalog-url", {}, fail_on_error=False)
+    contents = get_contents(res)
+    configured = _norm(contents.get("catalog_url")) if isinstance(contents, dict) else ""
+    return configured or DEFAULT_CATALOG_URL
+
+
 def fetch_pack_catalog(catalog_url: str = DEFAULT_CATALOG_URL) -> dict[str, Any]:
     data = http_get_json(catalog_url)
     if not isinstance(data, dict):
@@ -583,7 +602,7 @@ def do_list(args: dict[str, Any]):
     output_format = (_norm(args.get("output_format")) or "list").strip().lower()
     debug = arg_to_bool(args.get("debug"), False)
 
-    catalog_url = _norm(args.get("catalog_url") or DEFAULT_CATALOG_URL)
+    catalog_url = resolve_catalog_url(args.get("catalog_url"))
     # An explicitly empty docs_base_url disables linking, so distinguish it
     # from the argument being absent.
     docs_base_arg = args.get("docs_base_url")
@@ -1901,7 +1920,7 @@ def configure_jobs_from_xsoar_config(
 
 def do_configure(args):
     pack_id = (args.get("pack_id") or "").strip()
-    catalog_url = _norm(args.get("catalog_url") or DEFAULT_CATALOG_URL)
+    catalog_url = resolve_catalog_url(args.get("catalog_url"))
     using = (args.get("using") or "").strip()
     retry_count = to_int(args.get("retry_count"), 5)
     retry_sleep = to_int(args.get("retry_sleep_seconds"), 15)
@@ -2234,7 +2253,7 @@ def _run_main():
 
     debug = arg_to_bool(args.get("debug"), False)
 
-    catalog_url = _norm(args.get("catalog_url") or DEFAULT_CATALOG_URL)
+    catalog_url = resolve_catalog_url(args.get("catalog_url"))
 
     if action not in ("apply", "list", "configure", "sync-tags", "diagnose"):
         raise Exception(f"Unsupported action: {action}")
