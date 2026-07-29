@@ -38,6 +38,7 @@ def pack_dir_name(filename: str) -> str:
     name = filename[:-4] if filename.lower().endswith(".zip") else filename
     return PACK_VERSION_SUFFIX.sub("", name).strip()
 
+
 # Hard cap on the size of a pack ZIP we will download or extract.
 # SOC Framework packs are small (a few MB); 500 MB leaves plenty of headroom
 # while bounding memory / disk usage for a wrong or malicious URL.

@@ -610,9 +610,7 @@ def test_install_marketplace_packs_sends_full_closure_in_object_body():
     }
     demisto_mock._command_responses["core-api-post"] = [{"Type": 1, "Contents": {"response": []}}]
 
-    result = script.install_marketplace_packs(
-        [{"id": "CommonScripts", "version": "latest"}], "", 0, 0, debug=False
-    )
+    result = script.install_marketplace_packs([{"id": "CommonScripts", "version": "latest"}], "", 0, 0, debug=False)
 
     posts = [c for c in demisto_mock._commands if c[0] == "core-api-post"]
     assert len(posts) == 1
@@ -629,14 +627,10 @@ def test_install_marketplace_packs_sends_full_closure_in_object_body():
 
 def test_install_marketplace_packs_skips_when_already_satisfied():
     script, demisto_mock = load_script()
-    script.fetch_installed_packs = lambda using: {
-        "CommonScripts": {"version": "1.22.28", "update_available": False}
-    }
+    script.fetch_installed_packs = lambda using: {"CommonScripts": {"version": "1.22.28", "update_available": False}}
     script.resolve_install_closure = lambda seeds, using, installed, upgrade=False: {"CommonScripts": "1.22.28"}
 
-    result = script.install_marketplace_packs(
-        [{"id": "CommonScripts", "version": "latest"}], "", 0, 0, debug=False
-    )
+    result = script.install_marketplace_packs([{"id": "CommonScripts", "version": "latest"}], "", 0, 0, debug=False)
 
     assert [c for c in demisto_mock._commands if c[0] == "core-api-post"] == []
     assert result["installed"] == {}
@@ -676,14 +670,13 @@ def test_install_marketplace_packs_emits_legacy_context_on_failure():
         script.install_marketplace_packs([{"id": "CommonScripts", "version": "latest"}], "", 0, 0, debug=False)
 
     ctx = [r for r in demisto_mock._results if getattr(r, "outputs_prefix", None) == "ConfigurationSetup.MarketplacePacks"]
-    assert ctx and ctx[-1].outputs[0]["installationstatus"] == "Failed to install."
+    assert ctx
+    assert ctx[-1].outputs[0]["installationstatus"] == "Failed to install."
 
 
 def test_marketplace_context_rows_match_legacy_shape():
     script, _ = load_script()
-    rows = script._marketplace_context_rows(
-        {"A", "B", "C"}, {"A": "1.0.0", "D": "2.0.0"}, {"B": "3.0.0"}, {"C": "4.0.0"}
-    )
+    rows = script._marketplace_context_rows({"A", "B", "C"}, {"A": "1.0.0", "D": "2.0.0"}, {"B": "3.0.0"}, {"C": "4.0.0"})
     by_id = {r["packid"]: r for r in rows}
     assert set(by_id["A"]) == {"packid", "packversion", "installationstatus"}
     assert by_id["A"]["installationstatus"] == "Success."
@@ -1139,9 +1132,7 @@ def test_closure_upgrade_resolves_newest_published_version():
     script.fetch_mandatory_dependencies = lambda packs, using: {}
     script.resolve_latest_version = lambda pack_id, using: "1.22.39"
     installed = {"CommonScripts": {"version": "1.22.28", "update_available": True}}
-    closure = script.resolve_install_closure(
-        [{"id": "CommonScripts", "version": "latest"}], "", installed, upgrade=True
-    )
+    closure = script.resolve_install_closure([{"id": "CommonScripts", "version": "latest"}], "", installed, upgrade=True)
     assert closure == {"CommonScripts": "1.22.39"}
 
 
@@ -1176,16 +1167,12 @@ def test_closure_upgrade_does_not_force_upgrade_dependencies():
 
 def test_install_marketplace_packs_upgrade_produces_pending_install():
     script, demisto_mock = load_script()
-    script.fetch_installed_packs = lambda using: {
-        "CommonScripts": {"version": "1.22.28", "update_available": True}
-    }
+    script.fetch_installed_packs = lambda using: {"CommonScripts": {"version": "1.22.28", "update_available": True}}
     script.fetch_mandatory_dependencies = lambda packs, using: {}
     script.resolve_latest_version = lambda pack_id, using: "1.22.39"
     demisto_mock._command_responses["core-api-post"] = [{"Type": 1, "Contents": {"response": []}}]
 
-    result = script.install_marketplace_packs(
-        [{"id": "CommonScripts", "version": "latest"}], "", 0, 0, debug=False, upgrade=True
-    )
+    result = script.install_marketplace_packs([{"id": "CommonScripts", "version": "latest"}], "", 0, 0, debug=False, upgrade=True)
 
     posts = [c for c in demisto_mock._commands if c[0] == "core-api-post"]
     assert len(posts) == 1
@@ -1243,13 +1230,9 @@ def test_closure_highest_minversion_regardless_of_requirer_order():
 def test_closure_keeps_installed_version_when_it_exceeds_all_minimums():
     script, _ = load_script()
     graph = {"A": {"Dep": "1.0.0"}, "B": {"Dep": "2.0.0"}, "Dep": {}}
-    script.fetch_mandatory_dependencies = lambda packs, using: {
-        p["id"]: graph.get(p["id"], {}) for p in packs
-    }
+    script.fetch_mandatory_dependencies = lambda packs, using: {p["id"]: graph.get(p["id"], {}) for p in packs}
     installed = {"Dep": {"version": "9.9.9", "update_available": False}}
-    closure = script.resolve_install_closure(
-        [{"id": "A", "version": "1.0.0"}, {"id": "B", "version": "1.0.0"}], "", installed
-    )
+    closure = script.resolve_install_closure([{"id": "A", "version": "1.0.0"}, {"id": "B", "version": "1.0.0"}], "", installed)
     assert closure["Dep"] == "9.9.9"
 
 
@@ -1261,9 +1244,7 @@ def test_closure_raising_a_dependency_pulls_its_own_new_dependencies():
         "Mid": {"Deep": "1.0.0"},
         "Deep": {},
     }
-    script.fetch_mandatory_dependencies = lambda packs, using: {
-        p["id"]: graph.get(p["id"], {}) for p in packs
-    }
+    script.fetch_mandatory_dependencies = lambda packs, using: {p["id"]: graph.get(p["id"], {}) for p in packs}
     closure = script.resolve_install_closure([{"id": "A", "version": "1.0.0"}], "", {})
     assert closure["Mid"] == "2.0.0"
     assert closure["Deep"] == "1.0.0"

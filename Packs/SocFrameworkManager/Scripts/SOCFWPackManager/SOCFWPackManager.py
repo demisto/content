@@ -552,7 +552,7 @@ def _pack_docs_url(pack: dict[str, Any], docs_base_url: str) -> str:
     is resolved against the tenant host and lands the analyst back in XSIAM.
     """
     explicit = _norm(pack.get("docs"))
-    if explicit.startswith("http://") or explicit.startswith("https://"):
+    if explicit.startswith(("http://", "https://")):
         return explicit
 
     base = (docs_base_url or "").rstrip("/")
@@ -1051,18 +1051,13 @@ def install_marketplace_packs(
             f"reject an incomplete set. Underlying error: {e}"
         ) from e
 
-    pending = {
-        pid: ver for pid, ver in closure.items() if _ver_key(ver) > _ver_key(installed.get(pid, {}).get("version"))
-    }
+    pending = {pid: ver for pid, ver in closure.items() if _ver_key(ver) > _ver_key(installed.get(pid, {}).get("version"))}
 
     if debug:
         emit_progress(
             "\n".join(
                 ["Marketplace install plan:"]
-                + [
-                    f'- {pid} @ {ver}{"" if pid in pending else "  (already satisfied)"}'
-                    for pid, ver in sorted(closure.items())
-                ]
+                + [f'- {pid} @ {ver}{"" if pid in pending else "  (already satisfied)"}' for pid, ver in sorted(closure.items())]
             ),
             stage="packs.marketplace",
         )
@@ -2396,9 +2391,7 @@ def _run_main():
                 mp.append({"id": p.get("id"), "version": p.get("version", "latest")})
 
         try:
-            _ = install_marketplace_packs(
-                mp, using, retry_count, retry_sleep_seconds, debug=debug, upgrade=upgrade_marketplace
-            )
+            _ = install_marketplace_packs(mp, using, retry_count, retry_sleep_seconds, debug=debug, upgrade=upgrade_marketplace)
         except Exception as e:
             marketplace_errors.append(str(e))
             emit_progress(f"Marketplace install failed.\nError: {e}", stage="packs.marketplace.error")
@@ -2519,9 +2512,6 @@ def _run_main():
     return None
 
 
-    main()
-
-
 # ---------------------------
 # diagnose action
 # ---------------------------
@@ -2603,9 +2593,7 @@ def do_diagnose(args: dict[str, Any]):
             record("dependency lookup", endpoint, False, str(e)[:300])
 
     header = "| check | result | detail |\n| --- | --- | --- |\n"
-    table = header + "".join(
-        "| {} | {} | {} |\n".format(r["check"], r["result"], r["detail"].replace("|", "/")) for r in results
-    )
+    table = header + "".join("| {} | {} | {} |\n".format(r["check"], r["result"], r["detail"].replace("|", "/")) for r in results)
     failed = [r for r in results if r["result"] == "FAIL"]
     verdict = (
         "All checks passed — the marketplace install path is usable on this tenant."
@@ -2624,7 +2612,6 @@ def do_diagnose(args: dict[str, Any]):
             outputs=results,
         )
     )
-
 
 
 def main():
