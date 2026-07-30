@@ -10014,6 +10014,192 @@ class TestSpotlightSeverityBasedFetch:
         assert withheld == [vulnerabilities[0]]
 
     @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_skips_empty_batches(self, mocker, capfd):
+        """
+        Tests that a page with nothing left to send does not create a send task.
+
+        send_data_to_xsiam_async intentionally turns an empty assets payload into a single "seal"
+        chunk and reports its size as 1. Sending an empty batch would therefore add a phantom record
+        to the declared total (declared > stored) and leave the snapshot open.
+
+        Given:
+            - A severity whose only page returns exactly one vulnerability, which is withheld
+              for the seal, leaving nothing to send.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - No send task is created at all.
+            - total == 1 (the withheld record only), never 2.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": [{"id": "v1", "aid": "aid1"}],
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored")
+
+        with capfd.disabled():
+            total, _aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="CRITICAL",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        mock_create_task.assert_not_called()
+        assert total == 1
+        assert withheld == [{"id": "v1", "aid": "aid1"}]
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_no_results_counts_zero(self, mocker, capfd):
+        """
+        Tests that a severity with no vulnerabilities at all contributes exactly 0.
+
+        Given:
+            - A severity whose only page returns no resources (common for UNKNOWN / NONE).
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - No send task is created and total == 0, so the severity adds nothing to the
+              declared count.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {"resources": [], "meta": {"pagination": {"after": None}}}
+        mock_client._request.return_value = mock_response
+
+        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored")
+
+        with capfd.disabled():
+            total, _aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="UNKNOWN",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        mock_create_task.assert_not_called()
+        assert total == 0
+        assert withheld == []
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_clamps_overreported_stored_count(self, mocker, capfd):
+        """
+        Tests the declared <= stored guard: a sender can never inflate the total.
+
+        Given:
+            - 3 vulnerabilities (1 withheld, 2 sent).
+            - The send task erroneously reports 99 records stored.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - The counted amount is clamped to the 2 records actually attempted,
+              so total == withheld(1) + 2 == 3.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": [{"id": f"v{i}", "aid": f"aid{i}"} for i in range(1, 4)],
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result((1, 99))  # Nonsensical over-report
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            side_effect=create_task_side_effect,
+        )
+
+        with capfd.disabled():
+            total, _aids, _tasks, _withheld = await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="CRITICAL",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        assert total == 3
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_cancelled_send_is_not_fatal(self, mocker, capfd):
+        """
+        Tests that a cancelled send task does not kill the severity.
+
+        asyncio.CancelledError derives from BaseException (not Exception) since Python 3.8, so
+        catching only Exception would let it escape and abort the whole severity.
+
+        Given:
+            - The background send task is cancelled.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - The fetch completes without raising and the cancelled records are not counted.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": [{"id": f"v{i}", "aid": f"aid{i}"} for i in range(1, 4)],
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.cancel()
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            side_effect=create_task_side_effect,
+        )
+
+        with capfd.disabled():
+            total, _aids, _tasks, _withheld = await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="CRITICAL",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+            )
+
+        # Only the withheld record is counted; the cancelled batch contributes nothing.
+        assert total == 1
+
+    @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_counts_only_successful_sends(self, mocker):
         """
         Tests Fix 1 (P0): total is counted on successful send, plus the withheld record.
@@ -10313,6 +10499,99 @@ class TestSpotlightSeverityBasedFetch:
         assert {"id": "c1", "aid": "aid1"} in saved_withheld
         assert {"id": "m1", "aid": "aid3"} in saved_withheld
         assert len(saved_withheld) == 3
+
+    @pytest.mark.asyncio
+    async def test_await_and_aggregate_carries_prior_total_into_the_seal(self, mocker):
+        """
+        Tests that records stored in previous cycles are included in the declared total.
+
+        A resumed run only fetches the severities that have not completed yet. If the seal declared
+        only this cycle's records, it would declare fewer records than XSIAM actually holds
+        (declared < stored) and the snapshot would never balance.
+
+        Given:
+            - 200 records were stored by severities completed in previous cycles.
+            - One more severity completes this cycle with 300 records.
+        When:
+            - await_and_aggregate_severity_results is called with prior_total_fetched=200.
+        Then:
+            - The returned total is the grand total 500, not just this cycle's 300.
+            - The running total is persisted so the next cycle can carry it forward again.
+        """
+        from CrowdStrikeFalcon import await_and_aggregate_severity_results
+
+        mock_update_state = mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        def make_task(result):
+            f = asyncio.Future()
+            f.set_result(result)
+            return f
+
+        severity_tasks = [("MEDIUM", make_task((300, {"aid3"}, set(), [{"id": "m1", "aid": "aid3"}])))]
+
+        (
+            total,
+            _all_aids,
+            _all_tasks,
+            _completed,
+            _withheld,
+        ) = await await_and_aggregate_severity_results(
+            severity_tasks=severity_tasks,
+            current_completed_severities=["CRITICAL", "HIGH"],
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            prior_total_fetched=200,
+        )
+
+        assert total == 500, "The seal must declare the grand total across all cycles"
+        assert mock_update_state.call_args.kwargs["total_fetched"] == 500
+
+    @pytest.mark.asyncio
+    async def test_parallel_retries_the_seal_when_all_severities_already_completed(self, mocker, capfd):
+        """
+        Tests that an unsealed snapshot is retried instead of being abandoned.
+
+        If a previous cycle's seal failed, the state is never reset, so every severity is still
+        marked completed. Returning early in that case would mean finalization is never reached
+        again and the snapshot stays open forever.
+
+        Given:
+            - All severities are already in completed_severities (the previous seal failed).
+            - The persisted totals and withheld records are carried in from context.
+        When:
+            - fetch_spotlight_by_severity_parallel is called.
+        Then:
+            - No severity is re-fetched.
+            - finalize_severity_fetch is still called, with the persisted total and withheld
+              records, so the seal is retried.
+        """
+        from CrowdStrikeFalcon import fetch_spotlight_by_severity_parallel, SPOTLIGHT_SEVERITIES
+
+        mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mock_fetch_severity = mocker.patch("CrowdStrikeFalcon.fetch_vulnerabilities_by_severity")
+        mock_finalize = mocker.patch("CrowdStrikeFalcon.finalize_severity_fetch", new_callable=mocker.AsyncMock)
+
+        prior_withheld = [{"id": "c1", "aid": "aid1"}]
+
+        # This path intentionally logs a warning about the unsealed snapshot.
+        with capfd.disabled():
+            total, _aids = await fetch_spotlight_by_severity_parallel(
+                client=mocker.Mock(),
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                completed_severities=list(SPOTLIGHT_SEVERITIES),
+                prior_withheld_records=prior_withheld,
+                prior_total_fetched=500,
+            )
+
+        mock_fetch_severity.assert_not_called()
+        mock_finalize.assert_awaited_once()
+        assert mock_finalize.call_args.kwargs["total_vulnerabilities"] == 500
+        assert mock_finalize.call_args.kwargs["withheld_records"] == prior_withheld
+        assert total == 500
 
     def test_update_spotlight_state_persists_withheld_records(self, mocker):
         """
@@ -11137,3 +11416,142 @@ class TestSynchronousCompression:
         )
 
         assert tasks == [], "Empty non-asset data should return no tasks"
+
+
+class StopLoop(Exception):
+    """Sentinel used to break out of the long-running while-True loop in tests."""
+
+
+class TestLongRunningSpotlightExecution:
+    """Tests for the opt-in long-running Spotlight fetch loop."""
+
+    @staticmethod
+    def _run_loop(mocker, cycle_durations, fetch_side_effect=None):
+        """Run the long-running loop for len(cycle_durations) cycles, then stop.
+
+        The cycle period is a fixed 24 hours (LONG_RUNNING_ASSETS_INTERVAL_MINUTES) and is not
+        configurable, so no interval parameter is set up here.
+
+        Returns (sleep_calls, mock_fetch, mock_cnapp, mock_log).
+        """
+        import CrowdStrikeFalcon
+
+        mocker.patch.object(CrowdStrikeFalcon.demisto, "params", return_value={})
+        mocker.patch.object(CrowdStrikeFalcon.demisto, "error")
+        mock_log = mocker.patch.object(CrowdStrikeFalcon, "log_falcon_assets")
+
+        # fetch_spotlight_assets is a coroutine function, so patch.object would normally build an
+        # AsyncMock - that returns a coroutine and only raises side_effect when awaited, which never
+        # happens because asyncio.run is stubbed below. Force a synchronous MagicMock so a
+        # configured exception is raised at call time, inside the loop's try block.
+        mock_fetch = mocker.patch.object(
+            CrowdStrikeFalcon,
+            "fetch_spotlight_assets",
+            new_callable=mocker.MagicMock,
+            side_effect=fetch_side_effect,
+            return_value=None,
+        )
+        mock_cnapp = mocker.patch.object(CrowdStrikeFalcon, "fetch_cnapp_assets")
+
+        # The loop calls asyncio.run(fetch_spotlight_assets()); the inner call already did the work,
+        # so just pass its result through.
+        mocker.patch.object(CrowdStrikeFalcon.asyncio, "run", side_effect=lambda result: result)
+
+        # Drive elapsed time deterministically: each cycle consumes one duration.
+        clock = [0.0]
+        durations = list(cycle_durations)
+
+        def fake_monotonic():
+            value = clock[0]
+            if durations:
+                clock[0] += durations.pop(0)
+            return value
+
+        mocker.patch.object(CrowdStrikeFalcon.time, "monotonic", side_effect=fake_monotonic)
+
+        sleep_calls: list[float] = []
+
+        def fake_sleep(seconds):
+            sleep_calls.append(seconds)
+            if len(sleep_calls) >= len(cycle_durations):
+                raise StopLoop
+
+        mocker.patch.object(CrowdStrikeFalcon.time, "sleep", side_effect=fake_sleep)
+
+        with pytest.raises(StopLoop):
+            CrowdStrikeFalcon.long_running_spotlight_execution()
+
+        return sleep_calls, mock_fetch, mock_cnapp, mock_log
+
+    def test_runs_fetch_each_cycle(self, mocker):
+        """
+        Given: A long-running instance.
+        When: The loop runs for three cycles.
+        Then: The Spotlight fetch is invoked once per cycle.
+        """
+        _sleeps, mock_fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[60, 60, 60])
+
+        assert mock_fetch.call_count == 3
+
+    def test_survives_cycle_exception(self, mocker):
+        """
+        Given: The first fetch cycle raises an unexpected error.
+        When: The loop continues.
+        Then: The container does not die - later cycles still run and the failure is logged.
+        """
+        errors = [Exception("boom"), None, None]
+        _sleeps, mock_fetch, _cnapp, mock_log = self._run_loop(mocker, cycle_durations=[60, 60, 60], fetch_side_effect=errors)
+
+        assert mock_fetch.call_count == 3, "A failing cycle must not stop the loop"
+        logged = [call.args[0] for call in mock_log.call_args_list]
+        assert any("cycle failed" in message and "boom" in message for message in logged), "The failing cycle must be reported"
+
+    def test_subtracts_elapsed_from_interval(self, mocker):
+        """
+        Given: The fixed 24 hour period and a cycle that takes 3 hours.
+        When: The cycle finishes.
+        Then: The loop sleeps only the remaining 21 hours, so cycles start every 24 hours.
+        """
+        import CrowdStrikeFalcon
+
+        three_hours = 3 * 3600
+        sleeps, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[three_hours])
+
+        assert sleeps == [CrowdStrikeFalcon.LONG_RUNNING_ASSETS_INTERVAL_MINUTES * 60 - three_hours]
+
+    def test_cycle_longer_than_interval_sleeps_zero(self, mocker):
+        """
+        Given: A cycle running 30 hours against the fixed 24 hour period.
+        When: The cycle finishes.
+        Then: Sleep is clamped to 0 so the next cycle starts immediately, never negative,
+              and cycles can never overlap because the loop is sequential.
+        """
+        thirty_hours = 30 * 3600
+        sleeps, mock_fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[thirty_hours])
+
+        assert sleeps == [0.0]
+        assert mock_fetch.call_count == 1
+
+    def test_period_is_a_fixed_twenty_four_hours(self, mocker):
+        """
+        Given: The interval is hardcoded and cannot be configured.
+        When: A near-instant cycle completes.
+        Then: The loop sleeps the full 24 hours (1440 minutes).
+        """
+        import CrowdStrikeFalcon
+
+        assert CrowdStrikeFalcon.LONG_RUNNING_ASSETS_INTERVAL_MINUTES == 1440
+
+        sleeps, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[0])
+
+        assert sleeps == [1440 * 60]
+
+    def test_does_not_fetch_cnapp(self, mocker):
+        """
+        Given: A long-running instance (Spotlight-only scope).
+        When: The loop runs.
+        Then: CNAPP alerts are never fetched - they stay on the regular assets fetch.
+        """
+        _sleeps, _fetch, mock_cnapp, _log = self._run_loop(mocker, cycle_durations=[60])
+
+        mock_cnapp.assert_not_called()
