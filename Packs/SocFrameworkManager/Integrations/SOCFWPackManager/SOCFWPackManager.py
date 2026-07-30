@@ -13,6 +13,7 @@ import shutil
 import tempfile
 import zipfile
 from pathlib import Path
+from urllib.parse import urlparse
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -380,6 +381,20 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
 # ---------------------------------------------------------------------------
 
 
+def _is_valid_catalog_url(url: str) -> bool:
+    """Whether the value is an absolute http(s) URL with a hostname.
+
+    A relative or scheme-less value resolves against the tenant host when the
+    catalog is fetched, which surfaces as a confusing 404 from the tenant rather
+    than an obvious misconfiguration of this parameter.
+    """
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return False
+    return parsed.scheme in ("http", "https") and bool(parsed.hostname)
+
+
 def get_catalog_url_command(params: dict[str, Any]) -> CommandResults:
     """Return the pack catalog URL configured on this instance.
 
@@ -387,8 +402,23 @@ def get_catalog_url_command(params: dict[str, Any]) -> CommandResults:
     parameters, so it reads the configured location through this command. That
     keeps the catalog location set once on the instance rather than passed as an
     argument on every run.
+
+    An unusable configured value is reported and ignored rather than returned,
+    because the caller would otherwise fetch it and fail somewhere less obvious.
     """
-    catalog_url = (params.get("catalog_url") or "").strip() or DEFAULT_CATALOG_URL
+    configured = (params.get("catalog_url") or "").strip()
+    if configured and not _is_valid_catalog_url(configured):
+        demisto.error(f"Configured pack catalog URL is not an absolute http(s) URL: {configured!r}")
+        return CommandResults(
+            outputs_prefix="SOCFramework.PackManager",
+            outputs={"CatalogURL": DEFAULT_CATALOG_URL},
+            raw_response={"catalog_url": DEFAULT_CATALOG_URL},
+            readable_output=(
+                f"⚠️ The configured pack catalog URL is not an absolute http(s) URL and was ignored: `{configured}`\n\n"
+                f"Using the default instead: {DEFAULT_CATALOG_URL}"
+            ),
+        )
+    catalog_url = configured or DEFAULT_CATALOG_URL
     return CommandResults(
         outputs_prefix="SOCFramework.PackManager",
         outputs={"CatalogURL": catalog_url},

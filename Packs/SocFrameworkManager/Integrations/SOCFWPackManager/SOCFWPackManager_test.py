@@ -576,3 +576,31 @@ def test_pack_dir_name_keeps_version_like_strings_mid_filename():
     }
     for given, expected in cases.items():
         assert integration.pack_dir_name(given) == expected, given
+
+
+def test_get_catalog_url_command_rejects_a_relative_url():
+    """A scheme-less value would resolve against the tenant host at fetch time
+    and surface as a confusing 404, so it is reported and ignored here.
+    """
+    integration, _ = load_integration()
+    for bad in (
+        "raw.githubusercontent.com/org/repo/main/pack_catalog.json",
+        "/Packs/pack_catalog.json",
+        "ftp://example.com/pack_catalog.json",
+        "not a url",
+        "https:///pack_catalog.json",
+    ):
+        res = integration.get_catalog_url_command({"catalog_url": bad})
+        assert res["outputs"]["CatalogURL"] == integration.DEFAULT_CATALOG_URL, bad
+        assert "ignored" in res["readable_output"], bad
+
+
+def test_get_catalog_url_command_accepts_a_valid_override():
+    integration, _ = load_integration()
+    for good in (
+        "https://fork.example/pack_catalog.json",
+        "http://internal.example:8080/catalog/pack_catalog.json",
+    ):
+        res = integration.get_catalog_url_command({"catalog_url": good})
+        assert res["outputs"]["CatalogURL"] == good, good
+        assert "ignored" not in res["readable_output"], good
