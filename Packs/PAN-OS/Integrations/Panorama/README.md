@@ -6324,6 +6324,9 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | status | Filter to return jobs by status. | Optional |
 | job_type | Filter to return jobs by type. | Optional |
 | id | Filter by ID. | Optional |
+| polling | Whether to poll the job status until it reaches a terminal state (FIN). Only takes effect when a single job "id" is provided. Possible values are: true, false. Default is false. | Optional |
+| interval_in_seconds | The interval between poll attempts, in seconds. Default is 30. | Optional |
+| timeout_in_seconds | The maximum time to wait for the job to reach a terminal state, in seconds. If the timeout is reached before the job finishes, the command returns the last known result. Default is 3600. | Optional |
 
 #### Context Output
 
