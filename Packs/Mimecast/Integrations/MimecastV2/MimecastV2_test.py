@@ -1446,3 +1446,69 @@ class TestFetchIncidents:
         MimecastV2.fetch_incidents()
 
         assert set_last_run_mock.called
+
+
+class TestHttpRequestErrorHandling:
+    """Tests for the v2 error-envelope parsing in http_request."""
+
+    def test_success_returns_json(self, requests_mock):
+        """200 response returns parsed JSON."""
+        requests_mock.get("http://test.com/api/test", json={"key": "value"})
+        result = MimecastV2.http_request("GET", "/api/test")
+        assert result == {"key": "value"}
+
+    def test_is_file_returns_response_object(self, requests_mock):
+        """is_file=True returns the raw response object, not json()."""
+        requests_mock.get("http://test.com/api/test", content=b"binary")
+        result = MimecastV2.http_request("GET", "/api/test", is_file=True)
+        assert result.content == b"binary"
+
+    def test_v2_error_envelope_raises_demisto_exception(self, requests_mock):
+        """400 with v2 error envelope raises DemistoException with the message."""
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=400,
+            json={"error": [{"code": "err_test", "message": "Something went wrong"}]},
+        )
+        with pytest.raises(DemistoException, match="Something went wrong"):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+    def test_v2_multiple_errors_joined(self, requests_mock):
+        """Multiple errors in the v2 envelope are joined with '; '."""
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=400,
+            json={
+                "error": [
+                    {"code": "err_a", "message": "First error"},
+                    {"code": "err_b", "message": "Second error"},
+                ]
+            },
+        )
+        with pytest.raises(DemistoException, match="First error; Second error"):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+    def test_non_v2_4xx_reraises_http_error(self, requests_mock):
+        """4xx without v2 error key re-raises the original HTTPError."""
+        import requests
+
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=403,
+            json={"message": "Forbidden"},
+        )
+        with pytest.raises(requests.exceptions.HTTPError):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+    def test_json_parse_failure_reraises_http_error(self, requests_mock):
+        """If the error body is not JSON, re-raises the original HTTPError."""
+        import requests
+
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=400,
+            text="not json",
+            headers={"Content-Type": "text/plain"},
+        )
+        with pytest.raises(requests.exceptions.HTTPError):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
