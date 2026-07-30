@@ -1814,7 +1814,7 @@ class ExchangeOnlinePowershellV3Client
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
-            $response = New-TransportRule @cmd_params -WarningAction:SilentlyContinue -ErrorAction Stop
+            $response = New-TransportRule @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
         }
@@ -1844,7 +1844,7 @@ class ExchangeOnlinePowershellV3Client
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
-            $response = Set-TransportRule @cmd_params -WarningAction:SilentlyContinue -ErrorAction Stop
+            $response = Set-TransportRule @cmd_params -WarningAction:SilentlyContinue
         } finally {
             $this.DisconnectSession()
         }
@@ -2745,13 +2745,25 @@ function NewMailFlowRuleCommand {
     )
     $has_entry_id = -not [string]::IsNullOrEmpty($kwargs.entry_id)
 
-    # When no entry_id file is provided, the command arguments must be self-sufficient:
-    # the rule name is required, and at least one action must be specified.
+    # Build the final parameter set first (command args + entry_id file), then validate the
+    # RESULT. New-TransportRule's -Name is a mandatory parameter, so if the merged params
+    # lack a Name the cmdlet would block on an interactive prompt (which hangs the container).
+    # Validating the merged params guards this whether the name comes from an argument, the
+    # file, or neither.
+    $cmd_params = BuildMailFlowRuleParams $kwargs
+    if ($has_entry_id) {
+        $params_from_file = GetMailFlowRuleParamsFromEntryId $kwargs.entry_id
+        $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
+    }
+
+    if ([string]::IsNullOrEmpty($cmd_params.Name)) {
+        throw "A rule name is required. Provide the 'name' argument or include 'Name' in the entry_id file."
+    }
+
+    # A transport rule must have at least one action; otherwise Exchange rejects it. When an
+    # entry_id file is provided we let Exchange validate (the file may carry other action
+    # parameters beyond the three exposed here), otherwise we check the built-in actions.
     if (-not $has_entry_id) {
-        if ([string]::IsNullOrEmpty($kwargs.name)) {
-            ReturnError "The 'name' argument is required when no 'entry_id' file is provided."
-            return
-        }
         $action_args = @("reject_message_reason_text", "quarantine", "delete_message")
         $has_action = $false
         foreach ($action in $action_args) {
@@ -2761,15 +2773,8 @@ function NewMailFlowRuleCommand {
             }
         }
         if (-not $has_action) {
-            ReturnError "At least one action must be provided. Please specify one of: reject_message_reason_text, quarantine, or delete_message."
-            return
+            throw "At least one action must be provided. Please specify one of: reject_message_reason_text, quarantine, or delete_message."
         }
-    }
-
-    $cmd_params = BuildMailFlowRuleParams $kwargs
-    if ($has_entry_id) {
-        $params_from_file = GetMailFlowRuleParamsFromEntryId $kwargs.entry_id
-        $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
     }
 
     $extended_output = ConvertTo-Boolean $kwargs.extended_output
@@ -2795,20 +2800,23 @@ function SetMailFlowRuleCommand {
     )
     $has_entry_id = -not [string]::IsNullOrEmpty($kwargs.entry_id)
 
-    if (-not $has_entry_id -and [string]::IsNullOrEmpty($kwargs.identity)) {
-        ReturnError "The 'identity' argument is required when no 'entry_id' file is provided."
-        return
-    }
-
+    # Build the final parameter set first (command args + entry_id file), then validate the
+    # RESULT. Set-TransportRule's -Identity is a mandatory parameter, so if the merged params
+    # lack an Identity the cmdlet would block on an interactive prompt (which hangs the
+    # container). Validating the merged params guards this whether the identity comes from an
+    # argument, the file, or neither.
     $cmd_params = BuildMailFlowRuleParams $kwargs
     if ($has_entry_id) {
         $params_from_file = GetMailFlowRuleParamsFromEntryId $kwargs.entry_id
         $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
     }
 
+    if ([string]::IsNullOrEmpty($cmd_params.Identity)) {
+        throw "A rule identity is required. Provide the 'identity' argument or include 'Identity' in the entry_id file."
+    }
 
     $raw_response = $client.UpdateMailFlowRule($cmd_params)
-    $identity = if ($cmd_params.ContainsKey("Identity")) { $cmd_params.Identity } else { $kwargs.identity }
+    $identity = $cmd_params.Identity
     $human_readable = "Mail flow rule $identity has been updated successfully"
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
@@ -3053,7 +3061,7 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = DisableMailForwardingCommand $exo_client $command_arguments
             }
             default {
-                ReturnError "Could not recognize $command"
+                ReturnError "Could not recognize $command" | Out-Null
             }
         }
         # Return results to Demisto Server
@@ -3073,11 +3081,11 @@ function Main
             Integration: $script:INTEGRATION_NAME
             Command: $command
             Arguments: $( $command_arguments | ConvertTo-Json )
-            Error: $( $_.Exception )"
+            Error: $( $_.Exception )" | Out-Null
         }
         else
         {
-            ReturnError $_.Exception.Message
+            ReturnError $_.Exception.Message | Out-Null
         }
     }
     finally

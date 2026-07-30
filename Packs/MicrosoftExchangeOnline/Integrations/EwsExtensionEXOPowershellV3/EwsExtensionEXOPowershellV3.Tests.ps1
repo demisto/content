@@ -234,18 +234,11 @@ Describe 'NewMailFlowRuleCommand' {
     }
 
     Context "Missing action validation" {
-        It "Returns an error and does not call the client when no action is provided" {
-            Mock ReturnError {}
-
+        It "Throws when no action is provided and no entry_id file is given" {
             $kwargs = @{ name = "No-Action-Rule"; subject_contains_words = "test" }
 
-            $result = NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs
-
-            # ReturnError should be invoked exactly once
-            Should -Invoke ReturnError -Times 1 -Exactly
-
-            # The command returns nothing after the validation error
-            $result | Should -BeNullOrEmpty
+            { NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs } |
+                Should -Throw "*At least one action must be provided*"
         }
     }
 
@@ -391,58 +384,71 @@ Describe 'Entry ID parameter loading and merging' {
     }
 
     Context "Validation with entry_id present" {
-        It "Skips the name and action validation in create when an entry_id file is provided" {
-            # No name and no action, but an entry_id file is supplied -> validation is skipped
-            # and the client is called (Exchange would validate the merged params).
+        It "Skips the name and action validation in create when the file supplies the name and an action" {
+            # No name and no action on the command, but the entry_id file supplies both ->
+            # validation passes and the client is called.
             Mock GetMailFlowRuleParamsFromEntryId {
                 return @{ Name = "File Rule"; Quarantine = $true }
             }
-            Mock ReturnError {}
 
             $kwargs = @{ entry_id = "12@34" }
 
             $result = NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs
 
-            Should -Invoke ReturnError -Times 0 -Exactly
             $result | Should -HaveCount 3
         }
 
-        It "Skips the identity validation in update when an entry_id file is provided" {
+        It "Uses the identity from the file in update when the file supplies it" {
             Mock GetMailFlowRuleParamsFromEntryId {
                 return @{ Identity = "File Rule"; Priority = 5 }
             }
-            Mock ReturnError {}
 
             $kwargs = @{ entry_id = "12@34" }
 
             $result = SetMailFlowRuleCommand -client $mockClient -kwargs $kwargs
 
-            Should -Invoke ReturnError -Times 0 -Exactly
             $result | Should -HaveCount 3
+            $result[2].Identity | Should -Be "File Rule"
+        }
+
+        It "Throws in create when the entry_id file does NOT supply a name" {
+            # This is the regression that caused New-TransportRule to block on its mandatory
+            # -Name prompt: an entry_id file without a Name must be caught before the client call.
+            Mock GetMailFlowRuleParamsFromEntryId {
+                return @{ Quarantine = $true }
+            }
+
+            $kwargs = @{ entry_id = "12@34" }
+
+            { NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs } |
+                Should -Throw "*rule name is required*"
+        }
+
+        It "Throws in update when the entry_id file does NOT supply an identity" {
+            Mock GetMailFlowRuleParamsFromEntryId {
+                return @{ Priority = 5 }
+            }
+
+            $kwargs = @{ entry_id = "12@34" }
+
+            { SetMailFlowRuleCommand -client $mockClient -kwargs $kwargs } |
+                Should -Throw "*rule identity is required*"
         }
     }
 
     Context "Missing required argument without entry_id" {
-        It "create fails when neither name nor entry_id is provided" {
-            Mock ReturnError {}
-
+        It "create throws when neither name nor entry_id is provided" {
             $kwargs = @{ quarantine = "true" }
 
-            $result = NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs
-
-            Should -Invoke ReturnError -Times 1 -Exactly
-            $result | Should -BeNullOrEmpty
+            { NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs } |
+                Should -Throw "*rule name is required*"
         }
 
-        It "update fails when neither identity nor entry_id is provided" {
-            Mock ReturnError {}
-
+        It "update throws when neither identity nor entry_id is provided" {
             $kwargs = @{ priority = "1" }
 
-            $result = SetMailFlowRuleCommand -client $mockClient -kwargs $kwargs
-
-            Should -Invoke ReturnError -Times 1 -Exactly
-            $result | Should -BeNullOrEmpty
+            { SetMailFlowRuleCommand -client $mockClient -kwargs $kwargs } |
+                Should -Throw "*rule identity is required*"
         }
     }
 }
