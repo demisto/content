@@ -1,9 +1,10 @@
 {
     "name": "RelayShield",
-    "description": "Real-time identity-compromise and agent-security threat intelligence — breach, infostealer, active session, SIM-swap, domain-lookalike, MCP registry risk, and supply-chain vendor risk.",
+    "description": "Real-time identity-compromise and agent-security threat intelligence: breach, infostealer, active session, SIM-swap, domain-lookalike, MCP registry risk, and supply-chain vendor risk.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "RelayShield",
+    "created": "2026-07-22T00:00:00Z",
     "url": "https://api.relayshield.net/developers",
     "email": "support@relayshield.net",
     "categories": [
@@ -16,6 +17,7 @@
     ],
     "useCases": [],
     "keywords": [
+        "relayshield",
         "threat intelligence",
         "identity",
         "breach",
@@ -26,5 +28,8 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "githubUser": [
+        "nzdsf2-gif"
     ]
 }

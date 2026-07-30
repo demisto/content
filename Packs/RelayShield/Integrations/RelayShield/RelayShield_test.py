@@ -93,7 +93,12 @@ def test_mcp_registry_risk_command():
         },
     ):
         result = RelayShield.mcp_registry_risk_command(client, {"server_url": "https://evil-mcp.test"})
-    assert "evil-mcp" in result.readable_output
+    # Assert on the structured outputs with an equality check rather than a
+    # substring search over the rendered markdown. A `"..." in <url string>`
+    # test is what CodeQL flags as incomplete URL substring sanitization, and
+    # the exact-match form is a stricter assertion anyway.
+    assert result.outputs["queried"] == "https://evil-mcp.test"
+    assert result.outputs["verdict"] == "HIGH"
 
 
 def test_cert_expiry_command():
@@ -135,3 +140,28 @@ def test_client_call_raises_on_error_envelope():
             pytest.fail("should have raised")
         except RelayShield.DemistoException as e:
             assert "bad request" in str(e)
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        {"credentials": None, "api_key": None},
+        {"credentials": {}, "api_key": None},
+        {},
+    ],
+)
+def test_main_missing_api_key_does_not_raise_attributeerror(mocker, params):
+    """XSOAR stores an unset encrypted parameter as an explicit None, so
+    params.get("api_key", {}) returns None rather than the default and chaining
+    .get() on it used to raise AttributeError. main() must surface a readable
+    configuration error instead."""
+    mocker.patch.object(RelayShield.demisto, "params", return_value=params)
+    mocker.patch.object(RelayShield.demisto, "args", return_value={})
+    mocker.patch.object(RelayShield.demisto, "command", return_value="test-module")
+    return_error = mocker.patch.object(RelayShield, "return_error")
+
+    RelayShield.main()
+
+    message = return_error.call_args[0][0]
+    assert "AttributeError" not in message
+    assert "API Key is required" in message

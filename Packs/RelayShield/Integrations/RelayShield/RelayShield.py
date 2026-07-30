@@ -299,13 +299,21 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get("credentials", {}).get("password") or params.get("api_key", {}).get("password")
-    base_url = params.get("url", "https://api.relayshield.net").rstrip("/")
-    verify_certificate = not params.get("insecure", False)
-    proxy = params.get("proxy", False)
-
     demisto.debug(f"Command being called is {command}")
     try:
+        # `or {}` rather than a .get() default: XSOAR stores an unset encrypted
+        # parameter as an explicit None, and params.get("api_key", {}) returns
+        # that None rather than the default, so chaining .get() on it raises
+        # AttributeError before the friendlier check below can run.
+        # Parsed inside the try so a misconfigured instance surfaces through
+        # return_error like every other failure, instead of escaping main().
+        api_key = (params.get("credentials") or {}).get("password") or (params.get("api_key") or {}).get("password")
+        if not api_key:
+            raise DemistoException("API Key is required. Set it in the integration instance configuration.")
+        base_url = (params.get("url") or "https://api.relayshield.net").rstrip("/")
+        verify_certificate = not params.get("insecure", False)
+        proxy = params.get("proxy", False)
+
         client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy)
 
         if command == "test-module":
