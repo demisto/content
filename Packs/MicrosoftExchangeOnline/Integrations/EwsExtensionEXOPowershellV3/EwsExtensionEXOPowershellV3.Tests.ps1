@@ -348,14 +348,14 @@ Describe 'Entry ID parameter loading and merging' {
             $merged.StopRuleProcessing | Should -Be $true
         }
 
-        It "Gives precedence to explicit command arguments over file values" {
+        It "Gives precedence to the entry_id file over command arguments" {
             $cmd_params = @{ Comments = "Explicit comment" }
             $params_from_file = @{ Comments = "From file" }
 
             $merged = MergeEntryIdParams $cmd_params $params_from_file
 
-            # The explicit argument value must win.
-            $merged.Comments | Should -Be "Explicit comment"
+            # The entry_id file value must win.
+            $merged.Comments | Should -Be "From file"
         }
 
         It "Returns cmd_params unchanged when the file map is empty" {
@@ -371,22 +371,78 @@ Describe 'Entry ID parameter loading and merging' {
 
 
     Context "End-to-end entry_id merging via NewMailFlowRuleCommand" {
-        It "Merges file parameters into the client call, with explicit args winning" {
+        It "Merges file parameters into the client call, with the file winning" {
             # Mock the file-loading helper so this test focuses on the merge behavior
             # inside NewMailFlowRuleCommand, independent of the $demisto file API.
             Mock GetMailFlowRuleParamsFromEntryId {
                 return @{ Comments = "From file"; StopRuleProcessing = $true }
             }
 
-            # Explicit comments should win over the file value; StopRuleProcessing comes from the file.
+            # The file's Comments should win over the command argument; StopRuleProcessing comes from the file.
             $kwargs = @{ name = "Merged Rule"; quarantine = "true"; comments = "Explicit comment"; entry_id = "12@34" }
 
             $result = NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs
 
             $result | Should -HaveCount 3
             # raw_response echoes the params sent to the client (MockClient.CreateMailFlowRule).
-            $result[2].Comments | Should -Be "Explicit comment"
+            $result[2].Comments | Should -Be "From file"
             $result[2].StopRuleProcessing | Should -Be $true
+        }
+    }
+
+    Context "Validation with entry_id present" {
+        It "Skips the name and action validation in create when an entry_id file is provided" {
+            # No name and no action, but an entry_id file is supplied -> validation is skipped
+            # and the client is called (Exchange would validate the merged params).
+            Mock GetMailFlowRuleParamsFromEntryId {
+                return @{ Name = "File Rule"; Quarantine = $true }
+            }
+            Mock ReturnError {}
+
+            $kwargs = @{ entry_id = "12@34" }
+
+            $result = NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs
+
+            Should -Invoke ReturnError -Times 0 -Exactly
+            $result | Should -HaveCount 3
+        }
+
+        It "Skips the identity validation in update when an entry_id file is provided" {
+            Mock GetMailFlowRuleParamsFromEntryId {
+                return @{ Identity = "File Rule"; Priority = 5 }
+            }
+            Mock ReturnError {}
+
+            $kwargs = @{ entry_id = "12@34" }
+
+            $result = SetMailFlowRuleCommand -client $mockClient -kwargs $kwargs
+
+            Should -Invoke ReturnError -Times 0 -Exactly
+            $result | Should -HaveCount 3
+        }
+    }
+
+    Context "Missing required argument without entry_id" {
+        It "create fails when neither name nor entry_id is provided" {
+            Mock ReturnError {}
+
+            $kwargs = @{ quarantine = "true" }
+
+            $result = NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs
+
+            Should -Invoke ReturnError -Times 1 -Exactly
+            $result | Should -BeNullOrEmpty
+        }
+
+        It "update fails when neither identity nor entry_id is provided" {
+            Mock ReturnError {}
+
+            $kwargs = @{ priority = "1" }
+
+            $result = SetMailFlowRuleCommand -client $mockClient -kwargs $kwargs
+
+            Should -Invoke ReturnError -Times 1 -Exactly
+            $result | Should -BeNullOrEmpty
         }
     }
 }

@@ -2893,8 +2893,8 @@ script:
   - name: ews-mail-flow-rule-create
     arguments:
     - name: name
-      description: The unique name of the rule. The maximum length is 64 characters. If the value contains spaces, enclose the value in quotation marks (").
-      required: true
+      description: The unique name of the rule. The maximum length is 64 characters. If the value contains spaces, enclose the value in quotation marks ("). Required unless an entry_id file is provided.
+      required: false
     - name: mode
       description: How the rule operates.
       required: false
@@ -2921,17 +2921,17 @@ script:
       description: 'The words that, when found in the Subject field of messages, exempt the message from the rule. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN.'
       required: false
     - name: reject_message_reason_text
-      description: The explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
+      description: The explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). When no entry_id file is provided, at least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
       required: false
     - name: quarantine
-      description: Whether to quarantine messages that match the rule. At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
+      description: Whether to quarantine messages that match the rule. When no entry_id file is provided, at least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
       required: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: delete_message
-      description: Whether to silently drop messages without an NDR. At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
+      description: Whether to silently drop messages without an NDR. When no entry_id file is provided, at least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided.
       required: false
       auto: PREDEFINED
       predefined:
@@ -2941,13 +2941,17 @@ script:
       description: The descriptive text for the rule (for example, what the rule is used for, or how it has changed over time).
       required: false
     - name: entry_id
-      description: 'The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Explicit command arguments take precedence over values in the file.'
+      description: 'The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Values in the file take precedence over the corresponding command arguments.'
       required: false
     - name: extended_output
       description: Whether the output will be in verbose format.
       required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
       defaultValue: false
-    description: Create a transport rule (mail flow rule) in the organization. At least one action (reject_message_reason_text, quarantine, or delete_message) must be provided.
+    description: Create a transport rule (mail flow rule) in the organization. When no entry_id file is provided, both a name and at least one action (reject_message_reason_text, quarantine, or delete_message) are required.
     outputs:
     - contextPath: EWS.MailFlowRule.Size
       description: The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule.
@@ -3006,8 +3010,8 @@ script:
   - name: ews-mail-flow-rule-update
     arguments:
     - name: identity
-      description: 'The rule that you want to modify. You can use any value that uniquely identifies the rule. For example: Name, Distinguished name, or GUID.'
-      required: true
+      description: 'The rule that you want to modify. You can use any value that uniquely identifies the rule. For example: Name, Distinguished name, or GUID. Required unless an entry_id file is provided.'
+      required: false
     - name: mode
       description: How the rule operates.
       required: false
@@ -3054,9 +3058,9 @@ script:
       description: The descriptive text for the rule (for example, what the rule is used for, or how it has changed over time).
       required: false
     - name: entry_id
-      description: 'The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Explicit command arguments take precedence over values in the file.'
+      description: 'The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Values in the file take precedence over the corresponding command arguments.'
       required: false
-    description: Modify an existing transport rule (mail flow rule) in the organization.
+    description: Modify an existing transport rule (mail flow rule) in the organization. When no entry_id file is provided, the identity is required.
   - name: ews-mail-forwarding-disable
     arguments:
     - name: identity

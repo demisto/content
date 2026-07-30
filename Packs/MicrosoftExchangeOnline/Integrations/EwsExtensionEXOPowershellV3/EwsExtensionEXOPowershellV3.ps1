@@ -1814,7 +1814,7 @@ class ExchangeOnlinePowershellV3Client
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
-            $response = New-TransportRule @cmd_params -WarningAction:SilentlyContinue
+            $response = New-TransportRule @cmd_params -WarningAction:SilentlyContinue -ErrorAction Stop
         } finally {
             $this.DisconnectSession()
         }
@@ -1844,7 +1844,7 @@ class ExchangeOnlinePowershellV3Client
             # Establish session to remote
             $this.CreateSession()
             # Import and Execute command
-            $response = Set-TransportRule @cmd_params -WarningAction:SilentlyContinue
+            $response = Set-TransportRule @cmd_params -WarningAction:SilentlyContinue -ErrorAction Stop
         } finally {
             $this.DisconnectSession()
         }
@@ -2716,17 +2716,15 @@ function BuildMailFlowRuleParams([hashtable]$kwargs) {
 
 function MergeEntryIdParams([hashtable]$cmd_params, [hashtable]$params_from_file) {
     # Merges parameters read from the entry_id file into cmd_params.
-    # Explicit command arguments (already in cmd_params) take precedence over file values.
+    # The entry_id file takes precedence: its values override values set from command arguments.
     foreach ($key in $params_from_file.Keys) {
-        if (-not $cmd_params.ContainsKey($key)) {
-            $cmd_params[$key] = $params_from_file[$key]
-        }
+        $cmd_params[$key] = $params_from_file[$key]
     }
     return $cmd_params
     <#
         .DESCRIPTION
-        Merges file-provided parameters into the existing cmd_params, without overriding values
-        that were already set from explicit command arguments.
+        Merges file-provided parameters into cmd_params. The entry_id file is authoritative:
+        any parameter present in the file overrides the corresponding value from the command arguments.
 
         .PARAMETER cmd_params
         The parameters built from explicit command arguments.
@@ -2745,22 +2743,31 @@ function NewMailFlowRuleCommand {
         [Parameter(Mandatory)]$client,
         [hashtable]$kwargs
     )
-    # At least one action must be provided (Exchange rejects rules with no action).
-    $action_args = @("reject_message_reason_text", "quarantine", "delete_message")
-    $has_action = $false
-    foreach ($action in $action_args) {
-        if (-not [string]::IsNullOrEmpty($kwargs.$action)) {
-            $has_action = $true
-            break
+    $has_entry_id = -not [string]::IsNullOrEmpty($kwargs.entry_id)
+
+    # When no entry_id file is provided, the command arguments must be self-sufficient:
+    # the rule name is required, and at least one action must be specified.
+    if (-not $has_entry_id) {
+        if ([string]::IsNullOrEmpty($kwargs.name)) {
+            ReturnError "The 'name' argument is required when no 'entry_id' file is provided."
+            return
         }
-    }
-    if (-not $has_action) {
-        ReturnError "At least one action must be provided. Please specify one of: reject_message_reason_text, quarantine, or delete_message."
-        return
+        $action_args = @("reject_message_reason_text", "quarantine", "delete_message")
+        $has_action = $false
+        foreach ($action in $action_args) {
+            if (-not [string]::IsNullOrEmpty($kwargs.$action)) {
+                $has_action = $true
+                break
+            }
+        }
+        if (-not $has_action) {
+            ReturnError "At least one action must be provided. Please specify one of: reject_message_reason_text, quarantine, or delete_message."
+            return
+        }
     }
 
     $cmd_params = BuildMailFlowRuleParams $kwargs
-    if (-not [string]::IsNullOrEmpty($kwargs.entry_id)) {
+    if ($has_entry_id) {
         $params_from_file = GetMailFlowRuleParamsFromEntryId $kwargs.entry_id
         $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
     }
@@ -2786,14 +2793,23 @@ function SetMailFlowRuleCommand {
         [Parameter(Mandatory)]$client,
         [hashtable]$kwargs
     )
+    $has_entry_id = -not [string]::IsNullOrEmpty($kwargs.entry_id)
+
+    if (-not $has_entry_id -and [string]::IsNullOrEmpty($kwargs.identity)) {
+        ReturnError "The 'identity' argument is required when no 'entry_id' file is provided."
+        return
+    }
+
     $cmd_params = BuildMailFlowRuleParams $kwargs
-    if (-not [string]::IsNullOrEmpty($kwargs.entry_id)) {
+    if ($has_entry_id) {
         $params_from_file = GetMailFlowRuleParamsFromEntryId $kwargs.entry_id
         $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
     }
 
+
     $raw_response = $client.UpdateMailFlowRule($cmd_params)
-    $human_readable = "Mail flow rule $($kwargs.identity) has been updated successfully"
+    $identity = if ($cmd_params.ContainsKey("Identity")) { $cmd_params.Identity } else { $kwargs.identity }
+    $human_readable = "Mail flow rule $identity has been updated successfully"
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
 }
