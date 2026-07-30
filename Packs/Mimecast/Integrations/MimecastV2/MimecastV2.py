@@ -543,7 +543,6 @@ def updating_token_oauth2():
     """
     global TOKEN_OAUTH2
     global USE_SSL
-    USE_SSL = False
 
     integration_context = demisto.getIntegrationContext()
     current_ts = epoch_seconds()
