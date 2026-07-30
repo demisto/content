@@ -419,6 +419,44 @@ def test_test_module_full_bundle_is_non_mutating(mocker):
     get_token.assert_not_called()
 
 
+def test_test_module_full_bundle_stale_access_token_raises_helpful_error(mocker):
+    """
+    Given:
+    - A full Access Token bundle whose access token is expired/stale (validation fails).
+
+    When:
+    - Pressing the Test button.
+
+    Then:
+    - The refresh token is NOT rotated (get_access_token is not called), and a DemistoException is raised
+      that hints the token may be stale and can be refreshed via the 'aruba-auth-test' command.
+    """
+    from HPEArubaCentralEventCollector import test_module
+
+    client = Client(
+        base_url=BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        user_name="",
+        user_password="",
+        customer_id="",
+        downloaded_token=DOWNLOAD_TOKEN_FULL,
+        verify=False,
+        proxy=False,
+    )
+    validate = mocker.patch.object(
+        client, "validate_access_token", side_effect=DemistoException("Error in API call [401] - Unauthorized")
+    )
+    get_token = mocker.patch.object(client, "get_access_token")
+
+    with pytest.raises(DemistoException, match="aruba-auth-test"):
+        test_module(client)
+
+    validate.assert_called_once_with(TEST_TOKEN)
+    # The refresh token must not be rotated by test-module.
+    get_token.assert_not_called()
+
+
 def test_test_module_refresh_only_bundle_falls_back_to_refresh(mocker):
     """Test with a refresh-only bundle falls back to a refresh to get a token, then validates it."""
     from HPEArubaCentralEventCollector import test_module

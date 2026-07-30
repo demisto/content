@@ -653,6 +653,8 @@ def test_module(client: Client) -> str:
 
     Test-module can't persist tokens, so it avoids rotating the pasted Access Token's refresh token:
     validate with the bundle's own access token when present, otherwise fall back to a refresh.
+    If the bundle's access token is present but expired, the raised error hints that it may be stale and
+    can be refreshed via the 'aruba-auth-test' command (which is safe to rotate the refresh token).
     Username/Password can't be tested safely (would burn Aruba's 30-min new-token quota), so we point
     the user to the 'aruba-auth-test' command instead. Returns "ok" on success.
     """
@@ -660,7 +662,19 @@ def test_module(client: Client) -> str:
         _, access_token, _ = client.parse_download_token(client.downloaded_token)
         if access_token:
             # Non-mutating: validate with the bundle's own access token, leaving the refresh token untouched.
-            client.validate_access_token(access_token)
+            # The bundle's access token may already be expired (they are valid for only ~2 hours), while the
+            # refresh token remains valid for up to 15 days. If validation fails, tell the user the access token
+            # may be stale and can be refreshed - without rotating the refresh token here (test-module can't persist).
+            try:
+                client.validate_access_token(access_token)
+            except DemistoException as e:
+                demisto.debug(f"Validation with the bundle's access token failed: {e}")
+                raise DemistoException(
+                    "Failed to validate the pasted Access Token. Its access token may be expired (access tokens are "
+                    "valid for ~2 hours), even though the refresh token can still be valid (up to 15 days). Run the "
+                    "'aruba-auth-test' command to authenticate using the refresh token, or paste a freshly downloaded "
+                    "Access Token JSON from the Aruba Central UI."
+                ) from e
         else:
             # No access token in the bundle: a refresh is the only way to get one to validate with.
             demisto.debug("Access Token bundle has no access token; validating via refresh (may rotate the refresh token).")
