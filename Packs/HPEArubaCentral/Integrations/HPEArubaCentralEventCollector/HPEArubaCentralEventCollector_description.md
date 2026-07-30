@@ -50,7 +50,7 @@ Paste the **entire JSON**. The integration reads the `refresh_token` from it (an
 
 > Note: You only need to do this once. The integration stores and automatically rotates the refresh token.
 >
-> Access tokens are valid for 2 hours, and refresh tokens are valid for 15 days. If an access token is not renewed for a period of 15 days (in other words, if the refresh token is unused for 15 days), Classic Central removes the token. At this point, a new token must be generated either by going to the API Gateway UI (clicking the **Download Token** button and pasting the new token JSON here) or by using the OAuth API (Basic Auth method).
+> Access tokens are valid for 2 hours, and refresh tokens are valid for 15 days. If an access token is not renewed for 15 days (meaning the refresh token is unused for 15 days), Aruba Central removes the token. At this point, a new token must be generated either by going to the API Gateway UI (clicking the **Download Token** button and pasting the new token JSON here) or by using the OAuth API (Basic Auth method).
 
 
 ### Domain URLs for API Gateway Access

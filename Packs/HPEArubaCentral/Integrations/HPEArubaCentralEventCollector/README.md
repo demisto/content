@@ -4,14 +4,16 @@ This is the Aruba Central event collector integration for Cortex XSIAM.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| **Authentication Method** | Select how to authenticate. "Access Token": paste the token JSON downloaded from the Aruba Central UI. "Basic Auth": provide a Username, Password, and Customer ID. | False |
 | **Server URL** | The region-specific Base URL for the Aruba Central API Gateway. | True |
+| **Authentication Method** | The authentication method to use. "Access Token": paste the token JSON downloaded from the Aruba Central UI. "Basic Auth": provide a Username, Password, and Customer ID. | False |
 | **Client ID** | The unique identifier for your API application registered in Aruba Central. | True |
 | **Client Secret** | The secret key associated with your Client ID for API authentication. | True |
-| **Access Token (JSON)** | In the Aruba Central UI, click the "Download Token" button and paste the full token JSON here. The integration reads the refresh_token from it and refreshes access tokens automatically with no username/password. Required when the Authentication Method is "Access Token". | False |
+| **Access Token (JSON)** | The full token JSON downloaded from the Aruba Central UI (click the "Download Token" button and paste it here). The integration reads the `refresh_token` from it and refreshes access tokens automatically with no username/password. Required when the Authentication Method is "Access Token". | False |
 | **Customer ID** | The unique identifier for your Aruba Central account. Required only when the Authentication Method is "Basic Auth". | False |
 | **Username** | The username of an Aruba Central account with at least read-only privileges. Required only when the Authentication Method is "Basic Auth". | False |
 | **Password** | The password associated with the specified Aruba Central username. Required only when the Authentication Method is "Basic Auth". | False |
+| **Fetch Events** | Select this to enable fetching events into Cortex. | False |
+| **Events Fetch Interval** | The interval, in minutes, between event fetches. | False |
 | **Fetch networking events** | Select this to fetch networking events in addition to audit logs. If cleared, the collector will only fetch audit logs. | False |
 | **The maximum number of audit events per fetch** | The maximum number of audit events to pull in a single fetch. The default is `100`. | False |
 | **The maximum number of networking events per fetch** | The maximum number of networking events to pull in a single fetch. The default is `5000`. | False |
@@ -109,4 +111,4 @@ There is no context output for this command.
 
 ### Token expiration (Access Token method)
 
-Access tokens are valid for 2 hours, and refresh tokens are valid for 15 days. If an access token is not renewed for a period of 15 days (in other words, if the refresh token is unused for 15 days), Classic Central removes the token. At this point, a new token must be generated either by going to the API Gateway UI (clicking the "Download Token" button and pasting the new token JSON here) or by using the OAuth API (Basic Auth method).
+Access tokens are valid for 2 hours, and refresh tokens are valid for 15 days. If an access token is not renewed for 15 days (meaning the refresh token is unused for 15 days), Aruba Central removes the token. At this point, a new token must be generated either by going to the API Gateway UI (clicking the "Download Token" button and pasting the new token JSON here) or by using the OAuth API (Basic Auth method).

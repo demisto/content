@@ -20,7 +20,7 @@ MAX_GET_EVENTS_LIMIT = 1000  # Maximum limit accepted by get events API
 MAX_EVENT_API_REQS = 5
 AUDIT_TS = "ts"
 NETWORKING_TS = "timestamp"
-MASK_EDGE_LEN = 6  # Chars kept from each end when masking a secret for debug logs.
+MASK_EDGE_LEN = 4  # Chars kept from each end when masking a secret for debug logs.
 
 
 """ CLIENT CLASS """
@@ -481,7 +481,7 @@ class Client(BaseClient):
 def mask_secret(secret: str | None) -> str:
     """
     Masks a secret for safe debug logging: keeps a short prefix and suffix plus the length,
-    e.g. "paf8bU…fDvu(32)". This is enough to correlate a value across log lines and confirm
+    e.g. "paf8…Zy4R(32)". This is enough to correlate a value across log lines and confirm
     token rotation, without exposing a usable portion.
 
     Each non-usable case is distinguishable so the log tells you what actually happened:
@@ -493,7 +493,9 @@ def mask_secret(secret: str | None) -> str:
         return "<none>"
     if secret == "":
         return "<empty>"
-    if len(secret) <= 2 * MASK_EDGE_LEN:
+    # Only reveal edges when the secret is long enough that the revealed prefix+suffix is a small
+    # fraction of the whole; otherwise fully mask so short secrets never expose a usable portion.
+    if len(secret) <= 3 * MASK_EDGE_LEN:
         return f"***({len(secret)})"
     return f"{secret[:MASK_EDGE_LEN]}…{secret[-MASK_EDGE_LEN:]}({len(secret)})"
 
@@ -651,34 +653,36 @@ def test_module(client: Client) -> str:
     """
     Validates the configuration when the user clicks "Test".
 
-    Test-module can't persist tokens, so it avoids rotating the pasted Access Token's refresh token:
-    validate with the bundle's own access token when present, otherwise fall back to a refresh.
-    If the bundle's access token is present but expired, the raised error hints that it may be stale and
-    can be refreshed via the 'aruba-auth-test' command (which is safe to rotate the refresh token).
-    Username/Password can't be tested safely (would burn Aruba's 30-min new-token quota), so we point
-    the user to the 'aruba-auth-test' command instead. Returns "ok" on success.
+    Test-module can't persist the integration context, so it never refreshes the refresh token: a rotated
+    refresh token would be lost and would invalidate the stored configuration for future fetches. It only
+    validates non-mutatingly, using the pasted Access Token bundle's own access token. Any case that would
+    require a refresh (an expired/stale bundle access token, or a bundle with no access token) or a
+    Username/Password login is directed to the 'aruba-auth-test' command instead. Returns "ok" on success.
     """
     if client.downloaded_token:
         _, access_token, _ = client.parse_download_token(client.downloaded_token)
-        if access_token:
-            # Non-mutating: validate with the bundle's own access token, leaving the refresh token untouched.
-            # The bundle's access token may already be expired (they are valid for only ~2 hours), while the
-            # refresh token remains valid for up to 15 days. If validation fails, tell the user the access token
-            # may be stale and can be refreshed - without rotating the refresh token here (test-module can't persist).
-            try:
-                client.validate_access_token(access_token)
-            except DemistoException as e:
-                demisto.debug(f"Validation with the bundle's access token failed: {e}")
-                raise DemistoException(
-                    "Failed to validate the pasted Access Token. Its access token may be expired (access tokens are "
-                    "valid for ~2 hours), even though the refresh token can still be valid (up to 15 days). Run the "
-                    "'aruba-auth-test' command to authenticate using the refresh token, or paste a freshly downloaded "
-                    "Access Token JSON from the Aruba Central UI."
-                ) from e
-        else:
-            # No access token in the bundle: a refresh is the only way to get one to validate with.
-            demisto.debug("Access Token bundle has no access token; validating via refresh (may rotate the refresh token).")
-            client.validate_access_token(client.get_access_token())
+        if not access_token:
+            # No access token in the bundle: the only way to validate would be a refresh, which rotates the
+            # refresh token. Test-module can't persist the rotated token, so direct the user to aruba-auth-test.
+            raise DemistoException(
+                "The pasted Access Token JSON has no 'access_token', so the Test button cannot validate it without "
+                "refreshing (which would rotate and invalidate the refresh token, since the Test button cannot save it). "
+                "Run the 'aruba-auth-test' command to validate this configuration."
+            )
+        # Non-mutating: validate with the bundle's own access token, leaving the refresh token untouched.
+        # The bundle's access token may already be expired (they are valid for only ~2 hours), while the
+        # refresh token remains valid for up to 15 days. On failure, direct the user to aruba-auth-test, which
+        # can safely refresh (it persists the rotated refresh token) - we must not refresh here.
+        try:
+            client.validate_access_token(access_token)
+        except DemistoException as e:
+            demisto.debug(f"Validation with the bundle's access token failed: {e}")
+            raise DemistoException(
+                "Failed to validate the pasted Access Token. Its access token may be expired (access tokens are "
+                "valid for ~2 hours), even though the refresh token can still be valid (up to 15 days). Run the "
+                "'aruba-auth-test' command to authenticate using the refresh token, or paste a freshly downloaded "
+                "Access Token JSON from the Aruba Central UI."
+            ) from e
         return "ok"
 
     raise DemistoException(

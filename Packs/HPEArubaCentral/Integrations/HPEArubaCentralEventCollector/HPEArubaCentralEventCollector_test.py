@@ -457,8 +457,19 @@ def test_test_module_full_bundle_stale_access_token_raises_helpful_error(mocker)
     get_token.assert_not_called()
 
 
-def test_test_module_refresh_only_bundle_falls_back_to_refresh(mocker):
-    """Test with a refresh-only bundle falls back to a refresh to get a token, then validates it."""
+def test_test_module_refresh_only_bundle_raises_without_refreshing(mocker):
+    """
+    Given:
+    - A bundle that contains only a refresh token (no usable access token).
+
+    When:
+    - Pressing the Test button.
+
+    Then:
+    - The refresh token is NOT rotated (get_access_token and validate_access_token are not called), and a
+      DemistoException directs the user to the 'aruba-auth-test' command, because refreshing here would
+      rotate a token that test-module cannot persist.
+    """
     from HPEArubaCentralEventCollector import test_module
 
     client = Client(
@@ -472,12 +483,15 @@ def test_test_module_refresh_only_bundle_falls_back_to_refresh(mocker):
         verify=False,
         proxy=False,
     )
-    get_token = mocker.patch.object(client, "get_access_token", return_value="refreshed-access-token")
+    get_token = mocker.patch.object(client, "get_access_token")
     validate = mocker.patch.object(client, "validate_access_token")
 
-    assert test_module(client) == "ok"
-    get_token.assert_called_once()
-    validate.assert_called_once_with("refreshed-access-token")
+    with pytest.raises(DemistoException, match="aruba-auth-test"):
+        test_module(client)
+
+    # Nothing that could rotate or use the refresh token should have been called.
+    get_token.assert_not_called()
+    validate.assert_not_called()
 
 
 def test_test_module_userpass_only_raises():
@@ -1002,9 +1016,9 @@ def test_get_access_token_seeds_access_token_from_json_bundle(mocker):
         (None, "<none>"),  # never set
         ("", "<empty>"),  # set but empty (distinct from None)
         ("short", "***(5)"),
-        ("exactlytwelve", "exactl…twelve(13)"),  # len 13 > 2*6 -> prefix + suffix shown
-        ("abcdefghijkl", "***(12)"),  # len 12 == 2*6 -> fully masked
-        ("paf8bUQEpxcjxeFYfIlTiiO7fDvuZy4R", "paf8bU…vuZy4R(32)"),  # first 6 + last 6 + length
+        ("exactlytwelve", "exac…elve(13)"),  # len 13 > 3*4 -> prefix + suffix shown
+        ("abcdefghijkl", "***(12)"),  # len 12 == 3*4 -> fully masked
+        ("paf8bUQEpxcjxeFYfIlTiiO7fDvuZy4R", "paf8…Zy4R(32)"),  # first 4 + last 4 + length
     ],
 )
 def test_mask_secret(secret, expected):
