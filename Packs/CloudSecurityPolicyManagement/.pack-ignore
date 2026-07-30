@@ -12,3 +12,6 @@ ignore=PB106
 
 [file:Azure_-_VM_Instance_Network_Security_Group_Remediation.yml]
 ignore=PB106,GR109
+
+[file:AzureIdentifyNSGExposureRule.yml]
+ignore=GR109
