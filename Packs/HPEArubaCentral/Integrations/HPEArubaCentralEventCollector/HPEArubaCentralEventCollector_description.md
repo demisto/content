@@ -19,17 +19,17 @@ See [Creating Application & Token](https://developer.arubanetworks.com/hpe-aruba
 
 Use the **Authentication Method** selector to choose how to authenticate:
 
-- **Download Token (works for SSO users):** Paste the **Download Token** copied from the Aruba Central UI into the **Download Token** parameter. The integration uses it to obtain and refresh access tokens automatically, so **no Username, Password, or Customer ID is required**. This is the only option for SSO-only accounts.
-- **Username & Password (non-SSO accounts only):** Provide a **Username**, **Password**, and **Customer ID**. The integration then performs the full OAuth login. Not supported for SSO users.
+- **Access Token:** In the Aruba Central UI, click the **Download Token** button and paste the copied token JSON into the **Access Token** parameter. The integration uses it to obtain and refresh access tokens automatically, so **no Username, Password, or Customer ID is required**.
+- **Basic Auth:** Provide a **Username**, **Password**, and **Customer ID**. The integration then performs the full OAuth login. See [Authenticate a user and create a user session](https://developer.arubanetworks.com/central/docs/api-oauth-access-token#1-authenticate-a-user-and-create-a-user-session).
 
-#### How to get a Download Token
+#### How to get an Access Token
 
 1. Go to **Accounts Home** > **Global Settings** > **API Gateway**.
 2. Open the application you created (**My Apps & Tokens**).
-3. In the **Token List** table (which shows all generated tokens, including expired ones), click **Download Token** to view the generated token.
-4. The Download Token is a full **JSON** object. Copy the **entire JSON** and paste it into the **Download Token** parameter.
+3. In the **Token List** table (which shows all generated tokens, including expired ones), click the **Download Token** button to view the generated token.
+4. The token is a full **JSON** object. Copy the **entire JSON** and paste it into the **Access Token** parameter.
 
-The Download Token JSON looks like this:
+The token JSON looks like this:
 
 ```json
 {
@@ -50,7 +50,7 @@ Paste the **entire JSON**. The integration reads the `refresh_token` from it (an
 
 > Note: You only need to do this once. The integration stores and automatically rotates the refresh token.
 >
-> Access tokens are valid for 2 hours, and refresh tokens are valid for 15 days. If an access token is not renewed for a period of 15 days (in other words, if the refresh token is unused for 15 days), Classic Central removes the token. At this point, a new token must be generated either by going to the API Gateway UI (and pasting the new Download Token here) or by using the OAuth API (Username & Password method).
+> Access tokens are valid for 2 hours, and refresh tokens are valid for 15 days. If an access token is not renewed for a period of 15 days (in other words, if the refresh token is unused for 15 days), Classic Central removes the token. At this point, a new token must be generated either by going to the API Gateway UI (clicking the **Download Token** button and pasting the new token JSON here) or by using the OAuth API (Basic Auth method).
 
 
 ### Domain URLs for API Gateway Access
@@ -86,6 +86,6 @@ From this section, you can retrieve the following information:
 * **Server URL:** This is the base domain of your Aruba Central portal (e.g., `https://app-uswest4.central.arubanetworks.com`).
 * **Client ID & Client Secret:** Found on the **My Apps** tab. Select the application you created for XSOAR to view its details.
 
-**User Credentials (only for the "Username & Password" method):**
+**User Credentials (only for the "Basic Auth" method):**
 
-* **Username & Password:** These are the credentials for the Aruba Central user account that you used to generate the API application (Client ID and Secret). This account must have at least read-only privileges. These are **not** required when using the "Access Token" method.
+* **Username and Password:** These are the credentials for the Aruba Central user account that you used to generate the API application (Client ID and Secret). This account must have at least read-only privileges. These are **not** required when using the "Access Token" method.

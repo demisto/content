@@ -78,14 +78,14 @@ class Client(BaseClient):
             bundle = json.loads(raw)
         except (json.JSONDecodeError, ValueError) as e:
             raise DemistoException(
-                "The Download Token is not valid JSON. Paste the full token bundle copied from the "
-                "Aruba Central UI (Download Token)."
+                "The Access Token is not valid JSON. In the Aruba Central UI, click the 'Download Token' "
+                "button and paste the full token JSON."
             ) from e
 
         if not isinstance(bundle, dict) or not bundle.get("refresh_token"):
             raise DemistoException(
-                "The Download Token JSON is missing the required 'refresh_token' field. Paste the full token "
-                "bundle copied from the Aruba Central UI (Download Token)."
+                "The Access Token JSON is missing the required 'refresh_token' field. In the Aruba Central UI, "
+                "click the 'Download Token' button and paste the full token JSON."
             )
 
         refresh_token = bundle["refresh_token"]
@@ -147,8 +147,8 @@ class Client(BaseClient):
         else:
             raise DemistoException(
                 "Unable to authenticate: no valid token is stored and no credentials were provided. "
-                "Either paste a Download Token from the Aruba Central UI, or provide a "
-                "Username and Password (non-SSO accounts only) for the initial OAuth authentication."
+                "Either paste an Access Token (from the Aruba Central UI 'Download Token' button), or provide a "
+                "Username and Password for the initial OAuth authentication."
             )
 
         new_expiry_time = now + validity_duration
@@ -670,7 +670,7 @@ def test_module(client: Client) -> str:
     raise DemistoException(
         "Test button is not supported when authenticating with Username and Password due to Aruba's "
         "API limitation of one new access token every 30 minutes. Use the 'aruba-auth-test' command "
-        "to validate this configuration, or paste a Download Token to enable the Test button."
+        "to validate this configuration, or paste an Access Token to enable the Test button."
     )
 
 
@@ -858,31 +858,31 @@ def validate_authentication_params(
     here in Python based on the selected method.
 
     Args:
-        auth_method (str): The selected authentication method ("Download Token" or "Username & Password").
+        auth_method (str): The selected authentication method ("Access Token" or "Basic Auth").
         downloaded_token (str | None): The Download Token JSON pasted from the Aruba Central UI.
         user_name (str | None): The configured username.
         user_password (str | None): The configured password.
         customer_id (str | None): The configured customer ID.
     """
-    if auth_method == "Username & Password":
+    if auth_method == "Basic Auth":
         if not (user_name and user_password):
             raise DemistoException(
-                "Authentication Method is 'Username & Password', but a Username and/or Password is missing. "
-                "Provide both (non-SSO accounts only), or switch the Authentication Method to 'Download Token'."
+                "Authentication Method is 'Basic Auth', but a Username and/or Password is missing. "
+                "Provide both, or switch the Authentication Method to 'Access Token'."
             )
         if not customer_id:
             raise DemistoException(
-                "Authentication Method is 'Username & Password', but the Customer ID is missing. "
-                "Provide a Customer ID, or switch the Authentication Method to 'Download Token'."
+                "Authentication Method is 'Basic Auth', but the Customer ID is missing. "
+                "Provide a Customer ID, or switch the Authentication Method to 'Access Token'."
             )
         return
 
-    # "Download Token" method.
+    # "Access Token" method.
     if not downloaded_token:
         raise DemistoException(
-            "Authentication Method is 'Download Token', but no Download Token was provided. "
-            "Paste the Download Token JSON from the Aruba Central UI (works for SSO users), or switch the "
-            "Authentication Method to 'Username & Password' (non-SSO accounts only)."
+            "Authentication Method is 'Access Token', but no Access Token was provided. "
+            "In the Aruba Central UI, click the 'Download Token' button and paste the token JSON, or switch the "
+            "Authentication Method to 'Basic Auth'."
         )
     # Validate the bundle format now so a bad paste fails fast with a clear message instead of mid-fetch.
     # Raises if the JSON has no 'refresh_token'.
@@ -899,15 +899,15 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     client_id = params.get("credentials", {}).get("identifier")
     client_secret = params.get("credentials", {}).get("password")
-    # Default to "Username & Password" so instances created before this field existed keep their original behavior on upgrade.
-    auth_method = params.get("auth_method") or "Username & Password"
+    # Default to "Basic Auth" so instances created before this field existed keep their original behavior on upgrade.
+    auth_method = params.get("auth_method") or "Basic Auth"
     user_name = params.get("user", {}).get("identifier")
     user_password = params.get("user", {}).get("password")
     customer_id = params.get("customer_id", {}).get("password")
     downloaded_token = params.get("token", {}).get("password")
-    # Clear a leftover Download Token so it can't override the Username & Password flow.
+    # Clear a leftover Download Token so it can't override the Basic Auth flow.
     # (No reverse guard needed: the seeded token is always tried before user/password.)
-    if auth_method == "Username & Password":
+    if auth_method == "Basic Auth":
         downloaded_token = ""
     base_url = params.get("url", "")
     fetch_networking_events = params.get("fetch_networking_events", False)
