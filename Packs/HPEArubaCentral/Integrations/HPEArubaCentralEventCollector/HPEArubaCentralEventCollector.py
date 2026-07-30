@@ -877,7 +877,7 @@ def validate_authentication_params(
             )
         return
 
-    # Default / "Download Token" method.
+    # "Download Token" method.
     if not downloaded_token:
         raise DemistoException(
             "Authentication Method is 'Download Token', but no Download Token was provided. "
@@ -977,4 +977,3 @@ def main() -> None:  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
