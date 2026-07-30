@@ -23,22 +23,6 @@ NETWORKING_TS = "timestamp"
 MASK_EDGE_LEN = 6  # Chars kept from each end when masking a secret for debug logs.
 
 
-""" HELPER FUNCTIONS """
-
-
-def mask_secret(secret: str | None) -> str:
-    """
-    Masks a secret for safe debug logging: keeps a short prefix and suffix plus the length,
-    e.g. "paf8bU…fDvu(32)". This is enough to correlate a value across log lines and confirm
-    token rotation, without exposing a usable portion. Short/empty values are fully masked.
-    """
-    if not secret:
-        return "***"
-    if len(secret) <= 2 * MASK_EDGE_LEN:
-        return f"***({len(secret)})"
-    return f"{secret[:MASK_EDGE_LEN]}…{secret[-MASK_EDGE_LEN:]}({len(secret)})"
-
-
 """ CLIENT CLASS """
 
 
@@ -384,6 +368,18 @@ class Client(BaseClient):
 
         return response
 
+    def validate_access_token(self, access_token: str) -> None:
+        """
+        Validates the given access token via one lightweight API call, using it as-is (no refresh/rotation),
+        so it is safe to run from the Test button. Raises on an invalid token.
+        """
+        self._http_request(
+            method="GET",
+            url_suffix="/auditlogs/v1/events",
+            params={"limit": 1},
+            headers={"accept": "application/json", "authorization": f"Bearer {access_token}"},
+        )
+
     def fetch_audit_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict) -> list[dict]:
         """
         Fetch audit events from Aruba Central API.
@@ -480,6 +476,26 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def mask_secret(secret: str | None) -> str:
+    """
+    Masks a secret for safe debug logging: keeps a short prefix and suffix plus the length,
+    e.g. "paf8bU…fDvu(32)". This is enough to correlate a value across log lines and confirm
+    token rotation, without exposing a usable portion.
+
+    Each non-usable case is distinguishable so the log tells you what actually happened:
+        - None  -> "<none>"    (the value was never set)
+        - ""    -> "<empty>"   (the value was set but is an empty string)
+        - short -> "***(N)"    (too short to safely reveal any edge, only the length is shown)
+    """
+    if secret is None:
+        return "<none>"
+    if secret == "":
+        return "<empty>"
+    if len(secret) <= 2 * MASK_EDGE_LEN:
+        return f"***({len(secret)})"
+    return f"{secret[:MASK_EDGE_LEN]}…{secret[-MASK_EDGE_LEN:]}({len(secret)})"
 
 
 def filter_and_reverse_audit_events(events: list[dict], last_run: dict) -> list[dict]:
@@ -633,25 +649,22 @@ def push_events(audit_events: list | None, networking_events: list | None):
 
 def test_module(client: Client) -> str:
     """
-    Validates the integration configuration when the user clicks "Test".
+    Validates the configuration when the user clicks "Test".
 
-    Aruba's API only allows one NEW access token to be generated every 30 minutes, and the platform's
-    test-module run cannot persist the token to the integration context. Therefore:
-      - When a Download Token is configured, we validate by retrieving an access token via the
-        REFRESH flow (refresh is not subject to the 30-minute new-token limit), so the test is safe.
-      - When only a Username/Password is configured, retrieving a token would require a full OAuth
-        login, which would burn the 30-minute quota with a token we cannot save. In that case we keep
-        directing the user to the 'aruba-auth-test' command, which is able to persist the token.
-
-    Args:
-        client (Client): Aruba Central client to use.
-
-    Returns:
-        str: "ok" if authentication via the Download Token (refresh flow) succeeded.
+    Test-module can't persist tokens, so it avoids rotating the pasted Download Token's refresh token:
+    validate with the bundle's own access token when present, otherwise fall back to a refresh.
+    Username/Password can't be tested safely (would burn Aruba's 30-min new-token quota), so we point
+    the user to the 'aruba-auth-test' command instead. Returns "ok" on success.
     """
     if client.downloaded_token:
-        # Refresh-based validation: does not consume the 30-minute new-token quota.
-        client.get_access_token()
+        _, access_token, _ = client.parse_download_token(client.downloaded_token)
+        if access_token:
+            # Non-mutating: validate with the bundle's own access token, leaving the refresh token untouched.
+            client.validate_access_token(access_token)
+        else:
+            # No access token in the bundle: a refresh is the only way to get one to validate with.
+            demisto.debug("Download Token bundle has no access token; validating via refresh (may rotate the refresh token).")
+            client.validate_access_token(client.get_access_token())
         return "ok"
 
     raise DemistoException(
@@ -892,7 +905,8 @@ def main() -> None:  # pragma: no cover
     user_password = params.get("user", {}).get("password")
     customer_id = params.get("customer_id", {}).get("password")
     downloaded_token = params.get("token", {}).get("password")
-    # Honor the selected authentication method: ignore a stale Download Token when the user chose Username & Password.
+    # Clear a leftover Download Token so it can't override the Username & Password flow.
+    # (No reverse guard needed: the seeded token is always tried before user/password.)
     if auth_method == "Username & Password":
         downloaded_token = ""
     base_url = params.get("url", "")
@@ -963,3 +977,4 @@ def main() -> None:  # pragma: no cover
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+

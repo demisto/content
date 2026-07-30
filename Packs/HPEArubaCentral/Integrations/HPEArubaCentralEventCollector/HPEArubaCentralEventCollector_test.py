@@ -36,6 +36,10 @@ FETCH_LIMIT = 10
 # A Download Token bundle that contains only a refresh token (no usable access token),
 # so seeding it forces a refresh call.
 DOWNLOAD_TOKEN_REFRESH_ONLY = json.dumps({"refresh_token": TEST_REFRESH_TOKEN, "token_type": "bearer"})
+# A full Download Token bundle that also includes a usable access token.
+DOWNLOAD_TOKEN_FULL = json.dumps(
+    {"refresh_token": TEST_REFRESH_TOKEN, "access_token": TEST_TOKEN, "expires_in": 7200, "token_type": "bearer"}
+)
 
 
 def util_load_json(path):
@@ -392,17 +396,31 @@ def test_aruba_auth_test(mocker, should_fail):
         assert return_results_mock.call_args[0][0].readable_output == "Authentication was successful."
 
 
-def test_test_module_with_download_token_passes(mocker):
-    """
-    Given:
-    - test-module command and a client configured with a Download Token.
+def test_test_module_full_bundle_is_non_mutating(mocker):
+    """Test with a full bundle validates using the bundle's access token and never refreshes (non-mutating)."""
+    from HPEArubaCentralEventCollector import test_module
 
-    When:
-    - Pressing the Test button.
+    client = Client(
+        base_url=BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        user_name="",
+        user_password="",
+        customer_id="",
+        downloaded_token=DOWNLOAD_TOKEN_FULL,
+        verify=False,
+        proxy=False,
+    )
+    validate = mocker.patch.object(client, "validate_access_token")
+    get_token = mocker.patch.object(client, "get_access_token")
 
-    Then:
-    - test_module validates via the refresh flow (get_access_token) and returns "ok".
-    """
+    assert test_module(client) == "ok"
+    validate.assert_called_once_with(TEST_TOKEN)
+    get_token.assert_not_called()
+
+
+def test_test_module_refresh_only_bundle_falls_back_to_refresh(mocker):
+    """Test with a refresh-only bundle falls back to a refresh to get a token, then validates it."""
     from HPEArubaCentralEventCollector import test_module
 
     client = Client(
@@ -416,10 +434,12 @@ def test_test_module_with_download_token_passes(mocker):
         verify=False,
         proxy=False,
     )
-    get_token = mocker.patch.object(client, "get_access_token", return_value="an-access-token")
+    get_token = mocker.patch.object(client, "get_access_token", return_value="refreshed-access-token")
+    validate = mocker.patch.object(client, "validate_access_token")
 
     assert test_module(client) == "ok"
     get_token.assert_called_once()
+    validate.assert_called_once_with("refreshed-access-token")
 
 
 def test_test_module_userpass_only_raises():
@@ -526,6 +546,17 @@ def _make_client() -> Client:
         verify=False,
         proxy=False,
     )
+
+
+def test_validate_access_token_uses_given_token_without_refresh(requests_mock):
+    """validate_access_token calls the API with the given token as-is and does not refresh/rotate it."""
+    client = _make_client()
+    audit = requests_mock.get(f"{BASE_URL}/auditlogs/v1/events", json={"events": [], "total": 0})
+
+    client.validate_access_token("some-access-token")
+
+    assert audit.call_count == 1
+    assert audit.last_request.headers["authorization"] == "Bearer some-access-token"
 
 
 @freeze_time(FETCH_DATE)
@@ -930,8 +961,8 @@ def test_get_access_token_seeds_access_token_from_json_bundle(mocker):
 @pytest.mark.parametrize(
     "secret, expected",
     [
-        ("", "***"),
-        (None, "***"),
+        (None, "<none>"),  # never set
+        ("", "<empty>"),  # set but empty (distinct from None)
         ("short", "***(5)"),
         ("exactlytwelve", "exactl…twelve(13)"),  # len 13 > 2*6 -> prefix + suffix shown
         ("abcdefghijkl", "***(12)"),  # len 12 == 2*6 -> fully masked
@@ -940,9 +971,10 @@ def test_get_access_token_seeds_access_token_from_json_bundle(mocker):
 )
 def test_mask_secret(secret, expected):
     """
-    Given: secrets of various lengths (empty, None, short, and long).
+    Given: secrets in every state (None, empty, short, and long).
     When: mask_secret is called.
-    Then: empty/short values are fully masked, and long values expose only a short prefix+suffix and length.
+    Then: None, empty, and short each produce a distinct, non-revealing marker, and long values expose
+          only a short prefix+suffix plus length.
     """
     result = mask_secret(secret)
     # The full secret must never appear in the masked output.
