@@ -16,7 +16,14 @@
     "created": "2020-04-14T00:00:00Z",
     "defaultDataSource": "Google Chronicle Backstory Streaming API",
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google",
+        "Google SecOps",
+        "SecOps",
+        "Detections",
+        "Case",
+        "IOC"
+    ],
     "githubUser": [
         "crestdatasystems"
     ],
