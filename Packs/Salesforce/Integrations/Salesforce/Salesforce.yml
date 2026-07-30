@@ -71,6 +71,7 @@ configuration:
 script:
   script: ''
   type: javascript
+  dockerimage: node:22
   commands:
   - name: salesforce-search
     arguments:
