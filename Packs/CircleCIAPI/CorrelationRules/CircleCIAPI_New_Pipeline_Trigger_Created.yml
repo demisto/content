@@ -2,6 +2,9 @@ name: CircleCI - New Pipeline Trigger Created - by GoCortexIO
 description: Detects a newly created CircleCI pipeline trigger (scheduled or push), a persistence vector for recurring execution.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1053/
+  //   https://owasp.org/www-project-top-10-ci-cd-security-risks/
   datamodel dataset = circleci_triggers_raw
   | filter xdm.event.original_event_type = "trigger_created"
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.operation, xdm.event.operation_sub_type, xdm.event.original_event_type, xdm.event.description, xdm.source.user.identifier, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*

@@ -1,8 +1,8 @@
 # CircleCI API
 
-Integrates the CircleCI v2 API with Cortex, collecting CircleCI control-plane and pipeline
-activity into Cortex datasets, mapping it to the XDM data model, and detecting CI/CD security
-risks with correlation rules.
+Integrates the CircleCI v2 API with the Cortex Platform, collecting CircleCI control-plane
+and pipeline activity into Cortex Platform datasets, mapping it to the XDM data model, and
+detecting CI/CD security risks with correlation rules.
 
 The pack follows a per-endpoint collector design: each CircleCI v2 endpoint family has its own
 thin event collector and its own dataset, so log types can be modelled, retained, and correlated
@@ -67,3 +67,51 @@ The pack ships XDM modelling for every populated dataset and the following corre
 
 Licensed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later).
 Copyright (c) GoCortexIO.
+
+## About GoCortex
+
+Independent tools, projects, and ideas to complement and extend the Palo Alto Networks Cortex
+ecosystem.
+
+[gocortex.io](https://gocortex.io)
+
+## Version History (Managed by GoCortex Spellbook)
+
+<!-- spellbook:version-history:start -->
+### 2.0.5
+
+- Extend the pack description to name the detections it ships, not only the collectors and the mapping. A reader choosing whether to install a pack is choosing detections.
+
+### 2.0.4
+
+- Added a source reference block to the top of the query in all 5 correlation rules. Each rule now cites up to three references that informed its design, typically the MITRE ATT&CK technique page and the vendor documentation for the mechanism being detected. A detection is a security claim, so the reasoning behind it should be traceable by whoever tunes the rule later. Every URL was checked before publication.
+
+### 2.0.3
+
+- Added a rule-level description to every correlation rule, so the intent of each detection is clear in the rule list and in generated alerts.
+- Aligned the correlation rule file names with the marketplace naming convention (each file now begins with the pack folder name).
+
+### 2.0.2
+
+- Standardised the integration logos to the uniform GoCortexIO house style (dark navy text on a transparent background, consistent size across all collectors). No functional changes.
+
+### 2.0.1
+
+- Documentation and packaging maintenance. Split compound test assertions and made a time-dependent unit test deterministic so the pack passes the stricter contribution pipeline. Refreshed the pack and integration logos to a transparent background so they render cleanly on the marketplace. No functional changes.
+
+### 2.0.0
+
+- **CircleCI Pipelines Event Collector** collects pipeline activity from `GET /pipeline` into the
+- **CircleCI Webhooks Event Collector** collects the outbound webhook inventory into the
+- **CircleCI Triggers Event Collector** collects the pipeline trigger inventory (scheduled
+- **CircleCI Contexts Event Collector** collects the shared-context and context
+- **CircleCI Project Settings Event Collector** collects the advanced project-settings posture,
+- **CircleCI Checkout Keys Event Collector** collects the deploy/checkout key inventory into the
+- Added the **CircleCI API Modeling Rule**, which maps every populated dataset to the XDM data
+- **CircleCI - New Pipeline Created** alerts on a newly created pipeline (MITRE TA0002 / T1072).
+- **CircleCI - New Outbound Webhook Created** alerts on a newly created outbound webhook, a
+- **CircleCI - New Pipeline Trigger Created** alerts on a newly created scheduled or push
+- **CircleCI - New Context or Context Secret** alerts on a newly created shared context or secret
+- **CircleCI - Insecure Fork Build Settings** alerts on a project where forked pull requests can
+
+<!-- spellbook:version-history:end -->

@@ -2,6 +2,9 @@ name: CircleCI - New Pipeline Created - by GoCortexIO
 description: Detects a newly created CircleCI pipeline, surfacing unexpected build or deployment activity in the CI/CD environment.
 severity: SEV_020_LOW
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1072/
+  //   https://owasp.org/www-project-top-10-ci-cd-security-risks/
   datamodel dataset = circleci_pipelines_raw
   | filter xdm.event.type = "pipeline"
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.operation, xdm.event.operation_sub_type, xdm.event.original_event_type, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.source.user.upn, xdm.source.cloud.project, xdm.target.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
