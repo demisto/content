@@ -20,6 +20,23 @@ MAX_GET_EVENTS_LIMIT = 1000  # Maximum limit accepted by get events API
 MAX_EVENT_API_REQS = 5
 AUDIT_TS = "ts"
 NETWORKING_TS = "timestamp"
+MASK_EDGE_LEN = 6  # Chars kept from each end when masking a secret for debug logs.
+
+
+""" HELPER FUNCTIONS """
+
+
+def mask_secret(secret: str | None) -> str:
+    """
+    Masks a secret for safe debug logging: keeps a short prefix and suffix plus the length,
+    e.g. "paf8bU…fDvu(32)". This is enough to correlate a value across log lines and confirm
+    token rotation, without exposing a usable portion. Short/empty values are fully masked.
+    """
+    if not secret:
+        return "***"
+    if len(secret) <= 2 * MASK_EDGE_LEN:
+        return f"***({len(secret)})"
+    return f"{secret[:MASK_EDGE_LEN]}…{secret[-MASK_EDGE_LEN:]}({len(secret)})"
 
 
 """ CLIENT CLASS """
@@ -48,10 +65,8 @@ class Client(BaseClient):
         self.user_name = user_name
         self.user_password = user_password
         self.customer_id = customer_id
-        # The "Download Token" bundle pasted by the user from the Aruba Central UI.
-        # This is the full JSON bundle (containing access_token, refresh_token, expires_in, ...).
-        # Used only to seed the integration context on the first run; afterwards the
-        # rotating refresh token stored in the context is used.
+        # Full Download Token JSON bundle from the Aruba Central UI. Used only to seed the context on
+        # the first run; afterwards the rotating refresh token stored in the context is used.
         self.downloaded_token = downloaded_token
 
     @staticmethod
@@ -96,16 +111,17 @@ class Client(BaseClient):
 
     def get_access_token(self, use_cached_token=True) -> str:
         """
-        Get access token for Aruba Central API.
-        If one exists in the integration context and is not expired, returns it.
-        Otherwise, refreshes the access token using the refresh token and returns the new token.
+        Returns a valid access token for the Aruba Central API.
+
+        Resolution order: a non-expired cached token, then a refresh using the stored refresh token,
+        then (only for Username/Password auth) a full OAuth sequence. On the first run, the context is
+        seeded from the pasted Download Token so refresh works without a username/password.
 
         Args:
-        use_cached_token (bool): Whether to use the cached access token if it exists and is not expired.
-                                 If set to false, the token will either be refreshed or a new one will be created.
+            use_cached_token (bool): If False, skip the cache and force a refresh / new token.
 
         Returns:
-            Valid access token to the Aruba Central API.
+            str: A valid access token.
         """
         integration_context = get_integration_context()
         access_token = integration_context.get("access_token")
@@ -114,42 +130,29 @@ class Client(BaseClient):
 
         now = int(time.time())
         demisto.debug(
-            f"get_access_token: use_cached_token={use_cached_token}, "
-            f"has_cached_access_token={bool(access_token)}, has_refresh_token={bool(refresh_token)}, "
-            f"expiry_time={expiry_time}, now={now}, seconds_until_expiry={expiry_time - now}, "
-            f"has_downloaded_token={bool(self.downloaded_token)}, "
-            f"has_user_pass={bool(self.user_name and self.user_password)}"
+            f"get_access_token: use_cached_token={use_cached_token}, has_cached_access_token={bool(access_token)}, "
+            f"has_refresh_token={bool(refresh_token)}, seconds_until_expiry={expiry_time - now}, "
+            f"has_downloaded_token={bool(self.downloaded_token)}, has_user_pass={bool(self.user_name and self.user_password)}"
         )
 
-        # Seed the context from the user-pasted "Download Token" bundle on the first run
-        # (or if the user pasted a new one), so we can refresh without a username/password.
+        # First run (or a newly pasted bundle): seed the context so we can refresh without user/password.
         if self.downloaded_token and integration_context.get("seeded_token") != self.downloaded_token:
-            demisto.debug("Seeding tokens from the pasted Download Token bundle.")
             seeded_refresh_token, seeded_access_token, seeded_expires_in = self.parse_download_token(self.downloaded_token)
             refresh_token = seeded_refresh_token
             integration_context["seeded_token"] = self.downloaded_token
             integration_context["refresh_token"] = refresh_token
-            # If the bundle also included a still-valid access token, seed it too so we avoid an
-            # immediate refresh call on the first run.
+            # Reuse the bundle's access token if present, to avoid an immediate refresh on the first run.
             if seeded_access_token and seeded_expires_in:
-                demisto.debug(
-                    "Download Token bundle included an access token; seeding it to avoid an "
-                    f"immediate refresh (expires_in={seeded_expires_in}s)."
-                )
                 access_token = seeded_access_token
-                expiry_time = int(time.time()) + seeded_expires_in
+                expiry_time = now + seeded_expires_in
                 integration_context["access_token"] = access_token
                 integration_context["expiry_time"] = expiry_time
-            else:
-                demisto.debug(
-                    "Download Token bundle contained a refresh token only; an access token "
-                    "will be obtained via refresh on this run."
-                )
-            # Persist the seed now so it survives even if we return the cached token below.
+            demisto.debug(f"Seeded tokens from the Download Token bundle (had_access_token={bool(seeded_access_token)}).")
+            # Persist now so the seed survives even if the cached token is returned below.
             set_integration_context(integration_context)
 
-        if use_cached_token and access_token and expiry_time > int(time.time()):
-            demisto.debug("Auth path: using cached access token " f"(valid for {expiry_time - int(time.time())}s).")
+        if use_cached_token and access_token and expiry_time > now:
+            demisto.debug(f"Auth path: using cached access token (valid for {expiry_time - now}s).")
             return access_token
         elif isinstance(refresh_token, str) and refresh_token:
             demisto.debug("Auth path: refreshing access token using the stored refresh token.")
@@ -160,21 +163,13 @@ class Client(BaseClient):
         else:
             raise DemistoException(
                 "Unable to authenticate: no valid token is stored and no credentials were provided. "
-                "Either paste a Download Token (refresh token) from the Aruba Central UI, or provide a "
-                "Username and Password (non-SSO accounts only) to perform the initial OAuth authentication."
+                "Either paste a Download Token from the Aruba Central UI, or provide a "
+                "Username and Password (non-SSO accounts only) for the initial OAuth authentication."
             )
 
-        new_expiry_time = int(time.time()) + validity_duration
-        demisto.debug(
-            f"Obtained new access token (validity_duration={validity_duration}s, " f"new_expiry_time={new_expiry_time})."
-        )
-        integration_context.update(
-            {
-                "access_token": access_token,
-                "expiry_time": new_expiry_time,
-                "refresh_token": refresh_token,
-            }
-        )
+        new_expiry_time = now + validity_duration
+        demisto.debug(f"Obtained new access token (validity_duration={validity_duration}s, new_expiry_time={new_expiry_time}).")
+        integration_context.update({"access_token": access_token, "expiry_time": new_expiry_time, "refresh_token": refresh_token})
         set_integration_context(integration_context)
 
         return access_token
@@ -214,10 +209,9 @@ class Client(BaseClient):
 
             raise e
 
-        # TODO: [testing version only] Redact these secrets before releasing to production.
         demisto.debug(
-            f"Refresh access token succeeded: access_token={token_resp.get('access_token')}, "
-            f"refresh_token={token_resp.get('refresh_token')}, expires_in={token_resp.get('expires_in')}"
+            f"Refresh access token succeeded: access_token={mask_secret(token_resp.get('access_token'))}, "
+            f"refresh_token={mask_secret(token_resp.get('refresh_token'))}, expires_in={token_resp.get('expires_in')}"
         )
         return (
             token_resp["access_token"],
@@ -271,8 +265,7 @@ class Client(BaseClient):
             raise DemistoException(
                 "Failed to acquire CSRF token and session from login request. Check if the credentials are valid."
             )
-        # TODO: [testing version only] Redact these secrets before releasing to production.
-        demisto.debug(f"Login request succeeded: {csrf_token=}, {session=}")
+        demisto.debug(f"Login request succeeded: csrf_token={mask_secret(csrf_token)}, session={mask_secret(session)}")
         return csrf_token, session
 
     def request_auth_code(self, csrf_token: str, session: str) -> str:
@@ -306,8 +299,7 @@ class Client(BaseClient):
             params=params,
             json_data=json_data,
         )
-        # TODO: [testing version only] Redact this secret before releasing to production.
-        demisto.debug(f"Auth code request succeeded: auth_code={response.get('auth_code')}")
+        demisto.debug(f"Auth code request succeeded: auth_code={mask_secret(response.get('auth_code'))}")
         return response.get("auth_code")
 
     def request_access_token(self, auth_code: str) -> tuple[str, str, int]:
@@ -337,10 +329,9 @@ class Client(BaseClient):
             headers=headers,
             json_data=json_data,
         )
-        # TODO: [testing version only] Redact access_token/refresh_token before releasing to production.
         demisto.debug(
-            f"Access token request succeeded: access_token={response.get('access_token')}, "
-            f"refresh_token={response.get('refresh_token')}, expires_in={response.get('expires_in')}"
+            f"Access token request succeeded: access_token={mask_secret(response.get('access_token'))}, "
+            f"refresh_token={mask_secret(response.get('refresh_token'))}, expires_in={response.get('expires_in')}"
         )
         return (
             response.get("access_token"),

@@ -38,14 +38,14 @@ configuration:
   displaypassword: Download Token (JSON)
   section: Connect
   hiddenusername: true
-  additionalinfo: 'Works for SSO users. Paste the full Download Token JSON copied from the Aruba Central UI (Account Home > API Gateway > your app > Download Token). The integration reads the refresh_token from it to obtain access tokens automatically, with no username/password needed. Leave empty to use Username & Password instead.'
+  additionalinfo: 'Required when Authentication Method is "Download Token" (works for SSO users). Paste the full Download Token JSON copied from the Aruba Central UI (Account Home > API Gateway > your app > Download Token). The integration reads the refresh_token from it and refreshes access tokens automatically, with no username/password needed.'
 - name: customer_id
   type: 9
   required: false
   section: Connect
   displaypassword: Customer ID
   hiddenusername: true
-  additionalinfo: The unique identifier for your Aruba Central account. Can be obtained via the APIs page in the product. Required only when authenticating with Username & Password (leave the Download Token empty).
+  additionalinfo: The unique identifier for your Aruba Central account. Can be obtained via the APIs page in the product. Required only when Authentication Method is "Username & Password".
 - section: Connect
   display: Username
   name: user
@@ -53,7 +53,7 @@ configuration:
   type: 9
   displaypassword: Password
   hiddenusername: false
-  additionalinfo: The username and password of an Aruba Central account with at least read-only privileges. Required only when no Download Token is provided (non-SSO accounts).
+  additionalinfo: The username and password of an Aruba Central account with at least read-only privileges. Required only when Authentication Method is "Username & Password" (non-SSO accounts).
 - section: Collect
   display: Fetch networking events
   name: fetch_networking_events

@@ -6,6 +6,7 @@ from HPEArubaCentralEventCollector import (
     RATE_LIMIT_STATUS_CODE,
     BACKOFF_FACTOR,
     validate_authentication_params,
+    mask_secret,
 )
 import pytest
 import demistomock as demisto
@@ -924,3 +925,27 @@ def test_get_access_token_seeds_access_token_from_json_bundle(mocker):
             "expiry_time": FETCH_TIME + 7200,
         }
     )
+
+
+@pytest.mark.parametrize(
+    "secret, expected",
+    [
+        ("", "***"),
+        (None, "***"),
+        ("short", "***(5)"),
+        ("exactlytwelve", "exactl…twelve(13)"),  # len 13 > 2*6 -> prefix + suffix shown
+        ("abcdefghijkl", "***(12)"),  # len 12 == 2*6 -> fully masked
+        ("paf8bUQEpxcjxeFYfIlTiiO7fDvuZy4R", "paf8bU…vuZy4R(32)"),  # first 6 + last 6 + length
+    ],
+)
+def test_mask_secret(secret, expected):
+    """
+    Given: secrets of various lengths (empty, None, short, and long).
+    When: mask_secret is called.
+    Then: empty/short values are fully masked, and long values expose only a short prefix+suffix and length.
+    """
+    result = mask_secret(secret)
+    # The full secret must never appear in the masked output.
+    if secret:
+        assert secret not in result
+    assert result == expected
