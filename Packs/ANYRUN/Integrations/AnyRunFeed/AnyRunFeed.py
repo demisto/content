@@ -84,15 +84,15 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
             "last_seen": indicator.get("modified"),
             "vendor": "ANY.RUN",
             "source": "ANY.RUN TI Feed",
-            "tags": indicator.get("labels", []),
+            "tags": indicator.get("labels") or [],
             "publications": [
                 {
-                    "title": ref.get("source_name", ""),
-                    "link": ref["url"],
+                    "title": ref.get("source_name") or "",
+                    "link": ref.get("url") or "",
                     "source": "ANY.RUN TI Feed",
                     "timestamp": indicator.get("created"),
                 }
-                for ref in indicator.get("external_references", [])
+                for ref in indicator.get("external_references") or []
                 if ref.get("url")
             ],
         }
@@ -102,7 +102,7 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
                     "notes": ref["url"],
                     "timestamp": indicator.get("created"),
                 }
-                for ref in indicator.get("external_references", [])
+                for ref in indicator.get("external_references") or []
                 if ref.get("url")
             ]
 

@@ -106,19 +106,18 @@ def start_analyse(
     root_url = params.get("root_url") or DEFAULT_ROOT_URL
 
     return_results(
-        CommandResults(
-            outputs_prefix="ANYRUN.SandboxURL",
-            outputs=f"Link to the interactive analysis: https://app.{root_url}/tasks/{task_uuid}",
-            ignore_auto_extract=True,
-        )
-    )
-
-    return_results(
-        CommandResults(
-            outputs_prefix=build_context_path(analysis_type, connector),
-            outputs=task_uuid,
-            ignore_auto_extract=True,
-        )
+        [
+            CommandResults(
+                outputs_prefix="ANYRUN.SandboxURL",
+                outputs=f"Link to the interactive analysis: https://app.{root_url}/tasks/{task_uuid}",
+                ignore_auto_extract=True,
+            ),
+            CommandResults(
+                outputs_prefix=build_context_path(analysis_type, connector),
+                outputs=task_uuid,
+                ignore_auto_extract=True,
+            ),
+        ]
     )
 
 
@@ -127,7 +126,7 @@ def detonate_entity_windows(params: dict, args: dict, analysis_type: str) -> Non
         get_authentication(params),
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
-        verify_ssl=not params.get("insecure"),
+        verify_ssl=not argToBoolean(params.get("insecure", False)),
         root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
         start_analyse(params, args, analysis_type, connector)
@@ -138,7 +137,8 @@ def detonate_entity_linux(params: dict, args: dict, analysis_type: str) -> None:
         get_authentication(params),
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
-        verify_ssl=not params.get("insecure"),
+        verify_ssl=not argToBoolean(params.get("insecure", False)),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
         start_analyse(params, args, analysis_type, connector)
 
@@ -148,7 +148,8 @@ def detonate_entity_android(params: dict, args: dict, analysis_type: str) -> Non
         get_authentication(params),
         integration=VERSION,
         trust_env=argToBoolean(params.get("proxy", False)),
-        verify_ssl=not params.get("insecure"),
+        verify_ssl=not argToBoolean(params.get("insecure", False)),
+        root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
         start_analyse(params, args, analysis_type, connector)
 
@@ -404,6 +405,8 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"Command {demisto.command()} is not implemented")
     except RunTimeException as exception:
         return_error(exception.description, error=str(exception.json))
+    except Exception as e:
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}", error=traceback.format_exc())
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

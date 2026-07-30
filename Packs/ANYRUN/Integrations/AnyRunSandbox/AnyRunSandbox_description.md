@@ -16,7 +16,7 @@ API-KEY from your ANY.RUN account is required.
 6. Click **Test** to validate the URLs, token, and connection.
 
 
-| **Parameter**    | **Description**                                                                                                                                                | **Required** |
-|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| Password         | ANY.RUN API-KEY without prefix                                                                                                                               | True |
-| Root URL         | Base domain for the ANY.RUN connection. By default, the domain is any.run.                                                                                   | False |
+| **Parameter**    | **Description**                                                          
+|------------------|--------------------------------------------------------------------------|
+| Password         | ANY.RUN API-KEY without prefix                                            
+| Root URL         | Base domain for the ANY.RUN connection. By default, the domain is any.run.
