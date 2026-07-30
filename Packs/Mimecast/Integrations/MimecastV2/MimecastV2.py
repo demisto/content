@@ -303,7 +303,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
                     messages = "; ".join(err.get("message", str(err)) for err in errors)
                     raise DemistoException(messages) from e
             except (ValueError, AttributeError):
-                pass
+                demisto.debug("Could not parse v2 error body; re-raising original HTTPError")
             raise
 
     except Exception as e:
