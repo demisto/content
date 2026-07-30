@@ -1,4 +1,5 @@
 name: Binalyze AIR Extended
+provider: Binalyze
 display: Binalyze AIR Extended
 category: Forensics & Malware Analysis
 commonfields:
