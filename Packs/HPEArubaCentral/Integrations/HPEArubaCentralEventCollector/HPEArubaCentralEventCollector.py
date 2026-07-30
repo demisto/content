@@ -93,7 +93,7 @@ class Client(BaseClient):
         expires_in = arg_to_number(bundle.get("expires_in")) or 0
         return refresh_token, access_token, expires_in
 
-    def get_access_token(self, use_cached_token=True) -> str:
+    def get_access_token(self, use_cached_token: bool = True) -> str:
         """
         Returns a valid access token for the Aruba Central API.
 
