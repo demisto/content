@@ -249,7 +249,7 @@ endpoint at 2 credits per IP address.
 | IPGeolocation.IP.Network.ConnectionType | String | Network access type, for example Cable or Mobile, when available. |
 | IPGeolocation.IP.Network.Route | String | Network prefix in CIDR notation that contains the IP address. |
 | IPGeolocation.IP.Network.IsAnycast | Boolean | Whether the IP address is announced from multiple locations as anycast. |
-| IPGeolocation.IP.ASN.ASNumber | String | Autonomous System Number of the network, in AS<number> notation. |
+| IPGeolocation.IP.ASN.ASNumber | String | Autonomous System Number of the network, in AS notation, for example AS15169. |
 | IPGeolocation.IP.ASN.Organization | String | Organization that operates the Autonomous System. |
 | IPGeolocation.IP.ASN.Country | String | Country in which the Autonomous System is registered. |
 | IPGeolocation.IP.ASN.Type | String | Autonomous System category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT. |
@@ -570,7 +570,7 @@ This command does not set a reputation. Use `!ip` when a DBotScore is required.
 | IPGeolocation.IP.Network.ConnectionType | String | Network access type, for example Cable or Mobile, when available. |
 | IPGeolocation.IP.Network.Route | String | Network prefix in CIDR notation that contains the IP address. |
 | IPGeolocation.IP.Network.IsAnycast | Boolean | Whether the IP address is announced from multiple locations as anycast. |
-| IPGeolocation.IP.ASN.ASNumber | String | Autonomous System Number of the network, in AS<number> notation. |
+| IPGeolocation.IP.ASN.ASNumber | String | Autonomous System Number of the network, in AS notation, for example AS15169. |
 | IPGeolocation.IP.ASN.Organization | String | Organization that operates the Autonomous System. |
 | IPGeolocation.IP.ASN.Country | String | Country in which the Autonomous System is registered. |
 | IPGeolocation.IP.ASN.Type | String | Autonomous System category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT. |
@@ -951,7 +951,7 @@ Each lookup consumes 1 credit.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IPGeolocation.ASN.IP | String | The IP address that was looked up. |
-| IPGeolocation.ASN.ASNumber | String | Autonomous System Number of the network, in AS<number> notation. |
+| IPGeolocation.ASN.ASNumber | String | Autonomous System Number of the network, in AS notation, for example AS15169. |
 | IPGeolocation.ASN.Organization | String | Organization that operates the Autonomous System. |
 | IPGeolocation.ASN.Country | String | Country in which the Autonomous System is registered. |
 | IPGeolocation.ASN.Type | String | Autonomous System category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT. |

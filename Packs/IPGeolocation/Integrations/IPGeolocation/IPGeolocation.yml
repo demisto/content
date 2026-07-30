@@ -276,7 +276,7 @@ script:
       description: Whether the IP address is announced from multiple locations as anycast.
       type: Boolean
     - contextPath: IPGeolocation.IP.ASN.ASNumber
-      description: Autonomous System Number of the network, in AS<number> notation.
+      description: Autonomous System Number of the network, in AS notation, for example AS15169.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Organization
       description: Organization that operates the Autonomous System.
@@ -676,7 +676,7 @@ script:
       description: Whether the IP address is announced from multiple locations as anycast.
       type: Boolean
     - contextPath: IPGeolocation.IP.ASN.ASNumber
-      description: Autonomous System Number of the network, in AS<number> notation.
+      description: Autonomous System Number of the network, in AS notation, for example AS15169.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Organization
       description: Organization that operates the Autonomous System.
@@ -1083,7 +1083,7 @@ script:
       description: The IP address that was looked up.
       type: String
     - contextPath: IPGeolocation.ASN.ASNumber
-      description: Autonomous System Number of the network, in AS<number> notation.
+      description: Autonomous System Number of the network, in AS notation, for example AS15169.
       type: String
     - contextPath: IPGeolocation.ASN.Organization
       description: Organization that operates the Autonomous System.
