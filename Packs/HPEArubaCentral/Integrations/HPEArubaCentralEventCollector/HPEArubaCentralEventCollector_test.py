@@ -33,10 +33,10 @@ AUTH_CODE = "testauthcode"
 FETCH_DATE = "2024-09-12T03:21:33"
 FETCH_TIME = int(date_to_timestamp(FETCH_DATE, DATE_FORMAT) / 1000)
 FETCH_LIMIT = 10
-# A Download Token bundle that contains only a refresh token (no usable access token),
+# An Access Token bundle that contains only a refresh token (no usable access token),
 # so seeding it forces a refresh call.
 DOWNLOAD_TOKEN_REFRESH_ONLY = json.dumps({"refresh_token": TEST_REFRESH_TOKEN, "token_type": "bearer"})
-# A full Download Token bundle that also includes a usable access token.
+# A full Access Token bundle that also includes a usable access token.
 DOWNLOAD_TOKEN_FULL = json.dumps(
     {"refresh_token": TEST_REFRESH_TOKEN, "access_token": TEST_TOKEN, "expires_in": 7200, "token_type": "bearer"}
 )
@@ -445,7 +445,7 @@ def test_test_module_refresh_only_bundle_falls_back_to_refresh(mocker):
 def test_test_module_userpass_only_raises():
     """
     Given:
-    - test-module command and a client configured with only Username/Password (no Download Token).
+    - test-module command and a client configured with only Username/Password (no Access Token).
 
     When:
     - Pressing the Test button.
@@ -699,7 +699,7 @@ def test_http_request_passes_retry_params_on_initial_and_refresh(mocker):
 def test_get_access_token_seeds_from_downloaded_token(mocker, requests_mock):
     """
     Given:
-    - An instance configured with a pasted Download Token JSON (refresh token only) and no username/password.
+    - An instance configured with a pasted Access Token JSON (refresh token only) and no username/password.
 
     When:
     - get_access_token is called with an empty integration context.
@@ -845,7 +845,7 @@ def test_validate_authentication_params_valid_configs():
 def test_parse_download_token_full_json():
     """
     Given:
-    - A full Download Token JSON bundle (as downloaded from the Aruba Central UI).
+    - A full Access Token JSON bundle (as downloaded from the Aruba Central UI).
 
     When:
     - Client.parse_download_token is called.
@@ -869,7 +869,7 @@ def test_parse_download_token_full_json():
 def test_parse_download_token_bare_string_rejected():
     """
     Given:
-    - A bare refresh-token string instead of the full Download Token JSON.
+    - A bare refresh-token string instead of the full Access Token JSON.
 
     When:
     - Client.parse_download_token is called.
@@ -915,7 +915,7 @@ def test_parse_download_token_json_missing_refresh_token():
 def test_get_access_token_seeds_access_token_from_json_bundle(mocker):
     """
     Given:
-    - A Download Token pasted as a full JSON bundle that includes a still-valid access_token.
+    - An Access Token pasted as a full JSON bundle that includes a still-valid access_token.
 
     When:
     - get_access_token is called with an empty integration context.

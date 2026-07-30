@@ -49,20 +49,20 @@ class Client(BaseClient):
         self.user_name = user_name
         self.user_password = user_password
         self.customer_id = customer_id
-        # Full Download Token JSON bundle from the Aruba Central UI. Used only to seed the context on
+        # Full Access Token JSON bundle from the Aruba Central UI. Used only to seed the context on
         # the first run; afterwards the rotating refresh token stored in the context is used.
         self.downloaded_token = downloaded_token
 
     @staticmethod
     def parse_download_token(downloaded_token: str) -> tuple[str, str, int]:
         """
-        Parses the "Download Token" JSON bundle pasted from the Aruba Central UI.
+        Parses the "Access Token" JSON bundle pasted from the Aruba Central UI.
 
         The expected value is the full JSON bundle downloaded from the UI, e.g.:
             {"access_token": "...", "refresh_token": "...", "expires_in": 7200, ...}
 
         Args:
-            downloaded_token (str): The raw value from the Download Token parameter.
+            downloaded_token (str): The raw value from the Access Token parameter.
 
         Returns:
             tuple[str, str, int]: (refresh_token, access_token, expires_in) extracted from the bundle.
@@ -99,7 +99,7 @@ class Client(BaseClient):
 
         Resolution order: a non-expired cached token, then a refresh using the stored refresh token,
         then (only for Username/Password auth) a full OAuth sequence. On the first run, the context is
-        seeded from the pasted Download Token so refresh works without a username/password.
+        seeded from the pasted Access Token so refresh works without a username/password.
 
         Args:
             use_cached_token (bool): If False, skip the cache and force a refresh / new token.
@@ -131,7 +131,7 @@ class Client(BaseClient):
                 expiry_time = now + seeded_expires_in
                 integration_context["access_token"] = access_token
                 integration_context["expiry_time"] = expiry_time
-            demisto.debug(f"Seeded tokens from the Download Token bundle (had_access_token={bool(seeded_access_token)}).")
+            demisto.debug(f"Seeded tokens from the Access Token bundle (had_access_token={bool(seeded_access_token)}).")
             # Persist now so the seed survives even if the cached token is returned below.
             set_integration_context(integration_context)
 
@@ -651,7 +651,7 @@ def test_module(client: Client) -> str:
     """
     Validates the configuration when the user clicks "Test".
 
-    Test-module can't persist tokens, so it avoids rotating the pasted Download Token's refresh token:
+    Test-module can't persist tokens, so it avoids rotating the pasted Access Token's refresh token:
     validate with the bundle's own access token when present, otherwise fall back to a refresh.
     Username/Password can't be tested safely (would burn Aruba's 30-min new-token quota), so we point
     the user to the 'aruba-auth-test' command instead. Returns "ok" on success.
@@ -663,7 +663,7 @@ def test_module(client: Client) -> str:
             client.validate_access_token(access_token)
         else:
             # No access token in the bundle: a refresh is the only way to get one to validate with.
-            demisto.debug("Download Token bundle has no access token; validating via refresh (may rotate the refresh token).")
+            demisto.debug("Access Token bundle has no access token; validating via refresh (may rotate the refresh token).")
             client.validate_access_token(client.get_access_token())
         return "ok"
 
@@ -859,7 +859,7 @@ def validate_authentication_params(
 
     Args:
         auth_method (str): The selected authentication method ("Access Token" or "Basic Auth").
-        downloaded_token (str | None): The Download Token JSON pasted from the Aruba Central UI.
+        downloaded_token (str | None): The Access Token JSON pasted from the Aruba Central UI.
         user_name (str | None): The configured username.
         user_password (str | None): The configured password.
         customer_id (str | None): The configured customer ID.
@@ -905,7 +905,7 @@ def main() -> None:  # pragma: no cover
     user_password = params.get("user", {}).get("password")
     customer_id = params.get("customer_id", {}).get("password")
     downloaded_token = params.get("token", {}).get("password")
-    # Clear a leftover Download Token so it can't override the Basic Auth flow.
+    # Clear a leftover Access Token so it can't override the Basic Auth flow.
     # (No reverse guard needed: the seeded token is always tried before user/password.)
     if auth_method == "Basic Auth":
         downloaded_token = ""
