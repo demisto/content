@@ -340,11 +340,13 @@ endpoint at 2 credits per IP address.
 #### Human Readable Output
 
 ### IPGeolocation.io IP Geolocation for 2.56.188.34
+
 |IP Address|Hostname|City|State / Province|Country|Country Code|Continent|Postal Code|Latitude|Longitude|Time Zone|Local Time|ASN|AS Organization|AS Type|Company|Route|Anycast|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2.56.188.34 | 2.56.188.34 | Dallas | Texas | United States | US | North America | 75201 | 32.77822 | -96.79512 | America/Chicago | 2026-03-07 03:37:38.996-0600 | AS62240 | Clouvider Limited | HOSTING | Packethub S.A. | 2.56.188.0/22 | no |
 
 ### IPGeolocation.io IP Security for 2.56.188.34
+
 |IP Address|Threat Score|Anonymous|Known Attacker|Tor Exit Node|VPN|VPN Providers|VPN Confidence|VPN Last Seen|Proxy|Proxy Providers|Proxy Confidence|Proxy Last Seen|Residential Proxy|Relay|Bot|Spam|Cloud Provider|Cloud Provider Name|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2.56.188.34 | 80 | yes | yes | no | yes | Nord VPN | 80 | 2026-01-19 | yes | Zyte Proxy | 80 | 2025-12-12 | yes | no | no | no | yes | Packethub S.A. |
@@ -659,6 +661,7 @@ This command does not set a reputation. Use `!ip` when a DBotScore is required.
 #### Human Readable Output
 
 ### IPGeolocation.io IP Geolocation for 8.8.8.8
+
 |IP Address|City|State / Province|Country|Country Code|Continent|Postal Code|Latitude|Longitude|Time Zone|Local Time|ASN|AS Organization|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 8.8.8.8 | Mountain View | California | United States | US | North America | 94043 | 37.42240 | -122.08421 | America/Los_Angeles | 2026-03-07 01:37:39.506-0800 | AS15169 | Google LLC |
@@ -786,6 +789,7 @@ that must not influence indicator verdicts.
 #### Human Readable Output
 
 ### IPGeolocation.io IP Security for 2.56.188.34
+
 |IP Address|Threat Score|Anonymous|Known Attacker|Tor Exit Node|VPN|VPN Providers|VPN Confidence|VPN Last Seen|Proxy|Proxy Providers|Proxy Confidence|Proxy Last Seen|Residential Proxy|Relay|Bot|Spam|Cloud Provider|Cloud Provider Name|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2.56.188.34 | 80 | yes | yes | no | yes | Nord VPN | 80 | 2026-01-19 | yes | Zyte Proxy | 80 | 2025-12-12 | yes | no | no | no | yes | Packethub S.A. |
@@ -877,6 +881,7 @@ Each lookup consumes 1 credit.
 #### Human Readable Output
 
 ### IPGeolocation.io Abuse Contact for 1.0.0.0
+
 |IP Address|Abuse Contact Name|Contact Type|Emails|Phone Numbers|Route|Country|Registered Address|
 |---|---|---|---|---|---|---|---|
 | 1.0.0.0 | IRT-APNICRANDNET-AU | group | helpdesk@apnic.net | +61 7 3858 3100 | 1.0.0.0/24 | AU | PO Box 3646, South Brisbane, QLD 4101, Australia |
@@ -972,6 +977,7 @@ Each lookup consumes 1 credit.
 #### Human Readable Output
 
 ### IPGeolocation.io ASN Details for AS24940
+
 |ASN|AS Name|Organization|Type|Domain|Country|RIR|Date Allocated|Allocation Status|IPv4 Routes|IPv6 Routes|
 |---|---|---|---|---|---|---|---|---|---|---|
 | AS24940 | HETZNER-AS | Hetzner Online GmbH | HOSTING | hetzner.com | DE | RIPE | 2002-06-03 | ASSIGNED | 84 | 6 |

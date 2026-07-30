@@ -765,8 +765,7 @@ class ReputationConfig:
         )
         if self.suspicious_threshold > self.malicious_threshold:
             raise DemistoException(
-                "The suspicious threat score threshold must be lower than or equal to the malicious "
-                "threat score threshold."
+                "The suspicious threat score threshold must be lower than or equal to the malicious " "threat score threshold."
             )
         self.malicious_on_known_attacker = argToBoolean(params.get("malicious_on_known_attacker", True))
         self.suspicious_on_anonymizer = argToBoolean(params.get("suspicious_on_anonymizer", True))
@@ -1031,17 +1030,21 @@ def build_ip_indicator(raw: dict[str, Any], dbot_score: Common.DBotScore) -> Com
     security = raw.get("security") or {}
     abuse = raw.get("abuse") or {}
 
-    tags = [label for flag, label in (
-        ("is_tor", "tor"),
-        ("is_vpn", "vpn"),
-        ("is_proxy", "proxy"),
-        ("is_residential_proxy", "residential-proxy"),
-        ("is_relay", "relay"),
-        ("is_bot", "bot"),
-        ("is_spam", "spam"),
-        ("is_known_attacker", "known-attacker"),
-        ("is_cloud_provider", "cloud-provider"),
-    ) if security.get(flag)]
+    tags = [
+        label
+        for flag, label in (
+            ("is_tor", "tor"),
+            ("is_vpn", "vpn"),
+            ("is_proxy", "proxy"),
+            ("is_residential_proxy", "residential-proxy"),
+            ("is_relay", "relay"),
+            ("is_bot", "bot"),
+            ("is_spam", "spam"),
+            ("is_known_attacker", "known-attacker"),
+            ("is_cloud_provider", "cloud-provider"),
+        )
+        if security.get(flag)
+    ]
 
     geo_description_parts = [
         part for part in (location.get("city"), location.get("state_prov"), location.get("country_name")) if part
@@ -1124,9 +1127,7 @@ def ip_lookup_command(client: Client, args: dict[str, Any]) -> list[CommandResul
     for target in targets:
         validated = validate_ip_or_domain(target)
         try:
-            raw = client.get_ip_geolocation(
-                ip=validated, include=include, fields=fields, excludes=excludes, lang=lang
-            )
+            raw = client.get_ip_geolocation(ip=validated, include=include, fields=fields, excludes=excludes, lang=lang)
         except DemistoException as error:
             results.append(build_failure_entry(validated, error))
             continue
