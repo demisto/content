@@ -1,0 +1,821 @@
+id: HackerView Incident Management V2
+version: -1
+fromversion: "6.10.0"
+name: HackerView Incident Management V2
+description: |-
+  This playbook runs the incidents through indicator enrichment, then based on the mirroring settings, it can communicate with the remote server to track the progress of the investigation.
+
+  When the remote HackerView ticket status becomes inactive, the playbook automatically closes the local incident via the Close Incident Locally task (closeInvestigation). The HackerView Incident type is configured to run this playbook with autorun enabled, so no analyst prompt is required for that auto-close path.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d1c1ad37-093a-4476-8139-960e1da06685
+    type: start
+    task:
+      id: d1c1ad37-093a-4476-8139-960e1da06685
+      version: -1
+      name: ""
+      description: Start of playbook.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 935,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 12d78e8e-8950-4466-824a-c9404553ce60
+    type: regular
+    task:
+      id: 12d78e8e-8950-4466-824a-c9404553ce60
+      version: -1
+      name: Get Incident Remote Status
+      description: Fetch details of a single incident from the HackerView platform.
+      script: CTM360_HackerView|||ctm360-hv-incident-details
+      type: regular
+      iscommand: true
+      brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      ticketId:
+        simple: ${incident.dbotMirrorId}
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 431ad55e-e7b6-4e10-85d1-9d73ae03646c
+    type: condition
+    task:
+      id: 431ad55e-e7b6-4e10-85d1-9d73ae03646c
+      version: -1
+      name: Is The Incident Closed?
+      description: Check whether or not the incident had been closed on the remote
+        server.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HackerView.RemoteIncident.status
+            iscontext: true
+          right:
+            value:
+              simple: inactive
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b7e726a5-d771-4b7b-a8cb-4512c6b1a80c
+    type: regular
+    task:
+      id: b7e726a5-d771-4b7b-a8cb-4512c6b1a80c
+      version: -1
+      name: Close Incident Locally
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      closeReason:
+        simple: ${inputs.closeReason}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 2415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 72d1eece-9437-4780-81f5-dfe8c28d8af1
+    type: regular
+    task:
+      id: 72d1eece-9437-4780-81f5-dfe8c28d8af1
+      version: -1
+      name: Start Investigation
+      description: Change status of a HV incident and optionally add a comment.
+      script: CTM360_HackerView|||ctm360-hv-incident-status-change
+      type: regular
+      iscommand: true
+      brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      comment:
+        simple: Starting investigation
+      ticketId:
+        simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: investigating
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 355,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ed080654-6498-4389-9e21-43e1e9d21114
+    type: title
+    task:
+      id: ed080654-6498-4389-9e21-43e1e9d21114
+      version: -1
+      name: End of Playbook
+      description: The end of the playbook.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 017a7df7-8c37-4ca9-b52e-770628d28641
+    type: regular
+    task:
+      id: 017a7df7-8c37-4ca9-b52e-770628d28641
+      version: -1
+      name: Assign Analyst
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      assignBy:
+        simple: less-busy-user
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2d69ba4e-4211-40ce-8113-9ddd26dbc221
+    type: condition
+    task:
+      id: 2d69ba4e-4211-40ce-8113-9ddd26dbc221
+      version: -1
+      name: Prompt User to advance the progress of the incident response.
+      description: Ask the user to set the new progress status.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      A False Positive:
+      - "28"
+      An Acceptable Risk:
+      - "27"
+      No Action:
+      - "12"
+      Resolution Complete:
+      - "26"
+      Resolution in Progress:
+      - "25"
+      Start Investigation:
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: HackerView Incident ${incident.dbotMirrorId} waiting for user input
+      body:
+        simple: The HackerView incident is waiting for your input to progress.
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Start Investigation
+      - Resolution in Progress
+      - Resolution Complete
+      - An Acceptable Risk
+      - A False Positive
+      - No Action
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 33838e13-7fc0-4521-9571-4775de3a6457
+    type: playbook
+    task:
+      id: 33838e13-7fc0-4521-9571-4775de3a6457
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Add more value to indicators that were extracted
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      URLSSLVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 7ff87c07-2993-4cdd-84f0-6eecb4ffe9c7
+    type: condition
+    task:
+      id: 7ff87c07-2993-4cdd-84f0-6eecb4ffe9c7
+      version: -1
+      name: Check if Incoming Mirroring is Enabled
+      description: Check if incoming mirroring is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: incident.dbotMirrorDirection
+            iscontext: true
+          right:
+            value:
+              simple: In,Both
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 544b6011-2112-4299-8fc9-f90a57337360
+    type: regular
+    task:
+      id: 544b6011-2112-4299-8fc9-f90a57337360
+      version: -1
+      name: Resolution in Progress
+      description: Change status of a HV incident and optionally add a comment.
+      script: CTM360_HackerView|||ctm360-hv-incident-status-change
+      type: regular
+      iscommand: true
+      brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      comment:
+        simple: Applying mitigations
+      ticketId:
+        simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: in_progress
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3d9e60e4-504a-4ba5-8e67-08d08c587881
+    type: regular
+    task:
+      id: 3d9e60e4-504a-4ba5-8e67-08d08c587881
+      version: -1
+      name: Resolution Complete
+      description: Change status of a HV incident and optionally add a comment.
+      script: CTM360_HackerView|||ctm360-hv-incident-status-change
+      type: regular
+      iscommand: true
+      brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      comment:
+        simple: Mitigation is done
+      ticketId:
+        simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: fixed
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 2680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 1215387a-7357-4faf-8dd3-d3a3f68ccb7f
+    type: regular
+    task:
+      id: 1215387a-7357-4faf-8dd3-d3a3f68ccb7f
+      version: -1
+      name: An Acceptable Risk
+      description: Change status of a HV incident and optionally add a comment.
+      script: CTM360_HackerView|||ctm360-hv-incident-status-change
+      type: regular
+      iscommand: true
+      brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      comment:
+        simple: This is within the risk appetite/tolerance
+      ticketId:
+        simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: acceptable_risk
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: c77458a8-c51a-4156-8e76-48b404b7203c
+    type: regular
+    task:
+      id: c77458a8-c51a-4156-8e76-48b404b7203c
+      version: -1
+      name: A False Positive
+      description: Change status of a HV incident and optionally add a comment.
+      script: CTM360_HackerView|||ctm360-hv-incident-status-change
+      type: regular
+      iscommand: true
+      brand: CTM360_HackerView
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      comment:
+        simple: This is a false positive
+      ticketId:
+        simple: ${incident.dbotMirrorId}
+      ticketStatus:
+        simple: false_positive
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 3050520a-a504-4159-825d-d3021991caae
+    type: condition
+    task:
+      id: 3050520a-a504-4159-825d-d3021991caae
+      version: -1
+      name: Check if Integration is Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "33"
+      "yes":
+      - "31"
+    scriptarguments:
+      brandname:
+        simple: CTM360_HackerView
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 935,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: a2852902-9846-4af8-85f6-9269e8eba66d
+    type: regular
+    task:
+      id: a2852902-9846-4af8-85f6-9269e8eba66d
+      version: -1
+      name: Get Enabled Instances
+      description: Gets all currently enabled integration instances.
+      scriptName: GetEnabledInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      using:
+        simple: ${incident.sourceInstance}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 935,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: af10c0c3-238f-4260-8360-18beba5020f5
+    type: condition
+    task:
+      id: af10c0c3-238f-4260-8360-18beba5020f5
+      version: -1
+      name: Is Source Instance Enabled?
+      description: Checks whether the incident source integration instance is currently enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: EnabledInstances
+            iscontext: true
+          right:
+            value:
+              simple: incident.sourceInstance
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 935,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 28d16ccd-b220-4a3f-889b-037f7da891e7
+    type: title
+    task:
+      id: 28d16ccd-b220-4a3f-889b-037f7da891e7
+      version: -1
+      name: Early End of Playbook
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_12_No Action": 0.19,
+      "18_25_Resolution in Progress": 0.64,
+      "18_26_Resolution Complete": 0.57,
+      "32_20_yes": 0.71
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2865,
+        "width": 2520,
+        "x": 120,
+        "y": 140
+      }
+    }
+  }
+inputs:
+- key: closeReason
+  value:
+    simple: Incident closed by DBot via playbook
+  required: false
+  description: The reason recorded when the playbook closes the local incident after the remote HackerView ticket becomes inactive.
+outputs: []
+sourceplaybookid: HackerView Incident Management

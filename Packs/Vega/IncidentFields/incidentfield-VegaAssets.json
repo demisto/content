@@ -1,0 +1,30 @@
+{
+    "id": "incident_vegaassets",
+    "version": -1,
+    "name": "Vega Assets",
+    "ownerOnly": false,
+    "description": "Assets (IPs, instance IDs, IAM roles) involved in this incident.",
+    "cliName": "vegaassets",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
