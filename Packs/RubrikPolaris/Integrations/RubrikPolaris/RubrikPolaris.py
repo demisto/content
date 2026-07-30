@@ -4950,11 +4950,11 @@ def remove_typename(data: Union[dict, list]) -> Union[dict, list]:
         if "__typename" in data:
             data.pop("__typename")
         for key, value in data.items():
-            if isinstance(value, (dict, list)):  # noqa: UP038
+            if isinstance(value, (dict, list)):
                 data[key] = remove_typename(value)
     elif isinstance(data, list):
         for index, value in enumerate(data):
-            if isinstance(value, (dict, list)):  # noqa: UP038
+            if isinstance(value, (dict, list)):
                 data[index] = remove_typename(value)
     return data
 
