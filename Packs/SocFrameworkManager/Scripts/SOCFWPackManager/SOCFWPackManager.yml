@@ -1,9 +1,11 @@
 comment: |-
-  SOC Framework bootloader. Lists the SOC Framework pack catalog, installs
-  and configures packs from xsoar_config.json, and re-runs configuration
-  only. Also includes sync-tags, a backward-compat action for older SOC
-  Framework deployments still using the value_tags lookup; modern versions
-  use the SOCActionTimeMap_V3 list and do not require it.
+  The SOC Framework bootloader for Cortex XSIAM. Lists the SOC Framework pack
+  catalog with the installed version and update status of each pack, installs
+  and configures packs from xsoar_config.json, re-runs configuration only, and
+  diagnoses the platform endpoints the install path depends on. Also includes
+  sync-tags, a backward-compatible action for older SOC Framework deployments
+  still using the value_tags lookup; modern versions use the
+  SOCActionTimeMap_V3 list and do not require it.
 commonfields:
   id: SOCFWPackManager
   version: -1
@@ -38,10 +40,11 @@ args:
   - configure
   - sync-tags
   - diagnose
-  description: diagnose probes every platform endpoint the marketplace install path depends on and reports which one fails; run it first when an install misbehaves. list shows the catalog. apply installs and configures a pack. configure re-runs configuration only (no pack install). sync-tags is a backward-compat action that updates the legacy value_tags lookup; modern SOC Framework deployments use SOCActionTimeMap_V3 and do not need it.
+  description: The action to run. The diagnose action probes every platform endpoint the marketplace install path depends on and reports which one fails; run it first when an install misbehaves. The list action shows the catalog. The apply action installs and configures a pack. The configure action re-runs configuration only, without installing a pack. The sync-tags action is a backward-compatible action that updates the legacy value_tags lookup; modern SOC Framework deployments use SOCActionTimeMap_V3 and do not need it.
 - name: probe_pack
+  type: shortText
   defaultValue: Whois
-  description: action=diagnose only. Pack id used to probe the marketplace metadata and dependency endpoints. Defaults to Whois because it is a stock Marketplace pack present on effectively every tenant, which makes it a dependable read-only probe target; nothing is installed or modified. Falls back to an installed pack if this one is absent.
+  description: The pack ID used to probe the marketplace metadata and dependency endpoints, for the diagnose action only. Whois is a stock Marketplace pack present on effectively every tenant, which makes it a dependable read-only probe target; nothing is installed or modified. Falls back to an installed pack if this one is absent.
 - name: pack_id
   description: The pack ID from pack_catalog.json (for example, soc-optimization-unified). Required for action=apply.
 - name: catalog_url
@@ -144,12 +147,13 @@ args:
   - 'False'
   description: Continue with configuration steps if a custom-pack install times out and polling does not confirm installation.
 - name: upgrade_marketplace
+  type: boolean
   auto: PREDEFINED
   defaultValue: 'False'
   predefined:
   - 'True'
   - 'False'
-  description: action=apply only. Controls what a marketplace_packs entry of "latest" means. False (default) means ensure present - an already-installed pack keeps its current version. True means bring each requested pack to the newest published version. Mandatory dependencies are never force-upgraded either way; they move only when a minVersion requires it. Upgrading resolves versions from the marketplace, which returns large responses, so it is slower than the default.
+  description: Whether a marketplace_packs entry of "latest" brings each requested pack to the newest published version, for the apply action only. When false, an already-installed pack keeps its current version. Mandatory dependencies are never force-upgraded either way; they move only when a minVersion requires it. Upgrading resolves versions from the marketplace, which returns large responses, so it is slower.
 - name: fail_on_marketplace_errors
   auto: PREDEFINED
   defaultValue: 'False'
@@ -184,7 +188,7 @@ args:
   - status
   - visible
   - path
-  description: action=list only. Column to sort by. Ignored for ordering between categories when group_by_category is true.
+  description: The column to sort by, for the list action only. Ignored for ordering between categories when group_by_category is true.
 - name: sort_dir
   auto: PREDEFINED
   defaultValue: asc
@@ -201,24 +205,27 @@ args:
   description: action=list only. Hide packs marked visible=false in the catalog. Implied false when include_hidden=true.
 - name: fields
   defaultValue: id,version,installed,status,docs
-  description: action=list only. Comma-separated list of columns to show. Available columns are id, display_name, category, version, installed, status, docs, visible and path. Unknown fields are ignored.
+  description: The comma-separated list of columns to show, for the list action only. Available columns are id, display_name, category, version, installed, status, docs, visible and path. Unknown fields are ignored.
 - name: group_by_category
+  type: boolean
   auto: PREDEFINED
   defaultValue: 'True'
   predefined:
   - 'True'
   - 'False'
-  description: action=list only. Group packs under their catalog category, one table per category. Set to false for a single flat table.
+  description: Whether to group packs under their catalog category, one section per category, for the list action only. When false, a single flat list is rendered.
 - name: docs_base_url
+  type: shortText
   defaultValue: https://palo-cortex.github.io/secops-framework
-  description: action=list only. Absolute base URL of the documentation site. Each pack id is rendered as a link to its overview page. Must be absolute, otherwise the link resolves against the tenant host. Set to an empty value to disable linking.
+  description: The absolute base URL of the documentation site, for the list action only. The catalog supplies each pack's relative documentation path and this value supplies the host, so each pack links to its overview page. Must be absolute, otherwise the link resolves against the tenant host. Set to an empty value to disable linking.
 - name: output_format
+  type: shortText
   auto: PREDEFINED
   defaultValue: list
   predefined:
   - list
   - table
-  description: action=list only. list renders one line per pack and is the default because the war room transposes single-row tables and truncates long ones. table renders the columns named in fields.
+  description: The output style for the list action only. The list style renders one line per pack, because the War Room transposes single-row tables and truncates long ones. The table style renders the columns named in fields.
 - name: show_total
   auto: PREDEFINED
   defaultValue: 'True'

@@ -26,10 +26,11 @@ INTEGRATION_NAME = "SOCFWPackManager"
 # run; this value is the fallback when the instance leaves the field empty.
 DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json"
 
-# Trailing release-version suffix on a pack asset filename, e.g. the
-# "-v3.11.2" in soc-optimization-unified-v3.11.2.zip, optionally followed by a
-# pre-release tag such as "-pr1008".
-PACK_VERSION_SUFFIX = re.compile(r"-v\d+(?:\.\d+)*(?:-[A-Za-z0-9]+)?$")
+# Trailing release-version suffix on a release asset filename, e.g. "-v3.11.2"
+# or "-v3.11.1-pr1008". The pre-release group is restricted to recognized tag
+# forms on purpose: allowing any word there would strip a legitimate trailing
+# component, turning "soc-v3-tools" into "soc".
+PACK_VERSION_SUFFIX = re.compile(r"-v\d+(?:\.\d+)*(?:-(?:pr|rc|alpha|beta|dev)\d*)?$", re.IGNORECASE)
 
 
 def pack_dir_name(filename: str) -> str:

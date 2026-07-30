@@ -547,3 +547,32 @@ def test_get_catalog_url_command_defaults_when_unset():
     for params in ({}, {"catalog_url": ""}, {"catalog_url": "   "}, {"catalog_url": None}):
         res = integration.get_catalog_url_command(params)
         assert res["outputs"]["CatalogURL"] == integration.DEFAULT_CATALOG_URL, params
+
+
+def test_pack_dir_name_keeps_version_like_strings_mid_filename():
+    """Only a trailing version suffix is a version.
+
+    A version-like component in the middle of the name is part of the pack ID
+    and must survive, and a legitimate trailing word must not be mistaken for a
+    pre-release tag -- "soc-v3-tools" previously reduced to "soc", which would
+    install the pack under the wrong ID.
+    """
+    integration, _ = load_integration()
+    cases = {
+        # Version-like component mid-name, real version at the end.
+        "soc-v2-endpoint-v1.0.0.zip": "soc-v2-endpoint",
+        "my-v10-agent-v2.5.zip": "my-v10-agent",
+        # Version-like component mid-name, no trailing version.
+        "soc-v3-tools.zip": "soc-v3-tools",
+        "soc-v2-endpoint.zip": "soc-v2-endpoint",
+        # Recognized pre-release tags are still stripped with the version.
+        "soc-pack-v1.2.3-pr1008.zip": "soc-pack",
+        "soc-pack-v1.2.3-rc2.zip": "soc-pack",
+        "soc-pack-v1.2.3-beta.zip": "soc-pack",
+        # An unrecognized trailing word is not a pre-release tag.
+        "soc-pack-v1.2.3-tools.zip": "soc-pack-v1.2.3-tools",
+        # Case-insensitive on the version marker.
+        "soc-pack-V1.2.3.zip": "soc-pack",
+    }
+    for given, expected in cases.items():
+        assert integration.pack_dir_name(given) == expected, given

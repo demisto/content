@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401,F403
 import json
 import re
 import time
+import traceback
 from typing import Any
 from urllib.parse import urlparse
 
@@ -493,6 +494,13 @@ def resolve_catalog_url(explicit: Any) -> str:
     res = exec_cmd("socfw-catalog-url-get", {}, fail_on_error=False)
     contents = get_contents(res)
     configured = _norm(contents.get("catalog_url")) if isinstance(contents, dict) else ""
+    if not configured:
+        demisto.debug(
+            "socfw-catalog-url-get returned no catalog URL; falling back to the built-in "
+            f"default {DEFAULT_CATALOG_URL}. The command is unavailable on older versions "
+            "of the integration, and an instance created before the parameter existed "
+            "reports it as empty."
+        )
     return configured or DEFAULT_CATALOG_URL
 
 
@@ -847,7 +855,7 @@ def find_core_rest_api_instances() -> list[dict[str, str]]:
     try:
         modules = demisto.getModules() or {}
     except Exception as e:
-        demisto.debug(f"getModules unavailable: {e}")
+        demisto.error(f"getModules unavailable: {e}\n{traceback.format_exc()}")
         return []
     found = []
     for name, meta in modules.items():
@@ -1052,11 +1060,25 @@ def resolve_install_closure(
                 # version itself depends on.
                 frontier.append({"id": dep_id, "version": version})
 
+    if frontier:
+        # The install endpoint validates the request as a self-contained graph
+        # and rejects a partial set, naming the install endpoint rather than the
+        # unresolved dependency. Say which packs were still expanding so the
+        # rejection is attributable.
+        unresolved = ", ".join(sorted(f"{p['id']}@{p['version']}" for p in frontier))
+        emit_progress(
+            f"⚠️ Dependency resolution stopped after {MAX_DEPENDENCY_ROUNDS} rounds with packs "
+            f"still unexpanded: {unresolved}. The dependency set may be incomplete, and the "
+            f"install endpoint rejects an incomplete set. Re-run with a narrower pack list, or "
+            f"raise MAX_DEPENDENCY_ROUNDS if the dependency graph is genuinely this deep.",
+            stage="packs.marketplace.closure.incomplete",
+        )
+
     return wanted
 
 
 def _marketplace_context_rows(
-    requested_ids: set,
+    requested_ids: set[str],
     installed_now: dict[str, str],
     already_present: dict[str, str],
     failed: dict[str, str],
@@ -2595,7 +2617,7 @@ def _run_main():
 # ---------------------------
 
 
-def do_diagnose(args: dict[str, Any]):
+def do_diagnose(args: dict[str, Any]) -> None:
     """Probe every platform endpoint the marketplace install path depends on.
 
     Read-only. Exists because a failure in any one of these surfaces later as a
