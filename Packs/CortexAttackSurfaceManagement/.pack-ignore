@@ -26,7 +26,7 @@ ignore=RM108
 ignore=GR103
 
 # This pack is intended for XSOAR and Xpanse only, and intentionally omits 'platform'.
-[file=pack_metadata.json]
+[file=Cortex_ASM_-_Remediation_Path_Rules.yml]
 ignore=BA130
 
 [known_words]
