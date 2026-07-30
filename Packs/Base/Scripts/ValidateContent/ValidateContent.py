@@ -78,7 +78,7 @@ import types
 import zipfile
 from base64 import b64decode
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from contextlib import contextmanager, redirect_stderr
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -144,6 +144,38 @@ SKIPPED_HOOKS = [
     "check-yaml",
     "check-json",
 ]
+
+
+@contextmanager
+def suppress_fd_stdout():
+    """
+    Suppress writes to the OS-level stdout file descriptor (fd 1) for the
+    duration of the block.
+
+    `contextlib.redirect_stdout` only rebinds the Python-level ``sys.stdout``
+    object. It does NOT capture output that bypasses it, such as:
+      - a ``rich.Console`` instance that cached the original stream at creation
+        time (demisto-sdk creates such consoles),
+      - C-extension writes, or
+      - child processes that inherit fd 1.
+    Any of those leaking to fd 1 corrupts the JSON entry XSOAR reads from the
+    script's stdout, causing "invalid character 'P' looking for beginning of
+    value". This context manager duplicates fd 1, points it at os.devnull for
+    the block, and restores it afterwards so return_results() can emit the
+    entry cleanly.
+    """
+    # Ensure any buffered Python-level stdout is flushed before we swap the fd.
+    sys.stdout.flush()
+    saved_stdout_fd = os.dup(1)
+    devnull_fd = os.open(os.devnull, os.O_WRONLY)
+    try:
+        os.dup2(devnull_fd, 1)
+        yield
+    finally:
+        sys.stdout.flush()
+        os.dup2(saved_stdout_fd, 1)
+        os.close(devnull_fd)
+        os.close(saved_stdout_fd)
 
 
 class FormattedResultFields:
@@ -898,7 +930,23 @@ def main():
 
             # Got to be in content dir when running demisto-sdk commands.
             os.chdir(CONTENT_DIR_PATH)
-            validation_results, raw_outputs = validate_content(path_to_validate)
+            # demisto-sdk's ValidateManager / pre_commit_manager write progress and
+            # rich-console output to stdout while running in-process. XSOAR reads the
+            # script's stdout and expects ONLY the JSON entry produced by
+            # return_results(); any leaked text (e.g. lines starting with "Preparing"
+            # or "Packs") corrupts the response, causing the server error:
+            # "Failed to decode (loop) data ... invalid character 'P' ...".
+            # Redirect stdout to a throwaway buffer for the entire validation run so
+            # no library output escapes. return_results() is called AFTER this block,
+            # writing the JSON entry to the real stdout cleanly.
+            # Two layers of protection:
+            #  1. redirect_stdout  -> captures Python-level prints / new rich consoles.
+            #  2. suppress_fd_stdout -> captures anything writing directly to fd 1
+            #     (rich consoles bound to the original stream, C extensions, subprocs).
+            validation_stdout = io.StringIO()
+            with suppress_fd_stdout(), redirect_stdout(validation_stdout):
+                validation_results, raw_outputs = validate_content(path_to_validate)
+            demisto.debug(f"Captured validation stdout (suppressed from entry): {validation_stdout.getvalue()}")
             os.chdir(cwd)
 
             if not raw_outputs:
