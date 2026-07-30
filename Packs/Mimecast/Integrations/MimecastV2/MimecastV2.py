@@ -311,14 +311,15 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         raise
 
 
-def token_oauth2_request():
+def token_oauth2_request() -> tuple[str, int]:
+    """Fetch a new OAuth2 token and return (access_token, expires_in)."""
     api_endpoint = "/oauth/token"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET, "grant_type": "client_credentials"}
     response = http_request("POST", api_endpoint, user_auth=False, headers=headers, data=data)
     if failure_response := response.get("fail"):
         handle_error_response(failure_response, error_key="message")
-    return response.get("access_token")
+    return response.get("access_token"), int(response.get("expires_in", 1799))
 
 
 def search_message_request(args):
@@ -535,23 +536,17 @@ def auto_refresh_token():
 
 
 def updating_token_oauth2():
-    """
-    Ensures the OAuth2 token is up to date, refreshing it if necessary.
-
-    Returns:
-        str: The updated OAuth2 token.
-    """
+    """Ensures the OAuth2 token is up to date, refreshing it if necessary."""
     global TOKEN_OAUTH2
-    global USE_SSL
 
     integration_context = demisto.getIntegrationContext()
     current_ts = epoch_seconds()
     last_update_ts = integration_context.get("last_update")
-    if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
-        TOKEN_OAUTH2 = token_oauth2_request()
+    expires_in = integration_context.get("expires_in", 1799)
+    if last_update_ts is None or (current_ts - last_update_ts >= expires_in - 60):
+        TOKEN_OAUTH2, expires_in = token_oauth2_request()
         if TOKEN_OAUTH2:
-            token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
-            demisto.setIntegrationContext(token_oauth2)
+            demisto.setIntegrationContext({"value": TOKEN_OAUTH2, "last_update": current_ts, "expires_in": expires_in})
     else:
         TOKEN_OAUTH2 = integration_context.get("value")
 

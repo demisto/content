@@ -1559,3 +1559,118 @@ class TestUpdateBlockSenderPolicyCommand:
         )
         sent_body = adapter.last_request.json()
         assert sent_body["from"] == {"type": "email_domain", "domain": "example.com"}
+
+
+class TestOAuth2TokenManagement:
+    """Tests for token_oauth2_request and updating_token_oauth2."""
+
+    # --- token_oauth2_request ---
+
+    def test_token_oauth2_request_returns_token_and_expires_in(self, requests_mock):
+        """Successful token fetch returns (access_token, expires_in) tuple."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "tok123", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        token, expires_in = MimecastV2.token_oauth2_request()
+        assert token == "tok123"
+        assert expires_in == 1799
+
+    def test_token_oauth2_request_defaults_expires_in_when_missing(self, requests_mock):
+        """If expires_in is absent from the response, defaults to 1799."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "tok456", "token_type": "Bearer"},
+        )
+        token, expires_in = MimecastV2.token_oauth2_request()
+        assert token == "tok456"
+        assert expires_in == 1799
+
+    # --- updating_token_oauth2 ---
+
+    def test_updating_token_fetches_when_no_context(self, mocker, requests_mock):
+        """Fetches a new token when integration context is empty."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "new_tok", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+        set_ctx = mocker.patch.object(demisto, "setIntegrationContext")
+
+        MimecastV2.updating_token_oauth2()
+
+        assert MimecastV2.TOKEN_OAUTH2 == "new_tok"
+        ctx = set_ctx.call_args[0][0]
+        assert ctx["value"] == "new_tok"
+        assert ctx["expires_in"] == 1799
+        assert "last_update" in ctx
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_reuses_valid_token(self, mocker):
+        """Does not fetch a new token when the existing one is still valid."""
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "cached_tok", "last_update": now - 60, "expires_in": 1799},
+        )
+        fetch_mock = mocker.patch.object(MimecastV2, "token_oauth2_request")
+
+        MimecastV2.updating_token_oauth2()
+
+        fetch_mock.assert_not_called()
+        assert MimecastV2.TOKEN_OAUTH2 == "cached_tok"
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_refreshes_when_expired(self, mocker, requests_mock):
+        """Fetches a new token when the existing one has expired."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "refreshed_tok", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "old_tok", "last_update": now - 1799, "expires_in": 1799},
+        )
+        mocker.patch.object(demisto, "setIntegrationContext")
+
+        MimecastV2.updating_token_oauth2()
+
+        assert MimecastV2.TOKEN_OAUTH2 == "refreshed_tok"
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_uses_expires_in_from_context(self, mocker):
+        """Uses the expires_in stored in context, not a hardcoded value."""
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "short_ttl_tok", "last_update": now - 200, "expires_in": 300},
+        )
+        fetch_mock = mocker.patch.object(MimecastV2, "token_oauth2_request")
+
+        MimecastV2.updating_token_oauth2()
+
+        fetch_mock.assert_not_called()
+        assert MimecastV2.TOKEN_OAUTH2 == "short_ttl_tok"
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_refreshes_within_safety_margin(self, mocker, requests_mock):
+        """Refreshes when fewer than 60s remain before expiry."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "margin_tok", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "expiring_tok", "last_update": now - 1750, "expires_in": 1799},
+        )
+        mocker.patch.object(demisto, "setIntegrationContext")
+
+        MimecastV2.updating_token_oauth2()
+
+        assert MimecastV2.TOKEN_OAUTH2 == "margin_tok"
