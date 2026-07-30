@@ -57,6 +57,18 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  defaultvalue: 1
+  section: Collect
+  advanced: true
+  required: false
 script:
   script: ""
   type: python

@@ -11,6 +11,8 @@ This is the default integration for this content pack when configured by the Dat
 | proxy                                                                   | Use system proxy settings                                                                 | False        |
 | API key                                                                 | The request API key                                                                       | True         |
 | First fetch time interval                                               | The period (in days) to retrieve events from, if no time is saved in the system           | True         |
+| Fetch events                                                            | Whether to fetch events from Okta                                                         | False        |
+| Events Fetch Interval                                                   | The interval (in minutes) between fetch cycles                                            | False        |
 
 ## Commands
 
