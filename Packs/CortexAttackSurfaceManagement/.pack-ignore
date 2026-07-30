@@ -25,6 +25,10 @@ ignore=RM108
 [file:RankServiceOwners.yml]
 ignore=GR103
 
+# This pack is intended for XSOAR and Xpanse only, and intentionally omits 'platform'.
+[file=pack_metadata.json]
+ignore=BA130
+
 [known_words]
 ASM
 CMDB
