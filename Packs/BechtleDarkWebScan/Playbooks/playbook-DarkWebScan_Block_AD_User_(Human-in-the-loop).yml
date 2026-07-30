@@ -1,0 +1,707 @@
+id: DarkWebScan Block AD User (Human-in-the-loop)
+version: 19
+fromversion: 5.0.0
+vcShouldKeepItemLegacyProdMachine: false
+aclrelations: []
+aclowner:
+  id: ""
+  type: ""
+  name: ""
+name: DarkWebScan Block AD User (Human-in-the-loop)
+description: Gets the affected username of a Bechtle Dark Web Scan issue, then sends
+  an email for human confirmation if the affected user should be blocked.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b087a4dd-4d86-466b-8804-1ea262de188a
+    type: start
+    task:
+      id: b087a4dd-4d86-466b-8804-1ea262de188a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d3102716-e3fa-4381-9241-ce6f85fb2360
+    type: regular
+    task:
+      id: d3102716-e3fa-4381-9241-ce6f85fb2360
+      version: -1
+      name: Get Incident Evidence
+      description: "Searches Demisto incidents. A summarized version of this scrips
+        is available with the summarizedversion argument.\n\nThis automation runs
+        using the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex XSOAR
+        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script\nhttps://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations"
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      add_fields_to_summarize_context:
+        simple: ${issue.initial_evidence}
+      id:
+        simple: ${inputs.IssueID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7b4af5c4-c13f-4205-b56a-b72aaaa2018f
+    type: condition
+    task:
+      id: 7b4af5c4-c13f-4205-b56a-b72aaaa2018f
+      version: -1
+      name: Ask (via email) to block user or mark as resolved
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      Block user account in AD:
+      - "4"
+      Mark as Resolved:
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.SendMailsTo}
+      subject:
+        simple: New Dark Web Leak requires your response
+      body:
+        simple: |-
+          A new dark web leak occurred. This is an automated email from your CORTEX XSIAM Integration.<br>
+          <br>
+          ID: ${inputs.IssueID}<br>
+          <br>
+          Severity: ${inputs.Severity}<br>
+          <br>
+          Description: ${inputs.Details}<br>
+          Affected Username: ${issue.labels.username}<br>
+          Affected Username (without email domain): ${inputs.UsernameWithoutDomain}<br>
+          <br>
+          Link to Incident: ${demistoUrls.investigation}<br>
+          <br>
+
+          <br>
+
+          DarkWebScan Integration (Alpha Test) by <br>
+          <!-- Bechtle Logo --><img src="data:image/png;base64,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" width="auto" height="28" alt="Bechtle" /><!-- End Bechtle Logo-->
+
+          <br><br>
+          Please select how you want to continue with the user account ${inputs.UsernameWithoutDomain}:<br>
+          <style type="text/css">
+          p a {
+            display: inline-block;
+            padding: 12px 24px;
+            color: #ffffff;
+            text-decoration: none;
+            font-family: sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+          }
+          </style>
+      methods:
+      - email
+      format: html
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Block user account in AD
+      - Mark as Resolved
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 07fef2a6-a498-4267-9c13-afba6fd9b534
+    type: title
+    task:
+      id: 07fef2a6-a498-4267-9c13-afba6fd9b534
+      version: -1
+      name: Try to block user
+      description: Try to block the user using the Active Directory Query v2 Integration
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 490384be-54b9-4cbe-9b5e-cbd5214263fc
+    type: regular
+    task:
+      id: 490384be-54b9-4cbe-9b5e-cbd5214263fc
+      version: -1
+      name: Mark incident as resolved
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    scriptarguments:
+      closeNotes:
+        simple: User clicked "Mark as resolved" in email
+      closeReason:
+        simple: Resolved via email response
+      id:
+        simple: ${inputs.IssueID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 542.5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cba755d1-857f-4194-bf17-ac6e8ff21a3c
+    type: condition
+    task:
+      id: cba755d1-857f-4194-bf17-ac6e8ff21a3c
+      version: -1
+      name: Is Active Directory Query v2 Integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "8"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f9c6a71f-3d03-4215-899c-d2cea84ddb0e
+    type: regular
+    task:
+      id: f9c6a71f-3d03-4215-899c-d2cea84ddb0e
+      version: -1
+      name: Send email to configure integration
+      description: commands.server.mail.sendmail
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      body:
+        simple: You are receiving this mail because you have enabled the "DarkWebScan
+          Block AD (Human-in-the-loop)" Playbook. However, you have not yet installed
+          and configured an instance of the required "Active Directory Query v2" integration.
+          This integration is required to run this playbook. You will receive an email
+          like this for every failed attempt to run this playbook unless you disable
+          the playbook.
+      subject:
+        simple: DarkWebScan Block AD User Playbook has identified an issue
+      to:
+        simple: ${inputs.SendMailsTo}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a89c8d59-4463-475a-8282-089e23af8b1c
+    type: regular
+    task:
+      id: a89c8d59-4463-475a-8282-089e23af8b1c
+      version: -1
+      name: Active Directory - Get User
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      username:
+        simple: ${inputs.UsernameWithoutDomain}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ecadde1a-c79c-4183-a45b-cc2315b23f6c
+    type: condition
+    task:
+      id: ecadde1a-c79c-4183-a45b-cc2315b23f6c
+      version: -1
+      name: Does an account with that username exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f01e1936-2d36-4d1f-9128-dc4dbe0587b6
+    type: regular
+    task:
+      id: f01e1936-2d36-4d1f-9128-dc4dbe0587b6
+      version: -1
+      name: Active Directory - Disable Account
+      description: Disables an Active Directory user account.
+      script: Active Directory Query v2|||ad-disable-account
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      username:
+        simple: ${Account.Username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 56302690-415e-43a6-a720-aaddfa21fb51
+    type: regular
+    task:
+      id: 56302690-415e-43a6-a720-aaddfa21fb51
+      version: -1
+      name: Close Issue
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      closeNotes:
+        simple: Active Directory - Disable Account executed
+      closeReason:
+        simple: Active Directory - Disable Account executed
+      id:
+        simple: ${inputs.IssueID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 85ebabd5-3fe6-4c1f-8c90-8f8b9e186884
+    type: title
+    task:
+      id: 85ebabd5-3fe6-4c1f-8c90-8f8b9e186884
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: eb6a2f43-32b5-48b1-af8e-0f1f0495b7f3
+    type: regular
+    task:
+      id: eb6a2f43-32b5-48b1-af8e-0f1f0495b7f3
+      version: -1
+      name: Send email because user does not exist
+      description: commands.server.mail.sendmail
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      body:
+        simple: You are receiving this mail because you have enabled the "DarkWebScan
+          Block AD (Human-in-the-loop)" Playbook. The playbook tried to block a user
+          on your request, but the username was not found in your connected Active
+          Directory instance. You will receive an email like this for every failed
+          attempt to block a user with a non-existent username.
+      subject:
+        simple: DarkWebScan Block AD User Playbook has identified an issue
+      to:
+        simple: ${inputs.SendMailsTo}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 216f7b83-762e-4a60-9565-e6ce2c007fc9
+    type: title
+    task:
+      id: 216f7b83-762e-4a60-9565-e6ce2c007fc9
+      version: -1
+      name: Done (but unable to block)
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -780,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 974ea740-7690-4b0b-bbd2-9a46a9420c50
+    type: title
+    task:
+      id: 974ea740-7690-4b0b-bbd2-9a46a9420c50
+      version: -1
+      name: Done (User non-existent)
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+outlinetasks: {}
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_Block user account in AD": 0.55,
+      "3_5_Mark as Resolved": 0.69
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1650,
+        "width": 1910,
+        "x": -780,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IssueID
+  value:
+    simple: ${issue.id}
+  required: false
+  description: Issue ID
+  playbookInputQuery: null
+- key: Severity
+  value:
+    simple: ${issue.severity}
+  required: false
+  description: Issue Severity
+  playbookInputQuery: null
+- key: Details
+  value:
+    simple: ${issue.details}
+  required: false
+  description: Issue Details
+  playbookInputQuery: null
+- key: IssueUsername
+  value:
+    simple: ${issue.labels.username}
+  required: false
+  description: Username as reported from the Dark Web Scan Integration Evidence
+  playbookInputQuery: null
+- key: UsernameWithoutDomain
+  value:
+    complex:
+      root: issue.labels
+      accessor: username
+      transformers:
+      - operator: replaceMatch
+        args:
+          regex:
+            value:
+              simple: '@.*'
+          replaceWith: {}
+  required: false
+  description: The username but with the mail domain removed (e.g. @example.org)
+  playbookInputQuery: null
+- key: SendMailsTo
+  value:
+    simple: -bogus@example.org
+  required: false
+  description: Send all email notifications from this playbook to this email address
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - IssueID
+  - Severity
+  - Details
+  - IssueUsername
+  - UsernameWithoutDomain
+  - SendMailsTo
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+sourceplaybookid: 09b304ed-7dcc-4af7-8943-b5294bf727cc
+quiet: true
+dirtyInputs: true
+adopted: true
+possibleresponses: []

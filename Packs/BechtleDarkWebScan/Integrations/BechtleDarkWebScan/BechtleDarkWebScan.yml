@@ -1,0 +1,156 @@
+category: Identity and Access Management
+commonfields:
+  id: BechtleDarkWebScan
+  version: -1
+provider: Bechtle
+configuration:
+- display: API Key
+  additionalinfo: Your darkwebscan.app API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Additional request headers
+  name: addreqheaders
+  required: false
+  type: 12
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  defaultvalue: "60"
+  required: false
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: "6 months"
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Maximum incidents per fetch
+  name: max_fetch
+  defaultvalue: "50"
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'The dark web scan integration notifies you if login credentials to your company are being sold on the dark web.'
+display: BechtleDarkWebScan
+name: BechtleDarkWebScan
+script:
+  commands:
+  - name: darkwebscan-getcompanies
+    deprecated: false
+    description: 'Returns a list of all companies associated with your API key.'
+    execution: false
+    outputs:
+    - contextPath: BechtleDarkWebScan.Companies
+      description: 'All companies that you have access to.'
+      type: String
+  - name: darkwebscan-getleaks
+    arguments:
+    - name: company_id
+      default: false
+      description: 'ID of the company to retrieve leaked credentials for.'
+      isArray: false
+      required: true
+      type: number
+      secret: false
+    - name: only_new
+      default: false
+      defaultValue: "false"
+      description: 'Only return leaks not previously seen by this integration instance.'
+      isArray: false
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+    deprecated: false
+    description: 'Returns leaked credentials for a given company_id.'
+    execution: false
+    outputs:
+    - contextPath: BechtleDarkWebScan.LeakedCredentials
+      description: 'Leaked credentials for a given company_id.'
+      type: String
+
+  - name: darkwebscan-getosint
+    arguments:
+    - name: company_id
+      default: false
+      description: 'ID of the company to retrieve OSINT information for.'
+      isArray: false
+      required: true
+      type: number
+      secret: false
+    deprecated: false
+    description: 'Returns OSINT information about the associated domain of a given company_id.'
+    execution: false
+    outputs:
+    - contextPath: BechtleDarkWebScan.OSINT
+      description: 'OSINT information (email addresses, subdomains, ...) for the associated domain of a given company_id.'
+      type: String
+
+  - name: darkwebscan-getemailsecurity
+    arguments:
+    - name: company_id
+      default: false
+      description: 'ID of the company to retrieve email security information for.'
+      isArray: false
+      required: true
+      type: number
+      secret: false
+    deprecated: false
+    description: 'Returns information about the email security for the associated domain of a given company_id.'
+    execution: false
+    outputs:
+    - contextPath: BechtleDarkWebScan.EmailSecurity
+      description: 'Email security (SPF, DMARC, DANE, ...) for the associated domain of a given company_id.'
+      type: String
+
+  - name: darkwebscan-getwaf
+    arguments:
+    - name: company_id
+      default: false
+      description: 'ID of the company to retrieve Web Application Firewall Status information for.'
+      isArray: false
+      required: true
+      type: number
+      secret: false
+    deprecated: false
+    description: 'Returns Web Application Firewall Status information about the associated domain of a given company_id.'
+    execution: false
+    outputs:
+    - contextPath: BechtleDarkWebScan.WAF
+      description: 'Web Application Firewall status and product name (if applicable)'
+      type: String
+
+  - name: darkwebscan-resetcontext
+    deprecated: false
+    description: 'Resets integration context for the DarkWebScan. May result in many alerts reappearing.'
+    execution: false
+
+
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
