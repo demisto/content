@@ -1,0 +1,40 @@
+name: Cloudflare - Failed Sign-In Burst - by GoCortexIO
+description: Detects repeated failed sign-ins to the Cloudflare account by one identity, the shape of a password-guessing or credential-stuffing attempt against the account that controls DNS and edge configuration.
+severity: SEV_040_HIGH
+xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1110/
+  //   https://developers.cloudflare.com/fundamentals/account/account-security/review-audit-logs/
+  datamodel dataset = cloudflare_account_audit_v2_raw
+  | filter xdm.event.type = "authentication"
+  | alter outcome_s = lowercase(to_string(xdm.event.outcome))
+  | filter outcome_s contains "fail"
+  | comp count() as failed_signins, count_distinct(xdm.source.ipv4) as source_ip_count, values(xdm.source.ipv4) as source_ips, values(xdm.auth.service) as channels, min(_time) as first_attempt, max(_time) as last_attempt by xdm.source.user.upn, xdm.source.user.identity_type, xdm.source.user.user_type, xdm.source.cloud.project
+  | filter failed_signins >= 5
+  | fields xdm.source.user.upn, xdm.source.user.identity_type, xdm.source.user.user_type, xdm.source.cloud.project, failed_signins, source_ip_count, source_ips, channels, first_attempt, last_attempt
+alert_name: Cloudflare failed sign-in burst for $xdm.source.user.upn
+alert_category: User Defined
+user_defined_category: xdm.event.type
+alert_description: The identity $xdm.source.user.upn failed to sign in to Cloudflare account $xdm.source.cloud.project $failed_signins times, from $source_ip_count distinct source addresses ($source_ips) via $channels, between $first_attempt and $last_attempt. Repeated failures against a Cloudflare account are a password-guessing or credential-stuffing attempt on the control plane for DNS, certificates and edge code, so a successful takeover here can redirect or intercept traffic for every domain in the account. Check whether any sign-in for this identity SUCCEEDED in the same window, since a burst of failures followed by a success is the shape of a completed brute force. Confirm the source addresses are expected for this person, and if they are not, force a credential reset and review recent account changes.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0006 - Credential Access:
+  - T1110 - Brute Force
+suppression_fields:
+- xdm.source.user.upn
+global_rule_id: ed703ffa-e1e2-4e78-8030-8e002eb2c43e
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 1 hours
+timezone: Australia/Melbourne
+crontab: '*/15 * * * *'
+suppression_enabled: true
+suppression_duration: 12 hours
+dataset: alerts
+investigation_query_link: dataset = cloudflare_account_audit_v2_raw | filter actor_email = $xdm.source.user.upn and action_description = "LOGIN"
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

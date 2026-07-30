@@ -3,6 +3,8 @@ description: Detects a Cloudflare Security Center finding above informational se
 severity: User Defined
 user_defined_severity: xdm.alert.severity
 xql_query: |-
+  // References
+  //   https://developers.cloudflare.com/security-center/
   datamodel dataset = cloudflare_security_insights_raw
   | filter xdm.alert.severity in ("Medium", "High", "Critical")
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.alert.name, xdm.alert.severity, xdm.alert.subcategory, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.*

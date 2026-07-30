@@ -1,0 +1,40 @@
+name: Cloudflare - Worker Serving Identity Provider Lookalike Hostname - by GoCortexIO
+description: Detects a Cloudflare Worker serving a hostname that imitates an identity provider or sign-in page, which is the shape of credential phishing infrastructure hosted on the account's own edge.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1584/
+  //   https://developers.cloudflare.com/workers/configuration/routing/custom-domains/
+  datamodel dataset = cloudflare_workers_raw
+  | filter xdm.target.host.hostname != null
+  | alter host_lc = lowercase(xdm.target.host.hostname)
+  | filter host_lc contains "login" or host_lc contains "signin" or host_lc contains "sign-in" or host_lc contains "sso." or host_lc contains "okta" or host_lc contains "adfs" or host_lc contains "saml" or host_lc contains "entra" or host_lc contains "auth0" or host_lc contains "oauth" or host_lc contains "mfa."
+  | sort desc _time
+  | dedup xdm.target.resource.id
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.content_version, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.operation, xdm.event.operation_sub_type, xdm.event.original_event_type, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.resource.value, xdm.target.host.hostname, xdm.*
+alert_name: Cloudflare Worker $xdm.target.resource.name serves an identity provider lookalike hostname
+alert_category: User Defined
+user_defined_category: xdm.target.resource.type
+alert_description: The Cloudflare Worker $xdm.target.resource.name serves $xdm.target.host.hostname in account $xdm.source.cloud.project. A Worker runs code at the edge in front of a hostname, so a Worker answering on a sign-in or identity provider lookalike name can serve a convincing credential harvesting page from infrastructure the organisation owns, which defeats domain reputation checks. Confirm the Worker is a legitimate authentication flow. Check who deployed it via $xdm.event.operation_sub_type, review the hostnames it answers on, and inspect the script itself in the Cloudflare dashboard. Note that a genuine sign-in service will also match this pattern, so the question is whether this Worker is expected, not whether the name is unusual.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0042 - Resource Development:
+  - T1584 - Compromise Infrastructure
+suppression_fields:
+- xdm.target.resource.id
+global_rule_id: 43f8041c-e2ef-481e-8c15-78c4f7f1be4f
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 3 hours
+timezone: Australia/Melbourne
+crontab: '15 * * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = cloudflare_workers_raw | filter id = $xdm.target.resource.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

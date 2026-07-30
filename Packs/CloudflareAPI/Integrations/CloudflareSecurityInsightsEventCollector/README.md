@@ -5,7 +5,7 @@ Collect Cloudflare Security Center insights (findings) via
 `cloudflare_security_insights_raw` dataset in Cortex XSIAM.
 Insights are current findings (a snapshot), so each run sends the full set.
 
-## Configure Cloudflare Security Insights Event Collector in Cortex
+## Configure Cloudflare Security Insights Event Collector in the Cortex Platform
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

@@ -1,3 +1,12 @@
+// NOTE: the authentication branch below is DORMANT and is expected to be.
+// The version 1 audit endpoint carries no sign-in events across
+// weeks contained none, and this branch has produced zero rows in ninety days. It keys
+// on action.type containing "login", and in version 1 no action.type ever does.
+// Authentication for this pack is served by cloudflare_account_audit_v2_raw, where a
+// login is identified by action_description = "LOGIN". The branch is kept because it
+// costs nothing and would light up if the endpoint ever reports a sign-in, but its
+// presence here is NOT evidence that authentication is captured.
+
 [MODEL: dataset=cloudflare_account_audit_raw]
 filter
     action != null
@@ -109,4 +118,312 @@ filter
         "Cloudflare security insight: ", coalesce(issue_class, "unknown"),
         " (", coalesce(severity, "n/a"), ") on ", coalesce(subject, "unknown"),
         " -- status ", coalesce(status, "unknown"))
+;
+
+// SPDX-FileCopyrightText: GoCortexIO
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
+// Generated via
+// GOCORTEX_SKILLS_MODEL="claude-opus-5"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.0"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+// GOCORTEX_SKILLS_SOURCE_BASIS="spec-backed"
+//
+// Vendor:  Cloudflare
+// Product: Workers
+// Dataset: cloudflare_workers_raw
+//
+// Description: A snapshot of the Cloudflare Workers script inventory, one record per
+// script per collection. A Worker is code running on Cloudflare's edge in front of a
+// hostname, so the record answers what code is deployed, what its bindings let it reach,
+// and which hostnames it answers on. This is an inventory, not a change feed: the same
+// script reappears on every collection, so a correlation over it must dedup on
+// xdm.target.resource.id rather than assume one row means one event.
+//
+// Tenant-adjustable: xdm.observer.vendor, xdm.observer.product, and the [MODEL: dataset=]
+// header.
+//
+// EVENT FIELD MAPPING
+//   id                          -> xdm.target.resource.id, xdm.target.resource.name
+//   etag                        -> xdm.observer.content_version (the deployed code version)
+//   source_log_type             -> xdm.event.type
+//   cloudflare_account_id       -> xdm.source.cloud.project
+//   hostnames                   -> xdm.target.host.hostname (pipe-joined list)
+//   zone_names                  -> xdm.target.resource.parent_id (the owning DNS zones)
+//   binding_types               -> xdm.target.resource.sub_type
+//   has_*_binding, handlers,
+//   observability_enabled,
+//   logpush, hostname_count     -> xdm.target.resource.value (pipe-joined marker set)
+//   last_deployed_from          -> xdm.event.operation_sub_type (the deployment channel)
+//   binding_count, hostnames    -> xdm.event.description
+//
+// NOTE: raw columns are not readable in datamodel mode, so the boolean binding flags are
+// carried into xdm.target.resource.value as a pipe-joined marker set. Each marker restates
+// a fact the Cloudflare API reports (a binding of that type exists, observability is off, a
+// scheduled handler is registered). No marker asserts a classification Cloudflare does not
+// define: severity and intent belong to the correlation, not to the model.
+//
+// NOTE: the profiler reports an authentication story for this dataset. It is a false
+// positive. It matched the literal "login" inside script names, and a script inventory
+// carries no logon, so the authentication set is deliberately not mapped.
+//
+// NOTE: the dataset also carries a column named "tag" (Cloudflare's own content hash).
+// It is deliberately NOT read. A modelling rule that reads a column called "tag" is
+// rejected by the tenant at install time with error 101704, with no indication of which
+// field caused it, because the name collides with the platform's own tagging concept.
+// "etag" carries the same version information and is safe to read.
+//
+// NOT MAPPED
+//   created_on, modified_on     no XDM timestamp field for a resource's own lifecycle
+//                               dates; the snapshot time is carried by _time
+//   tag                         see the note above; use etag instead
+//   compatibility_date          Cloudflare runtime pinning, no XDM home, no detection value
+//   usage_model                 billing tier, not a security property
+//   etag, deployment_id         opaque version identifiers; tag already carries the version
+//   binding_names               the operator's own names for bindings; the TYPE carries the
+//                               access signal and the name adds no detection value
+//   handler_count,
+//   tail_consumer_count         counts whose presence is already carried as a marker
+//   placement_mode, has_assets,
+//   has_modules, environments   deployment shape, no XDM home and no detection value
+//
+// REVIEW UNMODELLED -- records that matched no classification branch:
+//   datamodel dataset = cloudflare_workers_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | fields xdm.target.resource.id, xdm.event.type
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset=cloudflare_workers_raw]
+filter
+    id != null
+| alter
+    tmp_script = id,
+    tmp_version = etag,
+    tmp_source_type = source_log_type,
+    tmp_account = cloudflare_account_id,
+    tmp_hostnames = coalesce(hostnames, ""),
+    tmp_zones = coalesce(zone_names, ""),
+    tmp_binding_types = coalesce(binding_types, ""),
+    tmp_handlers = lowercase(coalesce(handlers, "")),
+    tmp_deployed_from = last_deployed_from,
+    tmp_secret = has_secret_binding,
+    tmp_kv = has_kv_binding,
+    tmp_r2 = has_r2_binding,
+    tmp_d1 = has_d1_binding,
+    tmp_queue = has_queue_binding,
+    tmp_service = has_service_binding,
+    tmp_durable = has_durable_object_binding,
+    tmp_ai = has_ai_binding,
+    tmp_observability = observability_enabled,
+    tmp_logpush = logpush,
+    tmp_hostname_count = to_integer(hostname_count),
+    tmp_binding_count = to_integer(binding_count)
+| alter
+    tmp_m_secret = if(tmp_secret = true, "secret_binding|", ""),
+    tmp_m_kv = if(tmp_kv = true, "kv_binding|", ""),
+    tmp_m_r2 = if(tmp_r2 = true, "r2_binding|", ""),
+    tmp_m_d1 = if(tmp_d1 = true, "d1_binding|", ""),
+    tmp_m_queue = if(tmp_queue = true, "queue_binding|", ""),
+    tmp_m_service = if(tmp_service = true, "service_binding|", ""),
+    tmp_m_durable = if(tmp_durable = true, "durable_object_binding|", ""),
+    tmp_m_ai = if(tmp_ai = true, "ai_binding|", ""),
+    tmp_m_observability = if(tmp_observability = false, "no_observability|", ""),
+    tmp_m_logpush = if(tmp_logpush = true, "logpush|", ""),
+    tmp_m_scheduled = if(tmp_handlers contains "scheduled", "scheduled_handler|", ""),
+    tmp_m_hostname = if(tmp_hostname_count > 0, "has_hostname|", "")
+| alter
+    xdm.observer.vendor = "cloudflare",
+    xdm.observer.product = "workers",
+    xdm.observer.content_version = tmp_version,
+    xdm.event.id = tmp_script,
+    xdm.event.type = coalesce(tmp_source_type, "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = if(
+        tmp_source_type = "worker_script", "worker_script_snapshot",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(
+        tmp_source_type = "worker_script", arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+        null),
+    xdm.event.operation = if(
+        tmp_source_type = "worker_script", XDM_CONST.OPERATION_TYPE_AUDIT,
+        null),
+    xdm.event.operation_sub_type = tmp_deployed_from,
+    xdm.source.cloud.project = tmp_account,
+    xdm.target.resource.type = "worker_script",
+    xdm.target.resource.id = tmp_script,
+    xdm.target.resource.name = tmp_script,
+    xdm.target.resource.sub_type = if(tmp_binding_types = "", null, tmp_binding_types),
+    xdm.target.resource.parent_id = if(tmp_zones = "", null, tmp_zones),
+    xdm.target.host.hostname = if(tmp_hostnames = "", null, tmp_hostnames),
+    xdm.target.resource.value = concat(
+        tmp_m_secret, tmp_m_kv, tmp_m_r2, tmp_m_d1,
+        tmp_m_queue, tmp_m_service, tmp_m_durable, tmp_m_ai,
+        tmp_m_observability, tmp_m_logpush, tmp_m_scheduled, tmp_m_hostname),
+    xdm.event.description = concat(
+        "Cloudflare Worker ", coalesce(tmp_script, "unknown"),
+        " with ", coalesce(to_string(tmp_binding_count), "0"), " binding(s) [",
+        tmp_binding_types, "] serving ",
+        coalesce(to_string(tmp_hostname_count), "0"), " hostname(s): ",
+        tmp_hostnames)
+;
+
+// SPDX-FileCopyrightText: GoCortexIO
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
+// Generated via
+// GOCORTEX_SKILLS_MODEL="claude-opus-5"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.0"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+// GOCORTEX_SKILLS_SOURCE_BASIS="spec-backed"
+//
+// Vendor:  Cloudflare
+// Product: account_audit_v2
+// Dataset: cloudflare_account_audit_v2_raw
+//
+// Description: The Cloudflare version 2 account audit log. This is the only Cloudflare
+// source that reports dashboard and API sign-ins, which is why the pack collects it
+// alongside the version 1 audit log: the two endpoints return different records with
+// different identifier schemes, and version 1 carries no authentication at all. Records
+// are a mix of AUTHENTICATION (a LOGIN) and cloud audit (resource create, update and
+// delete), so classification is per record.
+//
+// Tenant-adjustable: xdm.observer.vendor, xdm.observer.product, and the [MODEL: dataset=]
+// header.
+//
+// EVENT FIELD MAPPING
+//   id                     -> xdm.event.id
+//   action_description     -> xdm.event.original_event_type, and the LOGIN discriminator
+//   action_type            -> xdm.event.operation (create / update / delete verb)
+//   action_result          -> xdm.event.outcome
+//   actor_email            -> xdm.source.user.upn, xdm.source.user.username
+//   actor_id               -> xdm.source.user.identifier
+//   actor_ip_address       -> xdm.source.ipv4
+//   actor_context          -> xdm.auth.service, xdm.event.operation_sub_type
+//   actor_type             -> xdm.source.user.identity_type, xdm.source.user.user_type
+//   cloudflare_account_id  -> xdm.source.cloud.project
+//   resource_type          -> xdm.target.resource.type
+//   resource_id            -> xdm.target.resource.id
+//   resource_product       -> xdm.target.resource.sub_type
+//   zone_name              -> xdm.target.resource.name
+//   source_log_type        -> the classification guard
+//
+// NOTE: the login is identified by action_description = "LOGIN", NOT by action_type. In
+// this source action_type is a coarse verb and a LOGIN carries action_type = "update", so
+// a matcher keyed on action_type never fires. This is the defect that left the pack with a
+// fully conformant authentication branch and no authentication rows for months.
+//
+// NOTE: the authentication mandatory set is padded per its documented placeholder policy
+// on LOGIN records only (ports to 0, target address to the empty string, IP_PROTOCOL_TCP
+// for an interactive sign-in). xdm.source.ipv4 is never padded: it always comes from
+// actor_ip_address, which the source populates on every LOGIN.
+//
+// NOT MAPPED
+//   account_id, account_name  the Cloudflare account already carried by
+//                             cloudflare_account_id in xdm.source.cloud.project
+//   raw_method, raw_uri,      present only on dashboard analytics queries
+//   raw_status_code,          and none of them authentication. Mapping them would pull the
+//   raw_user_agent,           network story onto a source that is not a network event, for
+//   raw_cf_ray_id             no detection gain
+//   resource_value,           JSON payloads of the changed object, no fixed shape and no
+//   resource_request,         XDM home; retained as raw columns for investigation
+//   resource_response
+//   resource_scope            Cloudflare's internal scoping label, no XDM home
+//   zone_id                   opaque identifier; zone_name is the readable equivalent
+//   action_time               the event time, already carried by _time
+//
+// REVIEW UNMODELLED -- records that matched no classification branch:
+//   datamodel dataset = cloudflare_account_audit_v2_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | fields xdm.event.id, xdm.event.type
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset=cloudflare_account_audit_v2_raw]
+filter
+    id != null
+| alter
+    tmp_id = id,
+    tmp_desc = action_description,
+    tmp_desc_u = uppercase(coalesce(action_description, "")),
+    tmp_verb = lowercase(coalesce(action_type, "")),
+    tmp_result = lowercase(coalesce(action_result, "")),
+    tmp_email = actor_email,
+    tmp_actor_id = actor_id,
+    tmp_ip = actor_ip_address,
+    tmp_context = lowercase(coalesce(actor_context, "")),
+    tmp_actor_type = lowercase(coalesce(actor_type, "")),
+    tmp_account = cloudflare_account_id,
+    tmp_res_type = resource_type,
+    tmp_res_id = resource_id,
+    tmp_res_product = resource_product,
+    tmp_zone = zone_name,
+    tmp_source_type = source_log_type
+| alter
+    tmp_is_login = if(tmp_desc_u = "LOGIN", "yes", null)
+| alter
+    xdm.observer.vendor = "cloudflare",
+    xdm.observer.product = "account_audit_v2",
+    xdm.event.id = tmp_id,
+    xdm.event.type = if(
+        tmp_is_login != null, "authentication",
+        tmp_source_type != null, "audit",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = coalesce(tmp_desc, tmp_verb, "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(
+        tmp_is_login != null, arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION, XDM_CONST.EVENT_TAG_SAAS),
+        tmp_source_type != null, arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+        null),
+    xdm.event.operation = if(
+        tmp_is_login != null, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+        tmp_verb = "create", XDM_CONST.OPERATION_TYPE_CREATE,
+        tmp_verb = "update", XDM_CONST.OPERATION_TYPE_UPDATE,
+        tmp_verb = "delete", XDM_CONST.OPERATION_TYPE_DELETE,
+        tmp_verb != "", XDM_CONST.OPERATION_TYPE_AUDIT,
+        null),
+    xdm.event.outcome = if(
+        tmp_result = "success", XDM_CONST.OUTCOME_SUCCESS,
+        tmp_result = "failure" or tmp_result = "failed" or tmp_result = "error", XDM_CONST.OUTCOME_FAILED,
+        null),
+    xdm.event.operation_sub_type = if(tmp_context = "", null, tmp_context),
+    xdm.source.ipv4 = if(tmp_ip contains ".", tmp_ip, null),
+    xdm.source.port = if(tmp_is_login != null, to_integer(0), null),
+    xdm.target.ipv4 = if(tmp_is_login != null, "", null),
+    xdm.target.port = if(tmp_is_login != null, to_integer(0), null),
+    xdm.network.ip_protocol = if(tmp_is_login != null, XDM_CONST.IP_PROTOCOL_TCP, null),
+    xdm.auth.service = if(
+        tmp_is_login = null, null,
+        tmp_context = "dash", "Dashboard",
+        tmp_context = "api", "API",
+        tmp_context != "", tmp_context,
+        "Login"),
+    xdm.source.user.upn = if(
+        tmp_email contains "@", tmp_email,
+        tmp_email != null, concat(tmp_email, "@localhost"),
+        null),
+    xdm.source.user.username = tmp_email,
+    xdm.source.user.identifier = tmp_actor_id,
+    xdm.source.user.identity_type = if(
+        tmp_actor_type = "user", XDM_CONST.IDENTITY_TYPE_USER,
+        tmp_actor_type = "system" or tmp_actor_type = "cloudflare", XDM_CONST.IDENTITY_TYPE_MACHINE,
+        null),
+    xdm.source.user.user_type = if(
+        tmp_actor_type = "user", XDM_CONST.USER_TYPE_REGULAR,
+        tmp_actor_type = "system" or tmp_actor_type = "cloudflare", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        null),
+    xdm.source.cloud.project = tmp_account,
+    xdm.target.resource.type = tmp_res_type,
+    xdm.target.resource.id = tmp_res_id,
+    xdm.target.resource.name = tmp_zone,
+    xdm.target.resource.sub_type = tmp_res_product,
+    xdm.event.description = concat(
+        "Cloudflare audit: ", coalesce(tmp_email, "system actor"),
+        " performed ", coalesce(tmp_desc, tmp_verb, "an action"),
+        " on ", coalesce(tmp_res_type, "resource"),
+        " (result=", coalesce(tmp_result, "n/a"), ")")
 ;

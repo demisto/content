@@ -20,7 +20,7 @@ Scope the token to the account(s) you want to collect from (Account Resources > 
 > for Cloudflare Access (Zero Trust) authentication logs, not the account audit trail. A token with
 > only that permission returns `403 Authentication error (code 10000)`.
 
-## Configure Cloudflare Audit Logs Event Collector in Cortex
+## Configure Cloudflare Audit Logs Event Collector in the Cortex Platform
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

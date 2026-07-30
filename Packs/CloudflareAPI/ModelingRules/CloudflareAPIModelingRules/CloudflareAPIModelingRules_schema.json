@@ -82,5 +82,153 @@
             "type": "string",
             "is_array": false
         }
+    },
+    "cloudflare_workers_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "cloudflare_account_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "hostnames": {
+            "type": "string",
+            "is_array": false
+        },
+        "zone_names": {
+            "type": "string",
+            "is_array": false
+        },
+        "binding_types": {
+            "type": "string",
+            "is_array": false
+        },
+        "handlers": {
+            "type": "string",
+            "is_array": false
+        },
+        "last_deployed_from": {
+            "type": "string",
+            "is_array": false
+        },
+        "has_secret_binding": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_kv_binding": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_r2_binding": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_d1_binding": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_queue_binding": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_service_binding": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_durable_object_binding": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_ai_binding": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "observability_enabled": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "logpush": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "hostname_count": {
+            "type": "int",
+            "is_array": false
+        },
+        "binding_count": {
+            "type": "int",
+            "is_array": false
+        },
+        "etag": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "cloudflare_account_audit_v2_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "action_description": {
+            "type": "string",
+            "is_array": false
+        },
+        "action_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "action_result": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_ip_address": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_context": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "cloudflare_account_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource_product": {
+            "type": "string",
+            "is_array": false
+        },
+        "zone_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        }
     }
 }

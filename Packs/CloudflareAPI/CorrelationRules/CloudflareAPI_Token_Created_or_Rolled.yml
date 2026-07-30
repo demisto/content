@@ -2,6 +2,9 @@ name: Cloudflare - API Token Created or Rolled - by GoCortexIO
 description: Detects creation or rolling of a Cloudflare API token, a persistence vector after account compromise.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1098/
+  //   https://developers.cloudflare.com/fundamentals/api/get-started/create-token/
   datamodel dataset = cloudflare_account_audit_raw
   | filter xdm.event.original_event_type in ("token_create", "token_roll")
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.operation, xdm.event.operation_sub_type, xdm.event.original_event_type, xdm.event.outcome, xdm.event.description, xdm.auth.service, xdm.network.ip_protocol, xdm.source.ipv4, xdm.source.port, xdm.target.ipv4, xdm.target.port, xdm.source.user.username, xdm.source.user.identifier, xdm.source.user.upn, xdm.source.user.user_type, xdm.source.user.identity_type, xdm.source.cloud.project, xdm.target.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*

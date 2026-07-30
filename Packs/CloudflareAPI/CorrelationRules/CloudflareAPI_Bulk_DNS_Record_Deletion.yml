@@ -2,6 +2,9 @@ name: Cloudflare - Bulk DNS Record Deletion - by GoCortexIO
 description: Detects a human or API-token actor deleting many distinct Cloudflare DNS records in a short window, a destructive or service-disrupting action. Cloudflare's own system actor is excluded, as it deletes and recreates records routinely during zone synchronisation.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1565/
+  //   https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/
   datamodel dataset = cloudflare_account_audit_raw
   | alter event_verb = lowercase(to_string(xdm.event.original_event_type)),
           actor_class = coalesce(to_string(xdm.source.user.identity_type), "UNKNOWN")

@@ -2,6 +2,9 @@ name: Cloudflare - Security or Configuration Setting Changed - by GoCortexIO
 description: Detects a change to a Cloudflare security or firewall configuration setting.
 severity: SEV_030_MEDIUM
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1562/001/
+  //   https://developers.cloudflare.com/security-center/
   datamodel dataset = cloudflare_account_audit_raw
   | alter event_verb = lowercase(to_string(xdm.event.original_event_type))
   | filter (event_verb contains "change" or event_verb contains "update" or event_verb contains "modify" or event_verb contains "edit" or event_verb contains "enable" or event_verb contains "disable" or event_verb contains "rotate" or event_verb contains "roll" or event_verb contains "deploy") and (event_verb contains "setting" or event_verb contains "security" or event_verb contains "firewall" or event_verb contains "waf")

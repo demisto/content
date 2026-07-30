@@ -7,6 +7,8 @@ import os
 
 import pytest
 
+import demistomock as demisto
+
 from CloudflareAuditLogsEventCollector import (
     Client,
     add_fields_to_event,
@@ -201,6 +203,10 @@ def test_a_failing_account_keeps_its_cursor_and_does_not_block_others(mocker):
     If the exception escaped fetch_events, setLastRun would never run and all
     accounts would re-read their whole window on the next poll.
     """
+    # The collector logs this failure with demisto.error, which the demisto-sdk
+    # harness treats as stdout and fails the run on. Production behaviour is
+    # correct and stays as it is; the test simply must not let it leak.
+    mocker.patch.object(demisto, "error")
     from CommonServerPython import DemistoException
 
     prior = {
