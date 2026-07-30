@@ -101,6 +101,7 @@ class Client(BaseClient):
             )
         except Exception as e:
             demisto.error(f"get_leaks: {e}")
+            return {}
     
     def get_email_security(
             self, 
@@ -224,6 +225,24 @@ def _to_iso8601(date_str: Optional[str]) -> str:
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def get_company_id_arg(args: dict) -> int:
+    """
+    Extracts, validates, and explicitly casts 'company_id' from command arguments.
+    Raises a ValueError if missing or invalid.
+    """
+    company_id_raw = args.get("company_id")
+    
+    if company_id_raw is None:
+        raise ValueError("Missing required argument: 'company_id'")
+        
+    company_id = arg_to_number(company_id_raw)
+    
+    if company_id is None:
+        raise ValueError(f"Invalid integer value provided for 'company_id': {company_id_raw}")
+        
+    return int(company_id)
+
+
 def darkwebscan_getcompanies_command(client: Client, args: dict) -> CommandResults:
     """
     darkwebscan-getcompanies
@@ -235,12 +254,14 @@ def darkwebscan_getcompanies_command(client: Client, args: dict) -> CommandResul
     companies = client.get_companies(page=page, page_size=page_size)
     
     if not isinstance(companies, list):
-        companies = [companies] if companies else []
+        companies_list = [companies] if companies else []
+    else:
+        companies_list = companies
 
     # Map the exact keys returned by the API to the markdown table headers
     readable_output = tableToMarkdown(
         name="DarkWebScan Companies",
-        t=companies,
+        t=companies_list,
         headers=["company_id", "printableName", "fqdn", "scanCreditsAmount"],
         removeNull=True,
     )
@@ -248,9 +269,9 @@ def darkwebscan_getcompanies_command(client: Client, args: dict) -> CommandResul
     return CommandResults(
         outputs_prefix="BechtleDarkWebScan.Companies",
         outputs_key_field="id",
-        outputs=companies,
+        outputs=companies_list,
         readable_output=readable_output,
-        raw_response=companies,
+        raw_response=companies_list,
     )
 
 
@@ -261,7 +282,7 @@ def darkwebscan_getleaks_command(client: Client, args: dict) -> CommandResults:
     a start date, with optional redaction of sensitive fields.
     """
     only_new = argToBoolean(args.get("only_new", "false"))
-    company_id = args.get("company_id")
+    company_id = get_company_id_arg(args)
     since = args.get("since")
     page = arg_to_number(args.get("page")) or 1
     page_size = arg_to_number(args.get("page_size")) or DEFAULT_PAGE_SIZE
@@ -336,8 +357,8 @@ def format_subdomains_and_emails(api_response: dict) -> str:
         emails_table = tableToMarkdown(
             name='Monitored Email Addresses',
             t=emails_list,
-            headers=['email'],                       
-            headerTransform=string_to_table_header  
+            headers=['email'],
+            headerTransform=string_to_table_header
         )
         markdown_outputs.append(emails_table)
         
@@ -351,7 +372,7 @@ def darkwebscan_getosint_command(client: Client, args: dict) -> CommandResults:
     darkwebscan-getosint
     Returns OSINT information about the associated domain of a given company_id.
     """
-    company_id = args.get("company_id")
+    company_id = get_company_id_arg(args)
     response = client.get_osint(company_id=company_id)
 
     return CommandResults(
@@ -369,7 +390,7 @@ def darkwebscan_getemailsecurity_command(client: Client, args: dict) -> CommandR
     darkwebscan-getemailsecurity
     Returns information about the email security for the associated domain of a given company_id.
     """
-    company_id = args.get("company_id")
+    company_id = get_company_id_arg(args)
     response = client.get_email_security(company_id=company_id)
 
     spf = response.get("spf",{})
@@ -422,7 +443,7 @@ def darkwebscan_getwaf_command(client: Client, args: dict) -> CommandResults:
     darkwebscan-getosint
     Returns OSINT information about the associated domain of a given company_id.
     """
-    company_id = args.get("company_id")
+    company_id = get_company_id_arg(args)
     response = client.get_waf(company_id=company_id)
 
     summary = {
@@ -495,9 +516,17 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
             occurred = _to_iso8601(leak.get("date") or None)
             demisto.debug("Preparing leak info...")
             incidents.append({
-                "name": f"DarkWebScan Leak: {leak.get('links', 'unknown')} ({leak.get('source', leak.get('stealer', 'unknown source'))})",
+                "name": (
+                    f"DarkWebScan Leak: {leak.get('links', 'unknown')} "
+                    f"({leak.get('source', leak.get('stealer', 'unknown source'))})"
+                ),
                 "type": "DarkWebScan Leak",
-                "details": f"New Dark Web Leak: {leak.get('links', 'unknown URL')}, Username: {leak.get('username', 'Username not included with initial offer')}, Price: {leak.get('price', 'Unknown')}, Source: {leak.get('source', leak.get('stealer', 'unknown') + ' Stealer')}",
+                "details": (
+                    f"New Dark Web Leak: {leak.get('links', 'unknown URL')}, "
+                    f"Username: {leak.get('username', 'Username not included with initial offer')}, "
+                    f"Price: {leak.get('price', 'Unknown')}, "
+                    f"Source: {leak.get('source', leak.get('stealer', 'unknown') + ' Stealer')}"
+                ),
                 "occurred": occurred,
                 "severity": 2,
                 "rawJSON": json.dumps(alertJSON),

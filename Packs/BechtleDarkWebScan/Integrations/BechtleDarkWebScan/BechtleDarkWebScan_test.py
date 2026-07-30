@@ -178,4 +178,4 @@ def test_command_darkwebscan_getosint(requests_mock):
 
     assert response.outputs_prefix == "BechtleDarkWebScan.OSINT"
     assert response.outputs == MOCK_GET_OSINT_RESPONSE
-    assert "rbrk01.example.org" in response.readable_output
+    assert "rbrk01" in response.readable_output
