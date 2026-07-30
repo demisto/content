@@ -1512,3 +1512,50 @@ class TestHttpRequestErrorHandling:
         )
         with pytest.raises(requests.exceptions.HTTPError):
             MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+
+class TestUpdateBlockSenderPolicyCommand:
+    """Tests for update_block_sender_policy_command."""
+
+    def test_missing_policy_id_raises(self):
+        with pytest.raises(DemistoException, match="policy ID"):
+            MimecastV2.update_block_sender_policy_command({})
+
+    def test_everyone_without_confirm_raises(self):
+        with pytest.raises(DemistoException, match="confirm_block_all"):
+            MimecastV2.update_block_sender_policy_command({"policy_id": "pid", "fromType": "everyone"})
+
+    def test_everyone_with_confirm_false_raises(self):
+        with pytest.raises(DemistoException, match="confirm_block_all"):
+            MimecastV2.update_block_sender_policy_command(
+                {"policy_id": "pid", "fromType": "everyone", "confirm_block_all": "false"}
+            )
+
+    def test_everyone_with_confirm_true_succeeds(self, requests_mock):
+        requests_mock.patch(
+            "http://test.com/policy-management/cloud-gateway/v1/blocked-senders/policies/pid", status_code=204, text=""
+        )
+        result = MimecastV2.update_block_sender_policy_command(
+            {"policy_id": "pid", "fromType": "everyone", "confirm_block_all": "true"}
+        )
+        assert "pid" in result.readable_output
+
+    def test_success_returns_readable_output(self, requests_mock):
+        requests_mock.patch(
+            "http://test.com/policy-management/cloud-gateway/v1/blocked-senders/policies/abc123", status_code=204, text=""
+        )
+        result = MimecastV2.update_block_sender_policy_command({"policy_id": "abc123", "description": "updated"})
+        assert "abc123" in result.readable_output
+        assert result.outputs is None
+
+    def test_patch_body_contains_from_object(self, requests_mock):
+        adapter = requests_mock.patch(
+            "http://test.com/policy-management/cloud-gateway/v1/blocked-senders/policies/pid",
+            status_code=204,
+            text="",
+        )
+        MimecastV2.update_block_sender_policy_command(
+            {"policy_id": "pid", "fromType": "email_domain", "fromValue": "example.com"}
+        )
+        sent_body = adapter.last_request.json()
+        assert sent_body["from"] == {"type": "email_domain", "domain": "example.com"}
