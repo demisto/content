@@ -299,7 +299,7 @@ script:
       type: boolean
     description: This command will dump all the non-sensitive parameters to the context, useful for debugging purposes.
     execution: true
-  dockerimage: demisto/xml-feed:1.0.0.3540467
+  dockerimage: demisto/xml-feed:1.0.0.10133006
   subtype: python3
 fromversion: 5.0.0
 tests:
