@@ -886,7 +886,8 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     client_id = params.get("credentials", {}).get("identifier")
     client_secret = params.get("credentials", {}).get("password")
-    auth_method = params.get("auth_method") or "Download Token"
+    # Default to "Username & Password" so instances created before this field existed keep their original behavior on upgrade.
+    auth_method = params.get("auth_method") or "Username & Password"
     user_name = params.get("user", {}).get("identifier")
     user_password = params.get("user", {}).get("password")
     customer_id = params.get("customer_id", {}).get("password")

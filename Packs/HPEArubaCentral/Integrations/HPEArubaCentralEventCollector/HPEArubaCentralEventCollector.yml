@@ -27,7 +27,7 @@ configuration:
   section: Connect
   additionalinfo: 'Select how to authenticate. "Download Token" (works for SSO users): paste the Download Token JSON from the Aruba Central UI. "Username & Password" (non-SSO accounts only): provide a Username, Password, and Customer ID.'
   display: Authentication Method
-  defaultvalue: Download Token
+  defaultvalue: Username & Password
   options:
   - Download Token
   - Username & Password
