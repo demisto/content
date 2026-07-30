@@ -109,16 +109,23 @@ call esxi_event_classification
 | call esxi_general_fields_mapping
 | filter esxi_event_type = "Command Execution" AND _raw_log ~= "(?i)user\s+\'\w+\'\s+running\s+command\s+\'.+\'"
 | alter // Extract fields
-    process = arrayindex(regextract(parsed_fields -> process_pid, "(.+)\["),0),
-    pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
+    source_process = arrayindex(regextract(parsed_fields -> process_pid, "(.+)\["),0),
+    source_pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
     user_name = arrayindex(regextract(msg, "User\s+\'(\S+)\'\s+"),0),
     command_line = arrayindex(regextract(msg, "command\s+\'(.+)\'"),0)
+| alter // Derive target process from the command line
+    target_first_token = arrayindex(regextract(command_line, "^(\S+)"),0)
+| alter
+    target_process_name = arrayindex(regextract(target_first_token, "([^\/]+)$"),0),
+    target_process_path = if(target_first_token ~= "\/", target_first_token, null)
 
 | alter // Map to XDM
-    xdm.target.host.hostname = parsed_fields -> hostname,
-    xdm.target.process.name = process,
-    xdm.target.process.pid = to_integer(pid),
-    xdm.target.user.username = user_name,
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.source.process.name = source_process,
+    xdm.source.process.pid = to_integer(source_pid),
+    xdm.source.user.username = user_name,
+    xdm.target.process.name = target_process_name,
+    xdm.target.process.executable.path = target_process_path,
     xdm.target.process.command_line = command_line,
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_EXECUTION,
     xdm.event.operation_sub_type = "User interactive";
@@ -132,13 +139,20 @@ call esxi_event_classification
     pid = arrayindex(regextract(parsed_fields -> process_pid, "\[(\d+)"),0),
     user_name = arrayindex(regextract(msg, "\[(\w+)\]\:"),0),
     command_line = arrayindex(regextract(msg, "\[\w+\]\:\s(.+)"),0)
+| alter // Derive target process from the command line
+    target_first_token = arrayindex(regextract(command_line, "^(\S+)"),0)
+| alter
+    target_process_name = arrayindex(regextract(target_first_token, "([^\/]+)$"),0),
+    target_process_path = if(target_first_token ~= "\/", target_first_token, null)
 
 | alter // Map to XDM
     xdm.source.host.hostname = parsed_fields -> hostname,
     xdm.source.process.name = process,
     xdm.source.process.pid = to_integer(pid),
     xdm.source.user.username = user_name,
-    xdm.source.process.command_line = command_line,
+    xdm.target.process.name = target_process_name,
+    xdm.target.process.executable.path = target_process_path,
+    xdm.target.process.command_line = command_line,
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_EXECUTION,
     xdm.event.operation_sub_type = "User interactive";
 
@@ -166,17 +180,24 @@ call esxi_event_classification
 | call esxi_general_fields_mapping
 | filter esxi_event_type = "Command Execution" AND _raw_log ~= "started\s+from\s+\'\w+\'\s+\d+\s+with\s+cmdline\s+\'.+\'\,\s+parent\s+\d+"
 | alter // Extract fields
-    process_name = arrayindex(regextract(msg, "started\s+from\s+\'(\w+)\'"),0),
-    pid = arrayindex(regextract(msg, "started\s+from\s+\'\w+\'\s+(\d+)"),0),
+    source_process_name = arrayindex(regextract(msg, "started\s+from\s+\'(\w+)\'"),0),
+    target_pid = arrayindex(regextract(msg, "started\s+from\s+\'\w+\'\s+(\d+)"),0),
     command_line = arrayindex(regextract(msg, "with\s+cmdline\s+\'(.+)\'"),0),
-    ppid = arrayindex(regextract(msg, "parent\s+(\d+)"),0)
+    source_pid = arrayindex(regextract(msg, "parent\s+(\d+)"),0)
+| alter // Derive target process from the cmdline
+    target_first_token = arrayindex(regextract(command_line, "^(\S+)"),0)
+| alter
+    target_process_name = arrayindex(regextract(target_first_token, "([^\/]+)$"),0),
+    target_process_path = if(target_first_token ~= "\/", target_first_token, null)
 
 | alter // Map to XDM
     xdm.source.host.hostname = parsed_fields -> hostname,
-    xdm.source.process.name = process_name,
-    xdm.source.process.pid = to_integer(pid),
-    xdm.source.process.command_line = command_line,
-    xdm.source.process.parent_id = ppid,
+    xdm.source.process.name = source_process_name,
+    xdm.source.process.pid = to_integer(source_pid),
+    xdm.target.process.pid = to_integer(target_pid),
+    xdm.target.process.name = target_process_name,
+    xdm.target.process.executable.path = target_process_path,
+    xdm.target.process.command_line = command_line,
     xdm.event.operation = XDM_CONST.OPERATION_TYPE_PROCESS_START,
     xdm.event.operation_sub_type = "System process start";
 

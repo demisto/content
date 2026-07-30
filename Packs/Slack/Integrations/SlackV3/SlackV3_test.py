@@ -4344,6 +4344,57 @@ def test_handle_tags_in_message_sync(mocker):
     assert user_message_doesnt_exist_result == "Goodbye PetahTikva!"
 
 
+def test_handle_tags_in_message_sync_already_resolved_id(mocker):
+    """
+    Given:
+        A message containing an already-resolved Slack user/bot ID mention (e.g. "<@U012A3CDE>").
+    When:
+        Running handle_tags_in_message_sync.
+    Then:
+        The mention is left untouched and no user lookup (get_user_by_name) is performed,
+        avoiding the expensive paginated Slack user search.
+    """
+    import SlackV3
+    from SlackV3 import handle_tags_in_message_sync
+
+    get_user_by_name_mock = mocker.patch.object(SlackV3, "get_user_by_name")
+
+    bot_id_message = "💡 For help, type <@U012A3CDE> !help"
+    multiple_ids_message = "cc <@W01AB2CD3> and <@B0123ABCD> please"
+
+    bot_id_result = handle_tags_in_message_sync(bot_id_message)
+    multiple_ids_result = handle_tags_in_message_sync(multiple_ids_message)
+
+    # Assert - messages are unchanged and no lookup was performed
+    assert bot_id_result == bot_id_message
+    assert multiple_ids_result == multiple_ids_message
+    get_user_by_name_mock.assert_not_called()
+
+
+def test_handle_tags_in_message_sync_resolved_id_with_unresolved_name(mocker):
+    """
+    Given:
+        A message containing an already-resolved Slack ID mention followed by an
+        unresolved name tag (which get_user_by_name cannot resolve).
+    When:
+        Running handle_tags_in_message_sync.
+    Then:
+        Only the unresolved tag's brackets are stripped, while the already-valid ID
+        mention is preserved (regression for the blanket re.sub bug).
+    """
+    import SlackV3
+    from SlackV3 import handle_tags_in_message_sync
+
+    mocker.patch.object(SlackV3, "get_user_by_name", return_value={})
+
+    message = "cc <@U012A3CDE> and <@NoSuchUser>"
+
+    result = handle_tags_in_message_sync(message)
+
+    # The valid ID mention must remain intact; only the unresolved tag is stripped.
+    assert result == "cc <@U012A3CDE> and NoSuchUser"
+
+
 def test_send_message_to_destinations_non_strict():
     """
     Given:
