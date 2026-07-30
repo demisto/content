@@ -7,7 +7,7 @@ This is the default integration for this content pack when configured by the Dat
 | **Parameter**                                                           | **Description**                                                                           | **Required** |
 |-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|--------------|
 | Server URL                                                              | Okta URL (https://yourdomain.okta.com)                                                    | True         |
-| API request limit                                                       | The amount of items to retrieve from Okta's API per request (a number between 1 and 1000) | False        |
+| Number of incidents to fetch per fetch                                  | The total number of incidents to retrieve in each fetch cycle                             | True         |
 | proxy                                                                   | Use system proxy settings                                                                 | False        |
 | API key                                                                 | The request API key                                                                       | True         |
 | First fetch time interval                                               | The period (in days) to retrieve events from, if no time is saved in the system           | True         |

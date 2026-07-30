@@ -25,8 +25,9 @@ configuration:
 - display: Number of incidents to fetch per fetch
   name: limit
   type: 0
-  defaultvalue: 1000
+  defaultvalue: 10000
   required: true
+  additionalinfo: 'The total number of incidents to retrieve in each fetch cycle.'
   section: Collect
 - display: First fetch from API time
   name: after
