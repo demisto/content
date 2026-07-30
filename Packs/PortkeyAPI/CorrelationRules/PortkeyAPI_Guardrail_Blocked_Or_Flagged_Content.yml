@@ -2,6 +2,10 @@ name: Portkey - Guardrail Blocked or Flagged Content - by GoCortexIO
 description: Detects a request that Portkey's own guardrails denied or flagged, which is the gateway's authoritative verdict on the content rather than an inference drawn from the prompt text.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1562/
+  //   https://portkey.ai/docs/product/guardrails
+  //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_llm_requests_raw
   | filter xdm.observer.action in ("denied", "soft_denied", "flagged")
   | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*

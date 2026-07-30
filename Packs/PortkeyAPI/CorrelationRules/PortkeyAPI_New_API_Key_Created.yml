@@ -2,6 +2,9 @@ name: Portkey - New API Key Created - by GoCortexIO
 description: Detects the creation of a new Portkey API key, so a credential issued outside the normal process is noticed while it is still recent.
 severity: SEV_030_MEDIUM
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1098/
+  //   https://portkey.ai/docs/product/administration
   datamodel dataset = portkey_audit_raw
   | alter event_verb = lowercase(to_string(xdm.event.original_event_type))
   | filter event_verb contains "create" and xdm.target.resource.type = "api-keys"

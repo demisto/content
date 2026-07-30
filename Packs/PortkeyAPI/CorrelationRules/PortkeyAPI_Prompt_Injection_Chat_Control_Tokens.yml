@@ -2,6 +2,9 @@ name: Portkey - Prompt Injection Using Chat Control Tokens - by GoCortexIO
 description: Detects a prompt containing the chat template control tokens a model uses to separate system, user and assistant turns. A user has no legitimate reason to send them, so their presence indicates an attempt to forge a turn boundary and issue instructions as the system.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1027/
+  //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_llm_requests_raw
   | alter prompt = lowercase(to_string(xdm.target.resource.value))
   | filter prompt contains "<|im_start|>" or prompt contains "<|im_end|>" or prompt contains "[/inst]"

@@ -2,6 +2,9 @@ name: Portkey - Prompt Injection Answered By The Model - by GoCortexIO
 description: Detects a prompt matching a known injection technique that the model then answered successfully, which separates an attempt that was refused or blocked from one the model may have complied with.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1119/
+  //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_llm_requests_raw
   | alter prompt = lowercase(to_string(xdm.target.resource.value))
   | filter prompt contains "<|im_start|>" or prompt contains "<|im_end|>" or prompt contains "[/inst]"

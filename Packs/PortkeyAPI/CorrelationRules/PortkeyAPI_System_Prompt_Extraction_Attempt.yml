@@ -2,6 +2,9 @@ name: Portkey - System Prompt or Context Extraction Attempt - by GoCortexIO
 description: Detects a prompt seeking the model's own instructions or context, including attempts to have it re-encoded so the text is not returned literally.
 severity: SEV_030_MEDIUM
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1082/
+  //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_llm_requests_raw
   | alter prompt = lowercase(to_string(xdm.target.resource.value))
   | filter prompt contains "system prompt" or prompt contains "exact instructions were you given"

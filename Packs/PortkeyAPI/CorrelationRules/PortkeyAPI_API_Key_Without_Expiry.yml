@@ -2,6 +2,9 @@ name: Portkey - API Key Without Expiry - by GoCortexIO
 description: Detects a Portkey API key that has no expiry date set, so a leaked or forgotten credential remains valid indefinitely.
 severity: SEV_030_MEDIUM
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1098/
+  //   https://portkey.ai/docs/product/administration
   datamodel dataset = portkey_api_keys_raw
   | filter xdm.target.resource.value contains "no_expiry"
   | sort desc _time

@@ -2,6 +2,9 @@ name: Portkey - Prompt Injection Overriding Model Instructions - by GoCortexIO
 description: Detects a prompt that tries to revoke the model's operating instructions or to substitute an unrestricted persona, the two most common ways of removing the constraints an application relies on.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1562/
+  //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_llm_requests_raw
   | alter prompt = lowercase(to_string(xdm.target.resource.value))
   | filter prompt contains "ignore all previous" or prompt contains "ignore previous instruction"

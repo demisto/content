@@ -3,6 +3,7 @@
 """Unit tests for the Portkey LLM Request Logs Event Collector."""
 
 import json
+import demistomock as demisto
 
 import PortkeyLogExportsEventCollector as collector
 
@@ -161,8 +162,12 @@ def test_a_finished_export_is_downloaded_and_advances_the_watermark():
     assert new_state == {"last_ts": "2026-07-25T11:00:00Z"}
 
 
-def test_a_failed_export_keeps_the_watermark_so_the_window_is_retried():
+def test_a_failed_export_keeps_the_watermark_so_the_window_is_retried(mocker):
     """The window must not be skipped when the export fails, or logs are lost."""
+    # The collector logs this failure with demisto.error, which the demisto-sdk
+    # harness treats as stdout and fails the run on. Production behaviour is
+    # correct and stays as it is; the test simply must not let it leak.
+    mocker.patch.object(demisto, "error")
     client = MockClient(statuses=["failed"])
     state = {"last_ts": "2026-07-25T10:00:00Z", "job": {"id": "exp-9", "win_end": "2026-07-25T11:00:00Z"}}
     events, new_state = collector.advance_workspace(
@@ -227,7 +232,11 @@ def test_bodies_can_be_excluded_to_cut_volume():
         assert field in without
 
 
-def test_a_failing_workspace_keeps_its_state_and_does_not_block_others():
+def test_a_failing_workspace_keeps_its_state_and_does_not_block_others(mocker):
+    # The collector logs this failure with demisto.error, which the demisto-sdk
+    # harness treats as stdout and fails the run on. Production behaviour is
+    # correct and stays as it is; the test simply must not let it leak.
+    mocker.patch.object(demisto, "error")
     class Boom(MockClient):
         def create_export(self, workspace_slug, start, end, requested_data):
             if workspace_slug == "ws-bad":

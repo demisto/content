@@ -2,6 +2,9 @@ name: Portkey - Gateway Config Changed By Non Owner - by GoCortexIO
 description: Detects a Portkey gateway config whose last editor was not its owner, surfacing a change to request routing or attached guardrails made by somebody else.
 severity: SEV_030_MEDIUM
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1562/
+  //   https://portkey.ai/docs/product/administration
   datamodel dataset = portkey_configs_raw
   | filter xdm.target.resource.value contains "changed_by_non_owner"
   | sort desc _time

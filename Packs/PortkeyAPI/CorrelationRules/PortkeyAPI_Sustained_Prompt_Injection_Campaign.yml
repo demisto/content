@@ -2,6 +2,9 @@ name: Portkey - Sustained Prompt Injection Campaign - by GoCortexIO
 description: Detects one identity making repeated prompt injection attempts across several technique families in a short window, which distinguishes a deliberate campaign from a single opportunistic prompt.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1595/
+  //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_llm_requests_raw
   | alter prompt = lowercase(to_string(xdm.target.resource.value))
   | filter prompt contains "<|im_start|>" or prompt contains "<|im_end|>" or prompt contains "[/inst]"

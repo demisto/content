@@ -2,6 +2,10 @@ name: Portkey - Workspace Guardrails Writable By Members - by GoCortexIO
 description: Detects a Portkey workspace where ordinary members may change guardrails or routing configs, allowing the AI safety and governance controls to be weakened without administrator involvement.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1562/
+  //   https://portkey.ai/docs/product/guardrails
+  //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_workspaces_raw
   | filter xdm.target.resource.value contains "members_write_guardrails" or xdm.target.resource.value contains "members_write_configs"
   | sort desc _time

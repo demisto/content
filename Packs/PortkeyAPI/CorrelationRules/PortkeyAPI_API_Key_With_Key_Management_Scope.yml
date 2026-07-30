@@ -2,6 +2,9 @@ name: Portkey - API Key Able to Manage API Keys - by GoCortexIO
 description: Detects a Portkey API key whose scopes let it create or delete other API keys, a privilege escalation path that lets one credential mint further credentials.
 severity: SEV_040_HIGH
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1098/
+  //   https://portkey.ai/docs/product/administration
   datamodel dataset = portkey_api_keys_raw
   | filter xdm.target.resource.value contains "can_create_api_keys" or xdm.target.resource.value contains "can_delete_api_keys"
   | sort desc _time

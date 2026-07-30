@@ -2,6 +2,9 @@ name: Portkey - API Key Without Spend or Rate Limit - by GoCortexIO
 description: Detects a Portkey API key with neither a usage limit nor a rate limit, leaving model spend and request volume uncapped if the key is abused.
 severity: SEV_030_MEDIUM
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1496/
+  //   https://portkey.ai/docs/product/administration
   datamodel dataset = portkey_api_keys_raw
   | filter xdm.target.resource.value contains "no_usage_limit" and xdm.target.resource.value contains "no_rate_limit"
   | sort desc _time

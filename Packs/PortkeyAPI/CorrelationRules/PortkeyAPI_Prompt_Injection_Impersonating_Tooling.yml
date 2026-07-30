@@ -2,6 +2,9 @@ name: Portkey - Prompt Injection Impersonating Tooling or Authority - by GoCorte
 description: Detects a prompt that casts the model as a terminal or command runner, claims an authority that permits disclosure, or dictates the opening words of the reply to steer it past a refusal.
 severity: SEV_030_MEDIUM
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1656/
+  //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_llm_requests_raw
   | alter prompt = lowercase(to_string(xdm.target.resource.value))
   | filter prompt contains "you are a linux terminal" or prompt contains "you are a system agent"

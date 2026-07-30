@@ -85,12 +85,23 @@ filter
     tmp_log_type = source_log_type
 | alter
     tmp_resource_id = arrayindex(regextract(coalesce(tmp_uri, ""), "/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})"), 0),
-    tmp_is_audit = if(coalesce(tmp_action, tmp_resource_type) != null, "yes", null)
+    tmp_is_audit = if(coalesce(tmp_action, tmp_resource_type) != null, "yes", null),
+    // The vendor sends an EMPTY action on some records rather than omitting the
+    // field, and coalesce only skips nulls, so the empty string flowed straight
+    // through to the event identity. Treat blank as absent.
+    tmp_action_named = if(tmp_action != "", tmp_action)
+| alter
+    // Those records are still fully modelled: the method supplies the verb, the
+    // status the outcome, and the actor and resource are both present. Naming them
+    // from the vendor's own method and resource type is therefore more honest than
+    // the catch-all, which would report them as unclassified when they are not.
+    // Neither half is invented vocabulary; both come from the record itself.
+    tmp_action_derived = if(tmp_method != "", concat(lowercase(tmp_method), "_", coalesce(tmp_resource_type, "resource")))
 | alter
     xdm.observer.vendor = "portkey",
     xdm.observer.product = "audit",
     xdm.event.id = tmp_request_id,
-    xdm.event.original_event_type = coalesce(tmp_action, "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = coalesce(tmp_action_named, tmp_action_derived, "GOCORTEX_UNMODELLED"),
     xdm.event.type = if(tmp_is_audit != null, coalesce(tmp_log_type, "audit"), "GOCORTEX_UNMODELLED"),
     xdm.event.tags = if(tmp_is_audit != null, arraycreate(XDM_CONST.EVENT_TAG_SAAS), null),
     xdm.event.operation = if(

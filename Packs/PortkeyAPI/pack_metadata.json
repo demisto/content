@@ -1,8 +1,8 @@
 {
   "name": "Portkey API",
-  "description": "Integrates the Portkey API with the Cortex Platform, collecting Portkey control-plane activity into Cortex Platform datasets and mapping it to the XDM data model. Starts with the Portkey Audit Logs collector, each endpoint family with its own dataset and XDM modelling. Portkey API by GoCortexIO.",
+  "description": "Integrates the Portkey API with the Cortex Platform, maps audit logs, API keys, workspaces, configs and LLM request logs into the Cortex XDM data model, and detects key hygiene failures, workspace permission posture, prompt injection and Portkey's own guardrail verdicts, by GoCortexIO",
   "support": "community",
-  "currentVersion": "1.9.2",
+  "currentVersion": "1.9.6",
   "author": "GoCortexIO",
   "url": "",
   "email": "",

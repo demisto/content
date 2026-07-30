@@ -2,6 +2,9 @@ name: Portkey - Workspace Lets Members Create API Keys - by GoCortexIO
 description: Detects a Portkey workspace whose permission model lets ordinary members create API keys or provider credentials, widening who can issue access to the AI gateway.
 severity: SEV_030_MEDIUM
 xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1098/
+  //   https://portkey.ai/docs/product/administration
   datamodel dataset = portkey_workspaces_raw
   | filter xdm.target.resource.value contains "members_write_api_keys" or xdm.target.resource.value contains "members_write_virtual_keys"
   | sort desc _time
