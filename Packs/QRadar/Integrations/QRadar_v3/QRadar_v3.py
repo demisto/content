@@ -190,6 +190,23 @@ REFERENCE_SETS_RAW_FORMATTED = {
 }
 REFERENCE_SET_DATA_RAW_FORMATTED = {"last_seen": "LastSeen", "source": "Source", "value": "Value", "first_seen": "FirstSeen"}
 
+REFERENCE_MAPS_RAW_FORMATTED = {
+    "number_of_elements": "NumberOfElements",
+    "name": "Name",
+    "creation_time": "CreationTime",
+    "element_type": "ElementType",
+    "namespace": "Namespace",
+    "collection_id": "CollectionID",
+    "data": "Data",
+}
+REFERENCE_MAP_DATA_RAW_FORMATTED = {
+    "last_seen": "LastSeen",
+    "source": "Source",
+    "value": "Value",
+    "first_seen": "FirstSeen",
+    "key": "Key",
+}
+
 DOMAIN_RAW_FORMATTED = {
     "asset_scanner_ids": "AssetScannerIDs",
     "custom_properties": "CustomProperties",
@@ -720,6 +737,20 @@ class Client(BaseClient):
             method="GET", url_suffix=f"/reference_data/sets{name_suffix}", params=params, additional_headers=additional_headers
         )
 
+    def reference_maps_list(
+        self,
+        range_: Optional[str] = None,
+        ref_name: Optional[str] = None,
+        filter_: Optional[str] = None,
+        fields: Optional[str] = None,
+    ):
+        name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ""
+        params = assign_params(filter=filter_, fields=fields)
+        additional_headers = {"Range": range_}
+        return self.http_request(
+            method="GET", url_suffix=f"/reference_data/maps{name_suffix}", params=params, additional_headers=additional_headers
+        )
+
     def reference_set_create(
         self,
         ref_name: str,
@@ -748,6 +779,13 @@ class Client(BaseClient):
             method="POST",
             url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
             params=assign_params(value=value, source=source, fields=fields),
+        )
+
+    def reference_map_value_upsert(self, ref_name: str, key: str, value: str, source: str | None = None):
+        return self.http_request(
+            method="POST",
+            url_suffix=f'/reference_data/maps/{parse.quote(ref_name, safe="")}',
+            params=assign_params(key=key, value=value, source=source),
         )
 
     def reference_set_value_delete(self, ref_name: str, value: str):
@@ -3606,6 +3644,53 @@ def qradar_reference_sets_list_command(client: Client, args: dict) -> CommandRes
     )
 
 
+def qradar_reference_maps_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves list of reference sets from QRadar service.
+    possible arguments:
+    - ref_name: Retrieves details of the specific reference that corresponds to the reference name given.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    ref_name = args.get("ref_name")
+    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    filter_ = args.get("filter")
+    fields = args.get("fields")
+    # if this call fails, raise an error and stop command execution
+    response = client.reference_maps_list(range_, ref_name, filter_, fields)
+    if ref_name:
+        outputs = dict(response)
+        # Reformat the data for better context layout, as maps are a dict of dicts
+        data = [{**value, "key": key} for key, value in outputs.get("data", {}).items()]
+        outputs["data"] = sanitize_outputs(data, REFERENCE_MAP_DATA_RAW_FORMATTED)
+    else:
+        outputs = response
+
+    final_outputs = sanitize_outputs(outputs, REFERENCE_MAPS_RAW_FORMATTED)
+    headers = build_headers(
+        ["Name", "ElementType", "Data", "Namespace", "CollectionID"], set(REFERENCE_MAPS_RAW_FORMATTED.values())
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown("Reference Maps List", final_outputs, headers, removeNull=True),
+        outputs_prefix="QRadar.ReferenceMaps",
+        outputs_key_field="Name",
+        outputs=final_outputs,
+        raw_response=response,
+    )
+
+
 def qradar_reference_set_create_command(client: Client, args: dict) -> CommandResults:
     """
     Create a new reference set.
@@ -3703,6 +3788,46 @@ def qradar_reference_set_value_upsert_command(args: dict, client: Client, params
     """
     return insert_values_to_reference_set_polling(
         client, params.get("api_version", ""), args, values=argToList(args.get("value", ""))
+    )
+
+
+def qradar_reference_map_value_upsert_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Update or insert new value to a reference set from QRadar service.
+    possible arguments:
+    - ref_name (Required): The reference name to insert/update a value for.
+    - value (Required): Comma separated list. All the values to be inserted/updated.
+    - key: The key to update.
+    - date_value: Boolean, specifies if values given are dates or not.
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        PollResult.
+    """
+
+    # TODO: Add Comment Option
+    ref_name: str = args.get("ref_name", "")
+    if not ref_name:
+        raise DemistoException("ref_name must not be empty")
+
+    value: str = args.get("value", "")
+    key: str = args.get("key", "")
+    source: str | None = args.get("source")
+
+    if not value or not key:
+        raise DemistoException("key and value must not be empty")
+
+    response = client.reference_map_value_upsert(ref_name, key, value, source)
+    return CommandResults(
+        raw_response=response,
+        readable_output=f'Request to update reference {ref_name} was submitted.'
+        f''' Current update status: {response.get('status', 'Unknown')}''',
     )
 
 
@@ -5704,6 +5829,12 @@ def main() -> None:  # pragma: no cover
 
         elif command == "qradar-print-context":
             return_results(qradar_print_context_command())
+
+        elif command == "qradar-reference-maps-list":
+            return_results(qradar_reference_maps_list_command(client, args))
+
+        elif command == "qradar-reference-map-value-upsert":  #
+            return_results(qradar_reference_map_value_upsert_command(client, args))
 
         else:
             raise NotImplementedError(f"""Command '{command}' is not implemented.""")
