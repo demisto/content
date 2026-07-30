@@ -39,7 +39,7 @@ class Client(BaseClient):
         user_name,
         user_password,
         customer_id,
-        downloaded_token="",
+        access_token_bundle="",
         verify=True,
         proxy=False,
     ):
@@ -51,10 +51,10 @@ class Client(BaseClient):
         self.customer_id = customer_id
         # Full Access Token JSON bundle from the Aruba Central UI. Used only to seed the context on
         # the first run; afterwards the rotating refresh token stored in the context is used.
-        self.downloaded_token = downloaded_token
+        self.access_token_bundle = access_token_bundle
 
     @staticmethod
-    def parse_download_token(downloaded_token: str) -> tuple[str, str, int]:
+    def parse_download_token(access_token_bundle: str) -> tuple[str, str, int]:
         """
         Parses the "Access Token" JSON bundle pasted from the Aruba Central UI.
 
@@ -62,7 +62,7 @@ class Client(BaseClient):
             {"access_token": "...", "refresh_token": "...", "expires_in": 7200, ...}
 
         Args:
-            downloaded_token (str): The raw value from the Access Token parameter.
+            access_token_bundle (str): The raw value from the Access Token parameter.
 
         Returns:
             tuple[str, str, int]: (refresh_token, access_token, expires_in) extracted from the bundle.
@@ -70,7 +70,7 @@ class Client(BaseClient):
         Raises:
             DemistoException: If the value is empty, not valid JSON, or missing required fields.
         """
-        raw = (downloaded_token or "").strip()
+        raw = (access_token_bundle or "").strip()
         if not raw:
             return "", "", 0
 
@@ -114,16 +114,17 @@ class Client(BaseClient):
 
         now = int(time.time())
         demisto.debug(
-            f"get_access_token: use_cached_token={use_cached_token}, has_cached_access_token={bool(access_token)}, "
+            f"[Auth] get_access_token: use_cached_token={use_cached_token}, has_cached_access_token={bool(access_token)}, "
             f"has_refresh_token={bool(refresh_token)}, seconds_until_expiry={expiry_time - now}, "
-            f"has_downloaded_token={bool(self.downloaded_token)}, has_user_pass={bool(self.user_name and self.user_password)}"
+            f"has_access_token_bundle={bool(self.access_token_bundle)}, "
+            f"has_user_pass={bool(self.user_name and self.user_password)}"
         )
 
         # First run (or a newly pasted bundle): seed the context so we can refresh without user/password.
-        if self.downloaded_token and integration_context.get("seeded_token") != self.downloaded_token:
-            seeded_refresh_token, seeded_access_token, seeded_expires_in = self.parse_download_token(self.downloaded_token)
+        if self.access_token_bundle and integration_context.get("seeded_token") != self.access_token_bundle:
+            seeded_refresh_token, seeded_access_token, seeded_expires_in = self.parse_download_token(self.access_token_bundle)
             refresh_token = seeded_refresh_token
-            integration_context["seeded_token"] = self.downloaded_token
+            integration_context["seeded_token"] = self.access_token_bundle
             integration_context["refresh_token"] = refresh_token
             # Reuse the bundle's access token if present, to avoid an immediate refresh on the first run.
             if seeded_access_token and seeded_expires_in:
@@ -131,18 +132,18 @@ class Client(BaseClient):
                 expiry_time = now + seeded_expires_in
                 integration_context["access_token"] = access_token
                 integration_context["expiry_time"] = expiry_time
-            demisto.debug(f"Seeded tokens from the Access Token bundle (had_access_token={bool(seeded_access_token)}).")
+            demisto.debug(f"[Auth] Seeded tokens from the Access Token bundle (had_access_token={bool(seeded_access_token)}).")
             # Persist now so the seed survives even if the cached token is returned below.
             set_integration_context(integration_context)
 
         if use_cached_token and access_token and expiry_time > now:
-            demisto.debug(f"Auth path: using cached access token (valid for {expiry_time - now}s).")
+            demisto.debug(f"[Auth] Using cached access token (valid for {expiry_time - now}s).")
             return access_token
         elif isinstance(refresh_token, str) and refresh_token:
-            demisto.debug("Auth path: refreshing access token using the stored refresh token.")
+            demisto.debug("[Auth] Refreshing access token using the stored refresh token.")
             access_token, refresh_token, validity_duration = self.refresh_access_token(refresh_token)
         elif self.user_name and self.user_password:
-            demisto.debug("Auth path: acquiring a new access token via the full OAuth sequence (username/password).")
+            demisto.debug("[Auth] Acquiring a new access token via the full OAuth sequence (username/password).")
             access_token, refresh_token, validity_duration = self.oauth_sequence()
         else:
             raise DemistoException(
@@ -152,7 +153,9 @@ class Client(BaseClient):
             )
 
         new_expiry_time = now + validity_duration
-        demisto.debug(f"Obtained new access token (validity_duration={validity_duration}s, new_expiry_time={new_expiry_time}).")
+        demisto.debug(
+            f"[Auth] Obtained new access token (validity_duration={validity_duration}s, new_expiry_time={new_expiry_time})."
+        )
         integration_context.update({"access_token": access_token, "expiry_time": new_expiry_time, "refresh_token": refresh_token})
         set_integration_context(integration_context)
 
@@ -188,13 +191,14 @@ class Client(BaseClient):
 
         except DemistoException as e:
             if "Invalid refresh_token" in str(e):
-                demisto.debug("Refresh token is invalid, acquiring new access token via oauth.")
+                demisto.debug("[Auth] Refresh token is invalid, acquiring a new access token via OAuth.")
                 return self.oauth_sequence()
 
+            demisto.debug(f"[Auth] Refresh access token request failed: {e}")
             raise e
 
         demisto.debug(
-            f"Refresh access token succeeded: access_token={mask_secret(token_resp.get('access_token'))}, "
+            f"[Auth] Refresh access token succeeded: access_token={mask_secret(token_resp.get('access_token'))}, "
             f"refresh_token={mask_secret(token_resp.get('refresh_token'))}, expires_in={token_resp.get('expires_in')}"
         )
         return (
@@ -212,6 +216,7 @@ class Client(BaseClient):
             refresh_token (str): The next refresh token.
             validity_duration (int): The validity duration of the access token in seconds.
         """
+        demisto.debug("[Auth] Starting full OAuth sequence (login -> auth code -> access token).")
         csrf_token, session = self.request_login()
         auth_code = self.request_auth_code(csrf_token, session)
         return self.request_access_token(auth_code)
@@ -249,7 +254,7 @@ class Client(BaseClient):
             raise DemistoException(
                 "Failed to acquire CSRF token and session from login request. Check if the credentials are valid."
             )
-        demisto.debug(f"Login request succeeded: csrf_token={mask_secret(csrf_token)}, session={mask_secret(session)}")
+        demisto.debug(f"[Auth] Login request succeeded: csrf_token={mask_secret(csrf_token)}, session={mask_secret(session)}")
         return csrf_token, session
 
     def request_auth_code(self, csrf_token: str, session: str) -> str:
@@ -283,7 +288,7 @@ class Client(BaseClient):
             params=params,
             json_data=json_data,
         )
-        demisto.debug(f"Auth code request succeeded: auth_code={mask_secret(response.get('auth_code'))}")
+        demisto.debug(f"[Auth] Auth code request succeeded: auth_code={mask_secret(response.get('auth_code'))}")
         return response.get("auth_code")
 
     def request_access_token(self, auth_code: str) -> tuple[str, str, int]:
@@ -314,7 +319,7 @@ class Client(BaseClient):
             json_data=json_data,
         )
         demisto.debug(
-            f"Access token request succeeded: access_token={mask_secret(response.get('access_token'))}, "
+            f"[Auth] Access token request succeeded: access_token={mask_secret(response.get('access_token'))}, "
             f"refresh_token={mask_secret(response.get('refresh_token'))}, expires_in={response.get('expires_in')}"
         )
         return (
@@ -352,7 +357,7 @@ class Client(BaseClient):
             )
         except DemistoException as e:
             if "access token is invalid" in str(e):
-                demisto.debug("Access token is invalid, refreshing and retrying the request")
+                demisto.debug("[Auth] Access token is invalid; refreshing and retrying the request once.")
                 headers["authorization"] = f"Bearer {self.get_access_token(use_cached_token=False)}"
                 response = self._http_request(
                     method=method,
@@ -373,12 +378,14 @@ class Client(BaseClient):
         Validates the given access token via one lightweight API call, using it as-is (no refresh/rotation),
         so it is safe to run from the Test button. Raises on an invalid token.
         """
+        demisto.debug(f"[Auth] Validating access token via a lightweight audit-logs call: token={mask_secret(access_token)}.")
         self._http_request(
             method="GET",
             url_suffix="/auditlogs/v1/events",
             params={"limit": 1},
             headers={"accept": "application/json", "authorization": f"Bearer {access_token}"},
         )
+        demisto.debug("[Auth] Access token validation succeeded.")
 
     def fetch_audit_events(self, start_time: int, end_time: int, amount_to_fetch: int, last_run: dict) -> list[dict]:
         """
@@ -394,12 +401,12 @@ class Client(BaseClient):
             events (list): list of audit events
         """
         if amount_to_fetch > MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT:
-            demisto.debug("API requests required to satisfy limit exceeded maximum allowed. Fetching up to the allowed max.")
+            demisto.debug("[Fetch] Audit events: requested amount exceeds the maximum allowed; fetching up to the allowed max.")
             amount_to_fetch = MAX_AUDIT_API_REQS * MAX_GET_AUDIT_LIMIT
         events = []
         offset = 0
 
-        demisto.debug(f"{amount_to_fetch=}")
+        demisto.debug(f"[Fetch] Audit events: starting fetch with {amount_to_fetch=}")
         while amount_to_fetch > 0:
             response = self.http_request(
                 method="GET",
@@ -413,7 +420,10 @@ class Client(BaseClient):
             )
             if response["total"] > amount_to_fetch + offset:
                 # manually skip to the end since the API has no option for ascending sort
-                demisto.debug("Total entries for timeframe are larger than amount to fetch, skipping to get the earliest ones")
+                demisto.debug(
+                    "[Fetch] Audit events: total entries for the timeframe exceed the amount to fetch; "
+                    "skipping to the earliest ones."
+                )
                 offset = response["total"] - amount_to_fetch
                 continue
 
@@ -444,7 +454,9 @@ class Client(BaseClient):
             events (list): list of networking events
         """
         if amount_to_fetch > MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT:
-            demisto.debug("API requests required to satisfy limit exceeded maximum allowed. Fetching up to the allowed max.")
+            demisto.debug(
+                "[Fetch] Networking events: requested amount exceeds the maximum allowed; fetching up to the allowed max."
+            )
             amount_to_fetch = MAX_EVENT_API_REQS * MAX_GET_EVENTS_LIMIT
         events = []
         offset = 0
@@ -659,8 +671,9 @@ def test_module(client: Client) -> str:
     require a refresh (an expired/stale bundle access token, or a bundle with no access token) or a
     Username/Password login is directed to the 'aruba-auth-test' command instead. Returns "ok" on success.
     """
-    if client.downloaded_token:
-        _, access_token, _ = client.parse_download_token(client.downloaded_token)
+    if client.access_token_bundle:
+        demisto.debug("[TestModule] Validating the pasted Access Token bundle (non-mutating).")
+        _, access_token, _ = client.parse_download_token(client.access_token_bundle)
         if not access_token:
             # No access token in the bundle: the only way to validate would be a refresh, which rotates the
             # refresh token. Test-module can't persist the rotated token, so direct the user to aruba-auth-test.
@@ -676,7 +689,7 @@ def test_module(client: Client) -> str:
         try:
             client.validate_access_token(access_token)
         except DemistoException as e:
-            demisto.debug(f"Validation with the bundle's access token failed: {e}")
+            demisto.debug(f"[TestModule] Validation with the bundle's access token failed: {e}")
             raise DemistoException(
                 "Failed to validate the pasted Access Token. Its access token may be expired (access tokens are "
                 "valid for ~2 hours), even though the refresh token can still be valid (up to 15 days). Run the "
@@ -773,7 +786,7 @@ def get_events(
     else:
         start_time = int(time.time()) - timedelta(hours=3).seconds
 
-    demisto.debug(f"Running get_events with {start_time=}")
+    demisto.debug(f"[GetEvents] Running get_events with {start_time=}, {audit_limit=}, {networking_limit=}.")
     _, audit_events, networking_events = fetch_events(
         client=client,
         last_run={},
@@ -839,21 +852,23 @@ def fetch_events(
 
     networking_events = None
     if fetch_networking_events:
-        demisto.debug(f"Fetching {num_networking_events_to_fetch} networking events from {networking_start_time} to {end_time}.")
+        demisto.debug(
+            f"[Fetch] Fetching {num_networking_events_to_fetch} networking events from {networking_start_time} to {end_time}."
+        )
         networking_events = client.fetch_networking_events(
             start_time=networking_start_time,
             end_time=end_time,
             amount_to_fetch=num_networking_events_to_fetch,
             last_run=last_run,
         )
-        demisto.debug(f"Got {len(networking_events)} networking events.")
+        demisto.debug(f"[Fetch] Got {len(networking_events)} networking events.")
 
     next_run = create_next_run(
         audit_events=audit_events,
         networking_events=networking_events,
         end_time=end_time,
     )
-    demisto.debug(f"Returning {next_run=}.")
+    demisto.debug(f"[Fetch] Returning {next_run=}.")
     return next_run, audit_events, networking_events
 
 
@@ -862,7 +877,7 @@ def fetch_events(
 
 def validate_authentication_params(
     auth_method: str,
-    downloaded_token: str | None,
+    access_token_bundle: str | None,
     user_name: str | None,
     user_password: str | None,
     customer_id: str | None,
@@ -877,11 +892,12 @@ def validate_authentication_params(
 
     Args:
         auth_method (str): The selected authentication method ("Access Token" or "Basic Auth").
-        downloaded_token (str | None): The Access Token JSON pasted from the Aruba Central UI.
+        access_token_bundle (str | None): The Access Token JSON pasted from the Aruba Central UI.
         user_name (str | None): The configured username.
         user_password (str | None): The configured password.
         customer_id (str | None): The configured customer ID.
     """
+    demisto.debug(f"[Auth] Validating authentication params for auth_method={auth_method!r}.")
     if auth_method == "Basic Auth":
         if not (user_name and user_password):
             raise DemistoException(
@@ -896,7 +912,7 @@ def validate_authentication_params(
         return
 
     # "Access Token" method.
-    if not downloaded_token:
+    if not access_token_bundle:
         raise DemistoException(
             "Authentication Method is 'Access Token', but no Access Token was provided. "
             "In the Aruba Central UI, click the 'Download Token' button and paste the token JSON, or switch the "
@@ -904,7 +920,7 @@ def validate_authentication_params(
         )
     # Validate the bundle format now so a bad paste fails fast with a clear message instead of mid-fetch.
     # Raises if the JSON has no 'refresh_token'.
-    Client.parse_download_token(downloaded_token)
+    Client.parse_download_token(access_token_bundle)
 
 
 def main() -> None:  # pragma: no cover
@@ -922,11 +938,12 @@ def main() -> None:  # pragma: no cover
     user_name = params.get("user", {}).get("identifier")
     user_password = params.get("user", {}).get("password")
     customer_id = params.get("customer_id", {}).get("password")
-    downloaded_token = params.get("token", {}).get("password")
+    access_token_bundle = params.get("token", {}).get("password")
     # Clear a leftover Access Token so it can't override the Basic Auth flow.
     # (No reverse guard needed: the seeded token is always tried before user/password.)
     if auth_method == "Basic Auth":
-        downloaded_token = ""
+        demisto.debug("[Auth] Basic Auth selected; ignoring any pasted Access Token for this run.")
+        access_token_bundle = ""
     base_url = params.get("url", "")
     fetch_networking_events = params.get("fetch_networking_events", False)
     max_audit_events_per_fetch = arg_to_number(params.get("max_audit_events_per_fetch")) or 0
@@ -936,9 +953,9 @@ def main() -> None:  # pragma: no cover
 
     first_fetch_time = int(time.time())
 
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"Command being called is {command} (auth_method={auth_method!r}).")
     try:
-        validate_authentication_params(auth_method, downloaded_token, user_name, user_password, customer_id)
+        validate_authentication_params(auth_method, access_token_bundle, user_name, user_password, customer_id)
         client = Client(
             base_url=base_url,
             client_id=client_id,
@@ -946,7 +963,7 @@ def main() -> None:  # pragma: no cover
             user_name=user_name,
             user_password=user_password,
             customer_id=customer_id,
-            downloaded_token=downloaded_token,
+            access_token_bundle=access_token_bundle,
             verify=verify_certificate,
             proxy=proxy,
         )
@@ -970,10 +987,15 @@ def main() -> None:  # pragma: no cover
             return_results(results)
 
             if should_push_events:
+                demisto.debug(
+                    f"[GetEvents] should_push_events=True; pushing {len(audit_events)} audit and "
+                    f"{len(networking_events or [])} networking events."
+                )
                 push_events(audit_events, networking_events)
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
+            demisto.debug(f"[Fetch] Starting fetch-events with {last_run=}.")
             next_run, audit_events, networking_events = fetch_events(
                 client=client,
                 last_run=last_run,
@@ -984,6 +1006,7 @@ def main() -> None:  # pragma: no cover
             )
 
             push_events(audit_events, networking_events)
+            demisto.debug(f"[Fetch] Setting last run to {next_run=}.")
             demisto.setLastRun(next_run)
 
     # Log exceptions and return errors

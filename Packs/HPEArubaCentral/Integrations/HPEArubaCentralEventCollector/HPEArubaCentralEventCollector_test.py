@@ -407,7 +407,7 @@ def test_test_module_full_bundle_is_non_mutating(mocker):
         user_name="",
         user_password="",
         customer_id="",
-        downloaded_token=DOWNLOAD_TOKEN_FULL,
+        access_token_bundle=DOWNLOAD_TOKEN_FULL,
         verify=False,
         proxy=False,
     )
@@ -440,7 +440,7 @@ def test_test_module_full_bundle_stale_access_token_raises_helpful_error(mocker)
         user_name="",
         user_password="",
         customer_id="",
-        downloaded_token=DOWNLOAD_TOKEN_FULL,
+        access_token_bundle=DOWNLOAD_TOKEN_FULL,
         verify=False,
         proxy=False,
     )
@@ -479,7 +479,7 @@ def test_test_module_refresh_only_bundle_raises_without_refreshing(mocker):
         user_name="",
         user_password="",
         customer_id="",
-        downloaded_token=DOWNLOAD_TOKEN_REFRESH_ONLY,
+        access_token_bundle=DOWNLOAD_TOKEN_REFRESH_ONLY,
         verify=False,
         proxy=False,
     )
@@ -515,7 +515,7 @@ def test_test_module_userpass_only_raises():
         user_name=USER_NAME,
         user_password=USER_PASSWORD,
         customer_id=CUSTOMER_ID,
-        downloaded_token="",
+        access_token_bundle="",
         verify=False,
         proxy=False,
     )
@@ -748,7 +748,7 @@ def test_http_request_passes_retry_params_on_initial_and_refresh(mocker):
 
 
 @freeze_time(FETCH_DATE)
-def test_get_access_token_seeds_from_downloaded_token(mocker, requests_mock):
+def test_get_access_token_seeds_from_access_token_bundle(mocker, requests_mock):
     """
     Given:
     - An instance configured with a pasted Access Token JSON (refresh token only) and no username/password.
@@ -788,7 +788,7 @@ def test_get_access_token_seeds_from_downloaded_token(mocker, requests_mock):
         user_name="",
         user_password="",
         customer_id="",
-        downloaded_token=DOWNLOAD_TOKEN_REFRESH_ONLY,
+        access_token_bundle=DOWNLOAD_TOKEN_REFRESH_ONLY,
     )
 
     assert client.get_access_token() == new_token
@@ -825,7 +825,7 @@ def test_get_access_token_no_credentials_and_no_token_raises(mocker):
         user_name="",
         user_password="",
         customer_id="",
-        downloaded_token="",
+        access_token_bundle="",
     )
 
     with pytest.raises(DemistoException, match="Unable to authenticate"):
@@ -994,7 +994,7 @@ def test_get_access_token_seeds_access_token_from_json_bundle(mocker):
         user_name="",
         user_password="",
         customer_id="",
-        downloaded_token=bundle,
+        access_token_bundle=bundle,
     )
 
     # No requests_mock is set up: if the code tried to refresh, it would fail. It should use the seeded token.
