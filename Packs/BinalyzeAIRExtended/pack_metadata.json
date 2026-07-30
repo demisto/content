@@ -32,6 +32,8 @@
         "isolation"
     ],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2",
+        "platform"
     ]
 }
