@@ -1,11 +1,11 @@
 # SOC Framework Pack Manager
 
-Install and configure SOC Framework content packs directly from the XSIAM
+Install and configure SOC Framework content packs directly from the Cortex XSIAM
 Playground. No manual ZIP uploads, no separate REST API tooling.
 
 ## What does this pack do?
 
-- Browses the SOC Framework pack catalog from the XSIAM Playground, showing which packs are installed and which have updates available
+- Browses the SOC Framework pack catalog from the Cortex XSIAM Playground, showing which packs are installed and which have updates available
 - Installs and updates SOC Framework content packs as system content
 - Applies integration instances, jobs, and lookup datasets from each pack's `xsoar_config.json`
 - Re-runs configuration without reinstalling, for recovery or config changes

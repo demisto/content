@@ -421,7 +421,7 @@ def main() -> None:
             return_results(test_module(client))
         elif command == "socfw-install-pack":
             return_results(install_pack_command(client, args))
-        elif command == "socfw-get-catalog-url":
+        elif command == "socfw-catalog-url-get":
             return_results(get_catalog_url_command(params))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")

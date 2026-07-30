@@ -1,4 +1,6 @@
-Internal HTTP layer used by the **SOCFWPackManager** script to install SOC Framework content packs as system content. End users run the script, not this integration directly.
+## SOCFWPackManager
+
+Internal HTTP layer used by the **SOCFWPackManager** script. End users run the script, not this integration directly.
 
 ### Create an API key
 
@@ -18,11 +20,3 @@ Internal HTTP layer used by the **SOCFWPackManager** script to install SOC Frame
 The API key requires the **Instance Administrator** role, because installing content as system content and creating integration instances cannot be delegated to a custom role.
 
 Click **Test** to confirm the URL and credentials, then **Done**.
-
-### Usage
-
-Run the script from the Playground:
-
-`!SOCFWPackManager action=list`
-
-`!SOCFWPackManager action=apply pack_id=soc-optimization-unified`

@@ -7,14 +7,16 @@ not invoke this integration directly.
 This integration is paired with the **SOCFWPackManager** script in the same
 pack. The script reads the SOC Framework pack catalog, sequences pack
 installs, configures integration instances and jobs, and synchronizes the
-`value_tags` lookup. Because XSIAM scripts can call `demisto.executeCommand`,
-all orchestration lives there. This integration stores the tenant URL,
-credentials, TLS verification setting, and the pack catalog location, and
-exposes two commands: `socfw-install-pack`, which downloads a pack ZIP and
-uploads it as system content, and `socfw-get-catalog-url`, which returns the
-configured catalog location so the script can read it. XSIAM integrations
-cannot call `demisto.executeCommand`, so the integration deliberately performs
-only the work that needs raw HTTP.
+`value_tags` lookup. Because Cortex XSIAM scripts can call
+`demisto.executeCommand`, all orchestration lives there.
+
+This integration stores the tenant URL, credentials, TLS verification setting,
+and the pack catalog location. It exposes two commands: `socfw-install-pack`,
+which downloads a pack ZIP and uploads it as system content, and
+`socfw-catalog-url-get`, which returns the configured catalog location so the
+script can read it. Cortex XSIAM integrations cannot call
+`demisto.executeCommand`, so the integration deliberately performs only the
+work that needs raw HTTP.
 
 End users run `!SOCFWPackManager action=apply pack_id=...` from the XSIAM
 Playground. The script invokes `socfw-install-pack` on this integration
@@ -30,14 +32,14 @@ internally.
 4. Search for **SOC Framework Pack Manager**.
 5. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Description** | **Required** |
-   | --- | --- | --- |
-   | Server URL | Tenant API URL or tenant URL. The integration adds the `api-` prefix when it is missing. | True |
-   | API Key ID | Numeric ID of the Standard API key. | True |
-   | API Key | Secret value of the Standard API key. Stored masked. | True |
-   | Trust any certificate (not secure) | Disable TLS certificate validation. Off by default. | False |
-   | Use system proxy settings | Route HTTP traffic through the system proxy. Off by default. | False |
-   | Pack catalog URL | Location of the SOC Framework `pack_catalog.json`. Override to point at a fork or branch. Leave empty to use the SOC Framework repository default. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL | The tenant API URL or tenant URL. The integration adds the api- prefix when it is missing. | True |
+| API Key ID | The numeric ID of the Standard API key, shown in the API Keys table. | True |
+| API Key | The secret value of the Standard API key. | True |
+| Trust any certificate (not secure) | Whether to disable TLS certificate validation. Off by default. | False |
+| Use system proxy settings | Whether to route HTTP traffic through the system proxy. Off by default. | False |
+| Pack catalog URL | The location of the SOC Framework pack_catalog.json. Override to point at a fork or branch. Leave empty to use the SOC Framework repository default. | False |
 
 6. Click **Test** to validate the URL and credentials, then **Done**.
 
@@ -99,45 +101,23 @@ invoke directly.
 #### Human Readable Output
 
 > Pack **soc-optimization-unified-v3.6.3.zip** installed successfully.
-
-### socfw-get-catalog-url
+>
+### socfw-catalog-url-get
 
 ***
-Returns the SOC Framework pack catalog URL configured on this instance, or the
-SOC Framework default when the field is left empty. Called by the
-SOCFWPackManager script so the catalog location is set once on the instance
-instead of passed as an argument on every run.
+Returns the SOC Framework pack catalog URL configured on this instance. Called by the SOCFWPackManager script so the catalog location is set once on the instance instead of passed as an argument on every run.
 
 #### Base Command
 
-`socfw-get-catalog-url`
+`socfw-catalog-url-get`
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SOCFramework.PackManager.CatalogURL | String | Pack catalog URL configured on this instance, or the SOC Framework default when the field is empty. |
-
-#### Command example
-
-```!socfw-get-catalog-url```
-
-#### Context Example
-
-```json
-{
-    "SOCFramework": {
-        "PackManager": {
-            "CatalogURL": "https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
-> Pack catalog URL: <https://raw.githubusercontent.com/Palo-Cortex/secops-framework/refs/heads/main/pack_catalog.json>
+| SOCFramework.PackManager.CatalogURL | String | The pack catalog URL configured on this instance, or the SOC Framework default when the field is empty. |

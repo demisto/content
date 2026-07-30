@@ -483,14 +483,14 @@ def resolve_catalog_url(explicit: Any) -> str:
     An explicit argument wins, then the catalog_url configured on the
     SOCFWPackManager integration instance, then the SOC Framework default. A
     script cannot read another integration's instance parameters, so the
-    configured value is read through socfw-get-catalog-url. That command is
+    configured value is read through socfw-catalog-url-get. That command is
     absent on older versions of the integration, so a failure here falls back to
     the default rather than stopping the run.
     """
     explicit = _norm(explicit)
     if explicit:
         return explicit
-    res = exec_cmd("socfw-get-catalog-url", {}, fail_on_error=False)
+    res = exec_cmd("socfw-catalog-url-get", {}, fail_on_error=False)
     contents = get_contents(res)
     configured = _norm(contents.get("catalog_url")) if isinstance(contents, dict) else ""
     return configured or DEFAULT_CATALOG_URL
@@ -879,11 +879,16 @@ class DependencyLookupError(Exception):
 
 
 def _ver_key(value: Any) -> tuple:
-    """Comparable key for an X.Y.Z pack version; non-numeric parts sort as 0."""
+    """Comparable key for an X.Y.Z pack version; non-numeric parts sort as 0.
+
+    Only the leading digits of each part count. Collecting every digit in the
+    part instead would fold a pre-release suffix into the number itself, so
+    "1.0.6-pr1008" would key as (1, 0, 61008) and compare greater than 1.0.7.
+    """
     parts = []
     for chunk in str(value or "").split("."):
-        digits = "".join(ch for ch in chunk if ch.isdigit())
-        parts.append(int(digits) if digits else 0)
+        match = re.match(r"\d+", chunk.strip())
+        parts.append(int(match.group()) if match else 0)
     while len(parts) < 3:
         parts.append(0)
     return tuple(parts[:3])
@@ -1034,7 +1039,13 @@ def resolve_install_closure(
                 required_min[dep_id] = min_version
                 current = installed.get(dep_id, {}).get("version") or ""
                 version = current if _ver_key(current) >= _ver_key(min_version) else min_version
-                if wanted.get(dep_id) == version:
+                # Never lower a version already resolved for this pack. A pack
+                # can be both explicitly requested and pulled in as another
+                # pack's dependency; without this guard the dependency pass
+                # would overwrite an upgrade target with the installed version
+                # and silently undo the upgrade the caller asked for.
+                prior_wanted = wanted.get(dep_id)
+                if prior_wanted and _ver_key(prior_wanted) >= _ver_key(version):
                     continue
                 wanted[dep_id] = version
                 # Re-queued because raising a version can change what that

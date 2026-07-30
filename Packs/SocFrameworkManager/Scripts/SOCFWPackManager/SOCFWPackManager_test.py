@@ -1301,18 +1301,18 @@ def test_guess_pack_id_leaves_embedded_dash_v_alone():
 
 def test_resolve_catalog_url_explicit_arg_wins():
     script, demisto_mock = load_script()
-    demisto_mock._command_responses["socfw-get-catalog-url"] = [
+    demisto_mock._command_responses["socfw-catalog-url-get"] = [
         {"Type": 1, "Contents": {"catalog_url": "https://instance.example/catalog.json"}}
     ]
 
     assert script.resolve_catalog_url("https://explicit.example/catalog.json") == "https://explicit.example/catalog.json"
     # The instance is not consulted when an explicit value is supplied.
-    assert not [c for c in demisto_mock._commands if c[0] == "socfw-get-catalog-url"]
+    assert not [c for c in demisto_mock._commands if c[0] == "socfw-catalog-url-get"]
 
 
 def test_resolve_catalog_url_uses_instance_value():
     script, demisto_mock = load_script()
-    demisto_mock._command_responses["socfw-get-catalog-url"] = [
+    demisto_mock._command_responses["socfw-catalog-url-get"] = [
         {"Type": 1, "Contents": {"catalog_url": "https://instance.example/catalog.json"}}
     ]
 
@@ -1327,6 +1327,83 @@ def test_resolve_catalog_url_falls_back_when_command_missing():
 
 def test_resolve_catalog_url_falls_back_on_error_entry():
     script, demisto_mock = load_script()
-    demisto_mock._command_responses["socfw-get-catalog-url"] = [{"Type": 4, "Contents": "Unsupported command (23)"}]
+    demisto_mock._command_responses["socfw-catalog-url-get"] = [{"Type": 4, "Contents": "Unsupported command (23)"}]
 
     assert script.resolve_catalog_url("") == script.DEFAULT_CATALOG_URL
+
+
+# ---------------------------
+# version comparison and install closure
+# ---------------------------
+
+
+def test_ver_key_ignores_prerelease_suffix():
+    """A pre-release suffix must not inflate the patch number.
+
+    Collecting every digit in the part folded the suffix into the number, so
+    1.0.6-pr1008 keyed as (1, 0, 61008) and compared greater than 1.0.7.
+    """
+    script, _ = load_script()
+    assert script._ver_key("1.0.6-pr1008") == (1, 0, 6)
+    assert script._ver_key("1.0.6-rc1") == (1, 0, 6)
+    assert script._ver_key("1.0.6") < script._ver_key("1.0.7")
+    assert script._ver_key("1.0.6-pr1008") < script._ver_key("1.0.7")
+    assert script._ver_key("3.11.2") == (3, 11, 2)
+    assert script._ver_key("1.0") == (1, 0, 0)
+    assert script._ver_key("") == (0, 0, 0)
+    assert script._ver_key(None) == (0, 0, 0)
+
+
+def test_ver_key_orders_double_digit_minor_correctly():
+    script, _ = load_script()
+    assert script._ver_key("3.9.0") < script._ver_key("3.11.0")
+
+
+def test_resolve_install_closure_does_not_downgrade_an_upgrade_target(mocker):
+    """A pack that is both requested and a dependency keeps its upgrade target.
+
+    The dependency pass computes the installed version when it already
+    satisfies minVersion. Writing that unconditionally overwrote the seed's
+    resolved upgrade target and silently undid the upgrade.
+    """
+    script, _ = load_script()
+    installed = {
+        "PackA": {"version": "1.0.0", "update_available": True},
+        "Shared": {"version": "3.0.0", "update_available": True},
+    }
+    mocker.patch.object(
+        script, "resolve_latest_version", side_effect=lambda pid, using: {"PackA": "2.0.0", "Shared": "4.0.0"}[pid]
+    )
+    # PackA depends on Shared at a minimum far below what is installed.
+    mocker.patch.object(
+        script,
+        "fetch_mandatory_dependencies",
+        side_effect=[{"PackA": {"Shared": "1.0.0"}}, {}],
+    )
+
+    wanted = script.resolve_install_closure(
+        [{"id": "PackA", "version": "latest"}, {"id": "Shared", "version": "latest"}],
+        using="",
+        installed=installed,
+        upgrade=True,
+    )
+
+    assert wanted["PackA"] == "2.0.0"
+    # Shared was requested for upgrade to 4.0.0; the dependency pass must not
+    # drag it back to the installed 3.0.0.
+    assert wanted["Shared"] == "4.0.0"
+
+
+def test_resolve_install_closure_still_raises_a_dependency_to_min_version(mocker):
+    script, _ = load_script()
+    installed = {"PackA": {"version": "1.0.0"}, "Dep": {"version": "1.0.0"}}
+    mocker.patch.object(script, "resolve_latest_version", side_effect=lambda pid, using: "1.0.0")
+    mocker.patch.object(
+        script,
+        "fetch_mandatory_dependencies",
+        side_effect=[{"PackA": {"Dep": "2.5.0"}}, {}],
+    )
+
+    wanted = script.resolve_install_closure([{"id": "PackA", "version": "latest"}], using="", installed=installed, upgrade=False)
+
+    assert wanted["Dep"] == "2.5.0"
