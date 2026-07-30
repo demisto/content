@@ -2232,71 +2232,19 @@ Gateway | Policies | Edit
 | --- | --- | --- |
 | policy_id | The ID of the policy to update. | Required |
 | description | A new description for the policy. | Optional |
-| fromType | The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email_domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name. | Optional |
+| fromType | The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email_domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
 | toType | The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email_domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address. | Optional |
 | option | The block action. Possible values are: no_action, block_sender. | Optional |
 | fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email_domain. | Optional |
 | toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email_domain. | Optional |
 | fromPart | The part from where addresses are pulled. Possible values are: envelope_from, header_from, both. | Optional |
+| confirm_block_all | Must be 'true' when fromType is 'everyone'. Prevents accidental blocking of all senders. | Optional |
+| from_date | Policy start date in ISO 8601 format. | Optional |
+| to_date | Policy end date in ISO 8601 format. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Mimecast.BlockedSendersPolicy.ID | string | Policy ID. |
-| Mimecast.BlockedSendersPolicy.Sender.Address | string | Block sender by email address value. |
-| Mimecast.BlockedSendersPolicy.Sender.Domain | string | Block sender by domain value. |
-| Mimecast.BlockedSendersPolicy.Sender.Group | string | Block sender by group value. |
-| Mimecast.BlockedSendersPolicy.Bidirectional | boolean | Whether the blocked policy is bidirectional. |
-| Mimecast.BlockedSendersPolicy.Receiver.Address | string | Block emails to receiver type address. |
-| Mimecast.BlockedSendersPolicy.Receiver.Domain | string | Block emails to receiver type domain. |
-| Mimecast.BlockedSendersPolicy.Receiver.Group | string | Block emails to receiver type group. |
-| Mimecast.BlockedSendersPolicy.Fromdate | date | The policy validation start date. |
-| Mimecast.BlockedSendersPolicy.Todate | date | The policy expiration date. |
-| Mimecast.BlockedSendersPolicy.Sender.Type | String | The sender type. |
-| Mimecast.BlockedSendersPolicy.Receiver.Type | String | The receiver type. |
-
-#### Command example
-
-```!mimecast-update-block-sender-policy policy_id=eNo1jrsOgjAAAP-1234 description=test fromPart=both fromType=email_domain fromValue=google.com option=block_sender toType=everyone```
-
-#### Context Example
-
-```json
-{
-    "Mimecast": {
-        "BlockedSendersPolicy": {
-            "Bidirectional": false,
-            "Description": "test",
-            "FromDate": "1900-01-01T00:00:00+0000",
-            "ID": "eNo1jrsOgjAAAP-1234",
-            "Receiver": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Sender": {
-                "Address": null,
-                "Domain": "google.com",
-                "Group": null,
-                "Type": "email_domain"
-            },
-            "ToDate": "2100-01-01T23:59:59+0000"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Mimecast Update Policy
->
-> Policy Was Updated Successfully!
->
->|Policy ID|Description|Sender|Receiver|Bidirectional|Start|End|
->|---|---|---|---|---|---|---|
->| eNo1jrsOgjAAAP-1234 | test | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+There is no context output for this command.
 
 ### mimecast-create-antispoofing-bypass-policy
 
