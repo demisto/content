@@ -121,6 +121,13 @@ filter id != null
     tmp_hook_name = name,
     tmp_hook_url = url,
     tmp_hook_events = events,
+    // TLS verification has no home of its own in the resource family, and
+    // xdm.network.tls describes an observed TLS session rather than a stored
+    // setting, so it would be the wrong field. Turning verification off is a
+    // deliberate downgrade that makes a delivered payload interceptable and has
+    // no benign reason, so it is kept queryable beside the event subscription as
+    // one delivery descriptor: a change to either half shows as a changed value.
+    tmp_hook_verify = concat("verify_tls=", to_string(coalesce(verify_tls, false))),
     tmp_project_id = circleci_project_id,
     tmp_is_new = if(timestamp_diff(_time, created_at, "MILLISECOND") <= 86400000, "yes", "no")
 | alter
@@ -141,7 +148,7 @@ filter id != null
     xdm.target.resource.id = id,
     xdm.target.resource.name = tmp_hook_name,
     xdm.target.resource.value = tmp_hook_url,
-    xdm.target.resource.sub_type = tmp_hook_events,
+    xdm.target.resource.sub_type = concat(coalesce(tmp_hook_events, ""), "|", tmp_hook_verify),
     xdm.event.description = concat(
         "CircleCI webhook ", coalesce(tmp_hook_name, "unnamed"),
         " delivers to ", coalesce(tmp_hook_url, "unknown destination"),

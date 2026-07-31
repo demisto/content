@@ -78,6 +78,18 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 2.0.8
+
+- Apply the upstream formatter output, so the committed source matches what the contribution pipeline produces and a submission is not failed for a purely cosmetic difference.
+
+### 2.0.7
+
+- Collect the restrictions guarding each context, so a shared credential store becoming readable by more of the organisation is visible, and record an unrestricted context explicitly rather than as an absence of rows.
+
+### 2.0.6
+
+- Detect an existing webhook being repointed, having its event subscription widened, or having TLS verification turned off, none of which creation-only detection can see. Map verify_tls, which was not previously collected into the data model.
+
 ### 2.0.5
 
 - Extend the pack description to name the detections it ships, not only the collectors and the mapping. A reader choosing whether to install a pack is choosing detections.

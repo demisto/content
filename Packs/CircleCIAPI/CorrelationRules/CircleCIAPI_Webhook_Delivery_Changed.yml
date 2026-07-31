@@ -1,0 +1,58 @@
+name: CircleCI API - Webhook Delivery Configuration Changed - by GoCortexIO
+description: Detects an existing CircleCI outbound webhook having its destination URL, subscribed events or TLS verification altered. Creation of a webhook is already covered; this is the same object being repointed or downgraded, which creation-only detection cannot see.
+severity: SEV_040_HIGH
+xql_query: |-
+  // References
+  //   https://attack.mitre.org/techniques/T1567/
+  //   https://attack.mitre.org/techniques/T1665/
+  //   https://circleci.com/docs/webhooks/
+  //
+  // This reads a SNAPSHOT dataset, where the collector re-reads the full webhook
+  // inventory each poll. On snapshot data the event is the DIFF, not the row, and
+  // a rule that only notices a row appearing sees creation and nothing else. An
+  // existing webhook is the more useful thing to watch: it is an outbound channel
+  // that is already authorised and already carrying build metadata, so repointing
+  // it needs no new object and raises no new-object alert.
+  //
+  // The diff needs no stored state. Because every poll writes a row per webhook,
+  // a value that changed appears as two distinct values for one webhook id over
+  // the window, which count_distinct finds directly.
+  //
+  // Three things are watched, and each is a different act:
+  //   the destination URL          where the payload goes
+  //   the subscribed event list    how much is sent
+  //   TLS verification             whether the payload can be intercepted in transit
+  //
+  // The last has no benign explanation, which is why it earns the same severity as
+  // a destination change despite being a single boolean.
+  datamodel dataset = circleci_webhooks_raw
+  | filter xdm.target.resource.type = "webhook" and xdm.target.resource.id != null
+  | comp count_distinct(xdm.target.resource.value) as destination_variants, values(xdm.target.resource.value) as destinations, count_distinct(xdm.target.resource.sub_type) as delivery_variants, values(xdm.target.resource.sub_type) as delivery_settings, values(xdm.source.cloud.project) as projects, count() as snapshots, min(_time) as first_seen, max(_time) as last_seen by xdm.target.resource.id, xdm.target.resource.name
+  | filter destination_variants > 1 or delivery_variants > 1
+  | fields xdm.target.resource.id, xdm.target.resource.name, destination_variants, destinations, delivery_variants, delivery_settings, projects, snapshots, first_seen, last_seen
+alert_name: CircleCI webhook $xdm.target.resource.name had its delivery configuration changed
+alert_category: User Defined
+user_defined_category: xdm.event.type
+alert_description: The CircleCI webhook $xdm.target.resource.name (id $xdm.target.resource.id) on project $projects changed its delivery configuration between $first_seen and $last_seen. Destinations observed, $destination_variants distinct, were $destinations. Delivery settings observed, $delivery_variants distinct, were $delivery_settings, each carrying the subscribed event list and the TLS verification flag. A webhook is an outbound channel that already carries build metadata and is already trusted, so changing where it points is a quieter way to exfiltrate than creating anything new. Read the values in order, starting with the destination. A changed destination means payloads now go somewhere else, and the new host is the thing to identify. A widened event list means more is being sent than before. And verify_tls moving to false is the one with no innocent reading, because it exists only to allow the delivered payload to be intercepted. Establish who changed it, whether a change record covers it, and what the webhook is subscribed to.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0010 - Exfiltration:
+  - T1567 - Exfiltration Over Web Service
+suppression_fields:
+- xdm.target.resource.id
+global_rule_id: 2726dc2d-2f7b-4fa4-a5b9-8a9448a54c83
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 24 hours
+timezone: Australia/Melbourne
+crontab: '41 * * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = circleci_webhooks_raw | filter id = "$xdm.target.resource.id"
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

@@ -2,7 +2,7 @@
   "name": "CircleCI API",
   "description": "Integrates the CircleCI v2 API with the Cortex Platform, maps pipelines, webhooks, contexts, triggers and project settings into the Cortex XDM data model, and detects new outbound webhooks, new scheduled triggers, new context secrets and insecure fork settings, by GoCortexIO",
   "support": "community",
-  "currentVersion": "2.0.5",
+  "currentVersion": "2.0.8",
   "author": "GoCortexIO",
   "url": "",
   "email": "",

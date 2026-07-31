@@ -208,7 +208,7 @@ def main() -> None:  # pragma: no cover
     try:
         if not project_slugs and not org_slugs:
             raise DemistoException(
-                "Configure at least one CircleCI project slug, or an organisation slug " "for automatic project discovery."
+                "Configure at least one CircleCI project slug, or an organisation slug for automatic project discovery."
             )
         client = Client(base_url=base_url, api_token=api_token, verify=verify, proxy=proxy)
 

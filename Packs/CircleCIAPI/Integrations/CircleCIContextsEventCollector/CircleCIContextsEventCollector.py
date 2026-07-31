@@ -14,8 +14,21 @@ incident, so tracking their inventory over time lets downstream correlations
 detect a newly created context (credential staging) or a newly added secret
 name (credential access), without ever handling the secret value.
 
-Each context produces one record with source_log_type "context" and one record
-per environment variable with source_log_type "context_envvar". Contexts are
+Each context produces one record with source_log_type "context", one record per
+environment variable with source_log_type "context_envvar", and one record per
+restriction with source_log_type "context_restriction".
+
+A context is a shared credential store, and its restrictions decide which
+projects may read it, so the restriction set is the access control on the secret
+rather than a detail about it. A context carrying no restrictions is readable by
+every project in the organisation. That absence is recorded as a record with
+is_restricted false rather than as missing rows, because a rule cannot detect
+the absence of rows it never receives.
+
+The webhook signing secret is deliberately NOT collected. CircleCI returns it
+only when a webhook is created and never on a read, so it cannot be observed
+here; and a signing secret is a live credential, which does not belong in an
+event dataset even where an API would hand it over. Contexts are
 owned by an organisation, so configuration takes organisation slugs directly;
 no project discovery is required.
 """
@@ -61,6 +74,19 @@ class Client(BaseClient):
         if page_token:
             params["page-token"] = page_token
         return self._http_request(method="GET", url_suffix=f"/context/{context_id}/environment-variable", params=params)
+
+    def list_context_restrictions(self, context_id: str, page_token: Optional[str] = None) -> dict:
+        """Fetch a single page of restrictions guarding a context.
+
+        A context holds shared credentials, and its restrictions decide which
+        projects may read them. An unrestricted context is readable by every
+        project in the organisation, so the restriction set is the access control
+        on the secret, not a detail about it.
+        """
+        params: dict[str, Any] = {}
+        if page_token:
+            params["page-token"] = page_token
+        return self._http_request(method="GET", url_suffix=f"/context/{context_id}/restrictions", params=params)
 
 
 def _now_rfc3339() -> str:
@@ -115,6 +141,43 @@ def fetch_events_for_org(client: Client, owner_slug: str, max_fetch: int) -> lis
             record["context_name"] = context_name
             record["circleci_org_slug"] = owner_slug
             events.append(record)
+
+        if len(events) >= max_fetch:
+            break
+
+        # Restrictions decide which projects can read this context's secrets.
+        # A context with NONE is readable organisation-wide, and that absence is
+        # itself the finding, so it is recorded as a record rather than left as
+        # missing data: a rule cannot detect the absence of rows it never sees.
+        restrictions = _paginate(
+            lambda token, cid=context_id: client.list_context_restrictions(cid, token),
+            max_fetch - len(events),
+        )
+        if restrictions:
+            for restriction in restrictions:
+                record = dict(restriction)
+                record["_time"] = now
+                record["snapshot_at"] = now
+                record["source_log_type"] = "context_restriction"
+                record["context_id"] = context_id
+                record["context_name"] = context_name
+                record["circleci_org_slug"] = owner_slug
+                record["is_restricted"] = True
+                events.append(record)
+        else:
+            events.append(
+                {
+                    "_time": now,
+                    "snapshot_at": now,
+                    "source_log_type": "context_restriction",
+                    "context_id": context_id,
+                    "context_name": context_name,
+                    "circleci_org_slug": owner_slug,
+                    "is_restricted": False,
+                    "restriction_type": "none",
+                    "restriction_value": "",
+                }
+            )
         if len(events) >= max_fetch:
             break
 
