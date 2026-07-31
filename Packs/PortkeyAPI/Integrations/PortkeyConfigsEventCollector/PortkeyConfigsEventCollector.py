@@ -111,8 +111,7 @@ def test_module(client: Client) -> str:
         message = str(e)
         if any(token in message for token in ("[401]", "[403]", "Unauthorized", "Forbidden", "AB03")):
             raise DemistoException(
-                "Authorisation failed. Check that the Portkey API key includes the configs.list "
-                f"scope. Original error: {message}"
+                f"Authorisation failed. Check that the Portkey API key includes the configs.list scope. Original error: {message}"
             )
         raise
     return "ok"

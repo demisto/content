@@ -76,6 +76,10 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 1.9.7
+
+- Apply the upstream formatter output, so the committed source matches what the contribution pipeline produces and a submission is not failed for a purely cosmetic difference.
+
 ### 1.9.6
 
 - Report how much traffic the guardrail actually evaluates, so a control that is mostly not running is visible as posture and a fall in coverage is visible as an alert.
