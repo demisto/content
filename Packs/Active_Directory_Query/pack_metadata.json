@@ -17,6 +17,9 @@
     "keywords": [
         "Active Directory"
     ],
+    "managed": true,
+    "managed:platform": false,
+    "source": "cloud_managed",
     "dependencies": {
         "Gmail": {
             "mandatory": false,
