@@ -1,0 +1,164 @@
+{
+    "koi_koi_raw": {
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "activity_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "activity_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "category_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "category_uid": {
+            "type": "int",
+            "is_array": false
+        },
+        "class_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "class_uid": {
+            "type": "int",
+            "is_array": false
+        },
+        "confidence": {
+            "type": "string",
+            "is_array": false
+        },
+        "confidence_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "created_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "endpoint": {
+            "type": "string",
+            "is_array": false
+        },
+        "finding_info": {
+            "type": "string",
+            "is_array": false
+        },
+        "hostname": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "is_alert": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "item_version": {
+            "type": "string",
+            "is_array": false
+        },
+        "marketplace": {
+            "type": "string",
+            "is_array": false
+        },
+        "message": {
+            "type": "string",
+            "is_array": false
+        },
+        "metadata": {
+            "type": "string",
+            "is_array": false
+        },
+        "object_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "object_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "object_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "observables": {
+            "type": "string",
+            "is_array": true
+        },
+        "platform": {
+            "type": "string",
+            "is_array": false
+        },
+        "reason": {
+            "type": "string",
+            "is_array": false
+        },
+        "resources": {
+            "type": "string",
+            "is_array": true
+        },
+        "risk_level": {
+            "type": "string",
+            "is_array": false
+        },
+        "risk_level_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "risk_score": {
+            "type": "float",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "status_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "time": {
+            "type": "int",
+            "is_array": false
+        },
+        "timezone_offset": {
+            "type": "int",
+            "is_array": false
+        },
+        "triggered_by": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "type_uid": {
+            "type": "int",
+            "is_array": false
+        }
+    }
+}
