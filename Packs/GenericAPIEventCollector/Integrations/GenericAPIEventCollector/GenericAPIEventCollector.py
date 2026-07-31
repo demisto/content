@@ -1,11 +1,15 @@
 import copy
 import enum
+import secrets
 from base64 import b64encode
 from collections import namedtuple
+from datetime import UTC
 from json import JSONDecodeError
+from urllib.parse import urlencode, urlparse, urlunparse
 
 import urllib3
 from CommonServerPython import *
+from ContentClientApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -90,10 +94,20 @@ def convert_epoch_to_timestamp(dt: str) -> datetime:
 
 
 def timestamp_format_to_datetime(dt: str, timestamp_format: str) -> datetime:
-    demisto.debug(f"converting {dt} using format:{timestamp_format}")
+    demisto.debug(f"[time] converting {dt} using format: {timestamp_format}")
     if timestamp_format == "epoch":
         return convert_epoch_to_timestamp(dt)
-    return datetime.strptime(dt, timestamp_format)
+    # arg_to_datetime raises a ValueError (it does not return None) when the value
+    # cannot be parsed, so both the None result and the exception are handled here
+    # to guarantee the current-time fallback and avoid crashing the collector.
+    try:
+        parsed = arg_to_datetime(dt)
+    except ValueError:
+        parsed = None
+    if parsed is None:
+        demisto.error(f"[time] time data {dt!r} could not be parsed, falling back to current time")
+        return datetime.now(UTC).replace(tzinfo=None)
+    return parsed.replace(tzinfo=None)
 
 
 def recursive_replace(org_dict: dict[Any, Any] | None, substitutions: list[tuple[Any, Any]]) -> dict[Any, Any] | None:
@@ -129,7 +143,7 @@ def recursive_replace(org_dict: dict[Any, Any] | None, substitutions: list[tuple
     return copy_dict
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """
     Client class to interact with the service API
 
@@ -417,12 +431,12 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
         username = params.get("credentials", {}).get("identifier")
         password = params.get("credentials", {}).get("password")
         if password:
-            demisto.debug("Adding Password to sensitive logs strings")
+            demisto.debug("[auth] Adding Password to sensitive logs strings")
             add_sensitive_log_strs(password)
         else:
             demisto.error("Password is required for Basic Authentication.")
             return_error("Password is required for Basic Authentication.")
-        demisto.debug(f"Authenticating with Basic Authentication, username: {username}")
+        demisto.debug(f"[auth] Authenticating with Basic Authentication, username: {username}")
         # encode username and password in a basic authentication method
         auth_credentials = f"{username}:{password}"
         encoded_credentials = b64encode(auth_credentials.encode()).decode("utf-8")
@@ -431,9 +445,9 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
             "Authorization": f"Basic {encoded_credentials}",
         }
     if authentication == "Bearer":
-        demisto.debug("Authenticating with Bearer Authentication")
+        demisto.debug("[auth] Authenticating with Bearer Authentication")
         if token := params.get("token", {}).get("password"):
-            demisto.debug("Adding Token to sensitive logs strings")
+            demisto.debug("[auth] Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -442,9 +456,9 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
             "Authorization": f"Bearer {token}",
         }
     if authentication == "Token":
-        demisto.debug("Authenticating with Token Authentication")
+        demisto.debug("[auth] Authenticating with Token Authentication")
         if token := params.get("token", {}).get("password"):
-            demisto.debug("Adding Token to sensitive logs strings")
+            demisto.debug("[auth] Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -453,9 +467,9 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
             "Authorization": f"Token {token}",
         }
     if authentication == "Api-Key":
-        demisto.debug("Authenticating with Api-Key Authentication")
+        demisto.debug("[auth] Authenticating with Api-Key Authentication")
         if token := params.get("token", {}).get("password"):
-            demisto.debug("Adding Token to sensitive logs strings")
+            demisto.debug("[auth] Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -464,9 +478,9 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
             "api-key": f"{token}",
         }
     if authentication == "RawToken":
-        demisto.debug("Authenticating with raw token")
+        demisto.debug("[auth] Authenticating with raw token")
         if token := params.get("token", {}).get("password"):
-            demisto.debug("Adding Token to sensitive logs strings")
+            demisto.debug("[auth] Adding Token to sensitive logs strings")
             add_sensitive_log_strs(token)
         else:
             demisto.error("API Token is required.")
@@ -474,17 +488,140 @@ def generate_authentication_headers(params: dict[Any, Any]) -> dict[Any, Any]:
         return {
             "Authorization": f"{token}",
         }
+    if authentication == "OAuth 2.0":
+        token_url = params.get("oauth_token_url")
+        client_id = params.get("oauth_client_id")
+        client_secret = params.get("oauth_client_secret")
+
+        if not token_url:
+            return_error("OAuth token url is required for OAuth 2.0 Authentication.")
+        if not client_id:
+            return_error("OAuth client id is required for OAuth 2.0 Authentication.")
+        if not client_secret:
+            return_error("OAuth client secret is required for OAuth 2.0 Authentication.")
+
+        add_sensitive_log_strs(client_secret)
+        # For OAuth 2.0 the access token is acquired and refreshed dynamically by the
+        # OAuth2ClientCredentialsHandler attached to the client (see get_oauth2_auth_handler).
+        # No static Authorization header is generated here.
+        demisto.debug("[auth] Authenticating with OAuth 2.0 (handled by OAuth2ClientCredentialsHandler)")
+        return {}
     if authentication == "No Authorization":
-        demisto.debug("Connecting without Authorization")
+        demisto.debug("[auth] Connecting without Authorization")
         return {}
 
     err_msg = (
-        "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken"
-        f"No Authorization, got: {authentication}"
+        "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken, "
+        f"OAuth 2.0, No Authorization, got: {authentication}"
     )
     demisto.error(err_msg)
     return_error(err_msg)
     return {}
+
+
+def get_oauth2_auth_handler(params: dict[Any, Any]) -> OAuth2ClientCredentialsHandler | None:
+    """
+    Builds an OAuth2ClientCredentialsHandler for the OAuth 2.0 authentication method.
+
+    The handler is responsible for acquiring and refreshing the access token
+    against the configured token endpoint. When both an authorization code and a
+    redirect uri are configured, the Authorization Code grant is used; otherwise
+    the Client Credentials grant is used.
+
+    Args:
+        params: The integration parameters.
+
+    Returns:
+        An OAuth2ClientCredentialsHandler when authentication is "OAuth 2.0", otherwise None.
+    """
+    if params.get("authentication") != "OAuth 2.0":
+        return None
+
+    token_url = params.get("oauth_token_url")
+    client_id = params.get("oauth_client_id")
+    client_secret = params.get("oauth_client_secret")
+    scope = params.get("oauth_scopes") or None
+    authorization_code = params.get("authorization_code")
+    redirect_uri = params.get("redirect_uri")
+
+    # When an authorization code and redirect uri are provided, use the
+    # OAuth 2.0 Authorization Code grant. The token request body is sent as
+    # application/x-www-form-urlencoded (handled by the underlying handler) with:
+    #   grant_type=authorization_code&code=...&redirect_uri=...&client_id=...&client_secret=...
+    auth_params: dict[str, str] | None = None
+    if authorization_code and redirect_uri:
+        add_sensitive_log_strs(str(authorization_code))
+        demisto.debug(f"Building OAuth 2.0 authorization code handler for token url: {token_url}")
+        auth_params = {
+            "grant_type": "authorization_code",
+            "code": str(authorization_code),
+            "redirect_uri": str(redirect_uri),
+        }
+    else:
+        demisto.debug(f"Building OAuth 2.0 client credentials handler for token url: {token_url}")
+
+    return OAuth2ClientCredentialsHandler(
+        token_url=str(token_url),
+        client_id=str(client_id),
+        client_secret=str(client_secret),
+        scope=scope,
+        auth_params=auth_params,
+    )
+
+
+def generate_login_url_command(params: dict[Any, Any]) -> CommandResults:
+    """
+    Generates the login URL used for the OAuth 2.0 Authorization Code flow.
+
+    The user should open the generated URL in a browser, authenticate and grant consent.
+    The IdP will then redirect to the configured redirect_uri with an authorization code
+    that should be pasted into the "Authorization code" integration parameter.
+
+    Args:
+        params: The integration parameters.
+
+    Returns:
+        CommandResults with the login URL as a human readable output.
+    """
+    token_url = params.get("oauth_token_url")
+    client_id = params.get("oauth_client_id")
+    redirect_uri = params.get("redirect_uri")
+    scope = params.get("oauth_scopes")
+
+    if not token_url:
+        return_error("Oauth token url is required to generate the login url.")
+    if not client_id:
+        return_error("Oauth client id is required to generate the login url.")
+    if not redirect_uri:
+        return_error("Redirect uri is required to generate the login url.")
+
+    # Derive the authorize endpoint from the token endpoint (replace the trailing path segment).
+    parsed = urlparse(str(token_url))
+    authorize_path = parsed.path.rsplit("/", 1)[0] + "/authorize" if parsed.path else "/authorize"
+    authorize_base = urlunparse((parsed.scheme, parsed.netloc, authorize_path, "", "", ""))
+
+    query_params: dict[str, str] = {
+        "response_type": "code",
+        "client_id": str(client_id),
+        "redirect_uri": str(redirect_uri),
+        "state": secrets.token_urlsafe(20),
+    }
+    if scope:
+        query_params["scope"] = str(scope)
+
+    login_url = f"{authorize_base}?{urlencode(query_params)}"
+    demisto.debug(f"Generated login url with authorize base: {authorize_base}")
+
+    readable_output = (
+        "### Authorization instructions\n"
+        "1. Click on the [login URL]"
+        f"({login_url}) to authorize the integration.\n"
+        "2. Complete the authentication and consent in your browser.\n"
+        "3. After being redirected, copy the `code` value from the redirect URL and paste it "
+        "into the **Authorization code** integration parameter.\n\n"
+        f"Login URL:\n{login_url}"
+    )
+    return CommandResults(readable_output=readable_output)
 
 
 def get_events_command(
@@ -574,11 +711,23 @@ def main() -> None:  # pragma: no cover
         verify: bool = not argToBoolean(params.get("insecure", False))
 
         # Create a client object.
-        client = Client(base_url=base_url, verify=verify, headers=generate_headers(params), proxy=proxy)
+        # For OAuth 2.0, an auth_handler manages token acquisition/refresh dynamically;
+        # for all other methods, authentication is applied via static headers.
+        oauth2_auth_handler = get_oauth2_auth_handler(params)
+        client = Client(
+            base_url=base_url,
+            verify=verify,
+            headers=generate_headers(params),
+            proxy=proxy,
+            auth_handler=oauth2_auth_handler,
+        )
         vendor: str = params.get("vendor").lower()
         raw_product: str = params.get("product").lower()
         product: str = f"{raw_product}_generic"
-        demisto.debug(f"Vendor: {vendor}, Raw Product: {raw_product}, Product: {product}")
+        demisto.debug(
+            f"Vendor: {vendor}, Raw Product: {raw_product}, Product: {product}, "
+            f"Authentication type: {params.get('authentication')}"
+        )
 
         command: str = demisto.command()
         demisto.debug(f"Command being called is {command}")
@@ -641,6 +790,9 @@ def main() -> None:  # pragma: no cover
                 events = organize_events_to_xsiam_format(raw_events, events_keys)
                 demisto.debug(f"Sending {len(events)} events from command")
                 send_events_to_xsiam(events, vendor=vendor, product=product)  # noqa
+
+        elif command == "generate-login-url":
+            return_results(generate_login_url_command(params))
 
     except Exception as e:
         # Log exceptions and return errors

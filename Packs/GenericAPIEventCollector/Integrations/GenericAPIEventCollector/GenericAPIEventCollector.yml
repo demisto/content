@@ -30,6 +30,7 @@ configuration:
       - Api-Key
       - RawToken
       - No Authorization
+      - OAuth 2.0
     additionalinfo: Select the authentication method.
   - name: http_method
     section: Connect
@@ -55,6 +56,42 @@ configuration:
     section: Connect
     displaypassword: Password
     additionalinfo: Username & Password to use for basic authentication.
+  - name: oauth_token_url
+    section: Connect
+    display: Oauth token URL
+    type: 0
+    required: false
+    additionalinfo: 'OAuth 2.0 token endpoint URL. Format example: https://YOUR_AUTH0_DOMAIN/oauth/token'
+  - name: oauth_client_id
+    section: Connect
+    display: Oauth client ID
+    type: 0
+    required: false
+    additionalinfo: OAuth Client ID issued by the IdP.
+  - name: oauth_client_secret
+    section: Connect
+    display: OAuth Client Secret
+    type: 14
+    required: false
+    additionalinfo: OAuth Client Secret.
+  - name: authorization_code
+    section: Connect
+    type: 14
+    display: Authorization code
+    required: false
+    additionalinfo: The IdP renders its login/consent page. After the user authenticates and grants consent, the IdP redirects the user-agent to redirect_uri with an authorization code.
+  - name: redirect_uri
+    section: Connect
+    display: Redirect URI
+    type: 0
+    required: false
+    additionalinfo: Used by IdP to provide an authorization code.
+  - name: oauth_scopes
+    section: Connect
+    display: Oauth scopes
+    type: 0
+    required: false
+    additionalinfo: 'Space-separated scopes, e.g. events:read alerts:read.'
   - name: add_fields_to_header
     section: Connect
     display: Add Fields To header
@@ -163,7 +200,7 @@ configuration:
     display: Pagination flag
     type: 0
     required: false
-    additionalinfo: 'Next page existence in JSON response e.g., "has_more", "next"'
+    additionalinfo: 'JSON response key indicating whether a next page exists, e.g., "has_more", "next".'
   - name: timestamp_format
     section: Collect
     display: 'Timestamp format of the event creation time or "epoch".'
@@ -243,12 +280,15 @@ script:
           required: true
         - name: limit
           description: Maximum number of results to return.
+    - name: generate-login-url
+      description: Generate the login URL used for the Authorization Code flow.
+      arguments: []
   runonce: false
   isfetchevents: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/fastapi:0.125.0.10158186
 fromversion: 6.8.0
 marketplaces:
   - marketplacev2
