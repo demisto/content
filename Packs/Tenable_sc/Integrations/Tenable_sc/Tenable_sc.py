@@ -5,6 +5,7 @@ import sys
 import time
 from datetime import datetime
 from typing import Any
+from uuid import NAMESPACE_DNS, uuid5
 
 import demistomock as demisto  # noqa: F401
 import pytz
@@ -48,8 +49,8 @@ MIN_ASSETS_INTERVAL = 60  # Minimum minutes between full fetch cycles
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10**6)  # 4 MB
 HOST_FIELDS = (
     "id,uuid,tenableUUID,name,ipAddress,os,firstSeen,lastSeen,"
-    "macAddress,source,netBios,dns,acr,aes,repository,systemType,"
-    "createdTime,modifiedTime"
+    "dns,fqdnIndex,netBios,netBiosWorkgroup,macAddress,systemType,"
+    "createdTime,modifiedTime,source,repID,repository,acr,aes"
 )
 
 
@@ -3019,6 +3020,8 @@ def fetch_assets_page(client: Client, last_run: dict) -> list:
         start_offset=current_offset,
         end_offset=end_offset,
     )
+    # TODO: REMOVE BEFORE MERGE
+    demisto.debug(f"The Raw Response is {response}")
 
     if not response or "response" not in response:
         demisto.debug("No response received from hosts/search endpoint.")
@@ -3140,6 +3143,8 @@ def fetch_vulnerabilities_page(client: Client, last_run: dict) -> list:
         start_offset=current_offset,
         end_offset=end_offset,
     )
+    # TODO: REMOVE BEFORE MERGE
+    demisto.debug(f"The Raw Response is {response}")
 
     if not response or "response" not in response:
         demisto.debug("No response received from analysis endpoint for vulnerabilities.")
@@ -3174,12 +3179,109 @@ def fetch_vulnerabilities_page(client: Client, last_run: dict) -> list:
     return results
 
 
+def generate_deterministic_uuid(fields: list[Any]) -> str:
+    """
+    Generate a deterministic UUID (UUIDv5) from the given ordered fields.
+
+    The same combination of field values always produces the same UUID, so records
+    that represent the same host/vulnerability are assigned a stable identifier even
+    when Tenable.sc does not provide a native one.
+
+    Args:
+        fields: Ordered list of field values to concatenate into the uniqueness key.
+
+    Returns:
+        str: A deterministic UUID string derived from the concatenated fields.
+    """
+    # Normalize to strings and join with a delimiter to avoid accidental collisions
+    # between different field boundaries (e.g. "1" + "23" vs "12" + "3").
+    uniqueness_key = "|".join("" if value is None else str(value) for value in fields)
+    return str(uuid5(NAMESPACE_DNS, uniqueness_key))
+
+
+def add_vulnerability_composite_keys(vuln: dict) -> None:
+    """
+    Add composite-key columns to a vulnerability record.
+
+    The native hostUUID / vulnUUID returned by the API are left untouched so the raw
+    data remains inspectable. Two additional deterministic composite-key columns are
+    always added from the Tenable.sc uniqueness fields, so records can be correlated
+    even when the source only populates hostUUID / vulnUUID for credentialed or
+    agent-based scans:
+        - hostUniqueness <- repositoryID, ip, dnsName
+        - vulnUniqueness <- repositoryID, ip, port, protocol, pluginID
+
+    Modifies the given vuln dict in place.
+
+    Args:
+        vuln: A single raw vulnerability record from the analysis API.
+    """
+    # repositoryID is exposed as a nested object (repository.id) in the analysis results.
+    repository_id = (vuln.get("repository") or {}).get("id")
+
+    host_fields = [repository_id, vuln.get("ip"), vuln.get("dnsName")]
+    vuln["hostUniqueness"] = generate_deterministic_uuid(host_fields)
+
+    vuln_fields = [
+        repository_id,
+        vuln.get("ip"),
+        vuln.get("port"),
+        vuln.get("protocol"),
+        vuln.get("pluginID"),
+    ]
+    vuln["vulnUniqueness"] = generate_deterministic_uuid(vuln_fields)
+
+
+def add_asset_composite_key(asset: dict) -> None:
+    """
+    Add the hostUniqueness composite-key column to a host asset record.
+
+    The native uuid / tenableUUID returned by the /hosts/search API are left untouched
+    so the raw data remains inspectable. A deterministic hostUniqueness column is added
+    from the Tenable.sc host uniqueness fields, so assets can be correlated even when the
+    source only populates a native UUID for credentialed or agent-based scans:
+        - hostUniqueness <- repositoryID, ipAddress, dns
+
+    Modifies the given asset dict in place.
+
+    Args:
+        asset: A single raw host asset record from the /hosts/search API.
+    """
+    # repositoryID is exposed as a nested object (repository.id) in the hosts results.
+    repository_id = (asset.get("repository") or {}).get("id")
+    host_fields = [repository_id, asset.get("ipAddress"), asset.get("dns")]
+    asset["hostUniqueness"] = generate_deterministic_uuid(host_fields)
+
+
+def parse_assets(assets: list) -> list:
+    """
+    Parse and prepare host assets for XSIAM ingestion.
+
+    Adds the hostUniqueness composite-key column while leaving the raw uuid / tenableUUID
+    untouched.
+
+    Args:
+        assets: List of raw host asset records from the /hosts/search API.
+
+    Returns:
+        list: Parsed host asset records ready for XSIAM.
+    """
+    demisto.debug("Parse the assets...")
+    if not isinstance(assets, list):
+        demisto.debug(f"result is of type: {type(assets)}")
+        assets = list(assets)
+    for asset in assets:
+        add_asset_composite_key(asset)
+    return assets
+
+
 def parse_vulnerabilities(vulns: list) -> list:
     """
     Parse and prepare vulnerabilities for XSIAM ingestion.
 
-    Adds _time field, truncates oversized entries, and marks truncation status.
-    Mirrors the Tenable_io parse_vulnerabilities pattern.
+    Adds _time field, adds composite-key columns (hostUniqueness/vulnUniqueness) while
+    leaving the raw hostUUID/vulnUUID untouched, truncates oversized entries, and marks
+    truncation status. Mirrors the Tenable_io parse_vulnerabilities pattern.
 
     Args:
         vulns: List of raw vulnerability records from the analysis API.
@@ -3192,8 +3294,14 @@ def parse_vulnerabilities(vulns: list) -> list:
         demisto.debug(f"result is of type: {type(vulns)}")
         vulns = list(vulns)
     for vuln in vulns:
-        # Set _time from lastSeen or firstSeen (Tenable.sc uses these fields)
-        vuln["_time"] = vuln.get("firstSeen") or vuln.get("lastSeen")
+        # Set _time from the most recent observation time so that recently re-observed
+        # vulnerabilities keep a recent _time and are not aged out by the findings
+        # retention window. Prefer lastSeen (latest observation) and fall back to firstSeen.
+        vuln["_time"] = vuln.get("lastSeen") or vuln.get("firstSeen")
+        # Add deterministic composite-key columns so findings can be correlated even for
+        # network scans that do not return native hostUUID / vulnUUID. The raw
+        # hostUUID / vulnUUID fields from the API are left untouched.
+        add_vulnerability_composite_keys(vuln)
         vuln_str = json.dumps(vuln)
         if sys.getsizeof(vuln_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
             demisto.debug(f"found oversized vulnerability object: {sys.getsizeof(vuln_str)} bytes")
@@ -3230,11 +3338,13 @@ def run_vulns_fetch(client: Client, last_run: dict) -> list:  # pragma: no cover
 
     # Starting new vuln fetch cycle - initialize state
     if not is_vulns_fetch_in_progress(last_run):
-        demisto.debug("Starting new vulnerability fetch cycle")
+        vuln_snapshot_id = generate_snapshot_id()
+        demisto.debug(f"Starting new vulnerability fetch cycle with vuln_snapshot_id: {vuln_snapshot_id}")
         last_run.update(
             {
                 "vuln_current_offset": 0,
                 "total_vulns_fetched": 0,
+                "vuln_snapshot_id": vuln_snapshot_id,
             }
         )
 
@@ -3363,6 +3473,7 @@ def main():  # pragma: no cover
                 assets_fetch_in_progress = is_assets_fetch_in_progress(assets_last_run)
 
                 if assets:
+                    assets = parse_assets(assets)
                     cumulative_total = assets_last_run.get("total_assets_fetched", 0)
                     # Per XSIAM spec: items_count=1 if not finished, else total count
                     items_count = 1 if assets_fetch_in_progress else cumulative_total
@@ -3402,16 +3513,56 @@ def main():  # pragma: no cover
                             add_proxy_to_request=proxy,
                         )
 
-                # Send vulnerabilities to XSIAM
+                # Send vulnerabilities to XSIAM using snapshot-based ingestion so UVEM can
+                # track complete vs incomplete snapshots the same way it does for assets.
+                vuln_snapshot_id = assets_last_run.get("vuln_snapshot_id")
+                if not vuln_snapshot_id:
+                    vuln_snapshot_id = generate_snapshot_id()
+                    assets_last_run["vuln_snapshot_id"] = vuln_snapshot_id
+                    demisto.setAssetsLastRun(assets_last_run)
+
+                vulns_fetch_in_progress = is_vulns_fetch_in_progress(assets_last_run)
+
                 if vulnerabilities:
                     vulnerabilities = parse_vulnerabilities(vulnerabilities)
-                    demisto.debug(f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
+                    cumulative_vulns_total = assets_last_run.get("total_vulns_fetched", 0)
+                    # Per XSIAM spec: items_count=1 if not finished, else total count
+                    vuln_items_count = 1 if vulns_fetch_in_progress else cumulative_vulns_total
+
+                    demisto.debug(
+                        f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM with "
+                        f"snapshot_id={vuln_snapshot_id}, items_count={vuln_items_count}, "
+                        f"cumulative_total={cumulative_vulns_total}, "
+                        f"vulns_fetch_in_progress={vulns_fetch_in_progress}"
+                    )
                     send_data_to_xsiam(
                         data=vulnerabilities,
                         vendor=VENDOR,
                         product=f"{PRODUCT}_vulnerabilities",
+                        data_type="assets",
+                        snapshot_id=vuln_snapshot_id,
+                        items_count=str(vuln_items_count),
+                        should_update_health_module=False,
                         add_proxy_to_request=proxy,
                     )
+
+                elif not vulns_fetch_in_progress:
+                    # Seal empty snapshot if we had previously sent vulnerability data
+                    cumulative_vulns_total = assets_last_run.get("total_vulns_fetched", 0)
+                    if cumulative_vulns_total > 0:
+                        demisto.debug(
+                            f"Vulnerability fetch completed with empty list. Sealing snapshot with "
+                            f"snapshot_id={vuln_snapshot_id}, items_count={cumulative_vulns_total}"
+                        )
+                        send_data_to_xsiam(
+                            data=[],
+                            vendor=VENDOR,
+                            product=f"{PRODUCT}_vulnerabilities",
+                            data_type="assets",
+                            snapshot_id=vuln_snapshot_id,
+                            items_count=str(cumulative_vulns_total),
+                            should_update_health_module=False,
+                        )
 
                 # Update module health
                 if (
@@ -3425,6 +3576,7 @@ def main():  # pragma: no cover
                 # Clean up snapshot state when BOTH assets and vulns fetch are complete
                 if not assets_fetch_in_progress and not is_vulns_fetch_in_progress(assets_last_run):
                     assets_last_run.pop("snapshot_id", None)
+                    assets_last_run.pop("vuln_snapshot_id", None)
                     assets_last_run.pop("total_assets_fetched", None)
                     assets_last_run.pop("total_vulns_fetched", None)
                     demisto.setAssetsLastRun(assets_last_run)
