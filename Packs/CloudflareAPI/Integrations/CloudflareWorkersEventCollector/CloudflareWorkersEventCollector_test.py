@@ -165,6 +165,7 @@ def test_a_failing_account_does_not_stop_the_others(mocker):
     # harness treats as stdout and fails the run on. Production behaviour is
     # correct and stays as it is; the test simply must not let it leak.
     mocker.patch.object(demisto, "error")
+
     class Boom(MockClient):
         def list_scripts(self, account_id):
             if account_id == "bad":
