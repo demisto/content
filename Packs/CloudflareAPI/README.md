@@ -102,6 +102,10 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 2.2.9
+
+- Apply the upstream formatter output, so the committed source matches what the contribution pipeline produces and a submission is not failed for a purely cosmetic difference.
+
 ### 2.2.8
 
 - Extend the pack description to name the endpoint families it now covers and the detections it ships. It still described the single audit log collector the pack started with.
