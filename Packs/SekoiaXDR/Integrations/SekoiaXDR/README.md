@@ -816,6 +816,111 @@ Command that performs a HTTP request to Sekoia using the integration authenticat
 
 There is no context output for this command.
 
+### sekoia-xdr-execute-query
+
+***
+Command to create a query run on Sekoia XDR, after this execute "sekoia-xdr-get-query-run" to see the status of the query run and "sekoia-xdr-download-query-result" to retrieve the results.
+
+#### Base Command
+
+`sekoia-xdr-execute-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_definition | Query definition in JSON. | Required | 
+| query_parameters | Query parameters in JSON. | Optional | 
+| query_uuid | Query UUID. | Optional | 
+| parent_uuid | Parent UUID. | Optional | 
+| parent_slug | Parent slug. | Optional | 
+| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional | 
+| community_uuid | Community UUID. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SekoiaXDR.QueryRun.task_id | unknown | Task UUID. | 
+| SekoiaXDR.QueryRun.uuid | unknown | Query Run UUID. | 
+
+
+### sekoia-xdr-get-query-run
+
+***
+Command gets query run status.
+
+#### Base Command
+
+`sekoia-xdr-get-query-run`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_run_uuid | Query run UUID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SekoiaXDR.QueryRun.community_id | unknown | Community UUID. | 
+| SekoiaXDR.QueryRun.created_at | unknown | Created at. | 
+| SekoiaXDR.QueryRun.created_by | unknown | Created by. | 
+| SekoiaXDR.QueryRun.duration | unknown | Duration. | 
+| SekoiaXDR.QueryRun.error | unknown | error. | 
+| SekoiaXDR.QueryRun.parent_slug | unknown | Parent slug. | 
+| SekoiaXDR.QueryRun.parent_type | unknown | Parent type. | 
+| SekoiaXDR.QueryRun.parent_uuid | unknown | Parent UUId. | 
+| SekoiaXDR.QueryRun.status | unknown | Status. | 
+| SekoiaXDR.QueryRun.total | unknown | Total. | 
+
+### sekoia-xdr-download-query-result
+
+***
+Command downloads query result as file.
+
+#### Base Command
+
+`sekoia-xdr-download-query-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_run_uuid | Query run UUID. | Required | 
+| result_format | File format for the result. Possible values are: csv, jsonl. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### sekoia-xdr-run-query
+
+***
+Command to run a query and get its result. This is a combination of 3 commands: sekoia-xdr-execute-query, sekoia-xdr-get-query-run and sekoia-xdr-download-query-result.
+
+#### Base Command
+
+`sekoia-xdr-run-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_definition | Query definition in JSON. | Required | 
+| result_format | File format for the result. Possible values are: csv, jsonl. | Required | 
+| query_parameters | Query parameters in JSON. | Optional | 
+| query_uuid | Query UUID. | Optional | 
+| parent_uuid | Parent UUID. | Optional | 
+| parent_slug | Parent slug. | Optional | 
+| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional | 
+| community_uuid | Community UUID. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Sekoia XDR corresponding events (available from Cortex XSOAR version 6.0.0).

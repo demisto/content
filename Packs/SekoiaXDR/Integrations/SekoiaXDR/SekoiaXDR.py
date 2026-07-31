@@ -270,6 +270,52 @@ class Client(BaseClient):
 
         return self._http_request(method=method, url_suffix=url_suffix, params=params)
 
+    def trigger_query_execution(
+        self,
+        query_definition: dict[str, Any],
+        query_parameters: dict | None = None,
+        query_uuid: str | None = None,
+        parent_uuid: str | None = None,
+        parent_slug: str | None = None,
+        parent_type: str | None = None,
+        community_uuid: str | None = None,
+    ) -> dict[str, Any]:
+        request_params: dict[str, Any] = {"query_definition": query_definition}
+
+        if query_uuid:
+            request_params["query_uuid"] = query_uuid
+
+        if query_parameters:
+            request_params["query_parameters"] = query_parameters
+
+        if parent_uuid:
+            request_params["parent_uuid"] = parent_uuid
+
+        if parent_slug:
+            request_params["parent_slug"] = parent_slug
+
+        if parent_type:
+            request_params["parent_type"] = parent_type
+
+        if community_uuid:
+            request_params["community_uuid"] = community_uuid
+
+        # https://docs.sekoia.com/developer/api/#/investigation/notebooks/execute_query_v1_notebooks_queries_runs_post
+        return self._http_request(method="POST", url_suffix="/v1/notebooks/queries/runs", json_data=request_params)
+
+    def get_query_run_by_uuid(self, query_run_uuid: str) -> dict[str, Any]:
+        # https://docs.sekoia.com/developer/api/#/investigation/notebooks/get_query_run_v1_notebooks_queries_runs__query_run_uuid__get
+        return self._http_request(method="GET", url_suffix=f"/v1/notebooks/queries/runs/{query_run_uuid}")
+
+    def download_query_result(self, query_run_uuid: str, result_format: str) -> Any:
+        # https://docs.sekoia.com/developer/api/#/investigation/notebooks/download_query_run_results_v1_notebooks_queries_runs__query_run_uuid__download_get
+        return self._http_request(
+            method="GET",
+            url_suffix=f"/v1/notebooks/queries/runs/{query_run_uuid}/download",
+            params={"download_format": result_format},
+            resp_type="file",
+        )
+
 
 """ HELPER FUNCTIONS """
 
@@ -1567,6 +1613,142 @@ def http_request_command(client: Client, args: dict[str, Any]) -> CommandResults
     )
 
 
+def trigger_query_execution_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    parent_uuid, parent_slug, parent_type = args.get("parent_uuid"), args.get("parent_slug"), args.get("parent_type")
+    community_uuid, query_uuid = args.get("community_uuid"), args.get("query_uuid")
+
+    try:
+        query_definition = json.loads(args["query_definition"])
+
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"query_definition argument is not a valid JSON: {e}")
+
+    try:
+        query_parameters = json.loads(args["query_parameters"]) if "query_parameters" in args else None
+
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"query_parameters argument is not a valid JSON: {e}")
+
+    result = client.trigger_query_execution(
+        query_uuid=query_uuid,
+        parent_uuid=parent_uuid,
+        parent_slug=parent_slug,
+        parent_type=parent_type,
+        community_uuid=community_uuid,
+        query_definition=query_definition,
+        query_parameters=query_parameters,
+    )
+
+    readable_output = tableToMarkdown("Triggered query execution:", result)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="SekoiaXDR.QueryRun",
+        outputs_key_field="uuid",
+        outputs=result,
+    )
+
+
+def get_query_run_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    query_run_uuid = args["query_run_uuid"]
+    status = client.get_query_run_by_uuid(query_run_uuid=query_run_uuid)
+
+    readable_output = tableToMarkdown(
+        f"Status of the query run {query_run_uuid}:",
+        status,
+        headers=[
+            "community_uuid",
+            "created_at",
+            "created_by",
+            "created_by_type",
+            "duration",
+            "error",
+            "parent_slug",
+            "parent_type",
+            "parent_uuid",
+            "status",
+            "total",
+        ],
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="SekoiaXDR.QueryRun",
+        outputs=status,
+    )
+
+
+def download_query_result_command(client: Client, args: dict[str, Any]) -> dict[str, Any]:
+    query_run_uuid = args["query_run_uuid"]
+    result_format = args["result_format"]
+
+    if result_format not in ("jsonl", "csv"):
+        raise DemistoException("result_format should be either 'jsonl' or 'csv'")
+
+    filename = "result.csv" if result_format == "csv" else "result.jl"
+    result = client.download_query_result(query_run_uuid=query_run_uuid, result_format=result_format)
+
+    return fileResult(
+        filename=filename,
+        data=result.content,
+    )
+
+
+@polling_function(name="sekoia-xdr-run-query", requires_polling_arg=False)
+def run_query_command(args: dict[str, Any], client: Client) -> PollResult:
+    parent_uuid, parent_slug, parent_type = args.get("parent_uuid"), args.get("parent_slug"), args.get("parent_type")
+    community_uuid, query_uuid = args.get("community_uuid"), args.get("query_uuid")
+    result_format = args["result_format"]
+
+    try:
+        query_definition = json.loads(args["query_definition"])
+
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"query_definition argument is not a valid JSON: {e}")
+
+    try:
+        query_parameters = json.loads(args["query_parameters"]) if "query_parameters" in args else None
+
+    except json.JSONDecodeError as e:
+        raise DemistoException(f"query_parameters argument is not a valid JSON: {e}")
+
+    if not (query_run_uuid := args.get("query_run_uuid")):
+        query_run_result = client.trigger_query_execution(
+            query_uuid=query_uuid,
+            parent_uuid=parent_uuid,
+            parent_slug=parent_slug,
+            parent_type=parent_type,
+            community_uuid=community_uuid,
+            query_definition=query_definition,
+            query_parameters=query_parameters,
+        )
+        query_run_uuid = query_run_result["uuid"]
+
+    query_run_status = client.get_query_run_by_uuid(query_run_uuid=query_run_uuid)
+    finished_status = query_run_status["status"] == "finished"
+
+    if not finished_status:
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run=(args | {"query_run_uuid": query_run_uuid}),
+            partial_result=CommandResults(
+                readable_output=f"Query is still running. Current state: {query_run_status['status']}."
+            ),
+        )
+
+    filename = "result.csv" if result_format == "csv" else "result.jl"
+    download_result = client.download_query_result(query_run_uuid=query_run_uuid, result_format=result_format)
+
+    return PollResult(
+        response=fileResult(
+            filename=filename,
+            data=download_result.content,
+        ),
+        continue_to_poll=False,
+    )
+
+
 def test_module(client: Client) -> str:
     """
     Tests API connectivity and authentication'
@@ -1710,6 +1892,14 @@ def main() -> None:
             return_results(get_kill_chain_command(client, args))
         elif command == "sekoia-xdr-http-request":
             return_results(http_request_command(client, args))
+        elif command == "sekoia-xdr-execute-query":
+            return_results(trigger_query_execution_command(client, args))
+        elif command == "sekoia-xdr-get-query-run":
+            return_results(get_query_run_command(client, args))
+        elif command == "sekoia-xdr-download-query-result":
+            return_results(download_query_result_command(client, args))
+        elif command == "sekoia-xdr-run-query":
+            return_results(run_query_command(args, client))
         elif command == "get-remote-data":
             return_results(
                 get_remote_data_command(
