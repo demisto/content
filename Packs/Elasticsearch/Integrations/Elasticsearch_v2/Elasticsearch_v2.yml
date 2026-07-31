@@ -151,11 +151,25 @@ configuration:
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  required: false
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Space ID
   name: space_id
   type: 0
@@ -2230,7 +2244,7 @@ script:
     - contextPath: Elasticsearch.Kibana.ValueListItem.created_at
       description: The creation date of the value list item.
       type: Date
-  dockerimage: demisto/elasticsearch:1.0.0.8425368
+  dockerimage: demisto/elasticsearch:1.0.0.11195141
   isfetch: true
   runonce: false
   script: '-'
