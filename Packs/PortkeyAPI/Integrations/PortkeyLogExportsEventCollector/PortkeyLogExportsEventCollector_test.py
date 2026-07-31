@@ -237,6 +237,7 @@ def test_a_failing_workspace_keeps_its_state_and_does_not_block_others(mocker):
     # harness treats as stdout and fails the run on. Production behaviour is
     # correct and stays as it is; the test simply must not let it leak.
     mocker.patch.object(demisto, "error")
+
     class Boom(MockClient):
         def create_export(self, workspace_slug, start, end, requested_data):
             if workspace_slug == "ws-bad":
