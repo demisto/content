@@ -108,11 +108,13 @@ def test_token_without_expiry_is_counted():
 
 
 def test_expired_revoked_and_unused_tokens_are_counted():
-    got = collector.summarise_tokens([
-        _token("a", hasExpired=True),
-        _token("b", isRevoked=True),
-        _token("c", lastUsedAt="2026-07-02T00:00:00Z"),
-    ])
+    got = collector.summarise_tokens(
+        [
+            _token("a", hasExpired=True),
+            _token("b", isRevoked=True),
+            _token("c", lastUsedAt="2026-07-02T00:00:00Z"),
+        ]
+    )
     assert got["tokens_expired"] == 1
     assert got["tokens_revoked"] == 1
     assert got["tokens_never_used"] == 2

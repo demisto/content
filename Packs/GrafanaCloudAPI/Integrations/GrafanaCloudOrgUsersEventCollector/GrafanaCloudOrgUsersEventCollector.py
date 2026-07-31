@@ -105,11 +105,7 @@ def fetch_org_users(client: Client, max_fetch: int) -> list[dict]:
 
     now = _now_rfc3339()
     instance_url = client._base_url  # noqa: SLF001 - the configured instance identifies the tenant
-    events = [
-        build_event(u, instance_url, now)
-        for u in users[:max_fetch]
-        if isinstance(u, dict) and u.get("userId") is not None
-    ]
+    events = [build_event(u, instance_url, now) for u in users[:max_fetch] if isinstance(u, dict) and u.get("userId") is not None]
     demisto.debug(f"Grafana: fetched {len(events)} organisation users")
     return events
 

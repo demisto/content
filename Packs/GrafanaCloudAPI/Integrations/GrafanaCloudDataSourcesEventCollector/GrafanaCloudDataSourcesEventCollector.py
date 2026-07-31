@@ -129,11 +129,7 @@ def fetch_datasources(client: Client, max_fetch: int) -> list[dict]:
 
     now = _now_rfc3339()
     instance_url = client._base_url  # noqa: SLF001 - the configured instance identifies the tenant
-    events = [
-        build_event(ds, instance_url, now)
-        for ds in datasources[:max_fetch]
-        if isinstance(ds, dict) and ds.get("uid")
-    ]
+    events = [build_event(ds, instance_url, now) for ds in datasources[:max_fetch] if isinstance(ds, dict) and ds.get("uid")]
     demisto.debug(f"Grafana: fetched {len(events)} data sources")
     return events
 

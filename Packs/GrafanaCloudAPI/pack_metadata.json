@@ -2,7 +2,7 @@
   "name": "Grafana Cloud",
   "description": "Collects Grafana Cloud service accounts, data sources and organisation users into the Cortex Platform, maps them into the Cortex XDM data model and detects a new service account holding a token that never expires, by GoCortexIO",
   "support": "community",
-  "currentVersion": "1.0.11",
+  "currentVersion": "1.0.12",
   "author": "GoCortexIO",
   "url": "",
   "email": "",

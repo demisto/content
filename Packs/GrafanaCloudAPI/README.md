@@ -78,6 +78,10 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 1.0.12
+
+- Apply the upstream formatter output, so the committed source matches what the contribution pipeline produces and a submission is not failed for a purely cosmetic difference.
+
 ### 1.0.11
 
 - Replace the scaffold default pack description with one that names what is collected, what is mapped into the Cortex XDM data model, and what the pack detects.
