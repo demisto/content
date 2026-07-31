@@ -233,7 +233,7 @@ def fetch_events(
         demisto.debug(f"{len(all_events_list)} events fetched")
         pagination_needed, next_page_value = is_pagination_needed(raw_events, pagination_logic)
         if pagination_needed:
-            request_json = {pagination_logic.pagination_field_name: next_page_value}
+            request_json = {".".join(pagination_logic.pagination_field_name): next_page_value}
             request_data = RequestData(request_data.request_data, request_json, request_data.query_params)
 
     # endregion
