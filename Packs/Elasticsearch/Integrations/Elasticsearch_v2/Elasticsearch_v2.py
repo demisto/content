@@ -1412,6 +1412,27 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     return response
 
 
+def build_fetch_extra_params(fields_list: list) -> dict:
+    """Builds the extra request-body parameters for the fetch Search request.
+
+    The "Fields to Fetch" parameter is optional. When it is left blank,
+    ``fields_list`` is an empty list and the "fields" key must be omitted from the
+    request body entirely. Sending ``"fields": []`` causes Elasticsearch to fail with:
+    ``ParsingException 400 'Unknown key for a START_ARRAY in [fields]'``.
+
+    Args:
+        fields_list (list): The list of fields to fetch (may be empty).
+
+    Returns:
+        dict: The kwargs to pass to ``Search.extra``. Always requests ``_source``,
+            and includes ``fields`` only when ``fields_list`` is non-empty.
+    """
+    extra_params: dict = {"_source": True}
+    if fields_list:
+        extra_params["fields"] = fields_list
+    return extra_params
+
+
 def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("time") or FETCH_TIME
@@ -1429,7 +1450,10 @@ def fetch_incidents(proxies):
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
-        search = search.extra(fields=FIELDS_LIST, _source=True)
+        # Only add the "fields" key to the request body when there are fields to fetch.
+        # Passing an empty list results in "fields": [] in the body, which Elasticsearch
+        # rejects with: ParsingException 400 'Unknown key for a START_ARRAY in [fields]'.
+        search = search.extra(**build_fetch_extra_params(FIELDS_LIST))
 
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
