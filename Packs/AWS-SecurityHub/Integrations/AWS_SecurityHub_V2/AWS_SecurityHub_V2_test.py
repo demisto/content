@@ -24,7 +24,6 @@ from AWS_SecurityHub_V2 import (
     parse_filters,
     parse_finding_identifiers,
     parse_tags,
-    parse,
     update_remote_system_command,
 )
 from CommonServerPython import DemistoException, IncidentStatus
@@ -789,7 +788,7 @@ def test_fetch_incidents_first_run_builds_filters_from_first_fetch(mocker):
 
     # Pin the first_fetch parse so the window Start is deterministic.
     fixed_start = datetime(2024, 3, 1, 0, 0, 0, tzinfo=UTC)
-    mocker.patch(__name__ + ".parse", return_value=fixed_start)
+    mocker.patch("AWS_SecurityHub_V2.parse", return_value=fixed_start)
 
     mock_client = mocker.Mock()
     mock_client.get_findings_v2.return_value = {
