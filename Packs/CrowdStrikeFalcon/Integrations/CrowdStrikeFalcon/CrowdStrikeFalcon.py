@@ -11,6 +11,7 @@ from collections.abc import Callable
 from enum import Enum, IntEnum
 from threading import Timer
 from typing import Any
+import traceback
 import urllib.parse
 
 import requests
@@ -4842,7 +4843,8 @@ async def fetch_vulnerabilities_by_severity(
                 first_send_error = first_send_error or e
                 log_falcon_assets(
                     f"[{severity}] Background vulnerability send task failed; "
-                    f"{items_attempted} records NOT counted and skipped (continuing with the next pages): {e}",
+                    f"{items_attempted} records NOT counted and skipped (continuing with the next pages): {e}\n"
+                    f"{traceback.format_exc()}",
                     "error",
                 )
 
@@ -5454,8 +5456,9 @@ def long_running_spotlight_execution():
         try:
             asyncio.run(fetch_spotlight_assets())
         except Exception as e:  # noqa: BLE001 - a single bad cycle must not kill the container
-            demisto.error(f"Long-running Spotlight fetch cycle failed: {e}")
-            log_falcon_assets(f"Long-running Spotlight fetch cycle failed: {e}", "error")
+            error_message = f"Long-running Spotlight fetch cycle failed: {e}\n{traceback.format_exc()}"
+            demisto.error(error_message)
+            log_falcon_assets(error_message, "error")
 
         elapsed = time.monotonic() - cycle_start
         # Interval is a period between cycle starts, not a gap between cycles: a 3-hour fetch on a

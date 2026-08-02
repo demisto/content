@@ -414,11 +414,11 @@ configuration:
   - "xsiam"
   - "exposure_management"
 - additionalinfo: |-
-    Runs the Spotlight vulnerabilities fetch in a long-running container instead of on the assets fetch schedule.
-    Use this when a full Spotlight fetch takes longer than the Assets Fetch Interval, so it is repeatedly interrupted.
-    When enabled, do not enable the assets fetch as well - only one of the two should be active.
+    Whether to run the Spotlight vulnerabilities fetch in a long-running container instead of on the assets fetch schedule.
+    Use this when a full Spotlight fetch takes longer than the Assets Fetch Interval and is repeatedly interrupted.
+    When enabled, do not enable the assets fetch as well; only one of the two should be active per instance.
     This mode fetches Spotlight vulnerabilities ONLY, regardless of the Asset types to fetch selection.
-    CNAPP Alerts are not collected in this mode; keep them on the regular assets fetch.
+    CNAPP Alerts are not collected in this mode; to collect them, configure a separate integration instance using the regular assets fetch.
     A fetch cycle starts every 24 hours. If a cycle runs longer than 24 hours, the next one starts as soon as it finishes.
   display: Long running instance for Spotlight vulnerabilities
   name: longRunning
@@ -429,6 +429,9 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
