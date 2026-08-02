@@ -545,8 +545,8 @@ function listFilePublicLinks(args) {
     if (!id) {
         throw "The 'id' argument is required.";
     }
-    // Escape single quotes to avoid breaking out of the SOQL string literal.
-    var safeId = String(id).replace(/'/g, "\\'");
+    // Escape backslashes first, then single quotes, to avoid breaking out of the SOQL string literal.
+    var safeId = String(id).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
     var records = queryObjects(['Id', 'ContentDocumentId', 'Name', 'DistributionPublicUrl'], 'ContentDistribution', "ContentDocumentId='" + safeId + "'").records || [];
     var distributions = [];
     for (var i = 0; i < records.length; i++) {
