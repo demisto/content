@@ -3277,6 +3277,15 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
         severity = severity_map.get(str(severity_str).lower(), 0)
 
         mirror_direction = MIRROR_DIRECTION_MAP.get(MIRROR_DIRECTION)
+        mirror_instance = demisto.integrationInstance()
+
+        hit.update(
+            {
+                "mirror_id": alert_uuid,
+                "mirror_instance": mirror_instance,
+                "mirror_direction": mirror_direction,
+            }
+        )
 
         inc: Dict[str, Any] = {
             "name": f"Elasticsearch: {index} {alert_uuid}",
@@ -3284,7 +3293,7 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
             "type": INCIDENT_TYPE_SECURITY_ALERT,
             "severity": severity,
             "dbotMirrorId": alert_uuid,
-            "dbotMirrorInstance": demisto.integrationInstance(),
+            "dbotMirrorInstance": mirror_instance,
             "dbotMirrorDirection": mirror_direction,
         }
         if occurred:
@@ -3370,10 +3379,21 @@ def fetch_cases(proxies) -> List[Dict[str, Any]]:
         severity = severity_map.get(str(severity_str).lower(), 0)
 
         mirror_direction = MIRROR_DIRECTION_MAP.get(MIRROR_DIRECTION)
+        mirror_instance = demisto.integrationInstance()
 
         raw_data = dict(case)
         if alerts_data:
             raw_data["_alerts"] = alerts_data
+
+        # See the comment in fetch_security_alerts - the mirror values must also be inside
+        # rawJSON so the incoming mapper can map them and let the server resolve the instance ID.
+        raw_data.update(
+            {
+                "mirror_id": case_id,
+                "mirror_instance": mirror_instance,
+                "mirror_direction": mirror_direction,
+            }
+        )
 
         inc: Dict[str, Any] = {
             "name": f"Elasticsearch: {case.get('title', case_id)}",
@@ -3381,7 +3401,7 @@ def fetch_cases(proxies) -> List[Dict[str, Any]]:
             "type": INCIDENT_TYPE_CASE,
             "severity": severity,
             "dbotMirrorId": case_id,
-            "dbotMirrorInstance": demisto.integrationInstance(),
+            "dbotMirrorInstance": mirror_instance,
             "dbotMirrorDirection": mirror_direction,
         }
         if updated_at_str:
@@ -3513,6 +3533,12 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                 # Return an error with "API rate limit" so the sync loop restarts from this incident.
                 return_error(f"API rate limit reached while fetching case {remote_id}. Error: {e}")
             demisto.debug(f"Failed to fetch case {remote_id}: {e}")
+
+    # Self-healing: re-assert the mirror instance on every incoming sync so an incident that was
+    # created with a bad/empty value corrects itself. Only when there is already something to
+    # update - populating an otherwise-empty dict would force spurious incident updates.
+    if updated_incident:
+        updated_incident["dbotMirrorInstance"] = demisto.integrationInstance()
 
     return GetRemoteDataResponse(mirrored_object=updated_incident, entries=entries)
 

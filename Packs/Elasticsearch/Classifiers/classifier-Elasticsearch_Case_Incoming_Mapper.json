@@ -6,6 +6,18 @@
         "Elasticsearch Case": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                },
                 "name": {
                     "simple": "title"
                 },

@@ -3305,3 +3305,150 @@ class TestBuildFetchExtraParams:
         extra_params = Elasticsearch_v2.build_fetch_extra_params(["field_a", "field_b"])
 
         assert extra_params == {"_source": True, "fields": ["field_a", "field_b"]}
+
+
+class TestMirrorFieldsInRawJson:
+    """Regression tests for the "Mirroring integration does not exist" server error.
+
+    The server stores dbotMirrorInstance as an internal module-instance ID, and only resolves
+    the instance *name* to that ID for values that pass through the incoming mapper. Values set
+    only as top-level keys on the incident dict bypass the mapper and are stored verbatim, so the
+    later lookup fails. The mirror values must therefore also be present inside rawJSON, which is
+    the source the incoming mappers read from ("mirror_id"/"mirror_instance"/"mirror_direction").
+    """
+
+    def test_security_alert_rawjson_contains_mirror_fields(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "MIRROR_DIRECTION", "Incoming And Outgoing")
+        mocker.patch.object(Elasticsearch_v2, "RAW_QUERY", None)
+        mocker.patch.object(Elasticsearch_v2, "MAP_LABELS", False)
+        mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder", return_value=MagicMock())
+        mocker.patch.object(demisto, "getLastRun", return_value={"alert_time": "2019-08-29T14:00:00Z"})
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "integrationInstance", return_value="es_instance_1")
+
+        hit = {
+            "_index": ".alerts-security.alerts-default",
+            "_id": "hit-1",
+            "_source": {
+                "@timestamp": "2019-08-29T14:45:00.123Z",
+                "kibana": {"alert": {"uuid": "alert-uuid-1", "severity": "high"}},
+            },
+        }
+        mocker.patch.object(Elasticsearch_v2.Search, "execute", return_value=MagicMock(to_dict=lambda: {"hits": {"hits": [hit]}}))
+        mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", Elasticsearch_v2.ELASTICSEARCH_V8)
+
+        incidents = Elasticsearch_v2.fetch_security_alerts({})
+
+        assert len(incidents) == 1
+        raw = json.loads(incidents[0]["rawJSON"])
+        # The mapper reads these - without them dbotMirrorInstance is never resolved to an ID.
+        assert raw["mirror_instance"] == "es_instance_1"
+        assert raw["mirror_direction"] == "Both"
+        assert raw["mirror_id"] == "alert-uuid-1"
+        # The top-level keys are kept as the safe fallback.
+        assert incidents[0]["dbotMirrorInstance"] == "es_instance_1"
+        assert incidents[0]["dbotMirrorDirection"] == "Both"
+        assert incidents[0]["dbotMirrorId"] == "alert-uuid-1"
+
+    def test_case_rawjson_contains_mirror_fields(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "MIRROR_DIRECTION", "Incoming")
+        mocker.patch.object(Elasticsearch_v2, "FETCH_SEVERITY", [])
+        mocker.patch.object(Elasticsearch_v2, "FETCH_STATUS", ["open"])
+        mocker.patch.object(Elasticsearch_v2, "FETCH_ALERTS_FOR_CASE", False)
+        mocker.patch.object(demisto, "getLastRun", return_value={"case_time": "2019-08-29T14:00:00Z"})
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "integrationInstance", return_value="es_instance_1")
+
+        case = {
+            "id": "case-id-1",
+            "title": "Suspicious activity",
+            "severity": "high",
+            "updated_at": "2019-08-29T15:00:00.000Z",
+            "created_at": "2019-08-29T14:50:00.000Z",
+        }
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"cases": [case]})
+
+        incidents = Elasticsearch_v2.fetch_cases({})
+
+        assert len(incidents) == 1
+        raw = json.loads(incidents[0]["rawJSON"])
+        assert raw["mirror_instance"] == "es_instance_1"
+        assert raw["mirror_direction"] == "In"
+        assert raw["mirror_id"] == "case-id-1"
+        assert incidents[0]["dbotMirrorInstance"] == "es_instance_1"
+        assert incidents[0]["dbotMirrorDirection"] == "In"
+        assert incidents[0]["dbotMirrorId"] == "case-id-1"
+
+    def test_get_remote_data_reasserts_mirror_instance(self, mocker):
+        """A non-empty mirrored object must re-assert the instance so bad values self-correct."""
+        import Elasticsearch_v2
+
+        mocker.patch.object(demisto, "integrationInstance", return_value="es_instance_1")
+        mocker.patch.object(demisto, "incident", return_value={"type": Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT})
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "kibana_http_request",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_id": "hit-1",
+                            "_source": {"kibana": {"alert": {"workflow_status": "open", "reason": "test"}}},
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-uuid-1", "lastUpdate": "2019-08-29T14:00:00Z"}, {})
+
+        assert response.mirrored_object["dbotMirrorInstance"] == "es_instance_1"
+
+    def test_get_remote_data_does_not_populate_empty_object(self, mocker):
+        """An empty mirrored object must stay empty, otherwise every sync forces a spurious update."""
+        import Elasticsearch_v2
+
+        mocker.patch.object(demisto, "integrationInstance", return_value="es_instance_1")
+        mocker.patch.object(demisto, "incident", return_value={"type": Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT})
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"hits": {"hits": []}})
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-uuid-1", "lastUpdate": "2019-08-29T14:00:00Z"}, {})
+
+        assert response.mirrored_object == {}
+
+
+class TestIncomingMappersContainMirrorFields:
+    """The incoming mappers must map the mirror trio, otherwise dbotMirrorInstance never reaches
+    SetIncidentField and the server cannot resolve the instance name to its internal ID."""
+
+    @pytest.mark.parametrize(
+        "mapper_file, incident_type, mirror_id_source",
+        [
+            (
+                "../../Classifiers/classifier-Elasticsearch_Security_Alert_Incoming_Mapper.json",
+                "Elasticsearch Security Alert",
+                "mirror_id",
+            ),
+            (
+                "../../Classifiers/classifier-Elasticsearch_Case_Incoming_Mapper.json",
+                "Elasticsearch Case",
+                "mirror_id",
+            ),
+        ],
+    )
+    def test_mapper_maps_mirror_fields(self, mapper_file, incident_type, mirror_id_source):
+        import os
+
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), mapper_file)
+        with open(path) as f:
+            mapper = json.load(f)
+
+        internal_mapping = mapper["mapping"][incident_type]["internalMapping"]
+
+        assert internal_mapping["dbotMirrorInstance"]["simple"] == "mirror_instance"
+        assert internal_mapping["dbotMirrorDirection"]["simple"] == "mirror_direction"
+        assert internal_mapping["dbotMirrorId"]["simple"] == mirror_id_source

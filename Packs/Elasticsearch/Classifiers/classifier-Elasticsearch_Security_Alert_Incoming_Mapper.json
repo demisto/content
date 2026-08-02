@@ -6,6 +6,18 @@
         "Elasticsearch Security Alert": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "mirror_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                },
                 "Elasticsearch Workflow Alert Status": {
                     "simple": "kibana.alert.workflow_status"
                 },
