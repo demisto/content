@@ -1736,11 +1736,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AzureSentinel.ThreatIndicator.DisplayName
+              simple: AzureSentinel.ThreatIndicator.Values
             iscontext: true
           right:
             value:
-              simple: NewDisplayName
+              simple: domain.dot
     view: |-
       {
         "position": {
