@@ -1782,18 +1782,44 @@ Soft-deletes a file (ContentDocument), moving it to the Recycle Bin and cascadin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The Salesforce sObject type. Defaults to ContentDocument. | Optional |
-| id | The ContentDocument record ID to delete. | Required |
-| ignore_not_found | If true, a 404/NOT_FOUND response is treated as success. Defaults to true. Possible values are: true, false. | Optional |
+| type | The Salesforce sObject type. Default is ContentDocument. | Optional | 
+| id | The ContentDocument record ID to delete. | Required | 
+| ignore_not_found | Whether to treat a 404/NOT_FOUND response as success. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Salesforce.Remediation.Action | string | The remediation action performed. |
-| Salesforce.Remediation.ObjectType | string | The Salesforce sObject type acted on. |
-| Salesforce.Remediation.Id | string | The record ID acted on. |
-| Salesforce.Remediation.Status | string | The result status of the remediation action. |
+| SalesForce.Remediation.Action | string | The remediation action performed. | 
+| SalesForce.Remediation.ObjectType | string | The Salesforce sObject type acted on. | 
+| SalesForce.Remediation.Id | string | The record ID acted on. | 
+| SalesForce.Remediation.Status | string | The result status of the remediation action. | 
+
+#### Command example
+
+```!salesforce-file-delete id=069dn000007JlATAA0```
+
+#### Context Example
+
+```json
+{
+    "SalesForce": {
+        "Remediation": {
+            "Action": "Delete File",
+            "Id": "069dn000007JlATAA0",
+            "ObjectType": "ContentDocument",
+            "Status": "Deleted"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Salesforce Remediation - Delete File
+>|Action|Id|ObjectType|Status|
+>|---|---|---|---|
+>| Delete File | 069dn000007JlATAA0 | ContentDocument | Deleted |
 
 ### salesforce-knowledge-article-archive
 
@@ -1808,18 +1834,44 @@ Archives a Knowledge article (non-destructive). Sets PublishStatus to Archived v
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The Salesforce sObject type. Defaults to KnowledgeArticleVersion. | Optional |
-| id | The Knowledge article version ID (the __kav record ID, starting with 'ka') to archive. | Required |
-| ignore_not_found | If true, a 404/NOT_FOUND response is treated as success. Defaults to true. Possible values are: true, false. | Optional |
+| type | The Salesforce sObject type. Default is KnowledgeArticleVersion. | Optional | 
+| id | The Knowledge article version ID (the __kav record ID, starting with 'ka') to archive. | Required | 
+| ignore_not_found | Whether to treat a 404/NOT_FOUND response as success. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Salesforce.Remediation.Action | string | The remediation action performed. |
-| Salesforce.Remediation.ObjectType | string | The Salesforce sObject type acted on. |
-| Salesforce.Remediation.Id | string | The record ID acted on. |
-| Salesforce.Remediation.Status | string | The result status of the remediation action. |
+| SalesForce.Remediation.Action | string | The remediation action performed. | 
+| SalesForce.Remediation.ObjectType | string | The Salesforce sObject type acted on. | 
+| SalesForce.Remediation.Id | string | The record ID acted on. | 
+| SalesForce.Remediation.Status | string | The result status of the remediation action. | 
+
+#### Command example
+
+```!salesforce-knowledge-article-archive id=ka1dn0000001ZwbAAE```
+
+#### Context Example
+
+```json
+{
+    "SalesForce": {
+        "Remediation": {
+            "Action": "Archive Knowledge Article",
+            "Id": "ka1dn0000001ZwbAAE",
+            "ObjectType": "KnowledgeArticleVersion",
+            "Status": "Archived"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Salesforce Remediation - Archive Knowledge Article
+>|Action|Id|ObjectType|Status|
+>|---|---|---|---|
+>| Archive Knowledge Article | ka1dn0000001ZwbAAE | KnowledgeArticleVersion | Archived |
 
 ### salesforce-file-public-link-list
 
@@ -1834,16 +1886,42 @@ Lists all public links (ContentDistribution records) for a given ContentDocument
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ContentDocument record ID whose public links (ContentDistribution rows) should be listed. | Required |
+| id | The ContentDocument record ID whose public links (ContentDistribution rows) should be listed. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Salesforce.ContentDistribution.Id | string | The ContentDistribution record ID (use with salesforce-file-public-link-remove). |
-| Salesforce.ContentDistribution.ContentDocumentId | string | The parent ContentDocument ID. |
-| Salesforce.ContentDistribution.Name | string | The name of the content distribution. |
-| Salesforce.ContentDistribution.PublicUrl | string | The public distribution URL. |
+| SalesForce.ContentDistribution.Id | string | The ContentDistribution record ID \(use with salesforce-file-public-link-remove\). | 
+| SalesForce.ContentDistribution.ContentDocumentId | string | The parent ContentDocument ID. | 
+| SalesForce.ContentDistribution.Name | string | The name of the content distribution. | 
+| SalesForce.ContentDistribution.PublicUrl | string | The public distribution URL. | 
+
+#### Command example
+
+```!salesforce-file-public-link-list id=069dn000007PpOIAA0```
+
+#### Context Example
+
+```json
+{
+    "SalesForce": {
+        "ContentDistribution": {
+            "ContentDocumentId": "069dn000007PpOIAA0",
+            "Id": "05Ddn000000VfWjEAK",
+            "Name": "cortex-test-file-01 7/28/2026",
+            "PublicUrl": "https://paloaltonetworks-sahil.sandbox.my.salesforce.com/sfc/p/7X000001T5lm/a/dn000000VfWj/TExjFQ7nttSYbbnXER8CaxGLqYDmVhzw2LEe1jg9_Vo"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Salesforce File Public Links (ContentDistribution) for 069dn000007PpOIAA0
+>|ContentDocumentId|Id|Name|PublicUrl|
+>|---|---|---|---|
+>| 069dn000007PpOIAA0 | 05Ddn000000VfWjEAK | cortex-test-file-01 7/28/2026 | https://paloaltonetworks-sahil.sandbox.my.salesforce.com/sfc/p/7X000001T5lm/a/dn000000VfWj/TExjFQ7nttSYbbnXER8CaxGLqYDmVhzw2LEe1jg9_Vo |
 
 ### salesforce-file-public-link-remove
 
@@ -1858,18 +1936,44 @@ Removes a file public link by deleting a single ContentDistribution record. The 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The Salesforce sObject type. Defaults to ContentDistribution. | Optional |
-| id | The ContentDistribution record ID to delete (severs the public link). Use salesforce-file-public-link-list to obtain distribution IDs for a ContentDocument. | Required |
-| ignore_not_found | If true, a 404/NOT_FOUND response is treated as success. Defaults to true. Possible values are: true, false. | Optional |
+| type | The Salesforce sObject type. Default is ContentDistribution. | Optional | 
+| id | The ContentDistribution record ID to delete (severs the public link). Use salesforce-file-public-link-list to obtain distribution IDs for a ContentDocument. | Required | 
+| ignore_not_found | Whether to treat a 404/NOT_FOUND response as success. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Salesforce.Remediation.Action | string | The remediation action performed. |
-| Salesforce.Remediation.ObjectType | string | The Salesforce sObject type acted on. |
-| Salesforce.Remediation.Id | string | The ContentDistribution record ID acted on. |
-| Salesforce.Remediation.Status | string | The result status of the remediation action. |
+| SalesForce.Remediation.Action | string | The remediation action performed. | 
+| SalesForce.Remediation.ObjectType | string | The Salesforce sObject type acted on. | 
+| SalesForce.Remediation.Id | string | The ContentDistribution record ID acted on. | 
+| SalesForce.Remediation.Status | string | The result status of the remediation action. | 
+
+#### Command example
+
+```!salesforce-file-public-link-remove id=05Ddn000000VfWjEAK```
+
+#### Context Example
+
+```json
+{
+    "SalesForce": {
+        "Remediation": {
+            "Action": "Remove File Public Link",
+            "Id": "05Ddn000000VfWjEAK",
+            "ObjectType": "ContentDistribution",
+            "Status": "Deleted"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Salesforce Remediation - Remove File Public Link
+>|Action|Id|ObjectType|Status|
+>|---|---|---|---|
+>| Remove File Public Link | 05Ddn000000VfWjEAK | ContentDistribution | Deleted |
 
 ### salesforce-knowledge-article-draft-create
 
@@ -1884,18 +1988,46 @@ Moves a published Knowledge article to Draft using the standard createDraftFromO
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The Salesforce sObject type. Defaults to KnowledgeArticleVersion. | Optional |
-| id | The Knowledge article ID (KnowledgeArticleId, starting with 'kA') or article version ID (starting with 'ka'). | Required |
-| unpublish | If true (default), archives the current online version (removing it from public visibility) and creates a new draft. If false, keeps the article online and creates an editable draft alongside it. Possible values are: true, false. | Optional |
-| ignore_not_found | If true, a 404/NOT_FOUND response is treated as success. Defaults to true. Possible values are: true, false. | Optional |
+| type | The Salesforce sObject type. Default is KnowledgeArticleVersion. | Optional | 
+| id | The Knowledge article ID (KnowledgeArticleId, starting with 'kA') or article version ID (starting with 'ka'). Used with the standard createDraftFromOnlineKnowledgeArticle action. | Required | 
+| unpublish | Whether to archive the current online version (removing it from public visibility) and create a new draft. If false, keeps the article online and creates an editable draft alongside it. Possible values are: true, false. Default is true. | Optional | 
+| ignore_not_found | Whether to treat a 404/NOT_FOUND response as success. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Salesforce.Remediation.Action | string | The remediation action performed. |
-| Salesforce.Remediation.ObjectType | string | The Salesforce sObject type acted on. |
-| Salesforce.Remediation.Id | string | The record ID acted on. |
-| Salesforce.Remediation.Status | string | The result status of the remediation action. |
-| Salesforce.Remediation.Unpublished | boolean | Whether the online version was unpublished (removed from public visibility). |
-| Salesforce.Remediation.DraftVersionId | string | The ID of the newly created draft article version. |
+| SalesForce.Remediation.Action | string | The remediation action performed. | 
+| SalesForce.Remediation.ObjectType | string | The Salesforce sObject type acted on. | 
+| SalesForce.Remediation.Id | string | The record ID acted on. | 
+| SalesForce.Remediation.Status | string | The result status of the remediation action. | 
+| SalesForce.Remediation.Unpublished | boolean | Whether the online version was unpublished \(removed from public visibility\). | 
+| SalesForce.Remediation.DraftVersionId | string | The ID of the newly created draft article version. | 
+
+#### Command example
+
+```!salesforce-knowledge-article-draft-create id=ka1dn0000001ZyDAAU unpublish=true```
+
+#### Context Example
+
+```json
+{
+    "SalesForce": {
+        "Remediation": {
+            "Action": "Draft Knowledge Article",
+            "DraftVersionId": "ka1dn0000001ZzpAAE",
+            "Id": "ka1dn0000001ZyDAAU",
+            "ObjectType": "KnowledgeArticleVersion",
+            "Status": "Unpublished (Draft created)",
+            "Unpublished": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Salesforce Remediation - Draft Knowledge Article
+>|Action|DraftVersionId|Id|ObjectType|Status|Unpublished|
+>|---|---|---|---|---|---|
+>| Draft Knowledge Article | ka1dn0000001ZzpAAE | ka1dn0000001ZyDAAU | KnowledgeArticleVersion | Unpublished (Draft created) | true |
