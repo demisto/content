@@ -1,16 +1,23 @@
 name: Cloudflare - Bulk DNS Record Deletion - by GoCortexIO
-description: Detects a human or API-token actor deleting many distinct Cloudflare DNS records in a short window, a destructive or service-disrupting action. Cloudflare's own system actor is excluded, as it deletes and recreates records routinely during zone synchronisation.
+description: Detects an actor deleting many distinct Cloudflare DNS records in a short window, a destructive or service-disrupting action. Machine and automation identities are included deliberately, since bulk deletion by an automation credential is the shape a stolen API token produces.
 severity: SEV_040_HIGH
 xql_query: |-
-  // References
-  //   https://attack.mitre.org/techniques/T1565/
-  //   https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/
+  // PROVENANCE
+  //   Pattern:   destructive change to authoritative DNS.
+  //   Basis:     partial. Published work covers records being REPOINTED and certificates
+  //              issued off the redirected validation path, a different motive. It supports
+  //              watching the DNS change surface, not deletion specifically.
+  //              https://labs.watchtowr.com/we-spent-20-to-achieve-rce-and-accidentally-became-the-admins-of-mobi/
+  //   ATT&CK:    T1565, T1584.001
+  //   Threshold: chosen operating point, not measured.
+  //   Note:      machine identities are NOT excluded. Bulk deletion by an automation
+  //              credential is the shape a stolen API token produces. Exclude noisy accounts
+  //              in the product, where the exclusion stays visible.
   datamodel dataset = cloudflare_account_audit_raw
   | alter event_verb = lowercase(to_string(xdm.event.original_event_type)),
           actor_class = coalesce(to_string(xdm.source.user.identity_type), "UNKNOWN")
   | filter (event_verb contains "del" or event_verb contains "remove")
       and xdm.target.resource.type = "dns.record"
-      and actor_class != "MACHINE"
   | comp count_distinct(xdm.target.resource.id) as deleted_record_count,
          values(xdm.target.resource.id) as deleted_record_ids,
          count() as delete_event_count,
@@ -23,7 +30,7 @@ xql_query: |-
 alert_name: Cloudflare bulk DNS record deletion - $deleted_record_count records in $dns_zone
 alert_category: User Defined
 user_defined_category: xdm.alert.category
-alert_description: A large number of distinct Cloudflare DNS records were deleted from a single zone by a non-system actor, which may indicate data manipulation, service disruption or destruction of resources. The affected zone, the deleted record identifiers and the deletion time window are included in the alert.
+alert_description: A large number of distinct Cloudflare DNS records were deleted from a single zone, which may indicate data manipulation, service disruption or destruction of resources. The affected zone, the deleted record identifiers and the deletion time window are included in the alert. Where any part of this turns out to be redirection rather than plain deletion, note that a certificate obtained while the records pointed elsewhere REMAINS VALID afterwards. Restoring the records does not revoke it, so remediation has to include finding and revoking any certificate issued for these names during the window, which is a separate action from fixing the zone.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:
   TA0040 - Impact:

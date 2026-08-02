@@ -6,7 +6,10 @@ xql_query: |-
   // References
   //   https://developers.cloudflare.com/security-center/
   datamodel dataset = cloudflare_security_insights_raw
-  | filter xdm.alert.severity in ("Medium", "High", "Critical")
+  // The pack's own severity ladder has FIVE tiers, with Low distinct from Informational, so
+  // "above informational" includes Low. Excluding it while the description promised it left
+  // a whole tier unevaluated and indistinguishable from having no findings.
+  | filter xdm.alert.severity in ("Low", "Medium", "High", "Critical")
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.alert.name, xdm.alert.severity, xdm.alert.subcategory, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.*
 alert_name: Cloudflare posture finding - $xdm.alert.name on $xdm.target.resource.name
 alert_category: User Defined

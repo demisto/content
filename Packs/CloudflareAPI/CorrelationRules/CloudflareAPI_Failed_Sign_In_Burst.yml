@@ -2,9 +2,15 @@ name: Cloudflare - Failed Sign-In Burst - by GoCortexIO
 description: Detects repeated failed sign-ins to the Cloudflare account by one identity, the shape of a password-guessing or credential-stuffing attempt against the account that controls DNS and edge configuration.
 severity: SEV_040_HIGH
 xql_query: |-
-  // References
-  //   https://attack.mitre.org/techniques/T1110/
-  //   https://developers.cloudflare.com/fundamentals/account/account-security/review-audit-logs/
+  // PROVENANCE
+  //   Pattern:   repeated failed authentication against one account.
+  //   Source:    CISA AA24-290A. https://www.cisa.gov/news-events/cybersecurity-advisories/aa24-290a
+  //   ATT&CK:    T1110, T1110.003
+  //   Basis:     corroborated and observed.
+  //   Threshold: chosen operating point, not measured.
+  //   Gap:       counts PER ACCOUNT, so it cannot detect spraying, where few attempts across
+  //              many accounts keep every account under any threshold. That needs a separate
+  //              rule grouped by source. The axis is wrong, not the value. See FUTURE_PLANS.
   datamodel dataset = cloudflare_account_audit_v2_raw
   | filter xdm.event.type = "authentication"
   | alter outcome_s = lowercase(to_string(xdm.event.outcome))

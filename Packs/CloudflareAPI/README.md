@@ -102,6 +102,10 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 2.2.10
+
+- Point Worker attribution at the data that holds it, and stop dropping a severity tier. Both Worker rules told the responder to check who deployed the script via a field the modelling rule documents as the deployment channel, so it renders as dashboard, api or wrangler and never as a person. The Worker inventory carries no deploying identity at all, so the alerts now say what the field is and send attribution to the account audit log, where a script deploy does name the actor. The Security Center rule promised findings above informational while its filter admitted only Medium and above, leaving the Low tier unevaluated and indistinguishable from having no findings.
+
 ### 2.2.9
 
 - Apply the upstream formatter output, so the committed source matches what the contribution pipeline produces and a submission is not failed for a purely cosmetic difference.

@@ -2,7 +2,7 @@
   "name": "Cloudflare API",
   "description": "Integrates the Cloudflare API with the Cortex Platform, maps account and zone audit logs, Security Center findings, Workers and Zero Trust Access into the Cortex XDM data model, and detects token lifecycle changes, bulk DNS deletion, failed sign-in bursts and posture findings, by GoCortexIO",
   "support": "community",
-  "currentVersion": "2.2.9",
+  "currentVersion": "2.2.10",
   "author": "GoCortexIO",
   "url": "",
   "email": "",
