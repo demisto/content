@@ -21,7 +21,7 @@ outputs:
   description: The calculated events for each input.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.2072021
+dockerimage: demisto/py3-tools:1.0.0.10120494
 runas: DBotWeakRole
 fromversion: 6.6.0
 tests:
