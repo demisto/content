@@ -283,6 +283,14 @@ def get_events(
             new_last_ids[detector_id] = sorted(seen_ids) if seen_ids else []
 
     demisto.debug(f"AWSGuardDutyEventCollector - Total number of events is {len(events)}")
+    # XSUP-73410: log the outgoing cursor value+type that will be persisted via setLastRun, so we can
+    # verify collect_from is stored in a parse_date_string-compatible format. Only the cursor (small)
+    # and the per-detector last_ids COUNT are logged to keep the line bounded even with many siblings.
+    demisto.debug(
+        "AWSGuardDutyEventCollector - Persisting state. "
+        f"new_collect_from={ {k: f'{v!r} ({type(v).__name__})' for k, v in new_collect_from.items()} }, "
+        f"new_last_ids_counts={ {k: len(v) for k, v in new_last_ids.items()} }"
+    )
     events = convert_events_with_datetime_to_str(events)
     return events, new_last_ids, new_collect_from
 
