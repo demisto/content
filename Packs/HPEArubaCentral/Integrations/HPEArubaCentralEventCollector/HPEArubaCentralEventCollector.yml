@@ -13,6 +13,16 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: The region-specific Base URL for the Aruba Central API Gateway.
+- name: auth_method
+  required: false
+  type: 15
+  section: Connect
+  additionalinfo: 'The authentication method to use. "Access Token": paste the token JSON downloaded from the Aruba Central UI. "Basic Auth": provide a Username, Password, and Customer ID.'
+  display: Authentication Method
+  defaultvalue: Basic Auth
+  options:
+  - Access Token
+  - Basic Auth
 - name: credentials
   display: Client ID
   required: true
@@ -21,40 +31,59 @@ configuration:
   section: Connect
   hiddenusername: false
   additionalinfo: The secret key associated with your Client ID for API authentication. Can be obtained via the APIs page in the product.
-- name: customer_id
-  required: true
+- name: token
+  display: ""
+  required: false
   type: 9
-  displaypassword: Customer ID
+  displaypassword: Access Token (JSON)
   section: Connect
   hiddenusername: true
-  additionalinfo: The unique identifier for your Aruba Central account. Can be obtained via the APIs page in the product.
-- name: user
-  display: Username
-  required: true
+  additionalinfo: 'The full token JSON downloaded from the Aruba Central UI. Required when Authentication Method is "Access Token".'
+- name: customer_id
   type: 9
-  displaypassword: Password 
-  section: Connect
-  hiddenusername: false
-  additionalinfo: The username and password of an Aruba Central account with at least read-only privileges.
-- display: Fetch networking events
-  name: fetch_networking_events
-  type: 8
   required: false
-  section: Collect
-- defaultvalue: 100
-  section: Collect
-  display: The maximum number of audit events per fetch
+  section: Connect
+  displaypassword: Customer ID
+  hiddenusername: true
+  additionalinfo: The unique identifier for your Aruba Central account. Can be obtained via the APIs page in the product. Required only when Authentication Method is "Basic Auth".
+- section: Connect
+  display: Username
+  name: user
+  required: false
+  type: 9
+  displaypassword: Password
+  hiddenusername: false
+  additionalinfo: The username and password of an Aruba Central account with at least read-only privileges. Required only when Authentication Method is "Basic Auth".
+- section: Collect
+  display: Fetch Events
+  name: isFetchEvents
+  required: false
+  type: 8
+- section: Collect
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  required: false
+  type: 19
+  advanced: true
+- section: Collect
+  display: Fetch networking events
+  name: fetch_networking_events
+  required: false
+  type: 8
+- display: The maximum number of audit events per fetch
   name: max_audit_events_per_fetch
   required: false
   type: 0
-  advanced: true
-- defaultvalue: 5000
   section: Collect
-  display: The maximum number of networking events per fetch
+  advanced: true
+  defaultvalue: '100'
+- display: The maximum number of networking events per fetch
   name: max_networking_events_per_fetch
   required: false
   type: 0
+  section: Collect
   advanced: true
+  defaultvalue: '5000'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -114,3 +143,32 @@ tests:
 - No tests (auto formatted)
 supportedModules:
 - xsiam
+triggers:
+- conditions:
+  - name: auth_method
+    operator: equal
+    value: Access Token
+  effects:
+  - name: token
+    action:
+      required: true
+  - name: user
+    action:
+      hidden: true
+  - name: customer_id
+    action:
+      hidden: true
+- conditions:
+  - name: auth_method
+    operator: equal
+    value: Basic Auth
+  effects:
+  - name: token
+    action:
+      hidden: true
+  - name: user
+    action:
+      required: true
+  - name: customer_id
+    action:
+      required: true
