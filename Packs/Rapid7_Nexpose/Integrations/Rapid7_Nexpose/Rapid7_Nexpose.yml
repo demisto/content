@@ -40,6 +40,14 @@ configuration:
   additionalinfo: "The number of times to try and re-create connections with rapid7 instance when there are temporary connection errors"
   type: 0
   section: Connect
+- display: Fetch Assets
+  name: isFetchAssets
+  type: 8
+  section: Collect
+  required: false
+  supportedModules:
+  - xsiam
+  - exposure_management
 - additionalinfo: The interval between asset fetches. Default is 24 hours.
   defaultvalue: 1440
   display: Assets Fetch Interval
@@ -50,6 +58,9 @@ configuration:
   required: false
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
+  - exposure_management
 description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose
