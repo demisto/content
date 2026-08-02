@@ -1,0 +1,53 @@
+{
+    "id": "Rubrik Sensitive Data Object",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Rubrik Sensitive Data Object",
+    "prevName": "Rubrik Sensitive Data Object",
+    "color": "#F8E7A5",
+    "playbookId": "Rubrik Sensitive Data Object Discovery - Rubrik Security Cloud",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Rubrik Sensitive Data Object",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "rubriklogicalpaths": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "rubrikobjectregion": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "domainRepUnified"
+                ]
+            },
+            "rubrikphysicalpaths": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "rubrikuserprincipalname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.10.0"
+}
