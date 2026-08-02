@@ -396,6 +396,10 @@ Describe 'Entry ID parameter loading and merging' {
             $result = NewMailFlowRuleCommand -client $mockClient -kwargs $kwargs
 
             $result | Should -HaveCount 3
+
+            # The human-readable title must use the resolved name from the file (not the empty
+            # 'name' command argument), so the success message is not "Mail flow rule '' ...".
+            $result[0] | Should -BeLike "*Mail flow rule 'File Rule' was created successfully*"
         }
 
         It "Uses the identity from the file in update when the file supplies it" {

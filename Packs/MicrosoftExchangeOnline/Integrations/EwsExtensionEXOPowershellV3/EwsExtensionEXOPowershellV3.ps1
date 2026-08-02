@@ -124,11 +124,7 @@ function ParseRawResponse([PSObject]$response) {
 
 function MailFlowRuleHelperFunction($raw_response, $extended_output) {
     $parsed_raw_response = ParseRawResponse $raw_response
-    $entry_context = if ($extended_output -eq "false") {
-        MailFlowRuleCreateEntryContext $parsed_raw_response
-    } else {
-        @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response}
-    }
+    $entry_context = MailFlowRuleEntryContext $parsed_raw_response (ConvertTo-Boolean $extended_output)
     $md_columns = $raw_response | Select-Object -Property Name, State, Priority, Comment, WhenChanged, CreatedBy
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     return $human_readable, $entry_context, $parsed_raw_response
@@ -194,6 +190,30 @@ function MailFlowRuleCreateEntryContext($parsed_raw_response) {
 
         .OUTPUTS
         PSObject - entries context.
+    #>
+}
+
+function MailFlowRuleEntryContext($parsed_raw_response, $extended_output) {
+    # if "extended_output" is false (default) the output context is just the selected rule fields
+    # if "extended_output" is true the output context is the full parsed response
+    if ($extended_output) {
+        return @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response}
+    }
+    return MailFlowRuleCreateEntryContext $parsed_raw_response
+    <#
+        .DESCRIPTION
+        Selects the entry context for a mail flow rule response based on the extended_output flag.
+        Centralizes the choice between the full parsed response and the limited selected-fields
+        context so it stays consistent across commands.
+
+        .PARAMETER parsed_raw_response
+        The parsed raw response object.
+
+        .PARAMETER extended_output
+        Whether to return the full response context (true) or the limited context (false).
+
+        .OUTPUTS
+        Hashtable - The entry context.
     #>
 }
 
@@ -2780,15 +2800,9 @@ function NewMailFlowRuleCommand {
     $extended_output = ConvertTo-Boolean $kwargs.extended_output
     $raw_response = $client.CreateMailFlowRule($cmd_params)
     $parsed_raw_response = ParseRawResponse $raw_response
-    # if "extended_output" is set to false (default) the output context is just the rule object selected fields
-    # if "extended_output" is set to true the output context is the full response
-    $entry_context = if ($extended_output) {
-        @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response}
-    } else {
-        MailFlowRuleCreateEntryContext $parsed_raw_response
-    }
+    $entry_context = MailFlowRuleEntryContext $parsed_raw_response $extended_output
     $md_columns = $raw_response | Select-Object -Property Identity, Name, State, Mode, Priority, IsRuleConfigurationSupported, Comments
-    $human_readable = TableToMarkdown $md_columns "Mail flow rule '$($kwargs.name)' was created successfully"
+    $human_readable = TableToMarkdown $md_columns "Mail flow rule '$($cmd_params.Name)' was created successfully"
     Write-Output $human_readable, $entry_context, $parsed_raw_response
 }
 
