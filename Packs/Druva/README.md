@@ -20,3 +20,23 @@ This two way API integration enables customers to:
 - Initiate recovery actions like restoring an endpoint to a point in time prior to an attack
 - Remotely wipe resources and delete quarantined snapshots affected by malware
 - Search data for malicious hashes to accelerate remediation of malicious content
+- Supported Event Types: inSync events (`insync_events`) and Cybersecurity events (`cybersecurity_events`).
+
+## Configuration on Server Side
+
+### Create an API credential (Client ID and Secret Key)
+
+1. Log in to your **Druva Cloud Platform Console** as an administrator.
+2. Navigate to the **Administration** area, then select **API Credentials** (under the **Cloud Settings** / **Manage** section).
+3. Select **Create New Credentials** (or **+ New** / **Add API Credentials**).
+4. Provide a **description** that identifies the purpose of the API credential.
+5. Select **Save** (or **Create**). Druva generates a **Client ID** and a **Secret Key** for the new credential.
+6. Select **Copy** to copy the **Client ID**, then copy the **Secret Key**.
+
+   > **Note:** The **Secret Key** is displayed only once at the time of creation. Store it securely, as it cannot be retrieved again later. If lost, you must generate a new Secret Key.
+
+7. Paste the **Client ID** and **Secret Key** into your Cortex XSIAM integration configuration.
+
+> **Managing credentials:** You can return to the **API Credentials** page at any time to **activate**, **deactivate**, **regenerate the Secret Key**, or **delete** existing API credentials.
+
+For more information, use the following guide [here](https://help.druva.com/en/articles/8580838-create-and-manage-api-credentials).
