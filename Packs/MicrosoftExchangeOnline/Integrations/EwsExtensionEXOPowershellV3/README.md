@@ -2247,7 +2247,7 @@ There are no context outputs for this command.
 ### ews-mail-flow-rule-create
 
 ***
-Create a transport rule (mail flow rule) in the organization. A name must always be provided, either through the "name" argument or as a "Name" key inside the entry_id file. When no entry_id file is provided, both the "name" argument and at least one action (reject_message_reason_text, quarantine, or delete_message) are required.
+Create a transport rule (mail flow rule) in the organization. A name must always be provided, either through the `name` argument or as a `Name` key inside the entry_id file. When no entry_id file is provided, both the `name` argument and at least one action (`reject_message_reason_text`, `quarantine`, or `delete_message`) are required.
 
 #### Base Command
 
@@ -2257,18 +2257,18 @@ Create a transport rule (mail flow rule) in the organization. A name must always
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The unique name of the rule. The maximum length is 64 characters. If the value contains spaces, enclose the value in quotation marks ("). A name must always be provided, either through this argument or as a "Name" key inside the entry_id file. If both are provided, the value from the entry_id file takes precedence. | Optional |
-| mode | How the rule operates. Possible values are: Audit, AuditAndNotify, Enforce. | Optional |
+| name | The unique name of the rule. The maximum length is 64 characters. If the value contains spaces, enclose the value in quotation marks ("). A name must always be provided, either through this argument or as a `Name` key inside the entry_id file. If both are provided, the value from the entry_id file takes precedence. | Optional |
+| mode | How the rule operates. Possible values are: `Audit`, `AuditAndNotify`, `Enforce`. | Optional |
 | priority | The priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value. | Optional |
-| from | A comma-separated list of senders to look for in messages. You can use any value that uniquely identifies the sender. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID. | Optional |
-| sent_to | A comma-separated list of recipients to look for in messages. You can use any value that uniquely identifies the recipient. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID. | Optional |
-| subject_contains_words | The words to look for in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN. | Optional |
-| except_if_subject_contains_words | The words that, when found in the Subject field of messages, exempt the message from the rule. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN. | Optional |
-| reject_message_reason_text | The explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). When no entry_id file is provided, at least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided. | Optional |
-| quarantine | Whether to quarantine messages that match the rule. When no entry_id file is provided, at least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided. Possible values are: true, false. | Optional |
-| delete_message | Whether to silently drop messages without an NDR. When no entry_id file is provided, at least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided. Possible values are: true, false. | Optional |
+| from | A comma-separated list of senders to look for in messages. You can use any value that uniquely identifies the sender, such as a name, alias, distinguished name, canonical DN, email address, or GUID. If a value contains spaces, enclose it in quotation marks ("). For example, to search for a sender with the name Chris and the alias Tech Writer, use the following syntax: Chris,"Tech Writer". | Optional |
+| sent_to | A comma-separated list of recipients to look for in messages. You can use any value that uniquely identifies the recipient, such as a name, alias, distinguished name, canonical DN, email address, or GUID. If a value contains spaces, enclose it in quotation marks ("). For example, to search for a recipient with the name Chris and the alias Tech Writer, use the following syntax: Chris,"Tech Writer". | Optional |
+| subject_contains_words | A comma-separated list of words or phrases to look for in the Subject field of messages. If a value contains spaces, as with a phrase, enclose it in quotation marks ("). For example: Word1,"Phrase with spaces",word2. | Optional |
+| except_if_subject_contains_words | A comma-separated list of words or phrases that, when found in the Subject field of messages, exempt the message from the rule. If a value contains spaces, as with a phrase, enclose it in quotation marks ("). For example: Word1,"Phrase with spaces",word2. | Optional |
+| reject_message_reason_text | The explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). When no entry_id file is provided, at least one of the actions (`reject_message_reason_text`, `quarantine`, or `delete_message`) must be provided. | Optional |
+| quarantine | Whether to quarantine messages that match the rule. When no entry_id file is provided, at least one of the actions (`reject_message_reason_text`, `quarantine`, or `delete_message`) must be provided. Possible values are: true, false. | Optional |
+| delete_message | Whether to silently drop messages without an NDR. When no entry_id file is provided, at least one of the actions (`reject_message_reason_text`, `quarantine`, or `delete_message`) must be provided. Possible values are: true, false. | Optional |
 | comments | The descriptive text for the rule (for example, what the rule is used for, or how it has changed over time). | Optional |
-| entry_id | The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"Name": "My rule", "ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Values in the file take precedence over the corresponding command arguments. If the "name" argument is not provided, the file must include a "Name" key. | Optional |
+| entry_id | The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"Name": "My rule", "ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Values in the file take precedence over the corresponding command arguments. If the `name` argument is not provided, the file must include a `Name` key. | Optional |
 | extended_output | Whether the output will be in verbose format. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -2279,7 +2279,7 @@ Create a transport rule (mail flow rule) in the organization. A name must always
 | EWS.MailFlowRule.ExpiryDate | Date | The date and time when the mail flow rule is set to expire and no longer apply (e.g., 2024-01-15T12:34:56Z). |
 | EWS.MailFlowRule.Mode | String | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
 | EWS.MailFlowRule.Quarantine | Boolean | Specifies whether the rule actions include quarantining messages that match the rule. |
-| EWS.MailFlowRule.Guid | String | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
+| EWS.MailFlowRule.Guid | String | The Globally Unique Identifier for the mail flow rule. |
 | EWS.MailFlowRule.OrganizationId | String | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
 | EWS.MailFlowRule.DistinguishedName | String | The distinguished name of the mail flow rule in the Exchange directory structure. |
 | EWS.MailFlowRule.IsValid | Boolean | Indicates whether the mail flow rule is valid and functional. |
@@ -2309,7 +2309,7 @@ Create a transport rule (mail flow rule) in the organization. A name must always
 ### ews-mail-flow-rule-update
 
 ***
-Modify an existing transport rule (mail flow rule) in the organization. An identity must always be provided, either through the "identity" argument or as an "Identity" key inside the entry_id file. When no entry_id file is provided, the "identity" argument is required.
+Modify an existing transport rule (mail flow rule) in the organization. An identity must always be provided, either through the `identity` argument or as an `Identity` key inside the entry_id file. When no entry_id file is provided, the `identity` argument is required.
 
 #### Base Command
 
@@ -2319,18 +2319,18 @@ Modify an existing transport rule (mail flow rule) in the organization. An ident
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identity | The rule that you want to modify. You can use any value that uniquely identifies the rule. For example: Name, Distinguished name, or GUID. An identity must always be provided, either through this argument or as an "Identity" key inside the entry_id file. If both are provided, the value from the entry_id file takes precedence. | Optional |
-| mode | How the rule operates. Possible values are: Audit, AuditAndNotify, Enforce. | Optional |
+| identity | The rule that you want to modify. You can use any value that uniquely identifies the rule, such as a name, distinguished name, or GUID. An identity must always be provided, either through this argument or as an `Identity` key inside the entry_id file. If both are provided, the value from the entry_id file takes precedence. | Optional |
+| mode | How the rule operates. Possible values are: `Audit`, `AuditAndNotify`, `Enforce`. | Optional |
 | priority | The priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value. | Optional |
-| from | A comma-separated list of senders to look for in messages. You can use any value that uniquely identifies the sender. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID. | Optional |
-| sent_to | A comma-separated list of recipients to look for in messages. You can use any value that uniquely identifies the recipient. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID. | Optional |
-| subject_contains_words | The words to look for in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN. | Optional |
-| except_if_subject_contains_words | The words that, when found in the Subject field of messages, exempt the message from the rule. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN. | Optional |
+| from | A comma-separated list of senders to look for in messages. You can use any value that uniquely identifies the sender, such as a name, alias, distinguished name, canonical DN, email address, or GUID. If a value contains spaces, enclose it in quotation marks ("). For example, to search for a sender with the name Chris and the alias Tech Writer, use the following syntax: Chris,"Tech Writer". | Optional |
+| sent_to | A comma-separated list of recipients to look for in messages. You can use any value that uniquely identifies the recipient, such as a name, alias, distinguished name, canonical DN, email address, or GUID. If a value contains spaces, enclose it in quotation marks ("). For example, to search for a recipient with the name Chris and the alias Tech Writer, use the following syntax: Chris,"Tech Writer". | Optional |
+| subject_contains_words | A comma-separated list of words or phrases to look for in the Subject field of messages. If a value contains spaces, as with a phrase, enclose it in quotation marks ("). For example: Word1,"Phrase with spaces",word2. | Optional |
+| except_if_subject_contains_words | A comma-separated list of words or phrases that, when found in the Subject field of messages, exempt the message from the rule. If a value contains spaces, as with a phrase, enclose it in quotation marks ("). For example: Word1,"Phrase with spaces",word2. | Optional |
 | reject_message_reason_text | The explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). | Optional |
 | quarantine | Whether to quarantine messages that match the rule. Possible values are: true, false. | Optional |
 | delete_message | Whether to silently drop messages without an NDR. Possible values are: true, false. | Optional |
 | comments | The descriptive text for the rule (for example, what the rule is used for, or how it has changed over time). | Optional |
-| entry_id | The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"Identity": "My rule", "ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Values in the file take precedence over the corresponding command arguments. If the "identity" argument is not provided, the file must include an "Identity" key. | Optional |
+| entry_id | The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"Identity": "My rule", "ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Values in the file take precedence over the corresponding command arguments. If the `identity` argument is not provided, the file must include an `Identity` key. | Optional |
 
 #### Context Output
 
