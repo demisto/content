@@ -4229,6 +4229,7 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/googleapi-python3:1.0.0.10182333
+source: 'cooc'
 fromversion: 8.11.0
 supportsquickactions: true
 isCloudProviderIntegration: true
