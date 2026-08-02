@@ -270,7 +270,7 @@ script:
     - contextPath: Cyberint.takedowns_submit.id
       description: ID.
       type: String
-  dockerimage: demisto/python33.12.13.10404775
+  dockerimage: demisto/python3:3.12.13.10404775
   feed: false
   subtype: python3
 tests:
