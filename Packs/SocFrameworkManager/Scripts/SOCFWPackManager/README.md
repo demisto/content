@@ -43,7 +43,7 @@ This script uses the following commands and scripts.
 | overwrite_lookup | Overwrite the SOC Framework lookup table. Save your customizations first. |
 | configure_jobs | When action=apply, run job configuration from xsoar_config.json. Ignored if apply_configure=false. |
 | configure_integrations | When action=apply, create or update integration instances from xsoar_config.json. Ignored if apply_configure=false. |
-| configure_lookups | When action=apply, create or update lookup datasets from xsoar_config.json. Ignored if apply_configure=false. |
+| configure_lookups | Whether to create or update lookup datasets from xsoar_config.json, for the apply and configure actions. A pack that ships a Lookup directory already brings its dataset with it, so configuring it again is redundant. Ignored when apply_configure is false. |
 | retry_count | Number of retry attempts for install or configure operations that fail transiently. |
 | retry_sleep_seconds | Seconds to wait between retry attempts. |
 | execution_timeout | Timeout in seconds for individual core-api commands invoked during configure. |

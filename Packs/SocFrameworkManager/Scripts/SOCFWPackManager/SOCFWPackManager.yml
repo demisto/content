@@ -115,12 +115,13 @@ args:
   - 'False'
   description: When action=apply, create or update integration instances from xsoar_config.json. Ignored if apply_configure=false.
 - name: configure_lookups
+  type: boolean
   auto: PREDEFINED
-  defaultValue: 'True'
+  defaultValue: 'False'
   predefined:
   - 'True'
   - 'False'
-  description: When action=apply, create or update lookup datasets from xsoar_config.json. Ignored if apply_configure=false.
+  description: Whether to create or update lookup datasets from xsoar_config.json, for the apply and configure actions. A pack that ships a Lookup directory already brings its dataset with it, so configuring it again is redundant. Ignored when apply_configure is false.
 - name: retry_count
   defaultValue: '5'
   description: Number of retry attempts for install or configure operations that fail transiently.

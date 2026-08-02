@@ -2008,7 +2008,7 @@ def do_configure(args):
     overwrite = arg_to_bool(args.get("overwrite_lookup"), False)
     cfg_jobs = arg_to_bool(args.get("configure_jobs"), True)
     cfg_integrations = arg_to_bool(args.get("configure_integrations"), True)
-    cfg_lookups = arg_to_bool(args.get("configure_lookups"), True)
+    cfg_lookups = arg_to_bool(args.get("configure_lookups"), False)
     debug = arg_to_bool(args.get("debug"), False)
     include_doc_content = arg_to_bool(args.get("include_doc_content"), False)
     doc_content_max_chars = to_int(args.get("doc_content_max_chars"), 6000)
@@ -2305,7 +2305,7 @@ def _run_main():
     apply_configure = arg_to_bool(args.get("apply_configure"), True)
     configure_jobs = arg_to_bool(args.get("configure_jobs"), True)
     configure_integrations = arg_to_bool(args.get("configure_integrations"), True)
-    configure_lookups = arg_to_bool(args.get("configure_lookups"), True)
+    configure_lookups = arg_to_bool(args.get("configure_lookups"), False)
     overwrite_lookup = arg_to_bool(args.get("overwrite_lookup"), False)
 
     include_doc_content = arg_to_bool(args.get("include_doc_content"), False)

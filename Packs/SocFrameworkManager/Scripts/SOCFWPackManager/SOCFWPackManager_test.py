@@ -355,7 +355,7 @@ def test_do_configure_missing_pack_id_raises():
         script.do_configure({})
 
 
-def test_do_configure_calls_all_sections(mocker):
+def test_do_configure_skips_lookups_by_default(mocker):
     script, _ = load_script()
 
     xsoar_cfg = {
@@ -376,6 +376,11 @@ def test_do_configure_calls_all_sections(mocker):
 
     mock_integ.assert_called_once()
     mock_jobs.assert_called_once()
+    # configure_lookups defaults to false: a pack that ships a Lookup directory
+    # already brings its dataset with it.
+    mock_lookups.assert_not_called()
+
+    script.do_configure({"pack_id": "my-pack", "configure_lookups": "true"})
     mock_lookups.assert_called_once()
 
 
