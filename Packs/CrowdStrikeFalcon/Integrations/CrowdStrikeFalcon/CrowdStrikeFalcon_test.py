@@ -11560,28 +11560,27 @@ class TestLongRunningSpotlightExecution:
 
         Returns (sleep_calls, mock_fetch, mock_cnapp, mock_log).
         """
-        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import long_running_spotlight_execution
 
-        mocker.patch.object(CrowdStrikeFalcon.demisto, "params", return_value={})
-        mocker.patch.object(CrowdStrikeFalcon.demisto, "error")
-        mock_log = mocker.patch.object(CrowdStrikeFalcon, "log_falcon_assets")
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
+        mocker.patch("CrowdStrikeFalcon.demisto.error")
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
 
-        # fetch_spotlight_assets is a coroutine function, so patch.object would normally build an
+        # fetch_spotlight_assets is a coroutine function, so patching would normally build an
         # AsyncMock - that returns a coroutine and only raises side_effect when awaited, which never
         # happens because asyncio.run is stubbed below. Force a synchronous MagicMock so a
         # configured exception is raised at call time, inside the loop's try block.
-        mock_fetch = mocker.patch.object(
-            CrowdStrikeFalcon,
-            "fetch_spotlight_assets",
+        mock_fetch = mocker.patch(
+            "CrowdStrikeFalcon.fetch_spotlight_assets",
             new_callable=mocker.MagicMock,
             side_effect=fetch_side_effect,
             return_value=None,
         )
-        mock_cnapp = mocker.patch.object(CrowdStrikeFalcon, "fetch_cnapp_assets")
+        mock_cnapp = mocker.patch("CrowdStrikeFalcon.fetch_cnapp_assets")
 
         # The loop calls asyncio.run(fetch_spotlight_assets()); the inner call already did the work,
         # so just pass its result through.
-        mocker.patch.object(CrowdStrikeFalcon.asyncio, "run", side_effect=lambda result: result)
+        mocker.patch("CrowdStrikeFalcon.asyncio.run", side_effect=lambda result: result)
 
         # Drive elapsed time deterministically: each cycle consumes one duration.
         clock = [0.0]
@@ -11593,7 +11592,7 @@ class TestLongRunningSpotlightExecution:
                 clock[0] += durations.pop(0)
             return value
 
-        mocker.patch.object(CrowdStrikeFalcon.time, "monotonic", side_effect=fake_monotonic)
+        mocker.patch("CrowdStrikeFalcon.time.monotonic", side_effect=fake_monotonic)
 
         sleep_calls: list[float] = []
 
@@ -11602,10 +11601,10 @@ class TestLongRunningSpotlightExecution:
             if len(sleep_calls) >= len(cycle_durations):
                 raise StopLoop
 
-        mocker.patch.object(CrowdStrikeFalcon.time, "sleep", side_effect=fake_sleep)
+        mocker.patch("CrowdStrikeFalcon.time.sleep", side_effect=fake_sleep)
 
         with pytest.raises(StopLoop):
-            CrowdStrikeFalcon.long_running_spotlight_execution()
+            long_running_spotlight_execution()
 
         return sleep_calls, mock_fetch, mock_cnapp, mock_log
 
@@ -11638,12 +11637,12 @@ class TestLongRunningSpotlightExecution:
         When: The cycle finishes.
         Then: The loop sleeps only the remaining 21 hours, so cycles start every 24 hours.
         """
-        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import LONG_RUNNING_ASSETS_INTERVAL_MINUTES
 
         three_hours = 3 * 3600
         sleeps, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[three_hours])
 
-        assert sleeps == [CrowdStrikeFalcon.LONG_RUNNING_ASSETS_INTERVAL_MINUTES * 60 - three_hours]
+        assert sleeps == [LONG_RUNNING_ASSETS_INTERVAL_MINUTES * 60 - three_hours]
 
     def test_cycle_longer_than_interval_sleeps_zero(self, mocker):
         """
@@ -11664,9 +11663,9 @@ class TestLongRunningSpotlightExecution:
         When: A near-instant cycle completes.
         Then: The loop sleeps the full 24 hours (1440 minutes).
         """
-        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import LONG_RUNNING_ASSETS_INTERVAL_MINUTES
 
-        assert CrowdStrikeFalcon.LONG_RUNNING_ASSETS_INTERVAL_MINUTES == 1440
+        assert LONG_RUNNING_ASSETS_INTERVAL_MINUTES == 1440
 
         sleeps, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[0])
 

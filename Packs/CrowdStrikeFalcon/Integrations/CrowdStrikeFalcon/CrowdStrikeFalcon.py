@@ -4833,10 +4833,10 @@ async def fetch_vulnerabilities_by_severity(
                         f"{records_lost} lost (continuing with the next pages).",
                         "error",
                     )
-            except BaseException as e:  # noqa: BLE001 - includes asyncio.CancelledError
+            except (asyncio.CancelledError, Exception) as e:  # noqa: BLE001
                 # Whole batch rejected: nothing is counted, so declared == stored still holds.
-                # BaseException, not Exception: a cancelled task raises asyncio.CancelledError, which
-                # since Python 3.8 does not derive from Exception and would kill the severity.
+                # CancelledError is listed explicitly: since Python 3.8 it does not derive from
+                # Exception, and a cancelled send task would otherwise kill the whole severity.
                 lost_send_batches += 1
                 lost_send_records += items_attempted
                 first_send_error = first_send_error or e

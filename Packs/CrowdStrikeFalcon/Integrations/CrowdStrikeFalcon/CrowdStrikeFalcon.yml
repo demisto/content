@@ -412,7 +412,7 @@ configuration:
   - xpanse
   supportedModules:
   - "xsiam"
-  - "exposure_management"  
+  - "exposure_management"
 - additionalinfo: |-
     Runs the Spotlight vulnerabilities fetch in a long-running container instead of on the assets fetch schedule.
     Use this when a full Spotlight fetch takes longer than the Assets Fetch Interval, so it is repeatedly interrupted.
