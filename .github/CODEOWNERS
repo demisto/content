@@ -15,7 +15,7 @@
 /Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
 
 # Test Collection
-/Tests/conf.json @merit-maita
+# /Tests/conf.json @merit-maita
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
@@ -27,10 +27,10 @@
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
 /Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419
 /Packs/MicrosoftExchangeOnline/Integrations @amshamah419
-/Packs/ContentManagement/* @adi88d
+# /Packs/ContentManagement/* @adi88d
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
-/Packs/rasterize/Integrations/rasterize/* @adi88d @MosheEichler @DeanArbel
+/Packs/rasterize/Integrations/rasterize/* @MosheEichler @DeanArbel # @adi88d
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @melamedbn
