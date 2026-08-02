@@ -1472,7 +1472,7 @@ def build_policy_v2_patch_body(args: dict) -> dict:
     return body
 
 
-def update_block_sender_policy_command(policy_args):
+def update_block_sender_policy_command(policy_args: dict) -> CommandResults:
     """
     Update an existing Blocked Senders policy using the v2 PATCH API.
     Only fields explicitly provided are sent (partial update semantics).
@@ -1490,11 +1490,8 @@ def update_block_sender_policy_command(policy_args):
     body = build_policy_v2_patch_body(policy_args)
 
     api_endpoint = f"/policy-management/cloud-gateway/v1/blocked-senders/policies/{policy_id}"
-    try:
-        http_request("PATCH", api_endpoint, payload=body)
-    except ValueError:
-        # 204 returns an empty body, treat as success
-        pass
+    # is_file=True returns the raw response without parsing JSON, as the endpoint returns 204 No Content
+    http_request("PATCH", api_endpoint, payload=body, is_file=True)
 
     return CommandResults(readable_output=f"Policy {policy_id} was updated successfully!")
 
