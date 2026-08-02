@@ -4479,41 +4479,22 @@ async def send_spotlight_batch_and_count_stored(
 ) -> tuple[int, int]:
     """Send a Spotlight batch to XSIAM and report exactly how many records were stored.
 
-    This is a Spotlight-specific variant of ``send_batch_to_xsiam_and_save_context``. It exists as a
-    separate function so the shared helper (still used by the assets/CNAPP paths) keeps its current
-    behaviour and ``-> int`` contract.
-
-    The difference is per-chunk accounting. A batch is compressed and sent as several independent
-    chunks, each one its own HTTP request with its own retries, so a chunk either stores completely
-    or not at all. ``send_batch_to_xsiam_and_save_context`` uses ``asyncio.gather(*tasks)``, which
-    raises on the first failing chunk and discards every chunk's return value, so a partially stored
-    batch is indistinguishable from a fully failed one. Here the chunks are awaited with
-    ``return_exceptions=True`` and the record counts of the chunks that succeeded are summed. The
-    caller can therefore add exactly the number of records XSIAM stored to its declared total, which
-    keeps ``declared == stored`` even when a batch only partially succeeds.
-
-    Args:
-        data: List of records to send.
-        product: Product name for XSIAM headers.
-        snapshot_id: Snapshot ID for asset collection tracking.
-        items_count: Total items count - final count when sealing, 1 while in-progress.
-        batch_number: Current batch number being processed.
-        last_saved_batch_number: Highest batch number that has successfully saved context.
-        context_store: ContentClientContextStore for thread-safe context operations.
-        state: ContentClientState containing cursor and metadata.
-        save_state_callback: Callback used to persist the state.
-        data_type: Type of data for the XSIAM collector-type header. Defaults to "assets".
+    Spotlight variant of ``send_batch_to_xsiam_and_save_context``, kept separate so the shared
+    helper (still used by the assets/CNAPP paths) keeps its ``-> int`` contract. The difference is
+    per-chunk accounting: a batch is sent as independent chunks, each its own request, so a chunk
+    either stores completely or not at all. The shared helper's ``asyncio.gather(*tasks)`` raises on
+    the first failing chunk and discards all counts, making a partially stored batch look like a
+    fully failed one. Here chunks are awaited with ``return_exceptions=True`` and the successful
+    chunks' counts are summed, so the caller can declare exactly what XSIAM stored.
 
     Returns:
-        Tuple of (batch_number_for_context_save, records_stored). ``records_stored`` is the number
-        of records in the chunks that were successfully stored — 0 if every chunk failed, and less
-        than ``len(data)`` on a partial failure.
+        Tuple of (batch_number_for_context_save, records_stored) - 0 if every chunk failed, and
+        less than ``len(data)`` on a partial failure.
     """
     log_falcon_assets(f"[Batch {batch_number}] Sending {len(data)} {data_type} to XSIAM")
 
     total_records = len(data)
 
-    # 1. Compress and create one async task per chunk. Each task returns its own record count.
     tasks = send_data_to_xsiam_async(
         data=data,
         vendor=VENDOR,
@@ -4529,8 +4510,7 @@ async def send_spotlight_batch_and_count_stored(
     # Release raw data — compression already done synchronously, async tasks hold only compressed bytes
     del data
 
-    # 2. Await every chunk. return_exceptions=True keeps the successful chunks' counts even when a
-    #    sibling chunk fails, which is what makes exact per-chunk accounting possible.
+    # return_exceptions=True keeps the successful chunks' counts even when a sibling chunk fails.
     chunk_results = await asyncio.gather(*tasks, return_exceptions=True)
 
     records_stored = 0
@@ -4553,7 +4533,7 @@ async def send_spotlight_batch_and_count_stored(
 
     log_falcon_assets(f"[Batch {batch_number}] for {product=} Successfully sent to XSIAM")
 
-    # 3. Save context ONLY if this is the latest batch using the provided callback
+    # Save context ONLY if this is the latest batch using the provided callback
     if batch_number > last_saved_batch_number:
         save_state_callback(context_store, state)
         log_falcon_assets(f"[Batch {batch_number}] Context saved")
@@ -4577,23 +4557,8 @@ def create_task_send_spotlight_batch_and_count_stored(
 ) -> asyncio.Task:
     """Create an async task running ``send_spotlight_batch_and_count_stored``.
 
-    Spotlight-specific counterpart of ``create_task_send_batch_to_xsiam_and_save_context``; the
-    resulting task resolves to ``(batch_number, records_stored)`` instead of just ``batch_number``.
-
-    Args:
-        data: List of records to send.
-        product: The product name.
-        snapshot_id: Snapshot ID for tracking.
-        items_count: Total items count - final count when sealing, 1 while in-progress.
-        batch_number: Current batch number being processed.
-        last_saved_batch_number: Highest batch number that has successfully saved context.
-        context_store: ContentClientContextStore for thread-safe context operations.
-        state: ContentClientState containing cursor and metadata.
-        save_state_callback: Callback used to persist the state.
-        data_type: Type of data for the XSIAM collector-type header.
-
-    Returns:
-        asyncio.Task resolving to (batch_number_for_context_save, records_stored).
+    Spotlight counterpart of ``create_task_send_batch_to_xsiam_and_save_context``; the resulting
+    task resolves to ``(batch_number, records_stored)`` instead of just ``batch_number``.
     """
     return asyncio.create_task(
         send_spotlight_batch_and_count_stored(
@@ -4790,15 +4755,6 @@ async def fetch_spotlight_vulnerabilities_page(
     # Parse JSON response
     response_data = response.json()
     vulnerabilities = response_data.get("resources", [])
-
-    # Diagnostic (XSUP-71944): log the full pagination object to determine whether the Spotlight
-    # combined endpoint returns a usable `total` under cursor (`after`) pagination. If `total` is
-    # populated with a meaningful non-zero value, it can be used as an expected-count guardrail for
-    # snapshot sealing; if it is always 0/absent, the seal must rely solely on the confirmed-stored count.
-    # Only log on the first page of each severity (no `after` cursor yet) to avoid per-page log noise.
-    if not after_token:
-        pagination_meta = response_data.get("meta", {}).get("pagination", {})
-        log_falcon_assets(f"Spotlight first-page pagination meta: {pagination_meta}", "info")
 
     log_falcon_assets(f"Fetched {len(vulnerabilities)} vulnerabilities in this page")
 
@@ -5174,7 +5130,6 @@ async def await_and_aggregate_severity_results(
     spotlight_state: ContentClientState,
     snapshot_id: str,
     prior_withheld_records: list[dict] | None = None,
-    prior_total_fetched: int = 0,
 ) -> tuple[int, set, set[asyncio.Task], list[str], list[dict]]:
     """Wait for all severity tasks and aggregate their results.
 
@@ -5186,75 +5141,57 @@ async def await_and_aggregate_severity_results(
         snapshot_id: Snapshot ID for asset collection tracking
         prior_withheld_records: Records withheld by severities completed in previous cycles.
             New per-severity withheld records are appended so the seal covers all severities.
-        prior_total_fetched: Records already stored by severities completed in previous cycles.
-            The seal must declare the grand total across every cycle of this snapshot, not just the
-            records stored in the final cycle, otherwise a resumed run declares fewer records than
-            XSIAM holds and the snapshot never balances.
 
     Returns:
         Tuple of (total_vulnerabilities, all_unique_aids, all_pending_tasks,
-        updated_completed_severities, withheld_records). ``total_vulnerabilities`` is cumulative
-        across all cycles of this snapshot; ``all_unique_aids`` holds only this cycle's AIDs.
+        updated_completed_severities, withheld_records). ``withheld_records`` holds the
+        records withheld across all completed severities (this cycle + prior cycles).
     """
-    # Seed with the running record total of severities completed in earlier cycles.
-    total_vulnerabilities = prior_total_fetched
+    total_vulnerabilities = 0
     all_unique_aids: set = set()
     all_pending_tasks: set[asyncio.Task] = set()
     # Seed with records withheld in previous cycles so the seal isn't missing earlier severities.
     all_withheld_records: list[dict] = list(prior_withheld_records or [])
 
-    # Fix 3 (P2): process severities in COMPLETION order, not the fixed SPOTLIGHT_SEVERITIES order.
-    # Previously a fast severity (e.g. LOW) that finished early was not checkpointed until all
-    # preceding severities (e.g. CRITICAL, HIGH) completed (head-of-line blocking). asyncio.as_completed
-    # lets us persist each severity's completion the moment it finishes. Because as_completed yields
-    # wrapper futures (not the original tasks), each task is wrapped so its severity label travels with
-    # the result and is available even when the task raises.
-    # Await each task while keeping its severity label attached, so a failing task can still be
-    # attributed to the right severity in logs (the label survives the exception).
-    async def await_with_severity(sev: str, task: asyncio.Task) -> tuple[str, tuple | BaseException]:
+    for severity, task in severity_tasks:
         try:
-            return sev, await task
-        except Exception as exc:  # noqa: BLE001 - one severity's failure must not abort the others
-            return sev, exc
+            log_falcon_assets(f"Waiting for {severity} severity task to complete...", "info")
+            severity_total, severity_aids, severity_tasks_result, severity_withheld = await task
+            total_vulnerabilities += severity_total
+            all_unique_aids.update(severity_aids)
+            all_pending_tasks.update(severity_tasks_result)
+            all_withheld_records.extend(severity_withheld)
+            log_falcon_assets(
+                f"[{severity}] Completed: {severity_total} vulnerabilities, {len(severity_aids)} unique hosts", "info"
+            )
 
-    for finished in asyncio.as_completed([await_with_severity(sev, t) for sev, t in severity_tasks]):
-        severity, result = await finished
-        if isinstance(result, BaseException):
-            log_falcon_assets(f"[{severity}] Failed with error: {result}", "error")
+            # Mark this severity as completed
+            if severity not in current_completed_severities:
+                current_completed_severities.append(severity)
+                log_falcon_assets(f"[{severity}] Marked as completed. Total completed: {current_completed_severities}", "info")
+
+                # Persist completed severities and the accumulated withheld records after each
+                # severity completes, so a resumed run does not lose earlier severities' records.
+                update_spotlight_state_and_metadata(
+                    spotlight_state=spotlight_state,
+                    cursor=None,  # No cursor needed for severity-based fetching
+                    snapshot_id=snapshot_id,
+                    total_fetched=0,  # Reset for next cycle
+                    unique_aids=set(),  # Reset for next cycle
+                    processed_aids=set(),  # Reset for next cycle
+                    completed_severities=current_completed_severities,
+                    withheld_records=all_withheld_records,
+                )
+                save_spotlight_state(context_store, spotlight_state)
+                log_falcon_assets(
+                    f"[{severity}] Saved completion state to context (withheld_records so far: {len(all_withheld_records)})",
+                    "info",
+                )
+
+        except Exception as e:
+            log_falcon_assets(f"[{severity}] Failed with error: {e}", "error")
             # Don't mark as completed if it failed - will retry next cycle
             continue
-
-        severity_total, severity_aids, severity_tasks_result, severity_withheld = result
-        total_vulnerabilities += severity_total
-        all_unique_aids.update(severity_aids)
-        all_pending_tasks.update(severity_tasks_result)
-        all_withheld_records.extend(severity_withheld)
-        log_falcon_assets(f"[{severity}] Completed: {severity_total} vulnerabilities, {len(severity_aids)} unique hosts", "info")
-
-        # Mark this severity as completed
-        if severity not in current_completed_severities:
-            current_completed_severities.append(severity)
-            log_falcon_assets(f"[{severity}] Marked as completed. Total completed: {current_completed_severities}", "info")
-
-            # Persist completed severities, the accumulated withheld records AND the running
-            # record total after each severity completes, so a resumed run neither loses earlier
-            # severities' records nor under-declares the grand total in the seal.
-            update_spotlight_state_and_metadata(
-                spotlight_state=spotlight_state,
-                cursor=None,  # No cursor needed for severity-based fetching
-                snapshot_id=snapshot_id,
-                total_fetched=total_vulnerabilities,  # Cumulative across cycles - used to seal
-                unique_aids=set(),  # Reset for next cycle
-                processed_aids=set(),  # Reset for next cycle
-                completed_severities=current_completed_severities,
-                withheld_records=all_withheld_records,
-            )
-            save_spotlight_state(context_store, spotlight_state)
-            log_falcon_assets(
-                f"[{severity}] Saved completion state to context (withheld_records so far: "
-                f"{len(all_withheld_records)}, running total: {total_vulnerabilities})",
-                "info",
-            )
 
     log_falcon_assets(
         f"All severity queries completed. Total vulnerabilities: {total_vulnerabilities}, "
@@ -5368,7 +5305,6 @@ async def fetch_spotlight_by_severity_parallel(
     snapshot_id: str,
     completed_severities: list[str],
     prior_withheld_records: list[dict] | None = None,
-    prior_total_fetched: int = 0,
 ) -> tuple[int, set]:
     """Orchestrate parallel vulnerability fetching across all severity levels.
 
@@ -5384,12 +5320,9 @@ async def fetch_spotlight_by_severity_parallel(
         completed_severities: List of severities already completed in previous cycles
         prior_withheld_records: Records withheld for the seal by severities completed in
             previous cycles, carried forward so the seal includes them.
-        prior_total_fetched: Records stored by severities completed in previous cycles, so the
-            seal declares the grand total for the snapshot rather than only this cycle's records.
 
     Returns:
-        Tuple of (total_vulnerabilities, unique_aids). ``total_vulnerabilities`` is cumulative
-        across every cycle of this snapshot; ``unique_aids`` holds this cycle's hosts.
+        Tuple of (total_vulnerabilities, unique_aids)
     """
     log_falcon_assets("Starting parallel vulnerability fetch by severity", "info")
     log_falcon_assets(f"All severities: {SPOTLIGHT_SEVERITIES}", "info")
@@ -5410,32 +5343,6 @@ async def fetch_spotlight_by_severity_parallel(
         processed_aids=set(),  # Start fresh for this fetch
         batch_limit=MAX_FETCH_SPOTLIGHT_ASSETS,
     )
-
-    if not severities_to_fetch:
-        # Every severity finished in earlier cycles, but the state was not reset - which only
-        # happens when the previous cycle's seal itself failed. Returning here would leave the
-        # snapshot open forever, because finalization would never be reached again. Instead, fall
-        # through to finalize_severity_fetch with the persisted totals to retry just the seal.
-        log_falcon_assets(
-            "All severities already completed in previous cycles, but the snapshot was not sealed. "
-            f"Retrying finalization with the persisted totals (records: {prior_total_fetched}, "
-            f"withheld: {len(prior_withheld_records or [])}).",
-            "warning",
-        )
-        await finalize_severity_fetch(
-            all_pending_tasks=set(),
-            current_completed_severities=current_completed_severities,
-            total_vulnerabilities=prior_total_fetched,
-            all_unique_aids=set(),
-            asset_handler=asset_handler,
-            context_store=context_store,
-            spotlight_state=spotlight_state,
-            snapshot_id=snapshot_id,
-            withheld_records=list(prior_withheld_records or []),
-        )
-        return prior_total_fetched, set()
-
-    log_falcon_assets(f"Severities to fetch in this cycle: {severities_to_fetch}", "info")
 
     # Create parallel tasks for each severity that needs fetching
     severity_tasks = []
@@ -5468,7 +5375,6 @@ async def fetch_spotlight_by_severity_parallel(
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
         prior_withheld_records=prior_withheld_records,
-        prior_total_fetched=prior_total_fetched,
     )
 
     await finalize_severity_fetch(
@@ -5520,15 +5426,13 @@ async def fetch_spotlight_assets():
     (
         spotlight_state,
         snapshot_id,
-        prior_total_fetched,
+        _total_fetched,
         _unique_aids_count,
         _processed_aids,
         completed_severities,
         prior_withheld_records,
     ) = load_spotlight_state(context_store)
-    # Each severity starts its own pagination fresh. prior_total_fetched is the running record total
-    # of the severities that completed in previous cycles - it must be carried forward so the seal
-    # declares the grand total for the snapshot, not just what this cycle stored.
+    # Note: cursor is not used for severity-based fetching - each severity starts fresh
 
     client = create_spotlight_client(context_store)
 
@@ -5541,7 +5445,6 @@ async def fetch_spotlight_assets():
             snapshot_id=snapshot_id,
             completed_severities=completed_severities,
             prior_withheld_records=prior_withheld_records,
-            prior_total_fetched=prior_total_fetched,
         )
 
         # Reset state after successful fetch (completed_severities already cleared in parallel function if all done).
