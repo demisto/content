@@ -10744,9 +10744,8 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with the operation status
         """
-        kwargs = {"ResourceArn": args.get("resource_arn")}
-        print_debug_logs(client, f"Deleting resource policy with parameters: {kwargs.keys()}")
-        response = client.delete_resource_policy(**kwargs)
+        print_debug_logs(client, f"Deleting resource policy for resource: {args.get('resource_arn')}")
+        response = client.delete_resource_policy(ResourceArn=args.get("resource_arn"))
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
@@ -10795,9 +10794,8 @@ class NetworkFirewall:
         Returns:
             CommandResults: Formatted results with the resource policy
         """
-        kwargs = {"ResourceArn": args.get("resource_arn")}
-        print_debug_logs(client, f"Describing resource policy with parameters: {kwargs.keys()}")
-        response = client.describe_resource_policy(**kwargs)
+        print_debug_logs(client, f"Describing resource policy for resource: {args.get('resource_arn')}")
+        response = client.describe_resource_policy(ResourceArn=args.get("resource_arn"))
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
             return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
@@ -10953,11 +10951,11 @@ class NetworkFirewall:
         log_destination_configs = outputs["LoggingConfiguration"].get("LogDestinationConfigs", [])
 
         return CommandResults(
-            outputs_prefix="AWS.NetworkFirewall.LoggingConfigurations",
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
             outputs_key_field="FirewallArn",
             outputs=outputs,
             readable_output=tableToMarkdown(
-                "AWS Network Firewall Logging Configuration",
+                f"AWS Network Firewall Logging Configuration for the Firewall {outputs.get('FirewallArn')}",
                 log_destination_configs,
                 headers=["LogType", "LogDestinationType", "LogDestination"],
                 removeNull=True,
@@ -10974,19 +10972,34 @@ class NetworkFirewall:
         Args:
             client (BotoClient): The boto3 client for NetworkFirewall service
             args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn,
-                logging_configuration_json, and enable_monitoring_dashboard
+                log_type, log_destination_type, log_destination_key, log_destination_value,
+                and enable_monitoring_dashboard
 
         Returns:
             CommandResults: Formatted results with the logging configuration
         """
         validate_network_firewall_identifier(args, "firewall")
-        logging_configuration_raw = args.get("logging_configuration_json")
+        log_type = args.get("log_type")
+        log_destination_type = args.get("log_destination_type")
+        log_destination_key = args.get("log_destination_key")
+        log_destination_value = args.get("log_destination_value")
+
         logging_configuration = None
-        if logging_configuration_raw:
-            try:
-                logging_configuration = json.loads(logging_configuration_raw)
-            except json.JSONDecodeError as e:
-                raise ValueError(f"logging_configuration_json must be a valid JSON string: {e}") from e
+        if any((log_type, log_destination_type, log_destination_key, log_destination_value)):
+            if not all((log_type, log_destination_type, log_destination_key, log_destination_value)):
+                raise ValueError(
+                    "To set a logging destination you must provide all of the following arguments: "
+                    "log_type, log_destination_type, log_destination_key, log_destination_value."
+                )
+            logging_configuration = {
+                "LogDestinationConfigs": [
+                    {
+                        "LogType": log_type,
+                        "LogDestinationType": log_destination_type,
+                        "LogDestination": {log_destination_key: log_destination_value},
+                    }
+                ]
+            }
 
         kwargs = {
             "FirewallName": args.get("firewall_name"),
@@ -11010,7 +11023,7 @@ class NetworkFirewall:
         remove_nulls_from_dictionary(outputs)
 
         return CommandResults(
-            outputs_prefix="AWS.NetworkFirewall.LoggingConfigurations",
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
             outputs_key_field="FirewallArn",
             outputs=outputs,
             readable_output="The logging configuration was updated successfully.",

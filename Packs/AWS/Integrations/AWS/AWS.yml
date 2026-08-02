@@ -20371,6 +20371,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -20420,6 +20421,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -20472,6 +20474,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -20528,6 +20531,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -20538,6 +20542,7 @@ script:
       required: true
     - name: limit
       description: The maximum number of objects that you want Network Firewall to return for this request.
+      defaultValue: 50
     - name: next_token
       description: The pagination token returned in a previous response, used to retrieve the next set of results.
     outputs:
@@ -20594,6 +20599,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -20646,6 +20652,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -20699,6 +20706,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -20709,18 +20717,18 @@ script:
     - name: firewall_arn
       description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
     outputs:
-    - contextPath: AWS.NetworkFirewall.LoggingConfigurations.FirewallArn
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
       description: The Amazon Resource Name (ARN) of the firewall.
       type: String
-    - contextPath: AWS.NetworkFirewall.LoggingConfigurations.LoggingConfiguration.LogDestinationConfigs
+    - contextPath: AWS.NetworkFirewall.Firewalls.LoggingConfiguration.LogDestinationConfigs
       description: Defines the logging destinations for the logs for a firewall, containing LogType, LogDestinationType, and LogDestination fields.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.LoggingConfigurations.EnableMonitoringDashboard
+    - contextPath: AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard
       description: A boolean that reflects whether the monitoring dashboard is enabled for the firewall.
       type: Boolean
 
   - name: aws-network-firewall-logging-configuration-update
-    description: "Sets the logging configuration for the specified firewall. To change the logging configuration, retrieve the LoggingConfiguration by calling aws-network-firewall-logging-configuration-describe, then change it and provide the modified object to this update call. Required permissions: network-firewall:UpdateLoggingConfiguration."
+    description: "Sets the logging configuration for the specified firewall. To change the logging configuration, retrieve the LoggingConfiguration by calling aws-network-firewall-logging-configuration-describe, then change it and provide the modified object to this update call. Required permissions: network-firewall:UpdateLoggingConfiguration, s3:PutBucketPolicy, s3:GetBucketPolicy, logs:CreateLogDelivery, logs:GetLogDelivery, logs:UpdateLogDelivery, logs:DeleteLogDelivery, logs:ListLogDeliveries, firehose:TagDeliveryStream, iam:CreateServiceLinkedRole."
     arguments:
     - name: account_id
       description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
@@ -20759,6 +20767,7 @@ script:
         - eu-north-1
         - eu-central-2
         - il-central-1
+        - mx-central-1
         - me-south-1
         - me-central-1
         - sa-east-1
@@ -20768,8 +20777,24 @@ script:
       description: The descriptive name of the firewall. You must specify the ARN or the name, and you can specify both.
     - name: firewall_arn
       description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
-    - name: logging_configuration_json
-      description: 'A JSON string defining the logging configuration to set for the firewall. For example: `{"LogDestinationConfigs": [{"LogType": "FLOW", "LogDestinationType": "S3", "LogDestination": {"bucketName": "DOC-EXAMPLE-BUCKET", "prefix": "alerts"}}]}`.'
+    - name: log_type
+      description: The type of log to record. FLOW logs capture network traffic that passes through the firewall. ALERT logs report traffic that matches stateful rules with an action setting that sends an alert. TLS logs report on TLS handshake negotiation results.
+      auto: PREDEFINED
+      predefined:
+        - FLOW
+        - ALERT
+        - TLS
+    - name: log_destination_type
+      description: The type of storage destination that the logs are sent to.
+      auto: PREDEFINED
+      predefined:
+        - S3
+        - CloudWatchLogs
+        - KinesisDataFirehose
+    - name: log_destination_key
+      description: 'The key for the logging destination, according to the log_destination_type. For example: `bucketName` for S3, `logGroup` for CloudWatchLogs, or `deliveryStream` for KinesisDataFirehose.'
+    - name: log_destination_value
+      description: 'The value for the logging destination, matching the log_destination_key. For example: the S3 bucket name, the CloudWatch Logs log group name, or the Kinesis Data Firehose delivery stream name.'
     - name: enable_monitoring_dashboard
       description: A boolean that lets you enable or disable the detailed firewall monitoring dashboard on the firewall.
       auto: PREDEFINED
@@ -20777,16 +20802,16 @@ script:
         - 'true'
         - 'false'
     outputs:
-    - contextPath: AWS.NetworkFirewall.LoggingConfigurations.FirewallArn
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
       description: The Amazon Resource Name (ARN) of the firewall.
       type: String
-    - contextPath: AWS.NetworkFirewall.LoggingConfigurations.FirewallName
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
       description: The descriptive name of the firewall.
       type: String
-    - contextPath: AWS.NetworkFirewall.LoggingConfigurations.LoggingConfiguration.LogDestinationConfigs
+    - contextPath: AWS.NetworkFirewall.Firewalls.LoggingConfiguration.LogDestinationConfigs
       description: Defines the logging destinations for the logs for a firewall, containing LogType, LogDestinationType, and LogDestination fields.
       type: Unknown
-    - contextPath: AWS.NetworkFirewall.LoggingConfigurations.EnableMonitoringDashboard
+    - contextPath: AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard
       description: A boolean that reflects whether the monitoring dashboard is enabled for the firewall.
       type: Boolean
 

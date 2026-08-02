@@ -21303,7 +21303,7 @@ def test_describe_logging_configuration_command_success(mocker):
     result = NetworkFirewall.describe_logging_configuration_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.NetworkFirewall.LoggingConfigurations"
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
     assert result.outputs["FirewallArn"] == "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall"
     assert result.outputs["LoggingConfiguration"]["LogDestinationConfigs"][0]["LogType"] == "FLOW"
     mock_client.describe_logging_configuration.assert_called_once_with(FirewallName="test-firewall")
@@ -21364,19 +21364,22 @@ def test_update_logging_configuration_command_success(mocker):
 
     args = {
         "firewall_name": "test-firewall",
-        "logging_configuration_json": (
-            '{"LogDestinationConfigs": [{"LogType": "FLOW", "LogDestinationType": "S3", '
-            '"LogDestination": {"bucketName": "my-bucket"}}]}'
-        ),
+        "log_type": "FLOW",
+        "log_destination_type": "S3",
+        "log_destination_key": "bucketName",
+        "log_destination_value": "my-bucket",
     }
 
     result = NetworkFirewall.update_logging_configuration_command(mock_client, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.NetworkFirewall.LoggingConfigurations"
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
     assert "updated successfully" in result.readable_output
     call_kwargs = mock_client.update_logging_configuration.call_args[1]
-    assert call_kwargs["LoggingConfiguration"]["LogDestinationConfigs"][0]["LogType"] == "FLOW"
+    log_destination_config = call_kwargs["LoggingConfiguration"]["LogDestinationConfigs"][0]
+    assert log_destination_config["LogType"] == "FLOW"
+    assert log_destination_config["LogDestinationType"] == "S3"
+    assert log_destination_config["LogDestination"] == {"bucketName": "my-bucket"}
 
 
 def test_update_logging_configuration_command_enable_monitoring_dashboard(mocker):
@@ -21404,18 +21407,18 @@ def test_update_logging_configuration_command_enable_monitoring_dashboard(mocker
     assert result.outputs["EnableMonitoringDashboard"] is True
 
 
-def test_update_logging_configuration_command_invalid_json(mocker):
+def test_update_logging_configuration_command_partial_destination_args(mocker):
     """
-    Given: A mocked boto3 NetworkFirewall client and an invalid logging configuration JSON string.
+    Given: A mocked boto3 NetworkFirewall client and only some of the log destination arguments.
     When: update_logging_configuration_command is called.
-    Then: It should raise a ValueError indicating the JSON is invalid.
+    Then: It should raise a ValueError requiring all log destination arguments to be provided together.
     """
     from AWS import NetworkFirewall
 
     mock_client = mocker.Mock()
-    args = {"firewall_name": "test-firewall", "logging_configuration_json": "{invalid-json"}
+    args = {"firewall_name": "test-firewall", "log_type": "FLOW", "log_destination_type": "S3"}
 
-    with pytest.raises(ValueError, match="logging_configuration_json must be a valid JSON string"):
+    with pytest.raises(ValueError, match="you must provide all of the following arguments"):
         NetworkFirewall.update_logging_configuration_command(mock_client, args)
 
 
@@ -21433,7 +21436,10 @@ def test_update_logging_configuration_command_api_error(mocker):
 
     args = {
         "firewall_name": "test-firewall",
-        "logging_configuration_json": '{"LogDestinationConfigs": []}',
+        "log_type": "FLOW",
+        "log_destination_type": "S3",
+        "log_destination_key": "bucketName",
+        "log_destination_value": "my-bucket",
         "account_id": "123456789012",
     }
 
