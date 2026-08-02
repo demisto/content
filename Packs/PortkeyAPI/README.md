@@ -13,7 +13,7 @@ activity into Cortex Platform datasets and mapping it to the XDM data model.
 | Portkey Configs Event Collector | Gateway config inventory from `GET /configs` into `portkey_configs_raw`, full snapshot per run. |
 | Portkey LLM Request Logs Event Collector | Gateway request logs, including prompt, completion, model, tokens and cost, into `portkey_llm_requests_raw` via the asynchronous log export. |
 | Portkey API Modeling Rule | Maps the collected datasets to the Cortex XDM data model. |
-| Correlation rules | Seven detections covering API key hygiene, workspace permission posture, config ownership and new key creation. |
+| Correlation rules | Sixteen detections covering prompt content reaching the models, gateway guardrail health, and API key and workspace posture. |
 
 The pack follows a per-endpoint collector design: each Portkey API endpoint family gets its own
 thin event collector and its own dataset, so log types can be modelled, retained, and correlated
@@ -52,15 +52,50 @@ keys is not.
 
 ## Detection content
 
-| Rule | What it catches |
-| --- | --- |
-| API Key Without Expiry | A credential that stays valid until somebody revokes it by hand. |
-| API Key Able to Manage API Keys | A key that can mint or delete further keys. |
-| API Key Without Spend or Rate Limit | Uncapped model spend and request volume. |
-| Workspace Lets Members Create API Keys | Ordinary members can issue gateway credentials. |
-| Workspace Guardrails Writable By Members | Members can weaken the prompt and response controls. |
-| Gateway Config Changed By Non Owner | Routing or guardrail changes made by an unexpected editor. |
-| New API Key Created | A key issued outside the normal process, with actor and source address. |
+Sixteen rules across three areas: what is being sent to the models, whether the gateway
+controls are working, and the posture of the credentials and workspaces around it.
+
+**Prompt content reaching the models**
+
+| Rule | Severity | What it catches |
+| --- | --- | --- |
+| Prompt Injection Using Chat Control Tokens | High | Chat template delimiters in prompt text, which is content forging turn structure. |
+| Prompt Injection Overriding Model Instructions | High | Imperatives directed at revoking or replacing the model's instructions. |
+| Prompt Injection Answered By The Model | High | An injection technique that reached a model and produced a response, gated on the guardrail verdict as well as the status code. |
+| Forged Tool Result Delimiter | High | A tool-result marker in prompt content, which is text dressed up as tooling output. Does not claim the content came from a tool: see the limitations below. |
+| Prompt Injection Impersonating Tooling or Authority | Medium | Content assuming the identity of a terminal, an interpreter or an authorised person. |
+| System Prompt or Context Extraction Attempt | Medium | Attempts to have the model reproduce its own instructions or context. |
+| Prompt Injection Across Multiple Technique Families | Medium | One identity working through several DIFFERENT techniques, which is deliberate iteration rather than one opportunistic prompt. Reports the identity, not the individual attempts. |
+
+**Gateway controls**
+
+| Rule | Severity | What it catches |
+| --- | --- | --- |
+| Guardrail Blocked or Flagged Content | High | A guardrail denying, soft-denying or flagging a request. |
+| Guardrail Coverage Degraded | Medium | Requests reaching models with no guardrail evaluation at all. |
+
+**Credential and workspace posture**
+
+| Rule | Severity | What it catches |
+| --- | --- | --- |
+| API Key Able to Manage API Keys | High | A key that can mint or delete further keys. |
+| Workspace Guardrails Writable By Members | High | Members can weaken the prompt and response controls. |
+| API Key Without Expiry | Medium | A credential that stays valid until somebody revokes it by hand. |
+| API Key Without Spend or Rate Limit | Medium | Uncapped model spend and request volume. |
+| Workspace Lets Members Create API Keys | Medium | Ordinary members can issue gateway credentials. |
+| Gateway Config Changed By Non Owner | Medium | Routing or guardrail changes made by an unexpected editor. |
+| New API Key Created | Medium | A key issued outside the normal process, with actor and source address. |
+
+### What this pack cannot see
+
+The gateway record joins the sender's turns and any tool turns into one field and discards the
+role labels, so no rule here can establish that content arrived from a tool rather than from the
+sender. Injection that genuinely arrives through retrieved data or an upstream service is
+therefore NOT covered, and the forged-delimiter rule detects the marker rather than its origin.
+
+There is also no signal for whether an instruction reached stored context. An injection that
+persists outlives the session it arrived in, which is the difference between one incident and a
+recurring one.
 
 The posture rules read snapshot datasets, which re-send the full inventory on every poll, so each
 rule takes only the newest snapshot per object. A finding therefore raises one alert rather than
@@ -76,6 +111,10 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 1.9.8
+
+- Stop several rules claiming more than the data supports. A guardrail soft denial returns a success status, so the answered-by-the-model rule reported blocked prompts as answered; it now gates on the guardrail verdict. The indirect injection rule asserted content came from a tool, which the collector cannot establish because it merges the sender's turns with tool turns and discards the labels; renamed to forged tool-result delimiter. Tool results carried as a nested content block were dropped entirely, so real tool output was invisible to every content rule. The campaign rule counted requests rather than distinct technique families, measuring repetition instead of iteration. The coverage rule grouped on a constant and so named no workspace, and its drilldown filtered a flag that is never null. The new key rule matched an event name that is empty of verbs when the vendor sends a blank action.
+
 ### 1.9.7
 
 - Apply the upstream formatter output, so the committed source matches what the contribution pipeline produces and a submission is not failed for a purely cosmetic difference.

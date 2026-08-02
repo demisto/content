@@ -2,55 +2,39 @@ name: Portkey API - Guardrail Coverage Degraded - by GoCortexIO
 description: Reports the proportion of LLM requests that a guardrail actually evaluated. A guardrail that runs on a small share of traffic is a control that mostly is not running, and a fall in that share is how the control being removed presents.
 severity: SEV_030_MEDIUM
 xql_query: |-
-  // References
-  //   https://attack.mitre.org/techniques/T1562/001/
-  //   https://portkey.ai/docs/product/guardrails
-  //
-  // This is a COVERAGE rule, not a content rule. Every other guardrail detection
-  // asks what the guardrail decided; this one asks how often it ran at all.
-  //
-  // The distinction matters because the two failure modes look nothing alike. A
-  // guardrail that blocks something raises an alert. A guardrail that silently
-  // stops being applied raises nothing, and the requests it would have caught
-  // simply pass. Coverage is the only place that second failure is visible, and
-  // it is normally reported as a health statistic that nobody alerts from.
-  //
-  // Read the output two ways.
-  //
-  // The LEVEL is a posture finding. A gateway where guardrails are attached to a
-  // few configs and not the rest will sit at a low percentage permanently, and
-  // that is worth knowing on day one: it is the gap every prompt-inspection rule
-  // is trying to cover, and raising it is a configuration action rather than a
-  // detection problem.
-  //
-  // A FALL is the alert. Coverage dropping means guardrails stopped being applied
-  // to traffic that previously had them, which is the same event as a guardrail
-  // reference disappearing from a config, seen from the other side. Either alone
-  // is arguable. Together they are hard to explain away.
-  //
-  // The threshold is deliberately generous rather than tuned, because the right
-  // level is a property of each deployment and cannot be shipped as a default.
-  // Set it to just below the coverage the estate normally achieves, so the rule
-  // reports a real drop rather than a standing condition. The minimum request
-  // count stops a quiet window producing a meaningless ratio.
+  // PROVENANCE
+  //   Pattern:   a control that has quietly stopped running, rather than one that fired.
+  //   ATT&CK:    T1562.001
+  //   Vendor:    https://portkey.ai/docs/product/guardrails
+  //   Basis:     corroborated. Coverage is normally reported as a health statistic that
+  //              nobody alerts from, which is why the failure stays invisible.
+  //   Threshold: CHOSEN, and deliberately generic. The right level is a property of each
+  //              deployment and cannot ship as a default, so set it just below the coverage
+  //              normally achieved. The minimum request count stops a quiet window
+  //              producing a meaningless ratio.
+  //   Grouping: PER WORKSPACE. Grouping on the observer product, which is a constant, put
+  //              the whole tenant in one row that named nothing a responder could act on,
+  //              and averaged a workspace losing its guardrail against all the traffic
+  //              that still had one, which is the loss this is meant to catch.
   datamodel dataset = portkey_llm_requests_raw
   | filter xdm.event.type = "llm_request"
   | alter evaluated_flag = if(xdm.observer.action != null, 1, 0)
-  | comp count() as requests, sum(evaluated_flag) as evaluated, values(xdm.target.host.hostname) as upstreams by xdm.observer.product
+  | comp count() as requests, sum(evaluated_flag) as evaluated, values(xdm.target.host.hostname) as upstreams, values(xdm.target.resource.name) as models by xdm.target.resource.parent_id
   | alter unevaluated = subtract(requests, evaluated)
   | alter coverage_percent = multiply(divide(to_float(evaluated), to_float(requests)), 100)
   | filter requests >= 50 and coverage_percent < 90
-  | fields xdm.observer.product, requests, evaluated, unevaluated, coverage_percent, upstreams
-alert_name: Portkey guardrail evaluated only $coverage_percent per cent of requests
+  | sort asc coverage_percent
+  | fields xdm.target.resource.parent_id, requests, evaluated, unevaluated, coverage_percent, upstreams, models
+alert_name: Portkey workspace $xdm.target.resource.parent_id guardrail coverage at $coverage_percent per cent
 alert_category: User Defined
 user_defined_category: xdm.event.type
-alert_description: Of $requests LLM requests through the Portkey gateway, only $evaluated were evaluated by a guardrail, leaving $unevaluated unevaluated, a coverage of $coverage_percent per cent. Upstreams seen were $upstreams. Treat this as two possible findings. If coverage has always been at this level, it is posture, because guardrails are attached to some configs and not others, and every request outside that set reaches the model with no inspection at all, which is the gap that prompt-content detection is left trying to cover by inspecting text. If coverage has FALLEN, that is the security event, because it means requests that were previously inspected no longer are, and the usual cause is a guardrail reference being removed from a config rather than anything being blocked or alerted. Check the configs for a guardrail that has disappeared, confirm whether the change was intended, and compare the current level against what this estate normally achieves rather than against the shipped threshold, which is deliberately generic.
+alert_description: Of $requests LLM requests through workspace $xdm.target.resource.parent_id, only $evaluated were evaluated by a guardrail, leaving $unevaluated uninspected, a coverage of $coverage_percent per cent. Upstreams were $upstreams and the models were $models. Treat this as two possible findings. If coverage has always been at this level it is posture, because guardrails are attached to some configs and not others, and every request outside that set reaches the model with no inspection at all, which is the gap prompt-content rules are left trying to cover by reading text. If coverage has FALLEN, that is the security event, because requests that were previously inspected no longer are, and the usual cause is a guardrail reference removed from a config rather than anything being blocked or alerted. Check the configs used by this workspace for a guardrail that has disappeared, confirm whether the change was intended, and compare against the level this workspace normally achieves rather than against the shipped threshold, which is deliberately generic.
 alert_domain: DOMAIN_POSTURE
 mitre_defs:
   TA0005 - Defense Evasion:
   - T1562 - Impair Defenses
 suppression_fields:
-- xdm.observer.product
+- xdm.target.resource.parent_id
 global_rule_id: 46797107-ce69-4cb5-84e1-08679fff1f82
 is_enabled: true
 alert_type: null
@@ -62,7 +46,7 @@ crontab: '46 * * * *'
 suppression_enabled: true
 suppression_duration: 24 hours
 dataset: alerts
-investigation_query_link: dataset = portkey_llm_requests_raw | filter guardrail_evaluated = null
+investigation_query_link: dataset = portkey_llm_requests_raw | filter guardrail_evaluated = false
 drilldown_query_timeframe: ALERT
 mapping_strategy: AUTO
 action: ALERTS

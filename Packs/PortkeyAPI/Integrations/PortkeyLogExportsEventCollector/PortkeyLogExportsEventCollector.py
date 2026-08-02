@@ -183,6 +183,18 @@ def extract_user_prompt(request: Any) -> str:
     words an attack would use, so matching the whole request marks every call as
     suspicious: an application whose system prompt mentions "base64" would flag
     all of its own traffic. Only the user and tool turns are returned.
+
+    Tool results are carried two different ways depending on the provider. Some
+    put them in a message with role "tool" and a plain string body; others keep
+    the role as "user" and place a tool_result block inside a multi-part content
+    list, where the payload sits under "content" rather than "text". Reading only
+    "text" discarded the whole of the second form, so tool output was invisible
+    to every rule that inspects prompt content.
+
+    The role labels are NOT preserved in the returned string. Anything reading
+    this field can therefore see WHAT was sent but not WHO sent it, so no rule
+    built on it can claim that content originated from a tool rather than from
+    the sender.
     """
     if not isinstance(request, dict):
         return ""
@@ -196,10 +208,20 @@ def extract_user_prompt(request: Any) -> str:
         if isinstance(content, str):
             parts.append(content)
         elif isinstance(content, list):
-            # Multi-part content: keep the text segments.
+            # Multi-part content: keep the text segments and any tool result body.
             for part in content:
-                if isinstance(part, dict) and isinstance(part.get("text"), str):
+                if not isinstance(part, dict):
+                    continue
+                if isinstance(part.get("text"), str):
                     parts.append(part["text"])
+                    continue
+                nested = part.get("content")
+                if isinstance(nested, str):
+                    parts.append(nested)
+                elif isinstance(nested, list):
+                    for block in nested:
+                        if isinstance(block, dict) and isinstance(block.get("text"), str):
+                            parts.append(block["text"])
     return "\n".join(parts)
 
 

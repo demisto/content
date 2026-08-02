@@ -1,10 +1,18 @@
 name: Portkey - Prompt Injection Answered By The Model - by GoCortexIO
-description: Detects a prompt matching a known injection technique that the model then answered successfully, which separates an attempt that was refused or blocked from one the model may have complied with.
+description: Detects a prompt matching a known injection technique that reached the model, gated on the guardrail verdict as well as the response outcome, so a request the gateway soft-denied is not reported as answered.
 severity: SEV_040_HIGH
 xql_query: |-
-  // References
-  //   https://attack.mitre.org/techniques/T1119/
-  //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
+  // PROVENANCE
+  //   Pattern:   an injection technique that REACHED the model, separated from one the
+  //              gateway stopped.
+  //   ATT&CK:    T1119
+  //   OWASP:     https://owasp.org/www-project-top-10-for-large-language-model-applications/
+  //   Threshold: none. Reaching the model is categorical.
+  //   Outcome is NOT sufficient on its own. A guardrail soft-deny returns HTTP 200, so the
+  //   request records as a success while the gateway actually blocked it. Gating on outcome
+  //   alone therefore reported blocked prompts as answered, and told the responder to
+  //   retrieve a completion that does not exist. The guardrail verdict is the real gate, and
+  //   "soft_denied" is treated as a block here exactly as it is in the guardrail rule.
   datamodel dataset = portkey_llm_requests_raw
   | alter prompt = lowercase(to_string(xdm.target.resource.value))
   | filter prompt contains "<|im_start|>" or prompt contains "<|im_end|>" or prompt contains "[/inst]"
@@ -36,11 +44,12 @@ xql_query: |-
       or prompt contains "act as a repl" or prompt contains "is now declassified" or prompt contains "end classified"
       or prompt contains "tool_result:" or prompt contains "tool result:"
   | filter to_string(xdm.event.outcome) = "SUCCESS"
+  | filter xdm.observer.action = null or xdm.observer.action = "allowed"
   | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
 alert_name: Portkey injection attempt answered by the model - $xdm.source.user.username
 alert_category: User Defined
 user_defined_category: xdm.alert.category
-alert_description: A prompt from $xdm.source.user.username matching a known injection technique was answered successfully by $xdm.target.resource.name, rather than being rejected upstream. A successful response does not prove the model complied, since it may have refused in prose, but it does mean the request reached the model and produced output, so this is the population worth reading first. Retrieve the completion and confirm whether protected material was returned.
+alert_description: A prompt from $xdm.source.user.username matching a known injection technique reached $xdm.target.resource.name and produced a response, and the gateway guardrail did not deny it. A response does not prove the model complied, since it may have refused in prose, but it does mean the request was not stopped upstream, so this is the population worth reading first. Retrieve the completion and confirm whether protected material was returned. Note the gate is the guardrail verdict and not the status code alone, because a soft denial returns a success status while having blocked the request.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:
   TA0009 - Collection:

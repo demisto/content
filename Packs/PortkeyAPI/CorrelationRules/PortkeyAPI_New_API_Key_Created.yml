@@ -2,12 +2,20 @@ name: Portkey - New API Key Created - by GoCortexIO
 description: Detects the creation of a new Portkey API key, so a credential issued outside the normal process is noticed while it is still recent.
 severity: SEV_030_MEDIUM
 xql_query: |-
-  // References
-  //   https://attack.mitre.org/techniques/T1098/
-  //   https://portkey.ai/docs/product/administration
+  // PROVENANCE
+  //   Pattern:   a gateway credential issued outside the normal process.
+  //   ATT&CK:    T1098
+  //   Vendor:    https://portkey.ai/docs/product/administration
+  //   Threshold: none. A key is created or it is not.
+  //   Filters on the MAPPED OPERATION, not on the event name. The vendor sends audit
+  //   records with a blank action, and the modelling rule then derives the event name from
+  //   the HTTP method and resource, producing a name that contains no verb at all. Matching
+  //   the name for "create" therefore missed exactly those records, while the operation
+  //   field had already been resolved correctly from the method. The model had done the
+  //   work and the rule was ignoring it.
   datamodel dataset = portkey_audit_raw
-  | alter event_verb = lowercase(to_string(xdm.event.original_event_type))
-  | filter event_verb contains "create" and xdm.target.resource.type = "api-keys"
+  | filter xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE
+      and xdm.target.resource.type = "api-keys"
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.description, xdm.source.cloud.project, xdm.source.user.identifier, xdm.source.user.user_type, xdm.source.user.identity_type, xdm.source.ipv4, xdm.source.location.country, xdm.network.http.method, xdm.network.http.url, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.parent_id, xdm.*
 alert_name: Portkey API key created by $xdm.source.user.identifier
 alert_category: User Defined

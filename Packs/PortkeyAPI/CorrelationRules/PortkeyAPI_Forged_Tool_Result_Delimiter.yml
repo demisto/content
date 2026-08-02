@@ -1,0 +1,48 @@
+name: Portkey - Forged Tool Result Delimiter - by GoCortexIO
+description: Detects a tool-result delimiter inside prompt content, which is an attempt to make text look as though it came from tooling rather than from the sender. The collector cannot distinguish user turns from tool turns, so this rule does not claim the content actually came from a tool.
+severity: SEV_040_HIGH
+xql_query: |-
+  // PROVENANCE
+  //   Pattern:   a tool-result delimiter appearing in prompt content, which is text
+  //              dressed up as tooling output so the model treats it as trusted.
+  //   ATT&CK:    T1195
+  //   OWASP:     https://owasp.org/www-project-top-10-for-large-language-model-applications/
+  //   Threshold: none. The delimiter is either present or it is not.
+  //   SCOPE, and this is the important part. This rule CANNOT establish that the content
+  //   came from a tool, and it no longer claims to. The collector returns user turns and
+  //   tool turns joined together with the role labels discarded, so the matched field
+  //   carries no provenance at all. What it detects is the delimiter itself, which is a
+  //   real technique on its own: a sender forging the marker to borrow the trust that
+  //   tool output is given. Genuine tool-borne injection is NOT covered by this pack and
+  //   is recorded in FUTURE_PLANS.md, because it needs a collector change.
+  datamodel dataset = portkey_llm_requests_raw
+  | alter prompt = lowercase(to_string(xdm.target.resource.value))
+  | filter prompt contains "tool_result:" or prompt contains "tool result:"
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
+alert_name: Portkey forged tool-result delimiter from $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: Content reaching $xdm.target.resource.name in the conversation of $xdm.source.user.username carried a tool-result delimiter. This is text formatted to look like tooling output, which borrows the trust a model gives to results it believes came from a tool it called. Do NOT read this as proof that a tool produced the content. The gateway record merges the sender's turns with tool turns and discards the role labels, so provenance cannot be established from it, and the likeliest explanation is that the delimiter was typed by the sender. Establish who or what the sender is, and retrieve the surrounding conversation to see whether the forged marker was followed by an instruction. Genuine injection arriving through retrieved data or an upstream service is a different problem and is not visible in this feed.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0001 - Initial Access:
+  - T1195 - Supply Chain Compromise
+suppression_fields:
+- xdm.source.user.identifier
+- xdm.target.resource.parent_id
+global_rule_id: 6f4e0db7-e90f-4044-b83e-e0797f8b06a4
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter id = $xdm.event.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

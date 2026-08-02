@@ -43,8 +43,8 @@
 //   mapped rather than synthesising one from the identifier.
 //   action and resource_type are free-form strings in the OpenAPI specification
 //   with no enumeration, so the operation verb is derived by classifying the
-//   action text and falling back to the HTTP method, rather than matching the
-//   handful of values the sample happened to contain.
+//   action text and falling back to the HTTP method. Matching a fixed list of
+//   literal values would break the moment the vendor added one.
 //
 // NOT MAPPED
 //   request_headers         -- transport headers, values are partially masked by
@@ -244,7 +244,8 @@ filter
 //   exhausted, type covers the organisation and workspace key families, and
 //   creation_mode covers ui, api and auto. A key minted through the API rather
 //   than the console, and a key that has exhausted its usage limit, are both
-//   detection-relevant and neither appears in the sample.
+//   detection-relevant, and both are mapped from the specification rather than
+//   from observation, because neither state is common enough to rely on seeing.
 //
 // NOT MAPPED
 //   key                 -- the masked key prefix, of no analytic value.

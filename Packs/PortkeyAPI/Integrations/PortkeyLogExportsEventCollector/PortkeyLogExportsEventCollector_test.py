@@ -304,6 +304,36 @@ def test_multipart_content_text_is_extracted():
     assert collector.extract_user_prompt(request) == "hello"
 
 
+def test_tool_result_block_body_is_extracted():
+    """A tool result carried as a content block must not be discarded.
+
+    Providers carry tool output two ways. One sets the role to "tool" with a plain
+    string body; the other keeps the role as "user" and nests a tool_result block
+    whose payload sits under "content", not "text". Reading only "text" dropped the
+    whole of the second form, so tool output was invisible to every rule that
+    inspects prompt content.
+    """
+    string_body = {
+        "messages": [{"role": "user", "content": [{"type": "tool_result", "content": "fetched page text"}]}]
+    }
+    assert "fetched page text" in collector.extract_user_prompt(string_body)
+
+    list_body = {
+        "messages": [
+            {
+                "role": "user",
+                "content": [{"type": "tool_result", "content": [{"type": "text", "text": "nested result"}]}],
+            }
+        ]
+    }
+    assert "nested result" in collector.extract_user_prompt(list_body)
+
+
+def test_tool_result_extraction_tolerates_malformed_blocks():
+    request = {"messages": [{"role": "user", "content": [None, 42, {"no": "keys"}, {"content": None}]}]}
+    assert collector.extract_user_prompt(request) == ""
+
+
 def test_missing_or_odd_request_yields_empty_prompt():
     assert collector.extract_user_prompt(None) == ""
     assert collector.extract_user_prompt("not a dict") == ""
