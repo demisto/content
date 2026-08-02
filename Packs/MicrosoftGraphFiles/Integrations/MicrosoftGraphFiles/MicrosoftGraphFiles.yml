@@ -1155,7 +1155,7 @@ script:
     - contextPath: MsGraphFiles.AssignedSensitivityLabel.location
       description: URL returned in the Microsoft Graph Location response header. Microsoft Graph treats assignSensitivityLabel as a long-running operation; poll this URL to track the operation's completion status.
       type: String
-  dockerimage: demisto/crypto:1.0.0.8931184
+  dockerimage: demisto/crypto:1.0.0.10120494
   script: ''
   subtype: python3
   type: python
