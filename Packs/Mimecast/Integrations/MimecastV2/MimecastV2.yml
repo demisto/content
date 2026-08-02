@@ -2617,11 +2617,15 @@ script:
       - envelope_from
       - header_from
       - both
-    - description: "Must be 'true' when fromType is 'everyone'. Prevents accidental blocking of all senders."
+    - auto: PREDEFINED
+      description: Whether to confirm blocking all senders. Must be 'true' when fromType is 'everyone' to prevent accidental blocking of all senders.
       name: confirm_block_all
-    - description: Policy start date in ISO 8601 format.
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The policy start date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       name: from_date
-    - description: Policy end date in ISO 8601 format.
+    - description: The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       name: to_date
   - name: mimecast-list-policies
     description: List all existing Mimecast blocked sender policies.

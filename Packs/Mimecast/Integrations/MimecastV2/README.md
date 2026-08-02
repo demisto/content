@@ -2238,9 +2238,9 @@ Gateway | Policies | Edit
 | fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email_domain. | Optional |
 | toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email_domain. | Optional |
 | fromPart | The part from where addresses are pulled. Possible values are: envelope_from, header_from, both. | Optional |
-| confirm_block_all | Must be 'true' when fromType is 'everyone'. Prevents accidental blocking of all senders. | Optional |
-| from_date | Policy start date in ISO 8601 format. | Optional |
-| to_date | Policy end date in ISO 8601 format. | Optional |
+| confirm_block_all | Whether to confirm blocking all senders. Must be 'true' when fromType is 'everyone' to prevent accidental blocking of all senders. Possible values are: true, false. | Optional |
+| from_date | The policy start date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| to_date | The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 
 #### Context Output
 
