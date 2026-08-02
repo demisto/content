@@ -2209,6 +2209,9 @@ async def test_check_entitlement(mocker):
     message6 = "hi test@demisto.com name-of-someone@mail-of-someone goodbye"
     message7 = "hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22_1|43 goodbye"
     message8 = "hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22_2 goodbye"
+    # Cortex Platform Case War Room ids look like 'INCIDENT-12' (XSUP-73616)
+    message9 = "hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@INCIDENT-12 goodbye"
+    message10 = "hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@INCIDENT-12|43 goodbye"
 
     # Arrange
     result1 = await check_and_handle_entitlement(message1, user, "")
@@ -2219,6 +2222,8 @@ async def test_check_entitlement(mocker):
     result6 = await check_and_handle_entitlement(message6, user, "")
     result7 = await check_and_handle_entitlement(message7, user, "")
     result8 = await check_and_handle_entitlement(message8, user, "")
+    result9 = await check_and_handle_entitlement(message9, user, "")
+    result10 = await check_and_handle_entitlement(message10, user, "")
 
     result1_args = demisto.handleEntitlementForUser.call_args_list[0][0]
     result2_args = demisto.handleEntitlementForUser.call_args_list[1][0]
@@ -2226,6 +2231,8 @@ async def test_check_entitlement(mocker):
     result4_args = demisto.handleEntitlementForUser.call_args_list[3][0]
     result7_args = demisto.handleEntitlementForUser.call_args_list[4][0]
     result8_args = demisto.handleEntitlementForUser.call_args_list[5][0]
+    result9_args = demisto.handleEntitlementForUser.call_args_list[6][0]
+    result10_args = demisto.handleEntitlementForUser.call_args_list[7][0]
 
     assert result1 == "Thank you for your response."
     assert result2 == "Thank you for your response."
@@ -2235,8 +2242,10 @@ async def test_check_entitlement(mocker):
     assert result6 == ""
     assert result7 == "Thank you for your response."
     assert result8 == "Thank you for your response."
+    assert result9 == "Thank you for your response."
+    assert result10 == "Thank you for your response."
 
-    assert demisto.handleEntitlementForUser.call_count == 6
+    assert demisto.handleEntitlementForUser.call_count == 8
 
     assert result1_args[0] == "e093ba05-3f3c-402e-81a7-149db969be5d"  # incident ID
     assert result1_args[1] == "4404dae8-2d45-46bd-85fa-64779c12abe8"  # GUID
@@ -2273,6 +2282,19 @@ async def test_check_entitlement(mocker):
     assert result8_args[2] == "test@demisto.com"
     assert result8_args[3] == "hi test@demisto.com  goodbye"
     assert result8_args[4] == ""
+
+    # Case War Room id 'INCIDENT-12' must be recognized and routed (XSUP-73616)
+    assert result9_args[0] == "INCIDENT-12"
+    assert result9_args[1] == "4404dae8-2d45-46bd-85fa-64779c12abe8"
+    assert result9_args[2] == "test@demisto.com"
+    assert result9_args[3] == "hi test@demisto.com  goodbye"
+    assert result9_args[4] == ""
+
+    assert result10_args[0] == "INCIDENT-12"
+    assert result10_args[1] == "4404dae8-2d45-46bd-85fa-64779c12abe8"
+    assert result10_args[2] == "test@demisto.com"
+    assert result10_args[3] == "hi test@demisto.com  goodbye"
+    assert result10_args[4] == "43"
 
 
 @pytest.mark.asyncio
