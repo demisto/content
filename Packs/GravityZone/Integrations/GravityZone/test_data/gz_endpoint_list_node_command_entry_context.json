@@ -1,0 +1,15 @@
+{
+    "GravityZone.EndpointsList(val.ID && val.ID == obj.ID)": [
+        {
+            "ID": "6940eb0b646e8e69399ce4a6",
+            "Hostname": "ABC",
+            "IP": "IP_214",
+            "OS": "Windows 10 Enterprise",
+            "MAC": "ABC_MAC",
+            "Vendor": "GravityZone",
+            "FQDN": "ABC",
+            "CompanyID": "COMPANY_ID",
+            "GroupID": "GROUP_ID"
+        }
+    ]
+}
