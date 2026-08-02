@@ -10859,7 +10859,7 @@ class TestAssetsDeviceHandler:
             data_type="assets",
         )
 
-        assert res2 == 2
+        assert res2 == (2, 0)
         mock_save_callback.assert_called()
         mock_save_callback.reset_mock()
 
@@ -10878,7 +10878,7 @@ class TestAssetsDeviceHandler:
             data_type="assets",
         )
 
-        assert res1 == 2
+        assert res1 == (2, 0)
         mock_save_callback.assert_not_called()
 
     def test_state_persistence_structure(self, mocker):
