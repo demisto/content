@@ -19,6 +19,7 @@
 /Packs/PAN-OS/Integrations/ @lironcohen272
 
 # Important Integrations
+/Packs/QRadar/Integrations/QRadar_v3/* @ilappe
 /Packs/Slack/Integrations/* @amshamah419 @rshunim
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
 /Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419
