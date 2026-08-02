@@ -9901,6 +9901,8 @@ class TestSpotlightSeverityBasedFetch:
             "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page",
             side_effect=page_side_effect,
         )
+        # Skip the real retry backoff so the test stays fast.
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
 
         # Disable stdout capture since this test intentionally triggers a shrink warning log.
         with capfd.disabled():
@@ -9944,6 +9946,8 @@ class TestSpotlightSeverityBasedFetch:
             "CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page",
             side_effect=always_truncated,
         )
+        # Skip the real retry backoff so the test stays fast.
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
 
         with capfd.disabled(), pytest.raises(_json.JSONDecodeError):
             await fetch_spotlight_page_with_shrink(
@@ -9952,6 +9956,167 @@ class TestSpotlightSeverityBasedFetch:
                 filter_query="filter",
                 severity="HIGH",
             )
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_page_with_shrink_backs_off_between_attempts(self, mocker, capfd):
+        """
+        Tests Fix 2 (P1): consecutive shrink attempts are separated by an escalating backoff.
+
+        Given:
+            - The attempts at limit 5000 and 2500 raise json.JSONDecodeError.
+            - The attempt at limit 1000 succeeds.
+        When:
+            - fetch_spotlight_page_with_shrink is called.
+        Then:
+            - A backoff sleep is awaited before each retry (never before the first attempt).
+            - The backoff delays escalate according to SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS.
+        """
+        import json as _json
+        from CrowdStrikeFalcon import SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS, fetch_spotlight_page_with_shrink
+
+        mock_client = mocker.AsyncMock()
+        good_vulns = [{"id": "v1", "aid": "aid1"}]
+
+        async def page_side_effect(client, after_token, filter_query, limit):
+            if limit in (5000, 2500):
+                raise _json.JSONDecodeError("Unterminated string", doc="{", pos=0)
+            return good_vulns, {"resources": good_vulns, "meta": {"pagination": {"after": None}}}
+
+        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page", side_effect=page_side_effect)
+        sleep_mock = mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
+
+        with capfd.disabled():
+            vulns, _ = await fetch_spotlight_page_with_shrink(
+                client=mock_client,
+                after_token="tok_same",
+                filter_query="filter",
+                severity="HIGH",
+            )
+
+        assert vulns == good_vulns
+        # Two failures => exactly two backoff sleeps, and none before the very first attempt.
+        actual_delays = [call.args[0] for call in sleep_mock.call_args_list]
+        assert actual_delays == SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS[:2]
+        # The backoff must escalate rather than stay flat.
+        assert actual_delays[1] > actual_delays[0]
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_page_with_shrink_recovers_from_retry_error(self, mocker, capfd):
+        """
+        Tests the transient upstream 500 storm (XSUP-71944): a ContentClientRetryError is retried.
+
+        Given:
+            - The first attempt raises ContentClientRetryError ("Exceeded retry attempts"),
+              which is what an upstream HTTP 500 storm surfaces as.
+            - The next attempt succeeds.
+        When:
+            - fetch_spotlight_page_with_shrink is called.
+        Then:
+            - The page is fetched successfully instead of killing the severity.
+            - The same after_token is reused (no rows skipped).
+        """
+        from ContentClientApiModule import ContentClientRetryError
+        from CrowdStrikeFalcon import fetch_spotlight_page_with_shrink
+
+        mock_client = mocker.AsyncMock()
+        good_vulns = [{"id": "v1", "aid": "aid1"}]
+        calls = []
+
+        async def page_side_effect(client, after_token, filter_query, limit):
+            calls.append({"after_token": after_token, "limit": limit})
+            if len(calls) == 1:
+                raise ContentClientRetryError("Exceeded retry attempts: Service error")
+            return good_vulns, {"resources": good_vulns, "meta": {"pagination": {"after": None}}}
+
+        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page", side_effect=page_side_effect)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
+
+        with capfd.disabled():
+            vulns, _ = await fetch_spotlight_page_with_shrink(
+                client=mock_client,
+                after_token="tok_same",
+                filter_query="filter",
+                severity="HIGH",
+            )
+
+        assert vulns == good_vulns
+        assert len(calls) == 2
+        assert calls[0]["after_token"] == "tok_same"
+        assert calls[1]["after_token"] == "tok_same"
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_page_with_shrink_raises_on_persistent_retry_error(self, mocker, capfd):
+        """
+        Tests the transient upstream 500 storm (XSUP-71944): a persistent outage still fails loudly.
+
+        Given:
+            - Every attempt across the whole shrink ladder raises ContentClientRetryError.
+        When:
+            - fetch_spotlight_page_with_shrink is called.
+        Then:
+            - ContentClientRetryError is raised after the ladder is exhausted.
+            - Every rung of the ladder was attempted.
+        """
+        from ContentClientApiModule import ContentClientRetryError
+        from CrowdStrikeFalcon import SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER, fetch_spotlight_page_with_shrink
+
+        mock_client = mocker.AsyncMock()
+        calls = []
+
+        async def always_retry_error(client, after_token, filter_query, limit):
+            calls.append(limit)
+            raise ContentClientRetryError("Exceeded retry attempts: Service error")
+
+        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page", side_effect=always_retry_error)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
+
+        with capfd.disabled(), pytest.raises(ContentClientRetryError):
+            await fetch_spotlight_page_with_shrink(
+                client=mock_client,
+                after_token="tok",
+                filter_query="filter",
+                severity="HIGH",
+            )
+
+        assert calls == SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_page_with_shrink_does_not_retry_non_transient_errors(self, mocker, capfd):
+        """
+        Tests that non-transient failures are NOT burned through the shrink ladder.
+
+        Given:
+            - The first attempt raises a generic ContentClientError, which is how a dead
+              pagination cursor (HTTP 404 "Search context expired") surfaces.
+        When:
+            - fetch_spotlight_page_with_shrink is called.
+        Then:
+            - The error propagates immediately without consuming the ladder or sleeping,
+              because shrinking the page cannot revive an expired cursor.
+        """
+        from ContentClientApiModule import ContentClientError
+        from CrowdStrikeFalcon import fetch_spotlight_page_with_shrink
+
+        mock_client = mocker.AsyncMock()
+        calls = []
+
+        async def expired_cursor(client, after_token, filter_query, limit):
+            calls.append(limit)
+            raise ContentClientError("Request failed: Search context expired, 'after' key no longer valid")
+
+        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page", side_effect=expired_cursor)
+        sleep_mock = mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
+
+        with capfd.disabled(), pytest.raises(ContentClientError):
+            await fetch_spotlight_page_with_shrink(
+                client=mock_client,
+                after_token="tok",
+                filter_query="filter",
+                severity="MEDIUM",
+            )
+
+        assert calls == [5000]
+        sleep_mock.assert_not_awaited()
 
     @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_send_failure_is_skipped_not_counted(self, mocker, capfd):

@@ -98,6 +98,12 @@ MAX_SPOTLIGHT_VULNERABILITY_PAGE_SIZE = 2500
 # When that happens we re-request the SAME page (same after token) with progressively smaller
 # limits. If the smallest limit still fails, the severity fetch fails with a clear error.
 SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER = [MAX_FETCH_SPOTLIGHT_ASSETS, 2500, 1000, 500]
+# Escalating backoff (seconds) applied BEFORE each retry in the shrink ladder. Observed truncation
+# offsets range from ~0.9 MB to ~23 MB, which points at a transient upstream/gateway fault rather
+# than a deterministic payload-size limit. Retrying back-to-back can therefore land every attempt
+# inside the same bad window, so each retry waits progressively longer. One entry per retry, i.e.
+# len(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER) - 1.
+SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS = [2, 5, 15]
 MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
 SPOTLIGHT_LOOKBACK_DAYS = 100  # Only fetch vulnerabilities updated within this many days (bounds dataset size)
 # Fixed period between Spotlight fetch cycle starts when running as a long-running instance.
@@ -4742,15 +4748,24 @@ async def wait_for_background_tasks(pending_tasks: set[asyncio.Task], task_descr
 async def fetch_spotlight_page_with_shrink(
     client: ContentClient, after_token: str | None, filter_query: str, severity: str
 ) -> tuple[list, dict]:
-    """Fetch a single Spotlight page, recovering from oversized-page JSON truncation (Fix 2, P1).
+    """Fetch a single Spotlight page, recovering from transient page-level failures (Fix 2, P1).
 
     The ``/spotlight/combined/vulnerabilities/v1`` endpoint with the ``cve`` facet can return
     10-16 MB pages that are occasionally truncated mid-stream, raising ``json.JSONDecodeError``
-    ("Unterminated string"). Historically this aborted the entire severity fetch. Instead, this
-    helper retries the SAME page (same ``after_token``) with progressively smaller page sizes from
-    ``SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER`` (5000 -> 2500 -> 1000 -> 500). The next page (a new
-    ``after_token``) automatically reverts to the default limit because each call starts the ladder
-    from the top.
+    ("Unterminated string"). The same page can also fail with ``ContentClientRetryError`` when an
+    upstream HTTP 500 storm exhausts the client's own retries. Historically either failure aborted
+    the entire severity fetch, leaving the snapshot permanently unsealed.
+
+    Instead, this helper retries the SAME page (same ``after_token``) with progressively smaller
+    page sizes from ``SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER`` (5000 -> 2500 -> 1000 -> 500), waiting an
+    escalating ``SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS`` delay before each retry so a transient
+    upstream fault has time to clear. The next page (a new ``after_token``) automatically reverts to
+    the default limit because each call starts the ladder from the top.
+
+    Only transient failures are retried. A non-transient ``ContentClientError`` (for example the
+    HTTP 404 "Search context expired, 'after' key no longer valid" raised by a dead cursor)
+    propagates immediately, because shrinking the page cannot revive an expired cursor and burning
+    the ladder would only delay the inevitable failure.
 
     Args:
         client: ContentClient instance for API calls.
@@ -4762,26 +4777,36 @@ async def fetch_spotlight_page_with_shrink(
         Tuple of (vulnerabilities_list, response_data) for the successfully fetched page.
 
     Raises:
-        json.JSONDecodeError: If even the smallest page size in the ladder is still truncated.
+        json.JSONDecodeError: If every page size in the ladder is still truncated.
+        ContentClientRetryError: If the upstream fault persists across the whole ladder.
     """
-    last_error: json.JSONDecodeError | None = None
-    for attempt_limit in SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER:
+    last_error: Exception | None = None
+    last_rung_index = len(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER) - 1
+
+    for rung_index, attempt_limit in enumerate(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER):
         try:
             return await fetch_spotlight_vulnerabilities_page(
                 client=client, after_token=after_token, filter_query=filter_query, limit=attempt_limit
             )
-        except json.JSONDecodeError as e:
+        except (json.JSONDecodeError, ContentClientRetryError) as e:
             last_error = e
+            reason = "oversized-page JSON truncation" if isinstance(e, json.JSONDecodeError) else "exhausted upstream retries"
+            if rung_index == last_rung_index:
+                break
+
+            backoff_seconds = SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS[rung_index]
             log_falcon_assets(
-                f"[{severity}] Oversized-page JSON truncation at limit={attempt_limit} "
-                f"(same after token). Shrinking and retrying the same page. Error: {e}",
+                f"[{severity}] Transient page failure ({reason}) at limit={attempt_limit} "
+                f"(same after token). Backing off {backoff_seconds}s, then retrying the same page "
+                f"at limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[rung_index + 1]}. Error: {e}",
                 "warning",
             )
+            await asyncio.sleep(backoff_seconds)
 
-    # Exhausted the shrink ladder — the smallest page size is still truncated.
+    # Exhausted the shrink ladder — the page is still failing at the smallest size.
     log_falcon_assets(
-        f"[{severity}] Failed to fetch Spotlight page after shrinking to the smallest limit "
-        f"({SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[-1]}); response is still truncated (Unterminated string).",
+        f"[{severity}] Failed to fetch Spotlight page after exhausting the shrink ladder down to "
+        f"limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[-1]}. Last error: {last_error}",
         "error",
     )
     # The ladder is non-empty, so last_error is always set once the loop exits without returning.
