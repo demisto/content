@@ -190,6 +190,117 @@ class TestBoxCollectEvents:
         # The limit used for the fetch must be clamped to the maximum, not the requested value.
         assert captured["limit"] == MAX_EVENTS_PER_FETCH_LIMIT
 
+    def test_fetch_events_resumes_from_stored_stream_position(self, mocker, requests_mock):
+        """A subsequent fetch must resume from the persisted `stream_position`.
+
+        After the backlog is chunked across cycles (XSUP-72996 cap), the next cycle relies on the
+        stored cursor. This simulates the merged `getLastRun` state by seeding `stream_position` in
+        params and asserts the very first request carries it, so no events are re-fetched or skipped.
+        """
+        params = self.params.copy()
+        params["stream_position"] = "12345"  # simulates demisto.getLastRun() from a previous cycle
+        mocked_request = requests_mock.get(
+            "https://api.box.com/2.0/events",
+            [
+                {"json": {"next_stream_position": "12346", "entries": [{"id": "e1"}]}},
+                {"json": {"next_stream_position": "12346", "entries": []}},
+            ],
+        )
+        last_run = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch("BoxEventsCollector.send_events_to_xsiam")
+        main("fetch-events", params)
+
+        # The first outgoing request must resume from the stored cursor, not from created_after.
+        assert mocked_request.request_history[0].qs["stream_position"] == ["12345"]
+        # And the new cursor is persisted for the following cycle.
+        assert last_run.call_args_list[0].args[0] == {"stream_position": "12346"}
+
+    def test_legacy_page_size_param_is_ignored(self, mocker, requests_mock):
+        """A stale `page_size` left in an upgraded instance's config must be ignored.
+
+        `page_size` was removed from the YAML; the request page size is now fixed at PAGE_SIZE.
+        This guards the live-customer upgrade path where the old value (e.g. "50") is still stored.
+        """
+        from BoxEventsCollector import PAGE_SIZE
+
+        params = self.params.copy()
+        params["page_size"] = "50"  # legacy value from a pre-upgrade instance
+        mocked_request = requests_mock.get(
+            "https://api.box.com/2.0/events",
+            [
+                {"json": {"next_stream_position": "1", "entries": [{"id": "e1"}]}},
+                {"json": {"next_stream_position": "1", "entries": []}},
+            ],
+        )
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch("BoxEventsCollector.send_events_to_xsiam")
+        main("fetch-events", params)
+
+        # The stale page_size=50 must NOT be used; the request page size stays at PAGE_SIZE.
+        assert mocked_request.request_history[0].qs["limit"] == [str(PAGE_SIZE)]
+
+    def test_cap_lands_exactly_on_page_boundary(self, mocker, requests_mock):
+        """When the cap is an exact multiple of the page size, the run stops cleanly on the boundary.
+
+        Two full pages of PAGE_SIZE fill the budget exactly; the `remaining <= 0` break must fire
+        without requesting a third (shrunk) page, and without dropping any event.
+        """
+        from BoxEventsCollector import PAGE_SIZE
+
+        params = self.params.copy()
+        params["max_events_per_fetch"] = PAGE_SIZE * 2  # exactly two full pages
+
+        state = {"counter": 0}
+
+        def callback(request, context):
+            requested = int(request.qs.get("limit", [str(PAGE_SIZE)])[0])
+            entries = []
+            for _ in range(requested):
+                state["counter"] += 1
+                entries.append({"id": f"e{state['counter']}"})
+            return {"next_stream_position": str(state["counter"]), "entries": entries}
+
+        mocked = requests_mock.get("https://api.box.com/2.0/events", json=callback)
+        last_run = mocker.patch.object(demisto, "setLastRun")
+        send_events_to_xsiam = mocker.patch("BoxEventsCollector.send_events_to_xsiam")
+        main("fetch-events", params)
+
+        pushed = send_events_to_xsiam.call_args_list[0].args[0]
+        # Exactly two full pages, no overshoot, no loss.
+        assert len(pushed) == PAGE_SIZE * 2
+        # Only two requests were made (both full pages); no extra shrunk third call.
+        requested_limits = [req.qs["limit"][0] for req in mocked.request_history]
+        assert requested_limits == [str(PAGE_SIZE), str(PAGE_SIZE)]
+        assert last_run.call_args_list[0].args[0] == {"stream_position": str(PAGE_SIZE * 2)}
+
+    def test_test_module_requests_single_event_and_returns_ok(self, mocker, requests_mock):
+        """test-module caps the fetch to a single event and reports success."""
+        mocked_request = requests_mock.get(
+            "https://api.box.com/2.0/events",
+            json={"next_stream_position": "0", "entries": []},
+        )
+        results = mocker.patch.object(demisto, "results")
+        main("test-module", self.params)
+
+        # test-module fixes options.limit = 1, so the first request asks for a single event.
+        assert mocked_request.request_history[0].qs["limit"] == ["1"]
+        assert results.call_args_list[0].args[0] == "ok"
+
+    def test_fetch_events_empty_first_page(self, mocker, requests_mock):
+        """A zero-backlog first page pushes no events but still persists a stream_position."""
+        params = self.params.copy()
+        requests_mock.get(
+            "https://api.box.com/2.0/events",
+            json={"next_stream_position": "777", "entries": []},
+        )
+        last_run = mocker.patch.object(demisto, "setLastRun")
+        send_events_to_xsiam = mocker.patch("BoxEventsCollector.send_events_to_xsiam")
+        main("fetch-events", params)
+
+        # Nothing to push, but the cursor advances so the next cycle starts from the right place.
+        assert len(send_events_to_xsiam.call_args_list[0].args[0]) == 0
+        assert last_run.call_args_list[0].args[0] == {"stream_position": "777"}
+
     @pytest.fixture(autouse=True, scope="function")
     def remove_authentication(self, mocker):
         """We don't need to authenticate in the test functions"""
