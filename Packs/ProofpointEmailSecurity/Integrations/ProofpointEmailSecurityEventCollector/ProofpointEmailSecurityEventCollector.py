@@ -28,8 +28,11 @@ BASE_BACKOFF_SECONDS = 2
 EVENT_TYPES = ["message", "maillog", "audit"]
 DEFAULT_GET_EVENTS_LIMIT = 10
 DATE_FILTER_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
-PING_TIMEOUT = 60  # Timeout for keepalive pings in seconds
+PING_INTERVAL = 60  # Interval between keepalive pings in seconds
+PING_TIMEOUT = 120  # Timeout for waiting for a pong reply to a keepalive ping in seconds
+OPEN_TIMEOUT = 10  # Timeout for opening the WebSocket connection in seconds
 CLOSE_TIMEOUT = 60  # Timeout for closing the connection in seconds
+MAX_MESSAGE_SIZE: int | None = None  # Disable the 1 MiB default size limit on incoming messages
 RECEIVE_TIMEOUT = 1  # Timeout for receiving events in seconds
 
 
@@ -58,8 +61,28 @@ class EventConnection:
     def connect(self) -> Connection:
         """
         Establish a new WebSocket connection.
+
+        Parameters are aligned with Proofpoint's official reference client
+        (see ``logstream-client.ini`` ``[Websocket]`` section):
+
+        * ``max_size=None`` disables the websockets library's default 1 MiB cap on incoming
+          frames. Proofpoint may emit messages larger than 1MB; without this the server tears
+          the connection down with code 1011 (internal error) and the client subsequently
+          fails to re-establish the TLS session ("[Errno 104] Connection reset by peer").
+        * ``ping_timeout=None`` disables pong-reply enforcement, preventing the keep-alive
+          watchdog from killing the socket while a large message is being received/decoded.
+        * ``ping_interval``, ``open_timeout`` and ``close_timeout`` mirror the reference
+          client defaults.
         """
-        return connect(self.url, additional_headers=self.headers, ping_timeout=PING_TIMEOUT, close_timeout=CLOSE_TIMEOUT)
+        return connect(
+            self.url,
+            additional_headers=self.headers,
+            open_timeout=OPEN_TIMEOUT,
+            close_timeout=CLOSE_TIMEOUT,
+            ping_interval=PING_INTERVAL,
+            ping_timeout=PING_TIMEOUT,
+            max_size=MAX_MESSAGE_SIZE,
+        )
 
     @property
     def is_to_archive(self) -> bool:
@@ -401,7 +424,13 @@ def recover_after_disconnection(connection: EventConnection, events: list[dict],
     )
     if reconnect:
         demisto.info(f"[{connection.event_type}] Attempting to reconnect after disconnection.")
-        connection.reconnect()
+        try:
+            connection.reconnect()
+        except Exception as e:
+            demisto.error(
+                f"[{connection.event_type}] Failed to reconnect after disconnection. Error: {e}. {traceback.format_exc()}"
+            )
+            raise
 
 
 def test_module(host: str, cluster_id: str, api_key: str):

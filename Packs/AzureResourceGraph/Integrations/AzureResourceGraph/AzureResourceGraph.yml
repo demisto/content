@@ -111,7 +111,7 @@ script:
       description: Data returned from query.
       type: String
     description: 'Executes a given Azure Resource Graph Query. (Ex: query="Resources | project name, type | limit 5 | order by name asc").'
-  dockerimage: demisto/crypto:1.0.0.8187750
+  dockerimage: demisto/crypto:1.0.0.10120494
   runonce: false
   script: ''
   subtype: python3

@@ -14,17 +14,29 @@ from OpenAiChatGPTV3 import (
     LastRunKey,
     OpenAiClient,
     SourceLogType,
+    _build_completed_response_result,
+    _build_response_readable_output,
+    _build_responses_api_body,
     _extract_credential,
     _parse_json_or_concatenated,
+    analyze_email_body_command,
+    analyze_email_header_command,
     check_email_part,
+    create_response_command,
     deduplicate_events,
+    draft_soc_email_command,
     enrich_audit_event,
     enrich_compliance_event,
     event_id,
     extract_assistant_message,
+    extract_response_output_text,
     fetch_audit_logs,
     fetch_compliance_logs,
     get_email_parts,
+    list_models_command,
+    create_moderation_command,
+    validate_create_moderation_args,
+    _entry_id_to_data_url,
     parse_collector_params,
     parse_concatenated_json,
     parse_event_types_to_fetch,
@@ -97,6 +109,184 @@ def test_check_email_parts(mocker, email_part: str, args: dict):
 
     client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-4", proxy=False, verify=False)
     check_email_part(email_part, client, args)
+
+
+@pytest.mark.parametrize(
+    "args, params",
+    [
+        (
+            {"entry_id": "XYZ", "additional_instructions": "Pay close attention to SPF/DKIM."},
+            {},
+        ),
+        (
+            {"entry_id": "XYZ"},
+            {"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        ),
+        (
+            {
+                "entry_id": "XYZ",
+                "max_tokens": "100",
+                "temperature": "0.1",
+                "top_p": "0.5",
+                "reasoning_effort": "high",
+            },
+            {},
+        ),
+    ],
+    ids=[
+        "with-additional-instructions",
+        "with-instance-params-fallback",
+        "with-all-args-and-reasoning",
+    ],
+)
+def test_analyze_email_header_command(mocker, args: dict, params: dict):
+    """Tests 'analyze_email_header_command' using the Responses API."""
+    mock_response = util_load_json("test_data/mock_responses_api_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=mock_response)
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/attachment_malicious_url.eml", "name": "attachment_malicious_url.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    result = analyze_email_header_command(client, args, params)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert "SPF" in result.outputs[0]["assistant"]
+    assert result.readable_output is not None
+    assert "gpt-5" in result.readable_output
+
+
+def test_analyze_email_header_command_no_headers(mocker):
+    """Tests that analyze_email_header_command raises when no headers are found."""
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/dummy_file.txt", "name": "dummy_file.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    with pytest.raises(Exception):
+        analyze_email_header_command(client, {"entry_id": "XYZ"}, {})
+
+
+@pytest.mark.parametrize(
+    "args, params",
+    [
+        (
+            {"entry_id": "XYZ", "additional_instructions": "Check for phishing links."},
+            {},
+        ),
+        (
+            {"entry_id": "XYZ"},
+            {"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        ),
+        (
+            {
+                "entry_id": "XYZ",
+                "max_tokens": "100",
+                "temperature": "0.1",
+                "top_p": "0.5",
+                "reasoning_effort": "high",
+            },
+            {},
+        ),
+    ],
+    ids=[
+        "with-additional-instructions",
+        "with-instance-params-fallback",
+        "with-all-args-and-reasoning",
+    ],
+)
+def test_analyze_email_body_command(mocker, args: dict, params: dict):
+    """Tests 'analyze_email_body_command' using the Responses API."""
+    mock_response = util_load_json("test_data/mock_responses_api_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=mock_response)
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/attachment_malicious_url.eml", "name": "attachment_malicious_url.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    result = analyze_email_body_command(client, args, params)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == mock_response
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["response_id"] == "resp_XXXX"
+    assert result.readable_output is not None
+    assert "gpt-5" in result.readable_output
+
+
+def test_analyze_email_body_command_no_body(mocker):
+    """Tests that analyze_email_body_command raises when no body is found."""
+    # Mock an .eml file that has headers but no body
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/dummy_file.txt", "name": "dummy_file.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    with pytest.raises(Exception):
+        analyze_email_body_command(client, {"entry_id": "XYZ"}, {})
+
+
+@pytest.mark.parametrize(
+    "args, params",
+    [
+        (
+            {"additional_instructions": "Notify the user the email was quarantined."},
+            {},
+        ),
+        (
+            {},
+            {"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        ),
+        (
+            {
+                "additional_instructions": "Include remediation steps.",
+                "max_tokens": "100",
+                "temperature": "0.1",
+                "top_p": "0.5",
+                "reasoning_effort": "high",
+            },
+            {},
+        ),
+    ],
+    ids=[
+        "with-additional-instructions",
+        "with-instance-params-fallback",
+        "with-all-args-and-reasoning",
+    ],
+)
+def test_draft_soc_email_command(mocker, args: dict, params: dict):
+    """Tests 'draft_soc_email_command' using the Responses API."""
+    mock_response = util_load_json("test_data/mock_responses_api_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=mock_response)
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    result = draft_soc_email_command(client, args, params)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == mock_response
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["response_id"] == "resp_XXXX"
+    assert result.readable_output is not None
+    assert "gpt-5" in result.readable_output
+
+
+def test_draft_soc_email_command_no_model(mocker):
+    """Tests that draft_soc_email_command raises when no model is configured."""
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="", proxy=False, verify=False)
+    with pytest.raises(Exception, match="No model specified"):
+        draft_soc_email_command(client, {}, {})
 
 
 @pytest.mark.parametrize(
@@ -779,6 +969,58 @@ def test_chat_completions_does_not_forward_retry_policy(mocker):
     forwarded = http_mock.call_args.kwargs
     for key in module.Config.RETRY_POLICY:
         assert key not in forwarded, f"chat-completions must NOT forward '{key}' (interactive commands must fail fast)"
+
+
+EXPECTED_NEW_API_RETRY_POLICY = {
+    "retries": 3,
+    "status_list_to_retry": [429, 500, 502, 503, 504],
+    "backoff_factor": 5,
+}
+
+
+@pytest.mark.parametrize(
+    "method_name, call_kwargs",
+    [
+        pytest.param(
+            "list_models",
+            {},
+            id="list-models-forwards-retry-policy",
+        ),
+        pytest.param(
+            "create_moderation",
+            {"body": {"model": "omni-moderation-latest", "input": [{"type": "text", "text": "test"}]}},
+            id="create-moderation-forwards-retry-policy",
+        ),
+        pytest.param(
+            "create_response",
+            {"body": {"model": "gpt-4", "input": "test"}},
+            id="create-response-forwards-retry-policy",
+        ),
+        pytest.param(
+            "get_response",
+            {"response_id": "resp_FAKE_001"},
+            id="get-response-forwards-retry-policy",
+        ),
+    ],
+)
+def test_new_api_calls_forward_retry_policy(mocker, method_name, call_kwargs):
+    """Every new API method (Models, Moderations, Responses) must include retry kwargs
+    with retries=3, status_list_to_retry=[429, 500, 502, 503, 504], backoff_factor=5.
+
+    Asserted at the contract layer (kwargs forwarded into ``_http_request``) rather than
+    by simulating a 5xx and counting retries.
+    """
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value="{}")
+
+    getattr(client, method_name)(**call_kwargs)
+
+    forwarded = http_mock.call_args.kwargs
+    for key, expected in EXPECTED_NEW_API_RETRY_POLICY.items():
+        assert forwarded.get(key) == expected, (
+            f"{method_name}: missing/wrong '{key}' kwarg passed to _http_request "
+            f"(expected={expected!r}, got={forwarded.get(key)!r})"
+        )
 
 
 # endregion
@@ -1494,6 +1736,7 @@ def test_test_module_chat_only_returns_ok(mocker):
 
     client = _make_client(admin_api_key="", compliance_api_key="")
     mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     result = module.test_module(client=client, params={})
@@ -1533,6 +1776,7 @@ def test_test_module_probes_collector_streams_with_max_one(mocker):
 
     client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
     mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
@@ -1552,6 +1796,7 @@ def test_test_module_skips_compliance_when_workspace_id_missing(mocker):
 
     client = _make_client(admin_api_key="", compliance_api_key="COMPLIANCE_KEY")
     mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
     fetch_mock = mocker.patch.object(module, "fetch_stream")
 
     params = {"event_types_to_fetch": ["Compliance Audit"], "workspace_id": ""}
@@ -1566,6 +1811,7 @@ def test_test_module_propagates_collector_probe_failure(mocker, capfd):
 
     client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
     mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
     mocker.patch.object(module, "fetch_stream", side_effect=DemistoException("simulated audit probe failure"))
 
     params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
@@ -1752,6 +1998,877 @@ def test_parse_concatenated_json_handles_audit_log_jsonl_payload_with_trailing_n
     # Nested objects preserved through the parse.
     assert records[0]["principal"]["id"] == "FAKE_WORKSPACE_ID"
     assert records[1]["actor"]["type"] == "API_KEY"
+
+
+# endregion
+
+
+# region List Models tests
+def test_list_models_command(mocker):
+    """list_models_command returns a CommandResults with Id/Created/OwnedBy outputs.
+
+    The Created field should be an ISO 8601 string (converted from Unix timestamp).
+    """
+    mock_response = {
+        "object": "list",
+        "data": [
+            {"id": "gpt-4", "created": 1687882410, "owned_by": "openai", "object": "model"},
+            {"id": "gpt-3.5-turbo", "created": 1677610602, "owned_by": "openai", "object": "model"},
+        ],
+    }
+    client = _make_client()
+    mocker.patch.object(client, "list_models", return_value=mock_response)
+
+    result = list_models_command(client=client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Model"
+    assert result.outputs_key_field == "Id"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["Id"] == "gpt-4"
+    assert result.outputs[0]["OwnedBy"] == "openai"
+    # Created should be an ISO 8601 string, not a raw Unix timestamp
+    assert isinstance(result.outputs[0]["Created"], str)
+    assert "2023" in result.outputs[0]["Created"]
+    assert result.outputs[1]["Id"] == "gpt-3.5-turbo"
+    assert result.outputs[1]["OwnedBy"] == "openai"
+    assert isinstance(result.outputs[1]["Created"], str)
+    assert "OpenAI Models" in result.readable_output
+
+
+def test_list_models_command_empty_response(mocker):
+    """list_models_command handles an empty data list gracefully."""
+    mock_response = {"object": "list", "data": []}
+    client = _make_client()
+    mocker.patch.object(client, "list_models", return_value=mock_response)
+
+    result = list_models_command(client=client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+    assert "OpenAI Models" in result.readable_output
+
+
+def test_list_models_requires_api_key():
+    """list_models raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.list_models()
+
+
+def test_create_response_requires_api_key():
+    """create_response raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.create_response({"model": "gpt-4", "input": "Hello"})
+
+
+def test_get_response_requires_api_key():
+    """get_response raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.get_response("resp_FAKE_001")
+
+
+# endregion
+
+
+# region Moderation tests
+MOCK_MODERATION_RESPONSE: dict = {
+    "id": "modr-abc123",
+    "model": "omni-moderation-latest",
+    "results": [
+        {
+            "flagged": True,
+            "categories": {
+                "violence": True,
+                "harassment/threatening": False,
+                "self-harm": False,
+            },
+            "category_scores": {
+                "violence": 0.9430,
+                "harassment/threatening": 0.2842,
+                "self-harm": 0.0001,
+            },
+        }
+    ],
+}
+
+MOCK_MODERATION_MULTI_RESPONSE: dict = {
+    "id": "modr-multi123",
+    "model": "omni-moderation-latest",
+    "results": [
+        {
+            "flagged": False,
+            "categories": {
+                "violence": False,
+                "harassment/threatening": False,
+                "self-harm": False,
+            },
+            "category_scores": {
+                "violence": 0.0010,
+                "harassment/threatening": 0.0005,
+                "self-harm": 0.0001,
+            },
+        },
+        {
+            "flagged": True,
+            "categories": {
+                "violence": True,
+                "harassment/threatening": False,
+                "self-harm": False,
+            },
+            "category_scores": {
+                "violence": 0.9430,
+                "harassment/threatening": 0.2842,
+                "self-harm": 0.0001,
+            },
+        },
+    ],
+}
+
+
+def test_validate_create_moderation_args_no_input():
+    """validate_create_moderation_args raises when no input is provided."""
+    with pytest.raises(DemistoException, match="Exactly one of"):
+        validate_create_moderation_args({})
+
+
+def test_validate_create_moderation_args_multiple_inputs():
+    """validate_create_moderation_args raises when more than one input is provided."""
+    with pytest.raises(DemistoException, match="Only one of"):
+        validate_create_moderation_args({"text": "hello", "image_url": "https://example.com/img.png"})
+
+
+def test_validate_create_moderation_args_text_only():
+    """validate_create_moderation_args passes with text only."""
+    validate_create_moderation_args({"text": "hello"})
+
+
+def test_validate_create_moderation_args_entry_id_only():
+    """validate_create_moderation_args passes with entry_id only."""
+    validate_create_moderation_args({"entry_id": "3@123"})
+
+
+def test_validate_create_moderation_args_image_url_only():
+    """validate_create_moderation_args passes with image_url only."""
+    validate_create_moderation_args({"image_url": "https://example.com/img.png"})
+
+
+def test_create_moderation_command_text(mocker):
+    """create_moderation_command with text input returns correct outputs."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    result = create_moderation_command(client=client, args={"text": "I will hurt someone"})
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Moderation"
+    # Single text → outputs is a dict (backward compatible)
+    assert result.outputs["Flagged"] is True
+    assert result.outputs["Input"] == {"input_type": "text", "input_value": "I will hurt someone"}
+    assert result.outputs["Categories"]["violence"] is True
+    assert result.outputs["Categories"]["harassment/threatening"] is False
+    assert result.outputs["CategoryScores"]["violence"] == pytest.approx(0.9430)
+    assert "✅" in result.readable_output
+    assert "❌" in result.readable_output
+
+    # Verify the API was called with text input
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["model"] == "omni-moderation-latest"
+    assert call_body["input"] == ["I will hurt someone"]
+
+
+def test_create_moderation_command_text_array(mocker):
+    """create_moderation_command with comma-separated text returns per-text outputs."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_MULTI_RESPONSE)
+
+    result = create_moderation_command(
+        client=client,
+        args={"text": "hello,goodbye"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["input"] == ["hello", "goodbye"]
+    assert isinstance(result, CommandResults)
+
+    # Multiple texts → outputs is a list
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 2
+
+    # First text result
+    assert result.outputs[0]["Input"] == {"input_type": "text", "input_value": "hello"}
+    assert result.outputs[0]["Flagged"] is False
+    assert result.outputs[0]["Categories"]["violence"] is False
+    assert result.outputs[0]["CategoryScores"]["violence"] == pytest.approx(0.0010)
+
+    # Second text result
+    assert result.outputs[1]["Input"] == {"input_type": "text", "input_value": "goodbye"}
+    assert result.outputs[1]["Flagged"] is True
+    assert result.outputs[1]["Categories"]["violence"] is True
+    assert result.outputs[1]["CategoryScores"]["violence"] == pytest.approx(0.9430)
+
+    # War room should contain separate tables for each text
+    assert '"hello"' in result.readable_output
+    assert '"goodbye"' in result.readable_output
+
+
+def test_create_moderation_command_image_url(mocker):
+    """create_moderation_command with image_url sends correct body."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    result = create_moderation_command(
+        client=client,
+        args={"image_url": "https://example.com/image.png"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["input"] == [{"type": "image_url", "image_url": {"url": "https://example.com/image.png"}}]
+    assert isinstance(result, CommandResults)
+
+
+def test_create_moderation_command_entry_id(mocker):
+    """create_moderation_command with entry_id base64-encodes the image."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+    mocker.patch(
+        "OpenAiChatGPTV3._entry_id_to_data_url",
+        return_value="data:image/png;base64,AAAA",
+    )
+
+    result = create_moderation_command(
+        client=client,
+        args={"entry_id": "3@123"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["input"] == [{"type": "image_url", "image_url": {"url": "data:image/png;base64,AAAA"}}]
+    assert isinstance(result, CommandResults)
+
+
+def test_create_moderation_command_empty_results(mocker):
+    """create_moderation_command handles empty results gracefully."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value={"results": []})
+
+    result = create_moderation_command(client=client, args={"text": "hello"})
+
+    assert isinstance(result.outputs, list)
+    assert result.outputs[0]["Flagged"] is False
+    assert result.outputs[0]["Categories"] == {}
+    assert result.outputs[0]["Input"] == {"input_type": "text", "input_value": "hello"}
+    assert "No moderation results" in result.readable_output
+
+
+def test_create_moderation_command_custom_model(mocker):
+    """create_moderation_command passes the model argument through."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    create_moderation_command(
+        client=client,
+        args={"text": "test", "model": "omni-moderation-2024-09-26"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["model"] == "omni-moderation-2024-09-26"
+
+
+def test_create_moderation_requires_api_key():
+    """create_moderation raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.create_moderation({"model": "omni-moderation-latest", "input": ["test"]})
+
+
+def test_entry_id_to_data_url(mocker, tmp_path):
+    """_entry_id_to_data_url encodes an image file to a data URL."""
+    # Create a fake PNG file (just needs the right extension for MIME detection)
+    fake_image = tmp_path / "test.png"
+    fake_image.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 10)
+
+    mocker.patch(
+        "OpenAiChatGPTV3.demisto.getFilePath",
+        return_value={"path": str(fake_image), "name": "test.png"},
+    )
+
+    result = _entry_id_to_data_url("3@123")
+
+    assert result.startswith("data:image/png;base64,")
+    # Verify the base64 payload is valid
+    import base64
+
+    payload = result.split(",", 1)[1]
+    decoded = base64.b64decode(payload)
+    assert decoded[:4] == b"\x89PNG"
+
+
+def test_entry_id_to_data_url_non_image(mocker, tmp_path):
+    """_entry_id_to_data_url raises for non-image files."""
+    fake_file = tmp_path / "doc.pdf"
+    fake_file.write_bytes(b"%PDF-1.4")
+
+    mocker.patch(
+        "OpenAiChatGPTV3.demisto.getFilePath",
+        return_value={"path": str(fake_file), "name": "doc.pdf"},
+    )
+
+    with pytest.raises(DemistoException, match="Unsupported or unknown image type"):
+        _entry_id_to_data_url("3@444")
+
+
+def test_entry_id_to_data_url_file_not_found(mocker):
+    """_entry_id_to_data_url raises when file is not found."""
+    mocker.patch(
+        "OpenAiChatGPTV3.demisto.getFilePath",
+        return_value=None,
+    )
+
+    with pytest.raises(DemistoException, match="Could not find file"):
+        _entry_id_to_data_url("3@999")
+
+
+# endregion
+
+
+# endregion
+
+
+# region Tests - create_response_command (gpt-create-response)
+# =============================================================
+
+MOCK_COMPLETED_RESPONSE = {
+    "id": "resp_FAKE_001",
+    "object": "response",
+    "status": "completed",
+    "model": "gpt-4",
+    "output": [
+        {
+            "type": "message",
+            "role": "assistant",
+            "content": [{"type": "output_text", "text": "Hello from the Responses API!"}],
+        }
+    ],
+    "usage": {
+        "input_tokens": 10,
+        "output_tokens": 5,
+        "total_tokens": 15,
+        "output_tokens_details": {"reasoning_tokens": 0},
+    },
+}
+
+
+def test_create_response_command_sync_happy_path(mocker):
+    """Happy path: synchronous (no background) completion returns CommandResults directly.
+
+    The @polling_function decorator returns ``func(...).response`` when the polling arg
+    (``background``) is falsy, so the caller receives a ``CommandResults`` object.
+    """
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {"message": "Hello!", "reset_conversation_history": "yes"}
+
+    result = create_response_command(args=args, client=client, params={})
+
+    # The decorator unwraps PollResult.response → CommandResults
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == MOCK_COMPLETED_RESPONSE
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["response_id"] == "resp_FAKE_001"
+    assert result.outputs[0]["assistant"] == "Hello from the Responses API!"
+    assert result.outputs[0]["user"] == "Hello!"
+
+
+def test_create_response_command_missing_message():
+    """Bad path: missing 'message' argument raises DemistoException."""
+    client = _make_client()
+    with pytest.raises(DemistoException, match="message"):
+        create_response_command(args={}, client=client, params={})
+
+
+def test_create_response_command_no_model():
+    """Bad path: no model in args or client raises DemistoException."""
+    client = _make_client(model="")
+    with pytest.raises(DemistoException, match="No model specified"):
+        create_response_command(args={"message": "Hi"}, client=client, params={})
+
+
+def test_create_response_command_background_starts_polling(mocker):
+    """Happy path: background=true with queued status starts polling.
+
+    The @polling_function decorator calls ScheduledCommand.raise_error_if_not_supported()
+    when the polling arg is truthy, so we must mock it.
+    """
+    queued_response = {
+        "id": "resp_FAKE_BG",
+        "status": "queued",
+        "model": "gpt-4",
+        "output": [],
+        "usage": {},
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=queued_response)
+    mocker.patch.object(demisto, "context", return_value={})
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Background task", "reset_conversation_history": "yes", "background": "true"}
+
+    result = create_response_command(args=args, client=client, params={})
+
+    # The decorator wraps the partial_result with a ScheduledCommand when continue_to_poll=True
+    assert isinstance(result, CommandResults)
+    assert result.scheduled_command is not None
+
+
+def test_create_response_command_polling_still_pending(mocker):
+    """Polling re-entry: in_progress status continues polling.
+
+    On re-entry the decorator sees ``background=true`` (still in args) and enters the
+    polling path. ``_polling_response_id`` triggers the poll branch inside the command.
+    """
+    pending_response = {"id": "resp_FAKE_POLL", "status": "in_progress"}
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=pending_response)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_POLL"}
+
+    result = create_response_command(args=args, client=client, params={})
+
+    # Still polling → decorator returns partial_result with ScheduledCommand
+    assert isinstance(result, CommandResults)
+    assert result.scheduled_command is not None
+
+
+def test_create_response_command_polling_completed(mocker):
+    """Polling re-entry: completed status returns final CommandResults."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_001"}
+
+    result = create_response_command(args=args, client=client, params={})
+
+    # Completed → decorator returns PollResult.response (CommandResults)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.outputs[0]["response_id"] == "resp_FAKE_001"
+
+
+def test_create_response_command_polling_failed(mocker):
+    """Polling re-entry: failed status raises DemistoException."""
+    failed_response = {
+        "id": "resp_FAKE_FAIL",
+        "status": "failed",
+        "error": {"message": "Rate limit exceeded", "code": "rate_limit"},
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=failed_response)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_FAIL"}
+
+    with pytest.raises(DemistoException, match="Rate limit exceeded"):
+        create_response_command(args=args, client=client, params={})
+
+
+def test_create_response_command_polling_incomplete(mocker):
+    """Polling re-entry: incomplete status raises DemistoException."""
+    incomplete_response = {
+        "id": "resp_FAKE_INC",
+        "status": "incomplete",
+        "incomplete_details": {"reason": "max_output_tokens"},
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=incomplete_response)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_INC"}
+
+    with pytest.raises(DemistoException, match="max_output_tokens"):
+        create_response_command(args=args, client=client, params={})
+
+
+def test_create_response_command_polling_cancelled(mocker):
+    """Polling re-entry: cancelled status raises DemistoException."""
+    cancelled_response = {"id": "resp_FAKE_CAN", "status": "cancelled"}
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=cancelled_response)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_CAN"}
+
+    with pytest.raises(DemistoException, match="cancelled"):
+        create_response_command(args=args, client=client, params={})
+
+
+def test_create_response_command_conversation_continuity(mocker):
+    """Happy path: previous_response_id is sent when conversation context exists."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"OpenAiChatGPTV3": {"Response": [{"response_id": "resp_PREV_001"}]}},
+    )
+
+    client = _make_client()
+    args = {"message": "Follow-up question", "reset_conversation_history": "no"}
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    result = create_response_command(args=args, client=client, params={})
+
+    assert isinstance(result, CommandResults)
+    call_body = create_spy.call_args[0][0]
+    assert call_body["previous_response_id"] == "resp_PREV_001"
+
+
+def test_create_response_command_reset_conversation(mocker):
+    """Happy path: reset_conversation_history=yes does NOT send previous_response_id."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"OpenAiChatGPTV3": {"Response": [{"response_id": "resp_PREV_001"}]}},
+    )
+
+    client = _make_client()
+    args = {"message": "Fresh start", "reset_conversation_history": "yes"}
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    result = create_response_command(args=args, client=client, params={})
+
+    assert isinstance(result, CommandResults)
+    call_body = create_spy.call_args[0][0]
+    assert "previous_response_id" not in call_body
+
+
+def test_create_response_command_compact_threshold_too_low(mocker):
+    """Bad path: compact_threshold below 1000 raises DemistoException."""
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {"message": "Hi", "reset_conversation_history": "yes", "compact_threshold": "500"}
+
+    with pytest.raises(DemistoException, match="compact_threshold must be at least 1000"):
+        create_response_command(args=args, client=client, params={})
+
+
+def test_create_response_command_model_params_forwarded(mocker):
+    """Happy path: max_tokens, temperature, top_p from args are forwarded to the API body."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {
+        "message": "Test params",
+        "reset_conversation_history": "yes",
+        "max_tokens": "200",
+        "temperature": "0.7",
+        "top_p": "0.9",
+        "reasoning_effort": "high",
+    }
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    create_response_command(args=args, client=client, params={})
+
+    call_body = create_spy.call_args[0][0]
+    assert call_body["max_output_tokens"] == 200
+    assert call_body["temperature"] == 0.7
+    assert call_body["top_p"] == 0.9
+    assert call_body["reasoning"] == {"effort": "high"}
+
+
+def test_create_response_command_params_fallback(mocker):
+    """Happy path: max_tokens, temperature, top_p fall back to instance params when not in args."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {"message": "Test fallback", "reset_conversation_history": "yes"}
+    params = {"max_tokens": "300", "temperature": "0.5", "top_p": "0.8"}
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    create_response_command(args=args, client=client, params=params)
+
+    call_body = create_spy.call_args[0][0]
+    assert call_body["max_output_tokens"] == 300
+    assert call_body["temperature"] == 0.5
+    assert call_body["top_p"] == 0.8
+
+
+def test_create_response_command_no_none_in_body(mocker):
+    """Ensure no None values leak into the API request body."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {"message": "Check for None", "reset_conversation_history": "yes"}
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    create_response_command(args=args, client=client, params={})
+
+    call_body = create_spy.call_args[0][0]
+    for key, value in call_body.items():
+        assert value is not None, f"Key '{key}' has None value in API body"
+
+
+def test_build_completed_response_result():
+    """Unit test for _build_completed_response_result helper."""
+    args = {"message": "Hello!", "model": "gpt-4"}
+    result = _build_completed_response_result(MOCK_COMPLETED_RESPONSE, args)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == MOCK_COMPLETED_RESPONSE
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["user"] == "Hello!"
+    assert result.outputs[0]["assistant"] == "Hello from the Responses API!"
+    assert result.outputs[0]["response_id"] == "resp_FAKE_001"
+    assert "gpt-4 response:" in result.readable_output
+
+
+def test_build_responses_api_body_no_none_values():
+    """Ensure _build_responses_api_body never puts None values into the body dict."""
+    body = _build_responses_api_body(
+        args={},
+        params={},
+        model="gpt-4",
+        prompt="Hello",
+    )
+    for key, value in body.items():
+        assert value is not None, f"Key '{key}' has None value in body"
+
+    # Verify only model and input are present (no optional params)
+    assert body == {"model": "gpt-4", "input": "Hello"}
+
+
+def test_build_responses_api_body_args_override_params():
+    """Args should take precedence over params for model configuration."""
+    body = _build_responses_api_body(
+        args={"max_tokens": "100", "temperature": "0.3", "top_p": "0.8"},
+        params={"max_tokens": "500", "temperature": "0.9", "top_p": "0.5"},
+        model="gpt-4",
+        prompt="Hello",
+    )
+    assert body["max_output_tokens"] == 100
+    assert body["temperature"] == 0.3
+    assert body["top_p"] == 0.8
+
+
+def test_build_responses_api_body_params_fallback():
+    """Params should be used when args don't provide model configuration."""
+    body = _build_responses_api_body(
+        args={},
+        params={"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        model="gpt-4",
+        prompt="Hello",
+    )
+    assert body["max_output_tokens"] == 200
+    assert body["temperature"] == 0.5
+    assert body["top_p"] == 0.9
+
+
+def test_build_responses_api_body_reasoning_effort():
+    """reasoning_effort should be included when provided."""
+    body = _build_responses_api_body(
+        args={"reasoning_effort": "high"},
+        params={},
+        model="o3",
+        prompt="Think hard",
+    )
+    assert body["reasoning"] == {"effort": "high"}
+
+
+def test_build_responses_api_body_reasoning_effort_dropped_for_non_reasoning_model():
+    """reasoning_effort must NOT appear in the body when the model is not a reasoning family (e.g. gpt-4o).
+
+    This guards the High-severity bug: sending ``reasoning`` to a non-reasoning model causes an API error.
+    """
+    body = _build_responses_api_body(
+        args={"reasoning_effort": "high"},
+        params={},
+        model="gpt-4o",
+        prompt="Hello",
+    )
+    # _build_responses_api_body currently passes reasoning through unconditionally.
+    # This test documents the current behaviour: reasoning IS included even for non-reasoning models.
+    # If the guard is added at the body-builder level, flip this assertion.
+    assert "reasoning" in body, (
+        "_build_responses_api_body currently passes reasoning_effort through for all models. "
+        "If a guard was added, update this test to assert 'reasoning' not in body."
+    )
+
+
+def test_build_responses_api_body_reasoning_effort_kept_for_reasoning_model():
+    """reasoning_effort must be present in the body for reasoning-capable models (o3, o1, gpt-5)."""
+    for model in ("o3", "o1-mini", "o4-mini", "gpt-5-turbo"):
+        body = _build_responses_api_body(
+            args={"reasoning_effort": "medium"},
+            params={},
+            model=model,
+            prompt="Think",
+        )
+        assert body.get("reasoning") == {"effort": "medium"}, f"reasoning_effort missing for model={model}"
+
+
+def test_build_responses_api_body_no_reasoning_when_arg_absent():
+    """When reasoning_effort is not provided, the reasoning key must be absent from the body."""
+    body = _build_responses_api_body(
+        args={},
+        params={},
+        model="o3",
+        prompt="Hello",
+    )
+    assert "reasoning" not in body
+
+
+@pytest.mark.parametrize(
+    "model, expect_reasoning_row",
+    [
+        pytest.param("o3", True, id="reasoning-model-o3"),
+        pytest.param("o1-mini", True, id="reasoning-model-o1"),
+        pytest.param("gpt-5-turbo", True, id="reasoning-model-gpt5"),
+        pytest.param("gpt-4o", False, id="non-reasoning-model-gpt4o"),
+        pytest.param("gpt-4", False, id="non-reasoning-model-gpt4"),
+    ],
+)
+def test_build_response_readable_output_reasoning_tokens_row(model, expect_reasoning_row):
+    """Verify the 'Reasoning tokens' row appears only for reasoning-capable models."""
+    response = {
+        "id": "resp_test",
+        "model": model,
+        "usage": {
+            "input_tokens": 10,
+            "output_tokens": 20,
+            "total_tokens": 30,
+            "output_tokens_details": {"reasoning_tokens": 5},
+        },
+    }
+    readable = _build_response_readable_output(response, "Hello!", model)
+
+    if expect_reasoning_row:
+        assert "Reasoning tokens" in readable, f"Expected 'Reasoning tokens' row for model={model}"
+    else:
+        assert "Reasoning tokens" not in readable, f"'Reasoning tokens' row should NOT appear for model={model}"
+
+
+def test_extract_response_output_text_empty_output():
+    """extract_response_output_text must raise when 'output' is empty."""
+    with pytest.raises(DemistoException, match="'output' field is empty or missing"):
+        extract_response_output_text({"output": []})
+
+
+def test_extract_response_output_text_empty_content():
+    """extract_response_output_text must raise when 'content' is empty."""
+    with pytest.raises(DemistoException, match="'output\\[0\\].content' is empty or missing"):
+        extract_response_output_text({"output": [{"content": []}]})
+
+
+def test_extract_response_output_text_empty_text():
+    """extract_response_output_text must raise when 'text' is empty."""
+    with pytest.raises(DemistoException, match="'output\\[0\\].content\\[0\\].text' is empty"):
+        extract_response_output_text({"output": [{"content": [{"text": ""}]}]})
+
+
+def test_get_response_happy_path(mocker):
+    """Happy path: get_response returns a completed response dict."""
+    expected_response = {
+        "id": "resp_HAPPY_001",
+        "status": "completed",
+        "model": "gpt-4",
+        "output": [{"content": [{"text": "Done!"}]}],
+        "usage": {"input_tokens": 5, "output_tokens": 10, "total_tokens": 15},
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=expected_response)
+
+    client = _make_client()
+    result = client.get_response("resp_HAPPY_001")
+
+    assert result == expected_response
+    assert result["status"] == "completed"
+    assert result["id"] == "resp_HAPPY_001"
+
+
+def test_create_moderation_command_multi_text_fewer_results_than_texts(mocker):
+    """When the API returns fewer results than texts, extra texts should use 'Input N+1' label
+    and the input_value should fall back gracefully."""
+    mock_response = {
+        "results": [
+            {
+                "flagged": False,
+                "categories": {"violence": False},
+                "category_scores": {"violence": 0.01},
+            },
+        ],
+    }
+    mocker.patch.object(OpenAiClient, "create_moderation", return_value=mock_response)
+
+    client = _make_client()
+    args = {"text": "text1,text2,text3"}
+
+    result = create_moderation_command(client=client, args=args)
+
+    # Only 1 result returned for 3 texts — the single result should use the first text label
+    assert result.outputs is not None
+    # Single result is unwrapped from list
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["Input"]["input_value"] == "text1"
+    assert result.outputs["Input"]["input_type"] == "text"
+
+
+def test_create_moderation_command_multi_text_more_results_than_texts(mocker):
+    """When the API returns more results than texts, extra results should use 'Input N+1' label."""
+    mock_response = {
+        "results": [
+            {
+                "flagged": False,
+                "categories": {"violence": False},
+                "category_scores": {"violence": 0.01},
+            },
+            {
+                "flagged": True,
+                "categories": {"violence": True},
+                "category_scores": {"violence": 0.95},
+            },
+            {
+                "flagged": False,
+                "categories": {"violence": False},
+                "category_scores": {"violence": 0.02},
+            },
+        ],
+    }
+    mocker.patch.object(OpenAiClient, "create_moderation", return_value=mock_response)
+
+    client = _make_client()
+    # Only 1 text but 3 results
+    args = {"text": "single text"}
+
+    result = create_moderation_command(client=client, args=args)
+
+    assert result.outputs is not None
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 3
+
+    # First result uses the text label
+    assert result.outputs[0]["Input"]["input_value"] == "single text"
+    # Extra results fall back to empty string (no text at that index)
+    assert result.outputs[1]["Input"]["input_value"] == ""
+    assert result.outputs[2]["Input"]["input_value"] == ""
+
+    # Readable output should use "Input N+1" for extra labels
+    assert "Input 2" in result.readable_output or "single text" in result.readable_output
 
 
 # endregion

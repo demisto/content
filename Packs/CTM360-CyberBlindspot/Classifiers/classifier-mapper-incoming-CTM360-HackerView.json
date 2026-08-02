@@ -12,6 +12,51 @@
                 "CTM360 HackerView Asset Type": {
                     "simple": "CustomFields.asset_type"
                 },
+                "CTM360 HackerView Brand": {
+                    "simple": "CustomFields.brand"
+                },
+                "CTM360 HackerView DS Asset": {
+                    "simple": "CustomFields.asset"
+                },
+                "CTM360 HackerView DS CPE": {
+                    "simple": "CustomFields.cpe"
+                },
+                "CTM360 HackerView DS CVSS Metrics": {
+                    "simple": "CustomFields.cvss_metrics"
+                },
+                "CTM360 HackerView DS CVSS Score": {
+                    "simple": "CustomFields.cvss_score"
+                },
+                "CTM360 HackerView DS Domain": {
+                    "simple": "CustomFields.domain"
+                },
+                "CTM360 HackerView DS EPSS Score": {
+                    "simple": "CustomFields.epss_score"
+                },
+                "CTM360 HackerView DS Evidence Request": {
+                    "simple": "CustomFields.evidence.request"
+                },
+                "CTM360 HackerView DS Evidence Response": {
+                    "simple": "CustomFields.evidence.response"
+                },
+                "CTM360 HackerView DS Evidence cURL Command": {
+                    "simple": "CustomFields.evidence.curl_command"
+                },
+                "CTM360 HackerView DS IP": {
+                    "simple": "CustomFields.ip"
+                },
+                "CTM360 HackerView DS Issue Description": {
+                    "simple": "CustomFields.issue_description"
+                },
+                "CTM360 HackerView DS Issue Type": {
+                    "simple": "CustomFields.issue_type"
+                },
+                "CTM360 HackerView DS Known Exploited": {
+                    "simple": "CustomFields.known_exploited"
+                },
+                "CTM360 HackerView DS Port": {
+                    "simple": "CustomFields.port"
+                },
                 "CTM360 HackerView Potential Attack Types": {
                     "simple": "CustomFields.potential_attack_type"
                 },
@@ -21,9 +66,24 @@
                 "CTM360 HackerView Technologies": {
                     "simple": "CustomFields.technologies"
                 },
-				"CVE ID": {
-					"simple": "CustomFields.cve_id"
-				},
+                "CTM360 HackerView DS Progress Status": {
+                    "simple": "CustomFields.progress_status"
+                },
+                "CTM360 HackerView DS Ticket ID": {
+                    "simple": "CustomFields.id"
+                },
+                "CTM360 HackerView DS URI": {
+                    "simple": "CustomFields.uri"
+                },
+                "CTM360 HackerView DS URL": {
+                    "simple": "CustomFields.url"
+                },
+                "CTM360 HackerView Scan Type": {
+                    "simple": "CustomFields.hv_module"
+                },
+                "CVE ID": {
+                    "simple": "CustomFields.cve_id"
+                },
                 "Categories": {
                     "simple": "CustomFields.issue_category"
                 },

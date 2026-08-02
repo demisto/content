@@ -443,3 +443,426 @@ Then: Make sure removing self references works as expected.
         $outDict.NestedProperty.NestedProperty2.DeeplyNestedProperty.Deep3 | Should -Be "DeepValue"
     }
 }
+
+# ================================================================================
+# UCP (Unified Connector Platform / ConnectUs) param interpolation tests.
+# Parity with CommonServerPython_test.py UCP suites (TestUcpInterpolation,
+# TestUcpInterpolationPassthroughDeep, get_ucp_credentials / invalidate tests).
+# ================================================================================
+
+Describe "Test ConvertFrom-UcpParamMap" {
+    It "Parses a canonical comma-separated string into ordered pairs" {
+        $pairs = ConvertFrom-UcpParamMap -ParamMap 'username:credentials.identifier,password:credentials.password'
+        @($pairs).Count | Should -Be 2
+        $pairs[0].FieldId | Should -Be 'username'
+        $pairs[0].Destination | Should -Be 'credentials.identifier'
+        $pairs[1].FieldId | Should -Be 'password'
+        $pairs[1].Destination | Should -Be 'credentials.password'
+    }
+
+    It "Skips empty and malformed (no-colon) entries" {
+        $pairs = ConvertFrom-UcpParamMap -ParamMap 'good:dest, ,nocolon,empty:'
+        @($pairs).Count | Should -Be 1
+        $pairs[0].FieldId | Should -Be 'good'
+        $pairs[0].Destination | Should -Be 'dest'
+    }
+
+    It "Returns empty for `$null input" {
+        @(ConvertFrom-UcpParamMap -ParamMap $null).Count | Should -Be 0
+    }
+
+    It "Returns empty for empty-string input" {
+        @(ConvertFrom-UcpParamMap -ParamMap '').Count | Should -Be 0
+    }
+
+    It "Trims whitespace around field id and destination" {
+        $pairs = ConvertFrom-UcpParamMap -ParamMap ' a : b.c '
+        @($pairs).Count | Should -Be 1
+        $pairs[0].FieldId | Should -Be 'a'
+        $pairs[0].Destination | Should -Be 'b.c'
+    }
+
+    It "Splits only on the first colon (dotted destinations preserved)" {
+        $pairs = ConvertFrom-UcpParamMap -ParamMap 'tenant:credentials.connection.tenant.slug'
+        $pairs[0].FieldId | Should -Be 'tenant'
+        $pairs[0].Destination | Should -Be 'credentials.connection.tenant.slug'
+    }
+}
+
+Describe "Test Set-UcpByPath" {
+    It "Places a value at a single-segment path" {
+        $target = [ordered]@{}
+        Set-UcpByPath -Target $target -Path 'dest' -Value 'v'
+        $target['dest'] | Should -Be 'v'
+    }
+
+    It "Creates intermediate dicts for a dotted path" {
+        $target = [ordered]@{}
+        Set-UcpByPath -Target $target -Path 'credentials.identifier' -Value 'alice'
+        $target['credentials']['identifier'] | Should -Be 'alice'
+    }
+
+    It "Folds two paths sharing a parent into one nested dict" {
+        $target = [ordered]@{}
+        Set-UcpByPath -Target $target -Path 'credentials.identifier' -Value 'alice'
+        Set-UcpByPath -Target $target -Path 'credentials.password' -Value 's3cr3t'
+        $target['credentials']['identifier'] | Should -Be 'alice'
+        $target['credentials']['password'] | Should -Be 's3cr3t'
+    }
+
+    It "Empty path is a no-op (existing keys preserved)" {
+        $target = [ordered]@{ keep = 1 }
+        Set-UcpByPath -Target $target -Path '' -Value 'x'
+        $target['keep'] | Should -Be 1
+        $target.Contains('') | Should -Be $false
+    }
+
+    It "Overwrites a non-dict intermediate with a dict" {
+        $target = [ordered]@{ a = 'scalar' }
+        Set-UcpByPath -Target $target -Path 'a.b' -Value 2
+        $target['a']['b'] | Should -Be 2
+    }
+}
+
+Describe "Test Merge-UcpDeep" {
+    It "Recursively merges nested dicts, preserving siblings" {
+        $target = [ordered]@{ credentials = [ordered]@{ identifier = 'original'; password = 'old'; field3 = 'value' } }
+        $source = [ordered]@{ credentials = [ordered]@{ identifier = 'new'; password = 'fresh' } }
+        Merge-UcpDeep -Target $target -Source $source | Out-Null
+        $target['credentials']['identifier'] | Should -Be 'new'
+        $target['credentials']['password'] | Should -Be 'fresh'
+        $target['credentials']['field3'] | Should -Be 'value'
+    }
+
+    It "Incoming value wins on a scalar conflict" {
+        $target = [ordered]@{ a = 1; b = 2 }
+        $source = [ordered]@{ a = 99 }
+        Merge-UcpDeep -Target $target -Source $source | Out-Null
+        $target['a'] | Should -Be 99
+        $target['b'] | Should -Be 2
+    }
+
+    It "A dict overwrites a scalar" {
+        $target = [ordered]@{ a = 'scalar' }
+        $source = [ordered]@{ a = [ordered]@{ nested = 1 } }
+        Merge-UcpDeep -Target $target -Source $source | Out-Null
+        $target['a']['nested'] | Should -Be 1
+    }
+
+    It "A scalar overwrites a dict" {
+        $target = [ordered]@{ a = [ordered]@{ nested = 1 } }
+        $source = [ordered]@{ a = 'scalar' }
+        Merge-UcpDeep -Target $target -Source $source | Out-Null
+        $target['a'] | Should -Be 'scalar'
+    }
+
+    It "Adds keys present only in the source" {
+        $target = [ordered]@{ a = 1 }
+        $source = [ordered]@{ b = 2 }
+        Merge-UcpDeep -Target $target -Source $source | Out-Null
+        $target['a'] | Should -Be 1
+        $target['b'] | Should -Be 2
+    }
+}
+
+Describe "Test Select-UcpProfiles" {
+    It "Selects the single profile matching the capability" {
+        $profiles = @(
+            [ordered]@{ capability = 'cap-a'; method_unique_id = 'A' },
+            [ordered]@{ capability = 'cap-b'; method_unique_id = 'B' }
+        )
+        $result = @(Select-UcpProfiles -Profiles $profiles -Capability 'cap-a')
+        $result.Count | Should -Be 1
+        $result[0]['method_unique_id'] | Should -Be 'A'
+    }
+
+    It "Selects all profiles matching the capability" {
+        $profiles = @(
+            [ordered]@{ capability = 'cap-x'; method_unique_id = 'A' },
+            [ordered]@{ capability = 'cap-x'; method_unique_id = 'B' }
+        )
+        $result = @(Select-UcpProfiles -Profiles $profiles -Capability 'cap-x')
+        $result.Count | Should -Be 2
+        $result[0]['method_unique_id'] | Should -Be 'A'
+        $result[1]['method_unique_id'] | Should -Be 'B'
+    }
+
+    It "Falls back to the first profile with an interpolation_mapping when no capability matches" {
+        $profiles = @(
+            [ordered]@{ capability = 'other'; method_unique_id = 'A' },
+            [ordered]@{ capability = 'other'; method_unique_id = 'B'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'u:x' } } }
+        )
+        $result = @(Select-UcpProfiles -Profiles $profiles -Capability 'no-match')
+        $result.Count | Should -Be 1
+        $result[0]['method_unique_id'] | Should -Be 'B'
+    }
+
+    It "Returns empty for an empty profile list" {
+        @(Select-UcpProfiles -Profiles @() -Capability 'cap').Count | Should -Be 0
+    }
+}
+
+Describe "Test ConvertFrom-UcpCredentials" {
+    It "Flattens a plain envelope (type -> inner dict)" {
+        $envelope = [ordered]@{ type = 'plain'; plain = [ordered]@{ username = 'alice'; password = 's3cr3t' } }
+        $flat = ConvertFrom-UcpCredentials -Credentials $envelope
+        $flat['username'] | Should -Be 'alice'
+        $flat['password'] | Should -Be 's3cr3t'
+    }
+
+    It "Descends into the 'parameters' sub-dict for a passthrough envelope" {
+        $envelope = [ordered]@{ type = 'passthrough'; passthrough = [ordered]@{ parameters = [ordered]@{ username = 'bob'; token = 'tok' } } }
+        $flat = ConvertFrom-UcpCredentials -Credentials $envelope
+        $flat['username'] | Should -Be 'bob'
+        $flat['token'] | Should -Be 'tok'
+    }
+}
+
+Describe "Test Resolve-UcpCapability" {
+    It "Maps a known command to its capability" {
+        Resolve-UcpCapability -Command 'fetch-incidents' | Should -Be 'fetch-issues'
+    }
+
+    It "Falls back to the default capability for an unknown command" {
+        Resolve-UcpCapability -Command 'some-random-command' | Should -Be 'automation-and-remediation'
+    }
+}
+
+Describe "Test Build-UcpParams" {
+    It "Folds flat fields into a credentials dict via interpolation_mapping" {
+        Mock Get-UcpCredentials { return [ordered]@{ type = 'plain'; plain = [ordered]@{ username = 'alice'; password = 's3cr3t' } } }
+        $meta = [ordered]@{
+            connectionProfiles = @(
+                [ordered]@{
+                    capability        = 'automation-and-remediation'
+                    method_unique_id  = 'A'
+                    metadata          = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'username:credentials.identifier,password:credentials.password' } }
+                }
+            )
+        }
+        $result = Build-UcpParams -ConnectorMetadata $meta -Capability 'automation-and-remediation'
+        $result['credentials']['identifier'] | Should -Be 'alice'
+        $result['credentials']['password'] | Should -Be 's3cr3t'
+    }
+
+    It "Only interpolates profiles matching the capability" {
+        Mock Get-UcpCredentials { return [ordered]@{ type = 'plain'; plain = [ordered]@{ k = 'COLLECTOR' } } }
+        $meta = [ordered]@{
+            connectionProfiles = @(
+                [ordered]@{ capability = 'cap-a'; method_unique_id = 'A'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'u:credentials.identifier' } } },
+                [ordered]@{ capability = 'cap-b'; method_unique_id = 'B'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'k:credentials.password' } } }
+            )
+        }
+        $result = Build-UcpParams -ConnectorMetadata $meta -Capability 'cap-b'
+        $result['credentials']['password'] | Should -Be 'COLLECTOR'
+        $result['credentials'].Contains('identifier') | Should -Be $false
+    }
+
+    It "Merges values from multiple active profiles" {
+        Mock Get-UcpCredentials {
+            param($MethodUniqueId, $Body)
+            if ($MethodUniqueId -eq 'A') { return [ordered]@{ type = 'plain'; plain = [ordered]@{ u = 'alice' } } }
+            return [ordered]@{ type = 'plain'; plain = [ordered]@{ p = 'pw' } }
+        }
+        $meta = [ordered]@{
+            connectionProfiles = @(
+                [ordered]@{ capability = 'x'; method_unique_id = 'A'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'u:credentials.identifier' } } },
+                [ordered]@{ capability = 'x'; method_unique_id = 'B'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'p:credentials.password' } } }
+            )
+        }
+        $result = Build-UcpParams -ConnectorMetadata $meta -Capability 'x'
+        $result['credentials']['identifier'] | Should -Be 'alice'
+        $result['credentials']['password'] | Should -Be 'pw'
+    }
+
+    It "Last profile wins on a destination conflict" {
+        Mock Get-UcpCredentials {
+            param($MethodUniqueId, $Body)
+            if ($MethodUniqueId -eq 'A') { return [ordered]@{ type = 'plain'; plain = [ordered]@{ v = 'first' } } }
+            return [ordered]@{ type = 'plain'; plain = [ordered]@{ v = 'second' } }
+        }
+        $meta = [ordered]@{
+            connectionProfiles = @(
+                [ordered]@{ capability = 'x'; method_unique_id = 'A'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'v:dest' } } },
+                [ordered]@{ capability = 'x'; method_unique_id = 'B'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'v:dest' } } }
+            )
+        }
+        $result = Build-UcpParams -ConnectorMetadata $meta -Capability 'x'
+        $result['dest'] | Should -Be 'second'
+    }
+
+    It "Skips fields with a missing (null) value" {
+        Mock Get-UcpCredentials { return [ordered]@{ type = 'plain'; plain = [ordered]@{ present = 1 } } }
+        $meta = [ordered]@{
+            connectionProfiles = @(
+                [ordered]@{ capability = 'x'; method_unique_id = 'A'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'present:a,absent:b' } } }
+            )
+        }
+        $result = Build-UcpParams -ConnectorMetadata $meta -Capability 'x'
+        $result['a'] | Should -Be 1
+        $result.Contains('b') | Should -Be $false
+    }
+
+    It "Returns empty when metadata is missing" {
+        $result = Build-UcpParams -ConnectorMetadata $null -Capability 'x'
+        @($result.Keys).Count | Should -Be 0
+    }
+
+    It "Returns empty when no profile carries an interpolation_mapping" {
+        $meta = [ordered]@{ connectionProfiles = @([ordered]@{ capability = 'x'; method_unique_id = 'A' }) }
+        $result = Build-UcpParams -ConnectorMetadata $meta -Capability 'x'
+        @($result.Keys).Count | Should -Be 0
+    }
+
+    It "Resolves the capability automatically when not provided" {
+        Mock Get-UcpCredentials { return [ordered]@{ type = 'plain'; plain = [ordered]@{ k = 'tok' } } }
+        Mock Resolve-UcpCapability { return 'fetch-issues' }
+        $meta = [ordered]@{
+            connectionProfiles = @(
+                [ordered]@{ capability = 'fetch-issues'; method_unique_id = 'A'; metadata = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = 'k:credentials.password' } } }
+            )
+        }
+        $result = Build-UcpParams -ConnectorMetadata $meta -Capability $null
+        $result['credentials']['password'] | Should -Be 'tok'
+    }
+
+    It "Performs deep, multi-level interpolation for a passthrough profile" {
+        $mapping = (
+            "username:credentials.identifier," +
+            "app_password:credentials.password," +
+            "bitbucket_email:credentials.metadata.email," +
+            "account_id:credentials.metadata.accountId," +
+            "api_token:credentials.metadata.token," +
+            "client_key:credentials.oauth.consumerKey," +
+            "client_secret:credentials.oauth.consumerSecret," +
+            "base_url:credentials.connection.host," +
+            "auth_scheme:credentials.connection.scheme," +
+            "tenant:credentials.connection.tenant.slug"
+        )
+        Mock Get-UcpCredentials {
+            return [ordered]@{
+                type        = 'passthrough'
+                passthrough = [ordered]@{
+                    parameters = [ordered]@{
+                        username        = 'alice'
+                        app_password    = 's3cr3t'
+                        bitbucket_email = 'you@example.com'
+                        account_id      = '557058:abc'
+                        api_token       = 'tok-123'
+                        client_key      = 'ck'
+                        client_secret   = 'cs'
+                        base_url        = 'host-value'
+                        auth_scheme     = 'basic'
+                        tenant          = 'my-tenant'
+                    }
+                }
+            }
+        }
+        $meta = [ordered]@{
+            connectionProfiles = @(
+                [ordered]@{
+                    capability       = 'automation-and-remediation'
+                    method_unique_id = 'pt-method-1'
+                    type             = 'passthrough'
+                    metadata         = [ordered]@{ xsoar = [ordered]@{ interpolation_mapping = $mapping } }
+                }
+            )
+        }
+        $result = Build-UcpParams -ConnectorMetadata $meta -Capability 'automation-and-remediation'
+        $creds = $result['credentials']
+        $creds['identifier'] | Should -Be 'alice'
+        $creds['password'] | Should -Be 's3cr3t'
+        $creds['metadata']['email'] | Should -Be 'you@example.com'
+        $creds['metadata']['accountId'] | Should -Be '557058:abc'
+        $creds['metadata']['token'] | Should -Be 'tok-123'
+        $creds['oauth']['consumerKey'] | Should -Be 'ck'
+        $creds['oauth']['consumerSecret'] | Should -Be 'cs'
+        $creds['connection']['host'] | Should -Be 'host-value'
+        $creds['connection']['scheme'] | Should -Be 'basic'
+        $creds['connection']['tenant']['slug'] | Should -Be 'my-tenant'
+    }
+}
+
+Describe "Test Get-UcpCredentials cache" {
+    BeforeEach {
+        $script:UcpCredsCache.Clear()
+    }
+    AfterEach {
+        $script:UcpCredsCache.Clear()
+    }
+
+    It "Serves a fresh (far-future expiry) cache entry without re-fetching" {
+        $creds = [ordered]@{ type = 'oauth2'; oauth2 = [ordered]@{ access_token = 'cached' } }
+        $future = ([double][System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds()) + 3600
+        $script:UcpCredsCache['abc123'] = @{ result = $creds; expiry = $future }
+        $result = Get-UcpCredentials -MethodUniqueId 'abc123'
+        $result['oauth2']['access_token'] | Should -Be 'cached'
+    }
+
+    It "Serves a `$null-expiry entry indefinitely" {
+        $creds = [ordered]@{ type = 'api_key'; api_key = [ordered]@{ key = 'k' } }
+        $script:UcpCredsCache['key123'] = @{ result = $creds; expiry = $null }
+        $result = Get-UcpCredentials -MethodUniqueId 'key123'
+        $result['api_key']['key'] | Should -Be 'k'
+    }
+}
+
+Describe "Test Clear-UcpCredentialEntry" {
+    BeforeEach {
+        $script:UcpCredsCache.Clear()
+    }
+    AfterEach {
+        $script:UcpCredsCache.Clear()
+    }
+
+    It "Removes the specified cache entry" {
+        $script:UcpCredsCache['abc123'] = @{ result = @{}; expiry = $null }
+        Clear-UcpCredentialEntry -MethodUniqueId 'abc123'
+        $script:UcpCredsCache.ContainsKey('abc123') | Should -Be $false
+    }
+
+    It "Does not raise for a non-existent key" {
+        { Clear-UcpCredentialEntry -MethodUniqueId 'nope' } | Should -Not -Throw
+    }
+
+    It "Only removes the specified key, leaving others intact" {
+        $script:UcpCredsCache['key1'] = @{ result = @{}; expiry = $null }
+        $script:UcpCredsCache['key2'] = @{ result = @{}; expiry = $null }
+        Clear-UcpCredentialEntry -MethodUniqueId 'key1'
+        $script:UcpCredsCache.ContainsKey('key1') | Should -Be $false
+        $script:UcpCredsCache.ContainsKey('key2') | Should -Be $true
+    }
+}
+
+Describe "Test Invoke-UcpParamInterpolation" {
+    BeforeEach {
+        $script:UcpAuthParamsInjected = $false
+    }
+    AfterEach {
+        $script:UcpAuthParamsInjected = $false
+    }
+
+    It "Sets the injected flag and merges interpolated params into the merge target" {
+        Mock Build-UcpParams { return [ordered]@{ credentials = [ordered]@{ identifier = 'alice'; password = 's3cr3t' } } }
+        $meta = [ordered]@{ connectionProfiles = @([ordered]@{ capability = 'automation-and-remediation'; method_unique_id = 'A' }) }
+
+        $result = Invoke-UcpParamInterpolation -ConnectorMetadata $meta
+
+        $result | Should -Be $true
+        $script:UcpAuthParamsInjected | Should -Be $true
+        # Merge target is $demisto._ucpParamsMergeTarget(); the interpolated
+        # credentials must be observable through Params().
+        $demisto.Params()['credentials']['identifier'] | Should -Be 'alice'
+        $demisto.Params()['credentials']['password'] | Should -Be 's3cr3t'
+    }
+
+    It "Is a no-op (flag stays false) when no params are produced" {
+        Mock Build-UcpParams { return [ordered]@{} }
+        $meta = [ordered]@{ connectionProfiles = @([ordered]@{ capability = 'automation-and-remediation'; method_unique_id = 'A' }) }
+
+        $result = Invoke-UcpParamInterpolation -ConnectorMetadata $meta
+
+        $result | Should -Be $false
+        $script:UcpAuthParamsInjected | Should -Be $false
+    }
+}

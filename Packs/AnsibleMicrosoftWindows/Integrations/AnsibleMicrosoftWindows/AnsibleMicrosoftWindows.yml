@@ -4537,7 +4537,7 @@ script:
     - contextPath: MicrosoftWindows.WinXml.err
       description: XML comparison exceptions.
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.3456168
+  dockerimage: demisto/ansible-runner:1.0.0.10189215
   script: ''
   subtype: python3
   type: python

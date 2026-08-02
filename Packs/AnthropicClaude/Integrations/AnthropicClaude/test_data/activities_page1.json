@@ -1,0 +1,16 @@
+{
+    "data": [
+        {
+            "id": "activity_002",
+            "activity_type": "user.login",
+            "created_at": "2026-06-11T07:08:59Z"
+        },
+        {
+            "id": "activity_001",
+            "activity_type": "chat.created",
+            "created_at": "2026-06-11T07:08:58Z"
+        }
+    ],
+    "has_more": true,
+    "last_id": "activity_001"
+}

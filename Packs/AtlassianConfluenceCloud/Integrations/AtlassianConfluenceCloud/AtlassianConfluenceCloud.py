@@ -1,4 +1,5 @@
 import json
+import re
 import urllib.parse
 from collections.abc import Callable
 from typing import Final
@@ -7,6 +8,8 @@ import demistomock as demisto  # noqa: F401
 import requests
 import urllib3
 from CommonServerPython import *  # noqa: F401
+
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 from CommonServerUserPython import *  # noqa
 
@@ -80,7 +83,18 @@ OUTPUT_PREFIX = {
     "SPACE": "ConfluenceCloud.Space",
     "PAGETOKEN": "ConfluenceCloud.PageToken.Content",
     "EVENT": "ConfluenceCloud.Event",
+    "FILE_CONTENT": "FileContent",
 }
+
+CONFLUENCE_URL_PATTERNS = [
+    # Pattern: /wiki/spaces/<space>/pages/<pageId>/<title>
+    re.compile(r"/wiki/spaces/[^/]+/pages/(\d+)"),
+    # Pattern: /wiki/rest/api/content/<contentId>
+    re.compile(r"/wiki/rest/api/content/(\d+)"),
+    # Pattern: /pages/viewpage.action?pageId=<pageId>
+    re.compile(r"pageId=(\d+)"),
+    # Pattern: /x/<tinyId> (tiny links) - not directly resolvable to content_id
+]
 DEFAULT_LIMIT = "50"
 DEFAULT_START = "0"
 LEGAL_ACCESS_TYPES = ["user", "site-admin", "admin"]
@@ -1403,6 +1417,101 @@ def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -
     )
 
 
+def _extract_content_id_from_url(url: str) -> str:
+    """
+    Extract the Confluence content ID from a Confluence page URL.
+
+    Supports the following URL formats:
+    - https://<site>.atlassian.net/wiki/spaces/<space>/pages/<pageId>/<title>
+    - https://<site>.atlassian.net/wiki/rest/api/content/<contentId>
+    - https://<site>.atlassian.net/wiki/pages/viewpage.action?pageId=<pageId>
+
+    :type url: ``str``
+    :param url: The Confluence page URL.
+
+    :return: The extracted content ID.
+    :rtype: ``str``
+
+    :raises ValueError: If the content ID cannot be extracted from the URL.
+    """
+    for pattern in CONFLUENCE_URL_PATTERNS:
+        match = pattern.search(url)
+        if match:
+            return match.group(1)
+
+    raise ValueError(
+        f"Could not extract content ID from URL: {url}. "
+        "Supported URL formats: "
+        "https://<site>.atlassian.net/wiki/spaces/<space>/pages/<pageId>/<title>, "
+        "https://<site>.atlassian.net/wiki/pages/viewpage.action?pageId=<pageId>"
+    )
+
+
+def confluence_cloud_generic_file_get_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Execute the get-file-content command.
+    Fetches content from Confluence Cloud by URL and returns it in a generic unified format.
+
+    :type client: ``Client``
+    :param client: The client used to send HTTP requests to the Confluence Cloud API.
+
+    :type args: ``dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: ``CommandResults`` containing the content in a generic format.
+    :rtype: ``CommandResults``
+    """
+    url = args.get("url", "")
+    if not url:
+        raise ValueError("The 'url' argument is required.")
+
+    content_id = _extract_content_id_from_url(url)
+
+    params = {"expand": "body.storage"}
+    request_url = urljoin(URL_SUFFIX.get("CONTENT"), content_id)
+    response = client.http_request(method="GET", url_suffix=request_url, params=params)
+    response_json = response.json()
+
+    title = response_json.get("title", "")
+    body_content = response_json.get("body", {}).get("storage", {}).get("value", "")
+
+    # Check size of body_content (limit to 5MB = 5 * 1024 * 1024 bytes)
+    if body_content:
+        size_bytes = len(body_content.encode("utf-8"))
+        if size_bytes > MAX_FILE_SIZE:
+            size_mb = size_bytes / (1024 * 1024)
+            limit_mb = MAX_FILE_SIZE / (1024 * 1024)
+            raise ValueError(
+                f"The file '{title}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB."
+            )
+
+    # Confluence returns the page body as HTML/XHTML (storage format), so the content MIME type is text/html.
+    generic_output = remove_empty_elements(
+        {
+            "Title": title,
+            "Type": "text/html",
+            "Name": title,
+            "Content": body_content,
+            "Url": url,
+            "Id": response_json.get("id", ""),
+        }
+    )
+
+    readable_hr = tableToMarkdown(
+        "File Content Results",
+        generic_output,
+        headers=["Id", "Title", "Type", "Url"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["FILE_CONTENT"],
+        outputs=generic_output,
+        readable_output=readable_hr,
+        raw_response=response_json,
+    )
+
+
 def oauth_start_command(oauth_client) -> CommandResults:
     """Start OAuth authentication flow."""
     url = oauth_client.oauth_start()
@@ -1618,6 +1727,7 @@ def main() -> None:  # pragma: no cover
             "confluence-cloud-content-create": confluence_cloud_content_create_command,
             "confluence-cloud-space-create": confluence_cloud_space_create_command,
             "confluence-cloud-content-get": confluence_cloud_content_get_command,
+            "get-file-content": confluence_cloud_generic_file_get_command,
         }
 
         strip_args(args)

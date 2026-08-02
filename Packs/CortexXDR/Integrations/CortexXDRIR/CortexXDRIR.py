@@ -71,6 +71,19 @@ ISSUE_REASON_MAP = {
     "resolved_security_testing": "resolved - security testing",
 }
 
+INCIDENT_TO_CASE_FIELD_MAP = {
+    "incident_id": "case_id",
+    "incident_name": "case_name",
+    "status": "status_progress",
+    "incident_domain": "case_domain",
+    "alert_count": "issue_count",
+    "low_severity_alert_count": "low_severity_issue_count",
+    "med_severity_alert_count": "med_severity_issue_count",
+    "high_severity_alert_count": "high_severity_issue_count",
+    "critical_severity_alert_count": "critical_severity_issue_count",
+    "alert_categories": "issue_categories",
+}
+
 
 def convert_epoch_to_milli(timestamp):
     if timestamp is None:
@@ -494,17 +507,25 @@ class Client(CoreClient):
         exclude_artifacts,
         incident_id_list=[],
         gte_creation_time_milliseconds=0,
+        lte_creation_time_milliseconds=0,
         statuses=[],
         starred=None,
         starred_incidents_fetch_window=None,
         page_number=0,
         limit=100,
+        search_from=0,
+        sort_field=None,
+        sort_order=None,
         excluded_alert_fields=[],
         remove_nulls_from_alerts=False,
     ):
         """
         Returns incident by id
         :param incident_id_list: The list ids of incidents
+        :param lte_creation_time_milliseconds: Filters incidents created before this timestamp (in milliseconds).
+        :param search_from: The starting offset for pagination (maps to the search_from field).
+        :param sort_field: The field by which to sort the results (creation_time, modification_time, incident_id).
+        :param sort_order: The sort order (asc/desc).
         :return:
         Maximum number alerts to get in Maximum number alerts to get in "get_multiple_incidents_extra_data" is 50, not sorted
         """
@@ -512,17 +533,21 @@ class Client(CoreClient):
         request_data = {
             "search_to": limit,
             "sort": {
-                "field": "creation_time",
-                "keyword": "asc",
+                "field": sort_field or "creation_time",
+                "keyword": sort_order or "asc",
             },
             "full_alert_fields": True,
         }
+        if search_from is not None:
+            request_data["search_from"] = search_from
         filters: list[dict] = []
         if incident_id_list:
             incident_id_list = argToList(incident_id_list, transform=str)
             filters.append({"field": "incident_id_list", "operator": "in", "value": incident_id_list})
         if statuses:
             filters.append({"field": "status", "operator": "in", "value": statuses})
+        if lte_creation_time_milliseconds:
+            filters.append({"field": "creation_time", "operator": "lte", "value": lte_creation_time_milliseconds})
         demisto.debug(f"{excluded_alert_fields=}, {remove_nulls_from_alerts=}, {exclude_artifacts=}")
         if exclude_artifacts:
             request_data["fields_to_exclude"] = FIELDS_TO_EXCLUDE
@@ -2802,6 +2827,42 @@ def automation_playbook_delete_command(client: Client, args: Dict) -> CommandRes
     return CommandResults(readable_output="Automation playbook deleted successfully.")
 
 
+def normalize_case_data_record(incident_record: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Normalizes a single record returned by the get_multiple_incidents_extra_data endpoint
+    into the case-shaped output used by the xdr-case-list command.
+
+    Args:
+    - incident_record (dict): A single record from the endpoint, of the form
+      {"incident": {...}, "alerts": {...}, "file_artifacts": {...}, "network_artifacts": {...}}.
+      Flat records (without an "incident" wrapper) are also supported.
+
+    Returns:
+    - dict: The normalized case record.
+    """
+    incident = incident_record.get("incident", incident_record)
+
+    case: dict[str, Any] = {}
+    for field, value in incident.items():
+        case[INCIDENT_TO_CASE_FIELD_MAP.get(field, field)] = value
+
+    case_id = case.get("case_id")
+
+    nested_data_map = {
+        "alerts": "Issues",
+        "file_artifacts": "FileArtifacts",
+        "network_artifacts": "NetworkArtifacts",
+    }
+    for source_key, case_key in nested_data_map.items():
+        records = dict_safe_get(incident_record, [source_key, "data"], default_return_value=[], return_type=list)
+        if records:
+            for record in records:
+                record.setdefault("case_id", case_id)
+            case[case_key] = records
+
+    return case
+
+
 def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     API Docs: https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Platform-APIs/Retrieve-cases-based-on-filters
@@ -2822,9 +2883,33 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     created_after = arg_to_timestamp(args.get("created_after"), "created_after") if args.get("created_after") else None
     sort_field = args.get("sort_field")
     sort_order = args.get("sort_order")
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    manual_pagination = page is not None or page_size is not None
     limit = arg_to_number(args.get("limit")) or 50
-    page_size = arg_to_number(args.get("page_size")) or limit
-    page = arg_to_number(args.get("page")) or 0
+
+    if manual_pagination:
+        page = page or 0
+        page_size = page_size or limit
+        search_from = page * page_size
+        search_to = (page + 1) * page_size
+    else:
+        search_from = 0
+        search_to = limit
+    extra_data = argToBoolean(args.get("extra_data", False))
+
+    if extra_data:
+        return case_list_with_extra_data(
+            client=client,
+            case_ids=case_ids,
+            statuses=statuses,
+            created_after=created_after,
+            created_before=created_before,
+            sort_field=sort_field,
+            sort_order=sort_order,
+            search_from=search_from,
+            search_to=search_to,
+        )
 
     filters = []
     if case_ids:
@@ -2845,8 +2930,8 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         filters.append({"field": "creation_time", "operator": "gte", "value": created_after})
 
     request_data = {
-        "search_from": page * page_size,
-        "search_to": (page + 1) * page_size,
+        "search_from": search_from,
+        "search_to": search_to,
         "filters": filters,
     }
     if sort_field:
@@ -2871,6 +2956,54 @@ def case_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field="case_id",
         outputs=cases,
         raw_response=cases,
+    )
+
+
+def case_list_with_extra_data(
+    client: Client,
+    case_ids: List[str],
+    statuses: List[str],
+    created_after: Optional[Union[int, float]],
+    created_before: Optional[Union[int, float]],
+    sort_field: Optional[str],
+    sort_order: Optional[str],
+    search_from: int,
+    search_to: int,
+) -> CommandResults:
+    mapped_sort_field = {
+        "case_id": "incident_id",
+        "creation_time": "creation_time",
+    }.get(sort_field or "")
+
+    raw_records = client.get_multiple_incidents_extra_data(
+        exclude_artifacts=False,
+        incident_id_list=case_ids,
+        statuses=statuses,
+        gte_creation_time_milliseconds=arg_to_number(created_after) or 0,
+        lte_creation_time_milliseconds=arg_to_number(created_before) or 0,
+        sort_field=mapped_sort_field,
+        sort_order=sort_order,
+        search_from=search_from,
+        limit=search_to,
+    )
+
+    cases = [normalize_case_data_record(record) for record in raw_records]
+
+    readable_output = tableToMarkdown(
+        name="Cortex XDR Cases",
+        t=cases,
+        headers=["case_id", "case_name", "case_domain", "creation_time", "modification_time", "description"],
+        date_fields=["creation_time", "modification_time"],
+        headerTransform=string_to_table_header,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Case",
+        outputs_key_field="case_id",
+        outputs=cases,
+        raw_response=raw_records,
     )
 
 

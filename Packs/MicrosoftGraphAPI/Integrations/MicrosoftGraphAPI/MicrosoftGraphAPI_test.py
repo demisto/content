@@ -3,7 +3,7 @@ import os
 from unittest.mock import MagicMock
 
 import pytest
-from MicrosoftApiModule import AZURE_WORLDWIDE_CLOUD
+from MicrosoftApiModule import AZURE_US_GCC_HIGH_CLOUD, AZURE_WORLDWIDE_CLOUD
 from MicrosoftGraphAPI import MsGraphClient, generic_command
 
 
@@ -215,3 +215,37 @@ def test_generic_command_headers(headers, expected_headers):
         request_body={"key": "value"},
         headers=expected_headers,
     )
+
+
+@pytest.mark.parametrize(
+    "azure_cloud, expected_scope",
+    [
+        (AZURE_WORLDWIDE_CLOUD, "https://graph.microsoft.com/.default"),
+        (AZURE_US_GCC_HIGH_CLOUD, "https://graph.microsoft.us/.default"),
+    ],
+)
+def test_scope_set_by_azure_cloud(requests_mock, azure_cloud, expected_scope):
+    """
+    Given:
+        - An Azure cloud environment (Commercial or GCC-High).
+    When:
+        - Creating the MsGraphClient with client credentials.
+    Then:
+        - Ensure the OAuth2 scope matches the cloud's Graph endpoint.
+    """
+    requests_mock.post(
+        f"{azure_cloud.endpoints.active_directory.rstrip('/')}/tenant_id/oauth2/v2.0/token",
+        json={},
+    )
+    client = MsGraphClient(
+        app_id="app_id",
+        scope="",
+        app_secret="app_secret",
+        tenant_id="tenant_id",
+        verify=False,
+        proxy=False,
+        azure_cloud=azure_cloud,
+        auth_code="",
+        redirect_uri="",
+    )
+    assert client.ms_client.scope == expected_scope

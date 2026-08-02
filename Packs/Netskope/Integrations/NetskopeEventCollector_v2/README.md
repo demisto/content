@@ -272,3 +272,9 @@ There is no context output for this command.
 >| 9f806593aa4385e4fc14865c | 2022-06-28T16:59:15.000Z | nspolicy | API Connector | Microsoft Office 365 Sharepoint Online | CloudApp |
 >| efac69202c964c91fd59bcb9 | 2022-07-20T15:27:50.000Z | admin_audit_logs |  |  |  |
 >| e03cf756afc2a707666fcbc0 | 2022-07-13T19:54:57.000Z | network | Client | [CS SEG's] | PrivateApp |
+
+## Troubleshooting
+
+### Out-of-memory (OOM) on high-volume tenants
+
+If you encounter OOM errors on a high-volume tenant, split the event types across multiple instances (ideally one type per instance) to spread the load across separate runtimes.

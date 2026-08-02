@@ -1,0 +1,26 @@
+{
+    "name": "Kibana",
+    "description": "This integration enables using Elastic Security for SIEM for security operations management and searching Elastic logs. This pack is to be used in combination with the Elasticsearch v2 integration.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "whsmith1223",
+    "url": "",
+    "email": "",
+    "created": "2026-05-28T13:45:23Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Elastic"
+    ],
+    "marketplaces": [
+        "platform",
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "whsmith1223"
+    ]
+}

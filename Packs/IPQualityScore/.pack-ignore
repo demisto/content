@@ -4,3 +4,5 @@ ignore=RM104
 [file:IPQualityScore_image.png]
 ignore=IM111
 
+[file:IPQualityScore.yml]
+ignore=BA129

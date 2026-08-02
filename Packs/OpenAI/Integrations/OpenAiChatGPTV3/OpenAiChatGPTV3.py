@@ -1,4 +1,6 @@
+import base64
 import json
+import mimetypes
 
 import demistomock as demisto  # noqa: F401
 import parse_emails
@@ -66,6 +68,21 @@ class Stream:
 EML_FILE_PREFIX = ".eml"
 
 
+class ResponsesConfig:
+    """Configuration constants for the OpenAI Responses API and background polling."""
+
+    # Regex prefixes that identify reasoning-capable model families.
+    # When the model name starts with any of these, the usage table includes a "Reasoning tokens" row.
+    REASONING_MODEL_PREFIXES = ("o1", "o3", "o4", "gpt-5")
+
+    # Terminal statuses for background responses polling.
+    BACKGROUND_TERMINAL_STATUSES = frozenset({"completed", "failed", "cancelled", "incomplete"})
+    BACKGROUND_PENDING_STATUSES = frozenset({"queued", "in_progress"})
+
+    DEFAULT_POLLING_INTERVAL_SECS = 10
+    DEFAULT_POLLING_TIMEOUT_SECS = 600
+
+
 class ApiPaths:
     """Centralized OpenAI API endpoint paths.
 
@@ -73,6 +90,9 @@ class ApiPaths:
     """
 
     CHAT_COMPLETIONS = "v1/chat/completions"
+    RESPONSES = "v1/responses"
+    MODELS = "v1/models"
+    MODERATIONS = "v1/moderations"
     AUDIT_LOGS = "v1/organization/audit_logs"
 
     @classmethod
@@ -303,6 +323,116 @@ class OpenAiClient(BaseClient):
         )
         return self._http_request(method="POST", url_suffix=ApiPaths.CHAT_COMPLETIONS, json_data=options, headers=self.headers)
 
+    # region commands using api.openai.com and ApiKey
+    def list_models(self) -> dict[str, Any]:
+        """List all models available to the configured API key (GET /v1/models).
+
+        Returns:
+            The parsed JSON response dict from the API containing a ``data`` list.
+        """
+        if not self.api_key:
+            raise DemistoException(
+                "API Key is required for the gpt-list-models command. "
+                "Configure the 'API Key' integration parameter and try again."
+            )
+        demisto.debug("[API Models] Listing available models.")
+        return self._http_request(
+            method="GET",
+            url_suffix=ApiPaths.MODELS,
+            headers=self.headers,
+            retries=3,
+            status_list_to_retry=[429, 500, 502, 503, 504],
+            backoff_factor=5,
+        )
+
+    def create_moderation(self, body: dict[str, Any]) -> dict[str, Any]:
+        """Call the OpenAI Moderations API (POST /v1/moderations).
+
+        Args:
+            body: The full JSON body containing ``model`` and ``input``.
+
+        Returns:
+            The parsed JSON response dict from the API.
+        """
+        if not self.api_key:
+            raise DemistoException(
+                "API Key is required for the gpt-create-moderation command. "
+                "Configure the 'API Key' integration parameter and try again."
+            )
+        demisto.debug(f"[API Moderations] Calling | model={body.get('model')}")
+        return self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.MODERATIONS,
+            json_data=body,
+            headers=self.headers,
+            retries=3,
+            status_list_to_retry=[429, 500, 502, 503, 504],
+            backoff_factor=5,
+        )
+
+    def create_response(self, body: dict[str, Any]) -> dict[str, Any]:
+        """Call the OpenAI Responses API (POST /v1/responses).
+
+        Uses the regular OpenAI API key and the Server URL base.
+
+        Args:
+            body: The full JSON body to send (model, input, and optional params).
+
+        Returns:
+            The parsed JSON response dict from the API.
+        """
+        if not self.api_key:
+            raise DemistoException(
+                "API Key is required for the Responses API commands "
+                "(gpt-create-response, gpt-analyze-email-header, gpt-analyze-email-body, gpt-draft-soc-email). "
+                "Configure the 'API Key' integration parameter and try again."
+            )
+        demisto.debug(
+            f"[API Responses] Calling | model={body.get('model')} | "
+            f"max_output_tokens={body.get('max_output_tokens')} | "
+            f"temperature={body.get('temperature')} | "
+            f"top_p={body.get('top_p')} | "
+            f"reasoning_effort={body.get('reasoning', {}).get('effort') if body.get('reasoning') else None} | "
+            f"background={body.get('background')}"
+        )
+        return self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.RESPONSES,
+            json_data=body,
+            headers=self.headers,
+            retries=3,
+            status_list_to_retry=[429, 500, 502, 503, 504],
+            backoff_factor=5,
+        )
+
+    def get_response(self, response_id: str) -> dict[str, Any]:
+        """Retrieve an existing response by ID (GET /v1/responses/{response_id}).
+
+        Used for polling background responses until they reach a terminal state.
+
+        Args:
+            response_id: The response ID returned from a ``POST /v1/responses`` call.
+
+        Returns:
+            The parsed JSON response dict from the API.
+        """
+        if not self.api_key:
+            raise DemistoException(
+                "API Key is required for polling Responses API results. "
+                "Configure the 'API Key' integration parameter and try again."
+            )
+        demisto.debug(f"[API Responses] Polling | response_id={response_id}")
+        return self._http_request(
+            method="GET",
+            url_suffix=f"{ApiPaths.RESPONSES}/{response_id}",
+            headers=self.headers,
+            retries=3,
+            status_list_to_retry=[429, 500, 502, 503, 504],
+            backoff_factor=5,
+        )
+
+    # endregion
+
     # region Event Collector - Audit Logs (Admin API)
     def get_audit_logs(
         self,
@@ -469,6 +599,81 @@ def setup_args(args: Dict[str, Any], params: Dict[str, Any]):
     for key in (ArgAndParamNames.MAX_TOKENS, ArgAndParamNames.TEMPERATURE, ArgAndParamNames.TOP_P):
         if not args.get(key) and params.get(key):
             args[key] = params.get(key)
+
+
+def _resolve_model(args: dict[str, Any], client: OpenAiClient) -> str:
+    """Resolve the model name from command args, falling back to the instance-level default.
+
+    Args:
+        args: Command arguments from ``demisto.args()``.
+        client: The configured ``OpenAiClient`` instance (carries the instance-level model).
+
+    Returns:
+        The resolved model name.
+
+    Raises:
+        DemistoException: If no model is specified anywhere.
+    """
+    model: str = args.get(ArgAndParamNames.MODEL, "") or client.model
+    if not model:
+        raise DemistoException("No model specified. Provide it as a command argument or configure it in the instance settings.")
+    return model
+
+
+def _build_responses_api_body(
+    args: dict[str, Any],
+    params: dict[str, Any],
+    model: str,
+    prompt: str,
+) -> dict[str, Any]:
+    """Build a Responses API request body from command args and instance params.
+
+    Centralises the repeated pattern of resolving ``max_output_tokens``,
+    ``temperature``, ``top_p``, and ``reasoning_effort`` from *args* (with
+    *params* as fallback) and assembling them into the ``POST /v1/responses``
+    request body.
+
+    Args:
+        args: Command arguments from ``demisto.args()``.
+        params: Instance parameters from ``demisto.params()``.
+        model: The resolved model name (use ``_resolve_model`` first).
+        prompt: The input text / prompt to send.
+
+    Returns:
+        A dict ready to be passed to ``client.create_response(body)``.
+    """
+    body: dict[str, Any] = {
+        "model": model,
+        "input": prompt,
+    }
+
+    # max_output_tokens: command arg takes precedence, then instance param
+    max_output_tokens = args.get(ArgAndParamNames.MAX_TOKENS)
+    if max_output_tokens is None:
+        max_output_tokens = params.get(ArgAndParamNames.MAX_TOKENS)
+    if max_output_tokens is not None:
+        body["max_output_tokens"] = int(max_output_tokens)
+
+    # temperature: command arg takes precedence, then instance param
+    temperature = args.get(ArgAndParamNames.TEMPERATURE)
+    if temperature is None:
+        temperature = params.get(ArgAndParamNames.TEMPERATURE)
+    if temperature is not None:
+        body["temperature"] = float(temperature)
+
+    # top_p: command arg takes precedence, then instance param
+    top_p = args.get(ArgAndParamNames.TOP_P)
+    if top_p is None:
+        top_p = params.get(ArgAndParamNames.TOP_P)
+    if top_p is not None:
+        body["top_p"] = float(top_p)
+
+    # reasoning_effort (only for reasoning model families)
+    reasoning_effort = args.get("reasoning_effort")
+    if reasoning_effort is not None:
+        body["reasoning"] = {"effort": reasoning_effort}
+
+    return body
 
 
 def conversation_to_chat_context(conversation: List[dict[str, str]]) -> List[dict[str, str]]:
@@ -682,8 +887,26 @@ def test_module(client: OpenAiClient, params: dict) -> str:
             demisto.error(f"[Test Module] Chat-completions probe raised non-auth error: {e}")
             raise
         demisto.debug("[Test Module] Chat-completions probe passed.")
+
+        demisto.debug("[Test Module] Probing Responses API endpoint...")
+        try:
+            response_params = {
+                ArgAndParamNames.MODEL: client.model or "gpt-3.5-turbo",
+                ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
+                ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None),
+                "max_output_tokens": params.get(ArgAndParamNames.MAX_TOKENS, None),
+                "input": "Present random english sentence",
+            }
+            client.create_response(body=response_params)
+        except DemistoException as e:
+            if "Forbidden" in str(e) or "Authorization" in str(e):
+                demisto.error(f"[Test Module] Responses API probe failed with auth error: {e}")
+                return "Authorization Error: make sure API Key is correctly set"
+            demisto.error(f"[Test Module] Responses API probe raised non-auth error: {e}")
+            raise
+        demisto.debug("[Test Module] Responses API probe passed.")
     else:
-        demisto.debug("[Test Module] Chat-completions probe skipped (no API Key configured).")
+        demisto.debug("[Test Module] Chat-completions and Responses API probes skipped (no API Key configured).")
 
     collector_params = parse_collector_params(params)
     streams_to_probe = [
@@ -790,6 +1013,157 @@ def check_email_body_command(client: OpenAiClient, args: dict[str, Any]) -> Comm
     return check_email_part(EmailParts.BODY, client, args)
 
 
+def analyze_email_header_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    """Analyze email headers using the OpenAI Responses API.
+
+    This is the Responses-API counterpart of ``gpt-check-email-header`` (which uses
+    Chat Completions). It parses the uploaded ``.eml`` file, builds the same prompt
+    template, and sends it via ``POST /v1/responses``.
+
+    Two war-room entries are produced (matching the ``gpt-check-email-header`` UX):
+      1. A table of the parsed email headers.
+      2. The AI verdict followed by a token-usage table (with a *Reasoning tokens*
+         row when a reasoning model is used).
+
+    Args:
+        client: The configured ``OpenAiClient`` instance.
+        args: Command arguments from ``demisto.args()``.
+        params: Instance parameters from ``demisto.params()``.
+
+    Returns:
+        A ``CommandResults`` with the AI analysis and usage info.
+    """
+    # --- Parse the .eml file ---
+    entry_id: str = args.get(ArgAndParamNames.ENTRY_ID, "")
+    email_headers, _, _, file_name = get_email_parts(entry_id)
+
+    if not email_headers:
+        raise DemistoException("'parse_emails' did not extract any email headers from the provided file.")
+
+    # --- Build the prompt (identical template to gpt-check-email-header) ---
+    additional_instructions = args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "")
+
+    email_headers_formatted = {
+        header["name"]: header["value"] for header in email_headers if "name" in header and "value" in header
+    }
+    readable_input = tableToMarkdown(name=f"{file_name} headers:", t=email_headers_formatted, sort_headers=False)
+    prompt = CHECK_EMAIL_HEADERS_PROMPT.format(additional_instructions, readable_input)
+
+    demisto.debug(f"[Analyze Email Header] Built prompt | length={len(prompt)} chars")
+
+    # --- Resolve model & build the Responses API request body ---
+    model = _resolve_model(args, client)
+    body = _build_responses_api_body(args, params, model, prompt)
+
+    # --- Call the Responses API ---
+    response = client.create_response(body)
+
+    # --- Extract the assistant's verdict ---
+    assistant_message = extract_response_output_text(response)
+    readable_output = _build_response_readable_output(response, assistant_message, model)
+
+    # --- Emit the headers table as a first war-room entry (same UX as gpt-check-email-header) ---
+    return_results(
+        CommandResults(
+            readable_output=readable_input,
+            outputs_prefix="OpenAiChatGPTV3.EmailHeaders",
+            outputs={"EmailHeaders": readable_input, "Response": response},
+            replace_existing=True,
+        )
+    )
+
+    # --- Return the AI verdict + usage table as the second war-room entry ---
+    return CommandResults(
+        outputs_prefix="OpenAiChatGPTV3.Response",
+        outputs=[
+            {
+                Roles.USER: prompt,
+                Roles.ASSISTANT: assistant_message,
+                "response_id": response.get("id", ""),
+            }
+        ],
+        replace_existing=True,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def analyze_email_body_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    """Analyze email body for security risks using the OpenAI Responses API.
+
+    This is the Responses-API counterpart of ``gpt-check-email-body`` (which uses
+    Chat Completions). It parses the uploaded ``.eml`` file, builds the same prompt
+    template, and sends it via ``POST /v1/responses``.
+
+    Two war-room entries are produced (matching the ``gpt-check-email-body`` UX):
+      1. A table of the parsed email body (text and HTML).
+      2. The AI verdict followed by a token-usage table (with a *Reasoning tokens*
+         row when a reasoning model is used).
+
+    Args:
+        client: The configured ``OpenAiClient`` instance.
+        args: Command arguments from ``demisto.args()``.
+        params: Instance parameters from ``demisto.params()``.
+
+    Returns:
+        A ``CommandResults`` with the AI analysis and usage info.
+    """
+    # --- Parse the .eml file ---
+    entry_id: str = args.get(ArgAndParamNames.ENTRY_ID, "")
+    _, email_text_body, email_html_body, file_name = get_email_parts(entry_id)
+
+    if not email_text_body and not email_html_body:
+        raise DemistoException("'email_parser' did not extract any email body from the provided file.")
+
+    # --- Build the prompt (identical template to gpt-check-email-body) ---
+    additional_instructions = args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "")
+
+    email_text_body = email_text_body if email_text_body else ""
+    email_html_body = email_html_body if email_html_body else ""
+    email_body = {"Body/Text": email_text_body, "HTML/Text": email_html_body}
+
+    readable_input = tableToMarkdown(name=f"{file_name} body:", t=email_body, sort_headers=False)
+    prompt = CHECK_EMAIL_BODY_PROMPT.format(additional_instructions, readable_input)
+
+    demisto.debug(f"[Analyze Email Body] Built prompt | length={len(prompt)} chars")
+
+    # --- Resolve model & build the Responses API request body ---
+    model = _resolve_model(args, client)
+    body = _build_responses_api_body(args, params, model, prompt)
+
+    # --- Call the Responses API ---
+    response = client.create_response(body)
+
+    # --- Extract the assistant's verdict ---
+    assistant_message = extract_response_output_text(response)
+    readable_output = _build_response_readable_output(response, assistant_message, model)
+
+    # --- Emit the body table as a first war-room entry (same UX as gpt-check-email-body) ---
+    return_results(
+        CommandResults(
+            readable_output=readable_input,
+            outputs_prefix="OpenAiChatGPTV3.EmailBody",
+            outputs={"EmailBody": readable_input, "Response": response},
+            replace_existing=True,
+        )
+    )
+
+    # --- Return the AI verdict + usage table as the second war-room entry ---
+    return CommandResults(
+        outputs_prefix="OpenAiChatGPTV3.Response",
+        outputs=[
+            {
+                Roles.USER: prompt,
+                Roles.ASSISTANT: assistant_message,
+                "response_id": response.get("id", ""),
+            }
+        ],
+        replace_existing=True,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
     additional_instructions = (
         f"Additional instructions: {args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS)}\n"
@@ -805,6 +1179,350 @@ def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]
         CommandResults(outputs_prefix="OpenAiChatGPTV3.SocEmailTemplate", outputs={"Response": response}, replace_existing=True)
     )
     return send_message_command_results
+
+
+def draft_soc_email_command(client: OpenAiClient, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
+    """Draft a SOC email template using the OpenAI Responses API.
+
+    This is the Responses-API counterpart of ``gpt-create-soc-email-template``
+    (which uses Chat Completions). It uses the same prompt template and is
+    designed to consume prior conversation context (e.g. from a preceding
+    ``gpt-analyze-email-body`` call).
+
+    There is no ``reset_conversation_history`` argument — this command consumes
+    prior conversation context by design.
+
+    Two war-room entries are produced (matching the ``gpt-create-soc-email-template`` UX):
+      1. The SOC email template context output.
+      2. The AI-generated template followed by a token-usage table (with a
+         *Reasoning tokens* row when a reasoning model is used).
+
+    Args:
+        client: The configured ``OpenAiClient`` instance.
+        args: Command arguments from ``demisto.args()``.
+        params: Instance parameters from ``demisto.params()``.
+
+    Returns:
+        A ``CommandResults`` with the AI-generated SOC email template and usage info.
+    """
+    # --- Build the prompt (identical template to gpt-create-soc-email-template) ---
+    additional_instructions = (
+        f"Additional instructions: {args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS)}\n"
+        if args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "")
+        else ""
+    )
+    prompt = CREATE_SOC_EMAIL_TEMPLATE_PROMPT.format(additional_instructions)
+
+    demisto.debug(f"[Draft SOC Email] Built prompt | length={len(prompt)} chars")
+
+    # --- Resolve model & build the Responses API request body ---
+    model = _resolve_model(args, client)
+    body = _build_responses_api_body(args, params, model, prompt)
+
+    # --- Call the Responses API ---
+    response = client.create_response(body)
+
+    # --- Extract the assistant's draft ---
+    assistant_message = extract_response_output_text(response)
+    readable_output = _build_response_readable_output(response, assistant_message, model)
+
+    # --- Emit the SOC email template context as a first war-room entry (same UX as gpt-create-soc-email-template) ---
+    return_results(
+        CommandResults(
+            outputs_prefix="OpenAiChatGPTV3.SocEmailTemplate",
+            outputs={"Response": response},
+            replace_existing=True,
+        )
+    )
+
+    # --- Return the AI draft + usage table as the second war-room entry ---
+    return CommandResults(
+        outputs_prefix="OpenAiChatGPTV3.Response",
+        outputs=[
+            {
+                Roles.USER: prompt,
+                Roles.ASSISTANT: assistant_message,
+                "response_id": response.get("id", ""),
+            }
+        ],
+        replace_existing=True,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def extract_response_output_text(response: dict[str, Any]) -> str:
+    """Extract the assistant's text from a Responses API response.
+
+    The Responses API returns output as a list of message objects, each containing
+    a list of content blocks. This extracts the first ``output_text`` block.
+
+    Args:
+        response: The parsed JSON response from ``POST /v1/responses``.
+
+    Returns:
+        The assistant's text content.
+
+    Raises:
+        DemistoException: If the expected structure is missing or empty.
+    """
+    output: list = response.get("output") or []
+    if not output:
+        raise DemistoException("Could not retrieve output from Responses API: 'output' field is empty or missing.")
+
+    content: list = output[0].get("content") or []
+    if not content:
+        raise DemistoException("Could not retrieve output from Responses API: 'output[0].content' is empty or missing.")
+
+    text: str = content[0].get("text") or ""
+    if not text:
+        raise DemistoException("Could not retrieve output from Responses API: 'output[0].content[0].text' is empty.")
+
+    demisto.debug(f"[Responses] Extracted assistant output | length={len(text)} chars")
+    return text
+
+
+def _is_reasoning_model(model: str) -> bool:
+    """Return ``True`` if *model* belongs to a reasoning-capable family.
+
+    Reasoning models (o1, o3, o4-mini, gpt-5*) expose extra usage details
+    such as ``usage.output_tokens_details.reasoning_tokens``.
+    """
+    return model.lower().startswith(ResponsesConfig.REASONING_MODEL_PREFIXES)
+
+
+def _build_response_readable_output(
+    response: dict[str, Any],
+    assistant_message: str,
+    model: str,
+) -> str:
+    """Build the human-readable output for a completed Responses API call.
+
+    Mirrors the ``gpt-send-message`` HR style using ``tableToMarkdown``.
+    For reasoning models, an extra *Reasoning tokens* row is included.
+
+    Args:
+        response: The full API response dict.
+        assistant_message: The extracted assistant text.
+        model: The resolved model name.
+
+    Returns:
+        Markdown-formatted readable output string.
+    """
+    usage: dict[str, Any] = response.get("usage") or {}
+    response_id = response.get("id", "")
+    actual_model = response.get("model", model)
+
+    usage_table: dict[str, Any] = {
+        "Input tokens": usage.get("input_tokens", ""),
+        "Output tokens": usage.get("output_tokens", ""),
+    }
+
+    # For reasoning models, include the reasoning tokens row.
+    if _is_reasoning_model(actual_model):
+        output_details = usage.get("output_tokens_details") or {}
+        usage_table["Reasoning tokens"] = output_details.get("reasoning_tokens", "")
+
+    usage_table["Total tokens"] = usage.get("total_tokens", "")
+    usage_table["Response ID"] = response_id
+
+    return (
+        assistant_message
+        + "\n"
+        + tableToMarkdown(
+            name=f"{actual_model} response:",
+            sort_headers=False,
+            t=usage_table,
+        )
+    )
+
+
+@polling_function(
+    name="gpt-create-response",
+    interval=ResponsesConfig.DEFAULT_POLLING_INTERVAL_SECS,
+    timeout=ResponsesConfig.DEFAULT_POLLING_TIMEOUT_SECS,
+    polling_arg_name="background",
+)
+def create_response_command(args: dict[str, Any], client: OpenAiClient, params: dict[str, Any]) -> PollResult:
+    """Execute the ``gpt-create-response`` command using the OpenAI Responses API.
+
+    Builds the request body from command arguments (falling back to instance params
+    where applicable), calls the Responses API, manages conversation context via
+    ``previous_response_id`` for multi-turn conversations, and returns structured
+    ``CommandResults``.
+
+    Conversation continuity:
+        The Responses API natively supports multi-turn conversations through the
+        ``previous_response_id`` field. After each call, the response ``id`` is stored
+        in the XSOAR context at ``OpenAiChatGPTV3.Response``. On subsequent
+        calls (when ``reset_conversation_history`` is ``False``), this ID is sent as
+        ``previous_response_id`` so the model retains full conversation context
+        server-side — no need to re-send prior messages.
+
+    Polling:
+        When ``background=true`` is set, the initial API call returns immediately with
+        a ``queued`` or ``in_progress`` status. The ``@polling_function`` decorator
+        handles re-scheduling automatically based on the returned ``PollResult``.
+
+    Note:
+        This command uses a **separate** context key (``Response``) from
+        the existing ``gpt-send-message`` command (``Conversation``) to avoid clashing.
+
+    Args:
+        args: Command arguments from ``demisto.args()``.
+        client: The configured ``OpenAiClient`` instance.
+        params: Instance parameters from ``demisto.params()``.
+
+    Returns:
+        A ``PollResult`` indicating whether polling should continue or the final result.
+    """
+    # --- Polling re-entry: if we already have a response_id, poll for completion ---
+    polling_response_id = args.get("_polling_response_id")
+    if polling_response_id:
+        demisto.debug(f"[Responses] Polling re-entry | response_id={polling_response_id}")
+        response = client.get_response(polling_response_id)
+        status = response.get("status", "")
+        demisto.debug(f"[Responses] Poll status={status}")
+
+        if status in ResponsesConfig.BACKGROUND_PENDING_STATUSES:
+            # Still running — continue polling
+            return PollResult(
+                response=None,
+                continue_to_poll=True,
+                args_for_next_run=args,
+                partial_result=CommandResults(
+                    readable_output=f"⏳ Response `{polling_response_id}` is still {status}. Polling...",
+                ),
+            )
+
+        if status == "failed":
+            error_info = response.get("error") or {}
+            raise DemistoException(
+                f"Background response failed. "
+                f"Error: {error_info.get('message', 'N/A')} (code={error_info.get('code', 'N/A')})"
+            )
+
+        if status == "incomplete":
+            incomplete_details = response.get("incomplete_details") or {}
+            raise DemistoException(f"Background response is incomplete. " f"Reason: {incomplete_details.get('reason', 'N/A')}")
+
+        if status == "cancelled":
+            raise DemistoException("Background response was cancelled.")
+
+        if status != "completed":
+            raise DemistoException(f"Background response reached unexpected status '{status}'. " f"Full response: {response}")
+
+        # Completed — return the final result
+        return PollResult(
+            response=_build_completed_response_result(response, args),
+            continue_to_poll=False,
+            partial_result=CommandResults(readable_output="Response completed successfully."),
+        )
+
+    # --- First call: build and send the request ---
+    message: str = args.get(ArgAndParamNames.MESSAGE, "")
+    if not message:
+        raise DemistoException("The 'message' argument is required.")
+
+    reset_conversation_history: bool = argToBoolean(args.get(ArgAndParamNames.RESET_CONVERSATION_HISTORY, "no"))
+
+    # Resolve model & build the base Responses API request body
+    model = _resolve_model(args, client)
+    body = _build_responses_api_body(args, params, model, message)
+
+    # Conversation continuity via previous_response_id.
+    # The Responses API keeps the full conversation server-side; we only need to
+    # pass the last response ID to continue the thread.
+    # Uses a SEPARATE context key (Response) to avoid clashing with
+    # the Chat Completions-based gpt-send-message command (Conversation).
+    if not reset_conversation_history:
+        conversation_ctx = demisto.context().get("OpenAiChatGPTV3", {}).get("Response")
+        previous_response_id: str | None = None
+        if isinstance(conversation_ctx, list) and conversation_ctx:
+            previous_response_id = conversation_ctx[-1].get("response_id") if isinstance(conversation_ctx[-1], dict) else None
+        elif isinstance(conversation_ctx, dict):
+            previous_response_id = conversation_ctx.get("response_id")
+
+        if previous_response_id:
+            body["previous_response_id"] = previous_response_id
+            demisto.debug(f"[Responses] Continuing conversation | previous_response_id={previous_response_id}")
+        else:
+            demisto.debug("[Responses] No previous response ID found - starting new conversation.")
+    else:
+        demisto.debug("[Responses] Conversation history reset requested - starting fresh.")
+
+    # background
+    background = args.get("background")
+    if background is not None:
+        body["background"] = argToBoolean(background)
+
+    # compact_threshold - validated but not sent to API; for future context compaction logic
+    compact_threshold = args.get("compact_threshold")
+    if compact_threshold is not None:
+        compact_threshold_val = int(compact_threshold)
+        if compact_threshold_val < 1000:
+            raise DemistoException("compact_threshold must be at least 1000.")
+
+    # Call the Responses API
+    response = client.create_response(body)
+
+    # If background=true and the response is not yet completed, start polling
+    response_status = response.get("status", "")
+    if body.get("background") and response_status in ResponsesConfig.BACKGROUND_PENDING_STATUSES:
+        response_id = response.get("id", "")
+        demisto.debug(f"[Responses] Background response queued | id={response_id} status={response_status}")
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={**args, "_polling_response_id": response_id},
+            partial_result=CommandResults(
+                readable_output=f"⏳ Background response `{response_id}` is {response_status}. Polling started...",
+            ),
+        )
+
+    # Synchronous completion — return the final result
+    return PollResult(
+        response=_build_completed_response_result(response, args),
+        continue_to_poll=False,
+    )
+
+
+def _build_completed_response_result(response: dict[str, Any], args: dict[str, Any]) -> CommandResults:
+    """Build the final ``CommandResults`` for a completed Responses API response.
+
+    Shared by both the synchronous path and the polling completion path.
+
+    Args:
+        response: The completed API response dict.
+        args: The original command arguments.
+
+    Returns:
+        A ``CommandResults`` with context, HR, and raw response.
+    """
+    message: str = args.get(ArgAndParamNames.MESSAGE) or ""
+    model: str = args.get(ArgAndParamNames.MODEL) or response.get("model") or ""
+
+    assistant_message = extract_response_output_text(response)
+    response_id = response.get("id", "")
+
+    # Store conversation step with response_id for multi-turn continuity
+    conversation_step = [
+        {
+            Roles.USER: message,
+            Roles.ASSISTANT: assistant_message,
+            "response_id": response_id,
+        }
+    ]
+
+    readable_output = _build_response_readable_output(response, assistant_message, model)
+
+    return CommandResults(
+        outputs_prefix="OpenAiChatGPTV3.Response",
+        outputs=conversation_step,
+        replace_existing=True,
+        readable_output=readable_output,
+        raw_response=response,
+    )
 
 
 # region Helpers - JSON parsing
@@ -1629,6 +2347,196 @@ def get_events_command(client: OpenAiClient, args: dict[str, Any], params: dict[
     )
 
 
+def validate_create_moderation_args(args: dict[str, Any]) -> None:
+    """Validate that exactly one of text, entry_id, or image_url is provided.
+
+    Raises:
+        DemistoException: When zero or more than one input source is supplied.
+    """
+    text = argToList(args.get("text"))
+    entry_id = args.get("entry_id")
+    image_url = args.get("image_url")
+
+    provided = sum(bool(v) for v in (text, entry_id, image_url))
+    if provided == 0:
+        raise DemistoException("Exactly one of 'text', 'entry_id', or 'image_url' must be provided.")
+    if provided > 1:
+        raise DemistoException("Only one of 'text', 'entry_id', or 'image_url' may be provided at a time.")
+
+
+def _entry_id_to_data_url(entry_id: str) -> str:
+    """Read a war-room image file and return a base64 data-URL string.
+
+    Args:
+        entry_id: The war-room entry ID referencing an uploaded image file.
+
+    Returns:
+        A ``data:<mime>;base64,<payload>`` string suitable for the Moderations API.
+
+    Raises:
+        DemistoException: When the file cannot be found or is not an image type.
+    """
+    file_result = demisto.getFilePath(entry_id)
+    if not file_result:
+        raise DemistoException(f"Could not find file for entry_id '{entry_id}'.")
+
+    file_path: str = file_result.get("path", "")
+    file_name: str = file_result.get("name", "")
+
+    if not file_path:
+        raise DemistoException(f"File path is empty for entry_id '{entry_id}'.")
+
+    mime_type, _ = mimetypes.guess_type(file_name)
+    if mime_type is None or not mime_type.startswith("image/"):
+        raise DemistoException(
+            f"Unsupported or unknown image type for file '{file_name}' "
+            f"(detected MIME: {mime_type}). Only image files are supported."
+        )
+
+    with open(file_path, "rb") as f:
+        image_b64 = base64.b64encode(f.read()).decode("utf-8")
+
+    demisto.debug(
+        f"[Moderation] Encoded image from entry_id '{entry_id}' | "
+        f"file={file_name} | mime={mime_type} | b64_len={len(image_b64)}"
+    )
+    return f"data:{mime_type};base64,{image_b64}"
+
+
+def create_moderation_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
+    """Run content through the OpenAI Moderations API and return per-category results.
+
+    Supports text (array / comma-separated), a war-room image entry, or a public image URL.
+    When multiple texts are provided the API returns one result per text; this function
+    iterates over all of them and produces a separate table and context entry for each.
+    """
+    validate_create_moderation_args(args)
+
+    model = args.get("model", "omni-moderation-latest")
+    text = argToList(args.get("text"))
+    entry_id = args.get("entry_id")
+    image_url = args.get("image_url")
+
+    # Build the ``input`` field based on which argument was supplied and
+    # track the input type/value for context output.
+    if text:
+        moderation_input: list[Any] = text
+        input_type = "text"
+    elif entry_id:
+        data_url = _entry_id_to_data_url(entry_id)
+        moderation_input = [{"type": "image_url", "image_url": {"url": data_url}}]
+        input_type = "image"
+    else:
+        # image_url
+        moderation_input = [{"type": "image_url", "image_url": {"url": image_url}}]
+        input_type = "image_url"
+
+    body: dict[str, Any] = {"model": model, "input": moderation_input}
+    response = client.create_moderation(body)
+
+    results_list: list[dict[str, Any]] = response.get("results", [])
+    if not results_list:
+        input_value = text[0] if text else (entry_id or image_url or "")
+        return CommandResults(
+            readable_output="No moderation results returned.",
+            outputs_prefix="OpenAiChatGPTV3.Moderation",
+            outputs=[
+                {
+                    "Flagged": False,
+                    "Categories": {},
+                    "CategoryScores": {},
+                    "Input": {"input_type": input_type, "input_value": input_value},
+                }
+            ],
+            replace_existing=True,
+        )
+
+    # Determine labels for each result.  For text inputs the label is the text
+    # itself; for images we fall back to a generic "Image" label.
+    input_labels: list[str] = text if text else ["Image"] * len(results_list)
+
+    all_outputs: list[dict[str, Any]] = []
+    readable_parts: list[str] = []
+
+    for idx, result in enumerate(results_list):
+        flagged: bool = result.get("flagged", False)
+        categories: dict[str, bool] = result.get("categories", {})
+        category_scores: dict[str, float] = result.get("category_scores", {})
+
+        label = input_labels[idx] if idx < len(input_labels) else f"Input {idx + 1}"
+
+        # Build human-readable table: one row per category.
+        table_rows = [
+            {
+                "Category": cat,
+                "Flagged": "✅" if categories.get(cat, False) else "❌",
+                "Score": f"{category_scores.get(cat, 0.0):.4f}",
+            }
+            for cat in categories
+        ]
+
+        readable_parts.append(
+            tableToMarkdown(
+                f"Moderation Results for \"{label}\" (Flagged: {'Yes' if flagged else 'No'})",
+                table_rows,
+                headers=["Category", "Flagged", "Score"],
+            )
+        )
+
+        # For text input each result corresponds to a text from the list;
+        # for image/image_url there is always a single result.
+        input_value = text[idx] if text and idx < len(text) else (entry_id or image_url or "")
+
+        all_outputs.append(
+            {
+                "Input": {"input_type": input_type, "input_value": input_value},
+                "Flagged": flagged,
+                "Categories": categories,
+                "CategoryScores": category_scores,
+            }
+        )
+
+    readable_output = "\n".join(readable_parts)
+
+    # When there is only a single result, unwrap the list for backward compatibility.
+    outputs: list[dict[str, Any]] | dict[str, Any] = all_outputs[0] if len(all_outputs) == 1 else all_outputs
+
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="OpenAiChatGPTV3.Moderation", outputs=outputs, replace_existing=True
+    )
+
+
+def list_models_command(client: OpenAiClient) -> CommandResults:
+    """List all models visible to the configured API key.
+
+    Calls ``GET /v1/models`` and returns a table of Id / Created / OwnedBy.
+    """
+    response = client.list_models()
+    models_data: list[dict[str, Any]] = response.get("data", [])
+
+    outputs = [
+        {
+            "Id": m.get("id", ""),
+            "Created": timestamp_to_datestring(m.get("created", 0) * 1000) if m.get("created") else "",
+            "OwnedBy": m.get("owned_by", ""),
+        }
+        for m in models_data
+    ]
+
+    readable_output = tableToMarkdown(
+        "OpenAI Models",
+        outputs,
+        headers=["Id", "Created", "OwnedBy"],
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="OpenAiChatGPTV3.Model",
+        outputs_key_field="Id",
+        outputs=outputs,
+    )
+
+
 # endregion
 
 
@@ -1644,6 +2552,14 @@ COMMAND_MAP: dict[str, Callable[["OpenAiClient", dict[str, Any], dict[str, Any]]
     "gpt-check-email-header": lambda client, args, params: check_email_headers_command(client=client, args=args),
     "gpt-check-email-body": lambda client, args, params: check_email_body_command(client=client, args=args),
     "gpt-create-soc-email-template": lambda client, args, params: create_soc_email_template_command(client=client, args=args),
+    "gpt-draft-soc-email": lambda client, args, params: draft_soc_email_command(client=client, args=args, params=params),
+    "gpt-analyze-email-header": lambda client, args, params: analyze_email_header_command(
+        client=client, args=args, params=params
+    ),
+    "gpt-analyze-email-body": lambda client, args, params: analyze_email_body_command(client=client, args=args, params=params),
+    "gpt-create-response": lambda client, args, params: create_response_command(args=args, client=client, params=params),
+    "gpt-list-models": lambda client, args, params: list_models_command(client=client),
+    "gpt-create-moderation": lambda client, args, params: create_moderation_command(client=client, args=args),
     "fetch-events": lambda client, args, params: fetch_events_command(client=client, params=params),
     "openai-get-events": lambda client, args, params: get_events_command(client=client, args=args, params=params),
 }
@@ -1710,6 +2626,5 @@ def main() -> None:  # pragma: no cover
 
 
 """ ENTRY POINT """
-
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

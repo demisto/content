@@ -52,10 +52,12 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Advanced faceted/elastic searches over the {file, domain, IP, URL} corpus to identify IoCs that match certain criteria, e.g. list all MS Office documents that when opened launch a powershell script and end up exhibiting network communication.
 - Download any file in the Google Threat Intelligence corpus and reroute it to other analysis systems you own.
 - Analysis and listing of Digital Threat Monitoring alerts (DTM Alerts) and Attack Surface Management issues (ASM Issues).
-- Enable outgoing mirroring for DTM Alerts, maintaining synchronized alert status and tags with XSOAR.
-- Enable outgoing mirroring for ASM Issues, maintaining synchronized status, tags, and notes with XSOAR.
+- Enable outgoing mirroring for DTM Alerts, maintaining synchronized alert status and tags with Cortex XSOAR.
+- Enable outgoing mirroring for ASM Issues, maintaining synchronized status, tags, and notes with Cortex XSOAR.
+- Enable bi-directional mirroring for Relevance System (RS) Alerts to maintain synchronized alert status with Cortex XSOAR.
 - Fetch DTM Alerts using filter parameters supported by the Google Threat Intelligence API.
-- Fetch ASM Issues into XSOAR as incidents for centralized incident management.
+- Fetch ASM Issues into Cortex XSOAR as incidents for centralized incident management.
+- Fetch RS Alerts into Cortex XSOAR as incidents using the filter parameters supported by the Google Threat Intelligence API.
 
 **Popular tasks**
 
@@ -71,8 +73,9 @@ Security team challenges | Solving with Google Threat Intelligence + XSOAR
 - Derive scores based on malicious observations and relationships for IPs transacting with your business.
 - Assign a severity score to issues identified in a vulnerability scan of your networks.
 - Enrich Digital Threat Monitoring alerts (DTM Alerts) and Attack Surface Management issues (ASM Issues).
-- Ingest DTM Alerts into XSOAR as incidents with supported outgoing mirroring of status and tags.
-- Ingest ASM Issues into XSOAR as incidents with supported outgoing mirroring of status, tags, and notes.
+- Ingest DTM Alerts into Cortex XSOAR as incidents with supported outgoing mirroring of status and tags.
+- Ingest ASM Issues into Cortex XSOAR as incidents with supported outgoing mirroring of status, tags, and notes.
+- Ingest RS Alerts into Cortex XSOAR as incidents with supported bi-directional mirroring for alert status synchronization.
 
 **Additional information**
 

@@ -1,4 +1,6 @@
 {
+  "id": "Prisma_Cloud_Network_API_and_Anomaly",
+  "name": "Prisma Cloud Network API and Anomaly",
   "rule_id": "Prisma_Cloud_Network_API_and_Anomaly",
   "layout_id": "Prisma Cloud - Network API and Anomaly Incident Layout",
   "description": "display for Prisma Cloud Network API and Anomaly alerts.",
@@ -14,14 +16,14 @@
               "SEARCH_VALUE": "network"
             },
             {
-                "SEARCH_FIELD": "policy_type",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "api"
+              "SEARCH_FIELD": "policy_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "api"
             },
             {
-                "SEARCH_FIELD": "policy_type",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "anomaly"
+              "SEARCH_FIELD": "policy_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "anomaly"
             }
           ]
         }

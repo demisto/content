@@ -568,8 +568,55 @@ def test_test_auth_code_command(mocker, command_to_check):
 
 
 def test_purge_ediscovery_data_command(mocker):
+    """
+    Given:
+        A purge response with no Location header.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the status is success and the null Operation ID is removed from the
+        context outputs.
+    """
     mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={}))
-    assert purge_ediscovery_data_command(client_mocker, {}).readable_output == "eDiscovery purge status is success."
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.readable_output == "eDiscovery purge status is success.\n- Operation ID: None"
+    assert result.outputs == {"Status": "success"}
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Purge"
+
+
+def test_purge_ediscovery_data_command_with_operation_id(mocker):
+    """
+    Given:
+        A purge response that includes a Location header with an operation ID.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the Operation ID is extracted and returned to the context outputs.
+    """
+    location = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_456"
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location}))
+    mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded"})
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs == {"OperationID": "op_456", "Status": "succeeded"}
+    assert "op_456" in result.readable_output
+
+
+def test_purge_ediscovery_data_command_with_malformed_location(mocker):
+    """
+    Given:
+        A purge response that includes a Location header without a parseable operation ID.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the null Operation ID is removed from the context outputs and the
+        readable output shows None.
+    """
+    location = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/"
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location}))
+    mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded"})
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs == {"Status": "succeeded"}
+    assert result.readable_output == "eDiscovery purge status is succeeded.\n- Operation ID: None"
 
 
 def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
@@ -1158,6 +1205,10 @@ def test_export_result_ediscovery_data_command(mocker):
 
     assert "eDiscovery export request was submitted successfully" in result.readable_output
     assert "op_123" in result.readable_output
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Export"
+    assert result.outputs["OperationID"] == "op_123"
+    assert result.outputs["CaseID"] == "case_123"
+    assert result.outputs["Location"] == mock_response.headers["Location"]
 
 
 # ==========================================
@@ -1288,3 +1339,43 @@ def test_download_operation_export_file_errors(mocker, mock_attrs, expected_erro
         _download_operation_export_file(client_mocker, operation)
 
     assert expected_error_msg in str(e.value)
+
+
+def test_download_export_file_resets_token_to_default_scope(mocker):
+    """
+    Given:
+        A client downloading an eDiscovery export file (which uses a non-default Purview scope).
+    When:
+        Calling download_export_file.
+    Then:
+        The download uses the Purview scope, and afterwards a default-scope token is fetched
+        to reset the shared refresh token and avoid token-scope drift (XSUP-71559).
+    """
+    mock_response = MagicMock()
+    http_request = mocker.patch.object(client_mocker.ms_client, "http_request", return_value=mock_response)
+    get_access_token = mocker.patch.object(client_mocker.ms_client, "get_access_token")
+
+    result = client_mocker.download_export_file("https://fake-url.com/data")
+
+    assert result is mock_response
+    assert http_request.call_args.kwargs["scope"] == "b26e684c-5068-4120-a679-64a5d2c909d9/.default"
+    get_access_token.assert_called_once_with(scope=client_mocker.ms_client.scope)
+
+
+def test_download_export_file_reset_uses_default_not_purview_scope(mocker):
+    """
+    Given:
+        A client downloading an eDiscovery export file.
+    When:
+        Calling download_export_file.
+    Then:
+        The post-download token reset requests the client's default scope, not the Purview scope.
+    """
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=MagicMock())
+    get_access_token = mocker.patch.object(client_mocker.ms_client, "get_access_token")
+
+    client_mocker.download_export_file("https://fake-url.com/data")
+
+    reset_scope = get_access_token.call_args.kwargs["scope"]
+    assert reset_scope == client_mocker.ms_client.scope
+    assert reset_scope != "b26e684c-5068-4120-a679-64a5d2c909d9/.default"

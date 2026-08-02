@@ -686,10 +686,10 @@ class Client(CoreClient):
 
     def test_module(self):
         """
-        Performs basic get request to get item samples
+        Performs basic get request to get health_check samples
         """
         try:
-            self.get_endpoints(limit=1)
+            self.get_health_check()
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
@@ -2059,7 +2059,13 @@ def get_cases_command(client: Client, args: dict[str, Any]):
 
 def get_cases_sort_order(sort_by_creation_time, sort_by_modification_time):
     if sort_by_creation_time and sort_by_modification_time:
-        raise ValueError("Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both")
+        raise CortexConflictingArgsError(
+            override_message="Should be provide either sort_by_creation_time or sort_by_modification_time. Can't provide both",
+            arguments=["sort_by_creation_time", "sort_by_modification_time"],
+            reason="Only one sort field can be specified at a time.",
+            resolution="Provide either sort_by_creation_time or sort_by_modification_time, not both.",
+            mutually_exclusive=True,
+        )
 
     if sort_by_creation_time:
         sort_field = "CREATION_TIME"
@@ -2307,7 +2313,12 @@ def search_assets_command(client: Client, args):
     if page_size is None:
         page_size = SEARCH_ASSETS_DEFAULT_LIMIT
     if page_size > SEARCH_ASSETS_MAX_LIMIT:
-        raise ValueError(f"page_size cannot exceed {SEARCH_ASSETS_MAX_LIMIT}")
+        raise CortexInvalidArgError(
+            "page_size",
+            value=page_size,
+            reason=f"must not exceed {SEARCH_ASSETS_MAX_LIMIT}",
+            override_message=f"page_size cannot exceed {SEARCH_ASSETS_MAX_LIMIT}",
+        )
 
     if page_size == 0:  # 0 Maps to max in the API, we will maintain this behavior with our max value instead
         page_size = SEARCH_ASSETS_MAX_LIMIT
@@ -3393,21 +3404,40 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     custom_fields = parse_custom_fields(args.get("custom_fields", []))
 
     if status == "resolved" and (not resolve_reason or not CaseManagement.STATUS_RESOLVED_REASON.get(resolve_reason, False)):
-        raise ValueError("In order to set the case to resolved, you must provide a resolve reason.")
+        raise CortexMissingArgError(
+            "resolve_reason",
+            override_message="In order to set the case to resolved, you must provide a resolve reason.",
+        )
 
-    if (resolve_reason or resolve_all_alerts or resolved_comment) and not status == "resolved":
-        raise ValueError(
-            "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
-            "'resolved'."
+    if (resolve_reason or resolve_all_alerts or resolved_comment) and status != "resolved":
+        conflicting = [arg for arg in ("resolve_reason", "resolve_all_alerts", "resolved_comment") if args.get(arg)]
+        raise CortexConflictingArgsError(
+            override_message=(
+                "In order to use resolve_reason, resolve_all_alerts, or resolved_comment, the case status must be set to "
+                "'resolved'."
+            ),
+            arguments=conflicting + ["status"],
+            reason="resolve_reason, resolve_all_alerts, and resolved_comment can only be used when status is 'resolved'.",
+            resolution="Set status to 'resolved' or remove the resolution-specific arguments.",
         )
 
     if status and not CaseManagement.STATUS.get(status):
-        raise ValueError(f"Invalid status '{status}'. Valid statuses are: {list(CaseManagement.STATUS.keys())}")
+        raise CortexInvalidArgError(
+            "status",
+            value=status,
+            allowed_values=list(CaseManagement.STATUS.keys()),
+            override_message=f"Invalid status '{status}'. Valid statuses are: {list(CaseManagement.STATUS.keys())}",
+        )
 
     if user_defined_severity and not CaseManagement.SEVERITY.get(user_defined_severity, False):
-        raise ValueError(
-            f"Invalid user_defined_severity '{user_defined_severity}'. Valid severities are: "
-            f"{list(CaseManagement.SEVERITY.keys())}"
+        raise CortexInvalidArgError(
+            "user_defined_severity",
+            value=user_defined_severity,
+            allowed_values=list(CaseManagement.SEVERITY.keys()),
+            override_message=(
+                f"Invalid user_defined_severity '{user_defined_severity}'. Valid severities are: "
+                f"{list(CaseManagement.SEVERITY.keys())}"
+            ),
         )
 
     valid_fields_to_update, error_messages = validate_custom_fields(custom_fields, client)
@@ -3429,7 +3459,23 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
     remove_nulls_from_dictionary(case_update_payload)
 
     if not case_update_payload:
-        raise ValueError(f"No valid update parameters provided.\n{error_messages}")
+        raise CortexMissingArgError(
+            [
+                "case_name",
+                "description",
+                "assignee",
+                "status",
+                "notes",
+                "starred",
+                "user_defined_severity",
+                "resolve_reason",
+                "resolved_comment",
+                "resolve_all_alerts",
+                "custom_fields",
+            ],
+            require_one=True,
+            override_message=f"No valid update parameters provided.\n{error_messages}",
+        )
 
     def is_bulk_update_allowed(case_update_payload: dict) -> bool:
         # Bulk update supports only those fields
@@ -3562,7 +3608,15 @@ def update_case_command(client: Client, args: dict) -> CommandResults:
 
     if error_messages:
         return_results(command_results)
-        return_error(f"The following fields could not be updated:\n{error_messages}")
+        # The fields failed validation (unknown field, invalid value/type, system field),
+        # so surface a standardized INVALID_ARGUMENT error_code while keeping the
+        # original human-readable message for backward compatibility.
+        error = CortexInvalidArgError(
+            "custom_fields",
+            reason=error_messages,
+            override_message=f"The following fields could not be updated:\n{error_messages}",
+        )
+        return_error(error.build_message(), error=error)
 
     return command_results
 
@@ -4997,7 +5051,7 @@ def postprocess_case_resolution_statuses(client, response: dict):
     categories = ["done", "inProgress", "pending", "recommended"]
 
     for category in categories:
-        tasks = response.get(category, {}).get("caseTasks", [])
+        tasks = (response.get(category) or {}).get("caseTasks", [])
         for task in tasks:
             # Add category field to identify which list this came from
             task["category"] = category
@@ -5009,8 +5063,11 @@ def postprocess_case_resolution_statuses(client, response: dict):
             if category in ["done", "inProgress"]:
                 enhance_with_pb_details(pb_id_to_data, task)
             elif category == "pending":
-                enhance_with_pb_details(pb_id_to_data, task.get("parentdetails"))
-                task["parentPlaybook"] = task.pop("parentdetails")
+                # A pending task's parent playbook may not be resolved yet, so parentdetails
+                # can be null (seen in prod). Only enhance when it's an actual dict.
+                if parent_details := task.get("parentdetails"):
+                    enhance_with_pb_details(pb_id_to_data, parent_details)
+                task["parentPlaybook"] = task.pop("parentdetails", None)
 
             all_items.append(task)
 

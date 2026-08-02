@@ -97,9 +97,11 @@ async def test_get_all_events(requests_mock, mocker):
 
     # Mock the get_events_count method to avoid None responses
     mocker.patch.object(client, "get_events_count", return_value=50)
-    events = []
-    events, new_last_run = await handle_fetch_and_send_all_events(client, FIRST_LAST_RUN, limit=100, send_to_xsiam=False)
+    events, total_count, new_last_run = await handle_fetch_and_send_all_events(
+        client, FIRST_LAST_RUN, limit=100, send_to_xsiam=False
+    )
     assert isinstance(events, list), f"Expected events to be a list, got {type(events)}"
+    assert total_count == len(events), f"Expected total_count to match len(events), got {total_count} vs {len(events)}"
     assert isinstance(new_last_run, dict), f"Expected new_last_run to be a dict, got {type(new_last_run)}"
     assert len(events) == 26, f"Expected 26 events, got {len(events)}"
     assert events[0].get("event_id") == "1", f"Expected first event_id to be '1', got {events[0].get('event_id')}"
@@ -114,6 +116,164 @@ async def test_get_all_events(requests_mock, mocker):
     assert all(
         isinstance(new_last_run[event_type], dict) for event_type in ALL_SUPPORTED_EVENT_TYPES
     ), "All event types should have dict values in new_last_run"
+
+
+@pytest.mark.asyncio
+async def test_fetch_path_send_and_flush(mocker):
+    """
+    Given:
+        - The fetch-events path (send_to_xsiam=True).
+    When:
+        - Running handle_fetch_and_send_all_events.
+    Then:
+        - Events are sent to XSIAM per page via the streaming path (use_streaming_send=True),
+          and the returned events list is empty while the total count reflects what was fetched
+          (send-and-flush: nothing is accumulated in memory).
+    """
+    from NetskopeEventCollector_v2 import handle_fetch_and_send_all_events
+
+    mocker.patch("NetskopeEventCollector_v2.support_multithreading")
+    send_mock = mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam")
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+
+    def mock_get_events_data_async(event_type, params):
+        if event_type in EVENTS_PAGE_RAW:
+            return EVENTS_PAGE_RAW[event_type]
+        return {"result": EVENTS_RAW["result"], "wait_time": 0}
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=mock_get_events_data_async)
+    mocker.patch.object(client, "get_events_count", return_value=50)
+
+    events, total_count, _new_last_run = await handle_fetch_and_send_all_events(
+        client, FIRST_LAST_RUN, limit=100, send_to_xsiam=True
+    )
+
+    # send-and-flush: nothing accumulated, but the real count is reported.
+    assert events == [], f"Expected no accumulated events on the fetch path, got {len(events)}"
+    assert total_count > 0, f"Expected a positive total_count, got {total_count}"
+
+    # The send happened per page through the CSP streaming path.
+    assert send_mock.call_count >= 1, "Expected send_events_to_xsiam to be called at least once"
+    for call in send_mock.call_args_list:
+        assert call.kwargs.get("use_streaming_send") is True, "Each send must use the streaming path"
+    # The number of events handed to the sender equals the reported total.
+    sent = sum(len(call.kwargs["events"]) for call in send_mock.call_args_list)
+    assert sent == total_count, f"Events sent ({sent}) should equal total_count ({total_count})"
+
+
+@pytest.mark.asyncio
+async def test_fetch_path_partial_failure(mocker):
+    """
+    Given:
+        - The fetch-events path where ONE event type's page fetch raises an error, while the others succeed.
+    When:
+        - Running handle_fetch_and_send_all_events with send_to_xsiam=True.
+    Then:
+        - The cycle does NOT crash because of one type's failure (it is isolated via return_exceptions),
+          the failing type does not advance its cursor (so it is retried next cycle), and
+          total_events_count still reflects the events from the types/pages that DID succeed (partial accounting).
+    """
+    from NetskopeEventCollector_v2 import handle_fetch_and_send_all_events
+
+    mocker.patch("NetskopeEventCollector_v2.support_multithreading")
+    mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam")
+    # The failing type intentionally logs errors; silence them so the no-stdout test fixture is satisfied.
+    mocker.patch.object(demisto, "error")
+    failing_type = "audit"
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+
+    def mock_get_events_data_async(event_type, params):
+        if event_type == failing_type:
+            raise Exception("boom: simulated page fetch failure")
+        if event_type in EVENTS_PAGE_RAW:
+            return EVENTS_PAGE_RAW[event_type]
+        return {"result": EVENTS_RAW["result"], "wait_time": 0}
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=mock_get_events_data_async)
+    mocker.patch.object(client, "get_events_count", return_value=50)
+
+    events, total_count, new_last_run = await handle_fetch_and_send_all_events(
+        client, FIRST_LAST_RUN, limit=100, send_to_xsiam=True
+    )
+
+    # The whole cycle survives a single type's failure (other types are unaffected).
+    assert events == [], "Fetch path should not accumulate events"
+    # The other types still contributed their events to the total (partial-failure accounting).
+    assert total_count > 0, f"total_events_count should reflect the types that DID send, got {total_count}"
+    # The failing type's cursor is not advanced, so it will be retried next cycle.
+    assert "next_fetch_start_time" not in new_last_run.get(
+        failing_type, {}
+    ), "Failing type must NOT advance its cursor (so it retries next cycle)"
+
+
+@pytest.mark.asyncio
+async def test_get_events_command_push_uses_plain_send(mocker):
+    """
+    Given:
+        - netskope-get-events with should_push_events=True.
+    When:
+        - Running get_events_command_async.
+    Then:
+        - send_events_to_xsiam is called with the PLAIN (non-streaming) path (no use_streaming_send=True),
+          and the events remain intact for the command's readable output / context (not emptied by the send).
+    """
+    from NetskopeEventCollector_v2 import get_events_command_async
+
+    mocker.patch("NetskopeEventCollector_v2.support_multithreading")
+    send_mock = mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam")
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+
+    def mock_get_events_data_async(event_type, params):
+        if event_type in EVENTS_PAGE_RAW:
+            return EVENTS_PAGE_RAW[event_type]
+        return {"result": EVENTS_RAW["result"], "wait_time": 0}
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=mock_get_events_data_async)
+    mocker.patch.object(client, "get_events_count", return_value=50)
+
+    results = await get_events_command_async(client, {"limit": 100}, FIRST_LAST_RUN, should_push_events=True)
+
+    # The push used the plain send (memory streaming would consume the list and break the display).
+    assert send_mock.call_count == 1, "Expected a single plain send for the low-volume command"
+    assert "use_streaming_send" not in send_mock.call_args.kwargs, "get-events must NOT use the streaming send"
+    # The events survived the send and are present in the command output for display.
+    assert results.outputs, "Events must remain intact for display after pushing"
+    assert len(results.outputs) > 0
+
+
+@pytest.mark.asyncio
+async def test_fetch_path_empty_page(mocker):
+    """
+    Given:
+        - The fetch-events path where every page returns 0 events.
+    When:
+        - Running handle_fetch_and_send_all_events with send_to_xsiam=True.
+    Then:
+        - Each page yields the int 0 (not an empty list), the int branch selection
+          (isinstance(success_res[0], int)) is not broken, and total_events_count is 0.
+    """
+    from NetskopeEventCollector_v2 import handle_fetch_and_send_all_events
+
+    mocker.patch("NetskopeEventCollector_v2.support_multithreading")
+    send_mock = mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam")
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+
+    # Every page is empty.
+    mocker.patch.object(client, "get_events_data_async", return_value={"result": [], "wait_time": 0})
+    mocker.patch.object(client, "get_events_count", return_value=50)
+
+    events, total_count, _new_last_run = await handle_fetch_and_send_all_events(
+        client, FIRST_LAST_RUN, limit=100, send_to_xsiam=True
+    )
+
+    # Empty pages return the int 0 (count branch), so nothing is accumulated and the total is 0.
+    # The key guarantee is that an empty page yields an int (not [] / None), so the
+    # isinstance(success_res[0], int) branch selection in handle_event_type_async is not broken.
+    assert events == [], "Empty fetch must accumulate nothing"
+    assert total_count == 0, f"Empty pages must sum to 0, got {total_count}"
+    # Every event sent through the per-page send carried 0 events (no events leaked through).
+    for call in send_mock.call_args_list:
+        assert len(call.kwargs.get("events", [])) == 0, "Empty pages must not send any events"
 
 
 @pytest.mark.asyncio

@@ -1150,3 +1150,63 @@ def test_add_playbook_metadata_missing_context(mocker, callingContext):
     }
     assert data["request_data"]["playbook_metadata"] == expected_metadata
     demisto.debug.assert_called_once()
+
+
+# =========================================== Bug Fix Tests ===========================================#
+
+
+def test_get_xql_query_results_polling_command_fail_status(mocker):
+    """
+    Given:
+    - A query that returned status FAIL with an error message.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Ensure a DemistoException is raised with the error details.
+    """
+    mock_response = {
+        "status": "FAIL",
+        "number_of_results": 0,
+        "query_cost": {},
+        "remaining_quota": 1000.0,
+        "results": None,
+        "execution_id": "query_id_mock",
+        "error": {"1001610318390": "ERR_000_GENERAL_ERROR", "validation_message": "unknown field username."},
+    }
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    with pytest.raises(DemistoException, match="unknown field username"):
+        CoreXQLApiModule.get_xql_query_results_polling_command(
+            CLIENT,
+            {"query": "BAD_QUERY", "query_name": "failing_query", "query_id": "query_id_mock"},
+        )
+
+
+def test_get_xql_query_results_polling_command_fail_status_no_error_message(mocker):
+    """
+    Given:
+    - A query that returned status FAIL without an error_message field.
+
+    When:
+    - Calling get_xql_query_results_polling_command function.
+
+    Then:
+    - Ensure a DemistoException is raised with the 'Unknown error' fallback message.
+    """
+    mock_response = {
+        "status": "FAIL",
+        "number_of_results": 0,
+        "query_cost": {},
+        "remaining_quota": 1000.0,
+        "results": None,
+        "execution_id": "query_id_mock",
+    }
+    mocker.patch("CoreXQLApiModule.get_xql_query_results", return_value=(mock_response, None))
+    mocker.patch.object(demisto, "command", return_value="xdr-xql-generic-query")
+    with pytest.raises(DemistoException, match="Unknown error"):
+        CoreXQLApiModule.get_xql_query_results_polling_command(
+            CLIENT,
+            {"query": "BAD_QUERY", "query_name": "failing_query", "query_id": "query_id_mock"},
+        )

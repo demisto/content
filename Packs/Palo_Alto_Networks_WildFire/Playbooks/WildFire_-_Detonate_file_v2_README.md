@@ -1,7 +1,7 @@
 Detonate one or more files using the Wildfire v2 integration. This playbook
 returns relevant reports to the War Room and file reputations to the context data.
 The detonation supports the following file types -
-APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
+APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL, SWF, DEX, BAT, BZ, CSV, GZ, ISO, CLASS, JSE, WSF, JPG, MACHO, ZBUNDLE, FAT, ONE, SLK, IQY, ODS, ODT, PL, PNG, PY, TAR, VBE, ASP, ASPX, XML, HTML, EML, CMD, CHM, ZIP.
 
 Note: Base64 encoded files are currently not supported.
 
