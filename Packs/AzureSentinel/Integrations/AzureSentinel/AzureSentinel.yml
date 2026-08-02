@@ -1366,7 +1366,7 @@ script:
       required: true
     - description: The display name of the indicator.
       name: display_name
-      required: true
+      hidden: true
     - description: The description of the threat indicator.
       name: description
     - auto: PREDEFINED

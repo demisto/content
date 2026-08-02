@@ -1738,7 +1738,6 @@ Updates an existing threat indicator.
 | --- | --- | --- |
 | indicator_name | The name of the indicator. | Required |
 | value | The value of the indicator. | Required |
-| display_name | The display name of the indicator. | Required |
 | description | The description of the threat indicator. | Optional |
 | indicator_type | The type of the indicator. Possible values are: ipv4, ipv6, file, url, domain. | Required |
 | hash_type | If indicator_type is a file, this entry is mandatory. | Optional |
