@@ -1,3 +1,5 @@
+from datetime import datetime, UTC
+
 import demistomock as demisto
 import pytest
 from AWS_SecurityHub_V2 import (
@@ -766,6 +768,75 @@ def test_fetch_incidents_with_existing_last_fetch(mocker):
     assert "End" in date_filter
     # min_severity=High is translated to an OCSF severity_id >= 4 NumberFilter in the query.
     assert composite["NumberFilters"] == [{"FieldName": "severity_id", "Filter": {"Gte": 4}}]
+
+
+def test_fetch_incidents_first_run_builds_filters_from_first_fetch(mocker):
+    """
+    Given: No existing last run (first run), a first_fetch of "3 days", a min_severity, and an
+           additional string fetch filter.
+    When: fetch_incidents is called.
+    Then: The window Start is derived from first_fetch (not a saved boundary), the query has a bounded
+          created_time_dt DateFilter (Start+End), the severity and additional string filters are applied,
+          no NextToken is sent, and the new boundary is persisted from the returned finding.
+    """
+    import AWS_SecurityHub_V2
+
+    # First run: getLastRun returns an empty object (no last_fetch/next_token/fetched_ids).
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    # Pin the first_fetch parse so the window Start is deterministic.
+    fixed_start = datetime(2024, 3, 1, 0, 0, 0, tzinfo=UTC)
+    mocker.patch.object(AWS_SecurityHub_V2, "parse", return_value=fixed_start)
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {
+        "Findings": [
+            {
+                "metadata": {"uid": "uid-1"},
+                "severity_id": 4,
+                "finding_info": {"title": "First Run Finding", "created_time_dt": "2024-03-02T09:00:00.000Z"},
+            }
+        ],
+        "NextToken": None,
+    }
+
+    fetch_incidents(
+        mock_client,
+        {
+            "max_fetch": 50,
+            "first_fetch": "3 days",
+            "min_severity": "High",
+            "fetch_filters": "field_name=status,value=Resolved,comparison=NOT_EQUALS",
+        },
+    )
+
+    # One page fetched via Filters (not a NextToken), requesting max_fetch.
+    assert mock_client.get_findings_v2.call_count == 1
+    call_kwargs = mock_client.get_findings_v2.call_args[1]
+    assert call_kwargs["MaxResults"] == 50
+    assert "NextToken" not in call_kwargs
+
+    # The window Start comes from the parsed first_fetch, and the window is bounded (Start+End).
+    composite = call_kwargs["Filters"]["CompositeFilters"][0]
+    date_filter = composite["DateFilters"][0]["Filter"]
+    assert composite["DateFilters"][0]["FieldName"] == "finding_info.created_time_dt"
+    assert date_filter["Start"] == fixed_start.isoformat()
+    assert "End" in date_filter
+    # min_severity=High -> severity_id >= 4, and the additional string filter is applied.
+    assert composite["NumberFilters"] == [{"FieldName": "severity_id", "Filter": {"Gte": 4}}]
+    assert composite["StringFilters"] == [{"FieldName": "status", "Filter": {"Value": "Resolved", "Comparison": "NOT_EQUALS"}}]
+
+    # One incident created and the boundary is persisted from the returned finding.
+    incidents = incidents_mock.call_args[0][0]
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "First Run Finding"
+    last_run = set_last_run.call_args[0][0]
+    assert last_run["last_fetch"] == "2024-03-02T09:00:00.000Z"
+    assert last_run["fetched_ids"] == ["uid-1"]
+    assert last_run["next_token"] is None
 
 
 def test_fetch_incidents_continues_with_next_token(mocker):

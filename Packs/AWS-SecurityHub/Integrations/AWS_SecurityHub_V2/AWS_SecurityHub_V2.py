@@ -840,7 +840,6 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         "CompositeFilters": [
             {
                 "StringFilters": [{"FieldName": "metadata.uid", "Filter": {"Value": finding_uid, "Comparison": "EQUALS"}}],
-                "Operator": "AND",
             }
         ],
     }

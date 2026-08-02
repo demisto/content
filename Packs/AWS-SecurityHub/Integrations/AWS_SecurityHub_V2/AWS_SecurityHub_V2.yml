@@ -203,7 +203,7 @@ script:
       description: "The tags to assign to the Security Hub V2 resource, in the format: key=key1,value=value1;key=key2,value=value2."
       required: false
     outputs:
-    - contextPath: AWS.SecurityHubV2.Hub.HubV2Arn
+    - contextPath: AWS.SecurityHubV2.EnableHubV2.HubV2Arn
       description: The ARN of the enabled Security Hub V2 resource.
       type: String
   - name: aws-securityhub-v2-security-hub-disable

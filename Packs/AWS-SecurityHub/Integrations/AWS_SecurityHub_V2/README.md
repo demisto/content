@@ -58,7 +58,7 @@ Enables AWS Security Hub V2 for the configured account and region. Required IAM 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.SecurityHubV2.Hub.HubV2Arn | String | The ARN of the enabled Security Hub V2 resource. |
+| AWS.SecurityHubV2.EnableHubV2.HubV2Arn | String | The ARN of the enabled Security Hub V2 resource. |
 
 #### Command example
 
@@ -70,7 +70,7 @@ Enables AWS Security Hub V2 for the configured account and region. Required IAM 
 {
     "AWS": {
         "SecurityHubV2": {
-            "Hub": {
+            "EnableHubV2": {
                 "HubV2Arn": "arn:aws:securityhub:us-east-1:123456789012:hub/v2/default"
             }
         }
