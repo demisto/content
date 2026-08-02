@@ -9159,7 +9159,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mock_create_task = mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -9248,7 +9248,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -9329,7 +9329,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -9425,7 +9425,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -9502,7 +9502,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -9558,7 +9558,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -9732,7 +9732,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mock_create_task = mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -9801,7 +9801,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -9851,7 +9851,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -10158,7 +10158,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -10214,7 +10214,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -10263,7 +10263,7 @@ class TestSpotlightSeverityBasedFetch:
         }
         mock_client._request.return_value = mock_response
 
-        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored")
+        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
 
         with capfd.disabled():
             total, _aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
@@ -10302,7 +10302,7 @@ class TestSpotlightSeverityBasedFetch:
         mock_response.json.return_value = {"resources": [], "meta": {"pagination": {"after": None}}}
         mock_client._request.return_value = mock_response
 
-        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored")
+        mock_create_task = mocker.patch("CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context")
 
         with capfd.disabled():
             total, _aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
@@ -10351,7 +10351,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -10401,7 +10401,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
@@ -10455,7 +10455,7 @@ class TestSpotlightSeverityBasedFetch:
             return f
 
         mocker.patch(
-            "CrowdStrikeFalcon.create_task_send_spotlight_batch_and_count_stored",
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
             side_effect=create_task_side_effect,
         )
 
