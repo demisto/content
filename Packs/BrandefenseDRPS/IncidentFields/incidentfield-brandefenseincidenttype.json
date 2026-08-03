@@ -1,0 +1,18 @@
+{
+    "id": "incident_brandefenseincidenttype",
+    "version": -1,
+    "name": "Brandefense Incident Type",
+    "cliName": "brandefenseincidenttype",
+    "type": "shortText",
+    "description": "Original incident type from the Brandefense API.",
+    "group": 0,
+    "system": false,
+    "content": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Brandefense Incident"
+    ],
+    "unsearchable": true,
+    "fromVersion": "6.10.0",
+    "required": false
+}

@@ -1,0 +1,18 @@
+{
+    "id": "incident_brandefenseintelligencetags",
+    "version": -1,
+    "name": "Brandefense Intelligence Tags",
+    "cliName": "brandefenseintelligencetags",
+    "type": "grid",
+    "description": "Tags associated with the Brandefense intelligence report.",
+    "group": 0,
+    "system": false,
+    "content": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Brandefense Intelligence"
+    ],
+    "unsearchable": true,
+    "fromVersion": "6.10.0",
+    "required": false
+}

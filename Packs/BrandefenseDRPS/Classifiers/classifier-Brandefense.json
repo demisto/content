@@ -1,0 +1,18 @@
+{
+    "id": "Brandefense - Classifier",
+    "name": "Brandefense - Classifier",
+    "type": "classification",
+    "description": "Classifies fetched Brandefense events into Brandefense Incident or Brandefense Intelligence incident types.",
+    "version": -1,
+    "defaultIncidentType": "Brandefense Incident",
+    "keyTypeMap": {
+        "Incident": "Brandefense Incident",
+        "Intelligence": "Brandefense Intelligence"
+    },
+    "transformer": {
+        "simple": "brandefense_type",
+        "complex": null
+    },
+    "feed": false,
+    "fromVersion": "6.10.0"
+}
