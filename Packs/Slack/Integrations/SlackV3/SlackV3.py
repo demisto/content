@@ -37,7 +37,11 @@ CHANNEL_TAG_EXPRESSION = "<#(.*?)>"
 SLACK_USER_ID_EXPRESSION = re.compile(r"^[UWB][A-Z0-9]{7,14}$")
 URL_EXPRESSION = r"<(https?://.+?)(?:\|.+)?>"
 GUID_REGEX = r"(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}"
-ENTITLEMENT_REGEX = rf"{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b"
+# The incident/investigation id (the part after '@') can be a GUID, a plain numeric id
+# (classic XSOAR), or an 'INCIDENT-<n>' id in a Cortex Platform Case War Room. The optional
+# 'INCIDENT-' prefix covers the latter so SlackBlockBuilder blocks are unwrapped and SlackAsk
+# replies are routed correctly from Case War Rooms (XSUP-73616).
+ENTITLEMENT_REGEX = rf"{GUID_REGEX}@(({GUID_REGEX})|(?:INCIDENT-)?(?:[\d_]+))_*(\|\S+)?\b"
 COMMAND_REGEX = r"command.*?(?=;)"
 MESSAGE_FOOTER = "\n**From Slack**"
 MIRROR_TYPE = "mirrorEntry"
