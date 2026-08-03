@@ -1,6 +1,7 @@
 import json
 import re
 import warnings
+from collections.abc import Callable
 from copy import deepcopy
 from types import UnionType
 from typing import Any
@@ -77,6 +78,34 @@ CONST_PARAMETERS_INDICATORS_SCRIPT = {
     "maxIncidentsToDisplay": "3000",
 }
 KEYS_ARGS_INDICATORS = ["indicatorsTypes", "maxIncidentsInIndicatorsForWhiteList", "minNumberOfIndicators", "incidentId"]
+
+
+def get_incident_link_creator() -> Callable[[Any], str]:
+    """Returns a function to build a markdown link to an incident details page.
+
+    The URL format depends on the platform:
+
+    - Unified Cortex platform (XSIAM v3 / XSOAR on platform): ``/issue-view/{id}``
+    - Cortex XSOAR 8.x (SaaS, non-platform): ``/Details/{id}``
+    - Cortex XSOAR 6.x (on-prem, legacy): ``#/Details/{id}``
+
+    This ensures the generated hyperlinks navigate directly to the incident/issue on
+    every supported platform.
+
+    :return: A function that takes an incident_id and returns a markdown-formatted link.
+    """
+    if is_platform():
+        template = "[{id}](/issue-view/{id})"
+    elif is_demisto_version_ge("8.4.0"):
+        template = "[{id}](/Details/{id})"
+    else:
+        template = "[{id}](#/Details/{id})"
+
+    def create_incident_link(incident_id: Any) -> str:
+        return template.format(id=incident_id)
+
+    return create_incident_link
+
 
 REGEX_DATE_PATTERN = [
     re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
@@ -586,7 +615,7 @@ def prepare_incidents_for_display(
     :return: Clean Dataframe
     """
     if "id" in similar_incidents.columns.tolist():
-        similar_incidents[COLUMN_ID] = similar_incidents["id"].apply(lambda _id: f"[{_id}](#/Details/{_id})")
+        similar_incidents[COLUMN_ID] = similar_incidents["id"].apply(get_incident_link_creator())
     if COLUMN_TIME in similar_incidents.columns:
         similar_incidents[COLUMN_TIME] = similar_incidents[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if aggregate == "True":
@@ -946,7 +975,7 @@ def prepare_current_incident(
     if COLUMN_TIME in incident_filter.columns.tolist():
         incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if "id" in incident_filter.columns.tolist():
-        incident_filter[COLUMN_ID] = incident_filter["id"].apply(lambda _id: f"[{_id}](#/Details/{_id})")
+        incident_filter[COLUMN_ID] = incident_filter["id"].apply(get_incident_link_creator())
     return incident_filter
 
 

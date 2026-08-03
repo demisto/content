@@ -672,9 +672,9 @@ def main():
         insecure = not params.get("insecure")
         tags = argToList(params.get("feedTags"))
         tlp_color = params.get("tlp_color")
-        feed_type = params.get("feed_type")
+        feed_type = params.get("feed_type") or "Cortex XSOAR MT Shared Feed"
         time_field = params.get("time_field") if FEED_TYPE_GENERIC in feed_type else "calculatedTime"
-        time_method = params.get("time_method")
+        time_method = params.get("time_method") or "Simple-Date"
         fetch_index = params.get("fetch_index")
         fetch_time = params.get("fetch_time", "3 days")
         fetch_limit = arg_to_number(params.get("fetch_limit", FETCH_LIMIT))
@@ -683,7 +683,7 @@ def main():
         )
         if not fetch_limit or fetch_limit > 10_000:
             raise DemistoException(f"Fetch limit must be between 1-10,000, got {fetch_limit}")
-        query = params.get("es_query")
+        query = params.get("es_query") or "*"
         api_id, api_key = extract_api_from_username_password(username, password)
         client = ElasticsearchClient(
             insecure,

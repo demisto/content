@@ -22,6 +22,7 @@ from CyberArkISP import (  # noqa: E402
     Client,
     Config,
     ContextKeys,
+    DefaultValues,
     add_time_to_events,
     compute_last_run,
     deduplicate_events,
@@ -580,9 +581,18 @@ def test_create_stream_query_success(mocker, client, date_from, date_to, expecte
     assert APIKeys.SORT_MODEL.value in json_data[APIKeys.QUERY.value]
     assert APIKeys.PAGE_SIZE.value in json_data[APIKeys.QUERY.value]
 
+    # CyberArk's SIEM Audit createQuery API rejects a page size greater than 500
+    # with HTTP 400 "Bad request syntax or unsupported method" (XSUP-72963).
+    assert json_data[APIKeys.QUERY.value][APIKeys.PAGE_SIZE.value] == 500
+
     filter_model = json_data[APIKeys.QUERY.value][APIKeys.FILTER_MODEL.value][APIKeys.DATE.value]
     for key in expected_filter_keys:
         assert key in filter_model
+
+
+def test_default_page_size_within_cyberark_limit():
+    """The default page size must not exceed CyberArk's documented maximum of 500 (XSUP-72963)."""
+    assert int(DefaultValues.PAGE_SIZE.value) <= 500
 
 
 def test_create_stream_query_missing_cursor_ref(mocker, client):

@@ -276,7 +276,7 @@ def main() -> None:  # pragma: no cover
     # optional
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    export_calls_per_fetch = arg_to_number(params.get("export_calls_per_fetch")) or 1
+    export_calls_per_fetch = arg_to_number(params.get("export_calls_per_fetch", 1)) or 1
 
     demisto.debug(f"{base_url=}")
 

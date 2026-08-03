@@ -2209,6 +2209,9 @@ async def test_check_entitlement(mocker):
     message6 = "hi test@demisto.com name-of-someone@mail-of-someone goodbye"
     message7 = "hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22_1|43 goodbye"
     message8 = "hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@22_2 goodbye"
+    # Cortex Platform Case War Room ids look like 'INCIDENT-12' (XSUP-73616)
+    message9 = "hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@INCIDENT-12 goodbye"
+    message10 = "hi test@demisto.com 4404dae8-2d45-46bd-85fa-64779c12abe8@INCIDENT-12|43 goodbye"
 
     # Arrange
     result1 = await check_and_handle_entitlement(message1, user, "")
@@ -2219,6 +2222,8 @@ async def test_check_entitlement(mocker):
     result6 = await check_and_handle_entitlement(message6, user, "")
     result7 = await check_and_handle_entitlement(message7, user, "")
     result8 = await check_and_handle_entitlement(message8, user, "")
+    result9 = await check_and_handle_entitlement(message9, user, "")
+    result10 = await check_and_handle_entitlement(message10, user, "")
 
     result1_args = demisto.handleEntitlementForUser.call_args_list[0][0]
     result2_args = demisto.handleEntitlementForUser.call_args_list[1][0]
@@ -2226,6 +2231,8 @@ async def test_check_entitlement(mocker):
     result4_args = demisto.handleEntitlementForUser.call_args_list[3][0]
     result7_args = demisto.handleEntitlementForUser.call_args_list[4][0]
     result8_args = demisto.handleEntitlementForUser.call_args_list[5][0]
+    result9_args = demisto.handleEntitlementForUser.call_args_list[6][0]
+    result10_args = demisto.handleEntitlementForUser.call_args_list[7][0]
 
     assert result1 == "Thank you for your response."
     assert result2 == "Thank you for your response."
@@ -2235,8 +2242,10 @@ async def test_check_entitlement(mocker):
     assert result6 == ""
     assert result7 == "Thank you for your response."
     assert result8 == "Thank you for your response."
+    assert result9 == "Thank you for your response."
+    assert result10 == "Thank you for your response."
 
-    assert demisto.handleEntitlementForUser.call_count == 6
+    assert demisto.handleEntitlementForUser.call_count == 8
 
     assert result1_args[0] == "e093ba05-3f3c-402e-81a7-149db969be5d"  # incident ID
     assert result1_args[1] == "4404dae8-2d45-46bd-85fa-64779c12abe8"  # GUID
@@ -2273,6 +2282,19 @@ async def test_check_entitlement(mocker):
     assert result8_args[2] == "test@demisto.com"
     assert result8_args[3] == "hi test@demisto.com  goodbye"
     assert result8_args[4] == ""
+
+    # Case War Room id 'INCIDENT-12' must be recognized and routed (XSUP-73616)
+    assert result9_args[0] == "INCIDENT-12"
+    assert result9_args[1] == "4404dae8-2d45-46bd-85fa-64779c12abe8"
+    assert result9_args[2] == "test@demisto.com"
+    assert result9_args[3] == "hi test@demisto.com  goodbye"
+    assert result9_args[4] == ""
+
+    assert result10_args[0] == "INCIDENT-12"
+    assert result10_args[1] == "4404dae8-2d45-46bd-85fa-64779c12abe8"
+    assert result10_args[2] == "test@demisto.com"
+    assert result10_args[3] == "hi test@demisto.com  goodbye"
+    assert result10_args[4] == "43"
 
 
 @pytest.mark.asyncio
@@ -4342,6 +4364,57 @@ def test_handle_tags_in_message_sync(mocker):
     assert user_message_exists_result == "Hello <@U012A3CDE>!"
     assert user_message_exists_in_email_result == "Hello <@U012A3CDE>! connected with spengler@ghostbusters.example.com !"
     assert user_message_doesnt_exist_result == "Goodbye PetahTikva!"
+
+
+def test_handle_tags_in_message_sync_already_resolved_id(mocker):
+    """
+    Given:
+        A message containing an already-resolved Slack user/bot ID mention (e.g. "<@U012A3CDE>").
+    When:
+        Running handle_tags_in_message_sync.
+    Then:
+        The mention is left untouched and no user lookup (get_user_by_name) is performed,
+        avoiding the expensive paginated Slack user search.
+    """
+    import SlackV3
+    from SlackV3 import handle_tags_in_message_sync
+
+    get_user_by_name_mock = mocker.patch.object(SlackV3, "get_user_by_name")
+
+    bot_id_message = "💡 For help, type <@U012A3CDE> !help"
+    multiple_ids_message = "cc <@W01AB2CD3> and <@B0123ABCD> please"
+
+    bot_id_result = handle_tags_in_message_sync(bot_id_message)
+    multiple_ids_result = handle_tags_in_message_sync(multiple_ids_message)
+
+    # Assert - messages are unchanged and no lookup was performed
+    assert bot_id_result == bot_id_message
+    assert multiple_ids_result == multiple_ids_message
+    get_user_by_name_mock.assert_not_called()
+
+
+def test_handle_tags_in_message_sync_resolved_id_with_unresolved_name(mocker):
+    """
+    Given:
+        A message containing an already-resolved Slack ID mention followed by an
+        unresolved name tag (which get_user_by_name cannot resolve).
+    When:
+        Running handle_tags_in_message_sync.
+    Then:
+        Only the unresolved tag's brackets are stripped, while the already-valid ID
+        mention is preserved (regression for the blanket re.sub bug).
+    """
+    import SlackV3
+    from SlackV3 import handle_tags_in_message_sync
+
+    mocker.patch.object(SlackV3, "get_user_by_name", return_value={})
+
+    message = "cc <@U012A3CDE> and <@NoSuchUser>"
+
+    result = handle_tags_in_message_sync(message)
+
+    # The valid ID mention must remain intact; only the unresolved tag is stripped.
+    assert result == "cc <@U012A3CDE> and NoSuchUser"
 
 
 def test_send_message_to_destinations_non_strict():

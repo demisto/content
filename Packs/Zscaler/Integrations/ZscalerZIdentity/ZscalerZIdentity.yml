@@ -840,7 +840,7 @@ script:
       type: String
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.13.10116658
   type: python
 fromversion: 6.10.0
 tests:
