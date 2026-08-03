@@ -10119,6 +10119,98 @@ class TestSpotlightSeverityBasedFetch:
         sleep_mock.assert_not_awaited()
 
     @pytest.mark.asyncio
+    async def test_fetch_spotlight_page_with_shrink_recovers_from_bare_content_client_error_500(self, mocker, capfd):
+        """
+        Tests the real shape of an upstream 500 (XSUP-71944), verified against a mock CrowdStrike server.
+
+        ContentClientApiModule raises a *bare* ContentClientError, not ContentClientRetryError, once it
+        has burned its own retry budget on a retryable status: the `attempt < max_attempts` guard is
+        False on the final pass, so it falls through to `raise ContentClientError(...)`. Matching only
+        the ContentClientRetryError subclass meant the shrink ladder never ran for an HTTP 500.
+
+        Given:
+            - The first attempt raises a bare ContentClientError carrying an HTTP 500 response.
+            - The next attempt succeeds.
+        When:
+            - fetch_spotlight_page_with_shrink is called.
+        Then:
+            - The page is fetched successfully instead of killing the severity.
+            - The same after_token is reused (no rows skipped).
+        """
+        from ContentClientApiModule import ContentClientError
+        from CrowdStrikeFalcon import fetch_spotlight_page_with_shrink
+
+        mock_client = mocker.AsyncMock()
+        good_vulns = [{"id": "v1", "aid": "aid1"}]
+        calls = []
+
+        async def page_side_effect(client, after_token, filter_query, limit):
+            calls.append({"after_token": after_token, "limit": limit})
+            if len(calls) == 1:
+                raise ContentClientError(
+                    'Request failed: {"errors":[{"code":500,"message":"Server error"}]}',
+                    response=mocker.Mock(status_code=500),
+                )
+            return good_vulns, {"resources": good_vulns, "meta": {"pagination": {"after": None}}}
+
+        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page", side_effect=page_side_effect)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
+
+        with capfd.disabled():
+            vulns, _ = await fetch_spotlight_page_with_shrink(
+                client=mock_client,
+                after_token="tok_same",
+                filter_query="filter",
+                severity="HIGH",
+            )
+
+        assert vulns == good_vulns
+        assert len(calls) == 2
+        assert calls[0]["after_token"] == "tok_same"
+        assert calls[1]["after_token"] == "tok_same"
+
+    @pytest.mark.asyncio
+    async def test_fetch_spotlight_page_with_shrink_does_not_retry_non_transient_status(self, mocker, capfd):
+        """
+        Tests that widening the catch to ContentClientError did NOT make the ladder swallow everything.
+
+        Given:
+            - The first attempt raises a ContentClientError carrying an HTTP 404 response, which is how
+              a dead pagination cursor ("Search context expired") surfaces.
+        When:
+            - fetch_spotlight_page_with_shrink is called.
+        Then:
+            - The error propagates immediately without consuming the ladder or sleeping, because 404 is
+              not in SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES and shrinking cannot revive an expired cursor.
+        """
+        from ContentClientApiModule import ContentClientError
+        from CrowdStrikeFalcon import fetch_spotlight_page_with_shrink
+
+        mock_client = mocker.AsyncMock()
+        calls = []
+
+        async def expired_cursor(client, after_token, filter_query, limit):
+            calls.append(limit)
+            raise ContentClientError(
+                "Request failed: Search context expired, 'after' key no longer valid",
+                response=mocker.Mock(status_code=404),
+            )
+
+        mocker.patch("CrowdStrikeFalcon.fetch_spotlight_vulnerabilities_page", side_effect=expired_cursor)
+        sleep_mock = mocker.patch("CrowdStrikeFalcon.asyncio.sleep", new=mocker.AsyncMock())
+
+        with capfd.disabled(), pytest.raises(ContentClientError):
+            await fetch_spotlight_page_with_shrink(
+                client=mock_client,
+                after_token="tok",
+                filter_query="filter",
+                severity="MEDIUM",
+            )
+
+        assert calls == [5000]
+        sleep_mock.assert_not_awaited()
+
+    @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_send_failure_is_skipped_not_counted(self, mocker, capfd):
         """
         Tests Fix 1 (P0): a failed XSIAM send must NOT be counted-but-dropped.
@@ -11680,3 +11772,265 @@ class TestLongRunningSpotlightExecution:
         _sleeps, _fetch, mock_cnapp, _log = self._run_loop(mocker, cycle_durations=[60])
 
         mock_cnapp.assert_not_called()
+
+
+class TestXsiamSendFailureIsNotCounted:
+    """XSUP-71944: a failed XSIAM send must never be counted as stored.
+
+    Observed on a live tenant (2026-08-03T08:36:50Z): XSIAM answered 502 Bad Gateway, yet the
+    batch was logged as "Successfully sent" and its records were counted. The declared
+    total-items-count then exceeded the rows actually stored and the snapshot never sealed -
+    exactly the symptom the customer reported.
+
+    The root cause was that ``xsiam_api_call_async`` logged the HTTP error but neither raised
+    nor set ``status_code``, so the awaiting caller saw a clean return.
+    """
+
+    @staticmethod
+    def _client_response_error(status: int, message: str):
+        import aiohttp
+        from unittest.mock import MagicMock
+
+        return aiohttp.ClientResponseError(request_info=MagicMock(), history=(), status=status, message=message)
+
+    @staticmethod
+    def _patch_xsiam_env(mocker):
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={"url": "mock_url"})
+        mocker.patch(
+            "CrowdStrikeFalcon.demisto.callingContext", {"context": {"IntegrationInstance": "test", "IntegrationBrand": "CSF"}}
+        )
+        mocker.patch("CrowdStrikeFalcon.demisto.getLicenseCustomField", return_value="mock-token")
+        mocker.patch("CrowdStrikeFalcon.demisto.updateModuleHealth")
+        # These tests deliberately exercise the error path, which logs at error level.
+        # The autouse check_std_out_err fixture fails any test that writes to stdout.
+        return mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+    def _patch_session_post(self, mocker, status: int, message: str):
+        """Make every POST to XSIAM raise ClientResponseError(status) from raise_for_status()."""
+        response = mocker.MagicMock()
+        response.status = status
+        response.raise_for_status.side_effect = self._client_response_error(status, message)
+
+        post_ctx = mocker.MagicMock()
+        post_ctx.__aenter__ = mocker.AsyncMock(return_value=response)
+        post_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+
+        session = mocker.MagicMock()
+        session.post = mocker.MagicMock(return_value=post_ctx)
+
+        session_ctx = mocker.MagicMock()
+        session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
+        session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+
+        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+        return session
+
+    @pytest.mark.asyncio
+    async def test_bad_gateway_raises_instead_of_returning_quietly(self, mocker):
+        """
+        Given: XSIAM returns 502 Bad Gateway on every attempt.
+        When: xsiam_api_call_async is awaited.
+        Then: It raises, rather than logging and returning as it did before the fix.
+              Returning quietly is what let the caller count unstored records.
+        """
+        from CrowdStrikeFalcon import xsiam_api_call_async
+
+        self._patch_xsiam_env(mocker)
+        self._patch_session_post(mocker, 502, "Bad Gateway")
+
+        with pytest.raises(DemistoException, match="NOT stored and must not be counted"):
+            await xsiam_api_call_async(
+                xsiam_url="https://api-mock", zipped_data=b"x", headers={}, num_of_attempts=1, data_type="assets"
+            )
+
+    @pytest.mark.asyncio
+    async def test_bad_gateway_batch_reports_zero_records_stored(self, mocker):
+        """
+        Given: A 50-record batch and XSIAM failing with 502 on every attempt (count_stored=True).
+        When: send_batch_to_xsiam_and_save_context is awaited.
+        Then: records_stored is 0, and the saved batch number does not advance.
+
+        This is the regression test for the live failure: before the fix this returned
+        records_stored == 50 for data XSIAM never accepted.
+        """
+        from CrowdStrikeFalcon import send_batch_to_xsiam_and_save_context
+
+        self._patch_xsiam_env(mocker)
+        self._patch_session_post(mocker, 502, "Bad Gateway")
+
+        save_state_callback = mocker.MagicMock()
+        data = [{"id": f"vuln{i}", "aid": "aid1"} for i in range(50)]
+
+        saved_batch_number, records_stored = await send_batch_to_xsiam_and_save_context(
+            data=data,
+            vendor="CrowdStrike",
+            product="Falcon_Spotlight_Vulnerabilities",
+            snapshot_id="snap123",
+            items_count=50,
+            batch_number=79,
+            last_saved_batch_number=78,
+            context_store=mocker.MagicMock(),
+            state=mocker.MagicMock(),
+            save_state_callback=save_state_callback,
+            data_type="assets",
+            count_stored=True,
+        )
+
+        assert records_stored == 0, "A batch XSIAM rejected must not be counted as stored"
+        assert saved_batch_number == 78, "A failed batch must not advance the saved batch number"
+        save_state_callback.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_successful_send_still_counts_normally(self, mocker):
+        """
+        Given: XSIAM accepts the batch with HTTP 200.
+        When: send_batch_to_xsiam_and_save_context is awaited.
+        Then: All records are counted and the batch number advances.
+
+        Guards against the fix over-reaching and breaking the success path.
+        """
+        from CrowdStrikeFalcon import send_batch_to_xsiam_and_save_context
+
+        self._patch_xsiam_env(mocker)
+
+        response = mocker.MagicMock()
+        response.status = 200
+        response.raise_for_status.return_value = None
+
+        post_ctx = mocker.MagicMock()
+        post_ctx.__aenter__ = mocker.AsyncMock(return_value=response)
+        post_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+        session = mocker.MagicMock()
+        session.post = mocker.MagicMock(return_value=post_ctx)
+        session_ctx = mocker.MagicMock()
+        session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
+        session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+
+        save_state_callback = mocker.MagicMock()
+        data = [{"id": f"vuln{i}", "aid": "aid1"} for i in range(50)]
+
+        saved_batch_number, records_stored = await send_batch_to_xsiam_and_save_context(
+            data=data,
+            vendor="CrowdStrike",
+            product="Falcon_Spotlight_Vulnerabilities",
+            snapshot_id="snap123",
+            items_count=50,
+            batch_number=79,
+            last_saved_batch_number=78,
+            context_store=mocker.MagicMock(),
+            state=mocker.MagicMock(),
+            save_state_callback=save_state_callback,
+            data_type="assets",
+            count_stored=True,
+        )
+
+        assert records_stored == 50
+        assert saved_batch_number == 79
+        save_state_callback.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_retryable_429_still_retries_then_succeeds(self, mocker):
+        """
+        Given: XSIAM answers 429 on the first attempt and 200 on the second.
+        When: xsiam_api_call_async is awaited with num_of_attempts=3.
+        Then: It returns normally without raising - the fix must not turn throttling into a
+              hard failure.
+        """
+        from CrowdStrikeFalcon import xsiam_api_call_async
+
+        self._patch_xsiam_env(mocker)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", mocker.AsyncMock())
+
+        throttled = mocker.MagicMock()
+        throttled.status = 429
+        throttled.raise_for_status.side_effect = self._client_response_error(429, "Too Many Requests")
+
+        accepted = mocker.MagicMock()
+        accepted.status = 200
+        accepted.raise_for_status.return_value = None
+
+        responses = [throttled, accepted]
+
+        def next_post_ctx(*_args, **_kwargs):
+            ctx = mocker.MagicMock()
+            ctx.__aenter__ = mocker.AsyncMock(return_value=responses.pop(0))
+            ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+            return ctx
+
+        session = mocker.MagicMock()
+        session.post = mocker.MagicMock(side_effect=next_post_ctx)
+        session_ctx = mocker.MagicMock()
+        session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
+        session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+
+        await xsiam_api_call_async(
+            xsiam_url="https://api-mock", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets"
+        )
+
+        assert responses == [], "Both the throttled and the accepted response should have been consumed"
+
+    @pytest.mark.asyncio
+    async def test_failed_send_does_not_abort_the_severity(self, mocker):
+        """
+        Given: Three pages for HIGH severity where the send of page 2 fails outright.
+        When:  fetch_vulnerabilities_by_severity runs.
+        Then:  The fetch continues to page 3, only the successfully stored records are counted,
+               and the failed page's records are simply not counted.
+
+        This is the behaviour the raise in xsiam_api_call_async feeds into: the send failure must
+        surface as an exception (so it is not miscounted) without killing the severity.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        def page(vulns, after):
+            response = mocker.Mock()
+            response.json.return_value = {"resources": vulns, "meta": {"pagination": {"after": after}}}
+            return response
+
+        # Page 1 withholds one record for the seal, so it only sends 2 of its 3.
+        mock_client._request.side_effect = [
+            page([{"id": "v1", "aid": "a1"}, {"id": "v2", "aid": "a1"}, {"id": "v3", "aid": "a1"}], "t2"),
+            page([{"id": "v4", "aid": "a2"}, {"id": "v5", "aid": "a2"}], "t3"),
+            page([{"id": "v6", "aid": "a3"}], None),
+        ]
+
+        pages_sent: list[int] = []
+
+        def create_task_side_effect(*_args, **kwargs):
+            batch = kwargs.get("data", [])
+            pages_sent.append(len(batch))
+            future = asyncio.Future()
+            if any(record["id"] == "v4" for record in batch):
+                # XSIAM rejected the whole batch, as the 502 path now reports.
+                future.set_exception(DemistoException("Failed sending assets to XSIAM (HTTP 502 Bad Gateway)."))
+            else:
+                future.set_result((1, len(batch)))
+            return future
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        total, aids, _tasks, withheld = await fetch_vulnerabilities_by_severity(
+            client=mock_client,
+            severity="HIGH",
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            asset_handler=mock_handler,
+        )
+
+        assert pages_sent == [2, 2, 1], "All three pages must be attempted; the failure must not stop pagination"
+        # Stored: 2 from page 1 + 0 from the rejected page 2 + 1 from page 3, plus the withheld seal record.
+        assert total == 4, "Only records XSIAM stored (plus the withheld seal record) may be counted"
+        assert withheld == [{"id": "v1", "aid": "a1"}]
+        assert aids == {"a1", "a2", "a3"}

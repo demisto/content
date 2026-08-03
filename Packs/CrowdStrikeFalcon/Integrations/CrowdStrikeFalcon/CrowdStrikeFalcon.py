@@ -101,6 +101,9 @@ SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER = [MAX_FETCH_SPOTLIGHT_ASSETS, 2500, 1000, 500
 # transient upstream fault, not a size limit, so retries are spaced out to let it clear.
 # One entry per retry, i.e. len(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER) - 1.
 SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS = [2, 5, 15]
+# Statuses worth re-requesting at a smaller page size. Mirrors RetryPolicy.retryable_status_codes in
+# ContentClientApiModule; anything else (expired cursor 404, 401, 400) cannot be helped by shrinking.
+SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES = {408, 413, 425, 429, 500, 502, 503, 504}
 MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
 SPOTLIGHT_LOOKBACK_DAYS = 100  # Only fetch vulnerabilities updated within this many days (bounds dataset size)
 # Period between Spotlight fetch cycle starts for a long-running instance. Not configurable, so it
@@ -849,6 +852,15 @@ def modify_detection_summaries_outputs(detection: dict):
     detection["detection_id"] = detection.pop("composite_id", None)
 
     return detection
+
+
+def log_spotlight_verify(log_line: str, log_type: str = "info"):
+    """Emit a XSUP-71944 fix-verification line, greppable as ``[VERIFY]``.
+
+    Diagnostic scaffolding for validating the snapshot-sealing fixes against a live tenant.
+    Every line is emitted once per severity or once per run, never per record.
+    """
+    log_falcon_assets(f"[VERIFY] {log_line}", log_type)
 
 
 def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
@@ -4183,6 +4195,7 @@ async def xsiam_api_call_async(
     status_code = None
     attempt_num = 1
     response = None
+    last_error: aiohttp.ClientResponseError | None = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
         log_falcon_assets(f"Sending {data_type} to XSIAM, attempt {attempt_num}/{num_of_attempts}")
@@ -4202,6 +4215,7 @@ async def xsiam_api_call_async(
                             attempt_num += 1
                         continue
                     else:
+                        last_error = e
                         header_msg = f"Error sending {data_type} to XSIAM: {e.message}"
                         log_falcon_assets(header_msg, "error")
                         demisto.updateModuleHealth(header_msg + e.message, is_error=True)
@@ -4210,6 +4224,17 @@ async def xsiam_api_call_async(
         if status_code == 429:
             await asyncio.sleep(1)
         attempt_num += 1
+
+    if status_code != 200:
+        # XSUP-71944: this used to log the failure and return normally. The caller's
+        # asyncio.gather() then saw no exception and counted the batch as stored, pushing the
+        # declared total-items-count above the rows actually stored, so the snapshot never sealed.
+        # Raising keeps "counted" tied to "confirmed stored".
+        error_detail = f"HTTP {last_error.status} {last_error.message}" if last_error else f"status_code={status_code}"
+        raise DemistoException(
+            f"Failed sending {data_type} to XSIAM after {num_of_attempts} attempt(s) ({error_detail}). "
+            f"The batch was NOT stored and must not be counted."
+        )
     return response
 
 
@@ -4715,7 +4740,8 @@ async def fetch_spotlight_page_with_shrink(
     Retries the SAME ``after_token`` down the ``SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER``
     (5000 -> 2500 -> 1000 -> 500), pausing for an escalating
     ``SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS`` delay before each retry. Handles oversized-page
-    truncation (``json.JSONDecodeError``) and upstream 500 storms (``ContentClientRetryError``).
+    truncation (``json.JSONDecodeError``) and upstream faults whose status is in
+    ``SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES``.
     Other errors, such as an expired cursor, propagate immediately since shrinking cannot help.
 
     Args:
@@ -4729,23 +4755,47 @@ async def fetch_spotlight_page_with_shrink(
 
     Raises:
         json.JSONDecodeError: If every page size in the ladder is still truncated.
-        ContentClientRetryError: If the upstream fault persists across the whole ladder.
+        ContentClientError: If a transient upstream fault persists across the whole ladder, or
+            immediately for any non-transient error that shrinking cannot resolve.
     """
     last_error: Exception | None = None
     last_rung_index = len(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER) - 1
 
     for rung_index, attempt_limit in enumerate(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER):
         try:
-            return await fetch_spotlight_vulnerabilities_page(
+            page = await fetch_spotlight_vulnerabilities_page(
                 client=client, after_token=after_token, filter_query=filter_query, limit=attempt_limit
             )
-        except (json.JSONDecodeError, ContentClientRetryError) as e:
+            if rung_index:
+                # Only reachable when an earlier rung failed, so this is a genuine recovery.
+                log_spotlight_verify(
+                    f"FIX-2 SHRINK-RECOVERED [{severity}] succeeded at limit={attempt_limit} "
+                    f"after {rung_index} failed attempt(s); severity NOT aborted."
+                )
+            return page
+        except (json.JSONDecodeError, ContentClientError) as e:
+            if isinstance(e, json.JSONDecodeError):
+                reason = "oversized-page JSON truncation"
+            else:
+                # ContentClientApiModule raises a bare ContentClientError once it has burned its own
+                # retry budget on a retryable status, so matching ContentClientRetryError alone
+                # would never fire for an HTTP 500.
+                status_code = getattr(e.response, "status_code", None)
+                if status_code not in SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES and not isinstance(e, ContentClientRetryError):
+                    # Expired cursor, auth failure, bad request: shrinking cannot help.
+                    raise
+                reason = f"transient upstream HTTP {status_code}" if status_code else "exhausted upstream retries"
             last_error = e
-            reason = "oversized-page JSON truncation" if isinstance(e, json.JSONDecodeError) else "exhausted upstream retries"
             if rung_index == last_rung_index:
                 break
 
             backoff_seconds = SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS[rung_index]
+            log_spotlight_verify(
+                f"FIX-2 SHRINK-RETRY [{severity}] rung={rung_index + 1}/{last_rung_index + 1} reason={reason} "
+                f"failed_at_limit={attempt_limit} backoff={backoff_seconds}s "
+                f"next_limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[rung_index + 1]} error_type={type(e).__name__}",
+                "warning",
+            )
             log_falcon_assets(
                 f"[{severity}] Transient page failure ({reason}) at limit={attempt_limit} "
                 f"(same after token). Backing off {backoff_seconds}s, then retrying the same page "
@@ -4755,6 +4805,12 @@ async def fetch_spotlight_page_with_shrink(
             await asyncio.sleep(backoff_seconds)
 
     # Exhausted the shrink ladder — the page is still failing at the smallest size.
+    log_spotlight_verify(
+        f"FIX-2 SHRINK-EXHAUSTED [{severity}] all {last_rung_index + 1} rungs failed down to "
+        f"limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[-1]}; severity WILL abort. "
+        f"error_type={type(last_error).__name__}",
+        "error",
+    )
     log_falcon_assets(
         f"[{severity}] Failed to fetch Spotlight page after exhausting the shrink ladder down to "
         f"limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[-1]}. Last error: {last_error}",
@@ -4829,6 +4885,12 @@ async def fetch_vulnerabilities_by_severity(
                 if records_lost > 0:
                     lost_send_batches += 1
                     lost_send_records += records_lost
+                    log_spotlight_verify(
+                        f"FIX-1 PARTIAL-STORE [{severity}] attempted={items_attempted} stored={records_stored} "
+                        f"lost={records_lost} counted={records_stored} (NOT {items_attempted}); "
+                        f"running_total={total_fetched}",
+                        "warning",
+                    )
                     log_falcon_assets(
                         f"[{severity}] Batch partially stored: {records_stored}/{items_attempted} records counted, "
                         f"{records_lost} lost (continuing with the next pages).",
@@ -4841,6 +4903,11 @@ async def fetch_vulnerabilities_by_severity(
                 lost_send_batches += 1
                 lost_send_records += items_attempted
                 first_send_error = first_send_error or e
+                log_spotlight_verify(
+                    f"FIX-1 SEND-FAILED [{severity}] attempted={items_attempted} stored=0 counted=0; "
+                    f"severity NOT aborted; running_total={total_fetched}; error_type={type(e).__name__}",
+                    "warning",
+                )
                 log_falcon_assets(
                     f"[{severity}] Background vulnerability send task failed; "
                     f"{items_attempted} records NOT counted and skipped (continuing with the next pages): {e}\n"
@@ -4859,7 +4926,6 @@ async def fetch_vulnerabilities_by_severity(
                 )
                 done, pending_tasks_updated = await asyncio.wait(pending_tasks, return_when=asyncio.FIRST_COMPLETED)
                 pending_tasks = pending_tasks_updated
-                # Reap completed tasks: count successful sends, skip failed ones.
                 reap_completed_send_tasks(done)
                 log_falcon_assets(
                     f"[{severity}] Backpressure released: {len(done)} tasks completed, " f"{len(pending_tasks)} still pending"
@@ -4925,7 +4991,6 @@ async def fetch_vulnerabilities_by_severity(
                     f"(fetched {len(vulnerabilities)}); skipping the send task."
                 )
             else:
-                # Create task to send batch to XSIAM (without the withheld first record).
                 # count_stored=True reports how many records were actually stored, so a partially
                 # stored batch is counted exactly (keeps declared == stored).
                 task = create_task_send_batch_to_xsiam_and_save_context(
@@ -4980,6 +5045,12 @@ async def fetch_vulnerabilities_by_severity(
             await asyncio.gather(*pending_tasks, return_exceptions=True)
             reap_completed_send_tasks(pending_tasks)
             pending_tasks.clear()
+
+        log_spotlight_verify(
+            f"FIX-1 SEVERITY-DONE [{severity}] counted_total={total_fetched} "
+            f"(withheld_first_record={1 if withheld_records else 0}) batches={batch_counter} "
+            f"lost_batches={lost_send_batches} lost_records={lost_send_records} unique_aids={len(unique_aids)}"
+        )
 
         if lost_send_batches:
             # Non-fatal: the severity completes with the records that were stored. The lost records
@@ -5145,6 +5216,13 @@ async def finalize_severity_fetch(
     # Check if ALL severities have completed (including previously completed ones)
     all_severities_completed = set(current_completed_severities) == set(SPOTLIGHT_SEVERITIES)
 
+    log_spotlight_verify(
+        f"SEAL-GATE completed={sorted(current_completed_severities)} "
+        f"required={sorted(SPOTLIGHT_SEVERITIES)} all_complete={all_severities_completed} "
+        f"grand_total={total_vulnerabilities} withheld_records={len(withheld_records)} "
+        f"will_seal={all_severities_completed and bool(withheld_records)}"
+    )
+
     if all_severities_completed:
         if not withheld_records:
             # Grand total is zero: there is no real record to seal with. Emitting an empty
@@ -5172,6 +5250,11 @@ async def finalize_severity_fetch(
                 data_type="assets",
             )
             await final_task
+            log_spotlight_verify(
+                f"SEAL-SENT snapshot_id={snapshot_id} declared_total_items_count={total_vulnerabilities} "
+                f"seal_batch_records={len(withheld_records)}. Snapshot seals only if the rows actually "
+                f"stored equal {total_vulnerabilities}."
+            )
             log_falcon_assets(
                 f"Final sealing batch sent successfully for snapshot_id={snapshot_id} "
                 f"(total-items-count={total_vulnerabilities})",
@@ -5194,6 +5277,13 @@ async def finalize_severity_fetch(
         # State will be cleared by fetch_spotlight_assets() after this function returns
         log_falcon_assets("All severities completed successfully.", "info")
     else:
+        log_spotlight_verify(
+            f"SEAL-SKIPPED snapshot NOT sealed; missing severities="
+            f"{[s for s in SPOTLIGHT_SEVERITIES if s not in current_completed_severities]}. "
+            f"Fetched {total_vulnerabilities} records this cycle; they remain unqueryable until a cycle "
+            f"completes every severity.",
+            "warning",
+        )
         log_falcon_assets(
             f"Not all severities completed yet. Snapshot NOT sealed. Completed: {current_completed_severities}, "
             f"Remaining: {[s for s in SPOTLIGHT_SEVERITIES if s not in current_completed_severities]}",
@@ -5340,6 +5430,12 @@ async def fetch_spotlight_assets():
     ) = load_spotlight_state(context_store)
     # Note: cursor is not used for severity-based fetching - each severity starts fresh
 
+    log_spotlight_verify(
+        f"RUN-START snapshot_id={snapshot_id} resumed_completed_severities={completed_severities} "
+        f"prior_withheld_records={len(prior_withheld_records or [])} "
+        f"shrink_ladder={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER} backoff={SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS}"
+    )
+
     client = create_spotlight_client(context_store)
 
     try:
@@ -5451,11 +5547,22 @@ def long_running_spotlight_execution():
         "info",
     )
 
+    cycle_number = 0
     while True:
         cycle_start = time.monotonic()
+        cycle_number += 1
+        log_spotlight_verify(f"LONG-RUNNING CYCLE-START cycle={cycle_number}")
         try:
             asyncio.run(fetch_spotlight_assets())
+            log_spotlight_verify(
+                f"LONG-RUNNING CYCLE-OK cycle={cycle_number} elapsed_min={(time.monotonic() - cycle_start) / 60:.1f}"
+            )
         except Exception as e:  # noqa: BLE001 - a single bad cycle must not kill the container
+            log_spotlight_verify(
+                f"LONG-RUNNING CYCLE-FAILED cycle={cycle_number} error_type={type(e).__name__}; "
+                f"container stays alive for the next cycle.",
+                "error",
+            )
             error_message = f"Long-running Spotlight fetch cycle failed: {e}\n{traceback.format_exc()}"
             demisto.error(error_message)
             log_falcon_assets(error_message, "error")
