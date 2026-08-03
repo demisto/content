@@ -6,7 +6,8 @@
         "2": "SpyCloud Informative Data",
         "20": "SpyCloud Breach Data",
         "25": "SpyCloud Malware Data",
-        "5": "SpyCloud Informative Data"
+        "5": "SpyCloud Informative Data",
+        "30": "SpyCloud Access Data"
     },
     "name": "SpyCloud - Classifier",
     "propagationLabels": [
