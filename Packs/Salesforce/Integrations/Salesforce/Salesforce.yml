@@ -63,11 +63,25 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   required: false
-  section: Connect
+  section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: javascript
