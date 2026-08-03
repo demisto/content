@@ -1,5 +1,7 @@
 from datetime import datetime, UTC
 import requests
+import pytest
+from CommonServerPython import DemistoException
 
 from ETDXsoarConnector import (
     ETDClient,
@@ -149,3 +151,54 @@ def test_fetch_incidents_duplicate_event(mocker):
     mocker.patch("ETDXsoarConnector.demisto.incidents")
     incidents = fetch_incidents(client, {"max_fetch": 10})
     assert len(incidents) == 1
+
+
+def test_get_access_token_no_token(mocker):
+    client = ETDClient.__new__(ETDClient)
+    client.params = {
+        "api_key": "apikey",
+        "client_secret": "secret",
+        "client_id": "client"
+    }
+    client._http_request = mocker.Mock(return_value={})
+
+    with pytest.raises(DemistoException):
+        client.get_access_token()
+
+
+def test_get_event_time_invalid():
+    event = {"message": {"timestamp": "invalid"}}
+    assert get_event_time(event) is None
+
+
+def test_get_links_empty():
+    client = ETDClient.__new__(ETDClient)
+    assert client.get_links({}) == []
+
+
+class MockResponseNonMessage:
+    status_code = 200
+    text = '{"logType":"audit"}\n'
+
+    def raise_for_status(self):
+        pass
+
+
+def test_download_logs_skip_non_message(monkeypatch):
+    monkeypatch.setattr(
+        requests,
+        "get",
+        lambda *args, **kwargs: MockResponseNonMessage()
+    )
+    client = ETDClient.__new__(ETDClient)
+    client.params = {"proxy": False, "insecure": False}
+    events = client.download_logs(["http://dummy"])
+    assert events == []
+
+
+def test_fetch_incidents_invalid_first_fetch(mocker):
+    client = mocker.Mock()
+    mocker.patch("ETDXsoarConnector.demisto.getLastRun", return_value={})
+    mocker.patch("ETDXsoarConnector.arg_to_datetime", return_value=None)
+    with pytest.raises(DemistoException):
+        fetch_incidents(client, {"first_fetch": "bad-date"})

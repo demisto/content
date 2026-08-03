@@ -3,7 +3,6 @@ This integration was integrated and tested with of ETDXsoarConnector.
 
 ## Configure Cisco ETD Connector in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | ETD Base URL | True |
