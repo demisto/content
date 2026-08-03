@@ -1928,7 +1928,7 @@ script:
       description: The ARN of the access entry.
       type: String
   - name: aws-eks-access-entry-create
-    description: "Creates a new Access Entry for an Amazon EKS cluster. Required IAM Permission: eks:CreateAccessEntry."
+    description: "Creates a new Access Entry for an Amazon EKS cluster. Required IAM Permissions: eks:CreateAccessEntry, eks:TagResource (only when the tags argument is provided)."
     arguments:
     - name: account_id
       description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.

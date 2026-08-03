@@ -11024,6 +11024,7 @@ REQUIRED_ACTIONS: list[str] = [
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "eks:CreateAccessEntry",
+    "eks:TagResource",
     "eks:UpdateAccessEntry",
     "ec2:CreateSecurityGroup",
     "ec2:CreateNetworkAcl",
