@@ -1,4 +1,5 @@
 category: Vulnerability Management
+provider: Horizon3.ai
 sectionorder:
 - Connect
 - Collect
@@ -142,5 +143,9 @@ fromversion: 6.1.0
 marketplaces:
 - xsoar
 - marketplacev2
+- platform
+supportedModules:
+- agentix
+- xsiam
 tests:
 - No tests (auto formatted)

@@ -27,6 +27,10 @@
         "marketplacev2",
         "platform"
     ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ],
     "devEmail": [
         "support@horizon3.ai"
     ],
