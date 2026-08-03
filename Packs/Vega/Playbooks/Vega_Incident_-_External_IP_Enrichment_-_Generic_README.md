@@ -15,6 +15,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Scripts
 
 * IsIntegrationAvailable
+* Print
 
 ### Commands
 
@@ -32,3 +33,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Vega Incident - External IP Enrichment - Generic](../doc_files/Vega_Incident_-_External_IP_Enrichment_-_Generic.png)
