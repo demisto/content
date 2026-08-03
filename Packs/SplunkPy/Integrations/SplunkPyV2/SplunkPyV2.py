@@ -58,6 +58,7 @@ DEFAULT_STATUSES = {
 # =========== Mirroring Mechanism Globals ===========
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 OUTGOING_MIRRORED_FIELDS = ["note", "status", "owner", "urgency", "reviewer", "disposition"]
+ES_APP_NAME = "SplunkEnterpriseSecuritySuite"
 
 # === Note Tag Globals ===
 NOTE_TAG_TO_SPLUNK = params.get("note_tag_to_splunk", "FROM XSOAR")
@@ -3304,9 +3305,6 @@ def get_modified_remote_data_command(
     return_results(res)
 
 
-ES_APP_NAME = "SplunkEnterpriseSecuritySuite"
-
-
 def get_enterprise_security_version(service: client.Service) -> str:
     """Retrieves the installed Splunk Enterprise Security (ES) app version.
 
@@ -3320,7 +3318,7 @@ def get_enterprise_security_version(service: client.Service) -> str:
         es_app = service.apps[ES_APP_NAME]
         return es_app.content.get("version", "unknown")
     except Exception as e:
-        demisto.debug(f"Could not determine Enterprise Security version: {e!s}")
+        demisto.debug(f"Could not determine Enterprise Security version: {e!s}\n{traceback.format_exc()}")
         return "unknown"
 
 
