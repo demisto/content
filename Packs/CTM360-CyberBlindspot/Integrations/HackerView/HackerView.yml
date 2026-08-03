@@ -1,3 +1,5 @@
+name: CTM360_HackerView
+display: CTM360 HackerView
 category: Network Security
 provider: CTM360
 commonfields:
@@ -18,45 +20,65 @@ configuration:
   - marketplacev2
   - platform
   required: false
-- defaultvalue: 7 days
-  display: First fetch (<number> <time unit>, e.g., 12 hours. Default is `7 days`)
-  additionalinfo: The time the incidents should be fetched starting from.
+  section: Collect
+- defaultvalue: Light Scan
+  display: Module To Use
+  additionalinfo: "The module to use: Light Scan or Deep Scan."
+  name: module_to_use
+  required: false
+  type: 15
+  options:
+  - Light Scan
+  - Deep Scan
+  section: Collect
+- additionalinfo: The time the incidents should be fetched starting from.
   name: first_fetch
   required: false
   type: 0
-- displaypassword: API Key
-  additionalinfo: The CTM360 HackerView API Key to use for fetching data.
-  name: api_key
-  required: true
-  hiddenusername: true
+  defaultvalue: 7 days
+  display: First fetch (<number> <time unit>, e.g., 12 hours)
+  section: Collect
+  advanced: true
+- name: api_key
   type: 9
-- name: max_fetch
-  display: Maximum Number of Incidents per Fetch
-  defaultvalue: "25"
+  required: true
+  additionalinfo: The CTM360 HackerView API Key to use for fetching data.
+  section: Connect
+  displaypassword: API Key
+  hiddenusername: true
+- display: Maximum Number of Incidents per Fetch
+  name: max_fetch
   type: 0
   required: true
-  additionalinfo: Default is 25. Maximum is 200.
+  section: Collect
+  defaultvalue: "25"
+  additionalinfo: The maximum number of incidents to fetch per run. Maximum is 200.
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Incident type
   defaultvalue: HackerView Incident
   name: incidentType
   type: 13
   required: false
+  section: Connect
 defaultmapperin: 'CTM360-HackerView - Incoming Mapper'
 description: 'External Attack Surface Management platform, which combines automated asset discovery, issue identification / management, remediation guidelines, security ratings and third party risk management.'
-display: CTM360 HackerView
-name: CTM360_HackerView
 script:
   commands:
   - name: ctm360-hv-incident-list
@@ -100,51 +122,79 @@ script:
       required: true
     outputs:
     - contextPath: HackerView.RemoteIncident.id
-      description: Symbolic Incident ID.
+      description: The symbolic incident ID.
     - contextPath: HackerView.RemoteIncident.timestamp
-      description: DB timestamp.
+      description: The database timestamp.
     - contextPath: HackerView.RemoteIncident.confidence
-      description: Confidence of report.
+      description: The confidence of the report.
     - contextPath: HackerView.RemoteIncident.cve_id
-      description: ID of associated CVE.
+      description: The associated CVE identifier(s).
     - contextPath: HackerView.RemoteIncident.cwe
-      description: List of associated CWEs.
+      description: The list of associated CWEs.
     - contextPath: HackerView.RemoteIncident.issue_category
-      description: Category of Incident.
+      description: The category of the incident.
     - contextPath: HackerView.RemoteIncident.issue_name
-      description: Name of Incident.
+      description: The name of the incident.
     - contextPath: HackerView.RemoteIncident.potential_attack_type
-      description: Potential attack to make use of incident.
+      description: The potential attack type that can make use of the incident.
     - contextPath: HackerView.RemoteIncident.potential_impact
-      description: Potential impact of incident.
+      description: The potential impact of the incident.
     - contextPath: HackerView.RemoteIncident.status
-      description: Active status of Incident.
+      description: The active status of the incident.
     - contextPath: HackerView.RemoteIncident.progress_status
-      description: Progress of incident response.
+      description: The progress of incident response.
     - contextPath: HackerView.RemoteIncident.severity
-      description: Severity of incident.
+      description: The severity of the incident.
     - contextPath: HackerView.RemoteIncident.resolved_ip
-      description: IP resolved on affected asset.
+      description: The IP resolved on the affected asset.
     - contextPath: HackerView.RemoteIncident.first_seen
-      description: Incident creation date.
+      description: The incident creation date.
     - contextPath: HackerView.RemoteIncident.last_seen
-      description: Last discovery date for incident.
+      description: The last discovery date for the incident.
     - contextPath: HackerView.RemoteIncident.last_updated
-      description: Last update date for incident.
+      description: The last update date for the incident.
     - contextPath: HackerView.RemoteIncident.environments
-      description: env.
+      description: The environments associated with the incident.
     - contextPath: HackerView.RemoteIncident.ticket_id
-      description: Ticket ID.
+      description: The ticket ID.
     - contextPath: HackerView.RemoteIncident.technologies
-      description: Technologies on affected asset.
+      description: The technologies on the affected asset.
     - contextPath: HackerView.RemoteIncident.domain
-      description: domain of affected asset.
+      description: The domain of the affected asset.
     - contextPath: HackerView.RemoteIncident.host
-      description: host of affected asset.
+      description: The host of the affected asset.
     - contextPath: HackerView.RemoteIncident.asset_type
-      description: affected asset type.
+      description: The affected asset type.
     - contextPath: HackerView.RemoteIncident.asset
-      description: affected asset.
+      description: The affected asset.
+    - contextPath: HackerView.RemoteIncident.brand
+      description: The organization brand the incident belongs to.
+    - contextPath: HackerView.RemoteIncident.ip
+      description: The IP address associated with the finding.
+    - contextPath: HackerView.RemoteIncident.port
+      description: The network port associated with the finding.
+    - contextPath: HackerView.RemoteIncident.uri
+      description: The URI path or resource related to the finding.
+    - contextPath: HackerView.RemoteIncident.url
+      description: The base URL of the affected asset or service.
+    - contextPath: HackerView.RemoteIncident.issue_type
+      description: The type or classification of the issue.
+    - contextPath: HackerView.RemoteIncident.issue_description
+      description: The detailed description of the issue.
+    - contextPath: HackerView.RemoteIncident.cpe
+      description: The Common Platform Enumeration (CPE) identifier if applicable.
+    - contextPath: HackerView.RemoteIncident.cvss_metrics
+      description: The CVSS vector or metric string for the vulnerability.
+    - contextPath: HackerView.RemoteIncident.cvss_score
+      description: The CVSS base score for the vulnerability.
+    - contextPath: HackerView.RemoteIncident.epss_score
+      description: The Exploit Prediction Scoring System (EPSS) score.
+    - contextPath: HackerView.RemoteIncident.known_exploited
+      description: The indicator of whether the vulnerability is known to be exploited.
+    - contextPath: HackerView.RemoteIncident.hackerview_link
+      description: The link to the issue in the HackerView platform.
+    - contextPath: HackerView.RemoteIncident.evidence
+      description: The request/response evidence for the finding (e.g. request, response, curl_command).
   - name: get-remote-data
     arguments:
     - description: The incident ID.
@@ -174,7 +224,10 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.9059085
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+sectionorder:
+- Connect
+- Collect
