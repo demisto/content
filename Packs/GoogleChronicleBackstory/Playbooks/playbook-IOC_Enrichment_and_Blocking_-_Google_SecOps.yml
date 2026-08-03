@@ -1489,14 +1489,6 @@ tasks:
         complex:
           root: Select Indicators to Block.Answers
           accessor: "1"
-      MD5:
-        complex:
-          root: File
-          accessor: MD5
-      SHA256:
-        complex:
-          root: File
-          accessor: SHA256
     separatecontext: true
     continueonerrortype: ""
     loop:

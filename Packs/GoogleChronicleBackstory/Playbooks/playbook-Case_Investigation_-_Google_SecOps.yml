@@ -761,7 +761,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Update the stage of violation?
+        simple: Update the stage of case?
       methods: []
       format: ""
       bcc:
