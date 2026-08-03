@@ -1,0 +1,19 @@
+{
+  "name": "GitBook API",
+  "description": "Collects GitBook organisation membership, standing invite links, site exposure, installed integrations and per-space Git sync into the Cortex Platform, so that who can reach the documentation, what is published publicly, and where content can leave become answerable. by GoCortexIO",
+  "support": "community",
+  "currentVersion": "1.1.7",
+  "author": "GoCortexIO",
+  "url": "",
+  "email": "",
+  "categories": [],
+  "tags": [],
+  "useCases": [],
+  "keywords": [],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": []
+}
