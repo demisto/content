@@ -499,4 +499,5 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Cyberint playbook
+description: Cyberint playbook.
+hidden: true
