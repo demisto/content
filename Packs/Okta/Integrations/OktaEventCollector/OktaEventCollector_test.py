@@ -267,14 +267,19 @@ def test_parse_time_argument_relative_value_is_in_the_past():
         pytest.param("   ", id="whitespace_only"),
     ],
 )
-def test_parse_time_argument_invalid_raises(value):
+def test_parse_time_argument_invalid_raises(value, capfd):
     """
     Given: A time argument that cannot be parsed.
     When: Parsing it.
     Then: A DemistoException names the offending argument instead of an AttributeError.
+
+    capfd is consumed because the failure path emits a demisto.error, and the repository
+    conftest fails any test that leaves output on stdout.
     """
     with pytest.raises(DemistoException, match="Could not parse the 'start_time' argument"):
         parse_time_argument(value, "start_time")
+
+    capfd.readouterr()
 
 
 # endregion
@@ -799,14 +804,19 @@ def test_okta_get_events_command_with_end_time(dummy_client, mocker):
     assert get_events.call_args.kwargs["until"] is not None
 
 
-def test_okta_get_events_command_invalid_time_raises(dummy_client):
+def test_okta_get_events_command_invalid_time_raises(dummy_client, capfd):
     """
     Given: A start_time argument that cannot be parsed.
     When: Running the okta-get-events command.
     Then: A DemistoException is raised instead of an AttributeError.
+
+    capfd is consumed because the failure path emits a demisto.error, and the repository
+    conftest fails any test that leaves output on stdout.
     """
     with pytest.raises(DemistoException, match="Could not parse the 'start_time' argument"):
         okta_get_events_command(dummy_client, {"start_time": "not a real date"}, 10)
+
+    capfd.readouterr()
 
 
 @pytest.mark.parametrize(
@@ -1019,6 +1029,33 @@ def test_client_get_events_builds_query_without_next_link(dummy_client, mocker):
         "limit": 500,
     }
     assert request_mock.call_args.kwargs["url_suffix"] == Config.LOGS_ENDPOINT
+
+
+def test_client_get_events_includes_until_when_supplied(dummy_client, mocker):
+    """
+    Given: An explicit upper bound for the search window.
+    When: Requesting a page.
+    Then: The until parameter is forwarded to the Okta API alongside since.
+    """
+    request_mock = mocker.patch.object(dummy_client, "_http_request", return_value=MockResponse())
+
+    dummy_client.get_events(since="2022-04-17T11:30:00.000", until="2022-04-18T11:30:00.000")
+
+    assert request_mock.call_args.kwargs["params"]["until"] == "2022-04-18T11:30:00.000"
+
+
+@pytest.mark.parametrize("until", [None, ""], ids=["until_none", "until_empty"])
+def test_client_get_events_omits_until_when_absent(dummy_client, mocker, until):
+    """
+    Given: No usable upper bound for the search window.
+    When: Requesting a page.
+    Then: The until parameter is omitted so the window runs to the present moment.
+    """
+    request_mock = mocker.patch.object(dummy_client, "_http_request", return_value=MockResponse())
+
+    dummy_client.get_events(since="2022-04-17T11:30:00.000", until=until)
+
+    assert "until" not in request_mock.call_args.kwargs["params"]
 
 
 def test_client_get_events_defaults_to_max_page_size(dummy_client, mocker):

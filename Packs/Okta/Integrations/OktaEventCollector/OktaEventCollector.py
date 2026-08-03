@@ -94,12 +94,15 @@ def parse_link_header(response: Any, rel: str = "next") -> str:
     """
     link_header = response.headers.get("link") or response.headers.get("Link")
     if not link_header:
+        demisto.debug(f"[Link Header] No Link header on the response. Cannot resolve rel='{rel}'.")
         return ""
 
     for match in LINK_HEADER_PATTERN.finditer(link_header):
         if match.group("rel") == rel:
+            demisto.debug(f"[Link Header] Resolved rel='{rel}'")
             return match.group("url")
 
+    demisto.debug(f"[Link Header] Link header present but no entry matched rel='{rel}'")
     return ""
 
 
@@ -147,10 +150,27 @@ def remove_duplicates(events: list, ids: list) -> list:
     Returns:
         List of events excluding those whose UUID appears in ids.
     """
+    if not events:
+        demisto.debug("[Dedup] No events to process")
+        return events
+
+    if not ids:
+        demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs)")
+        return events
+
+    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(ids)} previously collected IDs")
+
     # Membership is tested once per event, so ids is converted to a set to keep the
     # lookup O(1). With a list this would be O(len(events) * len(ids)).
     seen_ids = set(ids)
-    return [event for event in events if event.get("uuid") not in seen_ids]
+    new_events = [event for event in events if event.get("uuid") not in seen_ids]
+
+    if skipped := len(events) - len(new_events):
+        demisto.debug(f"[Dedup] Skipped {skipped} duplicates. {len(new_events)} new events remain.")
+    else:
+        demisto.debug("[Dedup] No duplicates found.")
+
+    return new_events
 
 
 def get_last_run(events: List[dict], last_run_after, next_link) -> dict:
@@ -188,6 +208,7 @@ def get_last_run(events: List[dict], last_run_after, next_link) -> dict:
     try:
         last_time = datetime.strptime(str(last_time).lower().replace("z", ""), "%Y-%m-%dt%H:%M:%S.%f")
     except ValueError:
+        demisto.debug(f"[Last Run] Timestamp '{last_time}' is not in the expected Okta format. Falling back to dateutil.")
         last_time = parse(str(last_time).lower().replace("z", ""))
     except Exception as e:
         demisto.error(f"[Last Run] Unexpected error parsing published date from event: {e}")
@@ -289,9 +310,9 @@ class Client(ContentClient):
         Args:
             events: List of event dicts to send.
         """
-        demisto.debug(f"[API] Sending {len(events)} events to XSIAM")
+        demisto.debug(f"[Send Events] Sending {len(events)} events | Vendor: {Config.VENDOR} | Product: {Config.PRODUCT}")
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[API] Successfully sent {len(events)} events to XSIAM")
+        demisto.debug(f"[Send Events] Successfully sent {len(events)} events to XSIAM")
 
 
 # endregion
@@ -365,7 +386,6 @@ def get_events_command(
 
             if last_object_ids:
                 events = remove_duplicates(events, last_object_ids)
-                demisto.debug(f"[Dedup] {len(events)} events remain after deduplication")
 
             if not events:
                 demisto.debug("[Pagination Loop] All events were duplicates. Stopping and resetting next_link.")
@@ -435,9 +455,15 @@ def test_module(client: Client) -> str:
     Returns:
         'ok' if the request succeeded.
     """
-    demisto.debug("[Test Module] Starting...")
+    demisto.debug(f"[Test Module] Starting | Lookback: {Config.TEST_MODULE_LOOKBACK}")
     after = cast(datetime, dateparser.parse(Config.TEST_MODULE_LOOKBACK, settings=Config.DATEPARSER_SETTINGS))
-    get_events_command(client, total_events_to_fetch=Config.TEST_MODULE_MAX_EVENTS, since=after.isoformat())
+
+    try:
+        get_events_command(client, total_events_to_fetch=Config.TEST_MODULE_MAX_EVENTS, since=after.isoformat())
+    except Exception:
+        demisto.error(f"[Test Module] Connectivity check failed.\n{traceback.format_exc()}")
+        raise
+
     demisto.debug("[Test Module] Success")
     return "ok"
 
@@ -472,7 +498,10 @@ def parse_time_argument(value: str, arg_name: str) -> str:
     """
     parsed = dateparser.parse(value.strip(), settings=Config.DATEPARSER_SETTINGS)
     if not parsed:
+        demisto.error(f"[Time Parse] Could not parse the '{arg_name}' argument: {value}")
         raise DemistoException(f"Could not parse the '{arg_name}' argument: {value}")
+
+    demisto.debug(f"[Time Parse] {arg_name}: '{value}' resolved to {parsed.isoformat()}")
     return parsed.isoformat()
 
 
@@ -562,7 +591,12 @@ def main():  # pragma: no cover
         elif command == "fetch-events":
             after = cast(datetime, dateparser.parse(demisto_params["after"].strip(), settings=Config.DATEPARSER_SETTINGS))
             last_run = demisto.getLastRun()
-            demisto.debug(f"[Fetch] Last run: {last_run}")
+            # Logged as a summary rather than the raw dict: ids can hold up to PAGE_SIZE
+            # UUIDs, which would bloat the log without adding diagnostic value.
+            demisto.debug(
+                f"[Fetch] Last run | After: {last_run.get('after')} | "
+                f"Dedup IDs: {len(last_run.get('ids') or [])} | Next link set: {bool(last_run.get('next_link'))}"
+            )
 
             last_run_after = last_run.get("after") or after.isoformat()
 
@@ -581,13 +615,17 @@ def main():  # pragma: no cover
 
             if new_last_run := get_last_run(events, last_run_after, next_link):
                 demisto.setLastRun(new_last_run)
-                demisto.debug(f"[Fetch] Last run updated: {new_last_run}")
+                demisto.debug(
+                    f"[Fetch] Last run updated | After: {new_last_run.get('after')} | "
+                    f"Dedup IDs: {len(new_last_run.get('ids') or [])} | "
+                    f"Next link set: {bool(new_last_run.get('next_link'))}"
+                )
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        demisto.error(f"Failed to execute {command} command.\n{traceback.format_exc()}")
+        demisto.error(f"[Main] Failed to execute {command} command.\n{traceback.format_exc()}")
         return_error(f"Failed to execute {command} command. Error: {e}")
 
 
