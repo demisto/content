@@ -20630,7 +20630,7 @@ script:
         - us-gov-west-1
     - name: resource_arn
       description: The Amazon Resource Name (ARN) of the account that you want to share your rule group or firewall policy with.
-      required: true
+      required: true  
     - name: policy
       description: The AWS Identity and Access Management policy statement that lists the accounts that you want to share your rule group or firewall policy with and the operations that you want the accounts to be able to perform.
       required: true

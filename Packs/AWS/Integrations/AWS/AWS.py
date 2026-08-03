@@ -11117,7 +11117,7 @@ class NetworkFirewall:
             "EnableMonitoringDashboard": response.get("EnableMonitoringDashboard"),
         }
         remove_nulls_from_dictionary(outputs)
-        log_destination_configs = outputs["LoggingConfiguration"].get("LogDestinationConfigs", [])
+        log_destination_configs = outputs.get("LoggingConfiguration", {}).get("LogDestinationConfigs", [])
 
         return CommandResults(
             outputs_prefix="AWS.NetworkFirewall.Firewalls",
