@@ -127,15 +127,15 @@ script:
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
-    - description: 'Deprecated. This argument is no longer supported by the Microsoft Defender for Cloud API and has no effect. To filter alerts, use the azure-rg-query command from the Azure Resource Graph integration.'
+    - description: 'The argument is deprecated and no longer supported by the Microsoft Defender for Cloud and has no effect. To filter alerts, use the azure-rg-query command from the Azure Resource Graph integration.'
       name: filter
       deprecated: true
       hidden: true
-    - description: 'Deprecated. This argument is no longer supported by the Microsoft Defender for Cloud API and has no effect. To filter alerts, use the azure-rg-query command from the Azure Resource Graph integration.'
+    - description: 'The argument is deprecated and no longer supported by the Microsoft Defender for Cloud and has no effect. To filter alerts, use the azure-rg-query command from the Azure Resource Graph integration.'
       name: select
       deprecated: true
       hidden: true
-    - description: 'Deprecated. This argument is no longer supported by the Microsoft Defender for Cloud API and has no effect. To filter alerts, use the azure-rg-query command from the Azure Resource Graph integration.'
+    - description: 'The argument is deprecated and no longer supported by the Microsoft Defender for Cloud and has no effect. To filter alerts, use the azure-rg-query command from the Azure Resource Graph integration.'
       name: expand
       deprecated: true
       hidden: true
