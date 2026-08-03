@@ -8489,3 +8489,136 @@ def test_splunk_configuration_stanza_delete_conf_file_not_found():
 
     with pytest.raises(DemistoException, match="Configuration file 'transforms' was not found"):
         splunk.splunk_configuration_stanza_delete(service, {"conf_file": "transforms", "stanza_name": "s1"})
+
+
+# =========== Enterprise Security version / mirror-out finding_time helpers ===========
+
+
+def _mock_service_with_es_app(version):
+    """Build a mock Splunk service whose ES app returns the given version."""
+    es_app = MagicMock()
+    es_app.content = {"version": version}
+    service = MagicMock()
+    service.apps = {splunk.ES_APP_NAME: es_app}
+    return service
+
+
+def test_get_enterprise_security_version_returns_version():
+    """
+    Given: A Splunk service whose Enterprise Security app reports version "8.2.0".
+    When: get_enterprise_security_version is called.
+    Then: The reported version string "8.2.0" is returned.
+    """
+    service = _mock_service_with_es_app("8.2.0")
+
+    result = splunk.get_enterprise_security_version(service)
+
+    assert result == "8.2.0"
+
+
+def test_get_enterprise_security_version_missing_version_key():
+    """
+    Given: A Splunk service whose Enterprise Security app content has no "version" key.
+    When: get_enterprise_security_version is called.
+    Then: "unknown" is returned.
+    """
+    es_app = MagicMock()
+    es_app.content = {}
+    service = MagicMock()
+    service.apps = {splunk.ES_APP_NAME: es_app}
+
+    result = splunk.get_enterprise_security_version(service)
+
+    assert result == "unknown"
+
+
+def test_get_enterprise_security_version_app_not_installed():
+    """
+    Given: A Splunk service whose apps lookup raises (ES app not installed).
+    When: get_enterprise_security_version is called.
+    Then: The exception is swallowed and "unknown" is returned.
+    """
+    service = MagicMock()
+    service.apps.__getitem__.side_effect = KeyError("SplunkEnterpriseSecuritySuite")
+
+    result = splunk.get_enterprise_security_version(service)
+
+    assert result == "unknown"
+
+
+@pytest.mark.parametrize(
+    "version, expected",
+    [
+        ("8.2", True),
+        ("8.2.0", True),
+        ("8.2.5", True),
+        ("8.1.9", False),
+        ("8.3.0", False),
+        ("9.0.0", False),
+        ("unknown", False),
+        ("", False),
+    ],
+)
+def test_is_es_version_8_2(version, expected):
+    """
+    Given: An Enterprise Security version string.
+    When: is_es_version_8_2 is called.
+    Then: True is returned only for 8.2.x versions; unparseable values return False.
+    """
+    assert splunk.is_es_version_8_2(version) is expected
+
+
+def test_get_finding_time_for_es_notable_time_returns_time_on_8_2(mocker: MockerFixture):
+    """
+    Given: An ES 8.2.x service and mirrored data containing a "notable_time" value.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: The notable_time value is returned as a string.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.2.0")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, {"notable_time": "2026-01-01T00:00:00.000Z"})
+
+    assert result == "2026-01-01T00:00:00.000Z"
+
+
+def test_get_finding_time_for_es_notable_time_none_when_not_8_2(mocker: MockerFixture):
+    """
+    Given: An ES 8.3.x service (out of the 8.2.x range) and mirrored data with a notable_time.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: None is returned because finding_time is only required on 8.2.x.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.3.0")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, {"notable_time": "2026-01-01T00:00:00.000Z"})
+
+    assert result is None
+
+
+def test_get_finding_time_for_es_notable_time_none_when_no_time_in_data(mocker: MockerFixture):
+    """
+    Given: An ES 8.2.x service but mirrored data that has no "notable_time" field.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: None is returned since there is no finding time to send.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.2.1")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, {"other": "value"})
+
+    assert result is None
+
+
+def test_get_finding_time_for_es_notable_time_none_when_data_is_none(mocker: MockerFixture):
+    """
+    Given: An ES 8.2.x service and data is None.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: None is returned without raising.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.2.0")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, None)
+
+    assert result is None
