@@ -1,3 +1,43 @@
+# ---------------------------------------------------------------------------
+# STDOUT FIREWALL - must run before EVERY other import in this file.
+#
+# XSOAR executes this script inside a Docker container in "loop" mode: the
+# server reads the container's stdout and requires EVERY line on it to be a
+# JSON document. demisto-sdk (validate / pre-commit / YmlSplitter / the
+# contribution converter) and its transitive dependencies write plain text to
+# stdout - progress output, rich consoles, "Packs/..." paths - both from Python
+# and directly to the OS-level file descriptor 1. A single leaked line breaks
+# the protocol and the server fails the script with:
+#   "Failed to decode (loop) data from docker code script:
+#    invalid character 'P' looking for beginning of value"
+#
+# `contextlib.redirect_stdout` is NOT sufficient: it only rebinds the
+# Python-level `sys.stdout` object and cannot stop writes coming from a
+# rich.Console that cached the original stream, from C extensions, or from
+# child processes that inherited fd 1. Guarding a single function is also not
+# sufficient, because leaks occur at import time and while the content
+# directory is being prepared.
+#
+# So we duplicate the real stdout onto a private fd and point fd 1 at a capture
+# file for the entire lifetime of the script. Nothing reaches the server by
+# accident. The real channel is restored only inside the `real_stdout()`
+# context manager, which every legitimate `demisto.*` call is routed through
+# (see `_wrap_demisto_ipc`), so logging and file lookups keep working.
+# ---------------------------------------------------------------------------
+import os
+import sys
+import tempfile
+
+# Private duplicate of the real stdout (the XSOAR IPC channel).
+_REAL_STDOUT_FD: int = os.dup(1)
+# Everything written to fd 1 from now on lands here instead of the IPC channel.
+# The PID keeps concurrent executions in the same container from clobbering
+# each other's capture file.
+_STDOUT_CAPTURE_PATH: str = os.path.join(tempfile.gettempdir(), f"validate_content_stdout_{os.getpid()}.log")
+_STDOUT_CAPTURE_FD: int = os.open(_STDOUT_CAPTURE_PATH, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+_FIREWALL_ARMED: bool = True
+os.dup2(_STDOUT_CAPTURE_FD, 1)
+
 import inspect
 import io
 
@@ -69,16 +109,18 @@ if not hasattr(inspect, "formatargspec"):
 
     inspect.formatargspec = _formatargspec  # type: ignore[attr-defined]
 # ---------------------------------------------------------------------------
+# NOTE: `os`, `sys` and `tempfile` are imported by the stdout firewall above.
+import functools
 import json
-import os
 import re
+import threading
 import shutil
 import traceback
 import types
 import zipfile
 from base64 import b64decode
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from contextlib import contextmanager, redirect_stderr, redirect_stdout
+from contextlib import contextmanager, redirect_stderr
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -91,7 +133,6 @@ from CommonServerPython import *  # noqa: F401
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
-from demisto_sdk.commands.split_yml.extractor import Extractor as YmlSplitter
 from importlib.metadata import version
 from ruamel.yaml import YAML
 
@@ -146,36 +187,140 @@ SKIPPED_HOOKS = [
 ]
 
 
-@contextmanager
-def suppress_fd_stdout():
-    """
-    Suppress writes to the OS-level stdout file descriptor (fd 1) for the
-    duration of the block.
+# Maximum number of captured characters echoed back as a debug entry. The
+# captured file holds the full pre-commit/validate console output, which can be
+# megabytes; sending all of it back would bloat the war-room entry.
+MAX_CAPTURED_STDOUT_CHARS = 20000
 
-    `contextlib.redirect_stdout` only rebinds the Python-level ``sys.stdout``
-    object. It does NOT capture output that bypasses it, such as:
-      - a ``rich.Console`` instance that cached the original stream at creation
-        time (demisto-sdk creates such consoles),
-      - C-extension writes, or
-      - child processes that inherit fd 1.
-    Any of those leaking to fd 1 corrupts the JSON entry XSOAR reads from the
-    script's stdout, causing "invalid character 'P' looking for beginning of
-    value". This context manager duplicates fd 1, points it at os.devnull for
-    the block, and restores it afterwards so return_results() can emit the
-    entry cleanly.
+# `validate_content` runs `validate` and `pre-commit` on two worker threads, and
+# both log through `demisto.*`. Without a lock, one thread could restore fd 1 for
+# its own IPC call while the other is emitting library output, letting that
+# output escape onto the IPC channel. The lock is re-entrant because a wrapped
+# `demisto.*` call may be made from within another one (e.g. debug inside error).
+_STDOUT_SWAP_LOCK = threading.RLock()
+
+
+def get_yml_splitter():
     """
-    # Ensure any buffered Python-level stdout is flushed before we swap the fd.
-    sys.stdout.flush()
-    saved_stdout_fd = os.dup(1)
-    devnull_fd = os.open(os.devnull, os.O_WRONLY)
+    Resolve demisto-sdk's unified-YAML splitter lazily.
+
+    The class moved between modules across demisto-sdk versions, and importing
+    it at module level makes this script unimportable (so untestable) whenever
+    the installed SDK does not expose that exact path. Resolving it on first use
+    keeps the script working across SDK/Docker image versions.
+    """
     try:
-        os.dup2(devnull_fd, 1)
+        from demisto_sdk.commands.split.ymlsplitter import YmlSplitter  # pylint: disable=import-error,no-name-in-module
+    except ImportError:
+        from demisto_sdk.commands.split_yml.extractor import (  # pylint: disable=import-error,no-name-in-module
+            Extractor as YmlSplitter,
+        )
+    return YmlSplitter
+
+
+def _flush_streams() -> None:
+    """Flush Python-level buffers so they cannot spill across an fd swap."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.flush()
+        except Exception:  # noqa: S110 - a broken stream must never fail the run.
+            pass
+
+
+@contextmanager
+def real_stdout():
+    """
+    Temporarily restore fd 1 to the real stdout (the XSOAR IPC channel).
+
+    Every `demisto.*` call must run inside this block - see `_wrap_demisto_ipc`.
+    Anything written to fd 1 outside it is diverted to the capture file by the
+    stdout firewall installed at the top of this module.
+    """
+    if not _FIREWALL_ARMED:
+        # Firewall already disarmed - fd 1 is the real channel, nothing to do.
         yield
-    finally:
-        sys.stdout.flush()
-        os.dup2(saved_stdout_fd, 1)
-        os.close(devnull_fd)
-        os.close(saved_stdout_fd)
+        return
+    with _STDOUT_SWAP_LOCK:
+        _flush_streams()
+        os.dup2(_REAL_STDOUT_FD, 1)
+        try:
+            yield
+        finally:
+            # Re-arm the firewall even if the caller raised.
+            _flush_streams()
+            if _FIREWALL_ARMED:
+                os.dup2(_STDOUT_CAPTURE_FD, 1)
+
+
+def _wrap_demisto_ipc() -> None:
+    """
+    Route every `demisto.*` call through the real stdout.
+
+    In the XSOAR runtime these helpers are not local no-ops: they serialize a
+    JSON message to stdout, and some of them (notably `getFilePath`) BLOCK
+    waiting for the server's reply on stdin. If the firewall were armed while
+    such a call is in flight, logs would be silently swallowed and file lookups
+    would deadlock until the script's execution timeout. Wrapping them keeps
+    the IPC channel available exactly for the duration of each call, while
+    library noise emitted in between is still captured.
+    """
+    ipc_functions = (
+        "addEntry",
+        "createIncidents",
+        "debug",
+        "error",
+        "executeCommand",
+        "get",
+        "getFilePath",
+        "info",
+        "investigation",
+        "log",
+        "results",
+        "setContext",
+    )
+
+    def make_proxy(func):
+        @functools.wraps(func)
+        def proxy(*args, **kwargs):
+            with real_stdout():
+                return func(*args, **kwargs)
+
+        return proxy
+
+    for func_name in ipc_functions:
+        original = getattr(demisto, func_name, None)
+        if callable(original):
+            setattr(demisto, func_name, make_proxy(original))
+
+
+def read_captured_stdout() -> str:
+    """Return everything libraries wrote to fd 1 while the firewall was armed."""
+    _flush_streams()
+    try:
+        with open(_STDOUT_CAPTURE_PATH, errors="replace") as capture_file:
+            captured = capture_file.read()
+    except Exception as e:
+        return f"<unable to read captured stdout: {e}>"
+    if len(captured) > MAX_CAPTURED_STDOUT_CHARS:
+        omitted = len(captured) - MAX_CAPTURED_STDOUT_CHARS
+        captured = f"{captured[:MAX_CAPTURED_STDOUT_CHARS]}\n...<{omitted} more characters omitted>"
+    return captured
+
+
+def restore_real_stdout() -> None:
+    """Permanently disarm the firewall and remove the capture file."""
+    global _FIREWALL_ARMED
+    with _STDOUT_SWAP_LOCK:
+        if not _FIREWALL_ARMED:
+            return
+        _flush_streams()
+        _FIREWALL_ARMED = False
+        try:
+            os.dup2(_REAL_STDOUT_FD, 1)
+            os.close(_STDOUT_CAPTURE_FD)
+            os.remove(_STDOUT_CAPTURE_PATH)
+        except Exception:  # noqa: S110 - best-effort cleanup, never fail the run.
+            pass
 
 
 class FormattedResultFields:
@@ -345,7 +490,7 @@ def content_item_to_package_format(
             file_type = find_type(content_item_file_path)
             file_type = file_type.value if file_type else file_type
             try:
-                extractor = YmlSplitter(
+                extractor = get_yml_splitter()(
                     input=content_item_file_path,
                     output=content_item_dir,
                     file_type=file_type,
@@ -454,7 +599,7 @@ def prepare_single_content_item_for_validation(file_name: str, data: bytes, pack
     file_type = file_type.value if file_type else file_type
     if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
         return str(file_path)
-    extractor = YmlSplitter(input=str(file_path), file_type=file_type, output=containing_dir)
+    extractor = get_yml_splitter()(input=str(file_path), file_type=file_type, output=containing_dir)
     # Validate the resulting package files, ergo set path_to_validate to the package directory that results
     # from extracting the unified yaml to a package format
     extractor.extract_to_package_format()
@@ -865,6 +1010,9 @@ def setup_envvars():
 
 
 def main():
+    # Route demisto.* IPC calls around the stdout firewall before anything else
+    # logs or reads a file entry.
+    _wrap_demisto_ipc()
     setup_envvars()
     # Save working directory for later return, as working directory changes during runtime.
     cwd = os.getcwd()
@@ -930,23 +1078,9 @@ def main():
 
             # Got to be in content dir when running demisto-sdk commands.
             os.chdir(CONTENT_DIR_PATH)
-            # demisto-sdk's ValidateManager / pre_commit_manager write progress and
-            # rich-console output to stdout while running in-process. XSOAR reads the
-            # script's stdout and expects ONLY the JSON entry produced by
-            # return_results(); any leaked text (e.g. lines starting with "Preparing"
-            # or "Packs") corrupts the response, causing the server error:
-            # "Failed to decode (loop) data ... invalid character 'P' ...".
-            # Redirect stdout to a throwaway buffer for the entire validation run so
-            # no library output escapes. return_results() is called AFTER this block,
-            # writing the JSON entry to the real stdout cleanly.
-            # Two layers of protection:
-            #  1. redirect_stdout  -> captures Python-level prints / new rich consoles.
-            #  2. suppress_fd_stdout -> captures anything writing directly to fd 1
-            #     (rich consoles bound to the original stream, C extensions, subprocs).
-            validation_stdout = io.StringIO()
-            with suppress_fd_stdout(), redirect_stdout(validation_stdout):
-                validation_results, raw_outputs = validate_content(path_to_validate)
-            demisto.debug(f"Captured validation stdout (suppressed from entry): {validation_stdout.getvalue()}")
+            # No stdout guard is needed here: the firewall installed at the top of
+            # this module has fd 1 pointed at the capture file for the whole run.
+            validation_results, raw_outputs = validate_content(path_to_validate)
             os.chdir(cwd)
 
             if not raw_outputs:
@@ -962,6 +1096,14 @@ def main():
                         FormattedResultFields.ERROR_CODE_OR_LINTER,
                     ],
                 )
+            # Surface the library noise that the firewall diverted, so debugging
+            # information is not lost. demisto.debug is already routed through
+            # the real stdout by _wrap_demisto_ipc().
+            demisto.debug(f"Captured stdout during validation:\n{read_captured_stdout()}")
+
+            # Disarm the firewall so the entry itself is written to the real
+            # stdout. From here on no demisto-sdk code runs, so nothing can leak.
+            restore_real_stdout()
             return_results(
                 CommandResults(
                     readable_output=readable_output,
@@ -974,8 +1116,13 @@ def main():
         demisto.info("Finished validating content.")
     except Exception as e:
         demisto.error(traceback.format_exc())
+        demisto.error(f"Captured stdout before failure:\n{read_captured_stdout()}")
+        restore_real_stdout()
         return_error(f"Failed to execute ValidateContent. Error: {e!s}")
     finally:
+        # Hand a clean, unredirected stdout back to the runtime wrapper, even if
+        # an early failure skipped the calls above.
+        restore_real_stdout()
         os.chdir(cwd)
 
 

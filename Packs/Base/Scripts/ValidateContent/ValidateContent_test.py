@@ -1,4 +1,8 @@
 import json
+import os
+import subprocess
+import sys
+import textwrap
 from io import BytesIO
 from unittest import mock
 
@@ -212,3 +216,231 @@ def test_read_validate_results(tmp_path):
     assert results[0].filePath.endswith("Packs/TestPack/Scripts/TestScript/TestScript.yml")
     assert results[0].errorCode == "ST001"
     assert results[0].message == "Test error message"
+
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _run_in_subprocess(body: str) -> subprocess.CompletedProcess:
+    """
+    Execute `body` in a fresh interpreter that imports ValidateContent.
+
+    A subprocess is required because the stdout firewall manipulates the
+    OS-level file descriptor 1 at import time. Doing that in-process would
+    hijack pytest's own stdout for the remainder of the session.
+    """
+    program = textwrap.dedent(body)
+    return subprocess.run(  # noqa: S603
+        [sys.executable, "-c", program],
+        capture_output=True,
+        text=True,
+        cwd=SCRIPT_DIR,
+        timeout=60,
+        check=False,
+    )
+
+
+def test_stdout_firewall_blocks_library_output_from_reaching_stdout():
+    """
+    Given: A third-party library writing plain text to stdout, both via Python's
+           `print` and directly to the OS-level file descriptor 1 (as
+           demisto-sdk's rich consoles and subprocesses do).
+     When: The module-level stdout firewall of ValidateContent is armed.
+     Then: None of that text reaches the real stdout, so the JSON entry XSOAR
+           reads stays parsable. This reproduces the server-side failure
+           "invalid character 'P' looking for beginning of value".
+    """
+    result = _run_in_subprocess(
+        """
+        import json, os, sys
+        import ValidateContent as vc
+
+        # Python-level print (e.g. demisto-sdk progress output).
+        print("Preparing content packs for validation")
+        # Direct fd-1 write, which contextlib.redirect_stdout cannot intercept.
+        os.write(1, b"Packs/HelloWorld/Integrations leaked from a rich console\\n")
+
+        vc.restore_real_stdout()
+        # Only this JSON entry may appear on the real stdout.
+        sys.stdout.write(json.dumps({"Type": 1, "Contents": "ok"}))
+        """
+    )
+
+    assert result.returncode == 0, result.stderr
+    # The whole stdout must be exactly one JSON document - the entry.
+    assert json.loads(result.stdout) == {"Type": 1, "Contents": "ok"}
+    assert "Preparing" not in result.stdout
+    assert "Packs/HelloWorld" not in result.stdout
+
+
+def test_captured_stdout_is_preserved_for_debugging():
+    """
+    Given: Library output that the firewall diverted away from stdout.
+     When: `read_captured_stdout` is called.
+     Then: The text is still retrievable, so suppressing it does not destroy
+           debugging information.
+    """
+    result = _run_in_subprocess(
+        """
+        import json, os, sys
+        import ValidateContent as vc
+
+        print("Preparing content packs for validation")
+        os.write(1, b"direct fd write\\n")
+
+        captured = vc.read_captured_stdout()
+        vc.restore_real_stdout()
+        sys.stdout.write(json.dumps(captured))
+        """
+    )
+
+    assert result.returncode == 0, result.stderr
+    captured = json.loads(result.stdout)
+    assert "Preparing content packs for validation" in captured
+    assert "direct fd write" in captured
+
+
+def test_real_stdout_context_manager_rearms_the_firewall():
+    """
+    Given: A `demisto.*` IPC call that needs the real stdout channel.
+     When: It runs inside the `real_stdout` context manager.
+     Then: Its output reaches stdout, and the firewall is re-armed afterwards so
+           subsequent library noise is still suppressed.
+    """
+    result = _run_in_subprocess(
+        """
+        import json, os, sys
+        import ValidateContent as vc
+
+        with vc.real_stdout():
+            sys.stdout.write(json.dumps({"ipc": "call"}) + "\\n")
+            sys.stdout.flush()
+
+        # Firewall must be armed again - this must NOT reach stdout.
+        os.write(1, b"leak after the ipc call\\n")
+
+        vc.restore_real_stdout()
+        """
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout.strip()) == {"ipc": "call"}
+    assert "leak" not in result.stdout
+
+
+def test_wrap_demisto_ipc_routes_calls_to_real_stdout():
+    """
+    Given: `demisto.debug` / `demisto.getFilePath`, which in the XSOAR runtime
+           write to stdout and (for getFilePath) block on a reply.
+     When: `_wrap_demisto_ipc` has wrapped them.
+     Then: They execute against the real stdout rather than the capture file,
+           which is what prevents swallowed logs and a deadlocked file lookup.
+    """
+    result = _run_in_subprocess(
+        """
+        import json, os, sys
+        import demistomock as demisto
+        import ValidateContent as vc
+
+        # Stand in for the runtime implementations, which talk over stdout.
+        def fake_debug(msg):
+            sys.stdout.write(json.dumps({"debug": msg}) + "\\n")
+
+        def fake_get_file_path(entry_id):
+            sys.stdout.write(json.dumps({"getFilePath": entry_id}) + "\\n")
+            return {"path": "/tmp/f"}
+
+        demisto.debug = fake_debug
+        demisto.getFilePath = fake_get_file_path
+
+        vc._wrap_demisto_ipc()
+
+        demisto.debug("hello")
+        # The wrapper must preserve the return value - setup_content_dir relies on it.
+        assert demisto.getFilePath("entry-1") == {"path": "/tmp/f"}
+
+        # Library noise in between must still be swallowed.
+        os.write(1, b"Packs/Leaked\\n")
+        vc.restore_real_stdout()
+        """
+    )
+
+    assert result.returncode == 0, result.stderr
+    lines = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
+    assert {"debug": "hello"} in lines
+    assert {"getFilePath": "entry-1"} in lines
+    assert "Packs/Leaked" not in result.stdout
+
+
+def test_concurrent_ipc_calls_do_not_let_library_output_escape():
+    """
+    Given: `validate_content` runs `validate` and `pre-commit` on two worker
+           threads, both of which log via `demisto.*` while libraries write
+           noise to fd 1.
+     When: IPC calls and library output are interleaved across threads.
+     Then: Only the JSON IPC lines reach stdout. Without a lock around the fd
+           swap, one thread restoring stdout for its own call would expose the
+           other thread's noise, re-introducing the decode failure.
+    """
+    result = _run_in_subprocess(
+        """
+        import json, os, sys, threading
+        import demistomock as demisto
+        import ValidateContent as vc
+
+        def fake_debug(msg):
+            sys.stdout.write(json.dumps({"debug": msg}) + "\\n")
+            sys.stdout.flush()
+
+        demisto.debug = fake_debug
+        vc._wrap_demisto_ipc()
+
+        def logger():
+            for i in range(200):
+                demisto.debug(i)
+
+        def noisemaker():
+            for _ in range(200):
+                os.write(1, b"Packs/Noise from a library\\n")
+
+        threads = [threading.Thread(target=logger), threading.Thread(target=noisemaker)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        vc.restore_real_stdout()
+        """
+    )
+
+    assert result.returncode == 0, result.stderr
+    lines = [line for line in result.stdout.splitlines() if line.strip()]
+    # Every single line on the IPC channel must be valid JSON.
+    for line in lines:
+        json.loads(line)
+    assert len(lines) == 200
+    assert "Packs/Noise" not in result.stdout
+
+
+def test_restore_real_stdout_is_idempotent():
+    """
+    Given: `restore_real_stdout` is called in a `finally` block and may also run
+           on the success path.
+     When: It is invoked more than once.
+     Then: It does not raise or corrupt stdout (a second os.close on the same fd
+           would otherwise risk closing an unrelated descriptor).
+    """
+    result = _run_in_subprocess(
+        """
+        import json, sys
+        import ValidateContent as vc
+
+        vc.restore_real_stdout()
+        vc.restore_real_stdout()
+        vc.restore_real_stdout()
+        sys.stdout.write(json.dumps({"still": "usable"}))
+        """
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout) == {"still": "usable"}
