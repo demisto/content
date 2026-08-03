@@ -1,15 +1,21 @@
 import json
+from datetime import UTC, datetime, timedelta
 
+import dateutil.parser
 import dateutil.parser._parser
 import pytest
 from OktaEventCollector import (
     Client,
+    CommandResults,
     Config,
+    DemistoException,
+    add_time_to_events,
     fetch_events,
     get_events_command,
     get_last_run,
     okta_get_events_command,
     parse_link_header,
+    parse_time_argument,
     remove_duplicates,
     resolve_page_size,
 )
@@ -146,6 +152,8 @@ def test_resolve_page_size(remaining, expected):
         pytest.param([id1], ["a5b57ec5febb"], [], id="all_duplicates"),
         pytest.param([], ["a5b57ec5febb"], [], id="no_events"),
         pytest.param([id1, id2], [], [id1, id2], id="no_ids"),
+        pytest.param([id1, id2], ["a5b57ec5febb", "a5b57ec5febb"], [id2], id="repeated_ids"),
+        pytest.param([{"published": "x"}], ["a5b57ec5febb"], [{"published": "x"}], id="event_without_uuid_kept"),
         pytest.param(
             [{"uuid": i} for i in range(10)],
             [0, 4, 7, 9],
@@ -161,6 +169,112 @@ def test_remove_duplicates(events, ids, result):
     Then: Only events whose UUID was not previously seen remain.
     """
     assert remove_duplicates(events, ids) == result
+
+
+# endregion
+
+# region add_time_to_events
+
+
+@pytest.mark.parametrize(
+    "events,expected",
+    [
+        pytest.param([], [], id="empty_batch"),
+        pytest.param(
+            [{"uuid": "a", "published": "2022-04-17T12:32:36.667"}],
+            ["2022-04-17T12:32:36.667"],
+            id="single_event",
+        ),
+        pytest.param(
+            [{"uuid": "a", "published": "2022-04-17T12:32:36.667"}, {"uuid": "b", "published": "2022-04-17T12:33:36.667"}],
+            ["2022-04-17T12:32:36.667", "2022-04-17T12:33:36.667"],
+            id="multiple_events",
+        ),
+    ],
+)
+def test_add_time_to_events(events, expected):
+    """
+    Given: Events carrying a published timestamp.
+    When: Enriching them for XSIAM ingestion.
+    Then: Each event gains a _time field mirroring its published value.
+    """
+    add_time_to_events(events)
+
+    assert [event["_time"] for event in events] == expected
+
+
+@pytest.mark.parametrize(
+    "event",
+    [
+        pytest.param({"uuid": "a"}, id="published_absent"),
+        pytest.param({"uuid": "a", "published": ""}, id="published_empty"),
+        pytest.param({"uuid": "a", "published": None}, id="published_none"),
+    ],
+)
+def test_add_time_to_events_without_published(event):
+    """
+    Given: A malformed event with no usable published timestamp.
+    When: Enriching it for XSIAM ingestion.
+    Then: No _time field is invented and the batch is not rejected.
+    """
+    add_time_to_events([event])
+
+    assert "_time" not in event
+
+
+# endregion
+
+# region parse_time_argument
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        pytest.param("5 minutes ago", id="relative_minutes"),
+        pytest.param("3 days", id="relative_days"),
+        pytest.param(" 1 hour ", id="padded_whitespace"),
+        pytest.param("2026-01-01T10:00:00Z", id="absolute_iso_utc"),
+    ],
+)
+def test_parse_time_argument_returns_utc(value):
+    """
+    Given: A time argument in a supported format.
+    When: Parsing it.
+    Then: The result is timezone aware and normalized to UTC, because Okta reads an
+          offset-less timestamp as UTC and a naive local value would shift the window.
+    """
+    parsed = dateutil.parser.isoparse(parse_time_argument(value, "start_time"))
+
+    assert parsed.utcoffset() == timedelta(0)
+
+
+def test_parse_time_argument_relative_value_is_in_the_past():
+    """
+    Given: A relative lookback argument.
+    When: Parsing it while the container runs in a non UTC timezone.
+    Then: The window starts in the past rather than drifting into the future.
+    """
+    parsed = dateutil.parser.isoparse(parse_time_argument(Config.DEFAULT_FROM_TIME, "start_time"))
+
+    assert parsed < datetime.now(UTC)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        pytest.param("not a real date", id="nonsense_text"),
+        pytest.param("", id="empty_string"),
+        pytest.param("   ", id="whitespace_only"),
+    ],
+)
+def test_parse_time_argument_invalid_raises(value):
+    """
+    Given: A time argument that cannot be parsed.
+    When: Parsing it.
+    Then: A DemistoException names the offending argument instead of an AttributeError.
+    """
+    with pytest.raises(DemistoException, match="Could not parse the 'start_time' argument"):
+        parse_time_argument(value, "start_time")
 
 
 # endregion
@@ -300,6 +414,61 @@ def test_get_events_dedup_removes_all(dummy_client, mocker):
 
     assert events == []
     assert next_link == ""
+
+
+@pytest.mark.parametrize(
+    "duplicate_pages",
+    [
+        pytest.param(1, id="one_all_duplicate_page"),
+        pytest.param(3, id="three_all_duplicate_pages"),
+    ],
+)
+def test_get_events_all_duplicate_page_terminates(dummy_client, mocker, duplicate_pages):
+    """
+    Given: Pages whose events were every one of them collected in a previous run, each
+           still advertising a next cursor so the API keeps offering more.
+    When: Running the pagination loop with a limit far larger than the page size.
+    Then: The loop terminates instead of spinning forever.
+
+    Regression guard for the reported infinite loop risk. side_effect is a finite list,
+    so a loop that failed to break would raise StopIteration rather than hang the suite.
+    """
+    mocker.patch.object(Config, "PAGE_SIZE", 1)
+    get_events_mock = mocker.patch.object(
+        dummy_client,
+        "get_events",
+        side_effect=[MockResponse(data=id1_pub, headers=link_headers())] * duplicate_pages,
+    )
+
+    events, next_link = get_events_command(dummy_client, 10_000, "since", last_object_ids=["a5b57ec5feaa"])
+
+    # The very first all-duplicate page breaks the loop, so only one request is issued
+    # no matter how many further pages the API was willing to serve.
+    assert get_events_mock.call_count == 1
+    assert events == []
+    assert next_link == ""
+
+
+def test_get_events_advances_cursor_before_deduplication(dummy_client, mocker):
+    """
+    Given: A first page that is entirely duplicated, followed by a page of new events.
+    When: Running the pagination loop across both.
+    Then: The second request uses a cursor advanced past the duplicated page.
+
+    This ordering is what makes an infinite loop impossible even if the all-duplicate
+    break were removed: a repeated page can never be re-requested with the same cursor.
+    """
+    mocker.patch.object(Config, "PAGE_SIZE", 1)
+    get_events_mock = mocker.patch.object(
+        dummy_client,
+        "get_events",
+        side_effect=[MockResponse(data=id1_pub), MockResponse(data=id2_pub)],
+    )
+
+    get_events_command(dummy_client, 2, "original-since")
+
+    assert get_events_mock.call_args_list[0].kwargs["since"] == "original-since"
+    assert get_events_mock.call_args_list[1].kwargs["since"] == id1_pub[-1]["published"]
 
 
 def test_get_events_dedup_keeps_new_events(dummy_client, mocker):
@@ -581,23 +750,139 @@ def test_test_module_propagates_failure(dummy_client, mocker, capfd):
         run_test_module(dummy_client)
 
 
+def command_outputs(result) -> list:
+    """Return the outputs of a CommandResults produced by okta-get-events."""
+    assert isinstance(result, CommandResults)
+    return result.outputs  # type: ignore[return-value]
+
+
 @pytest.mark.parametrize(
-    "from_date",
+    "start_time",
     [
         pytest.param("1 day", id="relative_day"),
         pytest.param("3 days", id="relative_days"),
         pytest.param(" 1 hour ", id="padded_whitespace"),
     ],
 )
-def test_okta_get_events_command(dummy_client, mocker, from_date):
+def test_okta_get_events_command(dummy_client, mocker, start_time):
     """
-    Given: A from_date argument in a supported format.
+    Given: A start_time argument in a supported format.
     When: Running the okta-get-events command.
-    Then: The collected events are returned.
+    Then: The collected events are returned in the command outputs.
     """
     mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
 
-    assert okta_get_events_command(dummy_client, {"from_date": from_date}, 10) == id1_pub
+    assert command_outputs(okta_get_events_command(dummy_client, {"start_time": start_time}, 10)) == id1_pub
+
+
+def test_okta_get_events_command_from_date_backward_compatibility(dummy_client, mocker):
+    """
+    Given: Only the deprecated from_date argument.
+    When: Running the okta-get-events command.
+    Then: The legacy argument is still honoured.
+    """
+    mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
+
+    assert command_outputs(okta_get_events_command(dummy_client, {"from_date": "1 day"}, 10)) == id1_pub
+
+
+def test_okta_get_events_command_with_end_time(dummy_client, mocker):
+    """
+    Given: Both a start_time and an end_time argument.
+    When: Running the okta-get-events command.
+    Then: The upper bound is forwarded to the API as the until parameter.
+    """
+    get_events = mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
+
+    okta_get_events_command(dummy_client, {"start_time": "3 days", "end_time": "1 day"}, 10)
+
+    assert get_events.call_args.kwargs["until"] is not None
+
+
+def test_okta_get_events_command_invalid_time_raises(dummy_client):
+    """
+    Given: A start_time argument that cannot be parsed.
+    When: Running the okta-get-events command.
+    Then: A DemistoException is raised instead of an AttributeError.
+    """
+    with pytest.raises(DemistoException, match="Could not parse the 'start_time' argument"):
+        okta_get_events_command(dummy_client, {"start_time": "not a real date"}, 10)
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        pytest.param({}, id="no_time_argument_at_all"),
+        pytest.param({"from_date": ""}, id="from_date_empty_string"),
+        pytest.param({"from_date": "   "}, id="from_date_whitespace_only"),
+        pytest.param({"start_time": ""}, id="start_time_empty_string"),
+        pytest.param({"start_time": "", "from_date": ""}, id="both_empty"),
+    ],
+)
+def test_okta_get_events_command_missing_time_falls_back_to_default(dummy_client, mocker, args):
+    """
+    Given: The command invoked with no usable time argument.
+    When: Running the okta-get-events command.
+    Then: The default lookback is applied and no AttributeError is raised.
+
+    Regression guard for the reported AttributeError. The previous implementation used
+    cast(datetime, dateparser.parse(args.get("from_date", "").strip())); cast is a no-op
+    at runtime, so dateparser returning None crashed on .isoformat().
+    """
+    get_events_mock = mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
+
+    assert command_outputs(okta_get_events_command(dummy_client, args, 10)) == id1_pub
+
+    # A real timestamp reached the API rather than None or an empty string.
+    assert get_events_mock.call_args.kwargs["since"]
+
+
+def test_okta_get_events_command_start_time_takes_precedence_over_from_date(dummy_client, mocker):
+    """
+    Given: Both the modern start_time and the deprecated from_date arguments.
+    When: Running the okta-get-events command.
+    Then: start_time wins, so the deprecated alias cannot override the current argument.
+    """
+    get_events_mock = mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
+
+    okta_get_events_command(dummy_client, {"start_time": "1 hour", "from_date": "30 days"}, 10)
+
+    since = dateutil.parser.isoparse(get_events_mock.call_args.kwargs["since"])
+    assert since > datetime.now(UTC) - timedelta(days=1)
+
+
+def test_okta_get_events_command_pushes_events(dummy_client, mocker):
+    """
+    Given: The should_push_events argument set to true on an XSIAM platform.
+    When: Running the okta-get-events command.
+    Then: The events are sent to XSIAM and a summary message is returned.
+    """
+    # resolve_should_push_events degrades to False off XSIAM, so the platform is mocked.
+    # is_xsiam is resolved inside CommonServerPython, which is where it must be patched.
+    mocker.patch("CommonServerPython.is_xsiam", return_value=True)
+    mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
+    send_events = mocker.patch.object(dummy_client, "send_events")
+
+    result = okta_get_events_command(dummy_client, {"start_time": "1 day", "should_push_events": "true"}, 10)
+
+    send_events.assert_called_once()
+    assert result == f"Successfully retrieved and pushed {len(id1_pub)} events to XSIAM"
+
+
+def test_okta_get_events_command_does_not_push_events_off_xsiam(dummy_client, mocker):
+    """
+    Given: The should_push_events argument set to true on a non XSIAM platform.
+    When: Running the okta-get-events command.
+    Then: The events are not sent and the command results are returned instead.
+    """
+    mocker.patch("CommonServerPython.is_xsiam", return_value=False)
+    mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
+    send_events = mocker.patch.object(dummy_client, "send_events")
+
+    result = okta_get_events_command(dummy_client, {"start_time": "1 day", "should_push_events": "true"}, 10)
+
+    send_events.assert_not_called()
+    assert command_outputs(result) == id1_pub
 
 
 def test_okta_get_events_command_respects_limit(dummy_client, mocker):
@@ -609,7 +894,33 @@ def test_okta_get_events_command_respects_limit(dummy_client, mocker):
     mocker.patch.object(Config, "PAGE_SIZE", 1)
     mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub, headers=link_headers())])
 
-    assert len(okta_get_events_command(dummy_client, {"from_date": "1 day"}, 1)) == 1
+    assert len(command_outputs(okta_get_events_command(dummy_client, {"start_time": "1 day"}, 1))) == 1
+
+
+def test_okta_get_events_command_limit_argument_overrides_instance_limit(dummy_client, mocker):
+    """
+    Given: A limit argument that is smaller than the instance level limit.
+    When: Running the okta-get-events command.
+    Then: The argument takes precedence over the instance level limit.
+    """
+    mocker.patch.object(Config, "PAGE_SIZE", 1)
+    mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub, headers=link_headers())])
+
+    assert len(command_outputs(okta_get_events_command(dummy_client, {"start_time": "1 day", "limit": "1"}, 10000))) == 1
+
+
+def test_time_field_added_to_all_events(dummy_client, mocker):
+    """
+    Given: Events returned by the API with a published timestamp.
+    When: Collecting the events.
+    Then: Every event carries a _time field sourced from published.
+    """
+    mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
+
+    events, _ = get_events_command(dummy_client, total_events_to_fetch=10, since="2026-01-01T00:00:00")
+
+    assert events
+    assert all(event["_time"] == event["published"] for event in events)
 
 
 def test_send_events(dummy_client, mocker):

@@ -60,9 +60,17 @@ class Config:
     # Request timeout in seconds.
     TIMEOUT = 60
 
+    # Default lookback window for the manual okta-get-events command.
+    DEFAULT_FROM_TIME = "5 minutes ago"
+
     # Test module settings.
     TEST_MODULE_LOOKBACK = "1 hour"
     TEST_MODULE_MAX_EVENTS = 1
+
+    # dateparser returns a naive datetime in the *container* local time by default.
+    # Okta interprets an offset-less timestamp as UTC, so a naive local value would
+    # shift the search window and can query into the future. Always parse as UTC.
+    DATEPARSER_SETTINGS = {"TIMEZONE": "UTC", "TO_TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
 
 
 # Matches a single RFC 5988 Link header entry, capturing the URL and its rel value.
@@ -112,6 +120,23 @@ def resolve_page_size(remaining_events: int) -> int:
     return page_size
 
 
+def add_time_to_events(events: list[dict]) -> None:
+    """Add the _time field to each event for XSIAM ingestion.
+
+    XSIAM uses _time to place an event on the timeline. Without it the platform falls
+    back to the ingestion time, which makes events appear later than they occurred.
+    The Okta System Log API returns the event time in the published field.
+
+    Args:
+        events: List of event dicts to enrich in place.
+    """
+    for event in events:
+        if published := event.get("published"):
+            event["_time"] = published
+        else:
+            demisto.debug(f"[Event Time] WARNING: Event missing published field: {event.get('uuid', 'unknown')}")
+
+
 def remove_duplicates(events: list, ids: list) -> list:
     """Remove events that were already collected in a previous run.
 
@@ -122,7 +147,10 @@ def remove_duplicates(events: list, ids: list) -> list:
     Returns:
         List of events excluding those whose UUID appears in ids.
     """
-    return [event for event in events if event["uuid"] not in ids]
+    # Membership is tested once per event, so ids is converted to a set to keep the
+    # lookup O(1). With a list this would be O(len(events) * len(ids)).
+    seen_ids = set(ids)
+    return [event for event in events if event.get("uuid") not in seen_ids]
 
 
 def get_last_run(events: List[dict], last_run_after, next_link) -> dict:
@@ -139,7 +167,13 @@ def get_last_run(events: List[dict], last_run_after, next_link) -> dict:
             - after: the timestamp to query from on the next cycle.
             - ids: UUIDs of events sharing the latest timestamp, used for deduplication.
             - next_link: the pagination link to resume from, if any.
-        Returns an empty dict if the timestamp could not be parsed.
+        Returns an empty dict if parsing failed unexpectedly, so the caller leaves the
+        stored cursor untouched rather than regressing it.
+
+    Raises:
+        ParserError: If the published timestamp is present but unparseable. This is
+            deliberate: silently accepting a corrupt timestamp would move the cursor to
+            the wrong point in time and skip or replay events.
     """
     ids = []
     last_time = events[-1].get("published") if events else last_run_after
@@ -213,7 +247,7 @@ class Client(ContentClient):
             headers={"Accept": "application/json", "Content-Type": "application/json"},
         )
 
-    def get_events(self, since: Any, page_size: int = Config.PAGE_SIZE, next_link_url: str = "") -> Any:
+    def get_events(self, since: Any, page_size: int = Config.PAGE_SIZE, next_link_url: str = "", until: Any = None) -> Any:
         """Fetch a single page of events from the Okta System Log API.
 
         When next_link_url is provided the request follows the pagination link returned
@@ -223,6 +257,8 @@ class Client(ContentClient):
             since: Start of the search window.
             page_size: Number of records to request. Capped at Config.PAGE_SIZE.
             next_link_url: Full pagination URL from the previous response, if any.
+            until: Optional end of the search window. Used by the manual command only;
+                the fetch cycle always collects up to the present moment.
 
         Returns:
             The raw HTTP response, so the caller can read the Link pagination header.
@@ -236,6 +272,9 @@ class Client(ContentClient):
             "since": since,
             "limit": page_size,
         }
+        if until:
+            params["until"] = until
+
         demisto.debug(f"[API Fetch] Requesting events | Params: {params}")
         return self._http_request(
             method="GET",
@@ -264,7 +303,12 @@ class Client(ContentClient):
 
 
 def get_events_command(
-    client: Client, total_events_to_fetch: int, since, last_object_ids: list[str] = [], next_link: str = ""
+    client: Client,
+    total_events_to_fetch: int,
+    since,
+    last_object_ids: list[str] | None = None,
+    next_link: str = "",
+    until=None,
 ) -> tuple[list[dict], str]:
     """Paginate through the Okta API until the requested number of events is collected.
 
@@ -283,6 +327,7 @@ def get_events_command(
         since: Start of the search window.
         last_object_ids: UUIDs of previously collected events, used for deduplication.
         next_link: Pagination link to resume from, if any.
+        until: Optional end of the search window. Used by the manual command only.
 
     Returns:
         Tuple of the collected events and the pagination link to resume from on the next
@@ -297,7 +342,7 @@ def get_events_command(
         page_size = resolve_page_size(total_events_to_fetch - len(stored_events))
 
         try:
-            response = client.get_events(since=since, page_size=page_size, next_link_url=next_link)
+            response = client.get_events(since=since, page_size=page_size, next_link_url=next_link, until=until)
 
             events = response.json()
             if not events:
@@ -327,6 +372,7 @@ def get_events_command(
                 next_link = ""
                 break
 
+            add_time_to_events(events)
             stored_events.extend(events)
             demisto.debug(f"[Pagination Loop] Collected so far: {len(stored_events)}/{total_events_to_fetch}")
 
@@ -351,7 +397,7 @@ def fetch_events(
     client: Client,
     events_limit: int,
     last_run_after,
-    last_object_ids: list[str] = [],
+    last_object_ids: list[str] | None = None,
     next_link: str = "",
 ) -> tuple[list[dict], str]:
     """Collect events for a single fetch cycle.
@@ -390,30 +436,94 @@ def test_module(client: Client) -> str:
         'ok' if the request succeeded.
     """
     demisto.debug("[Test Module] Starting...")
-    after = cast(datetime, dateparser.parse(Config.TEST_MODULE_LOOKBACK))
+    after = cast(datetime, dateparser.parse(Config.TEST_MODULE_LOOKBACK, settings=Config.DATEPARSER_SETTINGS))
     get_events_command(client, total_events_to_fetch=Config.TEST_MODULE_MAX_EVENTS, since=after.isoformat())
     demisto.debug("[Test Module] Success")
     return "ok"
 
 
-def okta_get_events_command(client: Client, args: dict, events_limit: int) -> list[dict]:
+def _first_non_blank(*values: Any) -> str:
+    """Return the first argument that holds a non blank value.
+
+    Args:
+        values: Candidate argument values, in order of precedence.
+
+    Returns:
+        The first stripped value that is not empty, or an empty string if none qualify.
+    """
+    for value in values:
+        if value and str(value).strip():
+            return str(value).strip()
+    return ""
+
+
+def parse_time_argument(value: str, arg_name: str) -> str:
+    """Parse a user supplied time argument into a UTC ISO 8601 string.
+
+    Args:
+        value: The raw argument value, absolute or relative.
+        arg_name: The argument name, used for the error message.
+
+    Returns:
+        The parsed timestamp in UTC, ISO 8601 format with an explicit offset.
+
+    Raises:
+        DemistoException: If the value cannot be parsed into a date.
+    """
+    parsed = dateparser.parse(value.strip(), settings=Config.DATEPARSER_SETTINGS)
+    if not parsed:
+        raise DemistoException(f"Could not parse the '{arg_name}' argument: {value}")
+    return parsed.isoformat()
+
+
+def okta_get_events_command(client: Client, args: dict, events_limit: int) -> CommandResults | str:
     """Manually retrieve events for debugging and development.
 
     Args:
         client: The Okta client.
-        args: Command arguments.
-        events_limit: Maximum number of events to retrieve.
+        args: Command arguments. Supports start_time, end_time, limit and
+            should_push_events. The legacy from_date argument is still honoured.
+        events_limit: Instance level limit, used when the limit argument is absent.
 
     Returns:
-        The retrieved events.
+        CommandResults with the retrieved events, or a summary string when the events
+        were pushed to XSIAM.
     """
     demisto.debug("[Command] okta-get-events triggered")
 
-    after = cast(datetime, dateparser.parse(args.get("from_date", "").strip()))
-    events, _ = get_events_command(client, total_events_to_fetch=events_limit, since=after.isoformat())
+    # Values are stripped before the fallback chain because a whitespace-only argument
+    # is truthy and would otherwise bypass the default and reach the parser as empty.
+    # from_date is retained for backward compatibility with existing callers.
+    start_time_input = _first_non_blank(args.get("start_time"), args.get("from_date")) or Config.DEFAULT_FROM_TIME
+    end_time_input = _first_non_blank(args.get("end_time"))
+    limit = arg_to_number(args.get("limit")) or events_limit
+    should_push_events = resolve_should_push_events(args)
+
+    start_time = parse_time_argument(start_time_input, "start_time")
+    end_time = parse_time_argument(end_time_input, "end_time") if end_time_input else None
+
+    demisto.debug(f"[Command Params] From: {start_time} | To: {end_time or 'Now'} | Limit: {limit} | Push: {should_push_events}")
+
+    events, _ = get_events_command(
+        client,
+        total_events_to_fetch=limit,
+        since=start_time,
+        until=end_time,
+    )
 
     demisto.debug(f"[Command Result] Retrieved {len(events)} events")
-    return events
+
+    if should_push_events and events:
+        client.send_events(events)
+        return f"Successfully retrieved and pushed {len(events)} events to XSIAM"
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f"{INTEGRATION_NAME} Logs", events, headerTransform=pascalToSpace),
+        outputs_prefix="Okta.Event",
+        outputs_key_field="uuid",
+        outputs=events,
+        raw_response=events,
+    )
 
 
 # endregion
@@ -447,18 +557,10 @@ def main():  # pragma: no cover
             return_results(test_module(client))
 
         elif command == "okta-get-events":
-            events = okta_get_events_command(client, demisto_args, events_limit)
-            return_results(
-                CommandResults(
-                    readable_output=tableToMarkdown(f"{INTEGRATION_NAME} Logs", events, headerTransform=pascalToSpace),
-                    raw_response=events,
-                )
-            )
-            if argToBoolean(demisto_args.get("should_push_events", "false")):
-                client.send_events(events[:events_limit])
+            return_results(okta_get_events_command(client, demisto_args, events_limit))
 
         elif command == "fetch-events":
-            after = cast(datetime, dateparser.parse(demisto_params["after"].strip()))
+            after = cast(datetime, dateparser.parse(demisto_params["after"].strip(), settings=Config.DATEPARSER_SETTINGS))
             last_run = demisto.getLastRun()
             demisto.debug(f"[Fetch] Last run: {last_run}")
 
@@ -472,7 +574,10 @@ def main():  # pragma: no cover
                 next_link=last_run.get("next_link"),
             )
 
-            client.send_events(events[:events_limit])
+            # get_events_command is already bounded by events_limit, so the batch that
+            # is published and the batch the cursor is derived from are always the same
+            # list. Slicing here would risk the two diverging and silently losing events.
+            client.send_events(events)
 
             if new_last_run := get_last_run(events, last_run_after, next_link):
                 demisto.setLastRun(new_last_run)

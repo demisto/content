@@ -27,7 +27,7 @@ configuration:
   type: 0
   defaultvalue: 10000
   required: true
-  additionalinfo: 'The total number of incidents to retrieve in each fetch cycle.'
+  additionalinfo: 'The total number of incidents to retrieve in each fetch cycle. The integration paginates automatically; the Okta API returns at most 1000 records per request.'
   section: Collect
 - display: First fetch from API time
   name: after
@@ -76,18 +76,44 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
       - 'True'
       - 'False'
       required: true
-    - defaultValue: '1 day'
-      description: "Specifies the start time of the search. This filter is optional. Default is 1 day. Syntax: start_time=YYYY-MM-DDTHH:mm or '1 hour/day/month'."
+    - defaultValue: '5 minutes ago'
+      description: 'The start time from which to retrieve events. Supports relative time (for example, "5 minutes ago", "3 days ago") or ISO 8601 (for example, "2026-01-01T10:00:00Z").'
+      name: start_time
+      required: false
+    - description: 'The end time until which to retrieve events. Supports relative time (for example, "1 hour ago") or ISO 8601 (for example, "2026-01-01T12:00:00Z"). Defaults to the present moment.'
+      name: end_time
+      required: false
+    - description: The maximum number of events to retrieve. Defaults to the instance level limit.
+      name: limit
+      required: false
+    - description: 'Deprecated. Use the start_time argument instead.'
+      deprecated: true
       name: from_date
       required: false
-    description: Manual command to fetch events and display them.
+    description: Manual command to fetch events and display them. Use for development and debugging only, as it may produce duplicate events or disrupt the fetch mechanism.
     name: okta-get-events
+    outputs:
+    - contextPath: Okta.Event.uuid
+      description: Unique identifier of the event.
+      type: String
+    - contextPath: Okta.Event.published
+      description: Timestamp when the event was published.
+      type: Date
+    - contextPath: Okta.Event.eventType
+      description: The type of the event.
+      type: String
+    - contextPath: Okta.Event.displayMessage
+      description: Human readable description of the event.
+      type: String
+    - contextPath: Okta.Event.severity
+      description: The severity of the event.
+      type: String
   dockerimage: demisto/fastapi:0.125.0.10158186
   isfetchevents: true
   subtype: python3
