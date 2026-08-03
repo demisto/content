@@ -13,7 +13,8 @@ detaileddescription: |-
   To learn more about how Brandefense can help protect your organization from cyber threats, visit our website at www.brandefense.io
 defaultclassifier: Brandefense - Classifier
 defaultmapperin: Brandefense - Incoming Mapper
-sectionOrder:
+provider: Brandefense
+sectionorder:
 - Connect
 - Collect
 configuration:
@@ -48,6 +49,9 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "30"
@@ -55,6 +59,9 @@ configuration:
   required: false
   additionalinfo: Start fetching incidents from the specified time.
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First time fetching
   name: first_fetch
   defaultvalue: 3 days
@@ -66,6 +73,9 @@ configuration:
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Max Results
   name: MaxResults
   defaultvalue: "30"
@@ -79,6 +89,9 @@ configuration:
   required: false
   additionalinfo: Maximum number of incidents to fetch per cycle.
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Source Reliability
   name: integrationReliability
   defaultvalue: B - Usually reliable
@@ -1111,6 +1124,8 @@ script:
       description: Created confirmed phishing incident data.
       type: Unknown
     description: Create a confirmed phishing address incident in Brandefense.
+    compliantpolicies:
+    - Domain Blockage
   - name: brandefense_takedown_request
     arguments:
     - name: url
@@ -1121,6 +1136,8 @@ script:
       description: Takedown request response data.
       type: Unknown
     description: Request takedown for a confirmed phishing address.
+    compliantpolicies:
+    - Domain Blockage
   - name: brandefense_get_indicators
     arguments:
     - name: indicator_type

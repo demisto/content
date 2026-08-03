@@ -114,5 +114,9 @@
                 }
             }
         }
-    }
+    },
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

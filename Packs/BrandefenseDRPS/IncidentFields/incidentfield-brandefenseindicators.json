@@ -15,5 +15,9 @@
     ],
     "unsearchable": true,
     "fromVersion": "6.10.0",
-    "required": false
+    "required": false,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

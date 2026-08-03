@@ -17,5 +17,9 @@
     "weeksR": 0,
     "hours": 0,
     "fromVersion": "6.10.0",
-    "layout": "Brandefense Intelligence"
+    "layout": "Brandefense Intelligence",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
