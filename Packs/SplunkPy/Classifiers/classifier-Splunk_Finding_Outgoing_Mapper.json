@@ -17,10 +17,6 @@
                 "disposition": {
                     "complex": null,
                     "simple": "splunkdisposition"
-                },
-                "notable_time": {
-                    "complex": null,
-                    "simple": "occurred"
                 }
             }
         },
@@ -30,6 +26,10 @@
                 "owner": {
                     "complex": null,
                     "simple": "owner"
+                },
+                "notable_time": {
+                    "complex": null,
+                    "simple": "occurred"
                 }
             }
         }
