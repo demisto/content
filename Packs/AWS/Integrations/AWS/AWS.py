@@ -6157,7 +6157,7 @@ class EKS:
 
         access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))
 
-        headers = ["clusterName", "principalArn", "username", "type", "createdAt"]
+        headers = ["clusterName", "principalArn", "username", "type", "tags", "createdAt"]
         readable_output = tableToMarkdown(
             name="The AWS EKS Access Entry was created successfully",
             t=access_entry,
