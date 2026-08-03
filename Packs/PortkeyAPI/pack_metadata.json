@@ -2,7 +2,7 @@
   "name": "Portkey API",
   "description": "Integrates the Portkey API with the Cortex Platform, maps audit logs, API keys, workspaces, configs and LLM request logs into the Cortex XDM data model, and detects key hygiene failures, workspace permission posture, prompt injection and Portkey's own guardrail verdicts, by GoCortexIO",
   "support": "community",
-  "currentVersion": "1.9.8",
+  "currentVersion": "1.9.11",
   "author": "GoCortexIO",
   "url": "",
   "email": "",

@@ -3,7 +3,7 @@ description: Detects a prompt that casts the model as a terminal or command runn
 severity: SEV_030_MEDIUM
 xql_query: |-
   // References
-  //   https://attack.mitre.org/techniques/T1656/
+  //   https://attack.mitre.org/techniques/T1684/001/
   //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_llm_requests_raw
   | alter prompt = lowercase(to_string(xdm.target.resource.value))
@@ -23,7 +23,7 @@ alert_description: A prompt sent by $xdm.source.user.username to $xdm.target.res
 alert_domain: DOMAIN_SECURITY
 mitre_defs:
   TA0005 - Defense Evasion:
-  - T1656 - Impersonation
+  - T1684.001 - Social Engineering - Impersonation
 suppression_fields:
 - xdm.source.user.identifier
 - xdm.target.resource.parent_id

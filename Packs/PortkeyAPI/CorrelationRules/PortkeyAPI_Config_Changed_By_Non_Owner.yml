@@ -3,7 +3,7 @@ description: Detects a Portkey gateway config whose last editor was not its owne
 severity: SEV_030_MEDIUM
 xql_query: |-
   // References
-  //   https://attack.mitre.org/techniques/T1562/
+  //   https://attack.mitre.org/techniques/T1685/
   //   https://portkey.ai/docs/product/administration
   datamodel dataset = portkey_configs_raw
   | filter xdm.target.resource.value contains "changed_by_non_owner"
@@ -17,7 +17,7 @@ alert_description: Portkey gateway config $xdm.target.resource.name was last cha
 alert_domain: DOMAIN_SECURITY
 mitre_defs:
   TA0005 - Defense Evasion:
-  - T1562 - Impair Defenses
+  - T1685 - Disable or Modify Tools
 suppression_fields:
 - xdm.event.id
 - xdm.target.user.identifier

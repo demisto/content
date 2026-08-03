@@ -111,6 +111,18 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 1.9.11
+
+- Format the one file the contribution gate objected to. A dict that fits inside the line limit was split across lines, which stayed invisible while the formatter could not start.
+
+### 1.9.10
+
+- Remove source-data description from public artifacts. Record counts and measurements taken from a customer estate are replaced by the technical fact they were evidence for, so the reasoning survives and the estate is not described.
+
+### 1.9.9
+
+- Update the ATT&CK mapping to the current technique numbering. The Impair Defenses family has been folded into Disable or Modify Tools, and the previously cited pages are deprecated. Each rule was remapped to the child that matches what it actually detects rather than by renaming the identifier, and every replacement page was fetched and its title checked. No detection logic changes.
+
 ### 1.9.8
 
 - Stop several rules claiming more than the data supports. A guardrail soft denial returns a success status, so the answered-by-the-model rule reported blocked prompts as answered; it now gates on the guardrail verdict. The indirect injection rule asserted content came from a tool, which the collector cannot establish because it merges the sender's turns with tool turns and discards the labels; renamed to forged tool-result delimiter. Tool results carried as a nested content block were dropped entirely, so real tool output was invisible to every content rule. The campaign rule counted requests rather than distinct technique families, measuring repetition instead of iteration. The coverage rule grouped on a constant and so named no workspace, and its drilldown filtered a flag that is never null. The new key rule matched an event name that is empty of verbs when the vendor sends a blank action.
@@ -170,7 +182,7 @@ ecosystem.
 
 - Added modelling for the LLM request dataset, mapping the model and provider called, the user, the upstream destination and status, the outcome and the token and cost figures to the Cortex XDM data model.
 - Added prompt-injection classification at ingest. Each request is matched against the publicly documented injection technique families, and the families that match are recorded on the event so a correlation can filter them without re-reading the prompt. Classifying once during modelling avoids every rule scanning a payload of twenty kilobytes or more.
-- The families covered are control-token injection, instruction override, persona jailbreak, system-prompt extraction, encoded exfiltration, authority pretexting, reply-prefix injection, tool impersonation and delimiter spoofing. Measured against live traffic, thirty-five of forty-four attack prompts matched with no false positives across the benign requests.
+- The families covered are control-token injection, instruction override, persona jailbreak, system-prompt extraction, encoded exfiltration, authority pretexting, reply-prefix injection, tool impersonation and delimiter spoofing. The token sets are deliberately tight, preferring precision over coverage, so a family that cannot be separated from legitimate use is excluded rather than approximated.
 - Fiction framing, sentence completion and non-English requests are deliberately left unclassified, because pattern matching cannot separate them from legitimate use. Homoglyph substitution evades matching by design. The classification narrows the field for an analyst, it does not replace a guardrail.
 
 ### 1.7.0

@@ -313,9 +313,7 @@ def test_tool_result_block_body_is_extracted():
     whole of the second form, so tool output was invisible to every rule that
     inspects prompt content.
     """
-    string_body = {
-        "messages": [{"role": "user", "content": [{"type": "tool_result", "content": "fetched page text"}]}]
-    }
+    string_body = {"messages": [{"role": "user", "content": [{"type": "tool_result", "content": "fetched page text"}]}]}
     assert "fetched page text" in collector.extract_user_prompt(string_body)
 
     list_body = {

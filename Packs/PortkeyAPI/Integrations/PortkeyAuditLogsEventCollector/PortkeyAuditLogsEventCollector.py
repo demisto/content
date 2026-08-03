@@ -79,8 +79,8 @@ def _to_iso8601(value: Any) -> str:
 def add_fields_to_event(event: dict) -> dict:
     """Attach XSIAM ingestion metadata to a raw audit log event.
 
-    Each record carries its own ``organisation_id``, so the organisation is
-    taken from the event rather than from configuration.
+    The audit API sets ``organisation_id`` on every event it returns, so the
+    organisation is taken from the event rather than from configuration.
     """
     event["_time"] = event.get("timestamp")
     event["source_log_type"] = "audit"

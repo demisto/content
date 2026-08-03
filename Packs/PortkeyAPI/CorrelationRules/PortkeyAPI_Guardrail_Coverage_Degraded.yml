@@ -4,7 +4,7 @@ severity: SEV_030_MEDIUM
 xql_query: |-
   // PROVENANCE
   //   Pattern:   a control that has quietly stopped running, rather than one that fired.
-  //   ATT&CK:    T1562.001
+  //   ATT&CK:    T1685
   //   Vendor:    https://portkey.ai/docs/product/guardrails
   //   Basis:     corroborated. Coverage is normally reported as a health statistic that
   //              nobody alerts from, which is why the failure stays invisible.
@@ -32,7 +32,7 @@ alert_description: Of $requests LLM requests through workspace $xdm.target.resou
 alert_domain: DOMAIN_POSTURE
 mitre_defs:
   TA0005 - Defense Evasion:
-  - T1562 - Impair Defenses
+  - T1685 - Disable or Modify Tools
 suppression_fields:
 - xdm.target.resource.parent_id
 global_rule_id: 46797107-ce69-4cb5-84e1-08679fff1f82

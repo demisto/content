@@ -3,7 +3,7 @@ description: Detects a Portkey workspace where ordinary members may change guard
 severity: SEV_040_HIGH
 xql_query: |-
   // References
-  //   https://attack.mitre.org/techniques/T1562/
+  //   https://attack.mitre.org/techniques/T1685/
   //   https://portkey.ai/docs/product/guardrails
   //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
   datamodel dataset = portkey_workspaces_raw
@@ -18,7 +18,7 @@ alert_description: Portkey workspace $xdm.target.resource.name allows ordinary m
 alert_domain: DOMAIN_POSTURE
 mitre_defs:
   TA0005 - Defense Evasion:
-  - T1562 - Impair Defenses
+  - T1685 - Disable or Modify Tools
 suppression_fields:
 - xdm.event.id
 global_rule_id: 956ae0bf-9a58-4354-bd33-140c6ac8918d

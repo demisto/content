@@ -105,7 +105,7 @@ class Client(BaseClient):
         ``workspace_id`` takes the workspace slug. ``description`` is rejected as
         missing when absent, although the specification does not mark it required.
         The response reports ``total`` before the job runs, which is what lets the
-        window be measured against the record cap.
+        window be sized against the record cap.
         """
         body: dict[str, Any] = {
             "workspace_id": workspace_slug,
