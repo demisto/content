@@ -150,8 +150,13 @@ def build_event(item: dict, organization_id: str, now: str) -> dict:
     an integration holds and a JSON string cannot be filtered without parsing
     it first.
     """
-    installation = item.get("installation") if isinstance(item.get("installation"), dict) else {}
-    integration = item.get("integration") if isinstance(item.get("integration"), dict) else {}
+    # Bind once, then narrow. Calling .get() inside the isinstance test and again for the
+    # value checks one object and assigns another, so nothing guarantees the two agree and
+    # the declared type stays optional even though the runtime value cannot be None.
+    raw_installation = item.get("installation")
+    raw_integration = item.get("integration")
+    installation: dict[str, Any] = raw_installation if isinstance(raw_installation, dict) else {}
+    integration: dict[str, Any] = raw_integration if isinstance(raw_integration, dict) else {}
     event: dict[str, Any] = {}
 
     # The configuration blob is integration-supplied and can hold the

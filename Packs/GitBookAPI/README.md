@@ -105,6 +105,10 @@ under the AGPL-3.0-or-later licence.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 1.1.8
+
+- Bind the installation and integration objects once before narrowing them. The type test called get() and the assignment called it again, so the code checked one object and assigned another; behaviour is unchanged and the value is now looked up once.
+
 ### 1.1.7
 
 - Add the contributors file that every pack in this repository carries at its root, and remove wording that read as a description of source data rather than of the product.
