@@ -133,9 +133,55 @@ def test_get_dbot_score(overall_riskscore, expected_dbot_score):
     assert actual_dbot_score == expected_dbot_score
 
 
+class TestIPFeedsBuildIterator:
+    def test_iphotlist_build_iterator(self, mocker, dt_feeds_client):
+        """
+        Given:
+            - Output of the IP hotlist feed API
+        When:
+            - When calling fetch_indicators or get_indicators
+        Then:
+            - Returns an iterator of IP indicators parsed from the API's response
+        """
+        mocker.patch.object(
+            dt_feeds_client,
+            "_get_dt_feeds",
+            return_value=feed_mock_response.IPHOTLIST_RESPONSE,
+        )
+        indicators = list(dt_feeds_client.build_iterator(feed_type="iphotlist"))
+        ips = [indicator.get("value") for indicator in indicators]
+
+        assert "203.0.113.5" in ips
+        assert len(indicators) == 3
+        assert indicators[0].get("type") == FeedIndicatorType.IP
+        assert indicators[0].get("ip_threat_data", {}).get("asn") == 12345
+
+    def test_iprisk_build_iterator(self, mocker, dt_feeds_client):
+        """
+        Given:
+            - Output of the IP risk feed API
+        When:
+            - When calling fetch_indicators or get_indicators
+        Then:
+            - Returns an iterator of IP indicators parsed from the API's response
+        """
+        mocker.patch.object(
+            dt_feeds_client,
+            "_get_dt_feeds",
+            return_value=feed_mock_response.IPRISK_RESPONSE,
+        )
+        indicators = list(dt_feeds_client.build_iterator(feed_type="iprisk"))
+        ips = [indicator.get("value") for indicator in indicators]
+
+        assert "203.0.113.10" in ips
+        assert len(indicators) == 2
+        assert indicators[0].get("type") == FeedIndicatorType.IP
+        assert indicators[0].get("ip_threat_data", {}).get("asn") == 22222
+
+
 @pytest.mark.parametrize(
     "feed_type",
-    ["nod", "nad", "noh", "domaindiscovery", "domainrdap", "domainrisk", "domainhotlist"],
+    ["nod", "nad", "noh", "domaindiscovery", "domainrdap", "domainrisk", "domainhotlist", "iphotlist", "iprisk"],
 )
 def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
     """
@@ -156,6 +202,8 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         "domainrdap": feed_mock_response.DOMAINRDAP_RESPONSE,
         "domainrisk": feed_mock_response.DOMAINRISK_RESPONSE,
         "domainhotlist": feed_mock_response.DOMAINHOTLIST_RESPONSE,
+        "iphotlist": feed_mock_response.IPHOTLIST_RESPONSE,
+        "iprisk": feed_mock_response.IPRISK_RESPONSE,
     }
 
     mocker.patch.object(
@@ -173,6 +221,8 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
         "domainrdap": feed_mock_response.DOMAINRDAP_PARSED_INDICATOR_RESPONSE,
         "domainrisk": feed_mock_response.DOMAINRISK_PARSED_INDICATOR_RESPONSE,
         "domainhotlist": feed_mock_response.DOMAINHOTLIST_PARSED_INDICATOR_RESPONSE,
+        "iphotlist": feed_mock_response.IPHOTLIST_PARSED_INDICATOR_RESPONSE,
+        "iprisk": feed_mock_response.IPRISK_PARSED_INDICATOR_RESPONSE,
     }
 
     human_readable = tableToMarkdown(

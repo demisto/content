@@ -849,6 +849,163 @@ DOMAINRISK_PARSED_INDICATOR_RESPONSE = [
     }
 ]
 
+IPHOTLIST_RESPONSE = [
+    '{"timestamp":"2025-09-06T22:00:00Z","ip":"203.0.113.5","asn":12345,"organization":"Evil Corp","city":"Moscow","country":"RU","latitude":55.7558,"longitude":37.6173,"pdns_resolutions":150,"bad_pdns_resolutions":120,"total_domains":80,"all_threats_combined_count":95,"third_party_threats":10}',
+    '{"timestamp":"2025-09-06T22:01:00Z","ip":"198.51.100.22","asn":67890,"organization":"BadNet","city":"Beijing","country":"CN","latitude":39.9042,"longitude":116.4074,"pdns_resolutions":200,"bad_pdns_resolutions":180,"total_domains":60,"all_threats_combined_count":75,"third_party_threats":5}',
+    '{"timestamp":"2025-09-06T22:02:00Z","ip":"192.0.2.100","asn":11111,"organization":"SpamCo","city":"Lagos","country":"NG","latitude":6.5244,"longitude":3.3792,"pdns_resolutions":50,"bad_pdns_resolutions":45,"total_domains":30,"all_threats_combined_count":40,"third_party_threats":2}',
+]
+
+IPHOTLIST_PARSED_INDICATOR_RESPONSE = [
+    {
+        "value": "203.0.113.5",
+        "type": "IP",
+        "fields": {
+            "tags": "DomainToolsFeeds,iphotlist",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-09-06T22:00:00Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "203.0.113.5",
+            "type": "IP",
+            "timestamp": "2025-09-06T22:00:00Z",
+            "ip_threat_data": {
+                "asn": 12345,
+                "organization": "Evil Corp",
+                "city": "Moscow",
+                "country": "RU",
+                "latitude": 55.7558,
+                "longitude": 37.6173,
+                "pdns_resolutions": 150,
+                "bad_pdns_resolutions": 120,
+                "total_domains": 80,
+                "all_threats_combined_count": 95,
+                "third_party_threats": 10,
+            },
+        },
+    },
+    {
+        "value": "198.51.100.22",
+        "type": "IP",
+        "fields": {
+            "tags": "DomainToolsFeeds,iphotlist",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-09-06T22:01:00Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "198.51.100.22",
+            "type": "IP",
+            "timestamp": "2025-09-06T22:01:00Z",
+            "ip_threat_data": {
+                "asn": 67890,
+                "organization": "BadNet",
+                "city": "Beijing",
+                "country": "CN",
+                "latitude": 39.9042,
+                "longitude": 116.4074,
+                "pdns_resolutions": 200,
+                "bad_pdns_resolutions": 180,
+                "total_domains": 60,
+                "all_threats_combined_count": 75,
+                "third_party_threats": 5,
+            },
+        },
+    },
+    {
+        "value": "192.0.2.100",
+        "type": "IP",
+        "fields": {
+            "tags": "DomainToolsFeeds,iphotlist",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-09-06T22:02:00Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "192.0.2.100",
+            "type": "IP",
+            "timestamp": "2025-09-06T22:02:00Z",
+            "ip_threat_data": {
+                "asn": 11111,
+                "organization": "SpamCo",
+                "city": "Lagos",
+                "country": "NG",
+                "latitude": 6.5244,
+                "longitude": 3.3792,
+                "pdns_resolutions": 50,
+                "bad_pdns_resolutions": 45,
+                "total_domains": 30,
+                "all_threats_combined_count": 40,
+                "third_party_threats": 2,
+            },
+        },
+    },
+]
+
+IPRISK_RESPONSE = [
+    '{"timestamp":"2025-09-06T22:10:00Z","ip":"203.0.113.10","asn":22222,"organization":"RiskNet","city":"Tehran","country":"IR","latitude":35.6892,"longitude":51.3890,"pdns_resolutions":300,"bad_pdns_resolutions":250,"total_domains":90,"all_threats_combined_count":110,"third_party_threats":15}',
+    '{"timestamp":"2025-09-06T22:11:00Z","ip":"198.51.100.50","asn":33333,"organization":"MalHost","city":"Pyongyang","country":"KP","latitude":39.0194,"longitude":125.7381,"pdns_resolutions":180,"bad_pdns_resolutions":160,"total_domains":55,"all_threats_combined_count":85,"third_party_threats":8}',
+]
+
+IPRISK_PARSED_INDICATOR_RESPONSE = [
+    {
+        "value": "203.0.113.10",
+        "type": "IP",
+        "fields": {
+            "tags": "DomainToolsFeeds,iprisk",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-09-06T22:10:00Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "203.0.113.10",
+            "type": "IP",
+            "timestamp": "2025-09-06T22:10:00Z",
+            "ip_threat_data": {
+                "asn": 22222,
+                "organization": "RiskNet",
+                "city": "Tehran",
+                "country": "IR",
+                "latitude": 35.6892,
+                "longitude": 51.3890,
+                "pdns_resolutions": 300,
+                "bad_pdns_resolutions": 250,
+                "total_domains": 90,
+                "all_threats_combined_count": 110,
+                "third_party_threats": 15,
+            },
+        },
+    },
+    {
+        "value": "198.51.100.50",
+        "type": "IP",
+        "fields": {
+            "tags": "DomainToolsFeeds,iprisk",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-09-06T22:11:00Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "198.51.100.50",
+            "type": "IP",
+            "timestamp": "2025-09-06T22:11:00Z",
+            "ip_threat_data": {
+                "asn": 33333,
+                "organization": "MalHost",
+                "city": "Pyongyang",
+                "country": "KP",
+                "latitude": 39.0194,
+                "longitude": 125.7381,
+                "pdns_resolutions": 180,
+                "bad_pdns_resolutions": 160,
+                "total_domains": 55,
+                "all_threats_combined_count": 85,
+                "third_party_threats": 8,
+            },
+        },
+    },
+]
+
 DOMAINHOTLIST_PARSED_INDICATOR_RESPONSE = [
     {
         "value": "scmipgf.icu",

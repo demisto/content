@@ -28,6 +28,8 @@ class DomainToolsClient:
     DOMAINDISCOVERY = "domaindiscovery"
     DOMAINRISK = "domainrisk"
     DOMAINHOTLIST = "domainhotlist"
+    IPHOTLIST = "iphotlist"
+    IPRISK = "iprisk"
 
     FEED_METHOD_MAP = {
         "nod": "nod",
@@ -169,8 +171,13 @@ class DomainToolsClient:
                 json_feed = json.loads(feed)
 
                 timestamp = json_feed.get("timestamp", "")
-                indicator = json_feed.get("domain")
-                indicator_type = FeedIndicatorType.Domain
+
+                if self.feed_type in (self.IPHOTLIST, self.IPRISK):
+                    indicator = json_feed.get("ip")
+                    indicator_type = FeedIndicatorType.IP
+                else:
+                    indicator = json_feed.get("domain")
+                    indicator_type = FeedIndicatorType.Domain
 
                 # for `domainrdap` feed, we have more data to display including the parsed data.
                 parsed_record = json_feed.get("parsed_record", {})
@@ -202,6 +209,22 @@ class DomainToolsClient:
 
                     # update the parsed dt feed data
                     dt_feed_data["risk_score_details"] = risk_score_details
+
+                if self.feed_type in (self.IPHOTLIST, self.IPRISK):
+                    ip_threat_data = {
+                        "asn": json_feed.get("asn"),
+                        "organization": json_feed.get("organization"),
+                        "city": json_feed.get("city"),
+                        "country": json_feed.get("country"),
+                        "latitude": json_feed.get("latitude"),
+                        "longitude": json_feed.get("longitude"),
+                        "pdns_resolutions": json_feed.get("pdns_resolutions"),
+                        "bad_pdns_resolutions": json_feed.get("bad_pdns_resolutions"),
+                        "total_domains": json_feed.get("total_domains"),
+                        "all_threats_combined_count": json_feed.get("all_threats_combined_count"),
+                        "third_party_threats": json_feed.get("third_party_threats"),
+                    }
+                    dt_feed_data["ip_threat_data"] = ip_threat_data
 
                 if indicator and indicator_type:
                     yield dt_feed_data
@@ -278,6 +301,7 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
             parsed_record_ = item.get("parsed_record")
             overall_risk_score_ = item.get("overall_risk_score")
             risk_score_details_ = item.get("risk_score_details")
+            ip_threat_data_ = item.get("ip_threat_data")
 
             indicator_tags = ",".join(tags_).rstrip(",")
 
@@ -292,6 +316,9 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
 
             if risk_score_details_:
                 raw_data["risk_score_details"] = risk_score_details_
+
+            if ip_threat_data_:
+                raw_data["ip_threat_data"] = ip_threat_data_
 
             # Create indicator object for each value.
             indicator_obj = {
@@ -384,6 +411,8 @@ def fetch_indicators_command(client: DomainToolsClient, params: dict[str, Any] =
         client.DOMAINDISCOVERY,
         client.DOMAINRISK,
         client.DOMAINHOTLIST,
+        client.IPHOTLIST,
+        client.IPRISK,
     ]
 
     dt_feed_kwargs = {"top": top, "after": after, "session_id": session_id}

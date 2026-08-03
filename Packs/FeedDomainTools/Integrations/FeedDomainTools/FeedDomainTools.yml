@@ -49,6 +49,8 @@ configuration:
   - domaindiscovery
   - domainrisk
   - domainhotlist
+  - iphotlist
+  - iprisk
   additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
   section: Collect
 - display: Fetch indicators
@@ -161,6 +163,8 @@ script:
       - "domaindiscovery"
       - "domainrisk"
       - "domainhotlist"
+      - "iphotlist"
+      - "iprisk"
       defaultValue: "nod"
       description: The DomainTools integration feed type to fetch.
       isArray: false
