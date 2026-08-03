@@ -1817,6 +1817,7 @@ Soft-deletes a file (ContentDocument), moving it to the Recycle Bin and cascadin
 #### Human Readable Output
 
 >### Salesforce Remediation - Delete File
+>
 >|Action|Id|ObjectType|Status|
 >|---|---|---|---|
 >| Delete File | 069dn000007JlATAA0 | ContentDocument | Deleted |
@@ -1869,6 +1870,7 @@ Archives a Knowledge article (non-destructive). Sets PublishStatus to Archived v
 #### Human Readable Output
 
 >### Salesforce Remediation - Archive Knowledge Article
+>
 >|Action|Id|ObjectType|Status|
 >|---|---|---|---|
 >| Archive Knowledge Article | ka1dn0000001ZwbAAE | KnowledgeArticleVersion | Archived |
@@ -1919,6 +1921,7 @@ Lists all public links (ContentDistribution records) for a given ContentDocument
 #### Human Readable Output
 
 >### Salesforce File Public Links (ContentDistribution) for 069dn000007PpOIAA0
+>
 >|ContentDocumentId|Id|Name|PublicUrl|
 >|---|---|---|---|
 >| 069dn000007PpOIAA0 | 05Ddn000000VfWjEAK | cortex-test-file-01 7/28/2026 | https://paloaltonetworks-sahil.sandbox.my.salesforce.com/sfc/p/7X000001T5lm/a/dn000000VfWj/TExjFQ7nttSYbbnXER8CaxGLqYDmVhzw2LEe1jg9_Vo |
@@ -1971,6 +1974,7 @@ Removes a file public link by deleting a single ContentDistribution record. The 
 #### Human Readable Output
 
 >### Salesforce Remediation - Remove File Public Link
+>
 >|Action|Id|ObjectType|Status|
 >|---|---|---|---|
 >| Remove File Public Link | 05Ddn000000VfWjEAK | ContentDistribution | Deleted |
@@ -2028,6 +2032,7 @@ Moves a published Knowledge article to Draft using the standard createDraftFromO
 #### Human Readable Output
 
 >### Salesforce Remediation - Draft Knowledge Article
+>
 >|Action|DraftVersionId|Id|ObjectType|Status|Unpublished|
 >|---|---|---|---|---|---|
 >| Draft Knowledge Article | ka1dn0000001ZzpAAE | ka1dn0000001ZyDAAU | KnowledgeArticleVersion | Unpublished (Draft created) | true |
