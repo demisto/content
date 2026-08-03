@@ -3292,10 +3292,13 @@ def get_modified_remote_data_command(
             demisto.info(f"mirror-in: the number of mirrored investigations reached the limit of: {MIRROR_LIMIT}")
 
     # Persist the cache of events (findings + investigations) processed in this run
-    # for the next iteration. Done once after both blocks to avoid an extra
-    # set_integration_context round-trip.
-    integration_context[PROCESSED_MIRRORED_EVENTS] = list(current_run_processed_events)
-    set_integration_context(integration_context)
+    # for the next iteration. Re-read the integration context immediately before
+    # writing so we don't clobber updates other containers made to OTHER keys
+    # between the initial get_integration_context() (early in this function) and now.
+    # The PROCESSED_MIRRORED_EVENTS key itself is intentionally overwritten with this run's set.
+    latest_context = get_integration_context()
+    latest_context[PROCESSED_MIRRORED_EVENTS] = list(current_run_processed_events)
+    set_integration_context(latest_context)
 
     res = SplunkGetModifiedRemoteDataResponse(modified_findings_data=modified_data, entries=entries)
     return_results(res)
