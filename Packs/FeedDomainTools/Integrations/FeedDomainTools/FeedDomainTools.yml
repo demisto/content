@@ -49,6 +49,8 @@ configuration:
   - domaindiscovery
   - domainrisk
   - domainhotlist
+  - iphotlist
+  - iprisk
   additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
   section: Collect
 - display: Fetch indicators
@@ -161,6 +163,8 @@ script:
       - "domaindiscovery"
       - "domainrisk"
       - "domainhotlist"
+      - "iphotlist"
+      - "iprisk"
       defaultValue: "nod"
       description: The DomainTools integration feed type to fetch.
       isArray: false
@@ -200,7 +204,7 @@ script:
       default: false
       required: false
       secret: false
-  dockerimage: demisto/vendors-sdk:1.0.0.10470199
+  dockerimage: demisto/vendors-sdk:1.0.0.11252302
   feed: true
   isfetch: false
   longRunning: false
