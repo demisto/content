@@ -6168,3 +6168,226 @@ def test_get_credentials_marketplace_no_project_id_anywhere_raises(mocker):
 
     with pytest.raises(DemistoException, match="Missing required parameter 'project_id'"):
         get_credentials(args, params)
+
+
+# ---------------------------------------------------------------------------
+# YML <-> PY wiring assertion tests
+#
+# These tests read the integration's .yml and .py from disk and assert that
+# every command, its arguments, and its output prefixes declared in the YML are
+# actually wired up in the Python code. This proves the command, its args, and
+# its outputs are implemented as declared.
+#
+# The comparison is PER-COMMAND: each YML command is resolved to its handler
+# function via the command_map in main(), and only that handler function's body
+# is inspected for `args.get("...")` reads and `outputs_prefix="..."` literals.
+#
+# Matching is STRICT and verbatim: an argument declared in the YML must appear
+# in the handler exactly as `args.get("<name>")` (same casing, snake_case vs
+# camelCase, etc.). Any naming difference fails the test.
+#
+# Quick-action commands (names ending in "-quick-action") and the built-in
+# "test-module" command are intentionally excluded.
+# ---------------------------------------------------------------------------
+
+import os
+import re
+
+QUICK_ACTION_SUFFIX = "-quick-action"
+_INTEGRATION_DIR = os.path.dirname(os.path.abspath(__file__))
+_YML_PATH = os.path.join(_INTEGRATION_DIR, "GCP.yml")
+_PY_PATH = os.path.join(_INTEGRATION_DIR, "GCP.py")
+
+# Platform-standard arguments that are resolved centrally (via get_credentials /
+# the integration configuration) rather than read with args.get(...) inside each
+# command handler. They are exempt from the per-handler verbatim arg check.
+PLATFORM_STANDARD_ARGS = {"project_id", "account_id"}
+
+
+def _is_included_command(command_name: str) -> bool:
+    """Return True if the command should be checked (not test-module / quick-action)."""
+    return command_name != "test-module" and not command_name.endswith(QUICK_ACTION_SUFFIX)
+
+
+def _load_yml_spec() -> dict:
+    """Parse the integration YML and return its command specifications.
+
+    Returns:
+        dict mapping command_name -> {"args": [arg_names], "outputs": [contextPaths]}
+        for every non-quick-action, non-test-module command.
+    """
+    import yaml
+
+    with open(_YML_PATH, encoding="utf-8") as f:
+        yml = yaml.safe_load(f)
+
+    spec: dict = {}
+    for command in yml.get("script", {}).get("commands", []):
+        name = command.get("name", "")
+        if not _is_included_command(name):
+            continue
+        arg_names = [arg["name"] for arg in (command.get("arguments") or []) if arg.get("name")]
+        context_paths = [out["contextPath"] for out in (command.get("outputs") or []) if out.get("contextPath")]
+        spec[name] = {"args": arg_names, "outputs": context_paths}
+    return spec
+
+
+def _load_py_source() -> str:
+    """Return the raw source text of the integration .py file."""
+    with open(_PY_PATH, encoding="utf-8") as f:
+        return f.read()
+
+
+def _parse_command_map(py_source: str) -> dict:
+    """Parse the ``command_map`` dict in main(), mapping command name -> handler name.
+
+    Skips test-module, quick-action entries and lambda handlers (which are not
+    plain named functions we can introspect).
+
+    Returns:
+        dict mapping command_name -> handler_function_name.
+    """
+    mapping: dict = {}
+    for command_name, handler in re.findall(r'"([a-z0-9][a-z0-9\-]*)"\s*:\s*([A-Za-z_][A-Za-z0-9_]*)\s*,', py_source):
+        if not command_name.startswith("gcp-") or not _is_included_command(command_name):
+            continue
+        if handler == "lambda":
+            continue
+        mapping[command_name] = handler
+    return mapping
+
+
+def _parse_function_bodies(py_source: str) -> dict:
+    """Split the .py source into top-level function bodies.
+
+    Returns:
+        dict mapping function_name -> the full source text of that function
+        (from its ``def`` line up to, but not including, the next top-level def).
+    """
+    lines = py_source.splitlines()
+    def_positions: list = []
+    for idx, line in enumerate(lines):
+        match = re.match(r"^def ([A-Za-z_][A-Za-z0-9_]*)\s*\(", line)
+        if match:
+            def_positions.append((idx, match.group(1)))
+
+    bodies: dict = {}
+    for i, (start_idx, name) in enumerate(def_positions):
+        end_idx = def_positions[i + 1][0] if i + 1 < len(def_positions) else len(lines)
+        bodies[name] = "\n".join(lines[start_idx:end_idx])
+    return bodies
+
+
+def _extract_args_get(source: str) -> set:
+    """Extract all argument names read via ``args.get("<name>")`` in the given source."""
+    return set(re.findall(r'args\.get\(\s*["\']([^"\']+)["\']', source))
+
+
+def _extract_output_prefixes(source: str) -> set:
+    """Extract all output context prefixes declared in the given source.
+
+    Recognizes the supported CommandResults wiring patterns:
+      1. ``outputs_prefix="GCP.Some.Path"`` keyword arguments, variable
+         assignments (``outputs_prefix = "GCP.Some.Path"``), and function
+         parameter defaults (``outputs_prefix: str = "GCP.Some.Path"``).
+      2. Context paths used directly as ``outputs`` dict keys, e.g.
+         ``"GCP.Some.Path(val.id && val.id == obj.id)": data``. The DT
+         transformer suffix in parentheses is stripped.
+    """
+    prefixes = set()
+    # Pattern 1: outputs_prefix = "..." / outputs_prefix: str = "..." / outputs_prefix="..."
+    # NOTE: the captured value is used verbatim (no .strip()) so that a leading or
+    # trailing whitespace typo in the source (e.g. " GCP.Compute.Operations") is
+    # surfaced as a real wiring defect instead of being silently masked.
+    for value in re.findall(r'outputs_prefix(?:\s*:\s*[A-Za-z_][A-Za-z0-9_]*)?\s*=\s*["\']([^"\']+)["\']', source):
+        prefixes.add(value)
+    # Pattern 2: context paths used as outputs dict keys.
+    for key in re.findall(r'["\'](GCP\.[^"\']+)["\']\s*:', source):
+        # Strip only the trailing DT transformer such as "(val.id && val.id == obj.id)"
+        # or "(true)" so only the bare context path remains.
+        prefixes.add(re.sub(r"\(.*\)$", "", key))
+    return prefixes
+
+
+def test_yml_commands_are_wired_in_py():
+    """
+    Given: The integration YML declaring command names.
+    When: Comparing against the command_map wired in the .py main().
+    Then: Every non-quick-action YML command must be wired in the .py.
+    """
+    yml_spec = _load_yml_spec()
+    command_map = _parse_command_map(_load_py_source())
+
+    missing = sorted(name for name in yml_spec if name not in command_map)
+    assert not missing, (
+        "The following commands are declared in GCP.yml but are NOT wired in the " f"command_map in GCP.py: {missing}"
+    )
+
+
+def test_yml_args_match_py_handler_verbatim():
+    """
+    Given: The arguments declared per command in the integration YML.
+    When: Comparing (verbatim) against the args.get("...") reads in that command's
+          resolved handler function in the .py.
+    Then: Each YML argument name must appear exactly as-is in the handler.
+          Any naming difference (snake_case vs camelCase, casing) fails.
+    """
+    yml_spec = _load_yml_spec()
+    py_source = _load_py_source()
+    command_map = _parse_command_map(py_source)
+    function_bodies = _parse_function_bodies(py_source)
+
+    mismatches: list = []
+    for command_name in sorted(yml_spec):
+        handler = command_map.get(command_name)
+        if handler is None:
+            # Missing wiring is reported by test_yml_commands_are_wired_in_py.
+            continue
+        handler_body = function_bodies.get(handler, "")
+        handler_args = _extract_args_get(handler_body)
+        for arg_name in yml_spec[command_name]["args"]:
+            if arg_name in PLATFORM_STANDARD_ARGS:
+                # Resolved centrally via credentials, not per-handler args.get(...).
+                continue
+            if arg_name not in handler_args:
+                mismatches.append(f'{command_name} (handler {handler}) -> args.get("{arg_name}")')
+
+    assert not mismatches, (
+        "The following YML arguments are NOT read verbatim via args.get(...) in their "
+        "command's handler in GCP.py (a naming difference such as snake_case vs "
+        "camelCase means the YML and PY are out of sync):\n" + "\n".join(mismatches)
+    )
+
+
+def test_yml_output_prefixes_match_py_handler():
+    """
+    Given: The output contextPaths declared per command in the integration YML.
+    When: Comparing against the outputs_prefix="..." literals in that command's
+          resolved handler function in the .py.
+    Then: Every YML output contextPath must be covered by an outputs_prefix declared
+          in the handler (the outputs_prefix must be a leading segment of the contextPath).
+    """
+    yml_spec = _load_yml_spec()
+    py_source = _load_py_source()
+    command_map = _parse_command_map(py_source)
+    function_bodies = _parse_function_bodies(py_source)
+
+    def _is_covered(context_path: str, prefixes: set) -> bool:
+        return any(context_path == prefix or context_path.startswith(prefix + ".") for prefix in prefixes)
+
+    uncovered: list = []
+    for command_name in sorted(yml_spec):
+        handler = command_map.get(command_name)
+        if handler is None:
+            continue
+        handler_body = function_bodies.get(handler, "")
+        handler_prefixes = _extract_output_prefixes(handler_body)
+        for context_path in yml_spec[command_name]["outputs"]:
+            if not _is_covered(context_path, handler_prefixes):
+                uncovered.append(f"{command_name} (handler {handler}) -> {context_path}")
+
+    assert not uncovered, (
+        "The following YML output contextPaths are NOT covered by any output prefix "
+        "(outputs_prefix=... or an outputs dict key) in their command's handler in "
+        "GCP.py:\n" + "\n".join(uncovered)
+    )
