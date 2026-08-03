@@ -20756,7 +20756,7 @@ script:
     - contextPath: AWS.NetworkFirewall.Tags.Tags.Value
       description: The part of the key:value pair that defines a tag.
       type: String
-    - contextPath: AWS.NetworkFirewall.TagsNextToken
+    - contextPath: AWS.NetworkFirewall.Tags.NextToken
       description: The token to use when requesting the next set of items.
       type: String
 
@@ -20863,7 +20863,7 @@ script:
       description: The Amazon Resource Name (ARN) of the resource.
       required: true
     - name: tag_keys
-      description: The comma-separated list of tag keys to remove from the resource.
+      description: A comma-separated list of tag keys to remove from the resource.
       required: true
       isArray: true
 
