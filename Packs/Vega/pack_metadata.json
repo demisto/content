@@ -2,7 +2,7 @@
     "name": "Vega",
     "description": "The Vega integration allows you to ingest alerts and incidents from the Vega platform into Cortex XSOAR.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "created": "2026-05-21T14:22:24Z",
     "author": "Vega",
     "url": "https://vega.io/",
