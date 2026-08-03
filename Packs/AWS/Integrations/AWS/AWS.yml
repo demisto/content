@@ -20810,7 +20810,7 @@ script:
       description: The Amazon Resource Name (ARN) of the resource.
       required: true
     - name: tags
-      description: One or more tags to add to the resource. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
+      description: The tags to add to the resource. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
       required: true
 
   - name: aws-network-firewall-resource-untag
@@ -20929,7 +20929,7 @@ script:
       type: Boolean
 
   - name: aws-network-firewall-logging-configuration-update
-    description: "Sets the logging configuration for the specified firewall. To change the logging configuration, retrieve the LoggingConfiguration by calling aws-network-firewall-logging-configuration-describe, then change it and provide the modified object to this update call. Required permissions: network-firewall:UpdateLoggingConfiguration, s3:PutBucketPolicy, s3:GetBucketPolicy, logs:CreateLogDelivery, logs:GetLogDelivery, logs:UpdateLogDelivery, logs:DeleteLogDelivery, logs:ListLogDeliveries, firehose:TagDeliveryStream, iam:CreateServiceLinkedRole."
+    description: "Sets the logging configuration for the specified firewall. To set a logging destination, provide the log_type, log_destination_type, log_destination_key, and log_destination_value arguments. To review the current configuration before updating, call aws-network-firewall-logging-configuration-describe. Required permissions: network-firewall:UpdateLoggingConfiguration, s3:PutBucketPolicy, s3:GetBucketPolicy, logs:CreateLogDelivery, logs:GetLogDelivery, logs:UpdateLogDelivery, logs:DeleteLogDelivery, logs:ListLogDeliveries, firehose:TagDeliveryStream, iam:CreateServiceLinkedRole."
     arguments:
     - name: account_id
       description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
@@ -20997,7 +20997,7 @@ script:
     - name: log_destination_value
       description: 'The value for the logging destination, matching the log_destination_key. For example: the S3 bucket name, the CloudWatch Logs log group name, or the Kinesis Data Firehose delivery stream name.'
     - name: enable_monitoring_dashboard
-      description: A boolean that lets you enable or disable the detailed firewall monitoring dashboard on the firewall.
+      description: Whether to enable the detailed firewall monitoring dashboard on the firewall.
       auto: PREDEFINED
       predefined:
         - 'true'
