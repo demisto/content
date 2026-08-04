@@ -647,6 +647,68 @@ def test_client_get_folder_by_path(mocker, mock_account):
     assert account.root.tois.__floordiv__.call_args_list == expected_calls  # type: ignore
 
 
+def test_get_folder_by_path_propagates_transient_error(mock_account):
+    """
+    Given:
+        - Exchange raises a transient error (HTTP 503) while resolving a folder path segment
+    When:
+        - client.get_folder_by_path is called
+    Then:
+        - The transient error is propagated unchanged (not masked as a "No such folder" ValueError),
+          so the caller can back off and retry
+    """
+    from exchangelib.errors import ErrorServerBusy
+
+    client = EWSClient(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        access_type=ACCESS_TYPE,
+        default_target_mailbox=DEFAULT_TARGET_MAILBOX,
+        ews_server=EWS_SERVER,
+        max_fetch=MAX_FETCH,
+        auth_type=AUTH_TYPE,
+        version=VERSION_STR,
+        folder=FOLDER,
+        is_public_folder=True,
+    )
+    account = client.get_account()
+    account.root.tois.__floordiv__.side_effect = ErrorServerBusy("Reraised from ErrorInternalServerTransientError")
+
+    with pytest.raises(ErrorServerBusy):
+        client.get_folder_by_path("Inbox/Phishing", account)
+
+
+def test_get_folder_by_path_wraps_non_transient_error(mock_account):
+    """
+    Given:
+        - A non-transient error is raised while resolving a folder path segment
+    When:
+        - client.get_folder_by_path is called
+    Then:
+        - It is wrapped in a "No such folder" ValueError, preserving the original cause via exception chaining
+    """
+    client = EWSClient(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        access_type=ACCESS_TYPE,
+        default_target_mailbox=DEFAULT_TARGET_MAILBOX,
+        ews_server=EWS_SERVER,
+        max_fetch=MAX_FETCH,
+        auth_type=AUTH_TYPE,
+        version=VERSION_STR,
+        folder=FOLDER,
+        is_public_folder=True,
+    )
+    account = client.get_account()
+    original_error = KeyError("root")
+    account.root.tois.__floordiv__.side_effect = original_error
+
+    with pytest.raises(ValueError, match="No such folder") as exc_info:
+        client.get_folder_by_path("Inbox/Phishing", account)
+
+    assert exc_info.value.__cause__ is original_error
+
+
 def test_client_send_email(mocker, mock_account):
     """
     Given:

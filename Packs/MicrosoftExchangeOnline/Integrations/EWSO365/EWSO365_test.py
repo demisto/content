@@ -33,6 +33,7 @@ from EWSO365 import (
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone, FileAttachment
 from exchangelib.attachments import AttachmentId, ItemAttachment
+from exchangelib.errors import ErrorInternalServerTransientError, ErrorServerBusy, MalformedResponseError, RateLimitError
 from exchangelib.items import Item, Message
 from exchangelib.properties import MessageHeader
 from freezegun import freeze_time
@@ -390,6 +391,59 @@ def test_fetch_and_mark_as_read(mocker):
     client.mark_as_read = True
     fetch_emails_as_incidents(client, {}, RECEIVED_FILTER, False)
     assert mark_item_as_read.called is True
+
+
+@pytest.mark.parametrize(
+    "transient_error",
+    [
+        pytest.param(ErrorServerBusy("Reraised from ErrorInternalServerTransientError"), id="ErrorServerBusy"),
+        pytest.param(ErrorInternalServerTransientError("Caused by HTTP 503 response"), id="TransientError"),
+        pytest.param(MalformedResponseError("Unknown failure in response. Code: 504"), id="MalformedResponse504"),
+        pytest.param(RateLimitError("Too many requests"), id="RateLimitError"),
+    ],
+)
+def test_fetch_skips_cycle_on_transient_server_error(mocker, transient_error):
+    """
+    Given:
+        - Exchange raises a transient error (HTTP 503/504 throttling) while resolving the folder
+    When:
+        - Running fetch command
+    Then:
+        - The cycle is skipped without raising, and the error counter is incremented in the last run
+    """
+    from EWSO365 import RECEIVED_FILTER
+
+    client = TestNormalCommands.MockClient()
+    client.folder_name = "Inbox"
+    client.get_folder_by_path = mocker.Mock(side_effect=transient_error)
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    incidents = fetch_emails_as_incidents(client, {}, RECEIVED_FILTER, False)
+
+    assert incidents == []
+    assert set_last_run.call_args[0][0]["errorCounter"] == 1
+
+
+def test_fetch_raises_when_transient_error_persists(mocker):
+    """
+    Given:
+        - A transient error, and a last run indicating the previous fetches already failed the same way
+    When:
+        - Running fetch command
+    Then:
+        - The error is raised so the failure becomes visible instead of being silently swallowed forever
+    """
+    from EWSO365 import MAX_CONSECUTIVE_TRANSIENT_ERRORS, RECEIVED_FILTER
+
+    client = TestNormalCommands.MockClient()
+    client.folder_name = "Inbox"
+    client.get_folder_by_path = mocker.Mock(side_effect=ErrorServerBusy("still busy"))
+    mocker.patch.object(demisto, "setLastRun")
+
+    last_run = {"errorCounter": MAX_CONSECUTIVE_TRANSIENT_ERRORS, "folderName": "Inbox"}
+
+    with pytest.raises(ErrorServerBusy):
+        fetch_emails_as_incidents(client, last_run, RECEIVED_FILTER, False)
 
 
 HEADERS_PACKAGE = [
