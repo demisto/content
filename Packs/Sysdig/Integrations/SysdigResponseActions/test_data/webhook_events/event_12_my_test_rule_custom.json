@@ -1,0 +1,119 @@
+{
+    "alert": {
+        "name": "Policy V2 7770003: Manuel test policy",
+        "description": "This is just a dumb policy to test custom policies",
+        "severity": 4,
+        "severityLabel": "Medium",
+        "subject": "Manuel test policy triggered at 04/28/2026 01:16 PM UTC",
+        "body": "Policy event triggered at 04/28/2026 01:16 PM UTC\n\nPolicy:             Manuel test policy\nPolicy URL:         https://app.example.sysdig.com/secure//#/policies/7770003\nDescription:        This is just a dumb policy to test custom policies\n\nTimestamp:          04/28/2026 01:16 PM UTC\nURL:                https://app.example.sysdig.com/secure//#/events/0000000000000000000000000000000c\nRule:               My test rule custom\nRule URL:           https://app.example.sysdig.com/secure//#/policies/rules/falco/My%20test%20rule%20custom\nSeverity:           Medium\nScope:\n    cloudProvider.account.id:      111122223333\n    container.label.io.kubernetes.container.name:      client\n    container.image.repo:      docker.io/example/test-app\n    host.id:      dddd000011112222333344445555666677778888999900001111222233334444\n    kubernetes.cronJob.name:      pygoat-cronjob\n    kubernetes.job.name:      pygoat-cronjob-29623036\n    kubernetes.cluster.name:      demo-eks-cluster\n    container.label.io.kubernetes.pod.namespace:      pygoat\n    kubernetes.node.name:      ip-10-0-0-3.ec2.internal\n    host.mac:      aa:bb:cc:dd:ee:04\n    kubernetes.namespace.name:      pygoat\n    container.image.digest:      sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff\n    orchestrator.type:      k8s\n    kubernetes.workload.name:      pygoat-cronjob\n    container.image.tag:      1.3\n    aws.instanceId:      i-0eee5555ffff66666\n    host.hostName:      ip-10-0-0-3.ec2.internal\n    container.name:      client\n    container.image.id:      bbb000000002\n    aws.accountId:      111122223333\n    aws.region:      us-east-1\n    cloudProvider.region:      us-east-1\n    kubernetes.pod.name:      pygoat-cronjob-29623036-4gbzj\n    process.name:      sh\n    agent.version:      14.3.1\n    cloudProvider.name:      aws\n    container.label.io.kubernetes.pod.name:      pygoat-cronjob-29623036-4gbzj\n    agent.variant:      traditional\n    kubernetes.workload.type:      cronjob\nActions:            No actions performed\nDetails:            Custom rule. The client with image docker.io/example/test-app by parent configure under user root (proc.name=sh proc.exepath-custom=/usr/bin/dash proc.pname=configure gparent=sh ggparent=python gggparent=<NA> image=docker.io/example/test-app user.uid=0 proc.cmdline=sh proc.pcmdline=configure /opt/nmap-7.92/configure user.name=root user.loginuid=-1 proc.args= container.name=client evt.type=execve evt.res=SUCCESS proc.pid=1989097 proc.cwd=/opt/nmap-7.92/ proc.ppid=1989057 proc.sid=1 proc.exepath=/usr/bin/dash user.loginname=<NA> group.gid=0 group.name=root proc.pid.ts=1777382167232862414 proc.ppid.ts=1777382167193331812 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000004)"
+    },
+    "event": {
+        "url": "https://app.example.sysdig.com/secure//#/events/?from=1777382107&to=1777382168"
+    },
+    "condition": "count(policyEvent) > 0",
+    "source": "Sysdig Secure",
+    "state": "ACTIVE",
+    "timestamp": 1777382167233195,
+    "timespan": 60000000,
+    "entities": [
+        {
+            "metricValues": [
+                {
+                    "metric": "policyEvent",
+                    "aggregation": "count",
+                    "groupAggregation": "none",
+                    "value": 1
+                }
+            ],
+            "policyEvents": [
+                {
+                    "id": "0000000000000000000000000000000c",
+                    "containerId": "aaa00000000a",
+                    "name": "Manuel test policy",
+                    "description": "This is just a dumb policy to test custom policies",
+                    "severity": 4,
+                    "policyId": 7770003,
+                    "output": "Custom rule. The client with image docker.io/example/test-app by parent configure under user root (proc.name=sh proc.exepath-custom=/usr/bin/dash proc.pname=configure gparent=sh ggparent=python gggparent=<NA> image=docker.io/example/test-app user.uid=0 proc.cmdline=sh proc.pcmdline=configure /opt/nmap-7.92/configure user.name=root user.loginuid=-1 proc.args= container.name=client evt.type=execve evt.res=SUCCESS proc.pid=1989097 proc.cwd=/opt/nmap-7.92/ proc.ppid=1989057 proc.sid=1 proc.exepath=/usr/bin/dash user.loginname=<NA> group.gid=0 group.name=root proc.pid.ts=1777382167232862414 proc.ppid.ts=1777382167193331812 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000004)",
+                    "ruleName": "My test rule custom",
+                    "ruleType": "RULE_TYPE_FALCO",
+                    "matchedOnDefault": false,
+                    "fields": {
+                        "proc.pname": "configure",
+                        "evt.type": "execve",
+                        "proc.cmdline": "sh",
+                        "proc.ppid": "1989057",
+                        "user.name": "root",
+                        "proc.sid": "1",
+                        "proc.aname[2]": "sh",
+                        "proc.pid": "1989097",
+                        "proc.aname[4]": "<NA>",
+                        "proc.hash.sha256": "aaa0000000000000000000000000000000000000000000000000000000000004",
+                        "container.name": "client",
+                        "proc.name": "sh",
+                        "group.gid": "0",
+                        "proc.pcmdline": "configure /opt/nmap-7.92/configure",
+                        "group.name": "root",
+                        "user.uid": "0",
+                        "proc.cwd": "/opt/nmap-7.92/",
+                        "proc.exepath": "/usr/bin/dash",
+                        "proc.pid.ts": "1777382167232862414",
+                        "proc.aname[3]": "python",
+                        "user.loginuid": "-1",
+                        "container.image.repository": "docker.io/example/test-app",
+                        "proc.ppid.ts": "1777382167193331812",
+                        "user.loginname": "<NA>",
+                        "evt.res": "SUCCESS"
+                    },
+                    "eventLabels": {
+                        "kubernetes.node.name": "ip-10-0-0-3.ec2.internal",
+                        "kubernetes.workload.name": "pygoat-cronjob",
+                        "container.image.tag": "1.3",
+                        "host.mac": "aa:bb:cc:dd:ee:04",
+                        "kubernetes.workload.type": "cronjob",
+                        "container.image.repo": "docker.io/example/test-app",
+                        "container.name": "client",
+                        "kubernetes.pod.name": "pygoat-cronjob-29623036-4gbzj",
+                        "cloudProvider.region": "us-east-1",
+                        "container.label.io.kubernetes.container.name": "client",
+                        "container.label.io.kubernetes.pod.namespace": "pygoat",
+                        "cloudProvider.name": "aws",
+                        "host.id": "dddd000011112222333344445555666677778888999900001111222233334444",
+                        "container.image.id": "bbb000000002",
+                        "kubernetes.namespace.name": "pygoat",
+                        "agent.variant": "traditional",
+                        "kubernetes.cronJob.name": "pygoat-cronjob",
+                        "orchestrator.type": "k8s",
+                        "kubernetes.cluster.name": "demo-eks-cluster",
+                        "kubernetes.job.name": "pygoat-cronjob-29623036",
+                        "process.name": "sh",
+                        "aws.region": "us-east-1",
+                        "aws.accountId": "111122223333",
+                        "container.label.io.kubernetes.pod.name": "pygoat-cronjob-29623036-4gbzj",
+                        "container.image.digest": "sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff",
+                        "host.hostName": "ip-10-0-0-3.ec2.internal",
+                        "agent.version": "14.3.1",
+                        "cloudProvider.account.id": "111122223333",
+                        "aws.instanceId": "i-0eee5555ffff66666"
+                    },
+                    "falsePositive": false,
+                    "policyVersion": 4,
+                    "origin": "Secure UI",
+                    "timestamp": 1777382167233195,
+                    "hostMac": "aa:bb:cc:dd:ee:04",
+                    "isAggregated": false
+                }
+            ],
+            "policies": [
+                {
+                    "name": "Manuel test policy",
+                    "description": "This is just a dumb policy to test custom policies",
+                    "origin": "Secure UI",
+                    "versionId": "0.0.0",
+                    "severity": 4,
+                    "enabled": false,
+                    "id": 7770003
+                }
+            ]
+        }
+    ]
+}
