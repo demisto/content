@@ -67,11 +67,12 @@ configuration:
   type: 0
   section: Collect
 - additionalinfo: This parameter allows you to filter based on the numeric severity code.
-  defaultvalue: 20,25
+  defaultvalue: 20,25,30
   display: Severity
   hidden: false
   name: severity
   options:
+  - '30'
   - '25'
   - '20'
   - '5'
