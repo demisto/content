@@ -155,11 +155,7 @@ def test_fetch_incidents_duplicate_event(mocker):
 
 def test_get_access_token_no_token(mocker):
     client = ETDClient.__new__(ETDClient)
-    client.params = {
-        "api_key": "apikey",
-        "client_secret": "secret",
-        "client_id": "client"
-    }
+    client.params = {"api_key": "apikey", "client_secret": "secret", "client_id": "client"}
     client._http_request = mocker.Mock(return_value={})
 
     with pytest.raises(DemistoException):
@@ -185,11 +181,7 @@ class MockResponseNonMessage:
 
 
 def test_download_logs_skip_non_message(monkeypatch):
-    monkeypatch.setattr(
-        requests,
-        "get",
-        lambda *args, **kwargs: MockResponseNonMessage()
-    )
+    monkeypatch.setattr(requests, "get", lambda *args, **kwargs: MockResponseNonMessage())
     client = ETDClient.__new__(ETDClient)
     client.params = {"proxy": False, "insecure": False}
     events = client.download_logs(["http://dummy"])
