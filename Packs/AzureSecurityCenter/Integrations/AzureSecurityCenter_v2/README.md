@@ -82,9 +82,9 @@ Lists alerts for the subscription according to the specified filters.
 | --- | --- | --- |
 | resource_group_name | The name of the resource group within the user's subscription. The name is case insensitive. | Optional |
 | asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Optional |
-| filter (deprecated) | The argument is deprecated and no longer supported by the Microsoft Defender for Cloud and has no effect. To filter alerts, use the azure-rg-query command from the Azure Resource Graph integration. | Optional |
-| select (deprecated) | The argument is deprecated and no longer supported by the Microsoft Defender for Cloud and has no effect. To filter alerts, use the azure-rg-query command from the Azure Resource Graph integration. | Optional |
-| expand (deprecated) | The argument is deprecated and no longer supported by the Microsoft Defender for Cloud and has no effect. To filter alerts, use the azure-rg-query command from the Azure Resource Graph integration. | Optional |
+| filter (deprecated) | This argument is deprecated as it is no longer supported by Microsoft Defender for Cloud and has no effect. To filter alerts, use the ***azure-rg-query*** command from the Azure Resource Graph integration. | Optional |
+| select (deprecated) | This argument is deprecated as it is no longer supported by Microsoft Defender for Cloud and has no effect. To filter alerts, use the ***azure-rg-query*** command from the Azure Resource Graph integration. | Optional |
+| expand (deprecated) | This argument is deprecated as it is no longer supported by Microsoft Defender for Cloud and has no effect. To filter alerts, use the ***azure-rg-query*** command from the Azure Resource Graph integration. | Optional |
 | subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional |
 
 ##### Context Output
