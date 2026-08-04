@@ -179,10 +179,10 @@ configuration:
   additionalinfo: The default Kibana space ID to use for es-kibana-* commands. Used to derive the Kibana base URL from the Server URL. If a space_id argument is provided to a command, it overrides this value. See https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
 - display: Fetch incident types
   name: fetch_incident_type
-  defaultvalue: Elasticsearch
+  defaultvalue: Elasticsearch Entity
   type: 15
   options:
-  - Elasticsearch
+  - Elasticsearch Entity
   - Elasticsearch Security Alert
   - Elasticsearch Case
   section: Collect
@@ -200,7 +200,7 @@ configuration:
   section: Collect
   required: false
   additionalinfo: Mirroring works only for incident types Elasticsearch Security Alert and Elasticsearch Case.
-- display: Fetch by Severity
+- display: Fetch cases by Severity
   name: fetch_severity
   type: 16
   options:
@@ -212,7 +212,7 @@ configuration:
   advanced: true
   required: false
   additionalinfo: Case severities to fetch. If none is chosen, all severity levels will be returned. Relevant only for incident type Elasticsearch Case.
-- display: Fetch by Status
+- display: Fetch cases by Status
   name: fetch_status
   defaultvalue: open,in-progress
   type: 16

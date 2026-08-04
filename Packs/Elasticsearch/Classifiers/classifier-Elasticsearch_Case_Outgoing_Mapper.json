@@ -6,25 +6,22 @@
         "Elasticsearch Case": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "name": {
-                    "simple": "title"
+                "title": {
+                    "simple": "name"
                 },
                 "description": {
                     "simple": "description"
                 },
-                "Category": {
-                    "simple": "category"
-                },
-                "Severity": {
+                "severity": {
                     "simple": "severity"
                 },
-                "Elasticsearch Case Status": {
-                    "simple": "status"
+                "status": {
+                    "simple": "elasticsearchcasestatus"
                 },
-                "Elasticsearch Case Close Reason": {
-                    "simple": "closeReason"
+                "closeReason": {
+                    "simple": "elasticsearchcaseclosereason"
                 },
-                "Tags": {
+                "tags": {
                     "simple": "tags"
                 }
             }

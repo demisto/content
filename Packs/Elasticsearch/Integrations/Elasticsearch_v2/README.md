@@ -37,17 +37,17 @@ The permissions required to use this integration depends on which operations you
 | Incident type |  | False |
 | Fetch incidents |  | False |
 | Space ID | The default Kibana space ID to use for es-kibana-* commands. Used to derive the Kibana base URL from the Server URL. If a `space_id` argument is provided to a command, it overrides this value. See [Spaces](https://www.elastic.co/docs/deploy-manage/manage-spaces) for more information. | False |
-| Fetch incident types | The type of incident to fetch from Elasticsearch (Elasticsearch, Elasticsearch Security Alert, or Elasticsearch Case). | False |
+| Fetch incident types | The type of incident to fetch from Elasticsearch (Elasticsearch Entity, Elasticsearch Security Alert, or Elasticsearch Case). | False |
 | Incident Mirroring Direction | Mirroring works only for incident types Elasticsearch Security Alert and Elasticsearch Case. | False |
-| Fetch by Severity | Case severities to fetch. If none is chosen, all severity levels will be returned. Relevant only for incident type Elasticsearch Case. | False |
-| Fetch by Status | Case statuses to fetch. If none is chosen, in-progress and open will be returned. Relevant only for incident type Elasticsearch Case. | False |
+| Fetch cases by Severity | Case severities to fetch. If none is chosen, all severity levels will be returned. Relevant only for incident type Elasticsearch Case. | False |
+| Fetch cases by Status | Case statuses to fetch. If none is chosen, in-progress and open will be returned. Relevant only for incident type Elasticsearch Case. | False |
 | Fetch alerts for case | When enabled, fetches alerts associated with each Elasticsearch Case. You must have read privileges for the Cases feature in the Management, Observability, or Security section of the Kibana feature privileges. | False |
 | Close Mirrored XSOAR Incident | When selected, closing the Elasticsearch alert or case is mirrored in Cortex XSOAR. | False |
 | Close Mirrored Elasticsearch Incident | When selected, closing the Cortex XSOAR incident is mirrored in Elasticsearch. | False |
 
 ## Fetch
 
-Use the **Fetch incident types** parameter to select what to fetch from Elasticsearch: the default **Elasticsearch** entity, **Elasticsearch Security Alert**, or **Elasticsearch Case**.
+Use the **Fetch incident types** parameter to select what to fetch from Elasticsearch: the default **Elasticsearch Entity**, **Elasticsearch Security Alert**, or **Elasticsearch Case**.
 
 Mirroring is only available for Elasticsearch Security Alerts and Cases.
 
@@ -61,7 +61,7 @@ To fetch security alerts use the **Raw Query** field (DSL query). The index must
 
 ### Fetch Cases
 
-Use the **Fetch by Severity** parameter to filter cases by the required severity and the **Fetch by Status** parameter to filter cases by the required status. Enable **Fetch alerts for case** to also retrieve the alerts associated with each case.
+Use the **Fetch cases by Severity** parameter to filter cases by the required severity and the **Fetch cases by Status** parameter to filter cases by the required status. Enable **Fetch alerts for case** to also retrieve the alerts associated with each case.
 
 ## Incident Mirroring
 
@@ -83,6 +83,20 @@ To set up mirroring:
 
 - The mirroring is affected by the following integration parameters: **Incident Mirroring Direction**, **Close Mirrored XSOAR Incident**, and **Close Mirrored Elasticsearch Incident**.
 - To ensure mirroring works as expected, the mappers are required, so that the fields are properly mapped to and from Elasticsearch. Select the appropriate incoming and outgoing mappers per incident type (**Elasticsearch Security Alert - Incoming/Outgoing Mapper** and **Elasticsearch Case - Incoming/Outgoing Mapper**).
+- Set the **Fetch incident types** parameter even when mirroring only. It is used to resolve the incident type when the remote lookup is unavailable; without it, changes may not be mirrored out.
+- Mirroring **out** always uses the Kibana API, because the security alert indices are Kibana system indices and writing to them directly would skip Kibana's bookkeeping (such as `kibana.alert.workflow_status_updated_at`, which mirroring in relies on). The configured credentials therefore need the **Security → Alerts: All** Kibana privilege, and the **Space ID** must match the space that owns the alerts. If either is wrong, the fetch keeps working while mirroring out reports that 0 alerts were updated.
+
+#### Which Security Alert fields can be mirrored
+
+Elasticsearch only allows a detection alert's **workflow status**, **status reason**, and **workflow tags** to be changed. These are the only fields mirrored out:
+
+| XSOAR incident field | Elasticsearch field |
+| --- | --- |
+| Elasticsearch Workflow Alert Status | `kibana.alert.workflow_status` |
+| Elasticsearch Workflow Alert Status Reason | `kibana.alert.workflow_reason` |
+| Tags | `kibana.alert.workflow_tags` |
+
+Other fields, such as **severity**, **risk score**, or the detection rule, cannot be pushed back to Elasticsearch because no API exists to change them on an existing alert. Editing those fields in Cortex XSOAR updates the local incident only, and an error is written to the log explaining that nothing was mirrored out. These fields are still mirrored **in** (from Elasticsearch to Cortex XSOAR).
 
 ## Commands
 

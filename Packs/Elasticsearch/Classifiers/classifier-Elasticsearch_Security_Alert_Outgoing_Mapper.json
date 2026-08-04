@@ -6,14 +6,14 @@
         "Elasticsearch Security Alert": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Tags": {
+                "status": {
+                    "simple": "elasticsearchworkflowalertstatus"
+                },
+                "reason": {
+                    "simple": "elasticsearchworkflowalertstatusreason"
+                },
+                "tags": {
                     "simple": "tags"
-                },
-                "Elasticsearch Workflow Alert Status": {
-                    "simple": "status"
-                },
-                "Elasticsearch Workflow Alert Status Reason": {
-                    "simple": "reason"
                 }
             }
         }

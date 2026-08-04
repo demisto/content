@@ -18,6 +18,10 @@
                     "complex": null,
                     "simple": "mirror_instance"
                 },
+                "dbotMirrorLastSync": {
+                    "complex": null,
+                    "simple": "kibana.alert.updated_at"
+                },
                 "Elasticsearch Workflow Alert Status": {
                     "simple": "kibana.alert.workflow_status"
                 },
@@ -27,8 +31,8 @@
                 "Elasticsearch Alert Reason": {
                     "simple": "kibana.alert.reason"
                 },
-                "Severity": {
-                    "simple": "kibana.alert.severity"
+                "severity": {
+                    "simple": "severity"
                 },
                 "Elasticsearch Status Update Date": {
                     "simple": "kibana.alert.workflow_status_updated_at"

@@ -33,7 +33,7 @@
                 "Elasticsearch Case Status": {
                     "simple": "status"
                 },
-                "Severity": {
+                "severity": {
                     "simple": "severity"
                 },
                 "Tags": {
@@ -43,6 +43,9 @@
                     "simple": "id"
                 },
                 "occurred": {
+                    "simple": "created_at"
+                },
+                "Elasticsearch Timestamp": {
                     "simple": "created_at"
                 },
                 "dbotMirrorLastSync": {
