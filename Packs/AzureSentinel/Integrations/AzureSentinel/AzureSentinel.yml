@@ -1364,9 +1364,10 @@ script:
     - description: The value of the indicator.
       name: value
       required: true
-    - description: The display name of the indicator.
+    - description: Deprecated. This argument is no longer supported by the Microsoft API and will be ignored. The display name of the indicator.
       name: display_name
       hidden: true
+      deprecated: true
     - description: The description of the threat indicator.
       name: description
     - auto: PREDEFINED
