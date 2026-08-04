@@ -4969,7 +4969,7 @@ script:
     description: Deletes a NAT rule.
     name: checkpoint-nat-rule-delete
     outputs: []
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
   script: ''
   subtype: python3
