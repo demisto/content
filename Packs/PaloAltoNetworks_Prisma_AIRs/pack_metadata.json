@@ -6,6 +6,9 @@
     "author": "Eric Partington",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
+    "githubUser": [
+        "epartington"
+    ],
     "created": "2026-06-19T00:00:00Z",
     "categories": [
         "Cloud Security"
