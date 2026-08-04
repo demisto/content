@@ -1660,7 +1660,8 @@ script:
       - document_classifier
     - name: supported_confidence_levels
       required: false
-      description: Comma-separated confidence levels (low, medium, high) or JSON array.
+      isArray: true
+      description: A comma-separated list of confidence levels (low, medium, high). Alternatively, a JSON array.
     - name: description
       required: false
       description: Pattern description.
@@ -1738,7 +1739,8 @@ script:
       - document_classifier
     - name: supported_confidence_levels
       required: false
-      description: Comma-separated confidence levels or JSON array.
+      isArray: true
+      description: A comma-separated list of confidence levels (low, medium, high). Alternatively, a JSON array.
     - name: description
       required: false
       description: Pattern description (set to "null" to clear).
@@ -1819,7 +1821,8 @@ script:
       - document_classifier
     - name: supported_confidence_levels
       required: false
-      description: Comma-separated confidence levels or JSON array.
+      isArray: true
+      description: A comma-separated list of confidence levels (low, medium, high). Alternatively, a JSON array.
     - name: description
       required: false
       description: Pattern description.
@@ -2056,7 +2059,8 @@ script:
       - 'false'
     - name: file_type
       required: false
-      description: Comma-separated list of file types to include/exclude.
+      isArray: true
+      description: A comma-separated list of file types to include or exclude.
     outputs:
     - contextPath: PrismaAIRs.DlpFilteringProfileReplace.id
       description: Filtering profile ID.
@@ -2783,7 +2787,8 @@ script:
       description: Scan UUID to delete labels from.
     - name: keys
       required: true
-      description: Label keys to delete as comma-separated string (e.g., "env,team") or JSON array.
+      isArray: true
+      description: A comma-separated list of label keys to delete (e.g., "env,team"). Alternatively, a JSON array.
     outputs:
     - contextPath: PrismaAIRs.ModelSecurityLabelsDelete.scan_uuid
       description: Scan UUID.
@@ -3927,7 +3932,8 @@ script:
       description: Connection parameters as JSON string.
     - name: probe_fields
       required: false
-      description: Comma-separated list of fields to probe (e.g., "multi_turn,rate_limit,content_filter").
+      isArray: true
+      description: A comma-separated list of fields to probe (e.g., "multi_turn,rate_limit,content_filter").
     outputs:
     - contextPath: PrismaAIRs.RedTeamTargetProbe.uuid
       description: Target UUID.
@@ -4094,7 +4100,8 @@ script:
       description: 'JSON array of attack goal strings (DYNAMIC scans only). Example: ["Extract PII", "Bypass content filter"].'
     - name: custom_prompt_sets
       required: false
-      description: Comma-separated list of prompt set UUIDs (CUSTOM scans only). Required for CUSTOM type.
+      isArray: true
+      description: A comma-separated list of prompt set UUIDs (CUSTOM scans only). Required for CUSTOM type.
     outputs:
     - contextPath: PrismaAIRs.RedTeamScanCreate.uuid
       description: Created scan job UUID.
@@ -4828,7 +4835,8 @@ script:
       description: Description of the prompt set.
     - name: property_names
       required: false
-      description: Comma-separated list of custom property names for the prompt set (e.g., "category,severity").
+      isArray: true
+      description: A comma-separated list of custom property names for the prompt set (e.g., "category,severity").
     outputs:
     - contextPath: PrismaAIRs.RedTeamPromptSetCreate.uuid
       description: UUID of the created prompt set.
@@ -4993,7 +5001,8 @@ script:
       description: Updated description.
     - name: property_names
       required: false
-      description: Updated comma-separated list of custom property names.
+      isArray: true
+      description: A comma-separated list of updated custom property names.
     - name: archive
       required: false
       description: Whether the prompt set should be archived.

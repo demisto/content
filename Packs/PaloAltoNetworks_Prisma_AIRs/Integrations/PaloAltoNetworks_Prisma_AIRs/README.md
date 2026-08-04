@@ -1803,7 +1803,7 @@ Create a new DLP data pattern.
 | name | Pattern name (1-64 characters). | Required |
 | type | Pattern type. Possible values are: predefined, custom, file_property. | Required |
 | detection_technique | Detection technique. Possible values are: edm, document_fingerprint, trainable_classifier, ml_document, regex, weighted_regex, ml, titus_tag, wildfire, file_property, dictionary, pab, document_classifier. | Required |
-| supported_confidence_levels | Comma-separated confidence levels (low, medium, high) or JSON array. | Optional |
+| supported_confidence_levels | A comma-separated list of confidence levels (low, medium, high). Alternatively, a JSON array. | Optional |
 | description | Pattern description. | Optional |
 | matching_rules | Matching rules as JSON object (proximity, delimiters, regexes, metadata_criteria). | Optional |
 | tags | Tags as JSON object with classification, compliance, geography arrays. | Optional |
@@ -1896,7 +1896,7 @@ Partially update a DLP data pattern (JSON Merge Patch). Fields set to "null" wil
 | name | Pattern name (required for PATCH, cannot be cleared). | Required |
 | type | Pattern type (required for PATCH, cannot be cleared). Possible values are: predefined, custom, file_property. | Required |
 | detection_technique | Detection technique (required for PATCH, cannot be cleared). Possible values are: edm, document_fingerprint, trainable_classifier, ml_document, regex, weighted_regex, ml, titus_tag, wildfire, file_property, dictionary, pab, document_classifier. | Required |
-| supported_confidence_levels | Comma-separated confidence levels or JSON array. | Optional |
+| supported_confidence_levels | A comma-separated list of confidence levels (low, medium, high). Alternatively, a JSON array. | Optional |
 | description | Pattern description (set to "null" to clear). | Optional |
 | matching_rules | Matching rules as JSON object (set to "null" to clear). | Optional |
 | tags | Tags as JSON object (set to "null" to clear). | Optional |
@@ -1989,7 +1989,7 @@ Replace (full update) a DLP data pattern. This replaces the entire pattern confi
 | name | Pattern name (1-64 characters). | Required |
 | type | Pattern type. Possible values are: predefined, custom, file_property. | Required |
 | detection_technique | Detection technique. Possible values are: edm, document_fingerprint, trainable_classifier, ml_document, regex, weighted_regex, ml, titus_tag, wildfire, file_property, dictionary, pab, document_classifier. | Required |
-| supported_confidence_levels | Comma-separated confidence levels or JSON array. | Optional |
+| supported_confidence_levels | A comma-separated list of confidence levels (low, medium, high). Alternatively, a JSON array. | Optional |
 | description | Pattern description. | Optional |
 | matching_rules | Matching rules as JSON object. | Optional |
 | tags | Tags as JSON object. | Optional |
@@ -2285,7 +2285,7 @@ Replace (full update) a DLP filtering profile. This is a destructive operation t
 | euc_template_id | End user coaching template ID. | Optional |
 | is_end_user_coaching_enabled | Whether end user coaching is enabled. Possible values are: true, false. | Optional |
 | is_granular_profile | Whether this is a granular profile. Possible values are: true, false. | Optional |
-| file_type | Comma-separated list of file types to include/exclude. | Optional |
+| file_type | A comma-separated list of file types to include or exclude. | Optional |
 
 #### Context Output
 
@@ -3072,7 +3072,7 @@ Delete labels from a model security scan by key. Removes specific labels while p
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scan_uuid | Scan UUID to delete labels from. | Required |
-| keys | Label keys to delete as comma-separated string (e.g., "env,team") or JSON array. | Required |
+| keys | A comma-separated list of label keys to delete (e.g., "env,team"). Alternatively, a JSON array. | Required |
 
 #### Context Output
 
@@ -4109,7 +4109,7 @@ Probe a Red Team target to validate connectivity and gather profiling data.
 | target_type | Target type. | Optional |
 | connection_type | Connection type. | Optional |
 | connection_params | Connection parameters as JSON string. | Optional |
-| probe_fields | Comma-separated list of fields to probe (e.g., "multi_turn,rate_limit,content_filter"). | Optional |
+| probe_fields | A comma-separated list of fields to probe (e.g., "multi_turn,rate_limit,content_filter"). | Optional |
 
 #### Context Output
 
@@ -4303,7 +4303,7 @@ Create a new Red Team scan job. This command submits the scan and returns immedi
 | stream_breadth | Parallel agents per goal (DYNAMIC scans only). Default is 6. Default is 6. | Optional |
 | stream_depth | Maximum conversation turns per goal (DYNAMIC scans only). Default is 10. Default is 10. | Optional |
 | attack_goals | JSON array of attack goal strings (DYNAMIC scans only). Example: ["Extract PII", "Bypass content filter"]. | Optional |
-| custom_prompt_sets | Comma-separated list of prompt set UUIDs (CUSTOM scans only). Required for CUSTOM type. | Optional |
+| custom_prompt_sets | A comma-separated list of prompt set UUIDs (CUSTOM scans only). Required for CUSTOM type. | Optional |
 
 #### Context Output
 
@@ -5332,7 +5332,7 @@ Create a new Red Team prompt set for organizing custom attack prompts.
 | --- | --- | --- |
 | name | Name of the prompt set. | Required |
 | description | Description of the prompt set. | Optional |
-| property_names | Comma-separated list of custom property names for the prompt set (e.g., "category,severity"). | Optional |
+| property_names | A comma-separated list of custom property names for the prompt set (e.g., "category,severity"). | Optional |
 
 #### Context Output
 
@@ -5509,7 +5509,7 @@ Update an existing Red Team prompt set.
 | uuid | UUID of the prompt set to update. | Required |
 | name | Updated name of the prompt set. | Optional |
 | description | Updated description. | Optional |
-| property_names | Updated comma-separated list of custom property names. | Optional |
+| property_names | A comma-separated list of updated custom property names. | Optional |
 | archive | Whether the prompt set should be archived. | Optional |
 
 #### Context Output
