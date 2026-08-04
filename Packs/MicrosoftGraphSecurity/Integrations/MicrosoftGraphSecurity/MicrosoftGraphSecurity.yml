@@ -818,11 +818,11 @@ script:
   - arguments:
     - description: The identifier of the accounts that are monitored for suspicious or malicious activity by Microsoft Defender for Identity.
       isArray: false
-      name: identityAccountsId
+      name: identity_accounts_id
       required: true
     - description: The identifier of the account to perform the action on.
       isArray: false
-      name: accountId
+      name: account_id
       required: true
     - auto: PREDEFINED
       description: The type of action to perform on the account.
@@ -839,7 +839,7 @@ script:
     - auto: PREDEFINED
       description: The identity provider associated with the account.
       isArray: false
-      name: identityProvider
+      name: identity_provider
       predefined:
       - 'entraID'
       - 'activeDirectory'
