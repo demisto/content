@@ -593,6 +593,7 @@ class AWSServices(str, Enum):
     CostExplorer = "ce"
     BUDGETS = "budgets"
     SSM = "ssm"
+    SNS = "sns"
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -4459,6 +4460,48 @@ class SSM:
         )
 
 
+class SNS:
+    service = AWSServices.SNS
+
+    @staticmethod
+    def topics_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Returns a list of the requester's Amazon SNS topics.
+        Args:
+            client: The AWS SNS boto3 client used to perform the request.
+            args (dict): Command arguments, optionally including a next_token for pagination.
+
+        Returns:
+            CommandResults: An object containing the list of SNS topic ARNs.
+        """
+        kwargs = remove_empty_elements({"NextToken": args.get("next_token")})
+        demisto.debug(f"{kwargs=}")
+        response = client.list_topics(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        topics = response.get("Topics", [])
+        if not topics:
+            return CommandResults(readable_output="No SNS topics found.")
+
+        outputs = {
+            "AWS.SNS.Topics(val.TopicArn && val.TopicArn == obj.TopicArn)": topics,
+            "AWS.SNS(true)": {"TopicsNextToken": response.get("NextToken")},
+        }
+        return CommandResults(
+            outputs=remove_empty_elements(outputs),
+            readable_output=tableToMarkdown(
+                "AWS SNS Topics",
+                topics,
+                headers=["TopicArn"],
+                headerTransform=pascalToSpace,
+                removeNull=True,
+            ),
+            raw_response=response,
+        )
+
+
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
     return filepath_result
@@ -4571,6 +4614,7 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-elb-load-balancer-attributes-modify": ELB.modify_load_balancer_attributes_command,
     "aws-ssm-inventory-entries-list": SSM.inventory_entries_list_command,
     "aws-ssm-command-run": SSM.command_run_command,
+    "aws-sns-topics-list": SNS.topics_list_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -4657,6 +4701,7 @@ REQUIRED_ACTIONS: list[str] = [
     "budgets:DescribeNotificationsForBudget",
     "ssm:SendCommand",
     "ssm:ListCommands",
+    "sns:ListTopics",
 ]
 
 COMMAND_SERVICE_MAP = {
