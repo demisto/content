@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Battery Ventures
 commonfields:
   id: FeedDomainTools
   version: -1
@@ -200,7 +199,7 @@ script:
       default: false
       required: false
       secret: false
-  dockerimage: demisto/vendors-sdk:1.0.0.10120494
+  dockerimage: demisto/vendors-sdk:1.0.0.10470199
   feed: true
   isfetch: false
   longRunning: false
