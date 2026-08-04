@@ -2488,7 +2488,7 @@ Create a new custom topic guardrail with examples for detection.
 | --- | --- | --- |
 | topic_name | The name for the new topic (must be unique). | Required |
 | description | The description of what this topic detects. | Required |
-| examples | The comma-separated list of example prompts/content that match this topic. | Required |
+| examples | A comma-separated list of example prompts/content that match this topic. | Required |
 | active | Whether the topic should be active. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
@@ -2562,7 +2562,7 @@ Update an existing custom topic. WARNING - Modifying topic definition can break 
 | topic_id | The topic UUID to update. | Required |
 | topic_name | The topic name (can be changed or kept the same). | Required |
 | description | The updated description (if omitted, description remains unchanged). | Optional |
-| examples | The updated comma-separated list of examples (if omitted, examples remain unchanged). | Optional |
+| examples | An updated comma-separated list of examples (if omitted, examples remain unchanged). | Optional |
 | active | Whether the topic should be active. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -3166,9 +3166,9 @@ Get files for a scan. Lists all files that were scanned within a model, showing 
 | offset | The offset for pagination. Default is 0. | Optional |
 | sort_field | The sort by field (path, type). | Optional |
 | sort_dir | The sort direction (asc, desc). | Optional |
-| type | Filter by file type (FILE, DIRECTORY). | Optional |
-| result | Filter by scan result (SUCCESS, FAILURE). | Optional |
-| query_path | Filter files by path prefix. Default is /. | Optional |
+| type | The file type to filter results by (FILE, DIRECTORY). | Optional |
+| result | The scan result to filter results by (SUCCESS, FAILURE). | Optional |
+| query_path | The path prefix to filter files by. Default is /. | Optional |
 
 #### Context Output
 
@@ -3209,8 +3209,8 @@ Get rule evaluations for a scan. Lists all rule evaluations showing which securi
 | offset | The offset for pagination. Default is 0. | Optional |
 | sort_field | The sort by field (created_at, updated_at). | Optional |
 | sort_order | The sort order (asc, desc). | Optional |
-| result | Filter by evaluation result (PASSED, FAILED, ERROR). | Optional |
-| rule_instance_uuid | Filter by specific rule instance UUID. | Optional |
+| result | The evaluation result to filter results by (PASSED, FAILED, ERROR). | Optional |
+| rule_instance_uuid | The rule instance UUID to filter results by. | Optional |
 
 #### Context Output
 
@@ -3250,11 +3250,11 @@ List Model Security model catalog entries (aggregate over their scanned versions
 | search_query | The search query \(matches model UUID or name\). | Optional |
 | sort_field | The field to sort by. Possible values are: created_at, updated_at. | Optional |
 | sort_order | The sort order. Possible values are: asc, desc. | Optional |
-| latest_version_outcomes | The comma-separated list of latest-version evaluation outcomes to filter by \(e.g., PASSED,FAILED\). | Optional |
-| latest_version_formats | The comma-separated list of latest-version model formats to filter by. | Optional |
-| latest_version_source_types | The comma-separated list of latest-version source types to filter by \(e.g., HUGGING_FACE,S3\). | Optional |
-| start_time | Only models created on or after this ISO 8601 datetime. | Optional |
-| end_time | Only models created on or before this ISO 8601 datetime. | Optional |
+| latest_version_outcomes | A comma-separated list of latest-version evaluation outcomes to filter by \(e.g., PASSED,FAILED\). | Optional |
+| latest_version_formats | A comma-separated list of latest-version model formats to filter by. | Optional |
+| latest_version_source_types | A comma-separated list of latest-version source types to filter by \(e.g., HUGGING_FACE,S3\). | Optional |
+| start_time | The earliest model creation datetime (ISO 8601); only models created on or after this time are returned. | Optional |
+| end_time | The latest model creation datetime (ISO 8601); only models created on or before this time are returned. | Optional |
 
 #### Context Output
 
@@ -3788,8 +3788,8 @@ List rule instances for a security group. Rule instances are rules that have bee
 | security_group_uuid | The security group UUID to list rule instances for. | Required |
 | limit | The maximum number of rule instances to return. Default is 50. | Optional |
 | offset | The offset for pagination. Default is 0. | Optional |
-| security_rule_uuid | Filter by specific security rule UUID. | Optional |
-| state | Filter by rule state. Possible values are: DISABLED, ALLOWING, BLOCKING. | Optional |
+| security_rule_uuid | The security rule UUID to filter results by. | Optional |
+| state | The rule state to filter results by. Possible values are: DISABLED, ALLOWING, BLOCKING. | Optional |
 
 #### Context Output
 
@@ -3891,8 +3891,8 @@ List all Red Team targets.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of targets to return. Default is 50. | Optional |
-| target_type | Filter by target type (e.g., API, UI, MOBILE). | Optional |
-| status | Filter by target status (e.g., READY, VALIDATING, FAILED). | Optional |
+| target_type | The target type to filter results by (e.g., API, UI, MOBILE). | Optional |
+| status | The target status to filter results by (e.g., READY, VALIDATING, FAILED). | Optional |
 
 #### Context Output
 
@@ -4339,8 +4339,8 @@ List all Red Team scans.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of scans to return. Default is 50. | Optional |
-| job_type | Filter by job type (e.g., STATIC, DYNAMIC, CUSTOM). | Optional |
-| status | Filter by scan status (e.g., COMPLETED, RUNNING, FAILED). | Optional |
+| job_type | The job type to filter results by (e.g., STATIC, DYNAMIC, CUSTOM). | Optional |
+| status | The scan status to filter results by (e.g., COMPLETED, RUNNING, FAILED). | Optional |
 
 #### Context Output
 
@@ -4655,7 +4655,7 @@ List Red Team network broker channels. Network channels are the data-plane relay
 | limit | The maximum number of channels to return. Default is 50. | Optional |
 | skip | The number of channels to skip from the start (for pagination). | Optional |
 | search | The free-text search filter. | Optional |
-| status | Filter by channel status. Supports a comma-separated list to filter by multiple statuses. Possible values are: ONLINE, OFFLINE, DRAFT. | Optional |
+| status | A comma-separated list of channel statuses to filter results by. Possible values are: ONLINE, OFFLINE, DRAFT. | Optional |
 | include_all_if_empty | Whether to return all channels if the other filters match nothing. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -5206,8 +5206,8 @@ List prompts in a Red Team prompt set.
 | limit | The maximum number of prompts to return. Default is 50. | Optional |
 | skip | The number of prompts to skip for pagination. | Optional |
 | search | The free-text search filter for prompt text. | Optional |
-| status | Filter by prompt status (e.g., READY, PENDING). | Optional |
-| active | Filter by active status (true or false). | Optional |
+| status | The prompt status to filter results by (e.g., READY, PENDING). | Optional |
+| active | The active status to filter results by (true or false). | Optional |
 
 #### Context Output
 
@@ -5369,8 +5369,8 @@ List Red Team prompt sets for custom attack scenarios.
 | limit | The maximum number of prompt sets to return. Default is 50. | Optional |
 | skip | The number of prompt sets to skip for pagination. | Optional |
 | search | The free-text search filter for prompt set names/descriptions. | Optional |
-| status | Filter by prompt set status (e.g., READY, PENDING). | Optional |
-| active | Filter by active status (true or false). | Optional |
+| status | The prompt set status to filter results by (e.g., READY, PENDING). | Optional |
+| active | The active status to filter results by (true or false). | Optional |
 | archive | Whether to filter by archive status. | Optional |
 
 #### Context Output
@@ -5680,7 +5680,7 @@ Get the allowed values for one or more custom-attack property names. Provide eit
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | property_name | A single property name to look up values for. | Optional |
-| property_names | The comma-separated list of property names to look up values for \(batch lookup\). | Optional |
+| property_names | A comma-separated list of property names to look up values for \(batch lookup\). | Optional |
 
 #### Context Output
 
@@ -6179,8 +6179,8 @@ List custom attacks for a scan job, with optional threat, prompt-set, and proper
 | --- | --- | --- |
 | job_id | The job UUID of the custom-attack scan. | Required |
 | threat | Whether to filter to attacks that produced a threat. Possible values are: true, false. | Optional |
-| prompt_set_id | Filter attacks by prompt-set UUID. | Optional |
-| property_value | Filter attacks by property value. | Optional |
+| prompt_set_id | The prompt-set UUID to filter attacks by. | Optional |
+| property_value | The property value to filter attacks by. | Optional |
 | skip | The number of records to skip from the start. | Optional |
 | limit | The maximum number of records to return. | Optional |
 | search | The free-text search filter. | Optional |

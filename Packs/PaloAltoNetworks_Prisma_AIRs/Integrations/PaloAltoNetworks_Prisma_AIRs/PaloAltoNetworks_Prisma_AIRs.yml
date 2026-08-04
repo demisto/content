@@ -2212,7 +2212,7 @@ script:
       description: The description of what this topic detects.
     - name: examples
       required: true
-      description: Comma-separated list of example prompts/content that match this topic.
+      description: A comma-separated list of example prompts/content that match this topic.
       isArray: true
     - name: active
       required: false
@@ -2268,7 +2268,7 @@ script:
       description: The updated description (if omitted, description remains unchanged).
     - name: examples
       required: false
-      description: Updated comma-separated list of examples (if omitted, examples remain unchanged).
+      description: An updated comma-separated list of examples (if omitted, examples remain unchanged).
       isArray: true
     - name: active
       required: false
@@ -2913,13 +2913,13 @@ script:
       description: The sort direction (asc, desc).
     - name: type
       required: false
-      description: Filter by file type (FILE, DIRECTORY).
+      description: The file type to filter results by (FILE, DIRECTORY).
     - name: result
       required: false
-      description: Filter by scan result (SUCCESS, FAILURE).
+      description: The scan result to filter results by (SUCCESS, FAILURE).
     - name: query_path
       required: false
-      description: Filter files by path prefix.
+      description: The path prefix to filter files by.
       defaultValue: '/'
     outputs:
     - contextPath: PrismaAIRs.ModelSecurityFiles.scan_uuid
@@ -2992,10 +2992,10 @@ script:
       description: The sort order (asc, desc).
     - name: result
       required: false
-      description: Filter by evaluation result (PASSED, FAILED, ERROR).
+      description: The evaluation result to filter results by (PASSED, FAILED, ERROR).
     - name: rule_instance_uuid
       required: false
-      description: Filter by specific rule instance UUID.
+      description: The rule instance UUID to filter results by.
     outputs:
     - contextPath: PrismaAIRs.ModelSecurityEvaluations.scan_uuid
       description: The scan UUID.
@@ -3071,22 +3071,22 @@ script:
       - desc
     - name: latest_version_outcomes
       required: false
-      description: Comma-separated list of latest-version evaluation outcomes to filter by (e.g., PASSED,FAILED).
+      description: A comma-separated list of latest-version evaluation outcomes to filter by (e.g., PASSED,FAILED).
       isArray: true
     - name: latest_version_formats
       required: false
-      description: Comma-separated list of latest-version model formats to filter by.
+      description: A comma-separated list of latest-version model formats to filter by.
       isArray: true
     - name: latest_version_source_types
       required: false
-      description: Comma-separated list of latest-version source types to filter by (e.g., HUGGING_FACE,S3).
+      description: A comma-separated list of latest-version source types to filter by (e.g., HUGGING_FACE,S3).
       isArray: true
     - name: start_time
       required: false
-      description: Only models created on or after this ISO 8601 datetime.
+      description: The earliest model creation datetime (ISO 8601); only models created on or after this time are returned.
     - name: end_time
       required: false
-      description: Only models created on or before this ISO 8601 datetime.
+      description: The latest model creation datetime (ISO 8601); only models created on or before this time are returned.
     outputs:
     - contextPath: PrismaAIRs.ModelSecurityModel.uuid
       description: The model UUID.
@@ -3563,10 +3563,10 @@ script:
       defaultValue: '0'
     - name: security_rule_uuid
       required: false
-      description: Filter by specific security rule UUID.
+      description: The security rule UUID to filter results by.
     - name: state
       required: false
-      description: Filter by rule state.
+      description: The rule state to filter results by.
       predefined:
       - 'DISABLED'
       - 'ALLOWING'
@@ -3722,10 +3722,10 @@ script:
       defaultValue: '50'
     - name: target_type
       required: false
-      description: Filter by target type (e.g., API, UI, MOBILE).
+      description: The target type to filter results by (e.g., API, UI, MOBILE).
     - name: status
       required: false
-      description: Filter by target status (e.g., READY, VALIDATING, FAILED).
+      description: The target status to filter results by (e.g., READY, VALIDATING, FAILED).
     outputs:
     - contextPath: PrismaAIRs.RedTeamTarget.uuid
       description: The target UUID.
@@ -4157,10 +4157,10 @@ script:
       defaultValue: '50'
     - name: job_type
       required: false
-      description: Filter by job type (e.g., STATIC, DYNAMIC, CUSTOM).
+      description: The job type to filter results by (e.g., STATIC, DYNAMIC, CUSTOM).
     - name: status
       required: false
-      description: Filter by scan status (e.g., COMPLETED, RUNNING, FAILED).
+      description: The scan status to filter results by (e.g., COMPLETED, RUNNING, FAILED).
     outputs:
     - contextPath: PrismaAIRs.RedTeamScan.uuid
       description: The scan UUID.
@@ -4308,7 +4308,7 @@ script:
       description: The free-text search filter.
     - name: status
       required: false
-      description: Filter by channel status. Supports a comma-separated list to filter by multiple statuses.
+      description: A comma-separated list of channel statuses to filter results by.
       auto: PREDEFINED
       predefined:
       - ONLINE
@@ -4670,10 +4670,10 @@ script:
       description: The free-text search filter for prompt text.
     - name: status
       required: false
-      description: Filter by prompt status (e.g., READY, PENDING).
+      description: The prompt status to filter results by (e.g., READY, PENDING).
     - name: active
       required: false
-      description: Filter by active status (true or false).
+      description: The active status to filter results by (true or false).
     outputs:
     - contextPath: PrismaAIRs.RedTeamPrompts.uuid
       description: The UUID of the prompt.
@@ -4896,10 +4896,10 @@ script:
       description: The free-text search filter for prompt set names/descriptions.
     - name: status
       required: false
-      description: Filter by prompt set status (e.g., READY, PENDING).
+      description: The prompt set status to filter results by (e.g., READY, PENDING).
     - name: active
       required: false
-      description: Filter by active status (true or false).
+      description: The active status to filter results by (true or false).
     - name: archive
       required: false
       description: Whether to filter by archive status.
@@ -5234,7 +5234,7 @@ script:
     - name: property_name
       description: A single property name to look up values for.
     - name: property_names
-      description: Comma-separated list of property names to look up values for (batch lookup).
+      description: A comma-separated list of property names to look up values for (batch lookup).
       isArray: true
     outputs:
     - contextPath: PrismaAIRs.RedTeamPropertyValue.name
@@ -5496,9 +5496,9 @@ script:
       - 'false'
       description: Whether to filter to attacks that produced a threat.
     - name: prompt_set_id
-      description: Filter attacks by prompt-set UUID.
+      description: The prompt-set UUID to filter attacks by.
     - name: property_value
-      description: Filter attacks by property value.
+      description: The property value to filter attacks by.
     - name: skip
       description: The number of records to skip from the start.
     - name: limit
