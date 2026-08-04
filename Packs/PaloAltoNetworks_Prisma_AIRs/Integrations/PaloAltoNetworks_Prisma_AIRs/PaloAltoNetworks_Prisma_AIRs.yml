@@ -175,10 +175,10 @@ script:
       description: Last 8 characters of the API key (for identification).
       type: String
     - contextPath: PrismaAIRs.ApiKey.created_at
-      description: API Key creation timestamp.
+      description: API Key creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ApiKey.expires_at
-      description: API Key expiration timestamp.
+      description: API Key expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ApiKey.revoked
       description: Whether the API key has been revoked.
@@ -238,13 +238,13 @@ script:
       description: Auth code associated with the key.
       type: String
     - contextPath: PrismaAIRs.ApiKeyCreate.expires_at
-      description: API Key expiration timestamp.
+      description: API Key expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ApiKeyCreate.revoked
       description: Whether the API key has been revoked.
       type: Boolean
     - contextPath: PrismaAIRs.ApiKeyCreate.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ApiKeyCreate.created_by
       description: User who created the key.
@@ -290,13 +290,13 @@ script:
       description: Auth code associated with the key.
       type: String
     - contextPath: PrismaAIRs.ApiKeyRegenerate.expires_at
-      description: New expiration timestamp.
+      description: New expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ApiKeyRegenerate.revoked
       description: Whether the API key has been revoked.
       type: Boolean
     - contextPath: PrismaAIRs.ApiKeyRegenerate.updated_at
-      description: Update timestamp.
+      description: Update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ApiKeyRegenerate.updated_by
       description: User who regenerated the key.
@@ -354,7 +354,7 @@ script:
       description: User who last updated the profile.
       type: String
     - contextPath: PrismaAIRs.SecurityProfile.last_modified_ts
-      description: Last modification timestamp.
+      description: Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.SecurityProfile.tsg_id
       description: Tenant Service Group ID.
@@ -391,7 +391,7 @@ script:
       description: User who last updated the profile.
       type: String
     - contextPath: PrismaAIRs.SecurityProfileGet.last_modified_ts
-      description: Last modification timestamp.
+      description: Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.SecurityProfileGet.tsg_id
       description: Tenant Service Group ID.
@@ -439,7 +439,7 @@ script:
       description: User who last updated the profile.
       type: String
     - contextPath: PrismaAIRs.SecurityProfileCreate.last_modified_ts
-      description: Last modification timestamp.
+      description: Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.SecurityProfileCreate.tsg_id
       description: Tenant Service Group ID.
@@ -490,7 +490,7 @@ script:
       description: User who last updated the profile.
       type: String
     - contextPath: PrismaAIRs.SecurityProfileUpdate.last_modified_ts
-      description: Last modification timestamp.
+      description: Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.SecurityProfileUpdate.tsg_id
       description: Tenant Service Group ID.
@@ -698,10 +698,10 @@ script:
       description: Source (api, sdk, etc.).
       type: String
     - contextPath: PrismaAIRs.CustomerAppConsumption.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.CustomerAppConsumption.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.CustomerAppConsumption.profiles
       description: Attached security profiles.
@@ -728,7 +728,7 @@ script:
       description: Last session ID.
       type: String
     - contextPath: PrismaAIRs.CustomerAppConsumption.most_recent_session_time
-      description: Most recent session timestamp.
+      description: Most recent session timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.CustomerAppConsumption.violations_critical
       description: Critical violations count.
@@ -856,7 +856,7 @@ script:
       description: Profile status.
       type: String
     - contextPath: PrismaAIRs.DeploymentProfile.expiration_date
-      description: Expiration date.
+      description: Expiration date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DeploymentProfile.ave_text_records
       description: Average text records.
@@ -904,10 +904,10 @@ script:
       description: DLP Profile version.
       type: Number
     - contextPath: PrismaAIRs.DlpProfile.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpProfile.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpProfile.created_by
       description: User who created the profile.
@@ -956,10 +956,10 @@ script:
       description: Detection rules array (expression_tree or multi_profile).
       type: Unknown
     - contextPath: PrismaAIRs.DlpProfileGet.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpProfileGet.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpProfileGet.created_by
       description: User who created the profile.
@@ -1015,7 +1015,7 @@ script:
       description: Detection rules array.
       type: Unknown
     - contextPath: PrismaAIRs.DlpProfileCreate.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpProfileCreate.created_by
       description: User who created the profile.
@@ -1068,7 +1068,7 @@ script:
       description: Detection rules array.
       type: Unknown
     - contextPath: PrismaAIRs.DlpProfilePatch.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpProfilePatch.updated_by
       description: User who last updated the profile.
@@ -1121,7 +1121,7 @@ script:
       description: Detection rules array.
       type: Unknown
     - contextPath: PrismaAIRs.DlpProfileReplace.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpProfileReplace.updated_by
       description: User who last updated the profile.
@@ -1197,10 +1197,10 @@ script:
       description: Number of keywords in the dictionary.
       type: Number
     - contextPath: PrismaAIRs.DlpDictionary.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpDictionary.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-runtime-dlp-dictionaries-get
     description: Get a single DLP dictionary by ID, optionally including keywords.
@@ -1257,10 +1257,10 @@ script:
       description: Tags (classification array).
       type: Unknown
     - contextPath: PrismaAIRs.DlpDictionaryGet.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpDictionaryGet.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpDictionaryGet.created_by
       description: User who created the dictionary.
@@ -1351,7 +1351,7 @@ script:
       description: Keyword list.
       type: Unknown
     - contextPath: PrismaAIRs.DlpDictionaryCreate.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpDictionaryCreate.created_by
       description: User who created the dictionary.
@@ -1419,7 +1419,7 @@ script:
       description: Whether the dictionary is case sensitive.
       type: Boolean
     - contextPath: PrismaAIRs.DlpDictionaryPatch.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpDictionaryPatch.updated_by
       description: User who last updated the dictionary.
@@ -1504,7 +1504,7 @@ script:
       description: Keyword list.
       type: Unknown
     - contextPath: PrismaAIRs.DlpDictionaryReplace.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpDictionaryReplace.updated_by
       description: User who last updated the dictionary.
@@ -1566,10 +1566,10 @@ script:
       description: Pattern status.
       type: String
     - contextPath: PrismaAIRs.DlpPattern.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpPattern.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-runtime-dlp-patterns-get
     description: Get a single DLP data pattern by ID.
@@ -1615,10 +1615,10 @@ script:
       description: Tags (classification, compliance, geography).
       type: Unknown
     - contextPath: PrismaAIRs.DlpPatternGet.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpPatternGet.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpPatternGet.created_by
       description: User who created the pattern.
@@ -1697,7 +1697,7 @@ script:
       description: Tags.
       type: Unknown
     - contextPath: PrismaAIRs.DlpPatternCreate.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpPatternCreate.created_by
       description: User who created the pattern.
@@ -1779,7 +1779,7 @@ script:
       description: Tags.
       type: Unknown
     - contextPath: PrismaAIRs.DlpPatternPatch.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpPatternPatch.updated_by
       description: User who last updated the pattern.
@@ -1861,7 +1861,7 @@ script:
       description: Tags.
       type: Unknown
     - contextPath: PrismaAIRs.DlpPatternReplace.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpPatternReplace.updated_by
       description: User who last updated the pattern.
@@ -1914,10 +1914,10 @@ script:
       description: Whether the profile is parent-managed.
       type: Boolean
     - contextPath: PrismaAIRs.DlpFilteringProfile.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpFilteringProfile.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-runtime-dlp-filtering-profiles-get
     description: Get a single DLP filtering profile by ID.
@@ -1978,10 +1978,10 @@ script:
       description: Allowed file types for scanning.
       type: Unknown
     - contextPath: PrismaAIRs.DlpFilteringProfileGet.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpFilteringProfileGet.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpFilteringProfileGet.created_by
       description: User who created the profile.
@@ -2108,10 +2108,10 @@ script:
       description: Profile version number.
       type: Number
     - contextPath: PrismaAIRs.DlpFilteringProfileReplace.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpFilteringProfileReplace.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.DlpFilteringProfileReplace.created_by
       description: User who created the profile.
@@ -2147,7 +2147,7 @@ script:
       description: Example prompts for the topic.
       type: Unknown
     - contextPath: PrismaAIRs.Topic.last_modified_ts
-      description: Last modification timestamp.
+      description: Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.Topic.created_by
       description: User who created the topic.
@@ -2196,10 +2196,10 @@ script:
       description: User who last updated the topic.
       type: String
     - contextPath: PrismaAIRs.TopicGet.last_modified_ts
-      description: Last modification timestamp.
+      description: Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.TopicGet.created_ts
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-runtime-topics-create
     description: Create a new custom topic guardrail with examples for detection.
@@ -2248,10 +2248,10 @@ script:
       description: User who last updated the topic.
       type: String
     - contextPath: PrismaAIRs.TopicCreate.last_modified_ts
-      description: Last modification timestamp.
+      description: Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.TopicCreate.created_ts
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-runtime-topics-update
     execution: true
@@ -2303,10 +2303,10 @@ script:
       description: User who last updated the topic.
       type: String
     - contextPath: PrismaAIRs.TopicUpdate.last_modified_ts
-      description: Last modification timestamp.
+      description: Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.TopicUpdate.created_ts
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-runtime-topics-delete
     execution: true
@@ -2451,10 +2451,10 @@ script:
       description: Scan origin.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityScan.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityScan.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityScan.created_by
       description: User who created the scan.
@@ -2519,10 +2519,10 @@ script:
       description: Scan owner.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityScanCreate.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityScanCreate.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityScanCreate.tsg_id
       description: Tenant Service Group ID.
@@ -2568,10 +2568,10 @@ script:
       description: Scan owner.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityScanGet.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityScanGet.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityScanGet.created_by
       description: User who created the scan.
@@ -2589,7 +2589,7 @@ script:
       description: Scanner version used.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityScanGet.time_started
-      description: Scan start time.
+      description: Scan start time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityScanGet.total_files_scanned
       description: Total files scanned.
@@ -2670,10 +2670,10 @@ script:
       description: Rule instance UUID.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityViolation.violations.created_at
-      description: Violation creation timestamp.
+      description: Violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityViolation.violations.updated_at
-      description: Violation last update timestamp.
+      description: Violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityViolation.violations.tsg_id
       description: Tenant Service Group ID.
@@ -2831,10 +2831,10 @@ script:
       description: Rule instance state (BLOCKING/ALLOWING/DISABLED).
       type: String
     - contextPath: PrismaAIRs.ModelSecurityEvaluation.created_at
-      description: Evaluation creation timestamp.
+      description: Evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityEvaluation.updated_at
-      description: Evaluation last update timestamp.
+      description: Evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityEvaluation.tsg_id
       description: Tenant Service Group ID.
@@ -2883,10 +2883,10 @@ script:
       description: Rule instance UUID.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityViolationDetail.created_at
-      description: Violation creation timestamp.
+      description: Violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityViolationDetail.updated_at
-      description: Violation last update timestamp.
+      description: Violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityViolationDetail.tsg_id
       description: Tenant Service Group ID.
@@ -2953,10 +2953,10 @@ script:
       description: Scan UUID.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityFiles.files.created_at
-      description: File entry creation timestamp.
+      description: File entry creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityFiles.files.updated_at
-      description: File entry last update timestamp.
+      description: File entry last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityFiles.files.tsg_id
       description: Tenant Service Group ID.
@@ -3025,10 +3025,10 @@ script:
       description: Rule description.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.created_at
-      description: Evaluation creation timestamp.
+      description: Evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.updated_at
-      description: Evaluation last update timestamp.
+      description: Evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.tsg_id
       description: Tenant Service Group ID.
@@ -3110,13 +3110,13 @@ script:
       description: Source types of the latest version.
       type: Unknown
     - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_scan_time
-      description: Scan time of the latest version.
+      description: Scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityModel.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityModel.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-model-security-models-get
     description: Get a single Model Security model by UUID. Read-only.
@@ -3153,13 +3153,13 @@ script:
       description: Source types of the latest version.
       type: Unknown
     - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_scan_time
-      description: Scan time of the latest version.
+      description: Scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityModel.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityModel.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-model-security-models-versions
     description: List the versions (revisions) of a Model Security model. Read-only.
@@ -3207,7 +3207,7 @@ script:
       description: Latest evaluation outcome.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityModelVersion.latest_scan_time
-      description: Latest scan time.
+      description: Latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_model_name
       description: Hugging Face model name.
@@ -3250,7 +3250,7 @@ script:
       description: Latest evaluation outcome.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityModelVersion.latest_scan_time
-      description: Latest scan time.
+      description: Latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_model_name
       description: Hugging Face model name.
@@ -3265,10 +3265,10 @@ script:
       description: Hugging Face commit title.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityModelVersion.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityModelVersion.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-model-security-models-files
     description: List the files of a Model Security model version. Read-only.
@@ -3335,10 +3335,10 @@ script:
       description: Whether the group is marked for deletion.
       type: Boolean
     - contextPath: PrismaAIRs.ModelSecurityGroup.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityGroup.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityGroup.tsg_id
       description: Tenant Service Group ID.
@@ -3369,10 +3369,10 @@ script:
       description: Whether the group is marked for deletion.
       type: Boolean
     - contextPath: PrismaAIRs.ModelSecurityGroupGet.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityGroupGet.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityGroupGet.tsg_id
       description: Tenant Service Group ID.
@@ -3417,10 +3417,10 @@ script:
       description: Whether the group is marked for deletion.
       type: Boolean
     - contextPath: PrismaAIRs.ModelSecurityGroupAdd.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityGroupAdd.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityGroupAdd.tsg_id
       description: Tenant Service Group ID.
@@ -3470,10 +3470,10 @@ script:
       description: Whether the group is marked for deletion.
       type: Boolean
     - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.tsg_id
       description: Tenant Service Group ID.
@@ -3597,10 +3597,10 @@ script:
       description: Security rule description.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.created_at
-      description: Rule instance creation timestamp.
+      description: Rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.updated_at
-      description: Rule instance last update timestamp.
+      description: Rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.tsg_id
       description: Tenant Service Group ID.
@@ -3659,10 +3659,10 @@ script:
       description: Security rule description.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.created_at
-      description: Rule instance creation timestamp.
+      description: Rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.updated_at
-      description: Rule instance last update timestamp.
+      description: Rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.tsg_id
       description: Tenant Service Group ID.
@@ -3702,10 +3702,10 @@ script:
       description: Security rule description.
       type: String
     - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.created_at
-      description: Rule instance creation timestamp.
+      description: Rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.updated_at
-      description: Rule instance last update timestamp.
+      description: Rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.tsg_id
       description: Tenant Service Group ID.
@@ -3746,10 +3746,10 @@ script:
       description: Whether the target has been validated.
       type: Boolean
     - contextPath: PrismaAIRs.RedTeamTarget.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamTarget.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamTarget.description
       description: Target description.
@@ -3811,7 +3811,7 @@ script:
       description: Whether the target has been validated.
       type: Boolean
     - contextPath: PrismaAIRs.RedTeamTargetCreate.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-redteam-targets-get
     description: Get Red Team target details by UUID.
@@ -3891,7 +3891,7 @@ script:
       description: Target status.
       type: String
     - contextPath: PrismaAIRs.RedTeamTargetUpdate.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-redteam-targets-delete
     description: Delete a Red Team target.
@@ -4022,8 +4022,8 @@ script:
       description: Whether the target is validated.
       type: Boolean
     - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.updated_at
-      description: Last update timestamp.
-      type: String
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
     - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.target_background
       description: Updated target background.
       type: Unknown
@@ -4137,10 +4137,10 @@ script:
       description: Attack Success Rate (null until scan completes).
       type: Number
     - contextPath: PrismaAIRs.RedTeamScanCreate.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamScanCreate.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamScanCreate.version
       description: Scan version.
@@ -4175,10 +4175,10 @@ script:
       description: Scan status.
       type: String
     - contextPath: PrismaAIRs.RedTeamScan.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamScan.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamScan.target_uuid
       description: Target UUID being scanned.
@@ -4187,10 +4187,10 @@ script:
       description: Target name being scanned.
       type: String
     - contextPath: PrismaAIRs.RedTeamScan.started_at
-      description: Scan start timestamp.
+      description: Scan start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamScan.completed_at
-      description: Scan completion timestamp.
+      description: Scan completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamScan.progress
       description: Scan progress percentage.
@@ -4251,13 +4251,13 @@ script:
       description: Progress percentage.
       type: Number
     - contextPath: PrismaAIRs.RedTeamScanGet.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamScanGet.started_at
-      description: Start timestamp.
+      description: Start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamScanGet.completed_at
-      description: Completion timestamp.
+      description: Completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-redteam-scan-abort
     description: Abort a running Red Team scan.
@@ -4339,13 +4339,13 @@ script:
       description: UUID of the user that created the channel.
       type: String
     - contextPath: PrismaAIRs.RedTeamNetworkChannel.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamNetworkChannel.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamNetworkChannel.last_online_at
-      description: Timestamp the channel was last online.
+      description: Timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamNetworkChannel.connected_clients_count
       description: Number of currently connected clients.
@@ -4385,10 +4385,10 @@ script:
       description: UUID of the user that created the channel.
       type: String
     - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-redteam-network-channels-stats
     description: Retrieve Red Team network broker channel statistics and deployment info (broker domain, docker registry/image, helm chart, online/total counts).
@@ -4438,13 +4438,13 @@ script:
       description: UUID of the user that created the channel.
       type: String
     - contextPath: PrismaAIRs.RedTeamNetworkChannel.created_at
-      description: Creation timestamp.
+      description: Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamNetworkChannel.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamNetworkChannel.last_online_at
-      description: Timestamp the channel was last online.
+      description: Timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamNetworkChannel.connected_clients_count
       description: Number of currently connected clients.
@@ -4484,7 +4484,7 @@ script:
       description: Channel status (ONLINE, OFFLINE, DRAFT).
       type: String
     - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.updated_at
-      description: Last update timestamp.
+      description: Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-redteam-languages-list
     description: List the tenant's allowed languages for Red Team scans. Queries the data plane by default; set use_management=true to query the management plane.
@@ -4573,7 +4573,7 @@ script:
       description: Whether the EULA is accepted.
       type: Boolean
     - contextPath: PrismaAIRs.RedTeamEula.accepted_at
-      description: Timestamp when EULA was accepted.
+      description: Timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamEula.accepted_by_user_id
       description: User ID who accepted the EULA.
@@ -4601,7 +4601,7 @@ script:
       description: Whether the EULA is accepted.
       type: Boolean
     - contextPath: PrismaAIRs.RedTeamEula.accepted_at
-      description: Timestamp when EULA was accepted.
+      description: Timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamEula.accepted_by_user_id
       description: User ID who accepted the EULA.
@@ -4641,10 +4641,10 @@ script:
       description: UUID of the prompt set this prompt belongs to.
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptCreate.created_at
-      description: Timestamp when the prompt was created.
+      description: Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptCreate.updated_at
-      description: Timestamp when the prompt was last updated.
+      description: Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptCreate.goal
       description: Optional custom goal for the prompt.
@@ -4691,10 +4691,10 @@ script:
       description: Whether the prompt is active.
       type: Boolean
     - contextPath: PrismaAIRs.RedTeamPrompts.created_at
-      description: Timestamp when the prompt was created.
+      description: Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPrompts.updated_at
-      description: Timestamp when the prompt was last updated.
+      description: Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPrompts.goal
       description: Optional custom goal for the prompt.
@@ -4731,10 +4731,10 @@ script:
       description: UUID of the prompt set this prompt belongs to.
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptGet.created_at
-      description: Timestamp when the prompt was created.
+      description: Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptGet.updated_at
-      description: Timestamp when the prompt was last updated.
+      description: Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptGet.goal
       description: Optional custom goal for the prompt.
@@ -4792,10 +4792,10 @@ script:
       description: UUID of the prompt set this prompt belongs to.
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptUpdate.created_at
-      description: Timestamp when the prompt was created.
+      description: Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptUpdate.updated_at
-      description: Timestamp when the prompt was last updated.
+      description: Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptUpdate.goal
       description: Optional custom goal for the prompt.
@@ -4855,10 +4855,10 @@ script:
       description: Status of the prompt set (e.g., READY, PENDING).
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptSetCreate.created_at
-      description: Timestamp when the prompt set was created.
+      description: Timestamp when the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetCreate.updated_at
-      description: Timestamp when the prompt set was last updated.
+      description: Timestamp when the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetCreate.description
       description: Description of the prompt set.
@@ -4920,10 +4920,10 @@ script:
       description: Status of the prompt set.
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptSets.created_at
-      description: Timestamp when created.
+      description: Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSets.updated_at
-      description: Timestamp when last updated.
+      description: Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSets.description
       description: Description of the prompt set.
@@ -4960,10 +4960,10 @@ script:
       description: Status of the prompt set.
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptSetGet.created_at
-      description: Timestamp when created.
+      description: Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetGet.updated_at
-      description: Timestamp when last updated.
+      description: Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetGet.description
       description: Description of the prompt set.
@@ -5025,10 +5025,10 @@ script:
       description: Status of the prompt set.
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.created_at
-      description: Timestamp when created.
+      description: Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.updated_at
-      description: Timestamp when last updated.
+      description: Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.description
       description: Description of the prompt set.
@@ -5074,10 +5074,10 @@ script:
       description: Status of the prompt set.
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptSetArchive.created_at
-      description: Timestamp when created.
+      description: Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetArchive.updated_at
-      description: Timestamp when last updated.
+      description: Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetArchive.description
       description: Description of the prompt set.
@@ -5101,7 +5101,7 @@ script:
       description: Registry access token for authenticating with the container registry.
       type: String
     - contextPath: PrismaAIRs.RedTeamRegistryCredentials.expiry
-      description: Token expiry timestamp (ISO 8601 format).
+      description: Token expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-redteam-prompt-sets-download
     description: Download CSV template for a Red Team prompt set. The template includes header row and sample data for bulk prompt uploads.
@@ -5157,11 +5157,11 @@ script:
       description: Tenant Service Group ID that owns the prompt set.
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptSetReference.created_at
-      description: Creation timestamp of the prompt set.
-      type: String
+      description: Creation timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetReference.updated_at
-      description: Last-updated timestamp of the prompt set.
-      type: String
+      description: Last-updated timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
   - name: prisma-airs-redteam-prompt-sets-version-info
     description: Get version information for a prompt set, including prompt counts.
     arguments:
@@ -5185,8 +5185,8 @@ script:
       description: The version identifier.
       type: String
     - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.snapshot_created_at
-      description: Timestamp the version snapshot was created.
-      type: String
+      description: Timestamp the version snapshot was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.stats.total_prompts
       description: Total number of prompts in the version.
       type: Number
@@ -5216,11 +5216,11 @@ script:
       description: Version of the prompt set.
       type: Unknown
     - contextPath: PrismaAIRs.RedTeamPromptSetActive.created_at
-      description: Creation timestamp of the prompt set.
-      type: String
+      description: Creation timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
     - contextPath: PrismaAIRs.RedTeamPromptSetActive.updated_at
-      description: Last-updated timestamp of the prompt set.
-      type: String
+      description: Last-updated timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
   - name: prisma-airs-redteam-properties-list
     description: List custom-attack property names. Property names (for example, category, severity) form the metadata vocabulary used to tag and filter custom attack prompts. Read-only.
     arguments: []

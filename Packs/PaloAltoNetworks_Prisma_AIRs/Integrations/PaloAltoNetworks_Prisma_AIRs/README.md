@@ -157,8 +157,8 @@ List all Runtime API Keys configured in Prisma AIRs.
 | PrismaAIRs.ApiKey.id | String | API Key ID \(UUID\). |
 | PrismaAIRs.ApiKey.name | String | API Key name. |
 | PrismaAIRs.ApiKey.last8 | String | Last 8 characters of the API key \(for identification\). |
-| PrismaAIRs.ApiKey.created_at | Date | API Key creation timestamp. |
-| PrismaAIRs.ApiKey.expires_at | Date | API Key expiration timestamp. |
+| PrismaAIRs.ApiKey.created_at | Date | API Key creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ApiKey.expires_at | Date | API Key expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ApiKey.revoked | Boolean | Whether the API key has been revoked. |
 
 #### Command example
@@ -232,9 +232,9 @@ Create a new Runtime API Key. WARNING - The full API key secret is only shown on
 | PrismaAIRs.ApiKeyCreate.api_key | String | FULL API KEY SECRET - Only shown once\! Save this securely. |
 | PrismaAIRs.ApiKeyCreate.last8 | String | Last 8 characters of the API key. |
 | PrismaAIRs.ApiKeyCreate.auth_code | String | Auth code associated with the key. |
-| PrismaAIRs.ApiKeyCreate.expires_at | Date | API Key expiration timestamp. |
+| PrismaAIRs.ApiKeyCreate.expires_at | Date | API Key expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ApiKeyCreate.revoked | Boolean | Whether the API key has been revoked. |
-| PrismaAIRs.ApiKeyCreate.created_at | Date | Creation timestamp. |
+| PrismaAIRs.ApiKeyCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ApiKeyCreate.created_by | String | User who created the key. |
 | PrismaAIRs.ApiKeyCreate.cust_app | String | Customer application name. |
 
@@ -265,9 +265,9 @@ Regenerate an existing Runtime API Key. WARNING - This creates a NEW key with a 
 | PrismaAIRs.ApiKeyRegenerate.api_key | String | NEW FULL API KEY SECRET - Only shown once\! The old key is now invalid. |
 | PrismaAIRs.ApiKeyRegenerate.last8 | String | Last 8 characters of the new API key. |
 | PrismaAIRs.ApiKeyRegenerate.auth_code | String | Auth code associated with the key. |
-| PrismaAIRs.ApiKeyRegenerate.expires_at | Date | New expiration timestamp. |
+| PrismaAIRs.ApiKeyRegenerate.expires_at | Date | New expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ApiKeyRegenerate.revoked | Boolean | Whether the API key has been revoked. |
-| PrismaAIRs.ApiKeyRegenerate.updated_at | Date | Update timestamp. |
+| PrismaAIRs.ApiKeyRegenerate.updated_at | Date | Update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ApiKeyRegenerate.updated_by | String | User who regenerated the key. |
 | PrismaAIRs.ApiKeyRegenerate.cust_app | String | Customer application name. |
 
@@ -321,7 +321,7 @@ List all runtime security profiles.
 | PrismaAIRs.SecurityProfile.active | Boolean | Whether the profile is active. |
 | PrismaAIRs.SecurityProfile.created_by | String | User who created the profile. |
 | PrismaAIRs.SecurityProfile.updated_by | String | User who last updated the profile. |
-| PrismaAIRs.SecurityProfile.last_modified_ts | Date | Last modification timestamp. |
+| PrismaAIRs.SecurityProfile.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.SecurityProfile.tsg_id | String | Tenant Service Group ID. |
 
 #### Command example
@@ -393,7 +393,7 @@ Get a specific security profile by ID or name. Returns the highest-revision prof
 | PrismaAIRs.SecurityProfileGet.policy | Unknown | Full policy configuration \(AI security profiles and DLP data profiles\). |
 | PrismaAIRs.SecurityProfileGet.created_by | String | User who created the profile. |
 | PrismaAIRs.SecurityProfileGet.updated_by | String | User who last updated the profile. |
-| PrismaAIRs.SecurityProfileGet.last_modified_ts | Date | Last modification timestamp. |
+| PrismaAIRs.SecurityProfileGet.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.SecurityProfileGet.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.SecurityProfileGet.csp_id | String | Cloud Service Provider ID. |
 
@@ -498,7 +498,7 @@ Create a new security profile with custom policy configuration.
 | PrismaAIRs.SecurityProfileCreate.policy | Unknown | Full policy configuration. |
 | PrismaAIRs.SecurityProfileCreate.created_by | String | User who created the profile. |
 | PrismaAIRs.SecurityProfileCreate.updated_by | String | User who last updated the profile. |
-| PrismaAIRs.SecurityProfileCreate.last_modified_ts | Date | Last modification timestamp. |
+| PrismaAIRs.SecurityProfileCreate.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.SecurityProfileCreate.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.SecurityProfileCreate.csp_id | String | Cloud Service Provider ID. |
 
@@ -604,7 +604,7 @@ Update an existing security profile. WARNING - Modifying profile configuration c
 | PrismaAIRs.SecurityProfileUpdate.policy | Unknown | Full policy configuration. |
 | PrismaAIRs.SecurityProfileUpdate.created_by | String | User who created the profile. |
 | PrismaAIRs.SecurityProfileUpdate.updated_by | String | User who last updated the profile. |
-| PrismaAIRs.SecurityProfileUpdate.last_modified_ts | Date | Last modification timestamp. |
+| PrismaAIRs.SecurityProfileUpdate.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.SecurityProfileUpdate.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.SecurityProfileUpdate.csp_id | String | Cloud Service Provider ID. |
 
@@ -918,8 +918,8 @@ Get per-application token consumption and session statistics over the requested 
 | PrismaAIRs.CustomerAppConsumption.name | String | Application name. |
 | PrismaAIRs.CustomerAppConsumption.cloud | String | Cloud provider. |
 | PrismaAIRs.CustomerAppConsumption.source | String | Source \(api, sdk, etc.\). |
-| PrismaAIRs.CustomerAppConsumption.created_at | Date | Creation timestamp. |
-| PrismaAIRs.CustomerAppConsumption.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.CustomerAppConsumption.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.CustomerAppConsumption.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.CustomerAppConsumption.profiles | Unknown | Attached security profiles. |
 | PrismaAIRs.CustomerAppConsumption.average_daily_tokens | Number | Average daily token consumption. |
 | PrismaAIRs.CustomerAppConsumption.average_daily_tokens_scale | String | Scale for daily tokens \(K, M, etc.\). |
@@ -928,7 +928,7 @@ Get per-application token consumption and session statistics over the requested 
 | PrismaAIRs.CustomerAppConsumption.sessions_total | Number | Total sessions in time window. |
 | PrismaAIRs.CustomerAppConsumption.sessions_violating | Number | Number of violating sessions. |
 | PrismaAIRs.CustomerAppConsumption.last_session_id | String | Last session ID. |
-| PrismaAIRs.CustomerAppConsumption.most_recent_session_time | Date | Most recent session timestamp. |
+| PrismaAIRs.CustomerAppConsumption.most_recent_session_time | Date | Most recent session timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.CustomerAppConsumption.violations_critical | Number | Critical violations count. |
 | PrismaAIRs.CustomerAppConsumption.violations_high | Number | High violations count. |
 | PrismaAIRs.CustomerAppConsumption.violations_medium | Number | Medium violations count. |
@@ -1019,7 +1019,7 @@ List all deployment profiles.
 | PrismaAIRs.DeploymentProfile.auth_code | String | Authentication code. |
 | PrismaAIRs.DeploymentProfile.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.DeploymentProfile.status | String | Profile status. |
-| PrismaAIRs.DeploymentProfile.expiration_date | Date | Expiration date. |
+| PrismaAIRs.DeploymentProfile.expiration_date | Date | Expiration date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DeploymentProfile.ave_text_records | Number | Average text records. |
 
 #### Command example
@@ -1079,8 +1079,8 @@ List all DLP data profiles (v2 API).
 | PrismaAIRs.DlpProfile.is_granular_data_profile | Boolean | Whether this is a granular data profile. |
 | PrismaAIRs.DlpProfile.is_parent_managed | Boolean | Whether the profile is parent-managed. |
 | PrismaAIRs.DlpProfile.version | Number | DLP Profile version. |
-| PrismaAIRs.DlpProfile.created_at | Date | Creation timestamp. |
-| PrismaAIRs.DlpProfile.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpProfile.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpProfile.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpProfile.created_by | String | User who created the profile. |
 | PrismaAIRs.DlpProfile.updated_by | String | User who last updated the profile. |
 
@@ -1168,8 +1168,8 @@ Get a single DLP data profile by ID.
 | PrismaAIRs.DlpProfileGet.is_parent_managed | Boolean | Whether the profile is parent-managed. |
 | PrismaAIRs.DlpProfileGet.version | Number | DLP Profile version. |
 | PrismaAIRs.DlpProfileGet.detection_rules | Unknown | Detection rules array \(expression_tree or multi_profile\). |
-| PrismaAIRs.DlpProfileGet.created_at | Date | Creation timestamp. |
-| PrismaAIRs.DlpProfileGet.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpProfileGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpProfileGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpProfileGet.created_by | String | User who created the profile. |
 | PrismaAIRs.DlpProfileGet.updated_by | String | User who last updated the profile. |
 
@@ -1204,7 +1204,7 @@ Create a new DLP data profile with detection rules.
 | PrismaAIRs.DlpProfileCreate.is_granular_data_profile | Boolean | Whether this is a granular data profile. |
 | PrismaAIRs.DlpProfileCreate.version | Number | Profile version. |
 | PrismaAIRs.DlpProfileCreate.detection_rules | Unknown | Detection rules array. |
-| PrismaAIRs.DlpProfileCreate.created_at | Date | Creation timestamp. |
+| PrismaAIRs.DlpProfileCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpProfileCreate.created_by | String | User who created the profile. |
 
 ### prisma-airs-runtime-dlp-profiles-patch
@@ -1238,7 +1238,7 @@ Partially update a DLP data profile (JSON Merge Patch). Fields set to "null" wil
 | PrismaAIRs.DlpProfilePatch.profile_type | String | Profile type. |
 | PrismaAIRs.DlpProfilePatch.version | Number | Profile version. |
 | PrismaAIRs.DlpProfilePatch.detection_rules | Unknown | Detection rules array. |
-| PrismaAIRs.DlpProfilePatch.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpProfilePatch.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpProfilePatch.updated_by | String | User who last updated the profile. |
 
 ### prisma-airs-runtime-dlp-profiles-replace
@@ -1272,7 +1272,7 @@ Replace (full update) a DLP data profile. This replaces the entire profile confi
 | PrismaAIRs.DlpProfileReplace.profile_type | String | Profile type. |
 | PrismaAIRs.DlpProfileReplace.version | Number | Profile version. |
 | PrismaAIRs.DlpProfileReplace.detection_rules | Unknown | Detection rules array. |
-| PrismaAIRs.DlpProfileReplace.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpProfileReplace.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpProfileReplace.updated_by | String | User who last updated the profile. |
 
 ### prisma-airs-runtime-dlp-profiles-delete
@@ -1330,8 +1330,8 @@ List DLP dictionaries.
 | PrismaAIRs.DlpDictionary.is_case_sensitive | Boolean | Whether the dictionary is case sensitive. |
 | PrismaAIRs.DlpDictionary.detection_technique | String | Detection technique. |
 | PrismaAIRs.DlpDictionary.number_of_keywords | Number | Number of keywords in the dictionary. |
-| PrismaAIRs.DlpDictionary.created_at | Date | Creation timestamp. |
-| PrismaAIRs.DlpDictionary.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpDictionary.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpDictionary.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -1420,8 +1420,8 @@ Get a single DLP dictionary by ID, optionally including keywords.
 | PrismaAIRs.DlpDictionaryGet.dictionary_metadata | Unknown | Dictionary metadata \(number of keywords, file size, original filename\). |
 | PrismaAIRs.DlpDictionaryGet.keywords | Unknown | Keyword list \(only populated if include_keywords is true\). |
 | PrismaAIRs.DlpDictionaryGet.tags | Unknown | Tags \(classification array\). |
-| PrismaAIRs.DlpDictionaryGet.created_at | Date | Creation timestamp. |
-| PrismaAIRs.DlpDictionaryGet.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpDictionaryGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpDictionaryGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpDictionaryGet.created_by | String | User who created the dictionary. |
 | PrismaAIRs.DlpDictionaryGet.updated_by | String | User who last updated the dictionary. |
 
@@ -1461,7 +1461,7 @@ Create a new DLP dictionary by uploading a keyword file.
 | PrismaAIRs.DlpDictionaryCreate.detection_technique | String | Detection technique. |
 | PrismaAIRs.DlpDictionaryCreate.dictionary_metadata | Unknown | Dictionary metadata. |
 | PrismaAIRs.DlpDictionaryCreate.keywords | Unknown | Keyword list. |
-| PrismaAIRs.DlpDictionaryCreate.created_at | Date | Creation timestamp. |
+| PrismaAIRs.DlpDictionaryCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpDictionaryCreate.created_by | String | User who created the dictionary. |
 
 ### prisma-airs-runtime-dlp-dictionaries-patch
@@ -1496,7 +1496,7 @@ Partially update a DLP dictionary (JSON Merge Patch). Fields set to "null" will 
 | PrismaAIRs.DlpDictionaryPatch.region_name | String | Region name. |
 | PrismaAIRs.DlpDictionaryPatch.type | String | Dictionary type. |
 | PrismaAIRs.DlpDictionaryPatch.is_case_sensitive | Boolean | Whether the dictionary is case sensitive. |
-| PrismaAIRs.DlpDictionaryPatch.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpDictionaryPatch.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpDictionaryPatch.updated_by | String | User who last updated the dictionary. |
 
 ### prisma-airs-runtime-dlp-dictionaries-replace
@@ -1534,7 +1534,7 @@ Replace (full update) a DLP dictionary by uploading a new keyword file.
 | PrismaAIRs.DlpDictionaryReplace.type | String | Dictionary type. |
 | PrismaAIRs.DlpDictionaryReplace.is_case_sensitive | Boolean | Whether the dictionary is case sensitive. |
 | PrismaAIRs.DlpDictionaryReplace.keywords | Unknown | Keyword list. |
-| PrismaAIRs.DlpDictionaryReplace.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpDictionaryReplace.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpDictionaryReplace.updated_by | String | User who last updated the dictionary. |
 
 ### prisma-airs-runtime-dlp-dictionaries-delete
@@ -1589,8 +1589,8 @@ List DLP data patterns.
 | PrismaAIRs.DlpPattern.detection_technique | String | Detection technique. |
 | PrismaAIRs.DlpPattern.detection_sub_technique | String | Detection sub-technique. |
 | PrismaAIRs.DlpPattern.pattern_status | String | Pattern status. |
-| PrismaAIRs.DlpPattern.created_at | Date | Creation timestamp. |
-| PrismaAIRs.DlpPattern.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpPattern.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpPattern.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -1723,8 +1723,8 @@ Get a single DLP data pattern by ID.
 | PrismaAIRs.DlpPatternGet.detection_config | Unknown | Detection configuration \(technique and confidence levels\). |
 | PrismaAIRs.DlpPatternGet.matching_rules | Unknown | Matching rules \(proximity, delimiters, regexes, metadata\). |
 | PrismaAIRs.DlpPatternGet.tags | Unknown | Tags \(classification, compliance, geography\). |
-| PrismaAIRs.DlpPatternGet.created_at | Date | Creation timestamp. |
-| PrismaAIRs.DlpPatternGet.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpPatternGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpPatternGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpPatternGet.created_by | String | User who created the pattern. |
 | PrismaAIRs.DlpPatternGet.updated_by | String | User who last updated the pattern. |
 
@@ -1820,7 +1820,7 @@ Create a new DLP data pattern.
 | PrismaAIRs.DlpPatternCreate.detection_config | Unknown | Detection configuration. |
 | PrismaAIRs.DlpPatternCreate.matching_rules | Unknown | Matching rules. |
 | PrismaAIRs.DlpPatternCreate.tags | Unknown | Tags. |
-| PrismaAIRs.DlpPatternCreate.created_at | Date | Creation timestamp. |
+| PrismaAIRs.DlpPatternCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpPatternCreate.created_by | String | User who created the pattern. |
 
 #### Command example
@@ -1914,7 +1914,7 @@ Partially update a DLP data pattern (JSON Merge Patch). Fields set to "null" wil
 | PrismaAIRs.DlpPatternPatch.detection_config | Unknown | Detection configuration. |
 | PrismaAIRs.DlpPatternPatch.matching_rules | Unknown | Matching rules. |
 | PrismaAIRs.DlpPatternPatch.tags | Unknown | Tags. |
-| PrismaAIRs.DlpPatternPatch.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpPatternPatch.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpPatternPatch.updated_by | String | User who last updated the pattern. |
 
 #### Command example
@@ -2007,7 +2007,7 @@ Replace (full update) a DLP data pattern. This replaces the entire pattern confi
 | PrismaAIRs.DlpPatternReplace.detection_config | Unknown | Detection configuration. |
 | PrismaAIRs.DlpPatternReplace.matching_rules | Unknown | Matching rules. |
 | PrismaAIRs.DlpPatternReplace.tags | Unknown | Tags. |
-| PrismaAIRs.DlpPatternReplace.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpPatternReplace.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpPatternReplace.updated_by | String | User who last updated the pattern. |
 
 #### Command example
@@ -2138,8 +2138,8 @@ List DLP filtering profiles.
 | PrismaAIRs.DlpFilteringProfile.type | String | Profile type. |
 | PrismaAIRs.DlpFilteringProfile.default_action | String | Default action for the profile. |
 | PrismaAIRs.DlpFilteringProfile.is_parent_managed | Boolean | Whether the profile is parent-managed. |
-| PrismaAIRs.DlpFilteringProfile.created_at | Date | Creation timestamp. |
-| PrismaAIRs.DlpFilteringProfile.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpFilteringProfile.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpFilteringProfile.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -2256,8 +2256,8 @@ Get a single DLP filtering profile by ID.
 | PrismaAIRs.DlpFilteringProfileGet.euc_template_id | String | End user coaching template ID. |
 | PrismaAIRs.DlpFilteringProfileGet.version | Number | Profile version number. |
 | PrismaAIRs.DlpFilteringProfileGet.file_type | Unknown | Allowed file types for scanning. |
-| PrismaAIRs.DlpFilteringProfileGet.created_at | Date | Creation timestamp. |
-| PrismaAIRs.DlpFilteringProfileGet.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpFilteringProfileGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpFilteringProfileGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpFilteringProfileGet.created_by | String | User who created the profile. |
 | PrismaAIRs.DlpFilteringProfileGet.updated_by | String | User who last updated the profile. |
 
@@ -2306,8 +2306,8 @@ Replace (full update) a DLP filtering profile. This is a destructive operation t
 | PrismaAIRs.DlpFilteringProfileReplace.is_granular_profile | Boolean | Whether this is a granular profile. |
 | PrismaAIRs.DlpFilteringProfileReplace.is_parent_managed | Boolean | Whether the profile is parent-managed. |
 | PrismaAIRs.DlpFilteringProfileReplace.version | Number | Profile version number. |
-| PrismaAIRs.DlpFilteringProfileReplace.created_at | Date | Creation timestamp. |
-| PrismaAIRs.DlpFilteringProfileReplace.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.DlpFilteringProfileReplace.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpFilteringProfileReplace.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.DlpFilteringProfileReplace.created_by | String | User who created the profile. |
 | PrismaAIRs.DlpFilteringProfileReplace.updated_by | String | User who last updated the profile. |
 
@@ -2336,7 +2336,7 @@ List custom topic guardrails.
 | PrismaAIRs.Topic.revision | Number | Topic revision number. |
 | PrismaAIRs.Topic.description | String | Topic description. |
 | PrismaAIRs.Topic.examples | Unknown | Example prompts for the topic. |
-| PrismaAIRs.Topic.last_modified_ts | Date | Last modification timestamp. |
+| PrismaAIRs.Topic.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.Topic.created_by | String | User who created the topic. |
 | PrismaAIRs.Topic.updated_by | String | User who last updated the topic. |
 | PrismaAIRs.Topic.csp_id | String | CSP ID. |
@@ -2430,8 +2430,8 @@ Get a specific custom topic by ID or name.
 | PrismaAIRs.TopicGet.examples | Unknown | Example prompts for the topic. |
 | PrismaAIRs.TopicGet.created_by | String | User who created the topic. |
 | PrismaAIRs.TopicGet.updated_by | String | User who last updated the topic. |
-| PrismaAIRs.TopicGet.last_modified_ts | Date | Last modification timestamp. |
-| PrismaAIRs.TopicGet.created_ts | Date | Creation timestamp. |
+| PrismaAIRs.TopicGet.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.TopicGet.created_ts | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -2503,8 +2503,8 @@ Create a new custom topic guardrail with examples for detection.
 | PrismaAIRs.TopicCreate.examples | Unknown | Example prompts for the topic. |
 | PrismaAIRs.TopicCreate.created_by | String | User who created the topic. |
 | PrismaAIRs.TopicCreate.updated_by | String | User who last updated the topic. |
-| PrismaAIRs.TopicCreate.last_modified_ts | Date | Last modification timestamp. |
-| PrismaAIRs.TopicCreate.created_ts | Date | Creation timestamp. |
+| PrismaAIRs.TopicCreate.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.TopicCreate.created_ts | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -2577,8 +2577,8 @@ Update an existing custom topic. WARNING - Modifying topic definition can break 
 | PrismaAIRs.TopicUpdate.examples | Unknown | Example prompts for the topic. |
 | PrismaAIRs.TopicUpdate.created_by | String | User who created the topic. |
 | PrismaAIRs.TopicUpdate.updated_by | String | User who last updated the topic. |
-| PrismaAIRs.TopicUpdate.last_modified_ts | Date | Last modification timestamp. |
-| PrismaAIRs.TopicUpdate.created_ts | Date | Creation timestamp. |
+| PrismaAIRs.TopicUpdate.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.TopicUpdate.created_ts | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -2752,8 +2752,8 @@ List all model security scans.
 | PrismaAIRs.ModelSecurityScan.security_group_uuid | String | Security group UUID. |
 | PrismaAIRs.ModelSecurityScan.security_group_name | String | Security group name. |
 | PrismaAIRs.ModelSecurityScan.scan_origin | String | Scan origin. |
-| PrismaAIRs.ModelSecurityScan.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityScan.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityScan.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScan.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityScan.created_by | String | User who created the scan. |
 
 #### Command example
@@ -2836,8 +2836,8 @@ Create a new model security scan to check a model for supply chain security issu
 | PrismaAIRs.ModelSecurityScanCreate.eval_outcome | String | Evaluation outcome \(PENDING initially, then ALLOWED/BLOCKED\). |
 | PrismaAIRs.ModelSecurityScanCreate.source_type | String | Model source type. |
 | PrismaAIRs.ModelSecurityScanCreate.owner | String | Scan owner. |
-| PrismaAIRs.ModelSecurityScanCreate.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityScanCreate.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityScanCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScanCreate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityScanCreate.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.ModelSecurityScanCreate.rules_passed | Number | Number of rules that passed. |
 | PrismaAIRs.ModelSecurityScanCreate.rules_failed | Number | Number of rules that failed. |
@@ -2870,14 +2870,14 @@ Get model security scan status and results. Use this to poll scan completion aft
 | PrismaAIRs.ModelSecurityScanGet.eval_outcome | String | Evaluation outcome \(PENDING/ALLOWED/BLOCKED\). |
 | PrismaAIRs.ModelSecurityScanGet.source_type | String | Model source type. |
 | PrismaAIRs.ModelSecurityScanGet.owner | String | Scan owner. |
-| PrismaAIRs.ModelSecurityScanGet.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityScanGet.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityScanGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScanGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityScanGet.created_by | String | User who created the scan. |
 | PrismaAIRs.ModelSecurityScanGet.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.ModelSecurityScanGet.model_version_uuid | String | Model version UUID. |
 | PrismaAIRs.ModelSecurityScanGet.enabled_rule_count_snapshot | Number | Snapshot of enabled rules count at scan time. |
 | PrismaAIRs.ModelSecurityScanGet.scanner_version | String | Scanner version used. |
-| PrismaAIRs.ModelSecurityScanGet.time_started | Date | Scan start time. |
+| PrismaAIRs.ModelSecurityScanGet.time_started | Date | Scan start time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityScanGet.total_files_scanned | Number | Total files scanned. |
 | PrismaAIRs.ModelSecurityScanGet.total_files_skipped | Number | Total files skipped. |
 | PrismaAIRs.ModelSecurityScanGet.rules_passed | Number | Number of rules that passed. |
@@ -2921,8 +2921,8 @@ Get rule violations for a model security scan. Shows detailed information about 
 | PrismaAIRs.ModelSecurityViolation.violations.operator | String | Operator involved in violation. |
 | PrismaAIRs.ModelSecurityViolation.violations.hash | String | Hash of the violating file. |
 | PrismaAIRs.ModelSecurityViolation.violations.rule_instance_uuid | String | Rule instance UUID. |
-| PrismaAIRs.ModelSecurityViolation.violations.created_at | Date | Violation creation timestamp. |
-| PrismaAIRs.ModelSecurityViolation.violations.updated_at | Date | Violation last update timestamp. |
+| PrismaAIRs.ModelSecurityViolation.violations.created_at | Date | Violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityViolation.violations.updated_at | Date | Violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityViolation.violations.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.ModelSecurityViolation.total_items | Number | Total number of violations available. |
 | PrismaAIRs.ModelSecurityViolation.limit | Number | Limit used for pagination. |
@@ -3109,8 +3109,8 @@ Get a single rule evaluation by UUID. Retrieves detailed information about how a
 | PrismaAIRs.ModelSecurityEvaluation.result | String | Evaluation result \(PASSED/FAILED/ERROR\). |
 | PrismaAIRs.ModelSecurityEvaluation.violation_count | Number | Number of violations found. |
 | PrismaAIRs.ModelSecurityEvaluation.rule_instance_state | String | Rule instance state \(BLOCKING/ALLOWING/DISABLED\). |
-| PrismaAIRs.ModelSecurityEvaluation.created_at | Date | Evaluation creation timestamp. |
-| PrismaAIRs.ModelSecurityEvaluation.updated_at | Date | Evaluation last update timestamp. |
+| PrismaAIRs.ModelSecurityEvaluation.created_at | Date | Evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityEvaluation.updated_at | Date | Evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityEvaluation.tsg_id | String | Tenant Service Group ID. |
 
 ### prisma-airs-model-security-scans-violation
@@ -3144,8 +3144,8 @@ Get a single violation by UUID. Retrieves detailed information about a specific 
 | PrismaAIRs.ModelSecurityViolationDetail.operator | String | Operator involved in violation. |
 | PrismaAIRs.ModelSecurityViolationDetail.hash | String | Hash of the violating file. |
 | PrismaAIRs.ModelSecurityViolationDetail.rule_instance_uuid | String | Rule instance UUID. |
-| PrismaAIRs.ModelSecurityViolationDetail.created_at | Date | Violation creation timestamp. |
-| PrismaAIRs.ModelSecurityViolationDetail.updated_at | Date | Violation last update timestamp. |
+| PrismaAIRs.ModelSecurityViolationDetail.created_at | Date | Violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityViolationDetail.updated_at | Date | Violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityViolationDetail.tsg_id | String | Tenant Service Group ID. |
 
 ### prisma-airs-model-security-scans-files
@@ -3184,8 +3184,8 @@ Get files for a scan. Lists all files that were scanned within a model, showing 
 | PrismaAIRs.ModelSecurityFiles.files.blob_id | String | Blob storage identifier. |
 | PrismaAIRs.ModelSecurityFiles.files.formats | Unknown | Model formats detected. |
 | PrismaAIRs.ModelSecurityFiles.files.scan_uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityFiles.files.created_at | Date | File entry creation timestamp. |
-| PrismaAIRs.ModelSecurityFiles.files.updated_at | Date | File entry last update timestamp. |
+| PrismaAIRs.ModelSecurityFiles.files.created_at | Date | File entry creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityFiles.files.updated_at | Date | File entry last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityFiles.files.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.ModelSecurityFiles.total_items | Number | Total number of files available. |
 | PrismaAIRs.ModelSecurityFiles.limit | Number | Limit used for pagination. |
@@ -3225,8 +3225,8 @@ Get rule evaluations for a scan. Lists all rule evaluations showing which securi
 | PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_state | String | Rule instance state \(BLOCKING, MONITORING\). |
 | PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_uuid | String | Rule instance UUID that performed the evaluation. |
 | PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_description | String | Rule description. |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.created_at | Date | Evaluation creation timestamp. |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.updated_at | Date | Evaluation last update timestamp. |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.created_at | Date | Evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.updated_at | Date | Evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityEvaluations.evaluations.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.ModelSecurityEvaluations.total_items | Number | Total number of evaluations available. |
 | PrismaAIRs.ModelSecurityEvaluations.limit | Number | Limit used for pagination. |
@@ -3267,9 +3267,9 @@ List Model Security model catalog entries (aggregate over their scanned versions
 | PrismaAIRs.ModelSecurityModel.latest_version_outcome | String | Evaluation outcome of the latest version. |
 | PrismaAIRs.ModelSecurityModel.latest_version_formats | Unknown | Model formats of the latest version. |
 | PrismaAIRs.ModelSecurityModel.latest_version_source_types | Unknown | Source types of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | Scan time of the latest version. |
-| PrismaAIRs.ModelSecurityModel.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityModel.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | Scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -3317,9 +3317,9 @@ Get a single Model Security model by UUID. Read-only.
 | PrismaAIRs.ModelSecurityModel.latest_version_outcome | String | Evaluation outcome of the latest version. |
 | PrismaAIRs.ModelSecurityModel.latest_version_formats | Unknown | Model formats of the latest version. |
 | PrismaAIRs.ModelSecurityModel.latest_version_source_types | Unknown | Source types of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | Scan time of the latest version. |
-| PrismaAIRs.ModelSecurityModel.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityModel.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | Scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -3365,7 +3365,7 @@ List the versions (revisions) of a Model Security model. Read-only.
 | PrismaAIRs.ModelSecurityModelVersion.model_formats | Unknown | Model formats. |
 | PrismaAIRs.ModelSecurityModelVersion.source_types | Unknown | Source types. |
 | PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome | String | Latest evaluation outcome. |
-| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | Latest scan time. |
+| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | Latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityModelVersion.hf_model_name | String | Hugging Face model name. |
 | PrismaAIRs.ModelSecurityModelVersion.hf_organization | String | Hugging Face organization. |
 
@@ -3411,13 +3411,13 @@ Get a single Model Security model version by UUID. Read-only.
 | PrismaAIRs.ModelSecurityModelVersion.model_formats | Unknown | Model formats. |
 | PrismaAIRs.ModelSecurityModelVersion.source_types | Unknown | Source types. |
 | PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome | String | Latest evaluation outcome. |
-| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | Latest scan time. |
+| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | Latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityModelVersion.hf_model_name | String | Hugging Face model name. |
 | PrismaAIRs.ModelSecurityModelVersion.hf_organization | String | Hugging Face organization. |
 | PrismaAIRs.ModelSecurityModelVersion.hf_commit_sha | String | Hugging Face commit SHA. |
 | PrismaAIRs.ModelSecurityModelVersion.hf_commit_title | String | Hugging Face commit title. |
-| PrismaAIRs.ModelSecurityModelVersion.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityModelVersion.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityModelVersion.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModelVersion.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -3508,8 +3508,8 @@ List all model security groups.
 | PrismaAIRs.ModelSecurityGroup.source_type | String | Source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
 | PrismaAIRs.ModelSecurityGroup.state | String | Group state \(ACTIVE, PENDING\). |
 | PrismaAIRs.ModelSecurityGroup.is_tombstone | Boolean | Whether the group is marked for deletion. |
-| PrismaAIRs.ModelSecurityGroup.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityGroup.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityGroup.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroup.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityGroup.tsg_id | String | Tenant Service Group ID. |
 
 #### Command example
@@ -3584,8 +3584,8 @@ Get model security group details by UUID.
 | PrismaAIRs.ModelSecurityGroupGet.source_type | String | Source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
 | PrismaAIRs.ModelSecurityGroupGet.state | String | Group state \(ACTIVE, PENDING\). |
 | PrismaAIRs.ModelSecurityGroupGet.is_tombstone | Boolean | Whether the group is marked for deletion. |
-| PrismaAIRs.ModelSecurityGroupGet.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityGroupGet.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityGroupGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroupGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityGroupGet.tsg_id | String | Tenant Service Group ID. |
 
 ### prisma-airs-model-security-groups-create
@@ -3615,8 +3615,8 @@ Create a new model security group for scanning models from a specific source typ
 | PrismaAIRs.ModelSecurityGroupAdd.source_type | String | Source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
 | PrismaAIRs.ModelSecurityGroupAdd.state | String | Group state \(PENDING initially, becomes ACTIVE after configuration\). |
 | PrismaAIRs.ModelSecurityGroupAdd.is_tombstone | Boolean | Whether the group is marked for deletion. |
-| PrismaAIRs.ModelSecurityGroupAdd.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityGroupAdd.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityGroupAdd.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroupAdd.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityGroupAdd.tsg_id | String | Tenant Service Group ID. |
 
 ### prisma-airs-model-security-groups-delete
@@ -3668,8 +3668,8 @@ Update an existing security group. Updates the name and/or description of a secu
 | PrismaAIRs.ModelSecurityGroupUpdate.source_type | String | Model source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
 | PrismaAIRs.ModelSecurityGroupUpdate.state | String | Group state after update. |
 | PrismaAIRs.ModelSecurityGroupUpdate.is_tombstone | Boolean | Whether the group is marked for deletion. |
-| PrismaAIRs.ModelSecurityGroupUpdate.created_at | Date | Creation timestamp. |
-| PrismaAIRs.ModelSecurityGroupUpdate.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.ModelSecurityGroupUpdate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroupUpdate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityGroupUpdate.tsg_id | String | Tenant Service Group ID. |
 
 ### prisma-airs-model-security-rules-list
@@ -3803,8 +3803,8 @@ List rule instances for a security group. Rule instances are rules that have bee
 | PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_name | String | Security rule name. |
 | PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_type | String | Security rule type. |
 | PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.created_at | Date | Rule instance creation timestamp. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.updated_at | Date | Rule instance last update timestamp. |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.created_at | Date | Rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.updated_at | Date | Rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityRuleInstance.rule_instances.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.ModelSecurityRuleInstance.rule_instances.field_values | Unknown | Custom field values for this rule instance. |
 | PrismaAIRs.ModelSecurityRuleInstance.total_items | Number | Total number of rule instances available. |
@@ -3840,8 +3840,8 @@ Update a rule instance within a security group. Use this to enable/disable rules
 | PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_name | String | Security rule name. |
 | PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_type | String | Security rule type. |
 | PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.created_at | Date | Rule instance creation timestamp. |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.updated_at | Date | Rule instance last update timestamp. |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.created_at | Date | Rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.updated_at | Date | Rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityRuleInstanceUpdate.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.ModelSecurityRuleInstanceUpdate.field_values | Unknown | Custom field values for this rule instance. |
 
@@ -3872,8 +3872,8 @@ Get a single rule instance within a security group. Retrieves detailed configura
 | PrismaAIRs.ModelSecurityRuleInstanceGet.rule_name | String | Security rule name. |
 | PrismaAIRs.ModelSecurityRuleInstanceGet.rule_type | String | Security rule type. |
 | PrismaAIRs.ModelSecurityRuleInstanceGet.rule_description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.created_at | Date | Rule instance creation timestamp. |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.updated_at | Date | Rule instance last update timestamp. |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.created_at | Date | Rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.updated_at | Date | Rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ModelSecurityRuleInstanceGet.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.ModelSecurityRuleInstanceGet.field_values | Unknown | Custom field values for this rule instance. |
 
@@ -3904,8 +3904,8 @@ List all Red Team targets.
 | PrismaAIRs.RedTeamTarget.status | String | Target status. |
 | PrismaAIRs.RedTeamTarget.active | Boolean | Whether the target is active. |
 | PrismaAIRs.RedTeamTarget.validated | Boolean | Whether the target has been validated. |
-| PrismaAIRs.RedTeamTarget.created_at | Date | Creation timestamp. |
-| PrismaAIRs.RedTeamTarget.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.RedTeamTarget.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamTarget.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamTarget.description | String | Target description. |
 | PrismaAIRs.RedTeamTarget.target_type | String | Target type. |
 | PrismaAIRs.RedTeamTarget.connection_type | String | Connection type. |
@@ -4003,7 +4003,7 @@ Create a new Red Team target.
 | PrismaAIRs.RedTeamTargetCreate.status | String | Target status. |
 | PrismaAIRs.RedTeamTargetCreate.active | Boolean | Whether the target is active. |
 | PrismaAIRs.RedTeamTargetCreate.validated | Boolean | Whether the target has been validated. |
-| PrismaAIRs.RedTeamTargetCreate.created_at | Date | Creation timestamp. |
+| PrismaAIRs.RedTeamTargetCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-redteam-targets-get
 
@@ -4065,7 +4065,7 @@ Update an existing Red Team target.
 | PrismaAIRs.RedTeamTargetUpdate.uuid | String | Target UUID. |
 | PrismaAIRs.RedTeamTargetUpdate.name | String | Target name. |
 | PrismaAIRs.RedTeamTargetUpdate.status | String | Target status. |
-| PrismaAIRs.RedTeamTargetUpdate.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.RedTeamTargetUpdate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-redteam-targets-delete
 
@@ -4179,7 +4179,7 @@ Update Red Team target profile (background and additional context). Modify targe
 | PrismaAIRs.RedTeamTargetUpdateProfile.status | String | Target status. |
 | PrismaAIRs.RedTeamTargetUpdateProfile.active | Boolean | Whether the target is active. |
 | PrismaAIRs.RedTeamTargetUpdateProfile.validated | Boolean | Whether the target is validated. |
-| PrismaAIRs.RedTeamTargetUpdateProfile.updated_at | String | Last update timestamp. |
+| PrismaAIRs.RedTeamTargetUpdateProfile.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamTargetUpdateProfile.target_background | Unknown | Updated target background. |
 | PrismaAIRs.RedTeamTargetUpdateProfile.additional_context | Unknown | Updated additional context. |
 
@@ -4320,8 +4320,8 @@ Create a new Red Team scan job. This command submits the scan and returns immedi
 | PrismaAIRs.RedTeamScanCreate.completed | Number | Number of completed attacks \(initially 0\). |
 | PrismaAIRs.RedTeamScanCreate.score | Number | Risk score \(null until scan completes\). |
 | PrismaAIRs.RedTeamScanCreate.asr | Number | Attack Success Rate \(null until scan completes\). |
-| PrismaAIRs.RedTeamScanCreate.created_at | Date | Creation timestamp. |
-| PrismaAIRs.RedTeamScanCreate.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.RedTeamScanCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScanCreate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamScanCreate.version | Number | Scan version. |
 | PrismaAIRs.RedTeamScanCreate.job_metadata | Unknown | Job metadata containing scan configuration. |
 
@@ -4350,12 +4350,12 @@ List all Red Team scans.
 | PrismaAIRs.RedTeamScan.tsg_id | String | Tenant Service Group ID. |
 | PrismaAIRs.RedTeamScan.job_type | String | Job type \(STATIC, DYNAMIC, CUSTOM\). |
 | PrismaAIRs.RedTeamScan.status | String | Scan status. |
-| PrismaAIRs.RedTeamScan.created_at | Date | Creation timestamp. |
-| PrismaAIRs.RedTeamScan.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.RedTeamScan.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScan.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamScan.target_uuid | String | Target UUID being scanned. |
 | PrismaAIRs.RedTeamScan.target_name | String | Target name being scanned. |
-| PrismaAIRs.RedTeamScan.started_at | Date | Scan start timestamp. |
-| PrismaAIRs.RedTeamScan.completed_at | Date | Scan completion timestamp. |
+| PrismaAIRs.RedTeamScan.started_at | Date | Scan start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScan.completed_at | Date | Scan completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamScan.progress | Number | Scan progress percentage. |
 | PrismaAIRs.RedTeamScan.total_prompts | Number | Total number of prompts in the scan. |
 | PrismaAIRs.RedTeamScan.completed_prompts | Number | Number of completed prompts. |
@@ -4449,9 +4449,9 @@ Get Red Team scan status and details by job ID.
 | PrismaAIRs.RedTeamScanGet.asr | Number | Attack Success Rate \(ASR\) percentage. |
 | PrismaAIRs.RedTeamScanGet.progress | String | Progress string \(e.g., "150/200"\). |
 | PrismaAIRs.RedTeamScanGet.progress_percentage | Number | Progress percentage. |
-| PrismaAIRs.RedTeamScanGet.created_at | Date | Creation timestamp. |
-| PrismaAIRs.RedTeamScanGet.started_at | Date | Start timestamp. |
-| PrismaAIRs.RedTeamScanGet.completed_at | Date | Completion timestamp. |
+| PrismaAIRs.RedTeamScanGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScanGet.started_at | Date | Start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScanGet.completed_at | Date | Completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-redteam-scan-abort
 
@@ -4667,9 +4667,9 @@ List Red Team network broker channels. Network channels are the data-plane relay
 | PrismaAIRs.RedTeamNetworkChannel.description | String | Channel description. |
 | PrismaAIRs.RedTeamNetworkChannel.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
 | PrismaAIRs.RedTeamNetworkChannel.added_by | String | UUID of the user that created the channel. |
-| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | Creation timestamp. |
-| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | Last update timestamp. |
-| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | Timestamp the channel was last online. |
+| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | Timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | Number of currently connected clients. |
 | PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | Number of connected clients running an outdated version. |
 | PrismaAIRs.RedTeamNetworkChannel.features | Unknown | Map of feature flags enabled on the channel. |
@@ -4729,8 +4729,8 @@ Create a new Red Team network broker channel.
 | PrismaAIRs.RedTeamNetworkChannelCreate.description | String | Channel description. |
 | PrismaAIRs.RedTeamNetworkChannelCreate.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
 | PrismaAIRs.RedTeamNetworkChannelCreate.added_by | String | UUID of the user that created the channel. |
-| PrismaAIRs.RedTeamNetworkChannelCreate.created_at | Date | Creation timestamp. |
-| PrismaAIRs.RedTeamNetworkChannelCreate.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannelCreate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -4835,9 +4835,9 @@ Get a single Red Team network broker channel by UUID.
 | PrismaAIRs.RedTeamNetworkChannel.description | String | Channel description. |
 | PrismaAIRs.RedTeamNetworkChannel.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
 | PrismaAIRs.RedTeamNetworkChannel.added_by | String | UUID of the user that created the channel. |
-| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | Creation timestamp. |
-| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | Last update timestamp. |
-| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | Timestamp the channel was last online. |
+| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | Timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | Number of currently connected clients. |
 | PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | Number of connected clients running an outdated version. |
 | PrismaAIRs.RedTeamNetworkChannel.features | Unknown | Map of feature flags enabled on the channel. |
@@ -4897,7 +4897,7 @@ Update a Red Team network broker channel's name and/or description. At least one
 | PrismaAIRs.RedTeamNetworkChannelUpdate.name | String | Channel name. |
 | PrismaAIRs.RedTeamNetworkChannelUpdate.description | String | Channel description. |
 | PrismaAIRs.RedTeamNetworkChannelUpdate.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
-| PrismaAIRs.RedTeamNetworkChannelUpdate.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -5044,7 +5044,7 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | PrismaAIRs.RedTeamEula.uuid | String | EULA record UUID. |
 | PrismaAIRs.RedTeamEula.is_accepted | Boolean | Whether the EULA is accepted. |
-| PrismaAIRs.RedTeamEula.accepted_at | Date | Timestamp when EULA was accepted. |
+| PrismaAIRs.RedTeamEula.accepted_at | Date | Timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamEula.accepted_by_user_id | String | User ID who accepted the EULA. |
 
 #### Command example
@@ -5153,7 +5153,7 @@ Accept the Red Team EULA (required before running scans).
 | --- | --- | --- |
 | PrismaAIRs.RedTeamEula.uuid | String | EULA record UUID. |
 | PrismaAIRs.RedTeamEula.is_accepted | Boolean | Whether the EULA is accepted. |
-| PrismaAIRs.RedTeamEula.accepted_at | Date | Timestamp when EULA was accepted. |
+| PrismaAIRs.RedTeamEula.accepted_at | Date | Timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamEula.accepted_by_user_id | String | User ID who accepted the EULA. |
 
 ### prisma-airs-redteam-prompts-create
@@ -5184,8 +5184,8 @@ Create a new prompt in a Red Team prompt set for custom attack scenarios.
 | PrismaAIRs.RedTeamPromptCreate.status | String | Status of the prompt \(e.g., READY, PENDING\). |
 | PrismaAIRs.RedTeamPromptCreate.active | Boolean | Whether the prompt is active. |
 | PrismaAIRs.RedTeamPromptCreate.prompt_set_id | String | UUID of the prompt set this prompt belongs to. |
-| PrismaAIRs.RedTeamPromptCreate.created_at | Date | Timestamp when the prompt was created. |
-| PrismaAIRs.RedTeamPromptCreate.updated_at | Date | Timestamp when the prompt was last updated. |
+| PrismaAIRs.RedTeamPromptCreate.created_at | Date | Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptCreate.updated_at | Date | Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptCreate.goal | Unknown | Optional custom goal for the prompt. |
 | PrismaAIRs.RedTeamPromptCreate.properties | Unknown | Optional additional properties for the prompt. |
 
@@ -5218,8 +5218,8 @@ List prompts in a Red Team prompt set.
 | PrismaAIRs.RedTeamPrompts.user_defined_goal | Boolean | Whether the prompt has a user-defined goal. |
 | PrismaAIRs.RedTeamPrompts.status | String | Status of the prompt. |
 | PrismaAIRs.RedTeamPrompts.active | Boolean | Whether the prompt is active. |
-| PrismaAIRs.RedTeamPrompts.created_at | Date | Timestamp when the prompt was created. |
-| PrismaAIRs.RedTeamPrompts.updated_at | Date | Timestamp when the prompt was last updated. |
+| PrismaAIRs.RedTeamPrompts.created_at | Date | Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPrompts.updated_at | Date | Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPrompts.goal | Unknown | Optional custom goal for the prompt. |
 | PrismaAIRs.RedTeamPrompts.properties | Unknown | Optional additional properties for the prompt. |
 
@@ -5249,8 +5249,8 @@ Get details of a specific prompt in a Red Team prompt set.
 | PrismaAIRs.RedTeamPromptGet.status | String | Status of the prompt. |
 | PrismaAIRs.RedTeamPromptGet.active | Boolean | Whether the prompt is active. |
 | PrismaAIRs.RedTeamPromptGet.prompt_set_id | String | UUID of the prompt set this prompt belongs to. |
-| PrismaAIRs.RedTeamPromptGet.created_at | Date | Timestamp when the prompt was created. |
-| PrismaAIRs.RedTeamPromptGet.updated_at | Date | Timestamp when the prompt was last updated. |
+| PrismaAIRs.RedTeamPromptGet.created_at | Date | Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptGet.updated_at | Date | Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptGet.goal | Unknown | Optional custom goal for the prompt. |
 | PrismaAIRs.RedTeamPromptGet.properties | Unknown | Optional additional properties for the prompt. |
 | PrismaAIRs.RedTeamPromptGet.property_assignments | Unknown | Optional property assignments for the prompt. |
@@ -5287,8 +5287,8 @@ Update an existing prompt in a Red Team prompt set.
 | PrismaAIRs.RedTeamPromptUpdate.status | String | Status of the prompt. |
 | PrismaAIRs.RedTeamPromptUpdate.active | Boolean | Whether the prompt is active. |
 | PrismaAIRs.RedTeamPromptUpdate.prompt_set_id | String | UUID of the prompt set this prompt belongs to. |
-| PrismaAIRs.RedTeamPromptUpdate.created_at | Date | Timestamp when the prompt was created. |
-| PrismaAIRs.RedTeamPromptUpdate.updated_at | Date | Timestamp when the prompt was last updated. |
+| PrismaAIRs.RedTeamPromptUpdate.created_at | Date | Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptUpdate.updated_at | Date | Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptUpdate.goal | Unknown | Optional custom goal for the prompt. |
 | PrismaAIRs.RedTeamPromptUpdate.properties | Unknown | Optional additional properties for the prompt. |
 
@@ -5343,8 +5343,8 @@ Create a new Red Team prompt set for organizing custom attack prompts.
 | PrismaAIRs.RedTeamPromptSetCreate.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetCreate.archive | Boolean | Whether the prompt set is archived. |
 | PrismaAIRs.RedTeamPromptSetCreate.status | String | Status of the prompt set \(e.g., READY, PENDING\). |
-| PrismaAIRs.RedTeamPromptSetCreate.created_at | Date | Timestamp when the prompt set was created. |
-| PrismaAIRs.RedTeamPromptSetCreate.updated_at | Date | Timestamp when the prompt set was last updated. |
+| PrismaAIRs.RedTeamPromptSetCreate.created_at | Date | Timestamp when the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetCreate.updated_at | Date | Timestamp when the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptSetCreate.description | Unknown | Description of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetCreate.property_names | Unknown | Array of custom property names. |
 | PrismaAIRs.RedTeamPromptSetCreate.properties | Unknown | Array of property definitions. |
@@ -5382,8 +5382,8 @@ List Red Team prompt sets for custom attack scenarios.
 | PrismaAIRs.RedTeamPromptSets.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSets.archive | Boolean | Whether the prompt set is archived. |
 | PrismaAIRs.RedTeamPromptSets.status | String | Status of the prompt set. |
-| PrismaAIRs.RedTeamPromptSets.created_at | Date | Timestamp when created. |
-| PrismaAIRs.RedTeamPromptSets.updated_at | Date | Timestamp when last updated. |
+| PrismaAIRs.RedTeamPromptSets.created_at | Date | Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSets.updated_at | Date | Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptSets.description | Unknown | Description of the prompt set. |
 | PrismaAIRs.RedTeamPromptSets.property_names | Unknown | Array of custom property names. |
 | PrismaAIRs.RedTeamPromptSets.stats | Unknown | Statistics about the prompt set. |
@@ -5482,8 +5482,8 @@ Get details of a specific Red Team prompt set.
 | PrismaAIRs.RedTeamPromptSetGet.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetGet.archive | Boolean | Whether the prompt set is archived. |
 | PrismaAIRs.RedTeamPromptSetGet.status | String | Status of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetGet.created_at | Date | Timestamp when created. |
-| PrismaAIRs.RedTeamPromptSetGet.updated_at | Date | Timestamp when last updated. |
+| PrismaAIRs.RedTeamPromptSetGet.created_at | Date | Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetGet.updated_at | Date | Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptSetGet.description | Unknown | Description of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetGet.property_names | Unknown | Array of custom property names. |
 | PrismaAIRs.RedTeamPromptSetGet.properties | Unknown | Array of property definitions. |
@@ -5521,8 +5521,8 @@ Update an existing Red Team prompt set.
 | PrismaAIRs.RedTeamPromptSetUpdate.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetUpdate.archive | Boolean | Whether the prompt set is archived. |
 | PrismaAIRs.RedTeamPromptSetUpdate.status | String | Status of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetUpdate.created_at | Date | Timestamp when created. |
-| PrismaAIRs.RedTeamPromptSetUpdate.updated_at | Date | Timestamp when last updated. |
+| PrismaAIRs.RedTeamPromptSetUpdate.created_at | Date | Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetUpdate.updated_at | Date | Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptSetUpdate.description | Unknown | Description of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetUpdate.property_names | Unknown | Array of custom property names. |
 | PrismaAIRs.RedTeamPromptSetUpdate.properties | Unknown | Array of property definitions. |
@@ -5555,8 +5555,8 @@ Archive or unarchive a Red Team prompt set.
 | PrismaAIRs.RedTeamPromptSetArchive.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetArchive.archive | Boolean | Whether the prompt set is archived. |
 | PrismaAIRs.RedTeamPromptSetArchive.status | String | Status of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetArchive.created_at | Date | Timestamp when created. |
-| PrismaAIRs.RedTeamPromptSetArchive.updated_at | Date | Timestamp when last updated. |
+| PrismaAIRs.RedTeamPromptSetArchive.created_at | Date | Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetArchive.updated_at | Date | Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptSetArchive.description | Unknown | Description of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetArchive.property_names | Unknown | Array of custom property names. |
 | PrismaAIRs.RedTeamPromptSetArchive.properties | Unknown | Array of property definitions. |
@@ -5581,7 +5581,7 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAIRs.RedTeamRegistryCredentials.token | String | Registry access token for authenticating with the container registry. |
-| PrismaAIRs.RedTeamRegistryCredentials.expiry | Date | Token expiry timestamp \(ISO 8601 format\). |
+| PrismaAIRs.RedTeamRegistryCredentials.expiry | Date | Token expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-redteam-prompt-sets-download
 
@@ -5883,8 +5883,8 @@ Get the reference metadata for a single custom prompt set by UUID.
 | PrismaAIRs.RedTeamPromptSetReference.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetReference.version | String | The current version ID of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetReference.tsg_id | String | The tenant service group ID owning the prompt set. |
-| PrismaAIRs.RedTeamPromptSetReference.created_at | Date | When the prompt set was created. |
-| PrismaAIRs.RedTeamPromptSetReference.updated_at | Date | When the prompt set was last updated. |
+| PrismaAIRs.RedTeamPromptSetReference.created_at | Date | When the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetReference.updated_at | Date | When the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -5926,7 +5926,7 @@ Get version information (status, latest flag, and prompt counts) for a custom pr
 | PrismaAIRs.RedTeamPromptSetVersionInfo.status | String | The validation status of the version. |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.is_latest | Boolean | Whether this is the latest version. |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.version | String | The version ID. |
-| PrismaAIRs.RedTeamPromptSetVersionInfo.snapshot_created_at | Date | When the version snapshot was created. |
+| PrismaAIRs.RedTeamPromptSetVersionInfo.snapshot_created_at | Date | When the version snapshot was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.stats.total_prompts | Number | Total number of prompts in the version. |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.stats.active_prompts | Number | Number of active prompts in the version. |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.stats.inactive_prompts | Number | Number of inactive prompts in the version. |
@@ -5959,8 +5959,8 @@ There are no input arguments for this command.
 | PrismaAIRs.RedTeamPromptSetActive.status | String | The validation status of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetActive.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetActive.version | String | The current version ID of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetActive.created_at | Date | When the prompt set was created. |
-| PrismaAIRs.RedTeamPromptSetActive.updated_at | Date | When the prompt set was last updated. |
+| PrismaAIRs.RedTeamPromptSetActive.created_at | Date | When the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetActive.updated_at | Date | When the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
