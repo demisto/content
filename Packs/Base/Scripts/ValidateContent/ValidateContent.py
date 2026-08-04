@@ -1157,6 +1157,11 @@ def main():
                     raw_response=raw_outputs,
                 )
             )
+            # fd 1 is a pipe, so Python block-buffers it (it is not a tty and is
+            # therefore not line-buffered). The entry above would otherwise sit in
+            # the userspace buffer, the server would never receive it, and the
+            # playbook would hang in `inprogress` until its execution timeout.
+            _flush_streams()
 
         demisto.info("Finished validating content.")
     except Exception as e:
@@ -1168,6 +1173,11 @@ def main():
         # Hand a clean, unredirected stdout back to the runtime wrapper, even if
         # an early failure skipped the calls above.
         restore_real_stdout()
+        # Unconditional: `restore_real_stdout` returns early (without flushing)
+        # when the firewall was already disarmed above, so this is the only flush
+        # that is guaranteed to run on every exit path - including the
+        # `return_error` path, which unwinds through here via SystemExit.
+        _flush_streams()
         os.chdir(cwd)
 
 
