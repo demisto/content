@@ -83,4 +83,4 @@ For support, please contact Palo Alto Networks support or visit the [Cortex port
 - **Support Level**: Community
 - **Author**: Eric Partington
 - **Categories**: Cloud Security
-- **Supported Modules**: cloud_runtime_security, xsiam, cloud
+- **Supported Modules**: cloud_runtime_security, Cortex XSIAM, cloud
