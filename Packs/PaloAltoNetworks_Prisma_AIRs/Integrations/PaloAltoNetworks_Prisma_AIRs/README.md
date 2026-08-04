@@ -872,7 +872,7 @@ Update a customer application configuration.
 | app_name | Application name. | Required |
 | cloud_provider | Cloud provider. Possible values are: aws, azure, gcp, other. | Required |
 | environment | Environment. Possible values are: prod, staging, dev. | Required |
-| tsg_id | Tenant Service Group ID (defaults to configured TSG ID if not provided). | Optional |
+| tsg_id | Tenant Service Group ID. If not provided, the configured TSG ID is used. | Optional |
 | model_name | Model name used by the application. | Optional |
 | ai_agent_framework | AI agent framework used by the application. | Optional |
 | updated_by | Email of user performing the update. | Optional |
@@ -2681,8 +2681,8 @@ Apply a topic to a security profile (additive - preserves existing topics). This
 | --- | --- | --- |
 | profile_name | Security profile name to apply the topic to. | Required |
 | topic_name | Topic name to apply. The topic must already exist (create with prisma-airs-runtime-topics-create). | Required |
-| action | Topic action. 'block' = block prompts matching this topic. 'allow' = allow prompts matching this topic. Default is 'block'. Possible values are: allow, block. Default is block. | Optional |
-| guardrail_action | Guardrail-level default action. 'block' = block all unless explicitly allowed (requires allow topics). 'allow' = allow all unless explicitly blocked (only block topics needed). Default is 'block'. Possible values are: allow, block. Default is block. | Optional |
+| action | Topic action. 'block' = block prompts matching this topic. 'allow' = allow prompts matching this topic. Possible values are: allow, block. Default is block. | Optional |
+| guardrail_action | Guardrail-level default action. 'block' = block all unless explicitly allowed (requires allow topics). 'allow' = allow all unless explicitly blocked (only block topics needed). Possible values are: allow, block. Default is block. | Optional |
 
 #### Context Output
 
@@ -3168,7 +3168,7 @@ Get files for a scan. Lists all files that were scanned within a model, showing 
 | sort_dir | Sort direction (asc, desc). | Optional |
 | type | Filter by file type (FILE, DIRECTORY). | Optional |
 | result | Filter by scan result (SUCCESS, FAILURE). | Optional |
-| query_path | Filter files by path prefix (default '/'). Default is /. | Optional |
+| query_path | Filter files by path prefix. Default is /. | Optional |
 
 #### Context Output
 
@@ -4300,8 +4300,8 @@ Create a new Red Team scan job. This command submits the scan and returns immedi
 | target_uuid | UUID of the target to scan. | Required |
 | job_type | Scan type - STATIC (attack library), DYNAMIC (agent-driven), or CUSTOM (prompt sets). Possible values are: STATIC, DYNAMIC, CUSTOM. Default is STATIC. | Optional |
 | categories | JSON object for category filtering (STATIC scans only). Example: {"category": {"subcategory": true}}. Empty {} means all categories. | Optional |
-| stream_breadth | Parallel agents per goal (DYNAMIC scans only). Default is 6. Default is 6. | Optional |
-| stream_depth | Maximum conversation turns per goal (DYNAMIC scans only). Default is 10. Default is 10. | Optional |
+| stream_breadth | Parallel agents per goal (DYNAMIC scans only). Default is 6. | Optional |
+| stream_depth | Maximum conversation turns per goal (DYNAMIC scans only). Default is 10. | Optional |
 | attack_goals | JSON array of attack goal strings (DYNAMIC scans only). Example: ["Extract PII", "Bypass content filter"]. | Optional |
 | custom_prompt_sets | A comma-separated list of prompt set UUIDs (CUSTOM scans only). Required for CUSTOM type. | Optional |
 
@@ -5005,7 +5005,7 @@ Get Red Team scan report with attack results and recommendations.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | job_id | The scan job UUID. | Required |
-| job_type | The job type (STATIC, DYNAMIC, CUSTOM). Defaults to STATIC. Default is STATIC. | Optional |
+| job_type | The job type (STATIC, DYNAMIC, CUSTOM). Default is STATIC. | Optional |
 
 #### Context Output
 
@@ -5203,7 +5203,7 @@ List prompts in a Red Team prompt set.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | prompt_set_uuid | UUID of the prompt set to list prompts from. | Required |
-| limit | Maximum number of prompts to return (default 50). | Optional |
+| limit | Maximum number of prompts to return. Default is 50. | Optional |
 | skip | Number of prompts to skip for pagination. | Optional |
 | search | Free-text search filter for prompt text. | Optional |
 | status | Filter by prompt status (e.g., READY, PENDING). | Optional |
@@ -5366,7 +5366,7 @@ List Red Team prompt sets for custom attack scenarios.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of prompt sets to return (default 50). | Optional |
+| limit | Maximum number of prompt sets to return. Default is 50. | Optional |
 | skip | Number of prompt sets to skip for pagination. | Optional |
 | search | Free-text search filter for prompt set names/descriptions. | Optional |
 | status | Filter by prompt set status (e.g., READY, PENDING). | Optional |
@@ -5916,7 +5916,7 @@ Get version information (status, latest flag, and prompt counts) for a custom pr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | uuid | The UUID of the custom prompt set. | Required |
-| version | A specific version ID to query. If omitted, the latest version is used. | Optional |
+| version | A specific version ID to query. If not provided, the latest version is returned. | Optional |
 
 #### Context Output
 

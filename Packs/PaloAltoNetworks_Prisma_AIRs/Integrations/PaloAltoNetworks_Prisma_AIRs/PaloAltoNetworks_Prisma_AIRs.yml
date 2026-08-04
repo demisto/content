@@ -621,7 +621,7 @@ script:
       - dev
     - name: tsg_id
       required: false
-      description: Tenant Service Group ID (defaults to configured TSG ID if not provided).
+      description: Tenant Service Group ID. If not provided, the configured TSG ID is used.
     - name: model_name
       required: false
       description: Model name used by the application.
@@ -2353,7 +2353,7 @@ script:
       - allow
       - block
       defaultValue: block
-      description: Topic action. 'block' = block prompts matching this topic. 'allow' = allow prompts matching this topic. Default is 'block'.
+      description: Topic action. 'block' = block prompts matching this topic. 'allow' = allow prompts matching this topic.
     - name: guardrail_action
       required: false
       auto: PREDEFINED
@@ -2361,7 +2361,7 @@ script:
       - allow
       - block
       defaultValue: block
-      description: Guardrail-level default action. 'block' = block all unless explicitly allowed (requires allow topics). 'allow' = allow all unless explicitly blocked (only block topics needed). Default is 'block'.
+      description: Guardrail-level default action. 'block' = block all unless explicitly allowed (requires allow topics). 'allow' = allow all unless explicitly blocked (only block topics needed).
     outputs:
     - contextPath: PrismaAIRs.TopicApplied.profile_name
       description: Security profile name.
@@ -2919,7 +2919,7 @@ script:
       description: Filter by scan result (SUCCESS, FAILURE).
     - name: query_path
       required: false
-      description: Filter files by path prefix (default '/').
+      description: Filter files by path prefix.
       defaultValue: '/'
     outputs:
     - contextPath: PrismaAIRs.ModelSecurityFiles.scan_uuid
@@ -4089,11 +4089,11 @@ script:
       description: 'JSON object for category filtering (STATIC scans only). Example: {"category": {"subcategory": true}}. Empty {} means all categories.'
     - name: stream_breadth
       required: false
-      description: Parallel agents per goal (DYNAMIC scans only). Default is 6.
+      description: Parallel agents per goal (DYNAMIC scans only).
       defaultValue: '6'
     - name: stream_depth
       required: false
-      description: Maximum conversation turns per goal (DYNAMIC scans only). Default is 10.
+      description: Maximum conversation turns per goal (DYNAMIC scans only).
       defaultValue: '10'
     - name: attack_goals
       required: false
@@ -4521,7 +4521,7 @@ script:
       description: The scan job UUID.
     - name: job_type
       required: false
-      description: The job type (STATIC, DYNAMIC, CUSTOM). Defaults to STATIC.
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
       defaultValue: STATIC
     outputs:
     - contextPath: PrismaAIRs.RedTeamReport.job_id
@@ -4660,7 +4660,8 @@ script:
       description: UUID of the prompt set to list prompts from.
     - name: limit
       required: false
-      description: Maximum number of prompts to return (default 50).
+      description: Maximum number of prompts to return.
+      defaultValue: '50'
     - name: skip
       required: false
       description: Number of prompts to skip for pagination.
@@ -4885,7 +4886,8 @@ script:
     arguments:
     - name: limit
       required: false
-      description: Maximum number of prompt sets to return (default 50).
+      description: Maximum number of prompt sets to return.
+      defaultValue: '50'
     - name: skip
       required: false
       description: Number of prompt sets to skip for pagination.
@@ -5168,7 +5170,7 @@ script:
       description: UUID of the prompt set.
     - name: version
       required: false
-      description: A specific version ID to query. Defaults to the latest version.
+      description: A specific version ID to query. If not provided, the latest version is returned.
     outputs:
     - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.uuid
       description: UUID of the prompt set.
