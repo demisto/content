@@ -76,7 +76,7 @@ The `list`, `create`, and `get` operations for dictionaries, patterns, and data 
 
 ## Support
 
-For support, please contact Palo Alto Networks support or visit the [Cortex XSOAR portal](https://www.paloaltonetworks.com/cortex).
+For support, please contact Palo Alto Networks support or visit the [Cortex portal](https://www.paloaltonetworks.com/cortex).
 
 ## Additional Information
 
