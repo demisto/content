@@ -1599,7 +1599,7 @@ Checks the reputation of an IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address to check. | Required |
-| accept_v6_ips | Whether to check IPv6 addresses. | Optional |
+| accept_v6_ips | Whether to accept IPv6 addresses as input for the ip command. | Optional |
 
 #### Context Output
 

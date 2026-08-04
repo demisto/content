@@ -739,7 +739,7 @@ def generic_reputation_command(
     return command_results
 
 
-def reputation_value_validation(value, dbot_type, accept_v6_ips=False):
+def reputation_value_validation(value, dbot_type, accept_v6_ips: bool = False):
     if dbot_type == "FILE":
         # hashFormat will be used only in output
         hash_format = get_hash_type(value)

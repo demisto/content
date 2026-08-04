@@ -848,7 +848,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: 'Whether to check IPv6 addresses. Possible values are: true, false.'
+      description: 'Whether to accept IPv6 addresses as input for the ip command. Possible values are: true, false.'
       name: accept_v6_ips
       predefined:
       - 'true'

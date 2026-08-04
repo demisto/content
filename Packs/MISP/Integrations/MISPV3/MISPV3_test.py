@@ -1073,9 +1073,12 @@ def test_get_role_info(mocker):
     (
         "value, dbot_type, malicious_tag_ids"
         ", suspicious_tag_ids, benign_tag_ids, reliability"
-        ", attributes_limit, search_warninglists"
+        ", attributes_limit, search_warninglists, accept_v6_ips, expected_indicator_type"
     ),
-    [("192.168.0.1", "IP", {}, {}, {}, DBotScoreReliability.A, 50, True)],
+    [
+        ("192.168.0.1", "IP", {}, {}, {}, DBotScoreReliability.A, 50, True, False, Common.IP),
+        ("2001:db8::1", "IP", {}, {}, {}, DBotScoreReliability.A, 50, True, True, Common.IPv6),
+    ],
 )
 def test_get_indicator_results(
     value,
@@ -1086,6 +1089,8 @@ def test_get_indicator_results(
     reliability,
     attributes_limit,
     search_warninglists,
+    accept_v6_ips,
+    expected_indicator_type,
     mocker,
 ):
     """Tests the get indicator results function"""
@@ -1101,7 +1106,7 @@ def test_get_indicator_results(
     response: Response = Response()
 
     def json_func():
-        return {"192.168.0.1": [{"id": "100", "name": "my_custom_list"}]}
+        return {value: [{"id": "100", "name": "my_custom_list"}]}
 
     response.json = json_func
     mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=response)
@@ -1115,9 +1120,62 @@ def test_get_indicator_results(
         reliability,
         attributes_limit,
         search_warninglists,
+        accept_v6_ips=accept_v6_ips,
     )
     assert "my_custom_list" in result.readable_output
-    assert isinstance(result.indicator, Common.IP)
+    assert isinstance(result.indicator, expected_indicator_type)
+    assert result.indicator.dbot_score.score == Common.DBotScore.GOOD
+
+
+# Ensure IPv6 values are rejected by default for the ip command.
+def test_get_indicator_results_ipv6_rejected_by_default(mocker):
+    mock_misp(mocker)
+    from MISPV3 import get_indicator_results
+
+    with pytest.raises(DemistoException, match=r"Error: The given IP address: 2001:db8::1 is not valid"):
+        get_indicator_results(
+            "2001:db8::1",
+            "IP",
+            set(),
+            set(),
+            set(),
+            DBotScoreReliability.A,
+            50,
+            True,
+        )
+
+
+# Ensure IPv6 values are accepted when accept_v6_ips is enabled.
+def test_get_indicator_results_ipv6_accepted_when_accept_v6_ips_enabled(mocker):
+    mock_misp(mocker)
+    import pymisp
+    from MISPV3 import get_indicator_results
+    from pymisp import ExpandedPyMISP
+
+    mocker.patch.object(ExpandedPyMISP, "search", return_value={})
+    mocker.patch("MISPV3.build_attributes_search_response", return_value={"test": "test"})
+    mocker.patch("MISPV3.build_events_search_response", return_value={"test": "test"})
+    response: Response = Response()
+
+    def json_func():
+        return {"2001:db8::1": [{"id": "100", "name": "my_custom_list"}]}
+
+    response.json = json_func
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=response)
+    mocker.patch.object(pymisp.api.PyMISP, "_check_response", return_value=response.json())
+
+    result = get_indicator_results(
+        "2001:db8::1",
+        "IP",
+        set(),
+        set(),
+        set(),
+        DBotScoreReliability.A,
+        50,
+        True,
+        accept_v6_ips=True,
+    )
+    assert isinstance(result.indicator, Common.IPv6)
     assert result.indicator.dbot_score.score == Common.DBotScore.GOOD
 
 
