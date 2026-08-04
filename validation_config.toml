@@ -104,7 +104,7 @@ warning = []
 
 [connectors_use_git]
 select = [
-  "CO100", "CO101", "CO102", "CO103", "CO104", "CO105", "CO106", "CO118", "CO157", "CO177", "CO164", "CO190"
+  "CO100", "CO101", "CO102", "CO103", "CO104", "CO105", "CO106", "CO114", "CO118", "CO157", "CO177", "CO164", "CO190"
 ]
 
 
