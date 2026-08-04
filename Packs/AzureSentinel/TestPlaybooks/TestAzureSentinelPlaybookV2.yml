@@ -1697,6 +1697,8 @@ tasks:
         simple: domain-name
       name:
         simple: ${AzureSentinel.ThreatIndicator.Name}
+      tags:
+        simple: NewTag
       value:
         simple: domain.dot
     separatecontext: false
@@ -1736,11 +1738,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AzureSentinel.ThreatIndicator.Values
+              simple: AzureSentinel.ThreatIndicator.Tags
             iscontext: true
           right:
             value:
-              simple: domain.dot
+              simple: NewTag
     view: |-
       {
         "position": {
