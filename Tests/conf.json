@@ -4438,6 +4438,34 @@
             ]
         },
         {
+            "playbookID": "Check Point - IOC Enrichment and Triage - Test",
+            "fromversion": "6.10.0",
+            "integrations": [
+                "Cyberint Feed"
+            ]
+        },
+        {
+            "playbookID": "Check Point - Credential Leak Validation and Response - Test",
+            "fromversion": "6.10.0",
+            "integrations": [
+                "Cyberint Feed"
+            ]
+        },
+        {
+            "playbookID": "Check Point - Vulnerability Exploitation Monitoring - Test",
+            "fromversion": "6.10.0",
+            "integrations": [
+                "Cyberint Feed"
+            ]
+        },
+        {
+            "playbookID": "Check Point - Phishing Takedown - Test",
+            "fromversion": "6.10.0",
+            "integrations": [
+                "Cyberint Takedowns"
+            ]
+        },
+        {
             "playbookID": "Druva-Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5922,6 +5950,7 @@
         }
     ],
     "skipped_tests": {
+        "Test - Netcraft": "Netcraft tenant is out of takedown credits, causing the test playbook to fail.",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
         "ThreatCrowd - Test": "The pack is deprecated",
@@ -5941,6 +5970,7 @@
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
+        "BlockExternalIP - Test": "Instance issues",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Deprecated. There is another implementation for V2",
