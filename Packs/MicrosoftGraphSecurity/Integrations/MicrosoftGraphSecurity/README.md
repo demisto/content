@@ -31,7 +31,7 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 3. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident`)
 4. ThreatHunting.Read.All - Delegated or Application (required for the command `msg-advanced-hunting`)
 
-**Alerts v2**:
+**Alerts**:
 
 1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
