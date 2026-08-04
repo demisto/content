@@ -10,7 +10,7 @@ from SiemApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 VENDOR = "salesforce"
 PRODUCT = "event-audit"
-
+# shir is doing a test to see if the new integration works with the new upload sync feature.
 
 class SalesforceClient(IntegrationEventsClient):
     def set_request_filter(self, after: str):
