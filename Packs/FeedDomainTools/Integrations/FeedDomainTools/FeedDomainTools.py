@@ -39,6 +39,8 @@ class DomainToolsClient:
         "domaindiscovery": "domaindiscovery",
         "domainrisk": "realtime_domain_risk",
         "domainhotlist": "domainhotlist",
+        "iphotlist": "iphotlist",
+        "iprisk": "iprisk",
     }
 
     def __init__(
