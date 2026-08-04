@@ -440,17 +440,17 @@ script:
         type: Number
       - contextPath: AWS.S3.Buckets.Objects.LastModified
         description: 'The date and time the object was last modified, in ISO 8601 format (for example: 2023-01-01T12:00:00+00:00).'
-        type: Date
+        type: String
       - contextPath: AWS.S3.Buckets.Objects.StorageClass
         description: The storage class of the object.
         type: String
       - contextPath: AWS.S3.Buckets.Objects.ChecksumType
         description: The checksum algorithm used to calculate the object checksum.
-        type: Array
+        type: String
       - contextPath: AWS.S3.Buckets.Objects.ETag
         description: The entity tag (hash) of the object.
         type: String
-      - contextPath: AWS.S3.ObjectsNextToken
+      - contextPath: AWS.S3.Buckets.ObjectsNextToken
         description: The token to use for pagination in subsequent requests.
         type: String
 

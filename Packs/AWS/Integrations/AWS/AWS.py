@@ -1413,7 +1413,7 @@ class S3:
                 - prefix (str): Limits the response to keys that begin with the specified prefix
                 - delimiter (str): A delimiter is a character you use to group keys
                 - start_after (str): The key to start listing after (all keys are listed alphabetically after it)
-                - limit (str): Sets the maximum number of keys returned in the response (default is 1000).
+                - limit (str): Sets the maximum number of keys returned in the response (default is 50).
                 - next_token (str): The continuation token for the next set of results (used for pagination).
 
         Returns:
@@ -1430,7 +1430,11 @@ class S3:
             args, minimum_limit=1, max_limit=1000, next_token_name="ContinuationToken", limit_name="MaxKeys"
         )
 
-        print_debug_logs(client, f"Created those pagination parameters {pagination_kwargs=}")
+        print_debug_logs(
+            client,
+            f"Pagination parameters: MaxKeys={pagination_kwargs.get('MaxKeys')}, "
+            f"has_continuation_token={bool(pagination_kwargs.get('ContinuationToken'))}",
+        )
 
         kwargs = {
             "Bucket": bucket,
@@ -1475,8 +1479,8 @@ class S3:
                 "AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)": {
                     "BucketName": bucket,
                     "Objects": contents,
+                    "ObjectsNextToken": serialized_response.get("NextContinuationToken"),
                 },
-                "AWS.S3(true)": {"ObjectsNextToken": serialized_response.get("NextContinuationToken")},
             }
             return CommandResults(
                 outputs=remove_empty_elements(outputs),
@@ -11257,6 +11261,7 @@ REQUIRED_ACTIONS: list[str] = [
     "rds:ModifyDBSnapshotAttribute",
     "s3:CreateBucket",
     "s3:ListAllMyBuckets",
+    "s3:ListBucket",
     "s3:PutBucketAcl",
     "s3:PutBucketLogging",
     "s3:PutBucketVersioning",

@@ -340,7 +340,8 @@ def test_list_bucket_objects_v2_command_pagination(mocker):
     call_kwargs = mock_client.list_objects_v2.call_args[1]
     assert call_kwargs["ContinuationToken"] == "prev-token-value"
     assert call_kwargs["StartAfter"] == "aaa.txt"
-    assert result.outputs["AWS.S3(true)"]["ObjectsNextToken"] == "next-token-value"
+    bucket_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
+    assert bucket_output["ObjectsNextToken"] == "next-token-value"
 
 
 def test_list_bucket_objects_v2_command_error_response(mocker):
