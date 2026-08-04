@@ -30,11 +30,4 @@ Before configuring this integration, you need:
 
 **Note**: The Server URL (`api.sase.paloaltonetworks.com`) is a global endpoint and does not require regional configuration. Only the Scanner API requires region selection.
 
-### Supported Capabilities
-
-- **Runtime Scanning**: Real-time AI threat detection
-- **Security Profiles**: Manage AI security policies
-- **Topic Guardrails**: Custom topic-based protection
-- **DLP Integration**: Data loss prevention for AI applications
-
 For detailed documentation, see the integration README.

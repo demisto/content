@@ -1,6 +1,13 @@
 Integrate with Palo Alto Networks Prisma AIRs for AI security capabilities including runtime scanning, red teaming, model security, and DLP configuration.
 This integration was integrated and tested with the Palo Alto Networks - Prisma AIRs AI Security API as of June 2026.
 
+## Supported Capabilities
+
+- **Runtime Scanning**: Real-time AI threat detection
+- **Security Profiles**: Manage AI security policies
+- **Topic Guardrails**: Custom topic-based protection
+- **DLP Integration**: Data loss prevention for AI applications
+
 ## Configure Palo Alto Networks - Prisma AIRs AI Security in Cortex
 
 | **Parameter** | **Description** | **Required** |
