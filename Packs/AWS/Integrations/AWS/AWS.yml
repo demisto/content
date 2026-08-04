@@ -5086,8 +5086,6 @@ script:
       defaultValue: 50
     - description: The token for the next set of results.
       name: next_token
-    - description: The Amazon Web Services region for the IP address.
-      name: address_region
     - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
@@ -5158,8 +5156,6 @@ script:
       defaultValue: 50
     - description: The token for the next set of results.
       name: next_token
-    - description: The Amazon Web Services region for the IP address.
-      name: address_region
     - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
@@ -6999,16 +6995,16 @@ script:
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsRoleArn
       description: The role assumed by CloudTrail to write logs to the CloudWatch log group.
       type: string
-    - contextPath: AWS.CloudTrail.KmsKeyId
+    - contextPath: AWS.CloudTrail.Trails.KmsKeyId
       description: The KMS key ID that encrypts logs delivered by CloudTrail.
       type: string
-    - contextPath: AWS.CloudTrail.HasCustomEventSelectors
+    - contextPath: AWS.CloudTrail.Trails.HasCustomEventSelectors
       description: Specifies if the trail has custom event selectors.
       type: boolean
-    - contextPath: AWS.CloudTrail.HasInsightSelectors
+    - contextPath: AWS.CloudTrail.Trails.HasInsightSelectors
       description: Specifies whether a trail has insight types specified in an InsightSelector list.
       type: boolean
-    - contextPath: AWS.CloudTrail.IsOrganizationTrail
+    - contextPath: AWS.CloudTrail.Trails.IsOrganizationTrail
       description: Specifies whether the trail is an organization trail.
       type: boolean
   - name: aws-s3-bucket-policy-delete

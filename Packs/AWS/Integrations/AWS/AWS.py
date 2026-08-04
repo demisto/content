@@ -649,6 +649,8 @@ def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> List[Dict
                 "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
                 "VolumeType": args.get("ebs_volume_type"),
                 "Throughput": arg_to_number(args.get("ebs_throughput")),
+                "EbsCardIndex": arg_to_number(args.get("ebs_card_index")),
+                "VolumeInitializationRate": arg_to_number(args.get("ebs_initialization_rate")),
             },
             "NoDevice": args.get("block_device_mappings_no_device"),
             "VirtualName": args.get("block_device_mappings_virtual_name"),
@@ -1907,6 +1909,7 @@ class S3:
         bucket_name = args.get("bucket_name")
         location = args.get("location_constraint") or args.get("region", "")
         kwargs = {
+            "ACL": args.get("acl"),
             "Bucket": bucket_name,
             "GrantFullControl": args.get("grant_full_control"),
             "GrantRead": args.get("grant_read"),
@@ -5461,6 +5464,7 @@ class EC2:
         response_data = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
         return CommandResults(
+            outputs_prefix="AWS.EC2.Fleets",
             outputs=response_data,
             outputs_key_field="FleetId",
             readable_output=tableToMarkdown(
