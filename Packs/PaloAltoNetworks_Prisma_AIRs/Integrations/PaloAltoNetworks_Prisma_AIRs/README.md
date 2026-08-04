@@ -42,38 +42,38 @@ Scan a single prompt against a security profile for AI security threats.
 | --- | --- | --- |
 | profile_name | The name of the security profile to use for scanning. | Required |
 | prompt | The prompt text to scan. | Required |
-| response | Optional response text to scan alongside the prompt. | Optional |
-| tr_id | Unique identifier string for correlating the prompt and response transactions. Returned in the scan response. | Optional |
-| session_id | Unique identifier string for tracking sessions. Returned in the scan response. | Optional |
-| app_name | AI application requesting the content scan. | Optional |
-| app_user | End user using the AI application. | Optional |
-| ai_model | AI model serving the AI application. | Optional |
-| user_ip | End user IP address using the AI application. | Optional |
-| agent_id | Agent identifier for metadata tracking. | Optional |
-| agent_version | Agent version for metadata tracking. | Optional |
-| agent_arn | Agent ARN for metadata tracking. | Optional |
+| response | The optional response text to scan alongside the prompt. | Optional |
+| tr_id | The unique identifier string for correlating the prompt and response transactions. Returned in the scan response. | Optional |
+| session_id | The unique identifier string for tracking sessions. Returned in the scan response. | Optional |
+| app_name | The AI application requesting the content scan. | Optional |
+| app_user | The end user using the AI application. | Optional |
+| ai_model | The AI model serving the AI application. | Optional |
+| user_ip | The end user IP address using the AI application. | Optional |
+| agent_id | The agent identifier for metadata tracking. | Optional |
+| agent_version | The agent version for metadata tracking. | Optional |
+| agent_arn | The agent ARN for metadata tracking. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RuntimeScan.scan_id | String | Unique scan identifier. |
-| PrismaAIRs.RuntimeScan.report_id | String | Report identifier for this scan. |
-| PrismaAIRs.RuntimeScan.tr_id | String | Transaction ID passed in the request and returned in the response. |
-| PrismaAIRs.RuntimeScan.session_id | String | Session ID passed in the request and returned in the response. |
+| PrismaAIRs.RuntimeScan.scan_id | String | The unique scan identifier. |
+| PrismaAIRs.RuntimeScan.report_id | String | The report identifier for this scan. |
+| PrismaAIRs.RuntimeScan.tr_id | String | The transaction ID passed in the request and returned in the response. |
+| PrismaAIRs.RuntimeScan.session_id | String | The session ID passed in the request and returned in the response. |
 | PrismaAIRs.RuntimeScan.prompt | String | The scanned prompt text. |
 | PrismaAIRs.RuntimeScan.response | String | The scanned response text. |
-| PrismaAIRs.RuntimeScan.action | String | Action taken \(allow or block\). |
-| PrismaAIRs.RuntimeScan.category | String | Threat category \(benign, malicious, etc.\). |
+| PrismaAIRs.RuntimeScan.action | String | The action taken \(allow or block\). |
+| PrismaAIRs.RuntimeScan.category | String | The threat category \(benign, malicious, etc.\). |
 | PrismaAIRs.RuntimeScan.detected | Boolean | Whether any threat was detected across prompt or response. |
-| PrismaAIRs.RuntimeScan.prompt_detected | Unknown | Object containing all detection types for the prompt \(e.g., injection, dlp, toxic_content, topic_violation, url_cats, malicious_code, agent\). |
-| PrismaAIRs.RuntimeScan.response_detected | Unknown | Object containing all detection types for the response \(e.g., dlp, toxic_content, topic_violation, url_cats, malicious_code, agent, db_security, ungrounded\). |
-| PrismaAIRs.RuntimeScan.profile_id | String | Profile ID used for scanning. |
-| PrismaAIRs.RuntimeScan.profile_name | String | Profile name used for scanning. |
-| PrismaAIRs.RuntimeScan.source | String | Source of the scan request. |
+| PrismaAIRs.RuntimeScan.prompt_detected | Unknown | The object containing all detection types for the prompt \(e.g., injection, dlp, toxic_content, topic_violation, url_cats, malicious_code, agent\). |
+| PrismaAIRs.RuntimeScan.response_detected | Unknown | The object containing all detection types for the response \(e.g., dlp, toxic_content, topic_violation, url_cats, malicious_code, agent, db_security, ungrounded\). |
+| PrismaAIRs.RuntimeScan.profile_id | String | The profile ID used for scanning. |
+| PrismaAIRs.RuntimeScan.profile_name | String | The profile name used for scanning. |
+| PrismaAIRs.RuntimeScan.source | String | The source of the scan request. |
 | PrismaAIRs.RuntimeScan.timeout | Boolean | Whether any detection service timed out. |
 | PrismaAIRs.RuntimeScan.error | Boolean | Whether any detection service encountered an error. |
-| PrismaAIRs.RuntimeScan.errors | Unknown | List of detection service errors or timeouts. |
+| PrismaAIRs.RuntimeScan.errors | Unknown | The list of detection service errors or timeouts. |
 
 #### Command example
 
@@ -148,17 +148,17 @@ List all Runtime API Keys configured in Prisma AIRs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of API keys to return. Default is 50. | Optional |
+| limit | The maximum number of API keys to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ApiKey.id | String | API Key ID \(UUID\). |
-| PrismaAIRs.ApiKey.name | String | API Key name. |
-| PrismaAIRs.ApiKey.last8 | String | Last 8 characters of the API key \(for identification\). |
-| PrismaAIRs.ApiKey.created_at | Date | API Key creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ApiKey.expires_at | Date | API Key expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ApiKey.id | String | The API Key ID \(UUID\). |
+| PrismaAIRs.ApiKey.name | String | The API Key name. |
+| PrismaAIRs.ApiKey.last8 | String | The last 8 characters of the API key \(for identification\). |
+| PrismaAIRs.ApiKey.created_at | Date | The API Key creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ApiKey.expires_at | Date | The API Key expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ApiKey.revoked | Boolean | Whether the API key has been revoked. |
 
 #### Command example
@@ -212,31 +212,31 @@ Create a new Runtime API Key. WARNING - The full API key secret is only shown on
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| api_key_name | Name for the new API key. | Required |
-| auth_code | Deployment profile auth code (obtained from deployment profile). | Required |
-| cust_app | Customer application name using this API key. | Required |
-| rotation_time_interval | Rotation time interval (number). | Required |
-| rotation_time_unit | Rotation time unit. Possible values are: hours, days, months. | Required |
-| created_by | Email of the user creating the API key. | Required |
-| dp_name | Deployment profile name (optional). | Optional |
-| cust_env | Customer environment (optional). | Optional |
-| cust_cloud_provider | Customer cloud provider (optional). | Optional |
-| cust_ai_agent_framework | Customer AI agent framework (optional). | Optional |
+| api_key_name | The name for the new API key. | Required |
+| auth_code | The deployment profile auth code (obtained from deployment profile). | Required |
+| cust_app | The customer application name using this API key. | Required |
+| rotation_time_interval | The rotation time interval (number). | Required |
+| rotation_time_unit | The rotation time unit. Possible values are: hours, days, months. | Required |
+| created_by | The email of the user creating the API key. | Required |
+| dp_name | The deployment profile name (optional). | Optional |
+| cust_env | The customer environment (optional). | Optional |
+| cust_cloud_provider | The customer cloud provider (optional). | Optional |
+| cust_ai_agent_framework | The customer AI agent framework (optional). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ApiKeyCreate.id | String | Created API Key ID \(UUID\). |
-| PrismaAIRs.ApiKeyCreate.name | String | API Key name. |
-| PrismaAIRs.ApiKeyCreate.api_key | String | FULL API KEY SECRET - Only shown once\! Save this securely. |
-| PrismaAIRs.ApiKeyCreate.last8 | String | Last 8 characters of the API key. |
-| PrismaAIRs.ApiKeyCreate.auth_code | String | Auth code associated with the key. |
-| PrismaAIRs.ApiKeyCreate.expires_at | Date | API Key expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ApiKeyCreate.id | String | The created API Key ID \(UUID\). |
+| PrismaAIRs.ApiKeyCreate.name | String | The API Key name. |
+| PrismaAIRs.ApiKeyCreate.api_key | String | The FULL API KEY SECRET - Only shown once\! Save this securely. |
+| PrismaAIRs.ApiKeyCreate.last8 | String | The last 8 characters of the API key. |
+| PrismaAIRs.ApiKeyCreate.auth_code | String | The auth code associated with the key. |
+| PrismaAIRs.ApiKeyCreate.expires_at | Date | The API Key expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ApiKeyCreate.revoked | Boolean | Whether the API key has been revoked. |
-| PrismaAIRs.ApiKeyCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ApiKeyCreate.created_by | String | User who created the key. |
-| PrismaAIRs.ApiKeyCreate.cust_app | String | Customer application name. |
+| PrismaAIRs.ApiKeyCreate.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ApiKeyCreate.created_by | String | The user who created the key. |
+| PrismaAIRs.ApiKeyCreate.cust_app | String | The customer application name. |
 
 ### prisma-airs-runtime-api-keys-regenerate
 
@@ -251,25 +251,25 @@ Regenerate an existing Runtime API Key. WARNING - This creates a NEW key with a 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| api_key_id | UUID of the API key to regenerate. | Required |
-| rotation_time_interval | New rotation time interval (number). | Required |
-| rotation_time_unit | New rotation time unit. Possible values are: hours, days, months. | Required |
-| updated_by | Email of the user performing regeneration (optional). | Optional |
+| api_key_id | The UUID of the API key to regenerate. | Required |
+| rotation_time_interval | The new rotation time interval (number). | Required |
+| rotation_time_unit | The new rotation time unit. Possible values are: hours, days, months. | Required |
+| updated_by | The email of the user performing regeneration (optional). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ApiKeyRegenerate.id | String | NEW API Key ID \(UUID\) - different from the old one. |
-| PrismaAIRs.ApiKeyRegenerate.name | String | API Key name \(same as before\). |
-| PrismaAIRs.ApiKeyRegenerate.api_key | String | NEW FULL API KEY SECRET - Only shown once\! The old key is now invalid. |
-| PrismaAIRs.ApiKeyRegenerate.last8 | String | Last 8 characters of the new API key. |
-| PrismaAIRs.ApiKeyRegenerate.auth_code | String | Auth code associated with the key. |
-| PrismaAIRs.ApiKeyRegenerate.expires_at | Date | New expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ApiKeyRegenerate.id | String | The NEW API Key ID \(UUID\) - different from the old one. |
+| PrismaAIRs.ApiKeyRegenerate.name | String | The API Key name \(same as before\). |
+| PrismaAIRs.ApiKeyRegenerate.api_key | String | The NEW FULL API KEY SECRET - Only shown once\! The old key is now invalid. |
+| PrismaAIRs.ApiKeyRegenerate.last8 | String | The last 8 characters of the new API key. |
+| PrismaAIRs.ApiKeyRegenerate.auth_code | String | The auth code associated with the key. |
+| PrismaAIRs.ApiKeyRegenerate.expires_at | Date | The new expiration timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.ApiKeyRegenerate.revoked | Boolean | Whether the API key has been revoked. |
-| PrismaAIRs.ApiKeyRegenerate.updated_at | Date | Update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ApiKeyRegenerate.updated_by | String | User who regenerated the key. |
-| PrismaAIRs.ApiKeyRegenerate.cust_app | String | Customer application name. |
+| PrismaAIRs.ApiKeyRegenerate.updated_at | Date | The update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ApiKeyRegenerate.updated_by | String | The user who regenerated the key. |
+| PrismaAIRs.ApiKeyRegenerate.cust_app | String | The customer application name. |
 
 ### prisma-airs-runtime-api-keys-delete
 
@@ -284,17 +284,17 @@ Delete a Runtime API Key by name. WARNING - This action cannot be undone and imm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| api_key_name | Name of the API key to delete. | Required |
-| updated_by | Email of the user performing the deletion. | Required |
+| api_key_name | The name of the API key to delete. | Required |
+| updated_by | The email of the user performing the deletion. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ApiKeyDeleted.api_key_name | String | Name of the deleted API key. |
-| PrismaAIRs.ApiKeyDeleted.deleted_by | String | Email of the user who deleted the key. |
-| PrismaAIRs.ApiKeyDeleted.message | String | Deletion confirmation message. |
-| PrismaAIRs.ApiKeyDeleted.deleted | Boolean | Boolean indicating successful deletion. |
+| PrismaAIRs.ApiKeyDeleted.api_key_name | String | The name of the deleted API key. |
+| PrismaAIRs.ApiKeyDeleted.deleted_by | String | The email of the user who deleted the key. |
+| PrismaAIRs.ApiKeyDeleted.message | String | The deletion confirmation message. |
+| PrismaAIRs.ApiKeyDeleted.deleted | Boolean | The boolean indicating successful deletion. |
 
 ### prisma-airs-runtime-profiles-list
 
@@ -309,20 +309,20 @@ List all runtime security profiles.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of profiles to return. Default is 50. | Optional |
+| limit | The maximum number of profiles to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.SecurityProfile.id | String | Profile ID \(UUID\). |
-| PrismaAIRs.SecurityProfile.name | String | Profile name. |
-| PrismaAIRs.SecurityProfile.revision | Number | Profile revision number. |
+| PrismaAIRs.SecurityProfile.id | String | The profile ID \(UUID\). |
+| PrismaAIRs.SecurityProfile.name | String | The profile name. |
+| PrismaAIRs.SecurityProfile.revision | Number | The profile revision number. |
 | PrismaAIRs.SecurityProfile.active | Boolean | Whether the profile is active. |
-| PrismaAIRs.SecurityProfile.created_by | String | User who created the profile. |
-| PrismaAIRs.SecurityProfile.updated_by | String | User who last updated the profile. |
-| PrismaAIRs.SecurityProfile.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.SecurityProfile.tsg_id | String | Tenant Service Group ID. |
+| PrismaAIRs.SecurityProfile.created_by | String | The user who created the profile. |
+| PrismaAIRs.SecurityProfile.updated_by | String | The user who last updated the profile. |
+| PrismaAIRs.SecurityProfile.last_modified_ts | Date | The last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.SecurityProfile.tsg_id | String | The tenant Service Group ID. |
 
 #### Command example
 
@@ -379,23 +379,23 @@ Get a specific security profile by ID or name. Returns the highest-revision prof
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_id | Profile UUID (either profile_id or profile_name is required). | Optional |
-| profile_name | Profile name (returns highest-revision match if multiple exist). | Optional |
+| profile_id | The profile UUID (either profile_id or profile_name is required). | Optional |
+| profile_name | The profile name (returns highest-revision match if multiple exist). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.SecurityProfileGet.id | String | Profile ID \(UUID\). |
-| PrismaAIRs.SecurityProfileGet.name | String | Profile name. |
-| PrismaAIRs.SecurityProfileGet.revision | Number | Profile revision number. |
+| PrismaAIRs.SecurityProfileGet.id | String | The profile ID \(UUID\). |
+| PrismaAIRs.SecurityProfileGet.name | String | The profile name. |
+| PrismaAIRs.SecurityProfileGet.revision | Number | The profile revision number. |
 | PrismaAIRs.SecurityProfileGet.active | Boolean | Whether the profile is active. |
-| PrismaAIRs.SecurityProfileGet.policy | Unknown | Full policy configuration \(AI security profiles and DLP data profiles\). |
-| PrismaAIRs.SecurityProfileGet.created_by | String | User who created the profile. |
-| PrismaAIRs.SecurityProfileGet.updated_by | String | User who last updated the profile. |
-| PrismaAIRs.SecurityProfileGet.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.SecurityProfileGet.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.SecurityProfileGet.csp_id | String | Cloud Service Provider ID. |
+| PrismaAIRs.SecurityProfileGet.policy | Unknown | The full policy configuration \(AI security profiles and DLP data profiles\). |
+| PrismaAIRs.SecurityProfileGet.created_by | String | The user who created the profile. |
+| PrismaAIRs.SecurityProfileGet.updated_by | String | The user who last updated the profile. |
+| PrismaAIRs.SecurityProfileGet.last_modified_ts | Date | The last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.SecurityProfileGet.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.SecurityProfileGet.csp_id | String | The cloud Service Provider ID. |
 
 #### Command example
 
@@ -483,24 +483,24 @@ Create a new security profile with custom policy configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_name | Name for the new security profile (must be unique). | Required |
+| profile_name | The name for the new security profile (must be unique). | Required |
 | active | Whether the profile should be active. Possible values are: true, false. Default is true. | Optional |
-| policy | Policy configuration as JSON string. Structure - ai-security-profiles array and dlp-data-profiles array. If omitted, creates empty policy. | Optional |
+| policy | The policy configuration as JSON string. Structure - ai-security-profiles array and dlp-data-profiles array. If omitted, creates empty policy. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.SecurityProfileCreate.id | String | Profile ID \(UUID\). |
-| PrismaAIRs.SecurityProfileCreate.name | String | Profile name. |
-| PrismaAIRs.SecurityProfileCreate.revision | Number | Profile revision number \(starts at 1\). |
+| PrismaAIRs.SecurityProfileCreate.id | String | The profile ID \(UUID\). |
+| PrismaAIRs.SecurityProfileCreate.name | String | The profile name. |
+| PrismaAIRs.SecurityProfileCreate.revision | Number | The profile revision number \(starts at 1\). |
 | PrismaAIRs.SecurityProfileCreate.active | Boolean | Whether the profile is active. |
-| PrismaAIRs.SecurityProfileCreate.policy | Unknown | Full policy configuration. |
-| PrismaAIRs.SecurityProfileCreate.created_by | String | User who created the profile. |
-| PrismaAIRs.SecurityProfileCreate.updated_by | String | User who last updated the profile. |
-| PrismaAIRs.SecurityProfileCreate.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.SecurityProfileCreate.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.SecurityProfileCreate.csp_id | String | Cloud Service Provider ID. |
+| PrismaAIRs.SecurityProfileCreate.policy | Unknown | The full policy configuration. |
+| PrismaAIRs.SecurityProfileCreate.created_by | String | The user who created the profile. |
+| PrismaAIRs.SecurityProfileCreate.updated_by | String | The user who last updated the profile. |
+| PrismaAIRs.SecurityProfileCreate.last_modified_ts | Date | The last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.SecurityProfileCreate.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.SecurityProfileCreate.csp_id | String | The cloud Service Provider ID. |
 
 #### Command example
 
@@ -588,25 +588,25 @@ Update an existing security profile. WARNING - Modifying profile configuration c
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_id | Profile UUID to update. | Required |
-| profile_name | Profile name (can be changed or kept the same). | Required |
+| profile_id | The profile UUID to update. | Required |
+| profile_name | The profile name (can be changed or kept the same). | Required |
 | active | Whether the profile should be active. Possible values are: true, false. | Optional |
-| policy | Updated policy configuration as JSON string. If omitted, policy remains unchanged. | Optional |
+| policy | The updated policy configuration as JSON string. If omitted, policy remains unchanged. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.SecurityProfileUpdate.id | String | Profile ID \(UUID\). |
-| PrismaAIRs.SecurityProfileUpdate.name | String | Profile name. |
-| PrismaAIRs.SecurityProfileUpdate.revision | Number | Profile revision number \(incremented after update\). |
+| PrismaAIRs.SecurityProfileUpdate.id | String | The profile ID \(UUID\). |
+| PrismaAIRs.SecurityProfileUpdate.name | String | The profile name. |
+| PrismaAIRs.SecurityProfileUpdate.revision | Number | The profile revision number \(incremented after update\). |
 | PrismaAIRs.SecurityProfileUpdate.active | Boolean | Whether the profile is active. |
-| PrismaAIRs.SecurityProfileUpdate.policy | Unknown | Full policy configuration. |
-| PrismaAIRs.SecurityProfileUpdate.created_by | String | User who created the profile. |
-| PrismaAIRs.SecurityProfileUpdate.updated_by | String | User who last updated the profile. |
-| PrismaAIRs.SecurityProfileUpdate.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.SecurityProfileUpdate.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.SecurityProfileUpdate.csp_id | String | Cloud Service Provider ID. |
+| PrismaAIRs.SecurityProfileUpdate.policy | Unknown | The full policy configuration. |
+| PrismaAIRs.SecurityProfileUpdate.created_by | String | The user who created the profile. |
+| PrismaAIRs.SecurityProfileUpdate.updated_by | String | The user who last updated the profile. |
+| PrismaAIRs.SecurityProfileUpdate.last_modified_ts | Date | The last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.SecurityProfileUpdate.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.SecurityProfileUpdate.csp_id | String | The cloud Service Provider ID. |
 
 #### Command example
 
@@ -694,17 +694,17 @@ Delete a security profile. WARNING - This action cannot be undone and permanentl
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_id | Profile UUID to delete. | Required |
+| profile_id | The profile UUID to delete. | Required |
 | force | Whether to force-delete the profile, bypassing safety checks. Requires updated_by. Possible values are: true, false. Default is false. | Optional |
-| updated_by | Email of the user performing the deletion. Required when force is true. | Optional |
+| updated_by | The email of the user performing the deletion. Required when force is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.SecurityProfileDeleted.profile_id | String | Deleted profile ID. |
-| PrismaAIRs.SecurityProfileDeleted.message | String | Deletion confirmation message. |
-| PrismaAIRs.SecurityProfileDeleted.deleted | Boolean | Boolean indicating successful deletion. |
+| PrismaAIRs.SecurityProfileDeleted.profile_id | String | The deleted profile ID. |
+| PrismaAIRs.SecurityProfileDeleted.message | String | The deletion confirmation message. |
+| PrismaAIRs.SecurityProfileDeleted.deleted | Boolean | The boolean indicating successful deletion. |
 | PrismaAIRs.SecurityProfileDeleted.force | Boolean | Whether the profile was force-deleted. |
 
 #### Command example
@@ -771,19 +771,19 @@ List all customer applications.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of customer apps to return. Default is 50. | Optional |
+| limit | The maximum number of customer apps to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.CustomerApp.id | String | Customer App ID. |
-| PrismaAIRs.CustomerApp.name | String | Customer App name. |
-| PrismaAIRs.CustomerApp.model_name | String | Model name used by the app. |
-| PrismaAIRs.CustomerApp.cloud_provider | String | Cloud provider. |
-| PrismaAIRs.CustomerApp.environment | String | Environment \(prod, staging, dev\). |
-| PrismaAIRs.CustomerApp.ai_agent_framework | String | AI agent framework used. |
-| PrismaAIRs.CustomerApp.tsg_id | String | Tenant Service Group ID. |
+| PrismaAIRs.CustomerApp.id | String | The customer App ID. |
+| PrismaAIRs.CustomerApp.name | String | The customer App name. |
+| PrismaAIRs.CustomerApp.model_name | String | The model name used by the app. |
+| PrismaAIRs.CustomerApp.cloud_provider | String | The cloud provider. |
+| PrismaAIRs.CustomerApp.environment | String | The environment \(prod, staging, dev\). |
+| PrismaAIRs.CustomerApp.ai_agent_framework | String | The AI agent framework used. |
+| PrismaAIRs.CustomerApp.tsg_id | String | The tenant Service Group ID. |
 
 #### Command example
 
@@ -838,22 +838,22 @@ Get customer application details by name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | Name of the customer application to retrieve. | Required |
+| app_name | The name of the customer application to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.CustomerAppGet.id | String | Customer App ID \(UUID\). |
-| PrismaAIRs.CustomerAppGet.name | String | Customer App name. |
-| PrismaAIRs.CustomerAppGet.model_name | String | Model name used by the app. |
-| PrismaAIRs.CustomerAppGet.cloud_provider | String | Cloud provider \(aws, azure, gcp, other\). |
-| PrismaAIRs.CustomerAppGet.environment | String | Environment \(prod, staging, dev\). |
-| PrismaAIRs.CustomerAppGet.ai_agent_framework | String | AI agent framework used. |
-| PrismaAIRs.CustomerAppGet.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.CustomerAppGet.status | String | Customer App status. |
-| PrismaAIRs.CustomerAppGet.created_by | String | Email of user who created the app. |
-| PrismaAIRs.CustomerAppGet.updated_by | String | Email of user who last updated the app. |
+| PrismaAIRs.CustomerAppGet.id | String | The customer App ID \(UUID\). |
+| PrismaAIRs.CustomerAppGet.name | String | The customer App name. |
+| PrismaAIRs.CustomerAppGet.model_name | String | The model name used by the app. |
+| PrismaAIRs.CustomerAppGet.cloud_provider | String | The cloud provider \(aws, azure, gcp, other\). |
+| PrismaAIRs.CustomerAppGet.environment | String | The environment \(prod, staging, dev\). |
+| PrismaAIRs.CustomerAppGet.ai_agent_framework | String | The AI agent framework used. |
+| PrismaAIRs.CustomerAppGet.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.CustomerAppGet.status | String | The customer App status. |
+| PrismaAIRs.CustomerAppGet.created_by | String | The email of user who created the app. |
+| PrismaAIRs.CustomerAppGet.updated_by | String | The email of user who last updated the app. |
 
 ### prisma-airs-runtime-customer-apps-update
 
@@ -868,29 +868,29 @@ Update a customer application configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_app_id | UUID of the customer application to update. | Required |
-| app_name | Application name. | Required |
-| cloud_provider | Cloud provider. Possible values are: aws, azure, gcp, other. | Required |
-| environment | Environment. Possible values are: prod, staging, dev. | Required |
-| tsg_id | Tenant Service Group ID. If not provided, the configured TSG ID is used. | Optional |
-| model_name | Model name used by the application. | Optional |
-| ai_agent_framework | AI agent framework used by the application. | Optional |
-| updated_by | Email of user performing the update. | Optional |
+| customer_app_id | The UUID of the customer application to update. | Required |
+| app_name | The application name. | Required |
+| cloud_provider | The cloud provider. Possible values are: aws, azure, gcp, other. | Required |
+| environment | The environment. Possible values are: prod, staging, dev. | Required |
+| tsg_id | The tenant Service Group ID. If not provided, the configured TSG ID is used. | Optional |
+| model_name | The model name used by the application. | Optional |
+| ai_agent_framework | The AI agent framework used by the application. | Optional |
+| updated_by | The email of user performing the update. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.CustomerAppUpdate.id | String | Customer App ID \(UUID\). |
-| PrismaAIRs.CustomerAppUpdate.name | String | Customer App name. |
-| PrismaAIRs.CustomerAppUpdate.model_name | String | Model name used by the app. |
-| PrismaAIRs.CustomerAppUpdate.cloud_provider | String | Cloud provider \(aws, azure, gcp, other\). |
-| PrismaAIRs.CustomerAppUpdate.environment | String | Environment \(prod, staging, dev\). |
-| PrismaAIRs.CustomerAppUpdate.ai_agent_framework | String | AI agent framework used. |
-| PrismaAIRs.CustomerAppUpdate.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.CustomerAppUpdate.status | String | Customer App status. |
-| PrismaAIRs.CustomerAppUpdate.created_by | String | Email of user who created the app. |
-| PrismaAIRs.CustomerAppUpdate.updated_by | String | Email of user who last updated the app. |
+| PrismaAIRs.CustomerAppUpdate.id | String | The customer App ID \(UUID\). |
+| PrismaAIRs.CustomerAppUpdate.name | String | The customer App name. |
+| PrismaAIRs.CustomerAppUpdate.model_name | String | The model name used by the app. |
+| PrismaAIRs.CustomerAppUpdate.cloud_provider | String | The cloud provider \(aws, azure, gcp, other\). |
+| PrismaAIRs.CustomerAppUpdate.environment | String | The environment \(prod, staging, dev\). |
+| PrismaAIRs.CustomerAppUpdate.ai_agent_framework | String | The AI agent framework used. |
+| PrismaAIRs.CustomerAppUpdate.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.CustomerAppUpdate.status | String | The customer App status. |
+| PrismaAIRs.CustomerAppUpdate.created_by | String | The email of user who created the app. |
+| PrismaAIRs.CustomerAppUpdate.updated_by | String | The email of user who last updated the app. |
 
 ### prisma-airs-runtime-customer-apps-consumption
 
@@ -905,35 +905,35 @@ Get per-application token consumption and session statistics over the requested 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_id | Customer Application UUID (from customer-apps-list or customer-apps-get). | Required |
-| app_name | Application display name (literal metadata.app_name value from scan payloads). | Required |
-| time_interval | Look-back window in days (7, 30, or 60). Possible values are: 7, 30, 60. Default is 30. | Optional |
-| time_unit | Time unit (only 'days' is supported by API). Default is days. | Optional |
+| app_id | The customer Application UUID (from customer-apps-list or customer-apps-get). | Required |
+| app_name | The application display name (literal metadata.app_name value from scan payloads). | Required |
+| time_interval | The look-back window in days (7, 30, or 60). Possible values are: 7, 30, 60. Default is 30. | Optional |
+| time_unit | The time unit (only 'days' is supported by API). Default is days. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.CustomerAppConsumption.id | String | Customer App ID. |
-| PrismaAIRs.CustomerAppConsumption.name | String | Application name. |
-| PrismaAIRs.CustomerAppConsumption.cloud | String | Cloud provider. |
-| PrismaAIRs.CustomerAppConsumption.source | String | Source \(api, sdk, etc.\). |
-| PrismaAIRs.CustomerAppConsumption.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.CustomerAppConsumption.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.CustomerAppConsumption.profiles | Unknown | Attached security profiles. |
-| PrismaAIRs.CustomerAppConsumption.average_daily_tokens | Number | Average daily token consumption. |
-| PrismaAIRs.CustomerAppConsumption.average_daily_tokens_scale | String | Scale for daily tokens \(K, M, etc.\). |
-| PrismaAIRs.CustomerAppConsumption.monthly_total_tokens | Number | Monthly total token consumption. |
-| PrismaAIRs.CustomerAppConsumption.monthly_total_tokens_scale | String | Scale for monthly tokens \(K, M, etc.\). |
-| PrismaAIRs.CustomerAppConsumption.sessions_total | Number | Total sessions in time window. |
-| PrismaAIRs.CustomerAppConsumption.sessions_violating | Number | Number of violating sessions. |
-| PrismaAIRs.CustomerAppConsumption.last_session_id | String | Last session ID. |
-| PrismaAIRs.CustomerAppConsumption.most_recent_session_time | Date | Most recent session timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.CustomerAppConsumption.violations_critical | Number | Critical violations count. |
-| PrismaAIRs.CustomerAppConsumption.violations_high | Number | High violations count. |
-| PrismaAIRs.CustomerAppConsumption.violations_medium | Number | Medium violations count. |
-| PrismaAIRs.CustomerAppConsumption.violations_low | Number | Low violations count. |
-| PrismaAIRs.CustomerAppConsumption.violations_total | Number | Total violations count. |
+| PrismaAIRs.CustomerAppConsumption.id | String | The customer App ID. |
+| PrismaAIRs.CustomerAppConsumption.name | String | The application name. |
+| PrismaAIRs.CustomerAppConsumption.cloud | String | The cloud provider. |
+| PrismaAIRs.CustomerAppConsumption.source | String | The source \(api, sdk, etc.\). |
+| PrismaAIRs.CustomerAppConsumption.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.CustomerAppConsumption.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.CustomerAppConsumption.profiles | Unknown | The attached security profiles. |
+| PrismaAIRs.CustomerAppConsumption.average_daily_tokens | Number | The average daily token consumption. |
+| PrismaAIRs.CustomerAppConsumption.average_daily_tokens_scale | String | The scale for daily tokens \(K, M, etc.\). |
+| PrismaAIRs.CustomerAppConsumption.monthly_total_tokens | Number | The monthly total token consumption. |
+| PrismaAIRs.CustomerAppConsumption.monthly_total_tokens_scale | String | The scale for monthly tokens \(K, M, etc.\). |
+| PrismaAIRs.CustomerAppConsumption.sessions_total | Number | The total sessions in time window. |
+| PrismaAIRs.CustomerAppConsumption.sessions_violating | Number | The number of violating sessions. |
+| PrismaAIRs.CustomerAppConsumption.last_session_id | String | The last session ID. |
+| PrismaAIRs.CustomerAppConsumption.most_recent_session_time | Date | The most recent session timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.CustomerAppConsumption.violations_critical | Number | The critical violations count. |
+| PrismaAIRs.CustomerAppConsumption.violations_high | Number | The high violations count. |
+| PrismaAIRs.CustomerAppConsumption.violations_medium | Number | The medium violations count. |
+| PrismaAIRs.CustomerAppConsumption.violations_low | Number | The low violations count. |
+| PrismaAIRs.CustomerAppConsumption.violations_total | Number | The total violations count. |
 
 ### prisma-airs-runtime-customer-apps-violations
 
@@ -948,27 +948,27 @@ Get per-detector violation severity breakdown for an application over the reques
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_id | Customer Application UUID (from customer-apps-list or customer-apps-get). | Required |
-| app_name | Application display name (literal metadata.app_name value from scan payloads). | Required |
-| time_interval | Look-back window in days (7, 30, or 60). Possible values are: 7, 30, 60. Default is 30. | Optional |
-| time_unit | Time unit (only 'days' is supported by API). Default is days. | Optional |
+| app_id | The customer Application UUID (from customer-apps-list or customer-apps-get). | Required |
+| app_name | The application display name (literal metadata.app_name value from scan payloads). | Required |
+| time_interval | The look-back window in days (7, 30, or 60). Possible values are: 7, 30, 60. Default is 30. | Optional |
+| time_unit | The time unit (only 'days' is supported by API). Default is days. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.CustomerAppViolations.app_id | String | Customer App ID. |
-| PrismaAIRs.CustomerAppViolations.app_name | String | Application name. |
-| PrismaAIRs.CustomerAppViolations.total_violating | Number | Total number of violating sessions. |
-| PrismaAIRs.CustomerAppViolations.time_interval | Number | Time window in days. |
-| PrismaAIRs.CustomerAppViolations.time_unit | String | Time unit used. |
-| PrismaAIRs.CustomerAppViolations.detectors | Unknown | Per-detector violation breakdown array. |
-| PrismaAIRs.CustomerAppViolations.detectors.detection_type | String | Detector type \(agent_security, dbs, dlp, malicious_code, pi, source_code, tc, topic_guardrails, uf, contextual_grounding\). |
-| PrismaAIRs.CustomerAppViolations.detectors.critical | Number | Critical violations count for this detector. |
-| PrismaAIRs.CustomerAppViolations.detectors.high | Number | High violations count for this detector. |
-| PrismaAIRs.CustomerAppViolations.detectors.medium | Number | Medium violations count for this detector. |
-| PrismaAIRs.CustomerAppViolations.detectors.low | Number | Low violations count for this detector. |
-| PrismaAIRs.CustomerAppViolations.detectors.total | Number | Total violations count for this detector. |
+| PrismaAIRs.CustomerAppViolations.app_id | String | The customer App ID. |
+| PrismaAIRs.CustomerAppViolations.app_name | String | The application name. |
+| PrismaAIRs.CustomerAppViolations.total_violating | Number | The total number of violating sessions. |
+| PrismaAIRs.CustomerAppViolations.time_interval | Number | The time window in days. |
+| PrismaAIRs.CustomerAppViolations.time_unit | String | The time unit used. |
+| PrismaAIRs.CustomerAppViolations.detectors | Unknown | The per-detector violation breakdown array. |
+| PrismaAIRs.CustomerAppViolations.detectors.detection_type | String | The detector type \(agent_security, dbs, dlp, malicious_code, pi, source_code, tc, topic_guardrails, uf, contextual_grounding\). |
+| PrismaAIRs.CustomerAppViolations.detectors.critical | Number | The critical violations count for this detector. |
+| PrismaAIRs.CustomerAppViolations.detectors.high | Number | The high violations count for this detector. |
+| PrismaAIRs.CustomerAppViolations.detectors.medium | Number | The medium violations count for this detector. |
+| PrismaAIRs.CustomerAppViolations.detectors.low | Number | The low violations count for this detector. |
+| PrismaAIRs.CustomerAppViolations.detectors.total | Number | The total violations count for this detector. |
 
 ### prisma-airs-runtime-customer-apps-delete
 
@@ -983,17 +983,17 @@ Delete a customer application and all associated API keys. WARNING - This action
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | Name of the customer application to delete. | Required |
-| updated_by | Email of the user performing the deletion. | Required |
+| app_name | The name of the customer application to delete. | Required |
+| updated_by | The email of the user performing the deletion. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.CustomerAppDeleted.app_name | String | Name of the deleted customer application. |
-| PrismaAIRs.CustomerAppDeleted.deleted_by | String | Email of the user who deleted the application. |
-| PrismaAIRs.CustomerAppDeleted.message | String | Deletion confirmation message. |
-| PrismaAIRs.CustomerAppDeleted.deleted | Boolean | Boolean indicating successful deletion. |
+| PrismaAIRs.CustomerAppDeleted.app_name | String | The name of the deleted customer application. |
+| PrismaAIRs.CustomerAppDeleted.deleted_by | String | The email of the user who deleted the application. |
+| PrismaAIRs.CustomerAppDeleted.message | String | The deletion confirmation message. |
+| PrismaAIRs.CustomerAppDeleted.deleted | Boolean | The boolean indicating successful deletion. |
 
 ### prisma-airs-runtime-deployment-profiles-list
 
@@ -1008,19 +1008,19 @@ List all deployment profiles.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of deployment profiles to return. Default is 50. | Optional |
+| limit | The maximum number of deployment profiles to return. Default is 50. | Optional |
 | unactivated | Whether to show only unactivated profiles. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DeploymentProfile.name | String | Deployment Profile name. |
-| PrismaAIRs.DeploymentProfile.auth_code | String | Authentication code. |
-| PrismaAIRs.DeploymentProfile.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.DeploymentProfile.status | String | Profile status. |
-| PrismaAIRs.DeploymentProfile.expiration_date | Date | Expiration date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DeploymentProfile.ave_text_records | Number | Average text records. |
+| PrismaAIRs.DeploymentProfile.name | String | The deployment Profile name. |
+| PrismaAIRs.DeploymentProfile.auth_code | String | The authentication code. |
+| PrismaAIRs.DeploymentProfile.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.DeploymentProfile.status | String | The profile status. |
+| PrismaAIRs.DeploymentProfile.expiration_date | Date | The expiration date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DeploymentProfile.ave_text_records | Number | The average text records. |
 
 #### Command example
 
@@ -1062,27 +1062,27 @@ List all DLP data profiles (v2 API).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number for pagination. Default is 0. | Optional |
-| size | Number of results per page. Default is 50. | Optional |
+| page | The page number for pagination. Default is 0. | Optional |
+| size | The number of results per page. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpProfile.id | String | DLP Profile ID. |
-| PrismaAIRs.DlpProfile.name | String | DLP Profile name. |
-| PrismaAIRs.DlpProfile.description | String | DLP Profile description. |
-| PrismaAIRs.DlpProfile.tenant_id | String | Tenant ID. |
-| PrismaAIRs.DlpProfile.type | String | Profile type \(custom or predefined\). |
-| PrismaAIRs.DlpProfile.profile_status | String | Profile status \(active, disabled, deleted\). |
-| PrismaAIRs.DlpProfile.profile_type | String | Profile type \(basic or advanced\). |
+| PrismaAIRs.DlpProfile.id | String | The DLP Profile ID. |
+| PrismaAIRs.DlpProfile.name | String | The DLP Profile name. |
+| PrismaAIRs.DlpProfile.description | String | The DLP Profile description. |
+| PrismaAIRs.DlpProfile.tenant_id | String | The tenant ID. |
+| PrismaAIRs.DlpProfile.type | String | The profile type \(custom or predefined\). |
+| PrismaAIRs.DlpProfile.profile_status | String | The profile status \(active, disabled, deleted\). |
+| PrismaAIRs.DlpProfile.profile_type | String | The profile type \(basic or advanced\). |
 | PrismaAIRs.DlpProfile.is_granular_data_profile | Boolean | Whether this is a granular data profile. |
 | PrismaAIRs.DlpProfile.is_parent_managed | Boolean | Whether the profile is parent-managed. |
-| PrismaAIRs.DlpProfile.version | Number | DLP Profile version. |
-| PrismaAIRs.DlpProfile.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpProfile.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpProfile.created_by | String | User who created the profile. |
-| PrismaAIRs.DlpProfile.updated_by | String | User who last updated the profile. |
+| PrismaAIRs.DlpProfile.version | Number | The DLP Profile version. |
+| PrismaAIRs.DlpProfile.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpProfile.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpProfile.created_by | String | The user who created the profile. |
+| PrismaAIRs.DlpProfile.updated_by | String | The user who last updated the profile. |
 
 #### Command example
 
@@ -1157,21 +1157,21 @@ Get a single DLP data profile by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpProfileGet.id | String | DLP Profile ID. |
-| PrismaAIRs.DlpProfileGet.name | String | DLP Profile name. |
-| PrismaAIRs.DlpProfileGet.description | String | DLP Profile description. |
-| PrismaAIRs.DlpProfileGet.tenant_id | String | Tenant ID. |
-| PrismaAIRs.DlpProfileGet.type | String | Profile type \(custom or predefined\). |
-| PrismaAIRs.DlpProfileGet.profile_status | String | Profile status \(active, disabled, deleted\). |
-| PrismaAIRs.DlpProfileGet.profile_type | String | Profile type \(basic or advanced\). |
+| PrismaAIRs.DlpProfileGet.id | String | The DLP Profile ID. |
+| PrismaAIRs.DlpProfileGet.name | String | The DLP Profile name. |
+| PrismaAIRs.DlpProfileGet.description | String | The DLP Profile description. |
+| PrismaAIRs.DlpProfileGet.tenant_id | String | The tenant ID. |
+| PrismaAIRs.DlpProfileGet.type | String | The profile type \(custom or predefined\). |
+| PrismaAIRs.DlpProfileGet.profile_status | String | The profile status \(active, disabled, deleted\). |
+| PrismaAIRs.DlpProfileGet.profile_type | String | The profile type \(basic or advanced\). |
 | PrismaAIRs.DlpProfileGet.is_granular_data_profile | Boolean | Whether this is a granular data profile. |
 | PrismaAIRs.DlpProfileGet.is_parent_managed | Boolean | Whether the profile is parent-managed. |
-| PrismaAIRs.DlpProfileGet.version | Number | DLP Profile version. |
-| PrismaAIRs.DlpProfileGet.detection_rules | Unknown | Detection rules array \(expression_tree or multi_profile\). |
-| PrismaAIRs.DlpProfileGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpProfileGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpProfileGet.created_by | String | User who created the profile. |
-| PrismaAIRs.DlpProfileGet.updated_by | String | User who last updated the profile. |
+| PrismaAIRs.DlpProfileGet.version | Number | The DLP Profile version. |
+| PrismaAIRs.DlpProfileGet.detection_rules | Unknown | The detection rules array \(expression_tree or multi_profile\). |
+| PrismaAIRs.DlpProfileGet.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpProfileGet.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpProfileGet.created_by | String | The user who created the profile. |
+| PrismaAIRs.DlpProfileGet.updated_by | String | The user who last updated the profile. |
 
 ### prisma-airs-runtime-dlp-profiles-create
 
@@ -1186,26 +1186,26 @@ Create a new DLP data profile with detection rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Profile name (1-64 characters). | Required |
-| detection_rules | Detection rules as JSON array. Each rule must have rule_type (expression_tree or multi_profile) and corresponding structure. | Required |
-| description | Profile description. | Optional |
+| name | The profile name (1-64 characters). | Required |
+| detection_rules | The detection rules as JSON array. Each rule must have rule_type (expression_tree or multi_profile) and corresponding structure. | Required |
+| description | The profile description. | Optional |
 | is_granular_data_profile | Whether this is a granular data profile. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpProfileCreate.id | String | DLP Profile ID. |
-| PrismaAIRs.DlpProfileCreate.name | String | DLP Profile name. |
-| PrismaAIRs.DlpProfileCreate.description | String | DLP Profile description. |
-| PrismaAIRs.DlpProfileCreate.type | String | Profile type. |
-| PrismaAIRs.DlpProfileCreate.profile_status | String | Profile status. |
-| PrismaAIRs.DlpProfileCreate.profile_type | String | Profile type \(basic or advanced\). |
+| PrismaAIRs.DlpProfileCreate.id | String | The DLP Profile ID. |
+| PrismaAIRs.DlpProfileCreate.name | String | The DLP Profile name. |
+| PrismaAIRs.DlpProfileCreate.description | String | The DLP Profile description. |
+| PrismaAIRs.DlpProfileCreate.type | String | The profile type. |
+| PrismaAIRs.DlpProfileCreate.profile_status | String | The profile status. |
+| PrismaAIRs.DlpProfileCreate.profile_type | String | The profile type \(basic or advanced\). |
 | PrismaAIRs.DlpProfileCreate.is_granular_data_profile | Boolean | Whether this is a granular data profile. |
-| PrismaAIRs.DlpProfileCreate.version | Number | Profile version. |
-| PrismaAIRs.DlpProfileCreate.detection_rules | Unknown | Detection rules array. |
-| PrismaAIRs.DlpProfileCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpProfileCreate.created_by | String | User who created the profile. |
+| PrismaAIRs.DlpProfileCreate.version | Number | The profile version. |
+| PrismaAIRs.DlpProfileCreate.detection_rules | Unknown | The detection rules array. |
+| PrismaAIRs.DlpProfileCreate.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpProfileCreate.created_by | String | The user who created the profile. |
 
 ### prisma-airs-runtime-dlp-profiles-patch
 
@@ -1221,25 +1221,25 @@ Partially update a DLP data profile (JSON Merge Patch). Fields set to "null" wil
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_id | The ID of the DLP data profile to update. | Required |
-| name | Profile name (required for PATCH, cannot be cleared). | Required |
-| profile_type | Profile type (required for PATCH, cannot be cleared). Possible values are: basic, advanced. | Required |
-| description | Profile description (set to "null" to clear). | Optional |
-| detection_rules | Detection rules as JSON array (set to "null" to clear). | Optional |
+| name | The profile name (required for PATCH, cannot be cleared). | Required |
+| profile_type | The profile type (required for PATCH, cannot be cleared). Possible values are: basic, advanced. | Required |
+| description | The profile description (set to "null" to clear). | Optional |
+| detection_rules | The detection rules as JSON array (set to "null" to clear). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpProfilePatch.id | String | DLP Profile ID. |
-| PrismaAIRs.DlpProfilePatch.name | String | DLP Profile name. |
-| PrismaAIRs.DlpProfilePatch.description | String | DLP Profile description. |
-| PrismaAIRs.DlpProfilePatch.type | String | Profile type. |
-| PrismaAIRs.DlpProfilePatch.profile_status | String | Profile status. |
-| PrismaAIRs.DlpProfilePatch.profile_type | String | Profile type. |
-| PrismaAIRs.DlpProfilePatch.version | Number | Profile version. |
-| PrismaAIRs.DlpProfilePatch.detection_rules | Unknown | Detection rules array. |
-| PrismaAIRs.DlpProfilePatch.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpProfilePatch.updated_by | String | User who last updated the profile. |
+| PrismaAIRs.DlpProfilePatch.id | String | The DLP Profile ID. |
+| PrismaAIRs.DlpProfilePatch.name | String | The DLP Profile name. |
+| PrismaAIRs.DlpProfilePatch.description | String | The DLP Profile description. |
+| PrismaAIRs.DlpProfilePatch.type | String | The profile type. |
+| PrismaAIRs.DlpProfilePatch.profile_status | String | The profile status. |
+| PrismaAIRs.DlpProfilePatch.profile_type | String | The profile type. |
+| PrismaAIRs.DlpProfilePatch.version | Number | The profile version. |
+| PrismaAIRs.DlpProfilePatch.detection_rules | Unknown | The detection rules array. |
+| PrismaAIRs.DlpProfilePatch.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpProfilePatch.updated_by | String | The user who last updated the profile. |
 
 ### prisma-airs-runtime-dlp-profiles-replace
 
@@ -1255,25 +1255,25 @@ Replace (full update) a DLP data profile. This replaces the entire profile confi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_id | The ID of the DLP data profile to replace. | Required |
-| name | Profile name (1-64 characters). | Required |
-| detection_rules | Detection rules as JSON array. | Required |
-| description | Profile description. | Optional |
+| name | The profile name (1-64 characters). | Required |
+| detection_rules | The detection rules as JSON array. | Required |
+| description | The profile description. | Optional |
 | is_granular_data_profile | Whether this is a granular data profile. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpProfileReplace.id | String | DLP Profile ID. |
-| PrismaAIRs.DlpProfileReplace.name | String | DLP Profile name. |
-| PrismaAIRs.DlpProfileReplace.description | String | DLP Profile description. |
-| PrismaAIRs.DlpProfileReplace.type | String | Profile type. |
-| PrismaAIRs.DlpProfileReplace.profile_status | String | Profile status. |
-| PrismaAIRs.DlpProfileReplace.profile_type | String | Profile type. |
-| PrismaAIRs.DlpProfileReplace.version | Number | Profile version. |
-| PrismaAIRs.DlpProfileReplace.detection_rules | Unknown | Detection rules array. |
-| PrismaAIRs.DlpProfileReplace.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpProfileReplace.updated_by | String | User who last updated the profile. |
+| PrismaAIRs.DlpProfileReplace.id | String | The DLP Profile ID. |
+| PrismaAIRs.DlpProfileReplace.name | String | The DLP Profile name. |
+| PrismaAIRs.DlpProfileReplace.description | String | The DLP Profile description. |
+| PrismaAIRs.DlpProfileReplace.type | String | The profile type. |
+| PrismaAIRs.DlpProfileReplace.profile_status | String | The profile status. |
+| PrismaAIRs.DlpProfileReplace.profile_type | String | The profile type. |
+| PrismaAIRs.DlpProfileReplace.version | Number | The profile version. |
+| PrismaAIRs.DlpProfileReplace.detection_rules | Unknown | The detection rules array. |
+| PrismaAIRs.DlpProfileReplace.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpProfileReplace.updated_by | String | The user who last updated the profile. |
 
 ### prisma-airs-runtime-dlp-profiles-delete
 
@@ -1294,11 +1294,11 @@ Soft-delete a DLP data profile. The DLP API has no DELETE endpoint, so the profi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpProfileDelete.id | String | ID of the deleted DLP data profile. |
-| PrismaAIRs.DlpProfileDelete.name | String | Name of the deleted DLP data profile. |
-| PrismaAIRs.DlpProfileDelete.profile_status | String | Lifecycle status after deletion \(deleted\). |
+| PrismaAIRs.DlpProfileDelete.id | String | The ID of the deleted DLP data profile. |
+| PrismaAIRs.DlpProfileDelete.name | String | The name of the deleted DLP data profile. |
+| PrismaAIRs.DlpProfileDelete.profile_status | String | The lifecycle status after deletion \(deleted\). |
 | PrismaAIRs.DlpProfileDelete.deleted | Boolean | Whether the profile was successfully soft-deleted. |
-| PrismaAIRs.DlpProfileDelete.status | String | Human-readable deletion status. |
+| PrismaAIRs.DlpProfileDelete.status | String | The human-readable deletion status. |
 
 ### prisma-airs-runtime-dlp-dictionaries-list
 
@@ -1313,25 +1313,25 @@ List DLP dictionaries.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number for pagination. Default is 0. | Optional |
-| size | Number of results per page. Default is 50. | Optional |
+| page | The page number for pagination. Default is 0. | Optional |
+| size | The number of results per page. Default is 50. | Optional |
 | include_keywords | Whether to include the keyword list in the response. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpDictionary.id | String | Dictionary ID. |
-| PrismaAIRs.DlpDictionary.name | String | Dictionary name. |
-| PrismaAIRs.DlpDictionary.description | String | Dictionary description. |
-| PrismaAIRs.DlpDictionary.category | String | Dictionary category. |
-| PrismaAIRs.DlpDictionary.region_name | String | Region name. |
-| PrismaAIRs.DlpDictionary.type | String | Dictionary type \(predefined or custom\). |
+| PrismaAIRs.DlpDictionary.id | String | The dictionary ID. |
+| PrismaAIRs.DlpDictionary.name | String | The dictionary name. |
+| PrismaAIRs.DlpDictionary.description | String | The dictionary description. |
+| PrismaAIRs.DlpDictionary.category | String | The dictionary category. |
+| PrismaAIRs.DlpDictionary.region_name | String | The region name. |
+| PrismaAIRs.DlpDictionary.type | String | The dictionary type \(predefined or custom\). |
 | PrismaAIRs.DlpDictionary.is_case_sensitive | Boolean | Whether the dictionary is case sensitive. |
-| PrismaAIRs.DlpDictionary.detection_technique | String | Detection technique. |
-| PrismaAIRs.DlpDictionary.number_of_keywords | Number | Number of keywords in the dictionary. |
-| PrismaAIRs.DlpDictionary.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpDictionary.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpDictionary.detection_technique | String | The detection technique. |
+| PrismaAIRs.DlpDictionary.number_of_keywords | Number | The number of keywords in the dictionary. |
+| PrismaAIRs.DlpDictionary.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpDictionary.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -1407,23 +1407,23 @@ Get a single DLP dictionary by ID, optionally including keywords.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpDictionaryGet.id | String | Dictionary ID. |
-| PrismaAIRs.DlpDictionaryGet.name | String | Dictionary name. |
-| PrismaAIRs.DlpDictionaryGet.description | String | Dictionary description. |
-| PrismaAIRs.DlpDictionaryGet.category | String | Dictionary category. |
-| PrismaAIRs.DlpDictionaryGet.region_name | String | Region name. |
-| PrismaAIRs.DlpDictionaryGet.type | String | Dictionary type \(predefined or custom\). |
+| PrismaAIRs.DlpDictionaryGet.id | String | The dictionary ID. |
+| PrismaAIRs.DlpDictionaryGet.name | String | The dictionary name. |
+| PrismaAIRs.DlpDictionaryGet.description | String | The dictionary description. |
+| PrismaAIRs.DlpDictionaryGet.category | String | The dictionary category. |
+| PrismaAIRs.DlpDictionaryGet.region_name | String | The region name. |
+| PrismaAIRs.DlpDictionaryGet.type | String | The dictionary type \(predefined or custom\). |
 | PrismaAIRs.DlpDictionaryGet.is_case_sensitive | Boolean | Whether the dictionary is case sensitive. |
 | PrismaAIRs.DlpDictionaryGet.is_parent_managed | Boolean | Whether the dictionary is parent-managed. |
-| PrismaAIRs.DlpDictionaryGet.detection_technique | String | Detection technique. |
-| PrismaAIRs.DlpDictionaryGet.detection_sub_technique | String | Detection sub-technique. |
-| PrismaAIRs.DlpDictionaryGet.dictionary_metadata | Unknown | Dictionary metadata \(number of keywords, file size, original filename\). |
-| PrismaAIRs.DlpDictionaryGet.keywords | Unknown | Keyword list \(only populated if include_keywords is true\). |
-| PrismaAIRs.DlpDictionaryGet.tags | Unknown | Tags \(classification array\). |
-| PrismaAIRs.DlpDictionaryGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpDictionaryGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpDictionaryGet.created_by | String | User who created the dictionary. |
-| PrismaAIRs.DlpDictionaryGet.updated_by | String | User who last updated the dictionary. |
+| PrismaAIRs.DlpDictionaryGet.detection_technique | String | The detection technique. |
+| PrismaAIRs.DlpDictionaryGet.detection_sub_technique | String | The detection sub-technique. |
+| PrismaAIRs.DlpDictionaryGet.dictionary_metadata | Unknown | The dictionary metadata \(number of keywords, file size, original filename\). |
+| PrismaAIRs.DlpDictionaryGet.keywords | Unknown | The keyword list \(only populated if include_keywords is true\). |
+| PrismaAIRs.DlpDictionaryGet.tags | Unknown | The tags \(classification array\). |
+| PrismaAIRs.DlpDictionaryGet.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpDictionaryGet.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpDictionaryGet.created_by | String | The user who created the dictionary. |
+| PrismaAIRs.DlpDictionaryGet.updated_by | String | The user who last updated the dictionary. |
 
 ### prisma-airs-runtime-dlp-dictionaries-create
 
@@ -1438,31 +1438,31 @@ Create a new DLP dictionary by uploading a keyword file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Dictionary name. | Required |
-| category | Dictionary category. Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
-| region_name | Region name (e.g., us-west-2). | Required |
-| entry_id | War room entry ID of the keyword file to upload. | Required |
-| description | Dictionary description. | Optional |
+| name | The dictionary name. | Required |
+| category | The dictionary category. Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
+| region_name | The region name (e.g., us-west-2). | Required |
+| entry_id | The war room entry ID of the keyword file to upload. | Required |
+| description | The dictionary description. | Optional |
 | is_case_sensitive | Whether the dictionary is case sensitive. Possible values are: true, false. | Optional |
-| type | Dictionary type. Possible values are: predefined, custom. | Optional |
+| type | The dictionary type. Possible values are: predefined, custom. | Optional |
 | include_keywords | Whether to include the keyword list in the response. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpDictionaryCreate.id | String | Dictionary ID. |
-| PrismaAIRs.DlpDictionaryCreate.name | String | Dictionary name. |
-| PrismaAIRs.DlpDictionaryCreate.description | String | Dictionary description. |
-| PrismaAIRs.DlpDictionaryCreate.category | String | Dictionary category. |
-| PrismaAIRs.DlpDictionaryCreate.region_name | String | Region name. |
-| PrismaAIRs.DlpDictionaryCreate.type | String | Dictionary type. |
+| PrismaAIRs.DlpDictionaryCreate.id | String | The dictionary ID. |
+| PrismaAIRs.DlpDictionaryCreate.name | String | The dictionary name. |
+| PrismaAIRs.DlpDictionaryCreate.description | String | The dictionary description. |
+| PrismaAIRs.DlpDictionaryCreate.category | String | The dictionary category. |
+| PrismaAIRs.DlpDictionaryCreate.region_name | String | The region name. |
+| PrismaAIRs.DlpDictionaryCreate.type | String | The dictionary type. |
 | PrismaAIRs.DlpDictionaryCreate.is_case_sensitive | Boolean | Whether the dictionary is case sensitive. |
-| PrismaAIRs.DlpDictionaryCreate.detection_technique | String | Detection technique. |
-| PrismaAIRs.DlpDictionaryCreate.dictionary_metadata | Unknown | Dictionary metadata. |
-| PrismaAIRs.DlpDictionaryCreate.keywords | Unknown | Keyword list. |
-| PrismaAIRs.DlpDictionaryCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpDictionaryCreate.created_by | String | User who created the dictionary. |
+| PrismaAIRs.DlpDictionaryCreate.detection_technique | String | The detection technique. |
+| PrismaAIRs.DlpDictionaryCreate.dictionary_metadata | Unknown | The dictionary metadata. |
+| PrismaAIRs.DlpDictionaryCreate.keywords | Unknown | The keyword list. |
+| PrismaAIRs.DlpDictionaryCreate.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpDictionaryCreate.created_by | String | The user who created the dictionary. |
 
 ### prisma-airs-runtime-dlp-dictionaries-patch
 
@@ -1478,26 +1478,26 @@ Partially update a DLP dictionary (JSON Merge Patch). Fields set to "null" will 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | dictionary_id | The ID of the DLP dictionary to update. | Required |
-| name | Dictionary name (required for PATCH, cannot be cleared). | Required |
-| category | Dictionary category (required for PATCH, cannot be cleared). Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
-| original_file_name | Original filename (required for PATCH, cannot be cleared). | Required |
-| description | Dictionary description (set to "null" to clear). | Optional |
+| name | The dictionary name (required for PATCH, cannot be cleared). | Required |
+| category | The dictionary category (required for PATCH, cannot be cleared). Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
+| original_file_name | The original filename (required for PATCH, cannot be cleared). | Required |
+| description | The dictionary description (set to "null" to clear). | Optional |
 | is_case_sensitive | Whether the dictionary is case sensitive (set to "null" to clear). Possible values are: true, false, null. | Optional |
-| region_name | Region name (set to "null" to clear). | Optional |
+| region_name | The region name (set to "null" to clear). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpDictionaryPatch.id | String | Dictionary ID. |
-| PrismaAIRs.DlpDictionaryPatch.name | String | Dictionary name. |
-| PrismaAIRs.DlpDictionaryPatch.description | String | Dictionary description. |
-| PrismaAIRs.DlpDictionaryPatch.category | String | Dictionary category. |
-| PrismaAIRs.DlpDictionaryPatch.region_name | String | Region name. |
-| PrismaAIRs.DlpDictionaryPatch.type | String | Dictionary type. |
+| PrismaAIRs.DlpDictionaryPatch.id | String | The dictionary ID. |
+| PrismaAIRs.DlpDictionaryPatch.name | String | The dictionary name. |
+| PrismaAIRs.DlpDictionaryPatch.description | String | The dictionary description. |
+| PrismaAIRs.DlpDictionaryPatch.category | String | The dictionary category. |
+| PrismaAIRs.DlpDictionaryPatch.region_name | String | The region name. |
+| PrismaAIRs.DlpDictionaryPatch.type | String | The dictionary type. |
 | PrismaAIRs.DlpDictionaryPatch.is_case_sensitive | Boolean | Whether the dictionary is case sensitive. |
-| PrismaAIRs.DlpDictionaryPatch.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpDictionaryPatch.updated_by | String | User who last updated the dictionary. |
+| PrismaAIRs.DlpDictionaryPatch.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpDictionaryPatch.updated_by | String | The user who last updated the dictionary. |
 
 ### prisma-airs-runtime-dlp-dictionaries-replace
 
@@ -1513,29 +1513,29 @@ Replace (full update) a DLP dictionary by uploading a new keyword file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | dictionary_id | The ID of the DLP dictionary to replace. | Required |
-| name | Dictionary name. | Required |
-| category | Dictionary category. Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
-| region_name | Region name (e.g., us-west-2). | Required |
-| entry_id | War room entry ID of the keyword file to upload. | Required |
-| description | Dictionary description. | Optional |
+| name | The dictionary name. | Required |
+| category | The dictionary category. Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
+| region_name | The region name (e.g., us-west-2). | Required |
+| entry_id | The war room entry ID of the keyword file to upload. | Required |
+| description | The dictionary description. | Optional |
 | is_case_sensitive | Whether the dictionary is case sensitive. Possible values are: true, false. | Optional |
-| type | Dictionary type. Possible values are: predefined, custom. | Optional |
+| type | The dictionary type. Possible values are: predefined, custom. | Optional |
 | include_keywords | Whether to include the keyword list in the response. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpDictionaryReplace.id | String | Dictionary ID. |
-| PrismaAIRs.DlpDictionaryReplace.name | String | Dictionary name. |
-| PrismaAIRs.DlpDictionaryReplace.description | String | Dictionary description. |
-| PrismaAIRs.DlpDictionaryReplace.category | String | Dictionary category. |
-| PrismaAIRs.DlpDictionaryReplace.region_name | String | Region name. |
-| PrismaAIRs.DlpDictionaryReplace.type | String | Dictionary type. |
+| PrismaAIRs.DlpDictionaryReplace.id | String | The dictionary ID. |
+| PrismaAIRs.DlpDictionaryReplace.name | String | The dictionary name. |
+| PrismaAIRs.DlpDictionaryReplace.description | String | The dictionary description. |
+| PrismaAIRs.DlpDictionaryReplace.category | String | The dictionary category. |
+| PrismaAIRs.DlpDictionaryReplace.region_name | String | The region name. |
+| PrismaAIRs.DlpDictionaryReplace.type | String | The dictionary type. |
 | PrismaAIRs.DlpDictionaryReplace.is_case_sensitive | Boolean | Whether the dictionary is case sensitive. |
-| PrismaAIRs.DlpDictionaryReplace.keywords | Unknown | Keyword list. |
-| PrismaAIRs.DlpDictionaryReplace.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpDictionaryReplace.updated_by | String | User who last updated the dictionary. |
+| PrismaAIRs.DlpDictionaryReplace.keywords | Unknown | The keyword list. |
+| PrismaAIRs.DlpDictionaryReplace.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpDictionaryReplace.updated_by | String | The user who last updated the dictionary. |
 
 ### prisma-airs-runtime-dlp-dictionaries-delete
 
@@ -1556,9 +1556,9 @@ Delete a DLP dictionary. This action cannot be undone.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpDictionaryDelete.id | String | ID of the deleted DLP dictionary. |
+| PrismaAIRs.DlpDictionaryDelete.id | String | The ID of the deleted DLP dictionary. |
 | PrismaAIRs.DlpDictionaryDelete.deleted | Boolean | Whether the dictionary was successfully deleted. |
-| PrismaAIRs.DlpDictionaryDelete.status | String | Human-readable deletion status. |
+| PrismaAIRs.DlpDictionaryDelete.status | String | The human-readable deletion status. |
 
 ### prisma-airs-runtime-dlp-patterns-list
 
@@ -1573,24 +1573,24 @@ List DLP data patterns.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number for pagination. Default is 0. | Optional |
-| size | Number of results per page. Default is 50. | Optional |
+| page | The page number for pagination. Default is 0. | Optional |
+| size | The number of results per page. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpPattern.id | String | Pattern ID. |
-| PrismaAIRs.DlpPattern.name | String | Pattern name. |
-| PrismaAIRs.DlpPattern.description | String | Pattern description. |
-| PrismaAIRs.DlpPattern.category | String | Pattern category. |
-| PrismaAIRs.DlpPattern.region_name | String | Region name. |
-| PrismaAIRs.DlpPattern.type | String | Pattern type \(predefined or custom\). |
-| PrismaAIRs.DlpPattern.detection_technique | String | Detection technique. |
-| PrismaAIRs.DlpPattern.detection_sub_technique | String | Detection sub-technique. |
-| PrismaAIRs.DlpPattern.pattern_status | String | Pattern status. |
-| PrismaAIRs.DlpPattern.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpPattern.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpPattern.id | String | The pattern ID. |
+| PrismaAIRs.DlpPattern.name | String | The pattern name. |
+| PrismaAIRs.DlpPattern.description | String | The pattern description. |
+| PrismaAIRs.DlpPattern.category | String | The pattern category. |
+| PrismaAIRs.DlpPattern.region_name | String | The region name. |
+| PrismaAIRs.DlpPattern.type | String | The pattern type \(predefined or custom\). |
+| PrismaAIRs.DlpPattern.detection_technique | String | The detection technique. |
+| PrismaAIRs.DlpPattern.detection_sub_technique | String | The detection sub-technique. |
+| PrismaAIRs.DlpPattern.pattern_status | String | The pattern status. |
+| PrismaAIRs.DlpPattern.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpPattern.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -1711,22 +1711,22 @@ Get a single DLP data pattern by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpPatternGet.id | String | Pattern ID. |
-| PrismaAIRs.DlpPatternGet.name | String | Pattern name. |
-| PrismaAIRs.DlpPatternGet.description | String | Pattern description. |
-| PrismaAIRs.DlpPatternGet.tenant_id | String | Tenant ID. |
-| PrismaAIRs.DlpPatternGet.type | String | Pattern type \(predefined, custom, file_property\). |
-| PrismaAIRs.DlpPatternGet.status | String | Pattern status \(active, disabled, deleted, deprecated, silent\). |
-| PrismaAIRs.DlpPatternGet.license_type | String | License tier \(standard, enterprise, essentials\). |
+| PrismaAIRs.DlpPatternGet.id | String | The pattern ID. |
+| PrismaAIRs.DlpPatternGet.name | String | The pattern name. |
+| PrismaAIRs.DlpPatternGet.description | String | The pattern description. |
+| PrismaAIRs.DlpPatternGet.tenant_id | String | The tenant ID. |
+| PrismaAIRs.DlpPatternGet.type | String | The pattern type \(predefined, custom, file_property\). |
+| PrismaAIRs.DlpPatternGet.status | String | The pattern status \(active, disabled, deleted, deprecated, silent\). |
+| PrismaAIRs.DlpPatternGet.license_type | String | The license tier \(standard, enterprise, essentials\). |
 | PrismaAIRs.DlpPatternGet.is_parent_managed | Boolean | Whether the pattern is parent-managed. |
-| PrismaAIRs.DlpPatternGet.version | Number | Pattern version number. |
-| PrismaAIRs.DlpPatternGet.detection_config | Unknown | Detection configuration \(technique and confidence levels\). |
-| PrismaAIRs.DlpPatternGet.matching_rules | Unknown | Matching rules \(proximity, delimiters, regexes, metadata\). |
-| PrismaAIRs.DlpPatternGet.tags | Unknown | Tags \(classification, compliance, geography\). |
-| PrismaAIRs.DlpPatternGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpPatternGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpPatternGet.created_by | String | User who created the pattern. |
-| PrismaAIRs.DlpPatternGet.updated_by | String | User who last updated the pattern. |
+| PrismaAIRs.DlpPatternGet.version | Number | The pattern version number. |
+| PrismaAIRs.DlpPatternGet.detection_config | Unknown | The detection configuration \(technique and confidence levels\). |
+| PrismaAIRs.DlpPatternGet.matching_rules | Unknown | The matching rules \(proximity, delimiters, regexes, metadata\). |
+| PrismaAIRs.DlpPatternGet.tags | Unknown | The tags \(classification, compliance, geography\). |
+| PrismaAIRs.DlpPatternGet.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpPatternGet.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpPatternGet.created_by | String | The user who created the pattern. |
+| PrismaAIRs.DlpPatternGet.updated_by | String | The user who last updated the pattern. |
 
 #### Command example
 
@@ -1800,28 +1800,28 @@ Create a new DLP data pattern.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Pattern name (1-64 characters). | Required |
-| type | Pattern type. Possible values are: predefined, custom, file_property. | Required |
-| detection_technique | Detection technique. Possible values are: edm, document_fingerprint, trainable_classifier, ml_document, regex, weighted_regex, ml, titus_tag, wildfire, file_property, dictionary, pab, document_classifier. | Required |
+| name | The pattern name (1-64 characters). | Required |
+| type | The pattern type. Possible values are: predefined, custom, file_property. | Required |
+| detection_technique | The detection technique. Possible values are: edm, document_fingerprint, trainable_classifier, ml_document, regex, weighted_regex, ml, titus_tag, wildfire, file_property, dictionary, pab, document_classifier. | Required |
 | supported_confidence_levels | A comma-separated list of confidence levels (low, medium, high). Alternatively, a JSON array. | Optional |
-| description | Pattern description. | Optional |
-| matching_rules | Matching rules as JSON object (proximity, delimiters, regexes, metadata_criteria). | Optional |
-| tags | Tags as JSON object with classification, compliance, geography arrays. | Optional |
+| description | The pattern description. | Optional |
+| matching_rules | The matching rules as JSON object (proximity, delimiters, regexes, metadata_criteria). | Optional |
+| tags | The tags as JSON object with classification, compliance, geography arrays. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpPatternCreate.id | String | Pattern ID. |
-| PrismaAIRs.DlpPatternCreate.name | String | Pattern name. |
-| PrismaAIRs.DlpPatternCreate.description | String | Pattern description. |
-| PrismaAIRs.DlpPatternCreate.type | String | Pattern type. |
-| PrismaAIRs.DlpPatternCreate.status | String | Pattern status. |
-| PrismaAIRs.DlpPatternCreate.detection_config | Unknown | Detection configuration. |
-| PrismaAIRs.DlpPatternCreate.matching_rules | Unknown | Matching rules. |
-| PrismaAIRs.DlpPatternCreate.tags | Unknown | Tags. |
-| PrismaAIRs.DlpPatternCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpPatternCreate.created_by | String | User who created the pattern. |
+| PrismaAIRs.DlpPatternCreate.id | String | The pattern ID. |
+| PrismaAIRs.DlpPatternCreate.name | String | The pattern name. |
+| PrismaAIRs.DlpPatternCreate.description | String | The pattern description. |
+| PrismaAIRs.DlpPatternCreate.type | String | The pattern type. |
+| PrismaAIRs.DlpPatternCreate.status | String | The pattern status. |
+| PrismaAIRs.DlpPatternCreate.detection_config | Unknown | The detection configuration. |
+| PrismaAIRs.DlpPatternCreate.matching_rules | Unknown | The matching rules. |
+| PrismaAIRs.DlpPatternCreate.tags | Unknown | The tags. |
+| PrismaAIRs.DlpPatternCreate.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpPatternCreate.created_by | String | The user who created the pattern. |
 
 #### Command example
 
@@ -1893,29 +1893,29 @@ Partially update a DLP data pattern (JSON Merge Patch). Fields set to "null" wil
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | pattern_id | The ID of the DLP data pattern to update. | Required |
-| name | Pattern name (required for PATCH, cannot be cleared). | Required |
-| type | Pattern type (required for PATCH, cannot be cleared). Possible values are: predefined, custom, file_property. | Required |
-| detection_technique | Detection technique (required for PATCH, cannot be cleared). Possible values are: edm, document_fingerprint, trainable_classifier, ml_document, regex, weighted_regex, ml, titus_tag, wildfire, file_property, dictionary, pab, document_classifier. | Required |
+| name | The pattern name (required for PATCH, cannot be cleared). | Required |
+| type | The pattern type (required for PATCH, cannot be cleared). Possible values are: predefined, custom, file_property. | Required |
+| detection_technique | The detection technique (required for PATCH, cannot be cleared). Possible values are: edm, document_fingerprint, trainable_classifier, ml_document, regex, weighted_regex, ml, titus_tag, wildfire, file_property, dictionary, pab, document_classifier. | Required |
 | supported_confidence_levels | A comma-separated list of confidence levels (low, medium, high). Alternatively, a JSON array. | Optional |
-| description | Pattern description (set to "null" to clear). | Optional |
-| matching_rules | Matching rules as JSON object (set to "null" to clear). | Optional |
-| tags | Tags as JSON object (set to "null" to clear). | Optional |
+| description | The pattern description (set to "null" to clear). | Optional |
+| matching_rules | The matching rules as JSON object (set to "null" to clear). | Optional |
+| tags | The tags as JSON object (set to "null" to clear). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpPatternPatch.id | String | Pattern ID. |
-| PrismaAIRs.DlpPatternPatch.name | String | Pattern name. |
-| PrismaAIRs.DlpPatternPatch.description | String | Pattern description. |
-| PrismaAIRs.DlpPatternPatch.type | String | Pattern type. |
-| PrismaAIRs.DlpPatternPatch.status | String | Pattern status. |
-| PrismaAIRs.DlpPatternPatch.version | Number | Pattern version number. |
-| PrismaAIRs.DlpPatternPatch.detection_config | Unknown | Detection configuration. |
-| PrismaAIRs.DlpPatternPatch.matching_rules | Unknown | Matching rules. |
-| PrismaAIRs.DlpPatternPatch.tags | Unknown | Tags. |
-| PrismaAIRs.DlpPatternPatch.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpPatternPatch.updated_by | String | User who last updated the pattern. |
+| PrismaAIRs.DlpPatternPatch.id | String | The pattern ID. |
+| PrismaAIRs.DlpPatternPatch.name | String | The pattern name. |
+| PrismaAIRs.DlpPatternPatch.description | String | The pattern description. |
+| PrismaAIRs.DlpPatternPatch.type | String | The pattern type. |
+| PrismaAIRs.DlpPatternPatch.status | String | The pattern status. |
+| PrismaAIRs.DlpPatternPatch.version | Number | The pattern version number. |
+| PrismaAIRs.DlpPatternPatch.detection_config | Unknown | The detection configuration. |
+| PrismaAIRs.DlpPatternPatch.matching_rules | Unknown | The matching rules. |
+| PrismaAIRs.DlpPatternPatch.tags | Unknown | The tags. |
+| PrismaAIRs.DlpPatternPatch.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpPatternPatch.updated_by | String | The user who last updated the pattern. |
 
 #### Command example
 
@@ -1986,29 +1986,29 @@ Replace (full update) a DLP data pattern. This replaces the entire pattern confi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | pattern_id | The ID of the DLP data pattern to replace. | Required |
-| name | Pattern name (1-64 characters). | Required |
-| type | Pattern type. Possible values are: predefined, custom, file_property. | Required |
-| detection_technique | Detection technique. Possible values are: edm, document_fingerprint, trainable_classifier, ml_document, regex, weighted_regex, ml, titus_tag, wildfire, file_property, dictionary, pab, document_classifier. | Required |
+| name | The pattern name (1-64 characters). | Required |
+| type | The pattern type. Possible values are: predefined, custom, file_property. | Required |
+| detection_technique | The detection technique. Possible values are: edm, document_fingerprint, trainable_classifier, ml_document, regex, weighted_regex, ml, titus_tag, wildfire, file_property, dictionary, pab, document_classifier. | Required |
 | supported_confidence_levels | A comma-separated list of confidence levels (low, medium, high). Alternatively, a JSON array. | Optional |
-| description | Pattern description. | Optional |
-| matching_rules | Matching rules as JSON object. | Optional |
-| tags | Tags as JSON object. | Optional |
+| description | The pattern description. | Optional |
+| matching_rules | The matching rules as JSON object. | Optional |
+| tags | The tags as JSON object. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpPatternReplace.id | String | Pattern ID. |
-| PrismaAIRs.DlpPatternReplace.name | String | Pattern name. |
-| PrismaAIRs.DlpPatternReplace.description | String | Pattern description. |
-| PrismaAIRs.DlpPatternReplace.type | String | Pattern type. |
-| PrismaAIRs.DlpPatternReplace.status | String | Pattern status. |
-| PrismaAIRs.DlpPatternReplace.version | Number | Pattern version number. |
-| PrismaAIRs.DlpPatternReplace.detection_config | Unknown | Detection configuration. |
-| PrismaAIRs.DlpPatternReplace.matching_rules | Unknown | Matching rules. |
-| PrismaAIRs.DlpPatternReplace.tags | Unknown | Tags. |
-| PrismaAIRs.DlpPatternReplace.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpPatternReplace.updated_by | String | User who last updated the pattern. |
+| PrismaAIRs.DlpPatternReplace.id | String | The pattern ID. |
+| PrismaAIRs.DlpPatternReplace.name | String | The pattern name. |
+| PrismaAIRs.DlpPatternReplace.description | String | The pattern description. |
+| PrismaAIRs.DlpPatternReplace.type | String | The pattern type. |
+| PrismaAIRs.DlpPatternReplace.status | String | The pattern status. |
+| PrismaAIRs.DlpPatternReplace.version | Number | The pattern version number. |
+| PrismaAIRs.DlpPatternReplace.detection_config | Unknown | The detection configuration. |
+| PrismaAIRs.DlpPatternReplace.matching_rules | Unknown | The matching rules. |
+| PrismaAIRs.DlpPatternReplace.tags | Unknown | The tags. |
+| PrismaAIRs.DlpPatternReplace.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpPatternReplace.updated_by | String | The user who last updated the pattern. |
 
 #### Command example
 
@@ -2084,9 +2084,9 @@ Delete (soft-delete/archive) a DLP data pattern. This action cannot be undone.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpPatternDelete.id | String | ID of the deleted DLP data pattern. |
+| PrismaAIRs.DlpPatternDelete.id | String | The ID of the deleted DLP data pattern. |
 | PrismaAIRs.DlpPatternDelete.deleted | Boolean | Whether the pattern was successfully deleted. |
-| PrismaAIRs.DlpPatternDelete.status | String | Human-readable deletion status. |
+| PrismaAIRs.DlpPatternDelete.status | String | The human-readable deletion status. |
 
 #### Command example
 
@@ -2125,21 +2125,21 @@ List DLP filtering profiles.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number for pagination. Default is 0. | Optional |
-| size | Number of results per page. Default is 50. | Optional |
+| page | The page number for pagination. Default is 0. | Optional |
+| size | The number of results per page. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpFilteringProfile.id | String | Filtering profile ID. |
-| PrismaAIRs.DlpFilteringProfile.name | String | Filtering profile name. |
-| PrismaAIRs.DlpFilteringProfile.description | String | Filtering profile description. |
-| PrismaAIRs.DlpFilteringProfile.type | String | Profile type. |
-| PrismaAIRs.DlpFilteringProfile.default_action | String | Default action for the profile. |
+| PrismaAIRs.DlpFilteringProfile.id | String | The filtering profile ID. |
+| PrismaAIRs.DlpFilteringProfile.name | String | The filtering profile name. |
+| PrismaAIRs.DlpFilteringProfile.description | String | The filtering profile description. |
+| PrismaAIRs.DlpFilteringProfile.type | String | The profile type. |
+| PrismaAIRs.DlpFilteringProfile.default_action | String | The default action for the profile. |
 | PrismaAIRs.DlpFilteringProfile.is_parent_managed | Boolean | Whether the profile is parent-managed. |
-| PrismaAIRs.DlpFilteringProfile.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpFilteringProfile.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpFilteringProfile.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpFilteringProfile.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -2239,27 +2239,27 @@ Get a single DLP filtering profile by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpFilteringProfileGet.id | String | Filtering profile ID. |
-| PrismaAIRs.DlpFilteringProfileGet.name | String | Filtering profile name. |
-| PrismaAIRs.DlpFilteringProfileGet.description | String | Filtering profile description. |
-| PrismaAIRs.DlpFilteringProfileGet.tenant_id | String | Tenant ID. |
-| PrismaAIRs.DlpFilteringProfileGet.type | String | Profile type. |
-| PrismaAIRs.DlpFilteringProfileGet.data_profile_id | Number | Associated data profile ID. |
-| PrismaAIRs.DlpFilteringProfileGet.direction | String | Scan direction \(BOTH, UPLOAD, DOWNLOAD\). |
+| PrismaAIRs.DlpFilteringProfileGet.id | String | The filtering profile ID. |
+| PrismaAIRs.DlpFilteringProfileGet.name | String | The filtering profile name. |
+| PrismaAIRs.DlpFilteringProfileGet.description | String | The filtering profile description. |
+| PrismaAIRs.DlpFilteringProfileGet.tenant_id | String | The tenant ID. |
+| PrismaAIRs.DlpFilteringProfileGet.type | String | The profile type. |
+| PrismaAIRs.DlpFilteringProfileGet.data_profile_id | Number | The associated data profile ID. |
+| PrismaAIRs.DlpFilteringProfileGet.direction | String | The scan direction \(BOTH, UPLOAD, DOWNLOAD\). |
 | PrismaAIRs.DlpFilteringProfileGet.file_based | Boolean | Whether file-based scanning is enabled. |
 | PrismaAIRs.DlpFilteringProfileGet.non_file_based | Boolean | Whether non-file-based scanning is enabled. |
-| PrismaAIRs.DlpFilteringProfileGet.log_severity | String | Log severity level. |
-| PrismaAIRs.DlpFilteringProfileGet.scan_type | String | Scan type \(include or exclude\). |
+| PrismaAIRs.DlpFilteringProfileGet.log_severity | String | The log severity level. |
+| PrismaAIRs.DlpFilteringProfileGet.scan_type | String | The scan type \(include or exclude\). |
 | PrismaAIRs.DlpFilteringProfileGet.is_end_user_coaching_enabled | Boolean | Whether end user coaching is enabled. |
 | PrismaAIRs.DlpFilteringProfileGet.is_granular_profile | Boolean | Whether this is a granular profile. |
 | PrismaAIRs.DlpFilteringProfileGet.is_parent_managed | Boolean | Whether the profile is parent-managed. |
-| PrismaAIRs.DlpFilteringProfileGet.euc_template_id | String | End user coaching template ID. |
-| PrismaAIRs.DlpFilteringProfileGet.version | Number | Profile version number. |
-| PrismaAIRs.DlpFilteringProfileGet.file_type | Unknown | Allowed file types for scanning. |
-| PrismaAIRs.DlpFilteringProfileGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpFilteringProfileGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpFilteringProfileGet.created_by | String | User who created the profile. |
-| PrismaAIRs.DlpFilteringProfileGet.updated_by | String | User who last updated the profile. |
+| PrismaAIRs.DlpFilteringProfileGet.euc_template_id | String | The end user coaching template ID. |
+| PrismaAIRs.DlpFilteringProfileGet.version | Number | The profile version number. |
+| PrismaAIRs.DlpFilteringProfileGet.file_type | Unknown | The allowed file types for scanning. |
+| PrismaAIRs.DlpFilteringProfileGet.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpFilteringProfileGet.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpFilteringProfileGet.created_by | String | The user who created the profile. |
+| PrismaAIRs.DlpFilteringProfileGet.updated_by | String | The user who last updated the profile. |
 
 ### prisma-airs-runtime-dlp-filtering-profiles-replace
 
@@ -2277,12 +2277,12 @@ Replace (full update) a DLP filtering profile. This is a destructive operation t
 | profile_id | The ID of the DLP filtering profile to replace. | Required |
 | file_based | Whether file-based scanning is enabled. Possible values are: true, false. | Required |
 | non_file_based | Whether non-file-based scanning is enabled. Possible values are: true, false. | Required |
-| description | Profile description. | Optional |
-| direction | Scan direction. Possible values are: BOTH, UPLOAD, DOWNLOAD. | Optional |
-| log_severity | Log severity level. Possible values are: CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL. | Optional |
-| scan_type | Scan type (include or exclude file types). Possible values are: include, exclude. | Optional |
-| data_profile_id | Associated data profile ID (numeric). | Optional |
-| euc_template_id | End user coaching template ID. | Optional |
+| description | The profile description. | Optional |
+| direction | The scan direction. Possible values are: BOTH, UPLOAD, DOWNLOAD. | Optional |
+| log_severity | The log severity level. Possible values are: CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL. | Optional |
+| scan_type | The scan type (include or exclude file types). Possible values are: include, exclude. | Optional |
+| data_profile_id | The associated data profile ID (numeric). | Optional |
+| euc_template_id | The end user coaching template ID. | Optional |
 | is_end_user_coaching_enabled | Whether end user coaching is enabled. Possible values are: true, false. | Optional |
 | is_granular_profile | Whether this is a granular profile. Possible values are: true, false. | Optional |
 | file_type | A comma-separated list of file types to include or exclude. | Optional |
@@ -2291,25 +2291,25 @@ Replace (full update) a DLP filtering profile. This is a destructive operation t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.DlpFilteringProfileReplace.id | String | Filtering profile ID. |
-| PrismaAIRs.DlpFilteringProfileReplace.name | String | Filtering profile name. |
-| PrismaAIRs.DlpFilteringProfileReplace.description | String | Filtering profile description. |
-| PrismaAIRs.DlpFilteringProfileReplace.tenant_id | String | Tenant ID. |
-| PrismaAIRs.DlpFilteringProfileReplace.type | String | Profile type. |
-| PrismaAIRs.DlpFilteringProfileReplace.data_profile_id | Number | Associated data profile ID. |
-| PrismaAIRs.DlpFilteringProfileReplace.direction | String | Scan direction \(BOTH, UPLOAD, DOWNLOAD\). |
+| PrismaAIRs.DlpFilteringProfileReplace.id | String | The filtering profile ID. |
+| PrismaAIRs.DlpFilteringProfileReplace.name | String | The filtering profile name. |
+| PrismaAIRs.DlpFilteringProfileReplace.description | String | The filtering profile description. |
+| PrismaAIRs.DlpFilteringProfileReplace.tenant_id | String | The tenant ID. |
+| PrismaAIRs.DlpFilteringProfileReplace.type | String | The profile type. |
+| PrismaAIRs.DlpFilteringProfileReplace.data_profile_id | Number | The associated data profile ID. |
+| PrismaAIRs.DlpFilteringProfileReplace.direction | String | The scan direction \(BOTH, UPLOAD, DOWNLOAD\). |
 | PrismaAIRs.DlpFilteringProfileReplace.file_based | Boolean | Whether file-based scanning is enabled. |
 | PrismaAIRs.DlpFilteringProfileReplace.non_file_based | Boolean | Whether non-file-based scanning is enabled. |
-| PrismaAIRs.DlpFilteringProfileReplace.log_severity | String | Log severity level. |
-| PrismaAIRs.DlpFilteringProfileReplace.scan_type | String | Scan type \(include or exclude\). |
+| PrismaAIRs.DlpFilteringProfileReplace.log_severity | String | The log severity level. |
+| PrismaAIRs.DlpFilteringProfileReplace.scan_type | String | The scan type \(include or exclude\). |
 | PrismaAIRs.DlpFilteringProfileReplace.is_end_user_coaching_enabled | Boolean | Whether end user coaching is enabled. |
 | PrismaAIRs.DlpFilteringProfileReplace.is_granular_profile | Boolean | Whether this is a granular profile. |
 | PrismaAIRs.DlpFilteringProfileReplace.is_parent_managed | Boolean | Whether the profile is parent-managed. |
-| PrismaAIRs.DlpFilteringProfileReplace.version | Number | Profile version number. |
-| PrismaAIRs.DlpFilteringProfileReplace.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpFilteringProfileReplace.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.DlpFilteringProfileReplace.created_by | String | User who created the profile. |
-| PrismaAIRs.DlpFilteringProfileReplace.updated_by | String | User who last updated the profile. |
+| PrismaAIRs.DlpFilteringProfileReplace.version | Number | The profile version number. |
+| PrismaAIRs.DlpFilteringProfileReplace.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpFilteringProfileReplace.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.DlpFilteringProfileReplace.created_by | String | The user who created the profile. |
+| PrismaAIRs.DlpFilteringProfileReplace.updated_by | String | The user who last updated the profile. |
 
 ### prisma-airs-runtime-topics-list
 
@@ -2324,23 +2324,23 @@ List custom topic guardrails.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of topics to return. Default is 100. | Optional |
-| offset | Starting offset for pagination. Default is 0. | Optional |
+| limit | The maximum number of topics to return. Default is 100. | Optional |
+| offset | The starting offset for pagination. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.Topic.topic_id | String | Topic UUID. |
-| PrismaAIRs.Topic.topic_name | String | Topic name. |
-| PrismaAIRs.Topic.revision | Number | Topic revision number. |
-| PrismaAIRs.Topic.description | String | Topic description. |
-| PrismaAIRs.Topic.examples | Unknown | Example prompts for the topic. |
-| PrismaAIRs.Topic.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.Topic.created_by | String | User who created the topic. |
-| PrismaAIRs.Topic.updated_by | String | User who last updated the topic. |
-| PrismaAIRs.Topic.csp_id | String | CSP ID. |
-| PrismaAIRs.Topic.tsg_id | String | Tenant Service Group ID. |
+| PrismaAIRs.Topic.topic_id | String | The topic UUID. |
+| PrismaAIRs.Topic.topic_name | String | The topic name. |
+| PrismaAIRs.Topic.revision | Number | The topic revision number. |
+| PrismaAIRs.Topic.description | String | The topic description. |
+| PrismaAIRs.Topic.examples | Unknown | The example prompts for the topic. |
+| PrismaAIRs.Topic.last_modified_ts | Date | The last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.Topic.created_by | String | The user who created the topic. |
+| PrismaAIRs.Topic.updated_by | String | The user who last updated the topic. |
+| PrismaAIRs.Topic.csp_id | String | The CSP ID. |
+| PrismaAIRs.Topic.tsg_id | String | The tenant Service Group ID. |
 
 #### Command example
 
@@ -2415,23 +2415,23 @@ Get a specific custom topic by ID or name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic_id | Topic UUID (either topic_id or topic_name is required). | Optional |
-| topic_name | Topic name. | Optional |
+| topic_id | The topic UUID (either topic_id or topic_name is required). | Optional |
+| topic_name | The topic name. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.TopicGet.topic_id | String | Topic UUID. |
-| PrismaAIRs.TopicGet.topic_name | String | Topic name. |
-| PrismaAIRs.TopicGet.revision | Number | Topic revision number. |
+| PrismaAIRs.TopicGet.topic_id | String | The topic UUID. |
+| PrismaAIRs.TopicGet.topic_name | String | The topic name. |
+| PrismaAIRs.TopicGet.revision | Number | The topic revision number. |
 | PrismaAIRs.TopicGet.active | Boolean | Whether the topic is active. |
-| PrismaAIRs.TopicGet.description | String | Topic description. |
-| PrismaAIRs.TopicGet.examples | Unknown | Example prompts for the topic. |
-| PrismaAIRs.TopicGet.created_by | String | User who created the topic. |
-| PrismaAIRs.TopicGet.updated_by | String | User who last updated the topic. |
-| PrismaAIRs.TopicGet.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.TopicGet.created_ts | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.TopicGet.description | String | The topic description. |
+| PrismaAIRs.TopicGet.examples | Unknown | The example prompts for the topic. |
+| PrismaAIRs.TopicGet.created_by | String | The user who created the topic. |
+| PrismaAIRs.TopicGet.updated_by | String | The user who last updated the topic. |
+| PrismaAIRs.TopicGet.last_modified_ts | Date | The last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.TopicGet.created_ts | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -2486,25 +2486,25 @@ Create a new custom topic guardrail with examples for detection.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic_name | Name for the new topic (must be unique). | Required |
-| description | Description of what this topic detects. | Required |
-| examples | Comma-separated list of example prompts/content that match this topic. | Required |
+| topic_name | The name for the new topic (must be unique). | Required |
+| description | The description of what this topic detects. | Required |
+| examples | The comma-separated list of example prompts/content that match this topic. | Required |
 | active | Whether the topic should be active. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.TopicCreate.topic_id | String | Topic UUID. |
-| PrismaAIRs.TopicCreate.topic_name | String | Topic name. |
-| PrismaAIRs.TopicCreate.revision | Number | Topic revision number \(starts at 1\). |
+| PrismaAIRs.TopicCreate.topic_id | String | The topic UUID. |
+| PrismaAIRs.TopicCreate.topic_name | String | The topic name. |
+| PrismaAIRs.TopicCreate.revision | Number | The topic revision number \(starts at 1\). |
 | PrismaAIRs.TopicCreate.active | Boolean | Whether the topic is active. |
-| PrismaAIRs.TopicCreate.description | String | Topic description. |
-| PrismaAIRs.TopicCreate.examples | Unknown | Example prompts for the topic. |
-| PrismaAIRs.TopicCreate.created_by | String | User who created the topic. |
-| PrismaAIRs.TopicCreate.updated_by | String | User who last updated the topic. |
-| PrismaAIRs.TopicCreate.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.TopicCreate.created_ts | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.TopicCreate.description | String | The topic description. |
+| PrismaAIRs.TopicCreate.examples | Unknown | The example prompts for the topic. |
+| PrismaAIRs.TopicCreate.created_by | String | The user who created the topic. |
+| PrismaAIRs.TopicCreate.updated_by | String | The user who last updated the topic. |
+| PrismaAIRs.TopicCreate.last_modified_ts | Date | The last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.TopicCreate.created_ts | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -2559,26 +2559,26 @@ Update an existing custom topic. WARNING - Modifying topic definition can break 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic_id | Topic UUID to update. | Required |
-| topic_name | Topic name (can be changed or kept the same). | Required |
-| description | Updated description (if omitted, description remains unchanged). | Optional |
-| examples | Updated comma-separated list of examples (if omitted, examples remain unchanged). | Optional |
+| topic_id | The topic UUID to update. | Required |
+| topic_name | The topic name (can be changed or kept the same). | Required |
+| description | The updated description (if omitted, description remains unchanged). | Optional |
+| examples | The updated comma-separated list of examples (if omitted, examples remain unchanged). | Optional |
 | active | Whether the topic should be active. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.TopicUpdate.topic_id | String | Topic UUID. |
-| PrismaAIRs.TopicUpdate.topic_name | String | Topic name. |
-| PrismaAIRs.TopicUpdate.revision | Number | Topic revision number \(incremented after update\). |
+| PrismaAIRs.TopicUpdate.topic_id | String | The topic UUID. |
+| PrismaAIRs.TopicUpdate.topic_name | String | The topic name. |
+| PrismaAIRs.TopicUpdate.revision | Number | The topic revision number \(incremented after update\). |
 | PrismaAIRs.TopicUpdate.active | Boolean | Whether the topic is active. |
-| PrismaAIRs.TopicUpdate.description | String | Topic description. |
-| PrismaAIRs.TopicUpdate.examples | Unknown | Example prompts for the topic. |
-| PrismaAIRs.TopicUpdate.created_by | String | User who created the topic. |
-| PrismaAIRs.TopicUpdate.updated_by | String | User who last updated the topic. |
-| PrismaAIRs.TopicUpdate.last_modified_ts | Date | Last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.TopicUpdate.created_ts | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.TopicUpdate.description | String | The topic description. |
+| PrismaAIRs.TopicUpdate.examples | Unknown | The example prompts for the topic. |
+| PrismaAIRs.TopicUpdate.created_by | String | The user who created the topic. |
+| PrismaAIRs.TopicUpdate.updated_by | String | The user who last updated the topic. |
+| PrismaAIRs.TopicUpdate.last_modified_ts | Date | The last modification timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.TopicUpdate.created_ts | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -2626,17 +2626,17 @@ Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| topic_id | Topic UUID to delete. | Required |
+| topic_id | The topic UUID to delete. | Required |
 | force | Whether to force-delete the topic, removing it from any referencing profiles. Possible values are: true, false. Default is false. | Optional |
-| updated_by | Email of the user performing the deletion. Optional for force-delete. | Optional |
+| updated_by | The email of the user performing the deletion. Optional for force-delete. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.TopicDeleted.topic_id | String | Deleted topic ID. |
-| PrismaAIRs.TopicDeleted.message | String | Deletion confirmation message. |
-| PrismaAIRs.TopicDeleted.deleted | Boolean | Boolean indicating successful deletion. |
+| PrismaAIRs.TopicDeleted.topic_id | String | The deleted topic ID. |
+| PrismaAIRs.TopicDeleted.message | String | The deletion confirmation message. |
+| PrismaAIRs.TopicDeleted.deleted | Boolean | The boolean indicating successful deletion. |
 | PrismaAIRs.TopicDeleted.force | Boolean | Whether the topic was force-deleted. |
 
 #### Command example
@@ -2679,23 +2679,23 @@ Apply a topic to a security profile (additive - preserves existing topics). This
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_name | Security profile name to apply the topic to. | Required |
-| topic_name | Topic name to apply. The topic must already exist (create with prisma-airs-runtime-topics-create). | Required |
-| action | Topic action. 'block' = block prompts matching this topic. 'allow' = allow prompts matching this topic. Possible values are: allow, block. Default is block. | Optional |
-| guardrail_action | Guardrail-level default action. 'block' = block all unless explicitly allowed (requires allow topics). 'allow' = allow all unless explicitly blocked (only block topics needed). Possible values are: allow, block. Default is block. | Optional |
+| profile_name | The security profile name to apply the topic to. | Required |
+| topic_name | The topic name to apply. The topic must already exist (create with prisma-airs-runtime-topics-create). | Required |
+| action | The topic action. 'block' = block prompts matching this topic. 'allow' = allow prompts matching this topic. Possible values are: allow, block. Default is block. | Optional |
+| guardrail_action | The guardrail-level default action. 'block' = block all unless explicitly allowed (requires allow topics). 'allow' = allow all unless explicitly blocked (only block topics needed). Possible values are: allow, block. Default is block. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.TopicApplied.profile_name | String | Security profile name. |
-| PrismaAIRs.TopicApplied.profile_id | String | Security profile UUID. |
-| PrismaAIRs.TopicApplied.topic_name | String | Topic name that was applied. |
-| PrismaAIRs.TopicApplied.topic_id | String | Topic UUID. |
-| PrismaAIRs.TopicApplied.topic_revision | Number | Topic revision number \(pinned to ensure consistent detection\). |
-| PrismaAIRs.TopicApplied.action | String | Topic action \(allow or block\). |
-| PrismaAIRs.TopicApplied.guardrail_action | String | Guardrail-level default action. |
-| PrismaAIRs.TopicApplied.applied | Boolean | Boolean indicating successful application. |
+| PrismaAIRs.TopicApplied.profile_name | String | The security profile name. |
+| PrismaAIRs.TopicApplied.profile_id | String | The security profile UUID. |
+| PrismaAIRs.TopicApplied.topic_name | String | The topic name that was applied. |
+| PrismaAIRs.TopicApplied.topic_id | String | The topic UUID. |
+| PrismaAIRs.TopicApplied.topic_revision | Number | The topic revision number \(pinned to ensure consistent detection\). |
+| PrismaAIRs.TopicApplied.action | String | The topic action \(allow or block\). |
+| PrismaAIRs.TopicApplied.guardrail_action | String | The guardrail-level default action. |
+| PrismaAIRs.TopicApplied.applied | Boolean | The boolean indicating successful application. |
 
 ### prisma-airs-runtime-bulk-scan
 
@@ -2710,21 +2710,21 @@ Perform bulk scanning of multiple prompts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_name | Security profile name to use for scanning. | Required |
-| prompts_csv | CSV content with prompts to scan (must include 'prompt' column header, or use newline-separated format). | Required |
-| session_id | Optional session ID for grouping scans in AIRS dashboard. | Optional |
+| profile_name | The security profile name to use for scanning. | Required |
+| prompts_csv | The CSV content with prompts to scan (must include 'prompt' column header, or use newline-separated format). | Required |
+| session_id | The optional session ID for grouping scans in AIRS dashboard. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.BulkScan.profile_name | String | Security profile used. |
-| PrismaAIRs.BulkScan.session_id | String | Session ID. |
-| PrismaAIRs.BulkScan.total | Number | Total prompts scanned. |
-| PrismaAIRs.BulkScan.blocked | Number | Number of prompts blocked. |
-| PrismaAIRs.BulkScan.allowed | Number | Number of prompts allowed. |
-| PrismaAIRs.BulkScan.errors | Number | Number of scan errors. |
-| PrismaAIRs.BulkScan.results | Unknown | Array of individual scan results. |
+| PrismaAIRs.BulkScan.profile_name | String | The security profile used. |
+| PrismaAIRs.BulkScan.session_id | String | The session ID. |
+| PrismaAIRs.BulkScan.total | Number | The total prompts scanned. |
+| PrismaAIRs.BulkScan.blocked | Number | The number of prompts blocked. |
+| PrismaAIRs.BulkScan.allowed | Number | The number of prompts allowed. |
+| PrismaAIRs.BulkScan.errors | Number | The number of scan errors. |
+| PrismaAIRs.BulkScan.results | Unknown | The array of individual scan results. |
 
 ### prisma-airs-model-security-scans-list
 
@@ -2739,22 +2739,22 @@ List all model security scans.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of scans to return. Default is 50. | Optional |
+| limit | The maximum number of scans to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityScan.uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityScan.model_uri | String | Model URI that was scanned. |
-| PrismaAIRs.ModelSecurityScan.eval_outcome | String | Evaluation outcome \(ALLOWED, BLOCKED\). |
-| PrismaAIRs.ModelSecurityScan.source_type | String | Source type \(HUGGING_FACE, LOCAL, etc.\). |
-| PrismaAIRs.ModelSecurityScan.security_group_uuid | String | Security group UUID. |
-| PrismaAIRs.ModelSecurityScan.security_group_name | String | Security group name. |
-| PrismaAIRs.ModelSecurityScan.scan_origin | String | Scan origin. |
-| PrismaAIRs.ModelSecurityScan.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityScan.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityScan.created_by | String | User who created the scan. |
+| PrismaAIRs.ModelSecurityScan.uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityScan.model_uri | String | The model URI that was scanned. |
+| PrismaAIRs.ModelSecurityScan.eval_outcome | String | The evaluation outcome \(ALLOWED, BLOCKED\). |
+| PrismaAIRs.ModelSecurityScan.source_type | String | The source type \(HUGGING_FACE, LOCAL, etc.\). |
+| PrismaAIRs.ModelSecurityScan.security_group_uuid | String | The security group UUID. |
+| PrismaAIRs.ModelSecurityScan.security_group_name | String | The security group name. |
+| PrismaAIRs.ModelSecurityScan.scan_origin | String | The scan origin. |
+| PrismaAIRs.ModelSecurityScan.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScan.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScan.created_by | String | The user who created the scan. |
 
 #### Command example
 
@@ -2815,33 +2815,33 @@ Create a new model security scan to check a model for supply chain security issu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model_uri | Model URI (HuggingFace URL like https://huggingface.co/microsoft/DialoGPT-medium or local path). | Required |
-| security_group_uuid | Security group UUID to use for scanning. | Required |
-| scan_origin | Scan origin identifier. Possible values are: MODEL_SECURITY_SDK, MODEL_SECURITY_API, MODEL_SECURITY_FRONTEND, HUGGING_FACE. Default is MODEL_SECURITY_API. | Optional |
-| model_name | Model name (optional metadata). | Optional |
-| model_author | Model author (optional metadata). | Optional |
-| model_version | Model version (optional metadata). | Optional |
-| labels | Labels to tag the scan, as a JSON array of key/value objects, e.g. \[{"key": "env", "value": "prod"}, {"key": "team", "value": "ml"}\]. Keys (\<=128 chars) and values (\<=256 chars) must match ^\[a-zA-Z0-9_-\]+$. | Optional |
+| model_uri | The model URI (HuggingFace URL like https://huggingface.co/microsoft/DialoGPT-medium or local path). | Required |
+| security_group_uuid | The security group UUID to use for scanning. | Required |
+| scan_origin | The scan origin identifier. Possible values are: MODEL_SECURITY_SDK, MODEL_SECURITY_API, MODEL_SECURITY_FRONTEND, HUGGING_FACE. Default is MODEL_SECURITY_API. | Optional |
+| model_name | The model name (optional metadata). | Optional |
+| model_author | The model author (optional metadata). | Optional |
+| model_version | The model version (optional metadata). | Optional |
+| labels | The labels to tag the scan, as a JSON array of key/value objects, e.g. \[{"key": "env", "value": "prod"}, {"key": "team", "value": "ml"}\]. Keys (\<=128 chars) and values (\<=256 chars) must match ^\[a-zA-Z0-9_-\]+$. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityScanCreate.uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityScanCreate.labels | Unknown | Labels (key/value pairs) applied to the scan. |
-| PrismaAIRs.ModelSecurityScanCreate.model_uri | String | Model URI that was scanned. |
-| PrismaAIRs.ModelSecurityScanCreate.security_group_uuid | String | Security group UUID used for scanning. |
-| PrismaAIRs.ModelSecurityScanCreate.security_group_name | String | Security group name. |
-| PrismaAIRs.ModelSecurityScanCreate.scan_origin | String | Scan origin. |
-| PrismaAIRs.ModelSecurityScanCreate.eval_outcome | String | Evaluation outcome \(PENDING initially, then ALLOWED/BLOCKED\). |
-| PrismaAIRs.ModelSecurityScanCreate.source_type | String | Model source type. |
-| PrismaAIRs.ModelSecurityScanCreate.owner | String | Scan owner. |
-| PrismaAIRs.ModelSecurityScanCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityScanCreate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityScanCreate.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.ModelSecurityScanCreate.rules_passed | Number | Number of rules that passed. |
-| PrismaAIRs.ModelSecurityScanCreate.rules_failed | Number | Number of rules that failed. |
-| PrismaAIRs.ModelSecurityScanCreate.total_rules | Number | Total number of rules evaluated. |
+| PrismaAIRs.ModelSecurityScanCreate.uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityScanCreate.labels | Unknown | The labels (key/value pairs) applied to the scan. |
+| PrismaAIRs.ModelSecurityScanCreate.model_uri | String | The model URI that was scanned. |
+| PrismaAIRs.ModelSecurityScanCreate.security_group_uuid | String | The security group UUID used for scanning. |
+| PrismaAIRs.ModelSecurityScanCreate.security_group_name | String | The security group name. |
+| PrismaAIRs.ModelSecurityScanCreate.scan_origin | String | The scan origin. |
+| PrismaAIRs.ModelSecurityScanCreate.eval_outcome | String | The evaluation outcome \(PENDING initially, then ALLOWED/BLOCKED\). |
+| PrismaAIRs.ModelSecurityScanCreate.source_type | String | The model source type. |
+| PrismaAIRs.ModelSecurityScanCreate.owner | String | The scan owner. |
+| PrismaAIRs.ModelSecurityScanCreate.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScanCreate.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScanCreate.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityScanCreate.rules_passed | Number | The number of rules that passed. |
+| PrismaAIRs.ModelSecurityScanCreate.rules_failed | Number | The number of rules that failed. |
+| PrismaAIRs.ModelSecurityScanCreate.total_rules | Number | The total number of rules evaluated. |
 
 ### prisma-airs-model-security-scans-get
 
@@ -2856,36 +2856,36 @@ Get model security scan status and results. Use this to poll scan completion aft
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Scan UUID to retrieve. | Required |
+| uuid | The scan UUID to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityScanGet.uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityScanGet.model_uri | String | Model URI that was scanned. |
-| PrismaAIRs.ModelSecurityScanGet.security_group_uuid | String | Security group UUID used for scanning. |
-| PrismaAIRs.ModelSecurityScanGet.security_group_name | String | Security group name. |
-| PrismaAIRs.ModelSecurityScanGet.scan_origin | String | Scan origin. |
-| PrismaAIRs.ModelSecurityScanGet.eval_outcome | String | Evaluation outcome \(PENDING/ALLOWED/BLOCKED\). |
-| PrismaAIRs.ModelSecurityScanGet.source_type | String | Model source type. |
-| PrismaAIRs.ModelSecurityScanGet.owner | String | Scan owner. |
-| PrismaAIRs.ModelSecurityScanGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityScanGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityScanGet.created_by | String | User who created the scan. |
-| PrismaAIRs.ModelSecurityScanGet.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.ModelSecurityScanGet.model_version_uuid | String | Model version UUID. |
-| PrismaAIRs.ModelSecurityScanGet.enabled_rule_count_snapshot | Number | Snapshot of enabled rules count at scan time. |
-| PrismaAIRs.ModelSecurityScanGet.scanner_version | String | Scanner version used. |
-| PrismaAIRs.ModelSecurityScanGet.time_started | Date | Scan start time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityScanGet.total_files_scanned | Number | Total files scanned. |
-| PrismaAIRs.ModelSecurityScanGet.total_files_skipped | Number | Total files skipped. |
-| PrismaAIRs.ModelSecurityScanGet.rules_passed | Number | Number of rules that passed. |
-| PrismaAIRs.ModelSecurityScanGet.rules_failed | Number | Number of rules that failed. |
-| PrismaAIRs.ModelSecurityScanGet.total_rules | Number | Total number of rules evaluated. |
-| PrismaAIRs.ModelSecurityScanGet.error_code | String | Error code if scan failed. |
-| PrismaAIRs.ModelSecurityScanGet.error_message | String | Error message if scan failed. |
-| PrismaAIRs.ModelSecurityScanGet.model_formats | Unknown | Model file formats detected. |
+| PrismaAIRs.ModelSecurityScanGet.uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityScanGet.model_uri | String | The model URI that was scanned. |
+| PrismaAIRs.ModelSecurityScanGet.security_group_uuid | String | The security group UUID used for scanning. |
+| PrismaAIRs.ModelSecurityScanGet.security_group_name | String | The security group name. |
+| PrismaAIRs.ModelSecurityScanGet.scan_origin | String | The scan origin. |
+| PrismaAIRs.ModelSecurityScanGet.eval_outcome | String | The evaluation outcome \(PENDING/ALLOWED/BLOCKED\). |
+| PrismaAIRs.ModelSecurityScanGet.source_type | String | The model source type. |
+| PrismaAIRs.ModelSecurityScanGet.owner | String | The scan owner. |
+| PrismaAIRs.ModelSecurityScanGet.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScanGet.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScanGet.created_by | String | The user who created the scan. |
+| PrismaAIRs.ModelSecurityScanGet.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityScanGet.model_version_uuid | String | The model version UUID. |
+| PrismaAIRs.ModelSecurityScanGet.enabled_rule_count_snapshot | Number | The snapshot of enabled rules count at scan time. |
+| PrismaAIRs.ModelSecurityScanGet.scanner_version | String | The scanner version used. |
+| PrismaAIRs.ModelSecurityScanGet.time_started | Date | The scan start time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityScanGet.total_files_scanned | Number | The total files scanned. |
+| PrismaAIRs.ModelSecurityScanGet.total_files_skipped | Number | The total files skipped. |
+| PrismaAIRs.ModelSecurityScanGet.rules_passed | Number | The number of rules that passed. |
+| PrismaAIRs.ModelSecurityScanGet.rules_failed | Number | The number of rules that failed. |
+| PrismaAIRs.ModelSecurityScanGet.total_rules | Number | The total number of rules evaluated. |
+| PrismaAIRs.ModelSecurityScanGet.error_code | String | The error code if scan failed. |
+| PrismaAIRs.ModelSecurityScanGet.error_message | String | The error message if scan failed. |
+| PrismaAIRs.ModelSecurityScanGet.model_formats | Unknown | The model file formats detected. |
 
 ### prisma-airs-model-security-scans-violations
 
@@ -2900,33 +2900,33 @@ Get rule violations for a model security scan. Shows detailed information about 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Scan UUID to retrieve violations for. | Required |
-| limit | Maximum number of violations to return. Default is 50. | Optional |
-| offset | Offset for pagination. Default is 0. | Optional |
+| uuid | The scan UUID to retrieve violations for. | Required |
+| limit | The maximum number of violations to return. Default is 50. | Optional |
+| offset | The offset for pagination. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityViolation.scan_uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityViolation.violations.uuid | String | Violation UUID. |
-| PrismaAIRs.ModelSecurityViolation.violations.rule_name | String | Security rule name that failed. |
-| PrismaAIRs.ModelSecurityViolation.violations.rule_description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityViolation.violations.description | String | Violation description. |
-| PrismaAIRs.ModelSecurityViolation.violations.rule_instance_state | String | Rule instance state \(BLOCKING/ALLOWING\). |
-| PrismaAIRs.ModelSecurityViolation.violations.file | String | File path where violation was found. |
-| PrismaAIRs.ModelSecurityViolation.violations.threat | String | Threat type. |
-| PrismaAIRs.ModelSecurityViolation.violations.threat_description | String | Threat description. |
-| PrismaAIRs.ModelSecurityViolation.violations.module | String | Module where threat was found. |
-| PrismaAIRs.ModelSecurityViolation.violations.operator | String | Operator involved in violation. |
-| PrismaAIRs.ModelSecurityViolation.violations.hash | String | Hash of the violating file. |
-| PrismaAIRs.ModelSecurityViolation.violations.rule_instance_uuid | String | Rule instance UUID. |
-| PrismaAIRs.ModelSecurityViolation.violations.created_at | Date | Violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityViolation.violations.updated_at | Date | Violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityViolation.violations.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.ModelSecurityViolation.total_items | Number | Total number of violations available. |
-| PrismaAIRs.ModelSecurityViolation.limit | Number | Limit used for pagination. |
-| PrismaAIRs.ModelSecurityViolation.offset | Number | Offset used for pagination. |
+| PrismaAIRs.ModelSecurityViolation.scan_uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityViolation.violations.uuid | String | The violation UUID. |
+| PrismaAIRs.ModelSecurityViolation.violations.rule_name | String | The security rule name that failed. |
+| PrismaAIRs.ModelSecurityViolation.violations.rule_description | String | The security rule description. |
+| PrismaAIRs.ModelSecurityViolation.violations.description | String | The violation description. |
+| PrismaAIRs.ModelSecurityViolation.violations.rule_instance_state | String | The rule instance state \(BLOCKING/ALLOWING\). |
+| PrismaAIRs.ModelSecurityViolation.violations.file | String | The file path where violation was found. |
+| PrismaAIRs.ModelSecurityViolation.violations.threat | String | The threat type. |
+| PrismaAIRs.ModelSecurityViolation.violations.threat_description | String | The threat description. |
+| PrismaAIRs.ModelSecurityViolation.violations.module | String | The module where threat was found. |
+| PrismaAIRs.ModelSecurityViolation.violations.operator | String | The operator involved in violation. |
+| PrismaAIRs.ModelSecurityViolation.violations.hash | String | The hash of the violating file. |
+| PrismaAIRs.ModelSecurityViolation.violations.rule_instance_uuid | String | The rule instance UUID. |
+| PrismaAIRs.ModelSecurityViolation.violations.created_at | Date | The violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityViolation.violations.updated_at | Date | The violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityViolation.violations.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityViolation.total_items | Number | The total number of violations available. |
+| PrismaAIRs.ModelSecurityViolation.limit | Number | The limit used for pagination. |
+| PrismaAIRs.ModelSecurityViolation.offset | Number | The offset used for pagination. |
 
 ### prisma-airs-model-security-labels-keys
 
@@ -2941,17 +2941,17 @@ Get distinct label keys across all model security scans. Use for discovering ava
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of label keys to return. Default is 50. | Optional |
-| offset | Offset for pagination. Default is 0. | Optional |
+| limit | The maximum number of label keys to return. Default is 50. | Optional |
+| offset | The offset for pagination. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityLabelKeys.keys | Unknown | List of distinct label keys. |
-| PrismaAIRs.ModelSecurityLabelKeys.total_items | Number | Total number of label keys available. |
-| PrismaAIRs.ModelSecurityLabelKeys.limit | Number | Limit used for pagination. |
-| PrismaAIRs.ModelSecurityLabelKeys.offset | Number | Offset used for pagination. |
+| PrismaAIRs.ModelSecurityLabelKeys.keys | Unknown | The list of distinct label keys. |
+| PrismaAIRs.ModelSecurityLabelKeys.total_items | Number | The total number of label keys available. |
+| PrismaAIRs.ModelSecurityLabelKeys.limit | Number | The limit used for pagination. |
+| PrismaAIRs.ModelSecurityLabelKeys.offset | Number | The offset used for pagination. |
 
 #### Command example
 
@@ -2996,19 +2996,19 @@ Get distinct values for a specific label key across all model security scans. Us
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key | Label key to get values for. | Required |
-| limit | Maximum number of label values to return. Default is 50. | Optional |
-| offset | Offset for pagination. Default is 0. | Optional |
+| key | The label key to get values for. | Required |
+| limit | The maximum number of label values to return. Default is 50. | Optional |
+| offset | The offset for pagination. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityLabelValues.key | String | Label key. |
-| PrismaAIRs.ModelSecurityLabelValues.values | Unknown | List of distinct label values. |
-| PrismaAIRs.ModelSecurityLabelValues.total_items | Number | Total number of label values available. |
-| PrismaAIRs.ModelSecurityLabelValues.limit | Number | Limit used for pagination. |
-| PrismaAIRs.ModelSecurityLabelValues.offset | Number | Offset used for pagination. |
+| PrismaAIRs.ModelSecurityLabelValues.key | String | The label key. |
+| PrismaAIRs.ModelSecurityLabelValues.values | Unknown | The list of distinct label values. |
+| PrismaAIRs.ModelSecurityLabelValues.total_items | Number | The total number of label values available. |
+| PrismaAIRs.ModelSecurityLabelValues.limit | Number | The limit used for pagination. |
+| PrismaAIRs.ModelSecurityLabelValues.offset | Number | The offset used for pagination. |
 
 ### prisma-airs-model-security-labels-add
 
@@ -3023,15 +3023,15 @@ Add labels to a model security scan for organization and filtering. Labels are k
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_uuid | Scan UUID to add labels to. | Required |
-| labels | Labels to add as JSON array (e.g., '[{"key":"env","value":"prod"}]'). | Required |
+| scan_uuid | The scan UUID to add labels to. | Required |
+| labels | The labels to add as JSON array (e.g., '[{"key":"env","value":"prod"}]'). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityLabelsAdd.scan_uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityLabelsAdd.labels_added | Unknown | Labels that were added. |
+| PrismaAIRs.ModelSecurityLabelsAdd.scan_uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityLabelsAdd.labels_added | Unknown | The labels that were added. |
 | PrismaAIRs.ModelSecurityLabelsAdd.success | Boolean | Whether the operation succeeded. |
 
 ### prisma-airs-model-security-labels-set
@@ -3047,15 +3047,15 @@ Set labels on a model security scan, replacing all existing labels. Use this to 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_uuid | Scan UUID to set labels on. | Required |
-| labels | Labels to set as JSON array (e.g., '[{"key":"env","value":"staging"}]'). Replaces all existing labels. | Required |
+| scan_uuid | The scan UUID to set labels on. | Required |
+| labels | The labels to set as JSON array (e.g., '[{"key":"env","value":"staging"}]'). Replaces all existing labels. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityLabelsSet.scan_uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityLabelsSet.labels_set | Unknown | Labels that were set. |
+| PrismaAIRs.ModelSecurityLabelsSet.scan_uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityLabelsSet.labels_set | Unknown | The labels that were set. |
 | PrismaAIRs.ModelSecurityLabelsSet.success | Boolean | Whether the operation succeeded. |
 
 ### prisma-airs-model-security-labels-delete
@@ -3071,15 +3071,15 @@ Delete labels from a model security scan by key. Removes specific labels while p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_uuid | Scan UUID to delete labels from. | Required |
+| scan_uuid | The scan UUID to delete labels from. | Required |
 | keys | A comma-separated list of label keys to delete (e.g., "env,team"). Alternatively, a JSON array. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityLabelsDelete.scan_uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityLabelsDelete.keys_deleted | Unknown | Label keys that were deleted. |
+| PrismaAIRs.ModelSecurityLabelsDelete.scan_uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityLabelsDelete.keys_deleted | Unknown | The label keys that were deleted. |
 | PrismaAIRs.ModelSecurityLabelsDelete.success | Boolean | Whether the operation succeeded. |
 
 ### prisma-airs-model-security-scans-evaluation
@@ -3095,23 +3095,23 @@ Get a single rule evaluation by UUID. Retrieves detailed information about how a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Evaluation UUID to retrieve. | Required |
+| uuid | The evaluation UUID to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityEvaluation.uuid | String | Evaluation UUID. |
-| PrismaAIRs.ModelSecurityEvaluation.scan_uuid | String | Scan UUID this evaluation belongs to. |
-| PrismaAIRs.ModelSecurityEvaluation.rule_instance_uuid | String | Rule instance UUID. |
-| PrismaAIRs.ModelSecurityEvaluation.rule_name | String | Security rule name. |
-| PrismaAIRs.ModelSecurityEvaluation.rule_description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityEvaluation.result | String | Evaluation result \(PASSED/FAILED/ERROR\). |
-| PrismaAIRs.ModelSecurityEvaluation.violation_count | Number | Number of violations found. |
-| PrismaAIRs.ModelSecurityEvaluation.rule_instance_state | String | Rule instance state \(BLOCKING/ALLOWING/DISABLED\). |
-| PrismaAIRs.ModelSecurityEvaluation.created_at | Date | Evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityEvaluation.updated_at | Date | Evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityEvaluation.tsg_id | String | Tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityEvaluation.uuid | String | The evaluation UUID. |
+| PrismaAIRs.ModelSecurityEvaluation.scan_uuid | String | The scan UUID this evaluation belongs to. |
+| PrismaAIRs.ModelSecurityEvaluation.rule_instance_uuid | String | The rule instance UUID. |
+| PrismaAIRs.ModelSecurityEvaluation.rule_name | String | The security rule name. |
+| PrismaAIRs.ModelSecurityEvaluation.rule_description | String | The security rule description. |
+| PrismaAIRs.ModelSecurityEvaluation.result | String | The evaluation result \(PASSED/FAILED/ERROR\). |
+| PrismaAIRs.ModelSecurityEvaluation.violation_count | Number | The number of violations found. |
+| PrismaAIRs.ModelSecurityEvaluation.rule_instance_state | String | The rule instance state \(BLOCKING/ALLOWING/DISABLED\). |
+| PrismaAIRs.ModelSecurityEvaluation.created_at | Date | The evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityEvaluation.updated_at | Date | The evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityEvaluation.tsg_id | String | The tenant Service Group ID. |
 
 ### prisma-airs-model-security-scans-violation
 
@@ -3126,27 +3126,27 @@ Get a single violation by UUID. Retrieves detailed information about a specific 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Violation UUID to retrieve. | Required |
+| uuid | The violation UUID to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityViolationDetail.uuid | String | Violation UUID. |
-| PrismaAIRs.ModelSecurityViolationDetail.rule_name | String | Security rule name that failed. |
-| PrismaAIRs.ModelSecurityViolationDetail.rule_description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityViolationDetail.description | String | Violation description. |
-| PrismaAIRs.ModelSecurityViolationDetail.rule_instance_state | String | Rule instance state \(BLOCKING/ALLOWING\). |
-| PrismaAIRs.ModelSecurityViolationDetail.file | String | File path where violation was found. |
-| PrismaAIRs.ModelSecurityViolationDetail.threat | String | Threat type. |
-| PrismaAIRs.ModelSecurityViolationDetail.threat_description | String | Threat description. |
-| PrismaAIRs.ModelSecurityViolationDetail.module | String | Module where threat was found. |
-| PrismaAIRs.ModelSecurityViolationDetail.operator | String | Operator involved in violation. |
-| PrismaAIRs.ModelSecurityViolationDetail.hash | String | Hash of the violating file. |
-| PrismaAIRs.ModelSecurityViolationDetail.rule_instance_uuid | String | Rule instance UUID. |
-| PrismaAIRs.ModelSecurityViolationDetail.created_at | Date | Violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityViolationDetail.updated_at | Date | Violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityViolationDetail.tsg_id | String | Tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityViolationDetail.uuid | String | The violation UUID. |
+| PrismaAIRs.ModelSecurityViolationDetail.rule_name | String | The security rule name that failed. |
+| PrismaAIRs.ModelSecurityViolationDetail.rule_description | String | The security rule description. |
+| PrismaAIRs.ModelSecurityViolationDetail.description | String | The violation description. |
+| PrismaAIRs.ModelSecurityViolationDetail.rule_instance_state | String | The rule instance state \(BLOCKING/ALLOWING\). |
+| PrismaAIRs.ModelSecurityViolationDetail.file | String | The file path where violation was found. |
+| PrismaAIRs.ModelSecurityViolationDetail.threat | String | The threat type. |
+| PrismaAIRs.ModelSecurityViolationDetail.threat_description | String | The threat description. |
+| PrismaAIRs.ModelSecurityViolationDetail.module | String | The module where threat was found. |
+| PrismaAIRs.ModelSecurityViolationDetail.operator | String | The operator involved in violation. |
+| PrismaAIRs.ModelSecurityViolationDetail.hash | String | The hash of the violating file. |
+| PrismaAIRs.ModelSecurityViolationDetail.rule_instance_uuid | String | The rule instance UUID. |
+| PrismaAIRs.ModelSecurityViolationDetail.created_at | Date | The violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityViolationDetail.updated_at | Date | The violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityViolationDetail.tsg_id | String | The tenant Service Group ID. |
 
 ### prisma-airs-model-security-scans-files
 
@@ -3161,11 +3161,11 @@ Get files for a scan. Lists all files that were scanned within a model, showing 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_uuid | Scan UUID to retrieve files for. | Required |
-| limit | Maximum number of files to return. Default is 50. | Optional |
-| offset | Offset for pagination. Default is 0. | Optional |
-| sort_field | Sort by field (path, type). | Optional |
-| sort_dir | Sort direction (asc, desc). | Optional |
+| scan_uuid | The scan UUID to retrieve files for. | Required |
+| limit | The maximum number of files to return. Default is 50. | Optional |
+| offset | The offset for pagination. Default is 0. | Optional |
+| sort_field | The sort by field (path, type). | Optional |
+| sort_dir | The sort direction (asc, desc). | Optional |
 | type | Filter by file type (FILE, DIRECTORY). | Optional |
 | result | Filter by scan result (SUCCESS, FAILURE). | Optional |
 | query_path | Filter files by path prefix. Default is /. | Optional |
@@ -3174,22 +3174,22 @@ Get files for a scan. Lists all files that were scanned within a model, showing 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityFiles.scan_uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityFiles.files.uuid | String | File entry UUID. |
-| PrismaAIRs.ModelSecurityFiles.files.path | String | File path within model. |
-| PrismaAIRs.ModelSecurityFiles.files.parent_path | String | Parent directory path. |
-| PrismaAIRs.ModelSecurityFiles.files.type | String | File type \(FILE, DIRECTORY\). |
-| PrismaAIRs.ModelSecurityFiles.files.result | String | Scan result \(SUCCESS, FAILURE\). |
-| PrismaAIRs.ModelSecurityFiles.files.model_version_uuid | String | Model version UUID. |
-| PrismaAIRs.ModelSecurityFiles.files.blob_id | String | Blob storage identifier. |
-| PrismaAIRs.ModelSecurityFiles.files.formats | Unknown | Model formats detected. |
-| PrismaAIRs.ModelSecurityFiles.files.scan_uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityFiles.files.created_at | Date | File entry creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityFiles.files.updated_at | Date | File entry last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityFiles.files.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.ModelSecurityFiles.total_items | Number | Total number of files available. |
-| PrismaAIRs.ModelSecurityFiles.limit | Number | Limit used for pagination. |
-| PrismaAIRs.ModelSecurityFiles.offset | Number | Offset used for pagination. |
+| PrismaAIRs.ModelSecurityFiles.scan_uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityFiles.files.uuid | String | The file entry UUID. |
+| PrismaAIRs.ModelSecurityFiles.files.path | String | The file path within model. |
+| PrismaAIRs.ModelSecurityFiles.files.parent_path | String | The parent directory path. |
+| PrismaAIRs.ModelSecurityFiles.files.type | String | The file type \(FILE, DIRECTORY\). |
+| PrismaAIRs.ModelSecurityFiles.files.result | String | The scan result \(SUCCESS, FAILURE\). |
+| PrismaAIRs.ModelSecurityFiles.files.model_version_uuid | String | The model version UUID. |
+| PrismaAIRs.ModelSecurityFiles.files.blob_id | String | The blob storage identifier. |
+| PrismaAIRs.ModelSecurityFiles.files.formats | Unknown | The model formats detected. |
+| PrismaAIRs.ModelSecurityFiles.files.scan_uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityFiles.files.created_at | Date | The file entry creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityFiles.files.updated_at | Date | The file entry last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityFiles.files.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityFiles.total_items | Number | The total number of files available. |
+| PrismaAIRs.ModelSecurityFiles.limit | Number | The limit used for pagination. |
+| PrismaAIRs.ModelSecurityFiles.offset | Number | The offset used for pagination. |
 
 ### prisma-airs-model-security-scans-evaluations
 
@@ -3204,11 +3204,11 @@ Get rule evaluations for a scan. Lists all rule evaluations showing which securi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scan_uuid | Scan UUID to retrieve evaluations for. | Required |
-| limit | Maximum number of evaluations to return. Default is 50. | Optional |
-| offset | Offset for pagination. Default is 0. | Optional |
-| sort_field | Sort by field (created_at, updated_at). | Optional |
-| sort_order | Sort order (asc, desc). | Optional |
+| scan_uuid | The scan UUID to retrieve evaluations for. | Required |
+| limit | The maximum number of evaluations to return. Default is 50. | Optional |
+| offset | The offset for pagination. Default is 0. | Optional |
+| sort_field | The sort by field (created_at, updated_at). | Optional |
+| sort_order | The sort order (asc, desc). | Optional |
 | result | Filter by evaluation result (PASSED, FAILED, ERROR). | Optional |
 | rule_instance_uuid | Filter by specific rule instance UUID. | Optional |
 
@@ -3216,21 +3216,21 @@ Get rule evaluations for a scan. Lists all rule evaluations showing which securi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityEvaluations.scan_uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.uuid | String | Rule evaluation UUID. |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.scan_uuid | String | Scan UUID. |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_name | String | Security rule name \(e.g., Pickle Scan, Malware Scan\). |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.result | String | Evaluation result \(PASSED, FAILED, ERROR\). |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.violation_count | Number | Number of violations detected by this rule. |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_state | String | Rule instance state \(BLOCKING, MONITORING\). |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_uuid | String | Rule instance UUID that performed the evaluation. |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_description | String | Rule description. |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.created_at | Date | Evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.updated_at | Date | Evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityEvaluations.evaluations.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.ModelSecurityEvaluations.total_items | Number | Total number of evaluations available. |
-| PrismaAIRs.ModelSecurityEvaluations.limit | Number | Limit used for pagination. |
-| PrismaAIRs.ModelSecurityEvaluations.offset | Number | Offset used for pagination. |
+| PrismaAIRs.ModelSecurityEvaluations.scan_uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.uuid | String | The rule evaluation UUID. |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.scan_uuid | String | The scan UUID. |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_name | String | The security rule name \(e.g., Pickle Scan, Malware Scan\). |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.result | String | The evaluation result \(PASSED, FAILED, ERROR\). |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.violation_count | Number | The number of violations detected by this rule. |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_state | String | The rule instance state \(BLOCKING, MONITORING\). |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_uuid | String | The rule instance UUID that performed the evaluation. |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_description | String | The rule description. |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.created_at | Date | The evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.updated_at | Date | The evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityEvaluations.evaluations.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityEvaluations.total_items | Number | The total number of evaluations available. |
+| PrismaAIRs.ModelSecurityEvaluations.limit | Number | The limit used for pagination. |
+| PrismaAIRs.ModelSecurityEvaluations.offset | Number | The offset used for pagination. |
 
 ### prisma-airs-model-security-models-list
 
@@ -3245,14 +3245,14 @@ List Model Security model catalog entries (aggregate over their scanned versions
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of models to return. Default is 50. | Optional |
-| skip | Number of records to skip from the start \(pagination offset\). | Optional |
-| search_query | Search query \(matches model UUID or name\). | Optional |
-| sort_field | Field to sort by. Possible values are: created_at, updated_at. | Optional |
-| sort_order | Sort order. Possible values are: asc, desc. | Optional |
-| latest_version_outcomes | Comma-separated list of latest-version evaluation outcomes to filter by \(e.g., PASSED,FAILED\). | Optional |
-| latest_version_formats | Comma-separated list of latest-version model formats to filter by. | Optional |
-| latest_version_source_types | Comma-separated list of latest-version source types to filter by \(e.g., HUGGING_FACE,S3\). | Optional |
+| limit | The maximum number of models to return. Default is 50. | Optional |
+| skip | The number of records to skip from the start \(pagination offset\). | Optional |
+| search_query | The search query \(matches model UUID or name\). | Optional |
+| sort_field | The field to sort by. Possible values are: created_at, updated_at. | Optional |
+| sort_order | The sort order. Possible values are: asc, desc. | Optional |
+| latest_version_outcomes | The comma-separated list of latest-version evaluation outcomes to filter by \(e.g., PASSED,FAILED\). | Optional |
+| latest_version_formats | The comma-separated list of latest-version model formats to filter by. | Optional |
+| latest_version_source_types | The comma-separated list of latest-version source types to filter by \(e.g., HUGGING_FACE,S3\). | Optional |
 | start_time | Only models created on or after this ISO 8601 datetime. | Optional |
 | end_time | Only models created on or before this ISO 8601 datetime. | Optional |
 
@@ -3260,16 +3260,16 @@ List Model Security model catalog entries (aggregate over their scanned versions
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityModel.uuid | String | Model UUID. |
-| PrismaAIRs.ModelSecurityModel.name | String | Model name. |
-| PrismaAIRs.ModelSecurityModel.latest_version_uuid | String | UUID of the model's latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_revision | String | Revision label of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_outcome | String | Evaluation outcome of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_formats | Unknown | Model formats of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_source_types | Unknown | Source types of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | Scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityModel.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityModel.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.uuid | String | The model UUID. |
+| PrismaAIRs.ModelSecurityModel.name | String | The model name. |
+| PrismaAIRs.ModelSecurityModel.latest_version_uuid | String | The UUID of the model's latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_revision | String | The revision label of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_outcome | String | The evaluation outcome of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_formats | Unknown | The model formats of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_source_types | Unknown | The source types of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | The scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -3302,24 +3302,24 @@ Get a single Model Security model by UUID. Read-only.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Model UUID. | Required |
+| uuid | The model UUID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityModel.uuid | String | Model UUID. |
-| PrismaAIRs.ModelSecurityModel.name | String | Model name. |
-| PrismaAIRs.ModelSecurityModel.latest_version_uuid | String | UUID of the model's latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_revision | String | Revision label of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_fingerprint | String | Fingerprint of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_hf_commit_sha | String | Hugging Face commit SHA of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_outcome | String | Evaluation outcome of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_formats | Unknown | Model formats of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_source_types | Unknown | Source types of the latest version. |
-| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | Scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityModel.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityModel.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.uuid | String | The model UUID. |
+| PrismaAIRs.ModelSecurityModel.name | String | The model name. |
+| PrismaAIRs.ModelSecurityModel.latest_version_uuid | String | The UUID of the model's latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_revision | String | The revision label of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_fingerprint | String | The fingerprint of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_hf_commit_sha | String | The Hugging Face commit SHA of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_outcome | String | The evaluation outcome of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_formats | Unknown | The model formats of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_source_types | Unknown | The source types of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | The scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModel.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -3348,26 +3348,26 @@ List the versions (revisions) of a Model Security model. Read-only.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model_uuid | Model UUID whose versions to list. | Required |
-| limit | Maximum number of versions to return. Default is 50. | Optional |
-| skip | Number of records to skip from the start \(pagination offset\). | Optional |
-| sort_order | Sort order. Possible values are: asc, desc. | Optional |
+| model_uuid | The model UUID whose versions to list. | Required |
+| limit | The maximum number of versions to return. Default is 50. | Optional |
+| skip | The number of records to skip from the start \(pagination offset\). | Optional |
+| sort_order | The sort order. Possible values are: asc, desc. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityModelVersion.uuid | String | Model version UUID. |
-| PrismaAIRs.ModelSecurityModelVersion.model_uuid | String | Parent model UUID. |
-| PrismaAIRs.ModelSecurityModelVersion.revision | String | Revision label. |
-| PrismaAIRs.ModelSecurityModelVersion.file_count | Number | Number of files in the version. |
-| PrismaAIRs.ModelSecurityModelVersion.license | String | Model license. |
-| PrismaAIRs.ModelSecurityModelVersion.model_formats | Unknown | Model formats. |
-| PrismaAIRs.ModelSecurityModelVersion.source_types | Unknown | Source types. |
-| PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome | String | Latest evaluation outcome. |
-| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | Latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityModelVersion.hf_model_name | String | Hugging Face model name. |
-| PrismaAIRs.ModelSecurityModelVersion.hf_organization | String | Hugging Face organization. |
+| PrismaAIRs.ModelSecurityModelVersion.uuid | String | The model version UUID. |
+| PrismaAIRs.ModelSecurityModelVersion.model_uuid | String | The parent model UUID. |
+| PrismaAIRs.ModelSecurityModelVersion.revision | String | The revision label. |
+| PrismaAIRs.ModelSecurityModelVersion.file_count | Number | The number of files in the version. |
+| PrismaAIRs.ModelSecurityModelVersion.license | String | The model license. |
+| PrismaAIRs.ModelSecurityModelVersion.model_formats | Unknown | The model formats. |
+| PrismaAIRs.ModelSecurityModelVersion.source_types | Unknown | The source types. |
+| PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome | String | The latest evaluation outcome. |
+| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | The latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModelVersion.hf_model_name | String | The Hugging Face model name. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_organization | String | The Hugging Face organization. |
 
 #### Command example
 
@@ -3396,28 +3396,28 @@ Get a single Model Security model version by UUID. Read-only.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Model version UUID. | Required |
+| uuid | The model version UUID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityModelVersion.uuid | String | Model version UUID. |
-| PrismaAIRs.ModelSecurityModelVersion.model_uuid | String | Parent model UUID. |
-| PrismaAIRs.ModelSecurityModelVersion.revision | String | Revision label. |
-| PrismaAIRs.ModelSecurityModelVersion.fingerprint | String | Version fingerprint. |
-| PrismaAIRs.ModelSecurityModelVersion.file_count | Number | Number of files in the version. |
-| PrismaAIRs.ModelSecurityModelVersion.license | String | Model license. |
-| PrismaAIRs.ModelSecurityModelVersion.model_formats | Unknown | Model formats. |
-| PrismaAIRs.ModelSecurityModelVersion.source_types | Unknown | Source types. |
-| PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome | String | Latest evaluation outcome. |
-| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | Latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityModelVersion.hf_model_name | String | Hugging Face model name. |
-| PrismaAIRs.ModelSecurityModelVersion.hf_organization | String | Hugging Face organization. |
-| PrismaAIRs.ModelSecurityModelVersion.hf_commit_sha | String | Hugging Face commit SHA. |
-| PrismaAIRs.ModelSecurityModelVersion.hf_commit_title | String | Hugging Face commit title. |
-| PrismaAIRs.ModelSecurityModelVersion.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityModelVersion.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModelVersion.uuid | String | The model version UUID. |
+| PrismaAIRs.ModelSecurityModelVersion.model_uuid | String | The parent model UUID. |
+| PrismaAIRs.ModelSecurityModelVersion.revision | String | The revision label. |
+| PrismaAIRs.ModelSecurityModelVersion.fingerprint | String | The version fingerprint. |
+| PrismaAIRs.ModelSecurityModelVersion.file_count | Number | The number of files in the version. |
+| PrismaAIRs.ModelSecurityModelVersion.license | String | The model license. |
+| PrismaAIRs.ModelSecurityModelVersion.model_formats | Unknown | The model formats. |
+| PrismaAIRs.ModelSecurityModelVersion.source_types | Unknown | The source types. |
+| PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome | String | The latest evaluation outcome. |
+| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | The latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModelVersion.hf_model_name | String | The Hugging Face model name. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_organization | String | The Hugging Face organization. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_commit_sha | String | The Hugging Face commit SHA. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_commit_title | String | The Hugging Face commit title. |
+| PrismaAIRs.ModelSecurityModelVersion.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityModelVersion.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -3446,22 +3446,22 @@ List the files of a Model Security model version. Read-only.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model_version_uuid | Model version UUID whose files to list. | Required |
-| limit | Maximum number of files to return. Default is 50. | Optional |
-| skip | Number of records to skip from the start \(pagination offset\). | Optional |
+| model_version_uuid | The model version UUID whose files to list. | Required |
+| limit | The maximum number of files to return. Default is 50. | Optional |
+| skip | The number of records to skip from the start \(pagination offset\). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityModelFile.uuid | String | File UUID. |
-| PrismaAIRs.ModelSecurityModelFile.path | String | File path within the model tree. |
-| PrismaAIRs.ModelSecurityModelFile.parent_path | String | Parent directory path. |
-| PrismaAIRs.ModelSecurityModelFile.type | String | Entry type \(e.g., FILE, DIRECTORY\). |
-| PrismaAIRs.ModelSecurityModelFile.result | String | Scan result for the file \(e.g., FAILED, SKIPPED\). |
-| PrismaAIRs.ModelSecurityModelFile.formats | Unknown | Detected file formats. |
-| PrismaAIRs.ModelSecurityModelFile.model_version_uuid | String | Parent model version UUID. |
-| PrismaAIRs.ModelSecurityModelFile.scan_uuid | String | Associated scan UUID. |
+| PrismaAIRs.ModelSecurityModelFile.uuid | String | The file UUID. |
+| PrismaAIRs.ModelSecurityModelFile.path | String | The file path within the model tree. |
+| PrismaAIRs.ModelSecurityModelFile.parent_path | String | The parent directory path. |
+| PrismaAIRs.ModelSecurityModelFile.type | String | The entry type \(e.g., FILE, DIRECTORY\). |
+| PrismaAIRs.ModelSecurityModelFile.result | String | The scan result for the file \(e.g., FAILED, SKIPPED\). |
+| PrismaAIRs.ModelSecurityModelFile.formats | Unknown | The detected file formats. |
+| PrismaAIRs.ModelSecurityModelFile.model_version_uuid | String | The parent model version UUID. |
+| PrismaAIRs.ModelSecurityModelFile.scan_uuid | String | The associated scan UUID. |
 
 #### Command example
 
@@ -3496,21 +3496,21 @@ List all model security groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of security groups to return. Default is 50. | Optional |
+| limit | The maximum number of security groups to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityGroup.uuid | String | Security group UUID. |
-| PrismaAIRs.ModelSecurityGroup.name | String | Security group name. |
-| PrismaAIRs.ModelSecurityGroup.description | String | Security group description. |
-| PrismaAIRs.ModelSecurityGroup.source_type | String | Source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
-| PrismaAIRs.ModelSecurityGroup.state | String | Group state \(ACTIVE, PENDING\). |
+| PrismaAIRs.ModelSecurityGroup.uuid | String | The security group UUID. |
+| PrismaAIRs.ModelSecurityGroup.name | String | The security group name. |
+| PrismaAIRs.ModelSecurityGroup.description | String | The security group description. |
+| PrismaAIRs.ModelSecurityGroup.source_type | String | The source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
+| PrismaAIRs.ModelSecurityGroup.state | String | The group state \(ACTIVE, PENDING\). |
 | PrismaAIRs.ModelSecurityGroup.is_tombstone | Boolean | Whether the group is marked for deletion. |
-| PrismaAIRs.ModelSecurityGroup.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityGroup.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityGroup.tsg_id | String | Tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityGroup.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroup.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroup.tsg_id | String | The tenant Service Group ID. |
 
 #### Command example
 
@@ -3572,21 +3572,21 @@ Get model security group details by UUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Security group UUID. | Required |
+| uuid | The security group UUID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityGroupGet.uuid | String | Security group UUID. |
-| PrismaAIRs.ModelSecurityGroupGet.name | String | Security group name. |
-| PrismaAIRs.ModelSecurityGroupGet.description | String | Security group description. |
-| PrismaAIRs.ModelSecurityGroupGet.source_type | String | Source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
-| PrismaAIRs.ModelSecurityGroupGet.state | String | Group state \(ACTIVE, PENDING\). |
+| PrismaAIRs.ModelSecurityGroupGet.uuid | String | The security group UUID. |
+| PrismaAIRs.ModelSecurityGroupGet.name | String | The security group name. |
+| PrismaAIRs.ModelSecurityGroupGet.description | String | The security group description. |
+| PrismaAIRs.ModelSecurityGroupGet.source_type | String | The source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
+| PrismaAIRs.ModelSecurityGroupGet.state | String | The group state \(ACTIVE, PENDING\). |
 | PrismaAIRs.ModelSecurityGroupGet.is_tombstone | Boolean | Whether the group is marked for deletion. |
-| PrismaAIRs.ModelSecurityGroupGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityGroupGet.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityGroupGet.tsg_id | String | Tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityGroupGet.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroupGet.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroupGet.tsg_id | String | The tenant Service Group ID. |
 
 ### prisma-airs-model-security-groups-create
 
@@ -3601,23 +3601,23 @@ Create a new model security group for scanning models from a specific source typ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Security group name. | Required |
-| source_type | Model source type. Possible values are: HUGGING_FACE, LOCAL, S3, GCS, AZURE. | Required |
-| description | Security group description. | Optional |
+| name | The security group name. | Required |
+| source_type | The model source type. Possible values are: HUGGING_FACE, LOCAL, S3, GCS, AZURE. | Required |
+| description | The security group description. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityGroupAdd.uuid | String | UUID of the created security group. |
-| PrismaAIRs.ModelSecurityGroupAdd.name | String | Name of the created security group. |
-| PrismaAIRs.ModelSecurityGroupAdd.description | String | Description of the created security group. |
-| PrismaAIRs.ModelSecurityGroupAdd.source_type | String | Source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
-| PrismaAIRs.ModelSecurityGroupAdd.state | String | Group state \(PENDING initially, becomes ACTIVE after configuration\). |
+| PrismaAIRs.ModelSecurityGroupAdd.uuid | String | The UUID of the created security group. |
+| PrismaAIRs.ModelSecurityGroupAdd.name | String | The name of the created security group. |
+| PrismaAIRs.ModelSecurityGroupAdd.description | String | The description of the created security group. |
+| PrismaAIRs.ModelSecurityGroupAdd.source_type | String | The source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
+| PrismaAIRs.ModelSecurityGroupAdd.state | String | The group state \(PENDING initially, becomes ACTIVE after configuration\). |
 | PrismaAIRs.ModelSecurityGroupAdd.is_tombstone | Boolean | Whether the group is marked for deletion. |
-| PrismaAIRs.ModelSecurityGroupAdd.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityGroupAdd.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityGroupAdd.tsg_id | String | Tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityGroupAdd.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroupAdd.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroupAdd.tsg_id | String | The tenant Service Group ID. |
 
 ### prisma-airs-model-security-groups-delete
 
@@ -3632,13 +3632,13 @@ Delete a security group. Removes a security group that is no longer needed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Security group UUID to delete. | Required |
+| uuid | The security group UUID to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityGroupDelete.uuid | String | UUID of deleted security group. |
+| PrismaAIRs.ModelSecurityGroupDelete.uuid | String | The UUID of deleted security group. |
 | PrismaAIRs.ModelSecurityGroupDelete.deleted | Boolean | Whether the deletion succeeded. |
 
 ### prisma-airs-model-security-groups-update
@@ -3654,23 +3654,23 @@ Update an existing security group. Updates the name and/or description of a secu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Security group UUID to update. | Required |
-| name | New name for the security group. | Optional |
-| description | New description for the security group. | Optional |
+| uuid | The security group UUID to update. | Required |
+| name | The new name for the security group. | Optional |
+| description | The new description for the security group. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityGroupUpdate.uuid | String | UUID of the updated security group. |
-| PrismaAIRs.ModelSecurityGroupUpdate.name | String | Updated security group name. |
-| PrismaAIRs.ModelSecurityGroupUpdate.description | String | Updated security group description. |
-| PrismaAIRs.ModelSecurityGroupUpdate.source_type | String | Model source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
-| PrismaAIRs.ModelSecurityGroupUpdate.state | String | Group state after update. |
+| PrismaAIRs.ModelSecurityGroupUpdate.uuid | String | The UUID of the updated security group. |
+| PrismaAIRs.ModelSecurityGroupUpdate.name | String | The updated security group name. |
+| PrismaAIRs.ModelSecurityGroupUpdate.description | String | The updated security group description. |
+| PrismaAIRs.ModelSecurityGroupUpdate.source_type | String | The model source type \(HUGGING_FACE, LOCAL, S3, GCS, AZURE\). |
+| PrismaAIRs.ModelSecurityGroupUpdate.state | String | The group state after update. |
 | PrismaAIRs.ModelSecurityGroupUpdate.is_tombstone | Boolean | Whether the group is marked for deletion. |
-| PrismaAIRs.ModelSecurityGroupUpdate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityGroupUpdate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityGroupUpdate.tsg_id | String | Tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityGroupUpdate.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroupUpdate.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityGroupUpdate.tsg_id | String | The tenant Service Group ID. |
 
 ### prisma-airs-model-security-rules-list
 
@@ -3685,18 +3685,18 @@ List all model security rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of security rules to return. Default is 50. | Optional |
+| limit | The maximum number of security rules to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityRule.uuid | String | Security rule UUID. |
-| PrismaAIRs.ModelSecurityRule.name | String | Security rule name. |
-| PrismaAIRs.ModelSecurityRule.description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityRule.rule_type | String | Rule type \(ARTIFACT, METADATA\). |
-| PrismaAIRs.ModelSecurityRule.compatible_sources | Unknown | Compatible source types for this rule. |
-| PrismaAIRs.ModelSecurityRule.default_state | String | Default state \(DISABLED, ALLOWING, BLOCKING\). |
+| PrismaAIRs.ModelSecurityRule.uuid | String | The security rule UUID. |
+| PrismaAIRs.ModelSecurityRule.name | String | The security rule name. |
+| PrismaAIRs.ModelSecurityRule.description | String | The security rule description. |
+| PrismaAIRs.ModelSecurityRule.rule_type | String | The rule type \(ARTIFACT, METADATA\). |
+| PrismaAIRs.ModelSecurityRule.compatible_sources | Unknown | The compatible source types for this rule. |
+| PrismaAIRs.ModelSecurityRule.default_state | String | The default state \(DISABLED, ALLOWING, BLOCKING\). |
 
 #### Command example
 
@@ -3753,24 +3753,24 @@ Get model security rule details by UUID. Returns full rule definition including 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Rule UUID to retrieve. | Required |
+| uuid | The rule UUID to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityRuleGet.uuid | String | Rule UUID. |
-| PrismaAIRs.ModelSecurityRuleGet.name | String | Rule name. |
-| PrismaAIRs.ModelSecurityRuleGet.description | String | Rule description. |
-| PrismaAIRs.ModelSecurityRuleGet.rule_type | String | Rule type \(ARTIFACT, METADATA, etc\). |
-| PrismaAIRs.ModelSecurityRuleGet.compatible_sources | Unknown | Compatible source types for this rule. |
-| PrismaAIRs.ModelSecurityRuleGet.default_state | String | Default state \(DISABLED, ALLOWING, BLOCKING\). |
-| PrismaAIRs.ModelSecurityRuleGet.remediation_description | String | Remediation description. |
-| PrismaAIRs.ModelSecurityRuleGet.remediation_steps | Unknown | Remediation steps. |
-| PrismaAIRs.ModelSecurityRuleGet.remediation_url | String | Remediation reference URL. |
-| PrismaAIRs.ModelSecurityRuleGet.editable_fields | Unknown | Editable fields configuration. |
-| PrismaAIRs.ModelSecurityRuleGet.constant_values | Unknown | Constant values for this rule. |
-| PrismaAIRs.ModelSecurityRuleGet.default_values | Unknown | Default values for editable fields. |
+| PrismaAIRs.ModelSecurityRuleGet.uuid | String | The rule UUID. |
+| PrismaAIRs.ModelSecurityRuleGet.name | String | The rule name. |
+| PrismaAIRs.ModelSecurityRuleGet.description | String | The rule description. |
+| PrismaAIRs.ModelSecurityRuleGet.rule_type | String | The rule type \(ARTIFACT, METADATA, etc\). |
+| PrismaAIRs.ModelSecurityRuleGet.compatible_sources | Unknown | The compatible source types for this rule. |
+| PrismaAIRs.ModelSecurityRuleGet.default_state | String | The default state \(DISABLED, ALLOWING, BLOCKING\). |
+| PrismaAIRs.ModelSecurityRuleGet.remediation_description | String | The remediation description. |
+| PrismaAIRs.ModelSecurityRuleGet.remediation_steps | Unknown | The remediation steps. |
+| PrismaAIRs.ModelSecurityRuleGet.remediation_url | String | The remediation reference URL. |
+| PrismaAIRs.ModelSecurityRuleGet.editable_fields | Unknown | The editable fields configuration. |
+| PrismaAIRs.ModelSecurityRuleGet.constant_values | Unknown | The constant values for this rule. |
+| PrismaAIRs.ModelSecurityRuleGet.default_values | Unknown | The default values for editable fields. |
 
 ### prisma-airs-model-security-rule-instances-list
 
@@ -3785,9 +3785,9 @@ List rule instances for a security group. Rule instances are rules that have bee
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| security_group_uuid | Security group UUID to list rule instances for. | Required |
-| limit | Maximum number of rule instances to return. Default is 50. | Optional |
-| offset | Offset for pagination. Default is 0. | Optional |
+| security_group_uuid | The security group UUID to list rule instances for. | Required |
+| limit | The maximum number of rule instances to return. Default is 50. | Optional |
+| offset | The offset for pagination. Default is 0. | Optional |
 | security_rule_uuid | Filter by specific security rule UUID. | Optional |
 | state | Filter by rule state. Possible values are: DISABLED, ALLOWING, BLOCKING. | Optional |
 
@@ -3795,21 +3795,21 @@ List rule instances for a security group. Rule instances are rules that have bee
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityRuleInstance.security_group_uuid | String | Security group UUID. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.uuid | String | Rule instance UUID. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.security_group_uuid | String | Security group UUID this instance belongs to. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.security_rule_uuid | String | Security rule UUID. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.state | String | Rule instance state \(DISABLED/ALLOWING/BLOCKING\). |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_name | String | Security rule name. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_type | String | Security rule type. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.created_at | Date | Rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.updated_at | Date | Rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.field_values | Unknown | Custom field values for this rule instance. |
-| PrismaAIRs.ModelSecurityRuleInstance.total_items | Number | Total number of rule instances available. |
-| PrismaAIRs.ModelSecurityRuleInstance.limit | Number | Limit used for pagination. |
-| PrismaAIRs.ModelSecurityRuleInstance.offset | Number | Offset used for pagination. |
+| PrismaAIRs.ModelSecurityRuleInstance.security_group_uuid | String | The security group UUID. |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.uuid | String | The rule instance UUID. |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.security_group_uuid | String | The security group UUID this instance belongs to. |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.security_rule_uuid | String | The security rule UUID. |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.state | String | The rule instance state \(DISABLED/ALLOWING/BLOCKING\). |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_name | String | The security rule name. |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_type | String | The security rule type. |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_description | String | The security rule description. |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.created_at | Date | The rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.updated_at | Date | The rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityRuleInstance.rule_instances.field_values | Unknown | The custom field values for this rule instance. |
+| PrismaAIRs.ModelSecurityRuleInstance.total_items | Number | The total number of rule instances available. |
+| PrismaAIRs.ModelSecurityRuleInstance.limit | Number | The limit used for pagination. |
+| PrismaAIRs.ModelSecurityRuleInstance.offset | Number | The offset used for pagination. |
 
 ### prisma-airs-model-security-rule-instances-update
 
@@ -3824,26 +3824,26 @@ Update a rule instance within a security group. Use this to enable/disable rules
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| security_group_uuid | Security group UUID. | Required |
-| rule_instance_uuid | Rule instance UUID to update. | Required |
-| state | New state for the rule instance. Possible values are: DISABLED, ALLOWING, BLOCKING. | Optional |
-| field_values | Custom field values as JSON string. | Optional |
+| security_group_uuid | The security group UUID. | Required |
+| rule_instance_uuid | The rule instance UUID to update. | Required |
+| state | The new state for the rule instance. Possible values are: DISABLED, ALLOWING, BLOCKING. | Optional |
+| field_values | The custom field values as JSON string. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.uuid | String | Rule instance UUID. |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.security_group_uuid | String | Security group UUID this instance belongs to. |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.security_rule_uuid | String | Security rule UUID. |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.state | String | Rule instance state \(DISABLED/ALLOWING/BLOCKING\). |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_name | String | Security rule name. |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_type | String | Security rule type. |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.created_at | Date | Rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.updated_at | Date | Rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.ModelSecurityRuleInstanceUpdate.field_values | Unknown | Custom field values for this rule instance. |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.uuid | String | The rule instance UUID. |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.security_group_uuid | String | The security group UUID this instance belongs to. |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.security_rule_uuid | String | The security rule UUID. |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.state | String | The rule instance state \(DISABLED/ALLOWING/BLOCKING\). |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_name | String | The security rule name. |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_type | String | The security rule type. |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_description | String | The security rule description. |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.created_at | Date | The rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.updated_at | Date | The rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityRuleInstanceUpdate.field_values | Unknown | The custom field values for this rule instance. |
 
 ### prisma-airs-model-security-rule-instances-get
 
@@ -3858,24 +3858,24 @@ Get a single rule instance within a security group. Retrieves detailed configura
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| security_group_uuid | Security group UUID. | Required |
-| rule_instance_uuid | Rule instance UUID to retrieve. | Required |
+| security_group_uuid | The security group UUID. | Required |
+| rule_instance_uuid | The rule instance UUID to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.uuid | String | Rule instance UUID. |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.security_group_uuid | String | Security group UUID this instance belongs to. |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.security_rule_uuid | String | Security rule UUID. |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.state | String | Rule instance state \(DISABLED/ALLOWING/BLOCKING\). |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.rule_name | String | Security rule name. |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.rule_type | String | Security rule type. |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.rule_description | String | Security rule description. |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.created_at | Date | Rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.updated_at | Date | Rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.ModelSecurityRuleInstanceGet.field_values | Unknown | Custom field values for this rule instance. |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.uuid | String | The rule instance UUID. |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.security_group_uuid | String | The security group UUID this instance belongs to. |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.security_rule_uuid | String | The security rule UUID. |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.state | String | The rule instance state \(DISABLED/ALLOWING/BLOCKING\). |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.rule_name | String | The security rule name. |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.rule_type | String | The security rule type. |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.rule_description | String | The security rule description. |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.created_at | Date | The rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.updated_at | Date | The rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.ModelSecurityRuleInstanceGet.field_values | Unknown | The custom field values for this rule instance. |
 
 ### prisma-airs-redteam-targets-list
 
@@ -3890,7 +3890,7 @@ List all Red Team targets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of targets to return. Default is 50. | Optional |
+| limit | The maximum number of targets to return. Default is 50. | Optional |
 | target_type | Filter by target type (e.g., API, UI, MOBILE). | Optional |
 | status | Filter by target status (e.g., READY, VALIDATING, FAILED). | Optional |
 
@@ -3898,18 +3898,18 @@ List all Red Team targets.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTarget.uuid | String | Target UUID. |
-| PrismaAIRs.RedTeamTarget.name | String | Target name. |
-| PrismaAIRs.RedTeamTarget.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.RedTeamTarget.status | String | Target status. |
+| PrismaAIRs.RedTeamTarget.uuid | String | The target UUID. |
+| PrismaAIRs.RedTeamTarget.name | String | The target name. |
+| PrismaAIRs.RedTeamTarget.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.RedTeamTarget.status | String | The target status. |
 | PrismaAIRs.RedTeamTarget.active | Boolean | Whether the target is active. |
 | PrismaAIRs.RedTeamTarget.validated | Boolean | Whether the target has been validated. |
-| PrismaAIRs.RedTeamTarget.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamTarget.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamTarget.description | String | Target description. |
-| PrismaAIRs.RedTeamTarget.target_type | String | Target type. |
-| PrismaAIRs.RedTeamTarget.connection_type | String | Connection type. |
-| PrismaAIRs.RedTeamTarget.auth_type | String | Authentication type. |
+| PrismaAIRs.RedTeamTarget.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamTarget.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamTarget.description | String | The target description. |
+| PrismaAIRs.RedTeamTarget.target_type | String | The target type. |
+| PrismaAIRs.RedTeamTarget.connection_type | String | The connection type. |
+| PrismaAIRs.RedTeamTarget.auth_type | String | The authentication type. |
 
 #### Command example
 
@@ -3984,26 +3984,26 @@ Create a new Red Team target.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Target name. | Required |
-| description | Target description. | Optional |
-| target_type | Target type (e.g., APPLICATION, AGENT, MODEL). | Optional |
-| connection_type | Connection type (e.g., REST, STREAMING, WEBSOCKET). | Optional |
-| api_endpoint_type | API endpoint accessibility (PUBLIC, PRIVATE, NETWORK_BROKER). | Optional |
-| response_mode | Response mode (REST, STREAMING). | Optional |
+| name | The target name. | Required |
+| description | The target description. | Optional |
+| target_type | The target type (e.g., APPLICATION, AGENT, MODEL). | Optional |
+| connection_type | The connection type (e.g., REST, STREAMING, WEBSOCKET). | Optional |
+| api_endpoint_type | The API endpoint accessibility (PUBLIC, PRIVATE, NETWORK_BROKER). | Optional |
+| response_mode | The response mode (REST, STREAMING). | Optional |
 | session_supported | Whether the target supports sessions (true/false). | Optional |
-| connection_params | Connection parameters as JSON string. | Optional |
+| connection_params | The connection parameters as JSON string. | Optional |
 | validate | Whether to validate target connectivity before creating. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTargetCreate.uuid | String | Target UUID. |
-| PrismaAIRs.RedTeamTargetCreate.name | String | Target name. |
-| PrismaAIRs.RedTeamTargetCreate.status | String | Target status. |
+| PrismaAIRs.RedTeamTargetCreate.uuid | String | The target UUID. |
+| PrismaAIRs.RedTeamTargetCreate.name | String | The target name. |
+| PrismaAIRs.RedTeamTargetCreate.status | String | The target status. |
 | PrismaAIRs.RedTeamTargetCreate.active | Boolean | Whether the target is active. |
 | PrismaAIRs.RedTeamTargetCreate.validated | Boolean | Whether the target has been validated. |
-| PrismaAIRs.RedTeamTargetCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamTargetCreate.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-redteam-targets-get
 
@@ -4018,24 +4018,24 @@ Get Red Team target details by UUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Target UUID. | Required |
+| uuid | The target UUID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTargetGet.uuid | String | Target UUID. |
-| PrismaAIRs.RedTeamTargetGet.name | String | Target name. |
-| PrismaAIRs.RedTeamTargetGet.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.RedTeamTargetGet.status | String | Target status. |
+| PrismaAIRs.RedTeamTargetGet.uuid | String | The target UUID. |
+| PrismaAIRs.RedTeamTargetGet.name | String | The target name. |
+| PrismaAIRs.RedTeamTargetGet.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.RedTeamTargetGet.status | String | The target status. |
 | PrismaAIRs.RedTeamTargetGet.active | Boolean | Whether the target is active. |
 | PrismaAIRs.RedTeamTargetGet.validated | Boolean | Whether the target has been validated. |
-| PrismaAIRs.RedTeamTargetGet.target_type | String | Target type. |
-| PrismaAIRs.RedTeamTargetGet.connection_type | String | Connection type. |
-| PrismaAIRs.RedTeamTargetGet.profiling_status | String | Profiling status. |
-| PrismaAIRs.RedTeamTargetGet.target_metadata | Unknown | Target metadata object with probe results. |
-| PrismaAIRs.RedTeamTargetGet.target_background | Unknown | Target background context. |
-| PrismaAIRs.RedTeamTargetGet.additional_context | Unknown | Additional target context. |
+| PrismaAIRs.RedTeamTargetGet.target_type | String | The target type. |
+| PrismaAIRs.RedTeamTargetGet.connection_type | String | The connection type. |
+| PrismaAIRs.RedTeamTargetGet.profiling_status | String | The profiling status. |
+| PrismaAIRs.RedTeamTargetGet.target_metadata | Unknown | The target metadata object with probe results. |
+| PrismaAIRs.RedTeamTargetGet.target_background | Unknown | The target background context. |
+| PrismaAIRs.RedTeamTargetGet.additional_context | Unknown | The additional target context. |
 
 ### prisma-airs-redteam-targets-update
 
@@ -4050,22 +4050,22 @@ Update an existing Red Team target.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Target UUID. | Required |
-| name | New target name. | Optional |
-| description | New target description. | Optional |
-| target_type | New target type. | Optional |
-| connection_type | New connection type. | Optional |
-| connection_params | New connection parameters as JSON string. | Optional |
+| uuid | The target UUID. | Required |
+| name | The new target name. | Optional |
+| description | The new target description. | Optional |
+| target_type | The new target type. | Optional |
+| connection_type | The new connection type. | Optional |
+| connection_params | The new connection parameters as JSON string. | Optional |
 | validate | Whether to validate target connectivity after the update. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTargetUpdate.uuid | String | Target UUID. |
-| PrismaAIRs.RedTeamTargetUpdate.name | String | Target name. |
-| PrismaAIRs.RedTeamTargetUpdate.status | String | Target status. |
-| PrismaAIRs.RedTeamTargetUpdate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamTargetUpdate.uuid | String | The target UUID. |
+| PrismaAIRs.RedTeamTargetUpdate.name | String | The target name. |
+| PrismaAIRs.RedTeamTargetUpdate.status | String | The target status. |
+| PrismaAIRs.RedTeamTargetUpdate.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-redteam-targets-delete
 
@@ -4080,15 +4080,15 @@ Delete a Red Team target.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | Target UUID to delete. | Required |
+| uuid | The target UUID to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTargetDelete.uuid | String | Deleted target UUID. |
-| PrismaAIRs.RedTeamTargetDelete.message | String | Deletion confirmation message. |
-| PrismaAIRs.RedTeamTargetDelete.status | Number | HTTP status code. |
+| PrismaAIRs.RedTeamTargetDelete.uuid | String | The deleted target UUID. |
+| PrismaAIRs.RedTeamTargetDelete.message | String | The deletion confirmation message. |
+| PrismaAIRs.RedTeamTargetDelete.status | Number | The HTTP status code. |
 
 ### prisma-airs-redteam-targets-probe
 
@@ -4103,27 +4103,27 @@ Probe a Red Team target to validate connectivity and gather profiling data.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Target name. | Required |
-| uuid | Existing target UUID (optional, for probing existing targets). | Optional |
-| description | Target description. | Optional |
-| target_type | Target type. | Optional |
-| connection_type | Connection type. | Optional |
-| connection_params | Connection parameters as JSON string. | Optional |
+| name | The target name. | Required |
+| uuid | The existing target UUID (optional, for probing existing targets). | Optional |
+| description | The target description. | Optional |
+| target_type | The target type. | Optional |
+| connection_type | The connection type. | Optional |
+| connection_params | The connection parameters as JSON string. | Optional |
 | probe_fields | A comma-separated list of fields to probe (e.g., "multi_turn,rate_limit,content_filter"). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTargetProbe.uuid | String | Target UUID. |
-| PrismaAIRs.RedTeamTargetProbe.name | String | Target name. |
-| PrismaAIRs.RedTeamTargetProbe.status | String | Target status after probing. |
+| PrismaAIRs.RedTeamTargetProbe.uuid | String | The target UUID. |
+| PrismaAIRs.RedTeamTargetProbe.name | String | The target name. |
+| PrismaAIRs.RedTeamTargetProbe.status | String | The target status after probing. |
 | PrismaAIRs.RedTeamTargetProbe.validated | Boolean | Whether the target was validated. |
-| PrismaAIRs.RedTeamTargetProbe.profiling_status | String | Profiling status. |
+| PrismaAIRs.RedTeamTargetProbe.profiling_status | String | The profiling status. |
 | PrismaAIRs.RedTeamTargetProbe.multi_turn_supported | Boolean | Whether multi-turn conversation is supported. |
 | PrismaAIRs.RedTeamTargetProbe.rate_limit_enabled | Boolean | Whether rate limiting is enabled. |
 | PrismaAIRs.RedTeamTargetProbe.content_filter_enabled | Boolean | Whether content filtering is enabled. |
-| PrismaAIRs.RedTeamTargetProbe.target_metadata | Unknown | Full probe results metadata. |
+| PrismaAIRs.RedTeamTargetProbe.target_metadata | Unknown | The full probe results metadata. |
 
 ### prisma-airs-redteam-targets-profile
 
@@ -4138,20 +4138,20 @@ Get Red Team target profile (background, context, profiling status). View detail
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target_uuid | Target UUID to retrieve profile for. | Required |
+| target_uuid | The target UUID to retrieve profile for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTargetProfile.target_id | String | Target ID. |
-| PrismaAIRs.RedTeamTargetProfile.target_version | Number | Target version number. |
-| PrismaAIRs.RedTeamTargetProfile.status | String | Target status. |
-| PrismaAIRs.RedTeamTargetProfile.profiling_status | String | Profiling status. |
-| PrismaAIRs.RedTeamTargetProfile.target_background | Unknown | Target background information \(industry, use case, etc.\). |
-| PrismaAIRs.RedTeamTargetProfile.additional_context | Unknown | Additional context \(model details, languages, etc.\). |
-| PrismaAIRs.RedTeamTargetProfile.ai_generated_fields | Unknown | AI-generated fields from profiling. |
-| PrismaAIRs.RedTeamTargetProfile.other_details | Unknown | Other profile details. |
+| PrismaAIRs.RedTeamTargetProfile.target_id | String | The target ID. |
+| PrismaAIRs.RedTeamTargetProfile.target_version | Number | The target version number. |
+| PrismaAIRs.RedTeamTargetProfile.status | String | The target status. |
+| PrismaAIRs.RedTeamTargetProfile.profiling_status | String | The profiling status. |
+| PrismaAIRs.RedTeamTargetProfile.target_background | Unknown | The target background information \(industry, use case, etc.\). |
+| PrismaAIRs.RedTeamTargetProfile.additional_context | Unknown | The additional context \(model details, languages, etc.\). |
+| PrismaAIRs.RedTeamTargetProfile.ai_generated_fields | Unknown | The aI-generated fields from profiling. |
+| PrismaAIRs.RedTeamTargetProfile.other_details | Unknown | The other profile details. |
 
 ### prisma-airs-redteam-targets-update-profile
 
@@ -4166,22 +4166,22 @@ Update Red Team target profile (background and additional context). Modify targe
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target_uuid | Target UUID to update. | Required |
-| target_background | Target background as JSON string. Example: {"industry": "Healthcare", "use_case": "Patient Support Chatbot"}. | Optional |
-| additional_context | Additional context as JSON string. Example: {"base_model": "GPT-4", "languages_supported": ["en", "es"]}. | Optional |
+| target_uuid | The target UUID to update. | Required |
+| target_background | The target background as JSON string. Example: {"industry": "Healthcare", "use_case": "Patient Support Chatbot"}. | Optional |
+| additional_context | The additional context as JSON string. Example: {"base_model": "GPT-4", "languages_supported": ["en", "es"]}. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTargetUpdateProfile.uuid | String | Target UUID. |
-| PrismaAIRs.RedTeamTargetUpdateProfile.name | String | Target name. |
-| PrismaAIRs.RedTeamTargetUpdateProfile.status | String | Target status. |
+| PrismaAIRs.RedTeamTargetUpdateProfile.uuid | String | The target UUID. |
+| PrismaAIRs.RedTeamTargetUpdateProfile.name | String | The target name. |
+| PrismaAIRs.RedTeamTargetUpdateProfile.status | String | The target status. |
 | PrismaAIRs.RedTeamTargetUpdateProfile.active | Boolean | Whether the target is active. |
 | PrismaAIRs.RedTeamTargetUpdateProfile.validated | Boolean | Whether the target is validated. |
-| PrismaAIRs.RedTeamTargetUpdateProfile.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamTargetUpdateProfile.target_background | Unknown | Updated target background. |
-| PrismaAIRs.RedTeamTargetUpdateProfile.additional_context | Unknown | Updated additional context. |
+| PrismaAIRs.RedTeamTargetUpdateProfile.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamTargetUpdateProfile.target_background | Unknown | The updated target background. |
+| PrismaAIRs.RedTeamTargetUpdateProfile.additional_context | Unknown | The updated additional context. |
 
 ### prisma-airs-redteam-targets-metadata
 
@@ -4200,7 +4200,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTargetMetadata | Unknown | Field metadata dictionary with field definitions. |
+| PrismaAIRs.RedTeamTargetMetadata | Unknown | The field metadata dictionary with field definitions. |
 
 ### prisma-airs-redteam-targets-validate-auth
 
@@ -4216,9 +4216,9 @@ Validate authentication credentials for a Red Team target provider without creat
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | auth_type | The authentication type to validate. Supported values include HEADERS, BASIC_AUTH, OAUTH2. | Required |
-| auth_config | Authentication configuration as a JSON object \(e.g., \`{"headers": {"Authorization": "Bearer sk-xxx"}}\`\). | Required |
-| target_id | Optional UUID of an existing target to validate credentials against. | Optional |
-| network_broker_channel_uuid | Optional network broker channel UUID to route the validation through. | Optional |
+| auth_config | The authentication configuration as a JSON object \(e.g., \`{"headers": {"Authorization": "Bearer sk-xxx"}}\`\). | Required |
+| target_id | The optional UUID of an existing target to validate credentials against. | Optional |
+| network_broker_channel_uuid | The optional network broker channel UUID to route the validation through. | Optional |
 
 #### Context Output
 
@@ -4259,7 +4259,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamTargetTemplate | Unknown | Provider-keyed dictionary of target configuration templates. |
+| PrismaAIRs.RedTeamTargetTemplate | Unknown | The provider-keyed dictionary of target configuration templates. |
 
 #### Command example
 
@@ -4296,34 +4296,34 @@ Create a new Red Team scan job. This command submits the scan and returns immedi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Scan name for identification. | Required |
-| target_uuid | UUID of the target to scan. | Required |
-| job_type | Scan type - STATIC (attack library), DYNAMIC (agent-driven), or CUSTOM (prompt sets). Possible values are: STATIC, DYNAMIC, CUSTOM. Default is STATIC. | Optional |
-| categories | JSON object for category filtering (STATIC scans only). Example: {"category": {"subcategory": true}}. Empty {} means all categories. | Optional |
-| stream_breadth | Parallel agents per goal (DYNAMIC scans only). Default is 6. | Optional |
-| stream_depth | Maximum conversation turns per goal (DYNAMIC scans only). Default is 10. | Optional |
-| attack_goals | JSON array of attack goal strings (DYNAMIC scans only). Example: ["Extract PII", "Bypass content filter"]. | Optional |
+| name | The scan name for identification. | Required |
+| target_uuid | The UUID of the target to scan. | Required |
+| job_type | The scan type - STATIC (attack library), DYNAMIC (agent-driven), or CUSTOM (prompt sets). Possible values are: STATIC, DYNAMIC, CUSTOM. Default is STATIC. | Optional |
+| categories | The JSON object for category filtering (STATIC scans only). Example: {"category": {"subcategory": true}}. Empty {} means all categories. | Optional |
+| stream_breadth | The parallel agents per goal (DYNAMIC scans only). Default is 6. | Optional |
+| stream_depth | The maximum conversation turns per goal (DYNAMIC scans only). Default is 10. | Optional |
+| attack_goals | The JSON array of attack goal strings (DYNAMIC scans only). Example: ["Extract PII", "Bypass content filter"]. | Optional |
 | custom_prompt_sets | A comma-separated list of prompt set UUIDs (CUSTOM scans only). Required for CUSTOM type. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamScanCreate.uuid | String | Created scan job UUID. |
-| PrismaAIRs.RedTeamScanCreate.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.RedTeamScanCreate.name | String | Scan name. |
-| PrismaAIRs.RedTeamScanCreate.job_type | String | Job type \(STATIC, DYNAMIC, CUSTOM\). |
-| PrismaAIRs.RedTeamScanCreate.status | String | Initial scan status \(typically QUEUED\). |
-| PrismaAIRs.RedTeamScanCreate.target_id | String | Target UUID being scanned. |
-| PrismaAIRs.RedTeamScanCreate.target_type | String | Target type. |
-| PrismaAIRs.RedTeamScanCreate.total | Number | Total number of attacks in the scan. |
-| PrismaAIRs.RedTeamScanCreate.completed | Number | Number of completed attacks \(initially 0\). |
-| PrismaAIRs.RedTeamScanCreate.score | Number | Risk score \(null until scan completes\). |
-| PrismaAIRs.RedTeamScanCreate.asr | Number | Attack Success Rate \(null until scan completes\). |
-| PrismaAIRs.RedTeamScanCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamScanCreate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamScanCreate.version | Number | Scan version. |
-| PrismaAIRs.RedTeamScanCreate.job_metadata | Unknown | Job metadata containing scan configuration. |
+| PrismaAIRs.RedTeamScanCreate.uuid | String | The created scan job UUID. |
+| PrismaAIRs.RedTeamScanCreate.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.RedTeamScanCreate.name | String | The scan name. |
+| PrismaAIRs.RedTeamScanCreate.job_type | String | The job type \(STATIC, DYNAMIC, CUSTOM\). |
+| PrismaAIRs.RedTeamScanCreate.status | String | The initial scan status \(typically QUEUED\). |
+| PrismaAIRs.RedTeamScanCreate.target_id | String | The target UUID being scanned. |
+| PrismaAIRs.RedTeamScanCreate.target_type | String | The target type. |
+| PrismaAIRs.RedTeamScanCreate.total | Number | The total number of attacks in the scan. |
+| PrismaAIRs.RedTeamScanCreate.completed | Number | The number of completed attacks \(initially 0\). |
+| PrismaAIRs.RedTeamScanCreate.score | Number | The risk score \(null until scan completes\). |
+| PrismaAIRs.RedTeamScanCreate.asr | Number | The attack Success Rate \(null until scan completes\). |
+| PrismaAIRs.RedTeamScanCreate.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScanCreate.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScanCreate.version | Number | The scan version. |
+| PrismaAIRs.RedTeamScanCreate.job_metadata | Unknown | The job metadata containing scan configuration. |
 
 ### prisma-airs-redteam-scans-list
 
@@ -4338,7 +4338,7 @@ List all Red Team scans.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of scans to return. Default is 50. | Optional |
+| limit | The maximum number of scans to return. Default is 50. | Optional |
 | job_type | Filter by job type (e.g., STATIC, DYNAMIC, CUSTOM). | Optional |
 | status | Filter by scan status (e.g., COMPLETED, RUNNING, FAILED). | Optional |
 
@@ -4346,21 +4346,21 @@ List all Red Team scans.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamScan.uuid | String | Scan UUID. |
-| PrismaAIRs.RedTeamScan.tsg_id | String | Tenant Service Group ID. |
-| PrismaAIRs.RedTeamScan.job_type | String | Job type \(STATIC, DYNAMIC, CUSTOM\). |
-| PrismaAIRs.RedTeamScan.status | String | Scan status. |
-| PrismaAIRs.RedTeamScan.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamScan.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamScan.target_uuid | String | Target UUID being scanned. |
-| PrismaAIRs.RedTeamScan.target_name | String | Target name being scanned. |
-| PrismaAIRs.RedTeamScan.started_at | Date | Scan start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamScan.completed_at | Date | Scan completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamScan.progress | Number | Scan progress percentage. |
-| PrismaAIRs.RedTeamScan.total_prompts | Number | Total number of prompts in the scan. |
-| PrismaAIRs.RedTeamScan.completed_prompts | Number | Number of completed prompts. |
-| PrismaAIRs.RedTeamScan.failed_prompts | Number | Number of failed prompts. |
-| PrismaAIRs.RedTeamScan.error_message | String | Error message if scan failed. |
+| PrismaAIRs.RedTeamScan.uuid | String | The scan UUID. |
+| PrismaAIRs.RedTeamScan.tsg_id | String | The tenant Service Group ID. |
+| PrismaAIRs.RedTeamScan.job_type | String | The job type \(STATIC, DYNAMIC, CUSTOM\). |
+| PrismaAIRs.RedTeamScan.status | String | The scan status. |
+| PrismaAIRs.RedTeamScan.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScan.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScan.target_uuid | String | The target UUID being scanned. |
+| PrismaAIRs.RedTeamScan.target_name | String | The target name being scanned. |
+| PrismaAIRs.RedTeamScan.started_at | Date | The scan start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScan.completed_at | Date | The scan completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScan.progress | Number | The scan progress percentage. |
+| PrismaAIRs.RedTeamScan.total_prompts | Number | The total number of prompts in the scan. |
+| PrismaAIRs.RedTeamScan.completed_prompts | Number | The number of completed prompts. |
+| PrismaAIRs.RedTeamScan.failed_prompts | Number | The number of failed prompts. |
+| PrismaAIRs.RedTeamScan.error_message | String | The error message if scan failed. |
 
 #### Command example
 
@@ -4437,21 +4437,21 @@ Get Red Team scan status and details by job ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamScanGet.uuid | String | Scan UUID. |
-| PrismaAIRs.RedTeamScanGet.name | String | Scan name. |
-| PrismaAIRs.RedTeamScanGet.job_type | String | Job type \(STATIC, DYNAMIC, CUSTOM\). |
-| PrismaAIRs.RedTeamScanGet.status | String | Scan status \(QUEUED, RUNNING, COMPLETED, FAILED, ABORTED\). |
-| PrismaAIRs.RedTeamScanGet.target_id | String | Target UUID being scanned. |
-| PrismaAIRs.RedTeamScanGet.target_name | String | Target name being scanned. |
-| PrismaAIRs.RedTeamScanGet.total | Number | Total number of attacks in the scan. |
-| PrismaAIRs.RedTeamScanGet.completed | Number | Number of completed attacks. |
-| PrismaAIRs.RedTeamScanGet.score | Number | Risk score \(0-100\). |
-| PrismaAIRs.RedTeamScanGet.asr | Number | Attack Success Rate \(ASR\) percentage. |
-| PrismaAIRs.RedTeamScanGet.progress | String | Progress string \(e.g., "150/200"\). |
-| PrismaAIRs.RedTeamScanGet.progress_percentage | Number | Progress percentage. |
-| PrismaAIRs.RedTeamScanGet.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamScanGet.started_at | Date | Start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamScanGet.completed_at | Date | Completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScanGet.uuid | String | The scan UUID. |
+| PrismaAIRs.RedTeamScanGet.name | String | The scan name. |
+| PrismaAIRs.RedTeamScanGet.job_type | String | The job type \(STATIC, DYNAMIC, CUSTOM\). |
+| PrismaAIRs.RedTeamScanGet.status | String | The scan status \(QUEUED, RUNNING, COMPLETED, FAILED, ABORTED\). |
+| PrismaAIRs.RedTeamScanGet.target_id | String | The target UUID being scanned. |
+| PrismaAIRs.RedTeamScanGet.target_name | String | The target name being scanned. |
+| PrismaAIRs.RedTeamScanGet.total | Number | The total number of attacks in the scan. |
+| PrismaAIRs.RedTeamScanGet.completed | Number | The number of completed attacks. |
+| PrismaAIRs.RedTeamScanGet.score | Number | The risk score \(0-100\). |
+| PrismaAIRs.RedTeamScanGet.asr | Number | The attack Success Rate \(ASR\) percentage. |
+| PrismaAIRs.RedTeamScanGet.progress | String | The progress string \(e.g., "150/200"\). |
+| PrismaAIRs.RedTeamScanGet.progress_percentage | Number | The progress percentage. |
+| PrismaAIRs.RedTeamScanGet.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScanGet.started_at | Date | The start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamScanGet.completed_at | Date | The completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-redteam-scan-abort
 
@@ -4473,7 +4473,7 @@ Abort a running Red Team scan.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAIRs.RedTeamScanAbort.job_id | String | The aborted job UUID. |
-| PrismaAIRs.RedTeamScanAbort.message | String | Abort confirmation message. |
+| PrismaAIRs.RedTeamScanAbort.message | String | The abort confirmation message. |
 
 ### prisma-airs-redteam-categories-list
 
@@ -4492,12 +4492,12 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamCategory.id | String | Category ID \(e.g., SECURITY, SAFETY, COMPLIANCE, BRAND\). |
-| PrismaAIRs.RedTeamCategory.display_name | String | Category display name. |
-| PrismaAIRs.RedTeamCategory.description | String | Category description. |
+| PrismaAIRs.RedTeamCategory.id | String | The category ID \(e.g., SECURITY, SAFETY, COMPLIANCE, BRAND\). |
+| PrismaAIRs.RedTeamCategory.display_name | String | The category display name. |
+| PrismaAIRs.RedTeamCategory.description | String | The category description. |
 | PrismaAIRs.RedTeamCategory.preselect | Boolean | Whether this category is preselected by default. |
-| PrismaAIRs.RedTeamCategory.sub_category_count | Number | Number of subcategories. |
-| PrismaAIRs.RedTeamCategory.sub_categories | Unknown | Array of subcategory objects. |
+| PrismaAIRs.RedTeamCategory.sub_category_count | Number | The number of subcategories. |
+| PrismaAIRs.RedTeamCategory.sub_categories | Unknown | The array of subcategory objects. |
 
 #### Command example
 
@@ -4652,9 +4652,9 @@ List Red Team network broker channels. Network channels are the data-plane relay
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of channels to return. Default is 50. | Optional |
-| skip | Number of channels to skip from the start (for pagination). | Optional |
-| search | Free-text search filter. | Optional |
+| limit | The maximum number of channels to return. Default is 50. | Optional |
+| skip | The number of channels to skip from the start (for pagination). | Optional |
+| search | The free-text search filter. | Optional |
 | status | Filter by channel status. Supports a comma-separated list to filter by multiple statuses. Possible values are: ONLINE, OFFLINE, DRAFT. | Optional |
 | include_all_if_empty | Whether to return all channels if the other filters match nothing. Possible values are: true, false. | Optional |
 
@@ -4662,17 +4662,17 @@ List Red Team network broker channels. Network channels are the data-plane relay
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamNetworkChannel.uuid | String | Channel UUID. |
-| PrismaAIRs.RedTeamNetworkChannel.name | String | Channel name. |
-| PrismaAIRs.RedTeamNetworkChannel.description | String | Channel description. |
-| PrismaAIRs.RedTeamNetworkChannel.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
-| PrismaAIRs.RedTeamNetworkChannel.added_by | String | UUID of the user that created the channel. |
-| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | Timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | Number of currently connected clients. |
-| PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | Number of connected clients running an outdated version. |
-| PrismaAIRs.RedTeamNetworkChannel.features | Unknown | Map of feature flags enabled on the channel. |
+| PrismaAIRs.RedTeamNetworkChannel.uuid | String | The channel UUID. |
+| PrismaAIRs.RedTeamNetworkChannel.name | String | The channel name. |
+| PrismaAIRs.RedTeamNetworkChannel.description | String | The channel description. |
+| PrismaAIRs.RedTeamNetworkChannel.status | String | The channel status \(ONLINE, OFFLINE, DRAFT\). |
+| PrismaAIRs.RedTeamNetworkChannel.added_by | String | The UUID of the user that created the channel. |
+| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | The timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | The number of currently connected clients. |
+| PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | The number of connected clients running an outdated version. |
+| PrismaAIRs.RedTeamNetworkChannel.features | Unknown | The map of feature flags enabled on the channel. |
 
 #### Command example
 
@@ -4717,20 +4717,20 @@ Create a new Red Team network broker channel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Channel name (1-64 characters). | Required |
-| description | Channel description. | Optional |
+| name | The channel name (1-64 characters). | Required |
+| description | The channel description. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamNetworkChannelCreate.uuid | String | Channel UUID. |
-| PrismaAIRs.RedTeamNetworkChannelCreate.name | String | Channel name. |
-| PrismaAIRs.RedTeamNetworkChannelCreate.description | String | Channel description. |
-| PrismaAIRs.RedTeamNetworkChannelCreate.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
-| PrismaAIRs.RedTeamNetworkChannelCreate.added_by | String | UUID of the user that created the channel. |
-| PrismaAIRs.RedTeamNetworkChannelCreate.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamNetworkChannelCreate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannelCreate.uuid | String | The channel UUID. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.name | String | The channel name. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.description | String | The channel description. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.status | String | The channel status \(ONLINE, OFFLINE, DRAFT\). |
+| PrismaAIRs.RedTeamNetworkChannelCreate.added_by | String | The UUID of the user that created the channel. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannelCreate.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -4775,13 +4775,13 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamNetworkChannelStats.network_channels_server_domain | String | Network channels broker server domain. |
-| PrismaAIRs.RedTeamNetworkChannelStats.docker_registry | String | Docker registry proxy domain for the channel client image. |
-| PrismaAIRs.RedTeamNetworkChannelStats.helm_chart | String | Helm chart path for deploying the channel client. |
-| PrismaAIRs.RedTeamNetworkChannelStats.docker_image | String | Docker image path for the channel client. |
-| PrismaAIRs.RedTeamNetworkChannelStats.online_channels | Number | Number of online channels. |
-| PrismaAIRs.RedTeamNetworkChannelStats.total_channels | Number | Total number of channels. |
-| PrismaAIRs.RedTeamNetworkChannelStats.client_version | String | Current channel client version. |
+| PrismaAIRs.RedTeamNetworkChannelStats.network_channels_server_domain | String | The network channels broker server domain. |
+| PrismaAIRs.RedTeamNetworkChannelStats.docker_registry | String | The Docker registry proxy domain for the channel client image. |
+| PrismaAIRs.RedTeamNetworkChannelStats.helm_chart | String | The Helm chart path for deploying the channel client. |
+| PrismaAIRs.RedTeamNetworkChannelStats.docker_image | String | The Docker image path for the channel client. |
+| PrismaAIRs.RedTeamNetworkChannelStats.online_channels | Number | The number of online channels. |
+| PrismaAIRs.RedTeamNetworkChannelStats.total_channels | Number | The total number of channels. |
+| PrismaAIRs.RedTeamNetworkChannelStats.client_version | String | The current channel client version. |
 
 #### Command example
 
@@ -4830,17 +4830,17 @@ Get a single Red Team network broker channel by UUID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamNetworkChannel.uuid | String | Channel UUID. |
-| PrismaAIRs.RedTeamNetworkChannel.name | String | Channel name. |
-| PrismaAIRs.RedTeamNetworkChannel.description | String | Channel description. |
-| PrismaAIRs.RedTeamNetworkChannel.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
-| PrismaAIRs.RedTeamNetworkChannel.added_by | String | UUID of the user that created the channel. |
-| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | Creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | Timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | Number of currently connected clients. |
-| PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | Number of connected clients running an outdated version. |
-| PrismaAIRs.RedTeamNetworkChannel.features | Unknown | Map of feature flags enabled on the channel. |
+| PrismaAIRs.RedTeamNetworkChannel.uuid | String | The channel UUID. |
+| PrismaAIRs.RedTeamNetworkChannel.name | String | The channel name. |
+| PrismaAIRs.RedTeamNetworkChannel.description | String | The channel description. |
+| PrismaAIRs.RedTeamNetworkChannel.status | String | The channel status \(ONLINE, OFFLINE, DRAFT\). |
+| PrismaAIRs.RedTeamNetworkChannel.added_by | String | The UUID of the user that created the channel. |
+| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | The timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | The number of currently connected clients. |
+| PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | The number of connected clients running an outdated version. |
+| PrismaAIRs.RedTeamNetworkChannel.features | Unknown | The map of feature flags enabled on the channel. |
 
 #### Command example
 
@@ -4886,18 +4886,18 @@ Update a Red Team network broker channel's name and/or description. At least one
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | channel_id | The channel UUID. | Required |
-| name | New channel name (1-64 characters). | Optional |
-| description | New channel description. | Optional |
+| name | The new channel name (1-64 characters). | Optional |
+| description | The new channel description. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamNetworkChannelUpdate.uuid | String | Channel UUID. |
-| PrismaAIRs.RedTeamNetworkChannelUpdate.name | String | Channel name. |
-| PrismaAIRs.RedTeamNetworkChannelUpdate.description | String | Channel description. |
-| PrismaAIRs.RedTeamNetworkChannelUpdate.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
-| PrismaAIRs.RedTeamNetworkChannelUpdate.updated_at | Date | Last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.uuid | String | The channel UUID. |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.name | String | The channel name. |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.description | String | The channel description. |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.status | String | The channel status \(ONLINE, OFFLINE, DRAFT\). |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.updated_at | Date | The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -4945,10 +4945,10 @@ List the tenant's allowed languages for Red Team scans. Queries the data plane b
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAIRs.RedTeamLanguages.multilingual_enabled | Boolean | Whether multilingual Red Team scanning is enabled for the tenant. |
-| PrismaAIRs.RedTeamLanguages.supported_job_types | Unknown | Scan job types the languages apply to \(for example STATIC, DYNAMIC\). |
-| PrismaAIRs.RedTeamLanguages.plane | String | Which plane the list was retrieved from \(data or management\). |
-| PrismaAIRs.RedTeamLanguages.languages.code | String | Language code \(for example en, es\). |
-| PrismaAIRs.RedTeamLanguages.languages.name | String | Language display name \(for example English, Spanish\). |
+| PrismaAIRs.RedTeamLanguages.supported_job_types | Unknown | The scan job types the languages apply to \(for example STATIC, DYNAMIC\). |
+| PrismaAIRs.RedTeamLanguages.plane | String | The which plane the list was retrieved from \(data or management\). |
+| PrismaAIRs.RedTeamLanguages.languages.code | String | The language code \(for example en, es\). |
+| PrismaAIRs.RedTeamLanguages.languages.name | String | The language display name \(for example English, Spanish\). |
 
 #### Command example
 
@@ -5011,19 +5011,19 @@ Get Red Team scan report with attack results and recommendations.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamReport.job_id | String | Scan job UUID. |
-| PrismaAIRs.RedTeamReport.job_type | String | Job type \(STATIC, DYNAMIC, CUSTOM\). |
-| PrismaAIRs.RedTeamReport.score | Number | Risk score \(0-100\). |
-| PrismaAIRs.RedTeamReport.asr | Number | Attack Success Rate \(ASR\) percentage. |
-| PrismaAIRs.RedTeamReport.total_attacks | Number | Total number of attacks. |
-| PrismaAIRs.RedTeamReport.successful_attacks | Number | Number of successful attacks. |
-| PrismaAIRs.RedTeamReport.failed_attacks | Number | Number of failed attacks. |
-| PrismaAIRs.RedTeamReport.severity_breakdown | Unknown | Array of severity statistics. |
-| PrismaAIRs.RedTeamReport.category_reports | Unknown | Array of category-level reports. |
-| PrismaAIRs.RedTeamReport.report_summary | String | Executive summary of findings. |
-| PrismaAIRs.RedTeamReport.total_goals | Number | Total goals \(Dynamic scans only\). |
-| PrismaAIRs.RedTeamReport.goals_achieved | Number | Goals achieved \(Dynamic scans only\). |
-| PrismaAIRs.RedTeamReport.total_threats | Number | Total threats detected \(Dynamic scans only\). |
+| PrismaAIRs.RedTeamReport.job_id | String | The scan job UUID. |
+| PrismaAIRs.RedTeamReport.job_type | String | The job type \(STATIC, DYNAMIC, CUSTOM\). |
+| PrismaAIRs.RedTeamReport.score | Number | The risk score \(0-100\). |
+| PrismaAIRs.RedTeamReport.asr | Number | The attack Success Rate \(ASR\) percentage. |
+| PrismaAIRs.RedTeamReport.total_attacks | Number | The total number of attacks. |
+| PrismaAIRs.RedTeamReport.successful_attacks | Number | The number of successful attacks. |
+| PrismaAIRs.RedTeamReport.failed_attacks | Number | The number of failed attacks. |
+| PrismaAIRs.RedTeamReport.severity_breakdown | Unknown | The array of severity statistics. |
+| PrismaAIRs.RedTeamReport.category_reports | Unknown | The array of category-level reports. |
+| PrismaAIRs.RedTeamReport.report_summary | String | The executive summary of findings. |
+| PrismaAIRs.RedTeamReport.total_goals | Number | The total goals \(Dynamic scans only\). |
+| PrismaAIRs.RedTeamReport.goals_achieved | Number | The goals achieved \(Dynamic scans only\). |
+| PrismaAIRs.RedTeamReport.total_threats | Number | The total threats detected \(Dynamic scans only\). |
 
 ### prisma-airs-redteam-eula-status
 
@@ -5042,10 +5042,10 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamEula.uuid | String | EULA record UUID. |
+| PrismaAIRs.RedTeamEula.uuid | String | The EULA record UUID. |
 | PrismaAIRs.RedTeamEula.is_accepted | Boolean | Whether the EULA is accepted. |
-| PrismaAIRs.RedTeamEula.accepted_at | Date | Timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamEula.accepted_by_user_id | String | User ID who accepted the EULA. |
+| PrismaAIRs.RedTeamEula.accepted_at | Date | The timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamEula.accepted_by_user_id | String | The user ID who accepted the EULA. |
 
 #### Command example
 
@@ -5091,8 +5091,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamEulaContent.content | String | Full EULA text content. |
-| PrismaAIRs.RedTeamEulaContent.content_length | Number | Length of EULA content in characters. |
+| PrismaAIRs.RedTeamEulaContent.content | String | The full EULA text content. |
+| PrismaAIRs.RedTeamEulaContent.content_length | Number | The length of EULA content in characters. |
 
 #### Command example
 
@@ -5145,16 +5145,16 @@ Accept the Red Team EULA (required before running scans).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| accepted_at | Optional timestamp for acceptance (ISO 8601 format). If not provided, server time is used. | Optional |
+| accepted_at | The optional timestamp for acceptance (ISO 8601 format). If not provided, server time is used. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamEula.uuid | String | EULA record UUID. |
+| PrismaAIRs.RedTeamEula.uuid | String | The EULA record UUID. |
 | PrismaAIRs.RedTeamEula.is_accepted | Boolean | Whether the EULA is accepted. |
-| PrismaAIRs.RedTeamEula.accepted_at | Date | Timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamEula.accepted_by_user_id | String | User ID who accepted the EULA. |
+| PrismaAIRs.RedTeamEula.accepted_at | Date | The timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamEula.accepted_by_user_id | String | The user ID who accepted the EULA. |
 
 ### prisma-airs-redteam-prompts-create
 
@@ -5169,25 +5169,25 @@ Create a new prompt in a Red Team prompt set for custom attack scenarios.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| prompt_set_uuid | UUID of the prompt set to add the prompt to. | Required |
+| prompt_set_uuid | The UUID of the prompt set to add the prompt to. | Required |
 | prompt | The prompt text to create. | Required |
-| goal | Optional custom goal for the prompt. | Optional |
-| properties | Optional JSON object with additional properties for the prompt. | Optional |
+| goal | The optional custom goal for the prompt. | Optional |
+| properties | The optional JSON object with additional properties for the prompt. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptCreate.uuid | String | UUID of the created prompt. |
+| PrismaAIRs.RedTeamPromptCreate.uuid | String | The UUID of the created prompt. |
 | PrismaAIRs.RedTeamPromptCreate.prompt | String | The prompt text. |
 | PrismaAIRs.RedTeamPromptCreate.user_defined_goal | Boolean | Whether the prompt has a user-defined goal. |
-| PrismaAIRs.RedTeamPromptCreate.status | String | Status of the prompt \(e.g., READY, PENDING\). |
+| PrismaAIRs.RedTeamPromptCreate.status | String | The status of the prompt \(e.g., READY, PENDING\). |
 | PrismaAIRs.RedTeamPromptCreate.active | Boolean | Whether the prompt is active. |
-| PrismaAIRs.RedTeamPromptCreate.prompt_set_id | String | UUID of the prompt set this prompt belongs to. |
-| PrismaAIRs.RedTeamPromptCreate.created_at | Date | Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptCreate.updated_at | Date | Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptCreate.goal | Unknown | Optional custom goal for the prompt. |
-| PrismaAIRs.RedTeamPromptCreate.properties | Unknown | Optional additional properties for the prompt. |
+| PrismaAIRs.RedTeamPromptCreate.prompt_set_id | String | The UUID of the prompt set this prompt belongs to. |
+| PrismaAIRs.RedTeamPromptCreate.created_at | Date | The timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptCreate.updated_at | Date | The timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptCreate.goal | Unknown | The optional custom goal for the prompt. |
+| PrismaAIRs.RedTeamPromptCreate.properties | Unknown | The optional additional properties for the prompt. |
 
 ### prisma-airs-redteam-prompts-list
 
@@ -5202,10 +5202,10 @@ List prompts in a Red Team prompt set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| prompt_set_uuid | UUID of the prompt set to list prompts from. | Required |
-| limit | Maximum number of prompts to return. Default is 50. | Optional |
-| skip | Number of prompts to skip for pagination. | Optional |
-| search | Free-text search filter for prompt text. | Optional |
+| prompt_set_uuid | The UUID of the prompt set to list prompts from. | Required |
+| limit | The maximum number of prompts to return. Default is 50. | Optional |
+| skip | The number of prompts to skip for pagination. | Optional |
+| search | The free-text search filter for prompt text. | Optional |
 | status | Filter by prompt status (e.g., READY, PENDING). | Optional |
 | active | Filter by active status (true or false). | Optional |
 
@@ -5213,15 +5213,15 @@ List prompts in a Red Team prompt set.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPrompts.uuid | String | UUID of the prompt. |
+| PrismaAIRs.RedTeamPrompts.uuid | String | The UUID of the prompt. |
 | PrismaAIRs.RedTeamPrompts.prompt | String | The prompt text. |
 | PrismaAIRs.RedTeamPrompts.user_defined_goal | Boolean | Whether the prompt has a user-defined goal. |
-| PrismaAIRs.RedTeamPrompts.status | String | Status of the prompt. |
+| PrismaAIRs.RedTeamPrompts.status | String | The status of the prompt. |
 | PrismaAIRs.RedTeamPrompts.active | Boolean | Whether the prompt is active. |
-| PrismaAIRs.RedTeamPrompts.created_at | Date | Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPrompts.updated_at | Date | Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPrompts.goal | Unknown | Optional custom goal for the prompt. |
-| PrismaAIRs.RedTeamPrompts.properties | Unknown | Optional additional properties for the prompt. |
+| PrismaAIRs.RedTeamPrompts.created_at | Date | The timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPrompts.updated_at | Date | The timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPrompts.goal | Unknown | The optional custom goal for the prompt. |
+| PrismaAIRs.RedTeamPrompts.properties | Unknown | The optional additional properties for the prompt. |
 
 ### prisma-airs-redteam-prompts-get
 
@@ -5236,27 +5236,27 @@ Get details of a specific prompt in a Red Team prompt set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| prompt_set_uuid | UUID of the prompt set containing the prompt. | Required |
-| prompt_uuid | UUID of the prompt to retrieve. | Required |
+| prompt_set_uuid | The UUID of the prompt set containing the prompt. | Required |
+| prompt_uuid | The UUID of the prompt to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptGet.uuid | String | UUID of the prompt. |
+| PrismaAIRs.RedTeamPromptGet.uuid | String | The UUID of the prompt. |
 | PrismaAIRs.RedTeamPromptGet.prompt | String | The prompt text. |
 | PrismaAIRs.RedTeamPromptGet.user_defined_goal | Boolean | Whether the prompt has a user-defined goal. |
-| PrismaAIRs.RedTeamPromptGet.status | String | Status of the prompt. |
+| PrismaAIRs.RedTeamPromptGet.status | String | The status of the prompt. |
 | PrismaAIRs.RedTeamPromptGet.active | Boolean | Whether the prompt is active. |
-| PrismaAIRs.RedTeamPromptGet.prompt_set_id | String | UUID of the prompt set this prompt belongs to. |
-| PrismaAIRs.RedTeamPromptGet.created_at | Date | Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptGet.updated_at | Date | Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptGet.goal | Unknown | Optional custom goal for the prompt. |
-| PrismaAIRs.RedTeamPromptGet.properties | Unknown | Optional additional properties for the prompt. |
-| PrismaAIRs.RedTeamPromptGet.property_assignments | Unknown | Optional property assignments for the prompt. |
-| PrismaAIRs.RedTeamPromptGet.detector_category | Unknown | Optional detector category for the prompt. |
-| PrismaAIRs.RedTeamPromptGet.severity | Unknown | Optional severity level for the prompt. |
-| PrismaAIRs.RedTeamPromptGet.extra_info | Unknown | Optional extra information about the prompt. |
+| PrismaAIRs.RedTeamPromptGet.prompt_set_id | String | The UUID of the prompt set this prompt belongs to. |
+| PrismaAIRs.RedTeamPromptGet.created_at | Date | The timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptGet.updated_at | Date | The timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptGet.goal | Unknown | The optional custom goal for the prompt. |
+| PrismaAIRs.RedTeamPromptGet.properties | Unknown | The optional additional properties for the prompt. |
+| PrismaAIRs.RedTeamPromptGet.property_assignments | Unknown | The optional property assignments for the prompt. |
+| PrismaAIRs.RedTeamPromptGet.detector_category | Unknown | The optional detector category for the prompt. |
+| PrismaAIRs.RedTeamPromptGet.severity | Unknown | The optional severity level for the prompt. |
+| PrismaAIRs.RedTeamPromptGet.extra_info | Unknown | The optional extra information about the prompt. |
 
 ### prisma-airs-redteam-prompts-update
 
@@ -5271,26 +5271,26 @@ Update an existing prompt in a Red Team prompt set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| prompt_set_uuid | UUID of the prompt set containing the prompt. | Required |
-| prompt_uuid | UUID of the prompt to update. | Required |
-| prompt | Updated prompt text. | Optional |
-| goal | Updated custom goal. | Optional |
-| properties | Updated properties JSON object. | Optional |
+| prompt_set_uuid | The UUID of the prompt set containing the prompt. | Required |
+| prompt_uuid | The UUID of the prompt to update. | Required |
+| prompt | The updated prompt text. | Optional |
+| goal | The updated custom goal. | Optional |
+| properties | The updated properties JSON object. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptUpdate.uuid | String | UUID of the updated prompt. |
+| PrismaAIRs.RedTeamPromptUpdate.uuid | String | The UUID of the updated prompt. |
 | PrismaAIRs.RedTeamPromptUpdate.prompt | String | The updated prompt text. |
 | PrismaAIRs.RedTeamPromptUpdate.user_defined_goal | Boolean | Whether the prompt has a user-defined goal. |
-| PrismaAIRs.RedTeamPromptUpdate.status | String | Status of the prompt. |
+| PrismaAIRs.RedTeamPromptUpdate.status | String | The status of the prompt. |
 | PrismaAIRs.RedTeamPromptUpdate.active | Boolean | Whether the prompt is active. |
-| PrismaAIRs.RedTeamPromptUpdate.prompt_set_id | String | UUID of the prompt set this prompt belongs to. |
-| PrismaAIRs.RedTeamPromptUpdate.created_at | Date | Timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptUpdate.updated_at | Date | Timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptUpdate.goal | Unknown | Optional custom goal for the prompt. |
-| PrismaAIRs.RedTeamPromptUpdate.properties | Unknown | Optional additional properties for the prompt. |
+| PrismaAIRs.RedTeamPromptUpdate.prompt_set_id | String | The UUID of the prompt set this prompt belongs to. |
+| PrismaAIRs.RedTeamPromptUpdate.created_at | Date | The timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptUpdate.updated_at | Date | The timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptUpdate.goal | Unknown | The optional custom goal for the prompt. |
+| PrismaAIRs.RedTeamPromptUpdate.properties | Unknown | The optional additional properties for the prompt. |
 
 ### prisma-airs-redteam-prompts-delete
 
@@ -5305,17 +5305,17 @@ Delete a prompt from a Red Team prompt set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| prompt_set_uuid | UUID of the prompt set containing the prompt. | Required |
-| prompt_uuid | UUID of the prompt to delete. | Required |
+| prompt_set_uuid | The UUID of the prompt set containing the prompt. | Required |
+| prompt_uuid | The UUID of the prompt to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptDeleted.prompt_uuid | String | UUID of the deleted prompt. |
-| PrismaAIRs.RedTeamPromptDeleted.prompt_set_uuid | String | UUID of the prompt set. |
-| PrismaAIRs.RedTeamPromptDeleted.status | String | Deletion status. |
-| PrismaAIRs.RedTeamPromptDeleted.message | String | Optional deletion message. |
+| PrismaAIRs.RedTeamPromptDeleted.prompt_uuid | String | The UUID of the deleted prompt. |
+| PrismaAIRs.RedTeamPromptDeleted.prompt_set_uuid | String | The UUID of the prompt set. |
+| PrismaAIRs.RedTeamPromptDeleted.status | String | The deletion status. |
+| PrismaAIRs.RedTeamPromptDeleted.message | String | The optional deletion message. |
 
 ### prisma-airs-redteam-prompt-sets-create
 
@@ -5330,28 +5330,28 @@ Create a new Red Team prompt set for organizing custom attack prompts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the prompt set. | Required |
-| description | Description of the prompt set. | Optional |
+| name | The name of the prompt set. | Required |
+| description | The description of the prompt set. | Optional |
 | property_names | A comma-separated list of custom property names for the prompt set (e.g., "category,severity"). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptSetCreate.uuid | String | UUID of the created prompt set. |
-| PrismaAIRs.RedTeamPromptSetCreate.name | String | Name of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetCreate.uuid | String | The UUID of the created prompt set. |
+| PrismaAIRs.RedTeamPromptSetCreate.name | String | The name of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetCreate.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetCreate.archive | Boolean | Whether the prompt set is archived. |
-| PrismaAIRs.RedTeamPromptSetCreate.status | String | Status of the prompt set \(e.g., READY, PENDING\). |
-| PrismaAIRs.RedTeamPromptSetCreate.created_at | Date | Timestamp when the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetCreate.updated_at | Date | Timestamp when the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetCreate.description | Unknown | Description of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetCreate.property_names | Unknown | Array of custom property names. |
-| PrismaAIRs.RedTeamPromptSetCreate.properties | Unknown | Array of property definitions. |
-| PrismaAIRs.RedTeamPromptSetCreate.stats | Unknown | Statistics about the prompt set. |
-| PrismaAIRs.RedTeamPromptSetCreate.version | Unknown | Version information. |
-| PrismaAIRs.RedTeamPromptSetCreate.created_by_user_id | Unknown | User ID who created the prompt set. |
-| PrismaAIRs.RedTeamPromptSetCreate.updated_by_user_id | Unknown | User ID who last updated the prompt set. |
+| PrismaAIRs.RedTeamPromptSetCreate.status | String | The status of the prompt set \(e.g., READY, PENDING\). |
+| PrismaAIRs.RedTeamPromptSetCreate.created_at | Date | The timestamp when the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetCreate.updated_at | Date | The timestamp when the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetCreate.description | Unknown | The description of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetCreate.property_names | Unknown | The array of custom property names. |
+| PrismaAIRs.RedTeamPromptSetCreate.properties | Unknown | The array of property definitions. |
+| PrismaAIRs.RedTeamPromptSetCreate.stats | Unknown | The statistics about the prompt set. |
+| PrismaAIRs.RedTeamPromptSetCreate.version | Unknown | The version information. |
+| PrismaAIRs.RedTeamPromptSetCreate.created_by_user_id | Unknown | The user ID who created the prompt set. |
+| PrismaAIRs.RedTeamPromptSetCreate.updated_by_user_id | Unknown | The user ID who last updated the prompt set. |
 
 ### prisma-airs-redteam-prompt-sets-list
 
@@ -5366,9 +5366,9 @@ List Red Team prompt sets for custom attack scenarios.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of prompt sets to return. Default is 50. | Optional |
-| skip | Number of prompt sets to skip for pagination. | Optional |
-| search | Free-text search filter for prompt set names/descriptions. | Optional |
+| limit | The maximum number of prompt sets to return. Default is 50. | Optional |
+| skip | The number of prompt sets to skip for pagination. | Optional |
+| search | The free-text search filter for prompt set names/descriptions. | Optional |
 | status | Filter by prompt set status (e.g., READY, PENDING). | Optional |
 | active | Filter by active status (true or false). | Optional |
 | archive | Whether to filter by archive status. | Optional |
@@ -5377,17 +5377,17 @@ List Red Team prompt sets for custom attack scenarios.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptSets.uuid | String | UUID of the prompt set. |
-| PrismaAIRs.RedTeamPromptSets.name | String | Name of the prompt set. |
+| PrismaAIRs.RedTeamPromptSets.uuid | String | The UUID of the prompt set. |
+| PrismaAIRs.RedTeamPromptSets.name | String | The name of the prompt set. |
 | PrismaAIRs.RedTeamPromptSets.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSets.archive | Boolean | Whether the prompt set is archived. |
-| PrismaAIRs.RedTeamPromptSets.status | String | Status of the prompt set. |
-| PrismaAIRs.RedTeamPromptSets.created_at | Date | Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSets.updated_at | Date | Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSets.description | Unknown | Description of the prompt set. |
-| PrismaAIRs.RedTeamPromptSets.property_names | Unknown | Array of custom property names. |
-| PrismaAIRs.RedTeamPromptSets.stats | Unknown | Statistics about the prompt set. |
-| PrismaAIRs.RedTeamPromptSets.created_by_user_id | Unknown | User ID who created the prompt set. |
+| PrismaAIRs.RedTeamPromptSets.status | String | The status of the prompt set. |
+| PrismaAIRs.RedTeamPromptSets.created_at | Date | The timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSets.updated_at | Date | The timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSets.description | Unknown | The description of the prompt set. |
+| PrismaAIRs.RedTeamPromptSets.property_names | Unknown | The array of custom property names. |
+| PrismaAIRs.RedTeamPromptSets.stats | Unknown | The statistics about the prompt set. |
+| PrismaAIRs.RedTeamPromptSets.created_by_user_id | Unknown | The user ID who created the prompt set. |
 
 #### Command example
 
@@ -5471,27 +5471,27 @@ Get details of a specific Red Team prompt set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the prompt set to retrieve. | Required |
+| uuid | The UUID of the prompt set to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptSetGet.uuid | String | UUID of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetGet.name | String | Name of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetGet.uuid | String | The UUID of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetGet.name | String | The name of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetGet.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetGet.archive | Boolean | Whether the prompt set is archived. |
-| PrismaAIRs.RedTeamPromptSetGet.status | String | Status of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetGet.created_at | Date | Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetGet.updated_at | Date | Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetGet.description | Unknown | Description of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetGet.property_names | Unknown | Array of custom property names. |
-| PrismaAIRs.RedTeamPromptSetGet.properties | Unknown | Array of property definitions. |
-| PrismaAIRs.RedTeamPromptSetGet.stats | Unknown | Statistics about the prompt set. |
-| PrismaAIRs.RedTeamPromptSetGet.extra_info | Unknown | Additional information. |
-| PrismaAIRs.RedTeamPromptSetGet.version | Unknown | Version information. |
-| PrismaAIRs.RedTeamPromptSetGet.created_by_user_id | Unknown | User ID who created the prompt set. |
-| PrismaAIRs.RedTeamPromptSetGet.updated_by_user_id | Unknown | User ID who last updated the prompt set. |
+| PrismaAIRs.RedTeamPromptSetGet.status | String | The status of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetGet.created_at | Date | The timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetGet.updated_at | Date | The timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetGet.description | Unknown | The description of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetGet.property_names | Unknown | The array of custom property names. |
+| PrismaAIRs.RedTeamPromptSetGet.properties | Unknown | The array of property definitions. |
+| PrismaAIRs.RedTeamPromptSetGet.stats | Unknown | The statistics about the prompt set. |
+| PrismaAIRs.RedTeamPromptSetGet.extra_info | Unknown | The additional information. |
+| PrismaAIRs.RedTeamPromptSetGet.version | Unknown | The version information. |
+| PrismaAIRs.RedTeamPromptSetGet.created_by_user_id | Unknown | The user ID who created the prompt set. |
+| PrismaAIRs.RedTeamPromptSetGet.updated_by_user_id | Unknown | The user ID who last updated the prompt set. |
 
 ### prisma-airs-redteam-prompt-sets-update
 
@@ -5506,9 +5506,9 @@ Update an existing Red Team prompt set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the prompt set to update. | Required |
-| name | Updated name of the prompt set. | Optional |
-| description | Updated description. | Optional |
+| uuid | The UUID of the prompt set to update. | Required |
+| name | The updated name of the prompt set. | Optional |
+| description | The updated description. | Optional |
 | property_names | A comma-separated list of updated custom property names. | Optional |
 | archive | Whether the prompt set should be archived. | Optional |
 
@@ -5516,19 +5516,19 @@ Update an existing Red Team prompt set.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptSetUpdate.uuid | String | UUID of the updated prompt set. |
-| PrismaAIRs.RedTeamPromptSetUpdate.name | String | Name of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetUpdate.uuid | String | The UUID of the updated prompt set. |
+| PrismaAIRs.RedTeamPromptSetUpdate.name | String | The name of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetUpdate.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetUpdate.archive | Boolean | Whether the prompt set is archived. |
-| PrismaAIRs.RedTeamPromptSetUpdate.status | String | Status of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetUpdate.created_at | Date | Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetUpdate.updated_at | Date | Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetUpdate.description | Unknown | Description of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetUpdate.property_names | Unknown | Array of custom property names. |
-| PrismaAIRs.RedTeamPromptSetUpdate.properties | Unknown | Array of property definitions. |
-| PrismaAIRs.RedTeamPromptSetUpdate.stats | Unknown | Statistics about the prompt set. |
-| PrismaAIRs.RedTeamPromptSetUpdate.version | Unknown | Version information. |
-| PrismaAIRs.RedTeamPromptSetUpdate.updated_by_user_id | Unknown | User ID who last updated the prompt set. |
+| PrismaAIRs.RedTeamPromptSetUpdate.status | String | The status of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetUpdate.created_at | Date | The timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetUpdate.updated_at | Date | The timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetUpdate.description | Unknown | The description of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetUpdate.property_names | Unknown | The array of custom property names. |
+| PrismaAIRs.RedTeamPromptSetUpdate.properties | Unknown | The array of property definitions. |
+| PrismaAIRs.RedTeamPromptSetUpdate.stats | Unknown | The statistics about the prompt set. |
+| PrismaAIRs.RedTeamPromptSetUpdate.version | Unknown | The version information. |
+| PrismaAIRs.RedTeamPromptSetUpdate.updated_by_user_id | Unknown | The user ID who last updated the prompt set. |
 
 ### prisma-airs-redteam-prompt-sets-archive
 
@@ -5543,25 +5543,25 @@ Archive or unarchive a Red Team prompt set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the prompt set to archive/unarchive. | Required |
+| uuid | The UUID of the prompt set to archive/unarchive. | Required |
 | archive | Whether to archive the prompt set (true to archive, false to unarchive). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptSetArchive.uuid | String | UUID of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetArchive.name | String | Name of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetArchive.uuid | String | The UUID of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetArchive.name | String | The name of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetArchive.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetArchive.archive | Boolean | Whether the prompt set is archived. |
-| PrismaAIRs.RedTeamPromptSetArchive.status | String | Status of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetArchive.created_at | Date | Timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetArchive.updated_at | Date | Timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetArchive.description | Unknown | Description of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetArchive.property_names | Unknown | Array of custom property names. |
-| PrismaAIRs.RedTeamPromptSetArchive.properties | Unknown | Array of property definitions. |
-| PrismaAIRs.RedTeamPromptSetArchive.stats | Unknown | Statistics about the prompt set. |
-| PrismaAIRs.RedTeamPromptSetArchive.version | Unknown | Version information. |
+| PrismaAIRs.RedTeamPromptSetArchive.status | String | The status of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetArchive.created_at | Date | The timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetArchive.updated_at | Date | The timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetArchive.description | Unknown | The description of the prompt set. |
+| PrismaAIRs.RedTeamPromptSetArchive.property_names | Unknown | The array of custom property names. |
+| PrismaAIRs.RedTeamPromptSetArchive.properties | Unknown | The array of property definitions. |
+| PrismaAIRs.RedTeamPromptSetArchive.stats | Unknown | The statistics about the prompt set. |
+| PrismaAIRs.RedTeamPromptSetArchive.version | Unknown | The version information. |
 
 ### prisma-airs-redteam-registry-credentials-get
 
@@ -5580,8 +5580,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamRegistryCredentials.token | String | Registry access token for authenticating with the container registry. |
-| PrismaAIRs.RedTeamRegistryCredentials.expiry | Date | Token expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamRegistryCredentials.token | String | The registry access token for authenticating with the container registry. |
+| PrismaAIRs.RedTeamRegistryCredentials.expiry | Date | The token expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 ### prisma-airs-redteam-prompt-sets-download
 
@@ -5596,7 +5596,7 @@ Download CSV template for a Red Team prompt set. The template includes header ro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the prompt set to download the template for. | Required |
+| uuid | The UUID of the prompt set to download the template for. | Required |
 
 #### Context Output
 
@@ -5615,17 +5615,17 @@ Upload CSV file with prompts to a Red Team prompt set. CSV must have 'prompt' an
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the prompt set to upload prompts to. | Required |
-| entryID | Entry ID of the CSV file from the war room to upload. | Required |
+| uuid | The UUID of the prompt set to upload prompts to. | Required |
+| entryID | The entry ID of the CSV file from the war room to upload. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamPromptSetUpload.message | String | Response message from the upload operation. |
-| PrismaAIRs.RedTeamPromptSetUpload.status | Number | HTTP status code of the upload operation. |
-| PrismaAIRs.RedTeamPromptSetUpload.prompt_set_uuid | String | UUID of the prompt set that was uploaded to. |
-| PrismaAIRs.RedTeamPromptSetUpload.file_name | String | Name of the uploaded CSV file. |
+| PrismaAIRs.RedTeamPromptSetUpload.message | String | The response message from the upload operation. |
+| PrismaAIRs.RedTeamPromptSetUpload.status | Number | The HTTP status code of the upload operation. |
+| PrismaAIRs.RedTeamPromptSetUpload.prompt_set_uuid | String | The UUID of the prompt set that was uploaded to. |
+| PrismaAIRs.RedTeamPromptSetUpload.file_name | String | The name of the uploaded CSV file. |
 
 ### prisma-airs-redteam-properties-list
 
@@ -5644,7 +5644,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PrismaAIRs.RedTeamProperty | Unknown | List of custom-attack property names. |
+| PrismaAIRs.RedTeamProperty | Unknown | The list of custom-attack property names. |
 
 #### Command example
 
@@ -5680,7 +5680,7 @@ Get the allowed values for one or more custom-attack property names. Provide eit
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | property_name | A single property name to look up values for. | Optional |
-| property_names | Comma-separated list of property names to look up values for \(batch lookup\). | Optional |
+| property_names | The comma-separated list of property names to look up values for \(batch lookup\). | Optional |
 
 #### Context Output
 
@@ -5725,8 +5725,8 @@ Create a new custom-attack property name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAIRs.RedTeamPropertyCreate.name | String | The property name that was created. |
-| PrismaAIRs.RedTeamPropertyCreate.message | String | Response message from the create operation. |
-| PrismaAIRs.RedTeamPropertyCreate.status | Number | HTTP status code of the create operation. |
+| PrismaAIRs.RedTeamPropertyCreate.message | String | The response message from the create operation. |
+| PrismaAIRs.RedTeamPropertyCreate.status | Number | The HTTP status code of the create operation. |
 
 #### Command example
 
@@ -5764,8 +5764,8 @@ Add an allowed value to an existing custom-attack property name.
 | --- | --- | --- |
 | PrismaAIRs.RedTeamPropertyValueCreate.property_name | String | The property name the value was added to. |
 | PrismaAIRs.RedTeamPropertyValueCreate.property_value | String | The value that was added. |
-| PrismaAIRs.RedTeamPropertyValueCreate.message | String | Response message from the add-value operation. |
-| PrismaAIRs.RedTeamPropertyValueCreate.status | Number | HTTP status code of the add-value operation. |
+| PrismaAIRs.RedTeamPropertyValueCreate.message | String | The response message from the add-value operation. |
+| PrismaAIRs.RedTeamPropertyValueCreate.status | Number | The HTTP status code of the add-value operation. |
 
 #### Command example
 
@@ -5883,8 +5883,8 @@ Get the reference metadata for a single custom prompt set by UUID.
 | PrismaAIRs.RedTeamPromptSetReference.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetReference.version | String | The current version ID of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetReference.tsg_id | String | The tenant service group ID owning the prompt set. |
-| PrismaAIRs.RedTeamPromptSetReference.created_at | Date | When the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetReference.updated_at | Date | When the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetReference.created_at | Date | The when the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetReference.updated_at | Date | The when the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -5926,10 +5926,10 @@ Get version information (status, latest flag, and prompt counts) for a custom pr
 | PrismaAIRs.RedTeamPromptSetVersionInfo.status | String | The validation status of the version. |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.is_latest | Boolean | Whether this is the latest version. |
 | PrismaAIRs.RedTeamPromptSetVersionInfo.version | String | The version ID. |
-| PrismaAIRs.RedTeamPromptSetVersionInfo.snapshot_created_at | Date | When the version snapshot was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetVersionInfo.stats.total_prompts | Number | Total number of prompts in the version. |
-| PrismaAIRs.RedTeamPromptSetVersionInfo.stats.active_prompts | Number | Number of active prompts in the version. |
-| PrismaAIRs.RedTeamPromptSetVersionInfo.stats.inactive_prompts | Number | Number of inactive prompts in the version. |
+| PrismaAIRs.RedTeamPromptSetVersionInfo.snapshot_created_at | Date | The when the version snapshot was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetVersionInfo.stats.total_prompts | Number | The total number of prompts in the version. |
+| PrismaAIRs.RedTeamPromptSetVersionInfo.stats.active_prompts | Number | The number of active prompts in the version. |
+| PrismaAIRs.RedTeamPromptSetVersionInfo.stats.inactive_prompts | Number | The number of inactive prompts in the version. |
 
 #### Command example
 
@@ -5959,8 +5959,8 @@ There are no input arguments for this command.
 | PrismaAIRs.RedTeamPromptSetActive.status | String | The validation status of the prompt set. |
 | PrismaAIRs.RedTeamPromptSetActive.active | Boolean | Whether the prompt set is active. |
 | PrismaAIRs.RedTeamPromptSetActive.version | String | The current version ID of the prompt set. |
-| PrismaAIRs.RedTeamPromptSetActive.created_at | Date | When the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
-| PrismaAIRs.RedTeamPromptSetActive.updated_at | Date | When the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetActive.created_at | Date | The when the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
+| PrismaAIRs.RedTeamPromptSetActive.updated_at | Date | The when the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 
 #### Command example
 
@@ -6001,14 +6001,14 @@ Get the custom-attack report summary (totals, score, and attack success rate) fo
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAIRs.RedTeamCustomAttackReport.job_id | String | The job UUID of the custom-attack scan. |
-| PrismaAIRs.RedTeamCustomAttackReport.total_prompts | Number | Total number of prompts in the scan. |
-| PrismaAIRs.RedTeamCustomAttackReport.total_attacks | Number | Total number of attacks executed. |
-| PrismaAIRs.RedTeamCustomAttackReport.total_threats | Number | Total number of attacks that produced a threat. |
-| PrismaAIRs.RedTeamCustomAttackReport.failed_attacks | Number | Total number of attacks that failed to execute. |
+| PrismaAIRs.RedTeamCustomAttackReport.total_prompts | Number | The total number of prompts in the scan. |
+| PrismaAIRs.RedTeamCustomAttackReport.total_attacks | Number | The total number of attacks executed. |
+| PrismaAIRs.RedTeamCustomAttackReport.total_threats | Number | The total number of attacks that produced a threat. |
+| PrismaAIRs.RedTeamCustomAttackReport.failed_attacks | Number | The total number of attacks that failed to execute. |
 | PrismaAIRs.RedTeamCustomAttackReport.score | Number | The overall report score. |
 | PrismaAIRs.RedTeamCustomAttackReport.asr | Number | The attack success rate. |
-| PrismaAIRs.RedTeamCustomAttackReport.custom_attack_reports | Unknown | Per-prompt-set summary breakdown. |
-| PrismaAIRs.RedTeamCustomAttackReport.property_statistics | Unknown | Per-property attack-success statistics. |
+| PrismaAIRs.RedTeamCustomAttackReport.custom_attack_reports | Unknown | The per-prompt-set summary breakdown. |
+| PrismaAIRs.RedTeamCustomAttackReport.property_statistics | Unknown | The per-property attack-success statistics. |
 
 #### Command example
 
@@ -6045,13 +6045,13 @@ Get the prompt-set breakdown for a custom-attack scan report.
 | --- | --- | --- |
 | PrismaAIRs.RedTeamCustomAttackReportPromptSet.prompt_set_id | String | The prompt-set UUID. |
 | PrismaAIRs.RedTeamCustomAttackReportPromptSet.prompt_set_name | String | The prompt-set name. |
-| PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_prompts | Number | Total number of prompts in the prompt set. |
-| PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_attacks | Number | Total number of attacks executed for the prompt set. |
-| PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_threats | Number | Total number of threats found for the prompt set. |
-| PrismaAIRs.RedTeamCustomAttackReportPromptSet.failed_attacks | Number | Total number of failed attacks for the prompt set. |
+| PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_prompts | Number | The total number of prompts in the prompt set. |
+| PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_attacks | Number | The total number of attacks executed for the prompt set. |
+| PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_threats | Number | The total number of threats found for the prompt set. |
+| PrismaAIRs.RedTeamCustomAttackReportPromptSet.failed_attacks | Number | The total number of failed attacks for the prompt set. |
 | PrismaAIRs.RedTeamCustomAttackReportPromptSet.threat_rate | Number | The threat rate for the prompt set. |
-| PrismaAIRs.RedTeamCustomAttackReportPromptSet.property_names | Unknown | Property names associated with the prompt set. |
-| PrismaAIRs.RedTeamCustomAttackReportPromptSet.property_statistics | Unknown | Per-property attack-success statistics for the prompt set. |
+| PrismaAIRs.RedTeamCustomAttackReportPromptSet.property_names | Unknown | The property names associated with the prompt set. |
+| PrismaAIRs.RedTeamCustomAttackReportPromptSet.property_statistics | Unknown | The per-property attack-success statistics for the prompt set. |
 
 #### Command example
 
@@ -6083,9 +6083,9 @@ List prompts for a specific prompt set within a custom-attack scan report.
 | job_id | The job UUID of the custom-attack scan. | Required |
 | prompt_set_id | The prompt-set UUID. | Required |
 | is_threat | Whether to filter to prompts that produced a threat. Possible values are: true, false. | Optional |
-| skip | Number of records to skip from the start. | Optional |
-| limit | Maximum number of records to return. | Optional |
-| search | Free-text search filter. | Optional |
+| skip | The number of records to skip from the start. | Optional |
+| limit | The maximum number of records to return. | Optional |
+| search | The free-text search filter. | Optional |
 
 #### Context Output
 
@@ -6095,7 +6095,7 @@ List prompts for a specific prompt set within a custom-attack scan report.
 | PrismaAIRs.RedTeamCustomAttackPrompt.prompt_text | String | The prompt text. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.goal | String | The attack goal for the prompt. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.user_defined_goal | Boolean | Whether the goal was user-defined. |
-| PrismaAIRs.RedTeamCustomAttackPrompt.properties | Unknown | Property assignments for the prompt. |
+| PrismaAIRs.RedTeamCustomAttackPrompt.properties | Unknown | The property assignments for the prompt. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.attack_id | String | The attack UUID associated with the prompt. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.threat | Boolean | Whether the prompt produced a threat. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.asr | Number | The attack success rate for the prompt. |
@@ -6142,7 +6142,7 @@ Get details for a single prompt within a custom-attack scan report.
 | PrismaAIRs.RedTeamCustomAttackPrompt.prompt_text | String | The prompt text. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.goal | String | The attack goal for the prompt. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.user_defined_goal | Boolean | Whether the goal was user-defined. |
-| PrismaAIRs.RedTeamCustomAttackPrompt.properties | Unknown | Property assignments for the prompt. |
+| PrismaAIRs.RedTeamCustomAttackPrompt.properties | Unknown | The property assignments for the prompt. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.attack_id | String | The attack UUID associated with the prompt. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.threat | Boolean | Whether the prompt produced a threat. |
 | PrismaAIRs.RedTeamCustomAttackPrompt.attack_outputs | Unknown | The target outputs generated for the prompt's attack. |
@@ -6181,9 +6181,9 @@ List custom attacks for a scan job, with optional threat, prompt-set, and proper
 | threat | Whether to filter to attacks that produced a threat. Possible values are: true, false. | Optional |
 | prompt_set_id | Filter attacks by prompt-set UUID. | Optional |
 | property_value | Filter attacks by property value. | Optional |
-| skip | Number of records to skip from the start. | Optional |
-| limit | Maximum number of records to return. | Optional |
-| search | Free-text search filter. | Optional |
+| skip | The number of records to skip from the start. | Optional |
+| limit | The maximum number of records to return. | Optional |
+| search | The free-text search filter. | Optional |
 
 #### Context Output
 
@@ -6191,9 +6191,9 @@ List custom attacks for a scan job, with optional threat, prompt-set, and proper
 | --- | --- | --- |
 | PrismaAIRs.RedTeamCustomAttack.job_id | String | The job UUID of the custom-attack scan. |
 | PrismaAIRs.RedTeamCustomAttack.attacks | Unknown | The list of custom attacks. |
-| PrismaAIRs.RedTeamCustomAttack.summary.total_attacks | Number | Total number of attacks matching the filters. |
-| PrismaAIRs.RedTeamCustomAttack.summary.total_threats | Number | Total number of threats matching the filters. |
-| PrismaAIRs.RedTeamCustomAttack.summary.total_items | Number | Total number of paginated items. |
+| PrismaAIRs.RedTeamCustomAttack.summary.total_attacks | Number | The total number of attacks matching the filters. |
+| PrismaAIRs.RedTeamCustomAttack.summary.total_threats | Number | The total number of threats matching the filters. |
+| PrismaAIRs.RedTeamCustomAttack.summary.total_items | Number | The total number of paginated items. |
 
 #### Command example
 
@@ -6277,7 +6277,7 @@ Get per-property attack-success statistics for a custom-attack scan.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PrismaAIRs.RedTeamCustomAttackPropertyStat.property_name | String | The property name. |
-| PrismaAIRs.RedTeamCustomAttackPropertyStat.values | Unknown | Per-value attack-success statistics (value, successful_attack_count, total_attack_count, success_rate). |
+| PrismaAIRs.RedTeamCustomAttackPropertyStat.values | Unknown | The per-value attack-success statistics (value, successful_attack_count, total_attack_count, success_rate). |
 
 #### Command example
 
