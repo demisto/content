@@ -19,7 +19,7 @@
 		},
 		"Doppel Alert Domains": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {			
+			"internalMapping": {
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -31,7 +31,7 @@
 		},
 		"Doppel Alert Ecommerce": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {			
+			"internalMapping": {
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -43,7 +43,7 @@
 		},
 		"Doppel Alert Email": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {			
+			"internalMapping": {
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -67,7 +67,7 @@
 		},
 		"Doppel Alert Paid_Ads": {
 			"dontMapEventToLabels": false,
-			"internalMapping": {		
+			"internalMapping": {
 				"queue_state": {
 					"complex": {
 						"filters": [],
@@ -78,6 +78,18 @@
 			}
 		},
 		"Doppel Alert Social_Media": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"queue_state": {
+					"complex": {
+						"filters": [],
+						"root": "doppelqueuestate",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Doppel Alert Telco": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
 				"queue_state": {

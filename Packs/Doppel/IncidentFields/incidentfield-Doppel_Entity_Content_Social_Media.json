@@ -1,18 +1,18 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Doppel Alert Domains"
+        "Doppel Alert Social_Media"
     ],
     "caseInsensitive": true,
-    "cliName": "doppelentitycontent",
+    "cliName": "doppelentitycontentsocialmedia",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "domain",
+            "displayName": "account_created_at",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "domain",
+            "key": "account_created_at",
             "orgType": "",
             "required": false,
             "script": "",
@@ -21,11 +21,11 @@
             "width": 150
         },
         {
-            "displayName": "registrar",
+            "displayName": "slug",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "registrar",
+            "key": "slug",
             "orgType": "",
             "required": false,
             "script": "",
@@ -34,11 +34,11 @@
             "width": 150
         },
         {
-            "displayName": "ip_address",
+            "displayName": "profile_display_name",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "ip_address",
+            "key": "profile_display_name",
             "orgType": "",
             "required": false,
             "script": "",
@@ -47,11 +47,11 @@
             "width": 150
         },
         {
-            "displayName": "contact_email",
+            "displayName": "profile_image_url",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "contact_email",
+            "key": "profile_image_url",
             "orgType": "",
             "required": false,
             "script": "",
@@ -60,11 +60,11 @@
             "width": 150
         },
         {
-            "displayName": "country_code",
+            "displayName": "profile_id",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "country_code",
+            "key": "profile_id",
             "orgType": "",
             "required": false,
             "script": "",
@@ -73,11 +73,11 @@
             "width": 150
         },
         {
-            "displayName": "hosting_provider",
+            "displayName": "num_followers",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "hosting_provider",
+            "key": "num_followers",
             "orgType": "",
             "required": false,
             "script": "",
@@ -86,29 +86,29 @@
             "width": 150
         },
         {
-            "displayName": "mx_records",
+            "displayName": "profile_description",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "mx_records",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": [],
-            "type": "longText",
-            "width": 150
-        },
-        {
-            "displayName": "nameservers",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "nameservers",
+            "key": "profile_description",
             "orgType": "",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "longText",
+            "width": 150
+        },
+        {
+            "displayName": "profile_display_url",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "profile_display_url",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
             "width": 150
         }
     ],
@@ -119,10 +119,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_doppelentitycontent",
+    "id": "incident_doppelentitycontentsocialmedia",
     "isReadOnly": false,
     "locked": false,
-    "name": "Doppel Entity Content",
+    "name": "Doppel Entity Content Social Media",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
