@@ -511,7 +511,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-      description: If true, force-delete the profile, bypassing safety checks. Requires updated_by.
+      description: Whether to force-delete the profile, bypassing safety checks. Requires updated_by.
     - name: updated_by
       description: Email of the user performing the deletion. Required when force is true.
     outputs:
@@ -836,7 +836,7 @@ script:
       defaultValue: '50'
     - name: unactivated
       required: false
-      description: Filter to show only unactivated profiles.
+      description: Whether to show only unactivated profiles.
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
@@ -1162,7 +1162,7 @@ script:
       defaultValue: '50'
     - name: include_keywords
       required: false
-      description: Include keyword list in response.
+      description: Whether to include the keyword list in the response.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -1210,7 +1210,7 @@ script:
       description: The ID of the DLP dictionary to retrieve.
     - name: include_keywords
       required: false
-      description: Include keyword list in response.
+      description: Whether to include the keyword list in the response.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -1313,7 +1313,7 @@ script:
       - custom
     - name: include_keywords
       required: false
-      description: Include keyword list in response.
+      description: Whether to include the keyword list in the response.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -1472,7 +1472,7 @@ script:
       - custom
     - name: include_keywords
       required: false
-      description: Include keyword list in response.
+      description: Whether to include the keyword list in the response.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -2317,7 +2317,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-      description: If true, force-delete the topic, removing it from any referencing profiles.
+      description: Whether to force-delete the topic, removing it from any referencing profiles.
     - name: updated_by
       description: Email of the user performing the deletion. Optional for force-delete.
     outputs:
@@ -3787,7 +3787,7 @@ script:
       description: Connection parameters as JSON string.
     - name: validate
       required: false
-      description: Validate target connectivity before creating (true/false).
+      description: Whether to validate target connectivity before creating.
       defaultValue: 'false'
     outputs:
     - contextPath: PrismaAIRs.RedTeamTargetCreate.uuid
@@ -3874,7 +3874,7 @@ script:
       description: New connection parameters as JSON string.
     - name: validate
       required: false
-      description: Validate target connectivity after update (true/false).
+      description: Whether to validate target connectivity after the update.
     outputs:
     - contextPath: PrismaAIRs.RedTeamTargetUpdate.uuid
       description: Target UUID.
@@ -4310,7 +4310,7 @@ script:
       isArray: true
     - name: include_all_if_empty
       required: false
-      description: If the other filters match nothing, return all channels.
+      description: Whether to return all channels if the other filters match nothing.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -4489,7 +4489,7 @@ script:
       - 'true'
       - 'false'
       defaultValue: 'false'
-      description: If true, query the management plane instead of the data plane. Both return the same shape; the management plane may expose a different subset.
+      description: Whether to query the management plane instead of the data plane. Both return the same shape; the management plane may expose a different subset.
     outputs:
     - contextPath: PrismaAIRs.RedTeamLanguages.multilingual_enabled
       description: Whether multilingual Red Team scanning is enabled for the tenant.
@@ -4892,7 +4892,7 @@ script:
       description: Filter by active status (true or false).
     - name: archive
       required: false
-      description: Filter by archive status (true or false).
+      description: Whether to filter by archive status.
     outputs:
     - contextPath: PrismaAIRs.RedTeamPromptSets.uuid
       description: UUID of the prompt set.
@@ -4996,7 +4996,7 @@ script:
       description: Updated comma-separated list of custom property names.
     - name: archive
       required: false
-      description: Updated archive status (true or false).
+      description: Whether the prompt set should be archived.
     outputs:
     - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.uuid
       description: UUID of the updated prompt set.
@@ -5045,7 +5045,7 @@ script:
       description: UUID of the prompt set to archive/unarchive.
     - name: archive
       required: true
-      description: Archive status - true to archive, false to unarchive.
+      description: Whether to archive the prompt set (true to archive, false to unarchive).
     outputs:
     - contextPath: PrismaAIRs.RedTeamPromptSetArchive.uuid
       description: UUID of the prompt set.
@@ -5391,7 +5391,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: Filter to prompts that produced a threat.
+      description: Whether to filter to prompts that produced a threat.
     - name: skip
       description: Number of records to skip from the start.
     - name: limit
@@ -5483,7 +5483,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: Filter to attacks that produced a threat.
+      description: Whether to filter to attacks that produced a threat.
     - name: prompt_set_id
       description: Filter attacks by prompt-set UUID.
     - name: property_value

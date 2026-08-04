@@ -695,7 +695,7 @@ Delete a security profile. WARNING - This action cannot be undone and permanentl
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_id | Profile UUID to delete. | Required |
-| force | If true, force-delete the profile, bypassing safety checks. Requires updated_by. Possible values are: true, false. Default is false. | Optional |
+| force | Whether to force-delete the profile, bypassing safety checks. Requires updated_by. Possible values are: true, false. Default is false. | Optional |
 | updated_by | Email of the user performing the deletion. Required when force is true. | Optional |
 
 #### Context Output
@@ -1009,7 +1009,7 @@ List all deployment profiles.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | Maximum number of deployment profiles to return. Default is 50. | Optional |
-| unactivated | Filter to show only unactivated profiles. Possible values are: true, false. Default is false. | Optional |
+| unactivated | Whether to show only unactivated profiles. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -1315,7 +1315,7 @@ List DLP dictionaries.
 | --- | --- | --- |
 | page | Page number for pagination. Default is 0. | Optional |
 | size | Number of results per page. Default is 50. | Optional |
-| include_keywords | Include keyword list in response. Possible values are: true, false. Default is false. | Optional |
+| include_keywords | Whether to include the keyword list in the response. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -1401,7 +1401,7 @@ Get a single DLP dictionary by ID, optionally including keywords.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | dictionary_id | The ID of the DLP dictionary to retrieve. | Required |
-| include_keywords | Include keyword list in response. Possible values are: true, false. Default is false. | Optional |
+| include_keywords | Whether to include the keyword list in the response. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -1445,7 +1445,7 @@ Create a new DLP dictionary by uploading a keyword file.
 | description | Dictionary description. | Optional |
 | is_case_sensitive | Whether the dictionary is case sensitive. Possible values are: true, false. | Optional |
 | type | Dictionary type. Possible values are: predefined, custom. | Optional |
-| include_keywords | Include keyword list in response. Possible values are: true, false. Default is false. | Optional |
+| include_keywords | Whether to include the keyword list in the response. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -1520,7 +1520,7 @@ Replace (full update) a DLP dictionary by uploading a new keyword file.
 | description | Dictionary description. | Optional |
 | is_case_sensitive | Whether the dictionary is case sensitive. Possible values are: true, false. | Optional |
 | type | Dictionary type. Possible values are: predefined, custom. | Optional |
-| include_keywords | Include keyword list in response. Possible values are: true, false. Default is false. | Optional |
+| include_keywords | Whether to include the keyword list in the response. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -2627,7 +2627,7 @@ Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | topic_id | Topic UUID to delete. | Required |
-| force | If true, force-delete the topic, removing it from any referencing profiles. Possible values are: true, false. Default is false. | Optional |
+| force | Whether to force-delete the topic, removing it from any referencing profiles. Possible values are: true, false. Default is false. | Optional |
 | updated_by | Email of the user performing the deletion. Optional for force-delete. | Optional |
 
 #### Context Output
@@ -3992,7 +3992,7 @@ Create a new Red Team target.
 | response_mode | Response mode (REST, STREAMING). | Optional |
 | session_supported | Whether the target supports sessions (true/false). | Optional |
 | connection_params | Connection parameters as JSON string. | Optional |
-| validate | Validate target connectivity before creating (true/false). Default is false. | Optional |
+| validate | Whether to validate target connectivity before creating. Default is false. | Optional |
 
 #### Context Output
 
@@ -4056,7 +4056,7 @@ Update an existing Red Team target.
 | target_type | New target type. | Optional |
 | connection_type | New connection type. | Optional |
 | connection_params | New connection parameters as JSON string. | Optional |
-| validate | Validate target connectivity after update (true/false). | Optional |
+| validate | Whether to validate target connectivity after the update. | Optional |
 
 #### Context Output
 
@@ -4656,7 +4656,7 @@ List Red Team network broker channels. Network channels are the data-plane relay
 | skip | Number of channels to skip from the start (for pagination). | Optional |
 | search | Free-text search filter. | Optional |
 | status | Filter by channel status. Supports a comma-separated list to filter by multiple statuses. Possible values are: ONLINE, OFFLINE, DRAFT. | Optional |
-| include_all_if_empty | If the other filters match nothing, return all channels. Possible values are: true, false. | Optional |
+| include_all_if_empty | Whether to return all channels if the other filters match nothing. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -4938,7 +4938,7 @@ List the tenant's allowed languages for Red Team scans. Queries the data plane b
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| use_management | If true, query the management plane instead of the data plane. Both return the same shape; the management plane may expose a different subset. Possible values are: true, false. Default is false. | Optional |
+| use_management | Whether to query the management plane instead of the data plane. Both return the same shape; the management plane may expose a different subset. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -5371,7 +5371,7 @@ List Red Team prompt sets for custom attack scenarios.
 | search | Free-text search filter for prompt set names/descriptions. | Optional |
 | status | Filter by prompt set status (e.g., READY, PENDING). | Optional |
 | active | Filter by active status (true or false). | Optional |
-| archive | Filter by archive status (true or false). | Optional |
+| archive | Whether to filter by archive status. | Optional |
 
 #### Context Output
 
@@ -5510,7 +5510,7 @@ Update an existing Red Team prompt set.
 | name | Updated name of the prompt set. | Optional |
 | description | Updated description. | Optional |
 | property_names | Updated comma-separated list of custom property names. | Optional |
-| archive | Updated archive status (true or false). | Optional |
+| archive | Whether the prompt set should be archived. | Optional |
 
 #### Context Output
 
@@ -5544,7 +5544,7 @@ Archive or unarchive a Red Team prompt set.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | uuid | UUID of the prompt set to archive/unarchive. | Required |
-| archive | Archive status - true to archive, false to unarchive. | Required |
+| archive | Whether to archive the prompt set (true to archive, false to unarchive). | Required |
 
 #### Context Output
 
@@ -6082,7 +6082,7 @@ List prompts for a specific prompt set within a custom-attack scan report.
 | --- | --- | --- |
 | job_id | The job UUID of the custom-attack scan. | Required |
 | prompt_set_id | The prompt-set UUID. | Required |
-| is_threat | Filter to prompts that produced a threat. Possible values are: true, false. | Optional |
+| is_threat | Whether to filter to prompts that produced a threat. Possible values are: true, false. | Optional |
 | skip | Number of records to skip from the start. | Optional |
 | limit | Maximum number of records to return. | Optional |
 | search | Free-text search filter. | Optional |
@@ -6178,7 +6178,7 @@ List custom attacks for a scan job, with optional threat, prompt-set, and proper
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | job_id | The job UUID of the custom-attack scan. | Required |
-| threat | Filter to attacks that produced a threat. Possible values are: true, false. | Optional |
+| threat | Whether to filter to attacks that produced a threat. Possible values are: true, false. | Optional |
 | prompt_set_id | Filter attacks by prompt-set UUID. | Optional |
 | property_value | Filter attacks by property value. | Optional |
 | skip | Number of records to skip from the start. | Optional |
