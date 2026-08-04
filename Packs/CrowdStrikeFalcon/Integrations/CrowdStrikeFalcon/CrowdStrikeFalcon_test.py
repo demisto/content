@@ -12034,3 +12034,94 @@ class TestXsiamSendFailureIsNotCounted:
         assert total == 4, "Only records XSIAM stored (plus the withheld seal record) may be counted"
         assert withheld == [{"id": "v1", "aid": "a1"}]
         assert aids == {"a1", "a2", "a3"}
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        "status, message", [(500, "Internal Server Error"), (502, "Bad Gateway"), (503, "Service Unavailable")]
+    )
+    async def test_every_server_error_raises_and_counts_zero(self, mocker, status, message):
+        """
+        Given: XSIAM rejects the batch with a 5xx on every attempt.
+        When:  send_batch_to_xsiam_and_save_context runs with count_stored=True.
+        Then:  records_stored is 0 and the saved batch number does not advance.
+
+        The live tenant happened to return 502, so that is the status the original regression test
+        pinned. Nothing in the fix is specific to 502 though, and the mock server reproduced the
+        same class of failure with 500 - so the guarantee is asserted across the range rather than
+        for the single status we happened to observe.
+        """
+        from CrowdStrikeFalcon import send_batch_to_xsiam_and_save_context
+
+        self._patch_xsiam_env(mocker)
+        self._patch_session_post(mocker, status, message)
+
+        save_state_callback = mocker.MagicMock()
+
+        saved_batch_number, records_stored = await send_batch_to_xsiam_and_save_context(
+            data=[{"id": f"vuln{i}", "aid": "aid1"} for i in range(25)],
+            vendor="CrowdStrike",
+            product="Falcon_Spotlight_Vulnerabilities",
+            snapshot_id="snap123",
+            items_count=25,
+            batch_number=5,
+            last_saved_batch_number=4,
+            context_store=mocker.MagicMock(),
+            state=mocker.MagicMock(),
+            save_state_callback=save_state_callback,
+            data_type="assets",
+            count_stored=True,
+        )
+
+        assert records_stored == 0, f"HTTP {status} must not be counted as stored"
+        assert saved_batch_number == 4, f"HTTP {status} must not advance the saved batch number"
+        save_state_callback.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_throttling_that_never_clears_still_raises(self, mocker):
+        """
+        Given: XSIAM answers 429 on every single attempt, so the throttling never clears.
+        When:  xsiam_api_call_async is awaited with num_of_attempts=3.
+        Then:  It raises.
+
+        This is the awkward edge of the retry loop, and the reason it deserves its own test:
+        429 is deliberately tolerated via ``ok_codes`` so that throttling is retried rather than
+        treated as failure. But ``ok_codes`` is set to None on the final attempt, so a 429 that
+        never clears has to fall through to the raise. Were that last-attempt narrowing ever
+        dropped, the loop would exit with status_code=429 having swallowed the error, and we would
+        be back to counting records XSIAM never stored - the exact bug this class exists to prevent.
+        """
+        from CrowdStrikeFalcon import xsiam_api_call_async
+
+        self._patch_xsiam_env(mocker)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", mocker.AsyncMock())
+        self._patch_session_post(mocker, 429, "Too Many Requests")
+
+        with pytest.raises(DemistoException, match="NOT stored and must not be counted"):
+            await xsiam_api_call_async(
+                xsiam_url="https://api-mock", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets"
+            )
+
+    @pytest.mark.asyncio
+    async def test_server_error_is_retried_the_configured_number_of_times(self, mocker):
+        """
+        Given: XSIAM returns 500 on every attempt and num_of_attempts=3.
+        When:  xsiam_api_call_async is awaited.
+        Then:  Exactly 3 POSTs are made before it gives up.
+
+        Guards the other direction from the tests above: the fix must not turn a transient error
+        into an immediate hard failure. Raising on the *first* 500 would satisfy every
+        "must not be counted" assertion while quietly throwing away data that a retry would have
+        delivered, so the retry budget is asserted explicitly.
+        """
+        from CrowdStrikeFalcon import xsiam_api_call_async
+
+        self._patch_xsiam_env(mocker)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", mocker.AsyncMock())
+        session = self._patch_session_post(mocker, 500, "Internal Server Error")
+
+        with pytest.raises(DemistoException):
+            await xsiam_api_call_async(
+                xsiam_url="https://api-mock", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets"
+            )
+
+        assert session.post.call_count == 3, "A transient 5xx must exhaust the retry budget, not fail on the first attempt"
