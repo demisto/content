@@ -25,7 +25,7 @@ Before configuring this integration, you need:
    - **Note**: This is different from the OAuth2 Client ID/Secret used for management operations
 
 3. **Configure the Integration**:
-   - Add the integration instance in XSOAR
+   - Add the integration instance in Cortex XSOAR
    - Enter the **API Client ID and API Client Secret** (OAuth2 credentials for management API)
    - Provide your **Tenant Services Group ID** (TSG ID)
    - Enter the **Runtime API Key** (for runtime scanning operations only)
