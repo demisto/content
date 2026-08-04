@@ -1,5 +1,8 @@
 category: Cloud Security
 provider: Palo Alto Networks
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Palo Alto Networks - Prisma AIRs AI Security
   version: -1
@@ -16,12 +19,6 @@ configuration:
   required: true
   type: 9
   displaypassword: API Client Secret
-- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
-  display: Tenant Services Group ID
-  name: tsg_id
-  required: true
-  type: 0
-  section: Connect
 - display: Runtime API Key
   section: Connect
   name: runtime_api_key
@@ -30,6 +27,12 @@ configuration:
   additionalinfo: 'Runtime API Key for Prisma AIRs Scanner API. This is used exclusively for runtime scanning operations and is different from the OAuth2 Client ID/Secret used for management operations.'
   hiddenusername: true
   displaypassword: Runtime API Key
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
+  display: Tenant Services Group ID
+  name: tsg_id
+  required: true
+  type: 0
+  section: Connect
 - display: Scanner API Base URL
   section: Connect
   name: scanner_base_url

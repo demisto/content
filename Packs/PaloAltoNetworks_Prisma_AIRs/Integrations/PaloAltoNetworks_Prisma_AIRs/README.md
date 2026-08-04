@@ -15,8 +15,8 @@ This integration was integrated and tested with the Palo Alto Networks - Prisma 
 | Server URL |  | True |
 | API Client ID |  | True |
 | API Client Secret |  | True |
-| Tenant Services Group ID | Default Tenant Services Group ID to use for API calls. Example: 1234567890. | True |
 | Runtime API Key | Runtime API Key for Prisma AIRs Scanner API. This is used exclusively for runtime scanning operations and is different from the OAuth2 Client ID/Secret used for management operations. | True |
+| Tenant Services Group ID | Default Tenant Services Group ID to use for API calls. Example: 1234567890. | True |
 | Scanner API Base URL | Scanner API base URL for runtime scanning operations. Default is US region. For other regions: EU: https://service-de.api.aisecurity.paloaltonetworks.com, IN: https://service-in.api.aisecurity.paloaltonetworks.com, SG: https://service-sg.api.aisecurity.paloaltonetworks.com. This must match the region selected during deployment profile creation. | False |
 | DLP API Base URL | DLP API base URL for DLP management operations \(dictionaries, patterns, filtering profiles\). Default is the global DLP endpoint. Change only if using a regional or custom DLP endpoint. | False |
 | Trust any certificate (not secure) |  | False |
