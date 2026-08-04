@@ -22,10 +22,14 @@ from exchangelib import (
 from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCredentials
 from exchangelib.errors import (
     AutoDiscoverFailed,
+    ErrorInternalServerTransientError,
     ErrorInvalidIdMalformed,
     ErrorIrresolvableConflict,
     ErrorItemNotFound,
     ErrorNameResolutionNoResults,
+    ErrorServerBusy,
+    MalformedResponseError,
+    RateLimitError,
     ResponseMessageError,
 )
 from exchangelib.folders.base import BaseFolder
@@ -61,6 +65,13 @@ SUPPORTED_ON_PREM_BUILDS = {
 }
 
 MARK_AS_READ_RETRY_DELAY = 0.1
+
+TRANSIENT_SERVER_ERRORS = (
+    RateLimitError,
+    ErrorServerBusy,
+    ErrorInternalServerTransientError,
+    MalformedResponseError,
+)
 
 """ Context Keys """
 ATTACHMENT_ID = "attachmentId"
@@ -696,9 +707,12 @@ class EWSClient:
             try:
                 demisto.debug(f"resolving {part=} {path_parts=}")
                 folder = folder // part
+            except TRANSIENT_SERVER_ERRORS:
+                demisto.debug(f"Transient error while resolving {part=} of {path_parts=}, propagating.")
+                raise
             except Exception as e:
                 demisto.debug(f"got error {e}")
-                raise ValueError(f"No such folder {path_parts}")
+                raise ValueError(f"No such folder {path_parts}") from e
         return folder
 
     def send_email(self, message: Message):
