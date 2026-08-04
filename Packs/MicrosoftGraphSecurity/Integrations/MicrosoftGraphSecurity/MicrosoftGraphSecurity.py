@@ -17,6 +17,7 @@ CMD_URL = "security/alerts_v2"
 PAGE_SIZE_LIMIT = 2000
 THREAT_ASSESSMENT_URL_PREFIX = "informationProtection/threatAssessmentRequests"
 MAX_ITEMS_PER_RESPONSE = 50
+FETCH_INCIDENTS_TIMEOUT = 60
 
 DataSourceType = {
     "USER": {
@@ -73,7 +74,7 @@ class MsGraphClient:
         headers = {"Prefer": "include-unknown-enum-members"}
         # This header maps unknownFutureValue value to the appropriate service resource.
         # https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the
-        demisto.debug(f"Fetching MS Graph Security incidents with params: {params} and header: {headers}")
+        demisto.debug(f"Fetching MS Graph Security alerts with params: {params} and header: {headers}")
         response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params, headers=headers)
         return response
 
@@ -689,7 +690,7 @@ def create_search_alerts_filters(args, is_fetch=False):
     Creates the relevant filters for the search_alerts function.
     Args:
         args (Dict): The command's arguments dictionary.
-        is_fetch (bool): wether the search_alerts function is being called from fetch incidents or not.
+        is_fetch (bool): whether the search_alerts function is being called from fetch alerts or not.
     Returns:
         Dict: The filter dictionary to use
     """
@@ -1145,34 +1146,69 @@ def set_url_suffix_list_incidents(args: dict) -> str:
 """ COMMAND FUNCTIONS """
 
 
-def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, service_sources: str) -> list:
+def fetch_incidents_and_alerts(client: MsGraphClient, params: dict):
+    fetch_time = params.get("fetch_time", "1 day")
+    fetch_limit = params.get("fetch_limit", 10) or 10
+    fetch_service_sources = params.get("fetch_service_sources", "")
+    fetch_filter = params.get("fetch_filter", "")
+    fetch_incidents_type = argToList(params.get("fetch_incidents_type")) or ["Alerts"]
+
+    last_run = demisto.getLastRun() or {}
+    new_last_run: dict = dict(last_run)
+    fetched: list = []
+
+    if "Alerts" in fetch_incidents_type:
+        alerts, alerts_last_run = fetch_alerts(
+            client,
+            fetch_time=fetch_time,
+            fetch_limit=int(fetch_limit),
+            filter=fetch_filter,
+            service_sources=fetch_service_sources,
+            last_run=last_run.get("alerts_last_run", {}),
+        )
+        fetched.extend(alerts)
+        new_last_run["alerts_last_run"] = alerts_last_run
+
+    if "Incidents" in fetch_incidents_type:
+        incidents, incidents_last_run = fetch_incidents(
+            client,
+            fetch_time=fetch_time,
+            fetch_limit=int(fetch_limit),
+            last_run=last_run.get("incidents_last_run", {}),
+        )
+        fetched.extend(incidents)
+        new_last_run["incidents_last_run"] = incidents_last_run
+
+    demisto.setLastRun(new_last_run)
+    return fetched
+
+
+def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, last_run: dict) -> tuple[list, dict]:
     """
     This function will execute each interval (default is 1 minute).
-    This function will return up to the given limit alerts according to the given filters using the search_alerts function.
+    This function will return up to the given limit incidents created within the fetch time window.
     Args:
         client (MsGraphClient): MsGraphClient client object.
-        fetch_time (str): time interval for fetch alerts.
-        fetch_limit (int): limit for number of fetch alerts per fetch.
-        filter (str): configured user filter.
-        service_sources (str): comma separated list of service_sources to fetch alerts by.
+        fetch_time (str): time interval for fetch incidents.
+        fetch_limit (int): limit for number of fetch incidents per fetch.
+        last_run (dict): the incidents last run object from the previous fetch.
     Returns:
-        List: list of fetched alerts.
+        tuple[list, dict]: list of fetched incidents, and the updated incidents last run object.
     """
-    filter_query = create_filter_query(filter, service_sources)
     severity_map = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0}
 
-    last_run = demisto.getLastRun()
     timestamp_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     demisto_incidents: list = []
     time_from = new_last_run.get("time")
     time_to = datetime.now().strftime(timestamp_format)
 
-    # Get incidents from MS Graph Security
-    demisto.debug(f"Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}. Filter: {filter_query}")
-    args = {"time_to": time_to, "time_from": time_from, "filter": filter_query}
-    params = create_search_alerts_filters(args, is_fetch=True)
-    incidents = client.search_alerts(params)["value"]
+    # Get incidents from MS Graph Security, filtered by the createdDateTime time window only.
+    top = min(fetch_limit, MAX_ITEMS_PER_RESPONSE)
+    filter_expression = f"createdDateTime gt {time_from} and createdDateTime le {time_to}"
+    url_suffix = f"security/incidents?$top={top}&$filter={filter_expression}&$orderby=createdDateTime asc"
+    demisto.debug(f"Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}.")
+    incidents = client.get_incidents_request(url_suffix, FETCH_INCIDENTS_TIMEOUT).get("value", [])
 
     if incidents:
         count = 0
@@ -1184,7 +1220,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
             if incident_time > last_incident_time and count < fetch_limit:
                 demisto_incidents.append(
                     {
-                        "name": incident.get("title") + " - " + incident.get("id"),
+                        "name": f'{incident.get("displayName")} - {incident.get("id")}',
                         "occurred": incident.get("createdDateTime"),
                         "severity": severity_map.get(incident.get("severity", ""), 0),
                         "rawJSON": json.dumps(incident),
@@ -1195,8 +1231,62 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
             last_incident_time = demisto_incidents[-1].get("occurred")
             new_last_run.update({"time": last_incident_time})
 
-    demisto.setLastRun(new_last_run)
-    return demisto_incidents
+    return demisto_incidents, new_last_run
+
+
+def fetch_alerts(
+    client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, service_sources: str, last_run: dict
+) -> tuple[list, dict]:
+    """
+    This function will execute each interval (default is 1 minute).
+    This function will return up to the given limit alerts according to the given filters using the search_alerts function.
+    Args:
+        client (MsGraphClient): MsGraphClient client object.
+        fetch_time (str): time interval for fetch alerts.
+        fetch_limit (int): limit for number of fetch alerts per fetch.
+        filter (str): configured user filter.
+        service_sources (str): comma separated list of service_sources to fetch alerts by.
+        last_run (dict): the alerts last run object from the previous fetch.
+    Returns:
+        tuple[list, dict]: list of fetched alerts, and the updated alerts last run object.
+    """
+    filter_query = create_filter_query(filter, service_sources)
+    severity_map = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0}
+
+    timestamp_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=timestamp_format)[0]}
+    demisto_alerts: list = []
+    time_from = new_last_run.get("time")
+    time_to = datetime.now().strftime(timestamp_format)
+
+    # Get alerts from MS Graph Security
+    demisto.debug(f"Fetching MS Graph Security alerts. From: {time_from}. To: {time_to}. Filter: {filter_query}")
+    args = {"time_to": time_to, "time_from": time_from, "filter": filter_query}
+    params = create_search_alerts_filters(args, is_fetch=True)
+    alerts = client.search_alerts(params)["value"]
+
+    if alerts:
+        count = 0
+        alerts = sorted(alerts, key=lambda k: k["createdDateTime"])  # sort the alerts by time-increasing order
+        last_alert_time = last_run.get("time", "0")
+        demisto.debug(f'Alerts times: {[alerts[i]["createdDateTime"] for i in range(len(alerts))]}\n')
+        for alert in alerts:
+            alert_time = alert.get("createdDateTime")
+            if alert_time > last_alert_time and count < fetch_limit:
+                demisto_alerts.append(
+                    {
+                        "name": alert.get("title") + " - " + alert.get("id"),
+                        "occurred": alert.get("createdDateTime"),
+                        "severity": severity_map.get(alert.get("severity", ""), 0),
+                        "rawJSON": json.dumps(alert),
+                    }
+                )
+                count += 1
+        if demisto_alerts:
+            last_alert_time = demisto_alerts[-1].get("occurred")
+            new_last_run.update({"time": last_alert_time})
+
+    return demisto_alerts, new_last_run
 
 
 def search_alerts_command(client: MsGraphClient, args):
@@ -2526,18 +2616,8 @@ def main():
             grant_type=grant_type,
         )
         if command == "fetch-incidents":
-            fetch_time = params.get("fetch_time", "1 day")
-            fetch_limit = params.get("fetch_limit", 10) or 10
-            fetch_service_sources = params.get("fetch_service_sources", "")
-            fetch_filter = params.get("fetch_filter", "")
-            incidents = fetch_incidents(
-                client,
-                fetch_time=fetch_time,
-                fetch_limit=int(fetch_limit),
-                filter=fetch_filter,
-                service_sources=fetch_service_sources,
-            )
-            demisto.incidents(incidents)
+            incidents_and_alerts = fetch_incidents_and_alerts(client, params)
+            demisto.incidents(incidents_and_alerts)
         elif command == "msg-create-mail-assessment-request":
             return_results(create_mail_assessment_request_command(args, client))
         elif command == "msg-create-email-file-assessment-request":

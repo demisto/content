@@ -25,7 +25,7 @@ from MicrosoftGraphSecurity import (
     create_search_alerts_filters,
     create_url_assessment_request_command,
     created_by_fields_to_hr,
-    fetch_incidents,
+    fetch_alerts,
     get_alert_details_command,
     get_list_security_incident_command,
     get_message_user,
@@ -171,33 +171,33 @@ def test_search_alerts_command(mocker, test_case):
         "test_case_1",
     ],
 )
-def test_fetch_incidents_command(mocker, test_case):
+def test_fetch_alerts_command(mocker, test_case):
     """
     Given:
     - test case that point to the relevant test case in the json test data which include a response mock.
     - Case 1: Response of a search_alert command results.
 
     When:
-    - Running fetch_incidents.
+    - Running fetch_alerts.
 
     Then:
-    - Ensure that the length of the results and the different fields of the fetched incidents are returned correctly.
-    - Case 1: Ensure that the len of the incidents returned in the first iteration is 3, then 1 and then 0.
+    - Ensure that the length of the results and the different fields of the fetched alerts are returned correctly.
+    - Case 1: Ensure that the len of the alerts returned in the first iteration is 3, then 1 and then 0.
     """
     mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19 08:14:21", "never mind"))
     test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
     mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
-    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", service_sources="")
-    assert len(incidents) == 3
-    assert incidents[0].get("severity") == 2
-    assert incidents[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
+    alerts = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", service_sources="")
+    assert len(alerts) == 3
+    assert alerts[0].get("severity") == 2
+    assert alerts[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
 
-    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=1, filter="", service_sources="")
-    assert len(incidents) == 1
-    assert incidents[0].get("name") == "test alert - da637218501473413212_-1554891308"
+    alerts = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=1, filter="", service_sources="")
+    assert len(alerts) == 1
+    assert alerts[0].get("name") == "test alert - da637218501473413212_-1554891308"
 
-    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=0, filter="", service_sources="")
-    assert len(incidents) == 0
+    alerts = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=0, filter="", service_sources="")
+    assert len(alerts) == 0
 
 
 @pytest.mark.parametrize(

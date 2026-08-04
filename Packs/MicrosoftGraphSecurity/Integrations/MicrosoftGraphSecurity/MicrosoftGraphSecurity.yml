@@ -150,6 +150,16 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Fetch incidents type
+  name: fetch_incidents_type
+  type: 16
+  section: Collect
+  required: false
+  defaultvalue: Alerts
+  additionalinfo: Select which record types to fetch. You can select Alerts, Incidents, or both.
+  options:
+  - Alerts
+  - Incidents
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   name: fetch_time
@@ -162,15 +172,15 @@ configuration:
   section: Collect
   required: false
   defaultvalue: '10'
-- display: Fetch incidents of the given service sources only.
-  additionalinfo: Multiple service sources can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, incidents of all service sources will be fetched.
+- display: Fetch alerts of the given service sources only.
+  additionalinfo: Relevant only when fetching Alerts (incidents have no service source). Multiple service sources can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, alerts of all service sources will be fetched.
   name: fetch_service_sources
   type: 0
   section: Collect
   advanced: true
   required: false
 - display: Fetched incidents filter
-  additionalinfo: Use this field to filter fetched incidents according to any of the alert properties. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
+  additionalinfo: Use this field to filter fetched records according to their properties. Applies to both alerts and incidents. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   name: fetch_filter
   type: 0
   section: Collect
