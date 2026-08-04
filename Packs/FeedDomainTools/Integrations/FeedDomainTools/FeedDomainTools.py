@@ -172,7 +172,7 @@ class DomainToolsClient:
 
                 timestamp = json_feed.get("timestamp", "")
 
-                if self.feed_type in (self.IPHOTLIST, self.IPRISK):
+                if feed_type in (self.IPHOTLIST, self.IPRISK):
                     indicator = json_feed.get("ip")
                     indicator_type = FeedIndicatorType.IP
                 else:
@@ -210,7 +210,7 @@ class DomainToolsClient:
                     # update the parsed dt feed data
                     dt_feed_data["risk_score_details"] = risk_score_details
 
-                if self.feed_type in (self.IPHOTLIST, self.IPRISK):
+                if feed_type in (self.IPHOTLIST, self.IPRISK):
                     ip_threat_data = {
                         "asn": json_feed.get("asn"),
                         "organization": json_feed.get("organization"),
