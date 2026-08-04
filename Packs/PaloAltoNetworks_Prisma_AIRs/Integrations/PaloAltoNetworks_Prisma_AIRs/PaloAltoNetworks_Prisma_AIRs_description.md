@@ -1,7 +1,3 @@
-## Palo Alto Networks - Prisma AIRs AI Security
-
-Integrate with Palo Alto Networks Prisma AIRs to secure AI applications with runtime scanning, red teaming, and model security capabilities.
-
 ### Prerequisites
 
 Before configuring this integration, you need:
