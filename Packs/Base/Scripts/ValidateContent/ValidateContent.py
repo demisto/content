@@ -192,12 +192,13 @@ SKIPPED_HOOKS = [
 # megabytes; sending all of it back would bloat the war-room entry.
 MAX_CAPTURED_STDOUT_CHARS = 20000
 
-# `validate_content` runs `validate` and `pre-commit` on two worker threads, and
-# both log through `demisto.*`. Without a lock, one thread could restore fd 1 for
-# its own IPC call while the other is emitting library output, letting that
-# output escape onto the IPC channel. The lock is re-entrant because a wrapped
-# `demisto.*` call may be made from within another one (e.g. debug inside error).
+# Guards the fd swap performed by `real_stdout`. Re-entrant because a wrapped
+# `demisto.*` call may be issued from within another one (e.g. debug in error).
 _STDOUT_SWAP_LOCK = threading.RLock()
+
+# Set while demisto-sdk runs `validate` / `pre-commit` on worker threads. See
+# `suspended_ipc` for why fd 1 must never be restored during that window.
+_IPC_SUSPENDED = False
 
 
 def get_yml_splitter():
@@ -228,19 +229,56 @@ def _flush_streams() -> None:
 
 
 @contextmanager
+def suspended_ipc():
+    """
+    Forbid restoring fd 1 for the duration of the block.
+
+    Restoring fd 1 is only safe while this script is the sole writer. Once
+    demisto-sdk runs `validate` and `pre-commit` on worker threads, its own
+    threads and subprocesses write to fd 1 at arbitrary moments. A lock cannot
+    prevent that - it only serializes OUR code - so any window in which fd 1
+    points at the IPC channel can be filled with library output, which is
+    exactly the corruption this module exists to prevent.
+
+    During the block, `demisto.*` output is written to the capture file instead
+    of being emitted, and is surfaced afterwards via `read_captured_stdout`.
+    Blocking IPC calls (e.g. `getFilePath`) must therefore be made before the
+    block - they are, in `setup_content_dir`, which runs single-threaded.
+    """
+    global _IPC_SUSPENDED
+    with _STDOUT_SWAP_LOCK:
+        # Wait for any in-flight IPC call to finish before suspending, so the
+        # worker threads never start while fd 1 is the real channel.
+        previous = _IPC_SUSPENDED
+        _IPC_SUSPENDED = True
+    try:
+        yield
+    finally:
+        with _STDOUT_SWAP_LOCK:
+            _IPC_SUSPENDED = previous
+
+
+@contextmanager
 def real_stdout():
     """
     Temporarily restore fd 1 to the real stdout (the XSOAR IPC channel).
 
-    Every `demisto.*` call must run inside this block - see `_wrap_demisto_ipc`.
+    Every `demisto.*` call runs inside this block - see `_wrap_demisto_ipc`.
     Anything written to fd 1 outside it is diverted to the capture file by the
     stdout firewall installed at the top of this module.
+
+    Does nothing while IPC is suspended (see `suspended_ipc`), so concurrent
+    library output can never escape through a restore window.
     """
     if not _FIREWALL_ARMED:
         # Firewall already disarmed - fd 1 is the real channel, nothing to do.
         yield
         return
     with _STDOUT_SWAP_LOCK:
+        if _IPC_SUSPENDED:
+            # Unsafe to restore fd 1 now; let the output go to the capture file.
+            yield
+            return
         _flush_streams()
         os.dup2(_REAL_STDOUT_FD, 1)
         try:
@@ -263,6 +301,9 @@ def _wrap_demisto_ipc() -> None:
     would deadlock until the script's execution timeout. Wrapping them keeps
     the IPC channel available exactly for the duration of each call, while
     library noise emitted in between is still captured.
+
+    While IPC is suspended the calls still succeed - their output is captured
+    rather than emitted - so logging never blocks or crashes the validation.
     """
     ipc_functions = (
         "addEntry",
@@ -1078,9 +1119,13 @@ def main():
 
             # Got to be in content dir when running demisto-sdk commands.
             os.chdir(CONTENT_DIR_PATH)
-            # No stdout guard is needed here: the firewall installed at the top of
-            # this module has fd 1 pointed at the capture file for the whole run.
-            validation_results, raw_outputs = validate_content(path_to_validate)
+            # `validate_content` runs demisto-sdk on worker threads that write to
+            # fd 1 at arbitrary moments. Suspend IPC so fd 1 is never restored
+            # while they run - otherwise their output would escape through a
+            # restore window and corrupt the entry. Logs emitted meanwhile are
+            # captured and reported below.
+            with suspended_ipc():
+                validation_results, raw_outputs = validate_content(path_to_validate)
             os.chdir(cwd)
 
             if not raw_outputs:

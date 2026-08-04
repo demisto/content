@@ -372,15 +372,15 @@ def test_wrap_demisto_ipc_routes_calls_to_real_stdout():
     assert "Packs/Leaked" not in result.stdout
 
 
-def test_concurrent_ipc_calls_do_not_let_library_output_escape():
+def test_suspended_ipc_prevents_concurrent_library_output_from_escaping():
     """
-    Given: `validate_content` runs `validate` and `pre-commit` on two worker
-           threads, both of which log via `demisto.*` while libraries write
-           noise to fd 1.
-     When: IPC calls and library output are interleaved across threads.
-     Then: Only the JSON IPC lines reach stdout. Without a lock around the fd
-           swap, one thread restoring stdout for its own call would expose the
-           other thread's noise, re-introducing the decode failure.
+    Given: `validate_content` runs demisto-sdk on worker threads that write to
+           fd 1 at arbitrary moments, while our own code logs via `demisto.*`.
+     When: That work runs inside `suspended_ipc`, as it does in `main`.
+     Then: Nothing at all reaches stdout. A lock alone is insufficient here - it
+           only serializes our code, so any window where fd 1 points at the IPC
+           channel could be filled by a library thread, which is precisely the
+           corruption this module prevents. Suspending IPC removes the window.
     """
     result = _run_in_subprocess(
         """
@@ -403,23 +403,60 @@ def test_concurrent_ipc_calls_do_not_let_library_output_escape():
             for _ in range(200):
                 os.write(1, b"Packs/Noise from a library\\n")
 
-        threads = [threading.Thread(target=logger), threading.Thread(target=noisemaker)]
-        for t in threads:
-            t.start()
-        for t in threads:
-            t.join()
+        # Mirrors how main() invokes validate_content().
+        with vc.suspended_ipc():
+            threads = [threading.Thread(target=logger), threading.Thread(target=noisemaker)]
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join()
 
+        captured = vc.read_captured_stdout()
+        vc.restore_real_stdout()
+        # Neither the logs nor the noise may have escaped; both are captured.
+        sys.stdout.write(json.dumps({
+            "logged": '{"debug": 199}' in captured,
+            "noise_captured": "Packs/Noise" in captured,
+        }))
+        """
+    )
+
+    assert result.returncode == 0, result.stderr
+    # Exactly one JSON document on stdout - no leaked lines before it.
+    summary = json.loads(result.stdout)
+    assert summary == {"logged": True, "noise_captured": True}
+
+
+def test_ipc_is_restored_after_suspension_ends():
+    """
+    Given: IPC was suspended for the threaded validation run.
+     When: The suspension block exits.
+     Then: `demisto.*` calls reach the real stdout again, so the final entry can
+           still be emitted.
+    """
+    result = _run_in_subprocess(
+        """
+        import json, sys
+        import demistomock as demisto
+        import ValidateContent as vc
+
+        def fake_debug(msg):
+            sys.stdout.write(json.dumps({"debug": msg}) + "\\n")
+
+        demisto.debug = fake_debug
+        vc._wrap_demisto_ipc()
+
+        with vc.suspended_ipc():
+            demisto.debug("suppressed")
+
+        demisto.debug("emitted")
         vc.restore_real_stdout()
         """
     )
 
     assert result.returncode == 0, result.stderr
-    lines = [line for line in result.stdout.splitlines() if line.strip()]
-    # Every single line on the IPC channel must be valid JSON.
-    for line in lines:
-        json.loads(line)
-    assert len(lines) == 200
-    assert "Packs/Noise" not in result.stdout
+    lines = [json.loads(line) for line in result.stdout.splitlines() if line.strip()]
+    assert lines == [{"debug": "emitted"}]
 
 
 def test_restore_real_stdout_is_idempotent():
