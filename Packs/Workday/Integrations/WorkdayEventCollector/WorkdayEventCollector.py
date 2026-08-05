@@ -11,7 +11,8 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-MAX_EVENTS_PER_REQUEST = 100
+DEFAULT_MAX_FETCH = 3000
+MAX_PAGE_SIZE = 1000
 VENDOR = "Workday"
 PRODUCT = "Activity"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -107,6 +108,20 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def resolve_max_fetch(params: dict) -> int:
+    """
+    Resolves the max_fetch value from the integration params, falling back to DEFAULT_MAX_FETCH
+    when the parameter is missing, empty, or evaluates to a falsy value.
+
+    Args:
+        params: The integration parameters.
+
+    Returns:
+        The resolved max_fetch value.
+    """
+    return arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+
+
 def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_date: str, to_date: str):
     """
     Fetches up to logging_to_fetch activity logging avaiable from Workday.
@@ -122,7 +137,7 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
     activity_loggings: list = []
     offset = 0
     while logging_to_fetch > 0:
-        limit = min(1000, logging_to_fetch)
+        limit = min(MAX_PAGE_SIZE, logging_to_fetch)
         res = client.get_activity_logging_request(from_date=from_date, to_date=to_date, offset=offset, limit=limit)
         demisto.debug(f"Fetched {len(res)} activity loggings.")
         activity_loggings.extend(res)
@@ -271,7 +286,7 @@ def main() -> None:  # pragma: no cover
 
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_fetch = arg_to_number(params.get("max_fetch")) or 1000
+    max_fetch = resolve_max_fetch(params)
     first_fetch = arg_to_datetime(arg=params.get("first_fetch", "3 days"), arg_name="First fetch time", required=True)
 
     demisto.debug(f"Command being called is {command}")

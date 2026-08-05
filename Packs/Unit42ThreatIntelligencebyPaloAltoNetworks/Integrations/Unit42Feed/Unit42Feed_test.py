@@ -824,8 +824,8 @@ def test_fetch_indicators_basic(client, mocker):
         - Calling fetch_indicators function
     Then:
         - Fetches indicators from API
-        - Parses and returns indicator list
-        - Handles pagination correctly
+        - Pushes both indicators and threat objects to the server immediately
+        - Returns the total count fetched
     """
     from Unit42Feed import fetch_indicators
 
@@ -843,6 +843,8 @@ def test_fetch_indicators_basic(client, mocker):
     mocker.patch.object(client, "get_indicators", return_value=mock_indicators_response)
     mocker.patch.object(client, "get_threat_objects", return_value=mock_threat_objects_response)
 
+    mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
+
     # Mock demisto functions
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
     mock_demisto_params(mocker)
@@ -857,12 +859,13 @@ def test_fetch_indicators_basic(client, mocker):
     current_time = datetime.now()
     result = fetch_indicators(client, params, current_time)
 
-    assert len(result) >= 2  # At least one indicator and one threat object
+    assert result >= 2  # At least one indicator and one threat object
 
-    # Check that we have both indicators and threat objects
-    indicator_types = [item["type"] for item in result]
-    assert FeedIndicatorType.IP in indicator_types
-    assert ThreatIntel.ObjectsNames.THREAT_ACTOR in indicator_types
+    # Check that both indicators and threat objects were pushed to the server
+    pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
+    pushed_types = [item["type"] for item in pushed_items]
+    assert FeedIndicatorType.IP in pushed_types
+    assert ThreatIntel.ObjectsNames.THREAT_ACTOR in pushed_types
 
 
 def test_fetch_indicators_pagination(client, mocker):
@@ -874,6 +877,7 @@ def test_fetch_indicators_pagination(client, mocker):
     Then:
         - Handles pagination correctly
         - Fetches multiple pages until limit or no more pages
+        - Pushes indicators from both pages to the server
     """
     from Unit42Feed import fetch_indicators
 
@@ -893,14 +897,18 @@ def test_fetch_indicators_pagination(client, mocker):
 
     mocker.patch.object(client, "get_threat_objects", return_value={"data": [], "metadata": {}})
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
+    mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
     params = {"feed_types": ["Indicators"], "indicator_types": ["ip"], "feed_tags": [], "tlp_color": None}
 
     current_time = datetime.now()
     result = fetch_indicators(client, params, current_time)
 
-    # Should have indicators from both pages
-    ip_indicators = [item for item in result if item["type"] == FeedIndicatorType.IP]
+    assert result == 2
+
+    # Should have indicators from both pages, pushed to the server
+    pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
+    ip_indicators = [item for item in pushed_items if item["type"] == FeedIndicatorType.IP]
     assert len(ip_indicators) == 2
     assert any(item["value"] == "1.2.3.4" for item in ip_indicators)
     assert any(item["value"] == "5.6.7.8" for item in ip_indicators)
@@ -1092,30 +1100,26 @@ def test_main_function_fetch_indicators(mocker):
     When:
         - Calling main function
     Then:
-        - Executes fetch_indicators and creates indicators
+        - Executes fetch_indicators, which pushes indicators to the server internally
+        - main() itself no longer accumulates or re-batches indicators
     """
     # Mock demisto functions
     mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "720"}
     mocker.patch("Unit42Feed.demisto.params", return_value=mock_params)
     mocker.patch("Unit42Feed.demisto.command", return_value="fetch-indicators")
     mocker.patch("Unit42Feed.demisto.getLicenseID", return_value="test_license")
-    mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
     mock_set_last_run = mocker.patch("Unit42Feed.demisto.setLastRun")
     mock_info = mocker.patch("Unit42Feed.demisto.info")
 
-    # Mock Client and fetch_indicators
+    # Mock Client and fetch_indicators (fetch_indicators now returns a count and pushes internally)
     mock_client = mocker.Mock()
     mocker.patch("Unit42Feed.Client", return_value=mock_client)
-    mock_indicators = [{"value": "1.2.3.4", "type": "IP"}]
-    mocker.patch("Unit42Feed.fetch_indicators", return_value=mock_indicators)
+    mock_fetch_indicators = mocker.patch("Unit42Feed.fetch_indicators", return_value=1)
     mocker.patch("Unit42Feed.datetime")
-
-    # Mock batch function
-    mocker.patch("Unit42Feed.batch", return_value=[mock_indicators])
 
     main()
 
-    mock_create_indicators.assert_called_once()
+    mock_fetch_indicators.assert_called_once()
     mock_set_last_run.assert_called_once()
     mock_info.assert_called_once()
 
@@ -1296,7 +1300,8 @@ def test_fetch_indicator_type_with_limit(client, mocker):
     When:
         - Calling fetch_indicator_type with limit smaller than API response
     Then:
-        - Returns only up to the limit
+        - Returns a count of only up to the limit
+        - Pushes only up to the limit to the server
         - Makes correct API calls with page_limit
     """
     # Mock responses - first page has 100 items, second page has 50
@@ -1312,14 +1317,18 @@ def test_fetch_indicator_type_with_limit(client, mocker):
 
     mock_get_indicators = mocker.patch.object(client, "get_indicators")
     mock_get_indicators.side_effect = [first_response, second_response]
+    mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Fetch with limit of 120 (should get 100 from first page, 20 from second)
     result = fetch_indicator_type(
         client=client, indicator_type="IP", limit=120, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
-    assert len(result) == 120
+    assert result == 120
     assert mock_get_indicators.call_count == 2
+
+    pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
+    assert len(pushed_items) == 120
 
     # Check first call had limit of 100 (min of API_LIMIT and remaining)
     first_call_args = mock_get_indicators.call_args_list[0][1]
@@ -1347,13 +1356,14 @@ def test_fetch_indicator_type_stops_at_limit(client, mocker):
     }
 
     mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Fetch with limit of 50
     result = fetch_indicator_type(
         client=client, indicator_type="IP", limit=50, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
-    assert len(result) == 50
+    assert result == 50
     assert mock_get_indicators.call_count == 1  # Should only make one call
 
 
@@ -1364,17 +1374,19 @@ def test_fetch_indicator_type_no_data(client, mocker):
     When:
         - Calling fetch_indicator_type
     Then:
-        - Returns empty list
+        - Returns a count of zero
         - Handles gracefully
     """
     mock_response = {"data": [], "metadata": {}}
     mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
     result = fetch_indicator_type(
         client=client, indicator_type="IP", limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
-    assert result == []
+    assert result == 0
+    mock_create_indicators.assert_not_called()
 
 
 def test_fetch_threat_objects_with_limit(client, mocker):
@@ -1384,7 +1396,8 @@ def test_fetch_threat_objects_with_limit(client, mocker):
     When:
         - Calling fetch_threat_objects_with_limit
     Then:
-        - Returns threat objects up to the limit
+        - Returns count of threat objects up to the limit
+        - Pushes threat objects to the server
         - Handles pagination correctly
     """
     mock_demisto_params(mocker)
@@ -1402,12 +1415,16 @@ def test_fetch_threat_objects_with_limit(client, mocker):
 
     mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects")
     mock_get_threat_objects.side_effect = [first_response, second_response]
+    mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Fetch with limit of 120
     result = fetch_threat_objects_with_limit(client=client, limit=120, feed_tags=[], tlp_color=None)
 
-    assert len(result) == 120
+    assert result == 120
     assert mock_get_threat_objects.call_count == 2
+
+    pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
+    assert len(pushed_items) == 120
 
 
 def test_fetch_indicators_limit_validation(client, mocker):
@@ -1539,13 +1556,14 @@ def test_fetch_indicator_type_pagination(client, mocker):
 
     mock_get_indicators = mocker.patch.object(client, "get_indicators")
     mock_get_indicators.side_effect = responses
+    mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Fetch with limit of 250 (should get 100 + 100 + 50)
     result = fetch_indicator_type(
         client=client, indicator_type="IP", limit=250, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
-    assert len(result) == 250
+    assert result == 250
     assert mock_get_indicators.call_count == 3
 
     # Verify the third call requested only 50 (remaining)
@@ -1571,11 +1589,12 @@ def test_fetch_threat_objects_with_limit_stops_early(client, mocker):
     }
 
     mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Request limit of 100, but only 25 available
     result = fetch_threat_objects_with_limit(client=client, limit=100, feed_tags=[], tlp_color=None)
 
-    assert len(result) == 25
+    assert result == 25
     assert mock_get_threat_objects.call_count == 1
 
 

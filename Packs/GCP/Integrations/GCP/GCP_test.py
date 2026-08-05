@@ -5426,7 +5426,7 @@ def test_get_credentials_marketplace_missing_credentials_raises(mocker):
     """
     Given:
         - Integration params with no credentials (empty password) and no project_id in args.
-        - No connector ID in context (not Cortex Cloud).
+        - No connector ID in context (not Cortex Platform).
     When:
         - get_credentials is called.
     Then:
@@ -5449,7 +5449,7 @@ def test_get_credentials_none_password_does_not_raise_attributeerror(mocker):
     """
     Given:
         - The 'credentials' param exists but its 'password' value is None.
-        - project_id is provided in args (Cortex Cloud path).
+        - project_id is provided in args (Cortex Platform path).
     When:
         - get_credentials is called.
     Then:
@@ -5473,7 +5473,7 @@ def test_get_credentials_none_password_does_not_raise_attributeerror(mocker):
 def test_get_credentials_cortex_cloud_token_path(mocker):
     """
     Given:
-        - No service account JSON in params (Cortex Cloud path).
+        - No service account JSON in params (Cortex Platform path).
         - project_id is provided in args.
         - get_cloud_credentials returns a valid access_token.
     When:
@@ -6099,7 +6099,7 @@ def test_get_credentials_marketplace_build_failure_raises(mocker):
 def test_get_credentials_cortex_cloud_missing_token_raises(mocker):
     """
     Given:
-        - No service account JSON (Cortex Cloud path) and a project_id in args.
+        - No service account JSON (Cortex Platform path) and a project_id in args.
         - get_cloud_credentials succeeds but returns a payload WITHOUT an access_token.
     When:
         - get_credentials is called.
@@ -6123,7 +6123,7 @@ def test_get_credentials_cortex_cloud_missing_token_raises(mocker):
 def test_get_credentials_cortex_cloud_cts_call_failure_wrapped(mocker):
     """
     Given:
-        - No service account JSON (Cortex Cloud path) and a project_id in args.
+        - No service account JSON (Cortex Platform path) and a project_id in args.
         - The get_cloud_credentials (CTS) call itself raises an exception.
     When:
         - get_credentials is called.

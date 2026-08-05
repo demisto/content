@@ -15,6 +15,12 @@ configuration:
   type: 8
   required: false
   section: Collect
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
@@ -208,6 +214,15 @@ configuration:
   defaultvalue: '50'
   display: Reputation commands context limit
   name: reputation_enrichments_limit
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
+- additionalinfo: >-
+    The maximum number of characters retained from the message field of a community search result returned by the ip command. Lowering this value reduces context payload size, while raising it preserves more of the original content.
+  defaultvalue: '500'
+  display: Community search message max length
+  name: message_max_length
   type: 0
   required: false
   section: Connect
@@ -4825,7 +4840,7 @@ script:
     description: List products using provided filters.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.13.10404775
   isfetch: true
   runonce: false
   subtype: python3
