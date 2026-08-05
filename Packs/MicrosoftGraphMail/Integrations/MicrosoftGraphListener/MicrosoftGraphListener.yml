@@ -118,7 +118,7 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: During authentication, ensure you are logged in to this email address.
+  additionalinfo: The single mailbox this integration operates against. During authentication, ensure you are logged in to this email address. This mailbox is used by fetch-incidents and by all mail commands. Because this integration uses delegated permissions, it can only access this signed-in user's mailbox.
 - display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
   type: 0
@@ -521,10 +521,8 @@ script:
     arguments: []
   - name: msgraph-mail-list-emails
     arguments:
-    - name: user_id
-      description: User ID from which to pull mails (can be principal ID (email address)). If not provided, the mailbox configured for the integration instance is used.
     - name: folder_id
-      description: 'A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).'
+      description: 'A comma-separated list of folder IDs, in the format: "mail_box,child_mail_box,child_mail_box".'
     - name: odata
       description: An OData query. See REDAME for OData usage examples.
     - name: search
@@ -617,7 +615,7 @@ script:
     - contextPath: MSGraphMail.NextPage
       description: A token to pass to the next list command to retrieve additional results.
       type: String
-    description: Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
+    description: Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results. This command lists emails only from the mailbox specified in the integration configuration.
     polling: true
   - name: msgraph-mail-list-attachments
     arguments:
