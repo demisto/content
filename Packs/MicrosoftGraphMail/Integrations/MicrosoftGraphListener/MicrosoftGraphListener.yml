@@ -521,6 +521,10 @@ script:
     arguments: []
   - name: msgraph-mail-list-emails
     arguments:
+    - name: user_id
+      description: User ID from which to pull mails (can be principal ID (email address)). If not provided, the mailbox configured for the integration instance is used.
+    - name: folder_id
+      description: 'A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).'
     - name: odata
       description: An OData query. See REDAME for OData usage examples.
     - name: search

@@ -328,6 +328,8 @@ Gets the properties of returned emails. Typically shows partial results, use the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| user_id | User ID from which to pull mails (can be principal ID (email address)). If not provided, the mailbox configured for the integration instance is used. | Optional |
+| folder_id | A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional |
 | odata | An OData query. See [OData Usage](#odata-usage) for OData usage examples. | Optional |
 | search | The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2. | Optional |
 | page_size | The maximum number of emails to fetch in one request. Default is 20. | Optional |
