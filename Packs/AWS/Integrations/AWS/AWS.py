@@ -1478,8 +1478,8 @@ class S3:
             outputs = {
                 "AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)": {
                     "BucketName": bucket,
-                    "Objects": contents,
-                    "ObjectsNextToken": serialized_response.get("NextContinuationToken"),
+                    "ObjectsV2": contents,
+                    "ObjectsV2NextToken": serialized_response.get("NextContinuationToken"),
                 },
             }
             return CommandResults(

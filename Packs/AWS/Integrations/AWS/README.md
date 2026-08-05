@@ -626,28 +626,28 @@ Creates a new Access Entry for an Amazon EKS cluster. Required IAM Permission: e
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
-| cluster_name | The name of the cluster for which to create an access entry. | Required |
-| principal_arn | The ARN of the IAM principal to associate with the access entry. | Required |
-| kubernetes_groups | A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional |
-| client_request_token | The unique string used to ensure the request is processed only once. | Optional |
-| type | The type of access entry to create. Possible values are: Standard, FARGATE_LINUX, EC2_LINUX, EC2_WINDOWS, EC2, HYBRID_LINUX, HYPERPOD_LINUX. | Optional |
-| user_name | The username for Kubernetes authentication. | Optional |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional | 
+| cluster_name | The name of the cluster for which to create an access entry. | Required | 
+| principal_arn | The ARN of the IAM principal to associate with the access entry. | Required | 
+| kubernetes_groups | A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional | 
+| client_request_token | The unique string used to ensure the request is processed only once. | Optional | 
+| type | The type of access entry to create. Possible values are: Standard, FARGATE_LINUX, EC2_LINUX, EC2_WINDOWS, EC2, HYBRID_LINUX, HYPERPOD_LINUX. | Optional | 
+| user_name | The username for Kubernetes authentication. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EKS.AccessEntry.clusterName | String | The name of the cluster. |
-| AWS.EKS.AccessEntry.principalArn | String | The ARN of the IAM principal for the access entry. |
-| AWS.EKS.AccessEntry.username | String | The Kubernetes user name for the access entry. |
-| AWS.EKS.AccessEntry.type | String | The access entry type. |
-| AWS.EKS.AccessEntry.createdAt | String | The date and time the access entry was created. |
-| AWS.EKS.AccessEntry.modifiedAt | String | The date and time the access entry was last modified. |
-| AWS.EKS.AccessEntry.kubernetesGroups | Array | The Kubernetes groups that the access entry is associated with. |
-| AWS.EKS.AccessEntry.tags | Object | The metadata tags associated with the access entry. |
-| AWS.EKS.AccessEntry.accessEntryArn | String | The ARN of the access entry. |
+| AWS.EKS.AccessEntry.clusterName | String | The name of the cluster. | 
+| AWS.EKS.AccessEntry.principalArn | String | The ARN of the IAM principal for the access entry. | 
+| AWS.EKS.AccessEntry.username | String | The Kubernetes user name for the access entry. | 
+| AWS.EKS.AccessEntry.type | String | The access entry type. | 
+| AWS.EKS.AccessEntry.createdAt | String | The date and time the access entry was created. | 
+| AWS.EKS.AccessEntry.modifiedAt | String | The date and time the access entry was last modified. | 
+| AWS.EKS.AccessEntry.kubernetesGroups | Array | The Kubernetes groups that the access entry is associated with. | 
+| AWS.EKS.AccessEntry.tags | Object | The metadata tags associated with the access entry. | 
+| AWS.EKS.AccessEntry.accessEntryArn | String | The ARN of the access entry. | 
 
 ### aws-eks-clusters-list
 

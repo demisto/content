@@ -307,10 +307,10 @@ def test_list_bucket_objects_v2_command(mocker, mock_contents, expected_readable
 
     if expected_output_len > 0:
         bucket_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
-        assert len(bucket_output["Objects"]) == expected_output_len
+        assert len(bucket_output["ObjectsV2"]) == expected_output_len
         assert bucket_output["BucketName"] == "test-bucket"
-        assert bucket_output["Objects"][0]["Key"] == "test.txt"
-        assert bucket_output["Objects"][0]["Size"] == 1024
+        assert bucket_output["ObjectsV2"][0]["Key"] == "test.txt"
+        assert bucket_output["ObjectsV2"][0]["Size"] == 1024
 
 
 def test_list_bucket_objects_v2_command_pagination(mocker):
@@ -341,7 +341,7 @@ def test_list_bucket_objects_v2_command_pagination(mocker):
     assert call_kwargs["ContinuationToken"] == "prev-token-value"
     assert call_kwargs["StartAfter"] == "aaa.txt"
     bucket_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
-    assert bucket_output["ObjectsNextToken"] == "next-token-value"
+    assert bucket_output["ObjectsV2NextToken"] == "next-token-value"
 
 
 def test_list_bucket_objects_v2_command_error_response(mocker):
