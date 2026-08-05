@@ -418,7 +418,9 @@ def test_fetch_skips_cycle_on_transient_server_error(mocker, transient_error):
     client.get_folder_by_path = mocker.Mock(side_effect=transient_error)
     set_last_run = mocker.patch.object(demisto, "setLastRun")
 
-    incidents = fetch_emails_as_incidents(client, {}, RECEIVED_FILTER, False)
+    last_run = {"lastRunTime": "2021-07-14T12:59:17Z", "folderName": "Inbox", "ids": []}
+
+    incidents = fetch_emails_as_incidents(client, last_run, RECEIVED_FILTER, False)
 
     assert incidents == []
     assert set_last_run.call_args[0][0]["errorCounter"] == 1
@@ -441,7 +443,12 @@ def test_fetch_raises_when_transient_error_persists(mocker):
     mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(demisto, "error")
 
-    last_run = {"errorCounter": MAX_CONSECUTIVE_TRANSIENT_ERRORS, "folderName": "Inbox"}
+    last_run = {
+        "lastRunTime": "2021-07-14T12:59:17Z",
+        "folderName": "Inbox",
+        "ids": [],
+        "errorCounter": MAX_CONSECUTIVE_TRANSIENT_ERRORS,
+    }
 
     with pytest.raises(ErrorServerBusy):
         fetch_emails_as_incidents(client, last_run, RECEIVED_FILTER, False)
