@@ -499,29 +499,6 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
             {"detector_id1": "2022-08-28T10:12:39.923854"},
             {"detector_id1": "finding_id0"},
             [{"DetectorIds": ["detector_id1"]}],
-            [{"FindingIds": ["finding_id0"]}],
-            # XSUP-72455: the id is fetched so its UpdatedAt can be inspected. It still shares the
-            # cursor second (already ingested), so it is deduped after the fetch — no events, cursor unchanged.
-            [{"Findings": [update_finding_id(FINDING.copy(), "finding_id0", updated_at="2022-08-28T10:12:39.923854")]}],
-            [call(MaxResults=50)],
-            [
-                call(
-                    **get_expected_list_finding_args(
-                        detector_id="detector_id1", updated_at_ts=1661681559000, gd_severity=1, max_results=10, next_token=None
-                    )
-                )
-            ],
-            [call(DetectorId="detector_id1", FindingIds=["finding_id0"])],
-            [],
-            {"detector_id1": "2022-08-28T10:12:39.923854"},
-            # last_ids preserves the already-seen id at the unchanged cursor second.
-            {"detector_id1": ["finding_id0"]},
-            id="1 detector, 1 old finding",
-        ),
-        pytest.param(
-            {"detector_id1": "2022-08-28T10:12:39.923854"},
-            {"detector_id1": "finding_id0"},
-            [{"DetectorIds": ["detector_id1"]}],
             [{"FindingIds": []}],
             [],
             [call(MaxResults=50)],
@@ -624,6 +601,51 @@ def test_fetch_events(
     assert events == expected_events
     assert new_collect_from == expected_new_collect_from
     assert new_last_ids == expected_new_last_ids
+
+
+def test_fetch_events_single_recent_old_finding_stays_pinned(mocker):
+    """
+    Given:
+        One detector whose cursor sits at a RECENT second, and the only finding
+        returned is the already-ingested one sharing that cursor second (no
+        NextToken). Extracted from the former parametrized "1 detector, 1 old
+        finding" case; the boundary is recent so it is within
+        STALE_BOUNDARY_MARGIN.
+
+    When:
+        get_events runs.
+
+    Then:
+        The already-seen finding is deduped (no events), and because the boundary
+        is still current the cursor stays pinned with last_ids preserved. (A stale
+        boundary would instead advance via the XSUP-71079 freeze-breaker.)
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — same-second dedup pins a current
+        boundary; the stale-boundary advance is time-gated.
+    """
+    cursor = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")
+
+    mocked_client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["detector_id1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_id0"]}],
+        get_findings_res=[{"Findings": [update_finding_id(FINDING.copy(), "finding_id0", updated_at=cursor)]}],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=mocked_client,
+        collect_from={"detector_id1": cursor},
+        collect_from_default=datetime(2022, 7, 28, 10, 11, 39, 923854),
+        last_ids={"detector_id1": "finding_id0"},
+        severity="Low",
+        limit=10,
+    )
+
+    assert events == []
+    # Current boundary: cursor pinned and the already-seen id preserved.
+    assert new_collect_from == {"detector_id1": cursor}
+    assert new_last_ids == {"detector_id1": ["finding_id0"]}
 
 
 # ---------------------------------------------------------------------------
@@ -999,7 +1021,10 @@ def test_same_id_same_second_still_deduped_xsup_72455(mocker):
     Reference:
         AWSGuardDutyEventCollector.get_events — same-second re-reads are still deduped.
     """
-    t1 = "2026-07-03T15:48:55.563000"
+    # A RECENT cursor second: the re-read is deduped and the cursor stays pinned
+    # (a real later same-second update could still arrive). Using a fixed past
+    # second would trip the XSUP-71079 stale-boundary advance instead.
+    t1 = datetime.utcnow().replace(microsecond=563000).strftime("%Y-%m-%dT%H:%M:%S.%f")
     same_second_again = update_finding_id(FINDING.copy(), "finding_X", updated_at=t1)
 
     client, _, _, _ = create_mocked_client(
@@ -1242,8 +1267,11 @@ def test_same_boundary_reupdate_does_not_freeze_fetch_forever(mocker):
         AWSGuardDutyEventCollector.get_events — dedup is scoped to the cursor
         second, so a later-boundary update always resumes forward progress.
     """
-    t1 = "2026-07-03T15:48:55.563000"
-    t2 = "2026-07-04T08:04:55.843000"
+    # T1 is a RECENT second so the same-second re-reads stay pinned (not tripped by
+    # the XSUP-71079 stale-boundary advance). T2 is a strictly-later second.
+    now = datetime.utcnow()
+    t1 = now.replace(microsecond=563000).strftime("%Y-%m-%dT%H:%M:%S.%f")
+    t2 = (now + timedelta(seconds=17)).replace(microsecond=843000).strftime("%Y-%m-%dT%H:%M:%S.%f")
 
     # ---- Runs that keep re-reading finding_X at the SAME second T1 ----------
     for run_number in range(3):
@@ -1409,9 +1437,14 @@ def test_millisecond_siblings_not_reingested_xsup_73410(mocker):
         AWSGuardDutyEventCollector.get_events — cursor advance + same-second
         sibling dedup must operate at whole-second resolution.
     """
-    ts_a = "2026-08-01T13:18:23.311000"
-    ts_b = "2026-08-01T13:18:23.627000"
-    ts_c = "2026-08-01T13:18:23.936000"
+    # Use a RECENT whole-second (within STALE_BOUNDARY_MARGIN of now) so the
+    # fully-deduped re-query in run 2 correctly stays pinned rather than tripping
+    # the stale-boundary freeze-breaker. A real later same-second update could
+    # still arrive at a current second, so pinning is the correct behavior here.
+    base_second = datetime.utcnow().replace(microsecond=0)
+    ts_a = base_second.replace(microsecond=311000).strftime("%Y-%m-%dT%H:%M:%S.%f")
+    ts_b = base_second.replace(microsecond=627000).strftime("%Y-%m-%dT%H:%M:%S.%f")
+    ts_c = base_second.replace(microsecond=936000).strftime("%Y-%m-%dT%H:%M:%S.%f")
 
     def make_findings():
         # Fresh copies each run so mutations never leak between cycles.
@@ -1540,11 +1573,12 @@ def test_stale_fully_deduped_boundary_advances_cursor_xsup_71079(mocker):
         AWSGuardDutyEventCollector.get_events — the fully-deduped-boundary
         advance guard (time-gated so a recent boundary still pins).
     """
-    # collect_from_default is "now" (as it is in production). Make the boundary
-    # second sit safely in the past so the time-gate fires.
-    now = datetime(2026, 8, 4, 18, 0, 0)
-    t0 = "2026-08-04T08:19:28.960000"  # ~10 hours before "now" — clearly stale
-    t0_plus_1s = "2026-08-04T08:19:29"  # cursor must step to the next second
+    # A fixed past boundary is stale against real wall-clock now — no mocking needed.
+    # collect_from_default is the first_fetch lookback FLOOR and is intentionally
+    # unrelated to the boundary; the guard must not depend on it.
+    collect_from_default_floor = datetime(2020, 1, 1, 0, 0, 0)
+    t0 = "2020-01-01T08:19:28.960000"  # years in the past — clearly stale
+    t0_plus_1s = "2020-01-01T08:19:29"  # cursor must step to the next second
 
     stale_only = update_finding_id(FINDING.copy(), "finding_X", updated_at=t0)
     client, _, _, _ = create_mocked_client(
@@ -1559,7 +1593,7 @@ def test_stale_fully_deduped_boundary_advances_cursor_xsup_71079(mocker):
     events, new_last_ids, new_collect_from = get_events(
         aws_client=client,
         collect_from={"det1": t0},
-        collect_from_default=now,
+        collect_from_default=collect_from_default_floor,
         last_ids={"det1": ["finding_X"]},
         severity="Low",
         limit=10,
@@ -1599,8 +1633,9 @@ def test_recent_fully_deduped_boundary_stays_pinned_xsup_71079(mocker):
         AWSGuardDutyEventCollector.get_events — the fully-deduped-boundary
         advance is time-gated; a recent boundary keeps the existing pin behavior.
     """
-    now = datetime(2026, 8, 4, 18, 0, 0)
-    # Boundary is only a few seconds before "now" — still current.
+    # Boundary is only a few seconds before real wall-clock now — still current,
+    # so it falls inside STALE_BOUNDARY_MARGIN and must stay pinned. No mocking.
+    now = datetime.utcnow()
     t_recent = (now - timedelta(seconds=3)).strftime("%Y-%m-%dT%H:%M:%S.%f")
 
     recent_only = update_finding_id(FINDING.copy(), "finding_X", updated_at=t_recent)
@@ -1652,9 +1687,8 @@ def test_stale_boundary_with_a_genuinely_new_finding_ingests_and_does_not_skip_x
         in the elif-finding_ids (zero-events) branch only; any real ingestion
         takes the normal path and is unaffected.
     """
-    now = datetime(2026, 8, 4, 18, 0, 0)
-    t0 = "2026-08-04T08:19:28.960000"  # stale boundary (already seen)
-    t1 = "2026-08-04T08:19:45.100000"  # a genuinely newer second
+    t0 = "2020-01-01T08:19:28.960000"  # stale boundary (already seen)
+    t1 = "2020-01-01T08:19:45.100000"  # a genuinely newer second
 
     finding_old = update_finding_id(FINDING.copy(), "finding_old", updated_at=t0)
     finding_new = update_finding_id(FINDING.copy(), "finding_new", updated_at=t1)
@@ -1668,7 +1702,7 @@ def test_stale_boundary_with_a_genuinely_new_finding_ingests_and_does_not_skip_x
     events, new_last_ids, new_collect_from = get_events(
         aws_client=client,
         collect_from={"det1": t0},
-        collect_from_default=now,
+        collect_from_default=datetime(2020, 1, 1, 0, 0, 0),
         last_ids={"det1": ["finding_old"]},
         severity="Low",
         limit=10,
@@ -1707,8 +1741,7 @@ def test_truncated_stale_fully_deduped_boundary_does_not_advance_xsup_71079(mock
         AWSGuardDutyEventCollector.get_events — the stale-boundary advance
         requires a fully-drained (non-truncated) page.
     """
-    now = datetime(2026, 8, 4, 18, 0, 0)
-    t0 = "2026-08-04T08:19:28.960000"  # stale boundary
+    t0 = "2020-01-01T08:19:28.960000"  # stale boundary
 
     stale_seen = update_finding_id(FINDING.copy(), "finding_X", updated_at=t0)
     client, _, _, _ = create_mocked_client(
@@ -1723,7 +1756,7 @@ def test_truncated_stale_fully_deduped_boundary_does_not_advance_xsup_71079(mock
     events, new_last_ids, new_collect_from = get_events(
         aws_client=client,
         collect_from={"det1": t0},
-        collect_from_default=now,
+        collect_from_default=datetime(2020, 1, 1, 0, 0, 0),
         last_ids={"det1": ["finding_X"]},
         severity="Low",
         limit=1,  # force the listing loop to stop with the NextToken still pending
@@ -1761,10 +1794,9 @@ def test_stale_wedged_detector_advances_without_affecting_healthy_detector_xsup_
         AWSGuardDutyEventCollector.get_events — per-detector cursor/seen-ids
         handling; the stale-boundary advance is scoped to the affected detector.
     """
-    now = datetime(2026, 8, 4, 18, 0, 0)
-    t_stale = "2026-08-04T08:19:28.960000"
-    t_stale_plus_1s = "2026-08-04T08:19:29"
-    t_new = "2026-08-04T17:59:10.500000"  # recent, healthy detector's new finding
+    t_stale = "2020-01-01T08:19:28.960000"
+    t_stale_plus_1s = "2020-01-01T08:19:29"
+    t_new = "2020-01-01T17:59:10.500000"  # healthy detector's new finding (ingested via normal path)
 
     stuck_seen = update_finding_id(FINDING.copy(), "finding_stuck", updated_at=t_stale)
     ok_new = update_finding_id(FINDING.copy(), "finding_ok", updated_at=t_new)
@@ -1786,7 +1818,7 @@ def test_stale_wedged_detector_advances_without_affecting_healthy_detector_xsup_
     events, new_last_ids, new_collect_from = get_events(
         aws_client=client,
         collect_from={"det_stuck": t_stale},  # det_ok has no prior cursor
-        collect_from_default=now,
+        collect_from_default=datetime(2020, 1, 1, 0, 0, 0),
         last_ids={"det_stuck": ["finding_stuck"]},
         severity="Low",
         limit=10,

@@ -352,8 +352,10 @@ def get_events(
             # cursor (which only advances on ingestion) never moves. To break the dead-end, step the
             # cursor one whole second past the drained boundary and drop the now-stale seen ids. A
             # RECENT boundary is left pinned so a genuine later same-second update is still catchable.
-            fetch_start = collect_from_default or datetime.utcnow()
-            boundary_is_stale = cursor_second < (fetch_start - STALE_BOUNDARY_MARGIN)
+            # Staleness is measured against wall-clock now so the margin guarantees no same-second
+            # update can still arrive.
+            now = datetime.utcnow()
+            boundary_is_stale = cursor_second < (now - STALE_BOUNDARY_MARGIN)
             if not truncated_by_limit and boundary_is_stale:
                 next_second = cursor_second + timedelta(seconds=1)
                 new_collect_from[detector_id] = next_second.isoformat()
@@ -362,7 +364,7 @@ def get_events(
                     f"AWSGuardDutyEventCollector - Fully-deduped STALE boundary for {detector_id=}: "
                     f"{len(finding_ids)} finding id(s) listed but all deduped, nothing newer, and the "
                     f"boundary second {cursor_second} is older than {STALE_BOUNDARY_MARGIN} before "
-                    f"{fetch_start}. Advancing cursor to {next_second.isoformat()} and clearing seen ids "
+                    f"now ({now}). Advancing cursor to {next_second.isoformat()} and clearing seen ids "
                     f"to break the stall."
                 )
             else:
