@@ -1,0 +1,39 @@
+commonfields:
+  id: SpecTestScriptDefault
+  version: -1
+name: SpecTestScriptDefault
+comment: >-
+  Test script WITHOUT the spec field.
+  Uses the default worker memory allocation.
+  Used to validate that scripts without the spec field continue to work normally.
+script: ''
+type: python
+subtype: python3
+tags:
+- Utility
+enabled: true
+args:
+- name: input_data
+  required: true
+  default: true
+  description: Input data to process.
+- name: operation
+  description: The operation to perform on the input data.
+  defaultValue: echo
+  auto: PREDEFINED
+  predefined:
+  - echo
+  - reverse
+  - count
+outputs:
+- contextPath: SpecTestScriptDefault.Result.Status
+  description: The processing status.
+  type: String
+- contextPath: SpecTestScriptDefault.Result.Data
+  description: The processed output data.
+  type: String
+scripttarget: 0
+dockerimage: demisto/python3:3.9.9.25564
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
