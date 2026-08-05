@@ -399,7 +399,7 @@ def test_fetch_and_mark_as_read(mocker):
         pytest.param(ErrorServerBusy("Reraised from ErrorInternalServerTransientError"), id="ErrorServerBusy"),
         pytest.param(ErrorInternalServerTransientError("Caused by HTTP 503 response"), id="TransientError"),
         pytest.param(MalformedResponseError("Unknown failure in response. Code: 504"), id="MalformedResponse504"),
-        pytest.param(RateLimitError("Too many requests"), id="RateLimitError"),
+        pytest.param(RateLimitError("Too many requests", wait=10), id="RateLimitError"),
     ],
 )
 def test_fetch_skips_cycle_on_transient_server_error(mocker, transient_error):
@@ -439,6 +439,7 @@ def test_fetch_raises_when_transient_error_persists(mocker):
     client.folder_name = "Inbox"
     client.get_folder_by_path = mocker.Mock(side_effect=ErrorServerBusy("still busy"))
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "error")
 
     last_run = {"errorCounter": MAX_CONSECUTIVE_TRANSIENT_ERRORS, "folderName": "Inbox"}
 

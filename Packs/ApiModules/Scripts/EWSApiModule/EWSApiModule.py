@@ -714,7 +714,7 @@ class EWSClient:
                 raise
             except Exception as e:
                 demisto.debug(f"got error {e}")
-                raise ValueError(f"No such folder {path_parts}")
+                raise ValueError(f"No such folder {path_parts}") from e
         return folder
 
     def send_email(self, message: Message):
