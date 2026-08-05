@@ -1,11 +1,10 @@
+name: IPGeolocation
+display: IPGeolocation.io
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: IPGeolocation
   version: -1
-name: IPGeolocation
-display: IPGeolocation.io
-description: Enrich IP addresses with geolocation, network, ASN, abuse contact and threat intelligence data from the IPGeolocation.io
-  v3 APIs.
+description: Enrich IP addresses with geolocation, network, ASN, abuse contact and threat intelligence data from the IPGeolocation.io v3 APIs.
 configuration:
 - display: Server URL
   name: url
@@ -22,13 +21,10 @@ configuration:
   hiddenusername: true
   additionalinfo: The API key issued in the IPGeolocation.io dashboard. Sent as the documented apiKey query parameter.
   section: Connect
-- display: HTTP timeout (seconds)
-  name: timeout
-  defaultvalue: '30'
-  type: 0
+- display: Use system proxy settings
+  name: proxy
+  type: 8
   required: false
-  additionalinfo: Per request timeout, between 1 and 300 seconds. A timeout that is too short causes the API to return HTTP
-    499.
   section: Connect
   advanced: true
 - display: Trust any certificate (not secure)
@@ -37,10 +33,12 @@ configuration:
   required: false
   section: Connect
   advanced: true
-- display: Use system proxy settings
-  name: proxy
-  type: 8
+- display: HTTP timeout (seconds)
+  name: timeout
+  defaultvalue: '30'
+  type: 0
   required: false
+  additionalinfo: Per request timeout, between 1 and 300 seconds. A timeout that is too short causes the API to return HTTP 499.
   section: Connect
   advanced: true
 - display: Source Reliability
@@ -63,8 +61,7 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
-  additionalinfo: When enabled the ip command calls /v3/ipgeo with include=security and costs 3 credits per IP address. When
-    disabled it calls /v3/security only and costs 2 credits per IP address.
+  additionalinfo: Whether to include geolocation context in the ip command. When enabled the ip command calls /v3/ipgeo with include=security and costs 3 credits per IP address. When disabled it calls /v3/security only and costs 2 credits per IP address.
   section: Collect
 - display: Malicious threat score threshold
   name: malicious_threshold
@@ -78,15 +75,14 @@ configuration:
   defaultvalue: '40'
   type: 0
   required: false
-  additionalinfo: Threat score, from 0 to 100, at which the ip command marks an IP address as Suspicious. Must be lower than
-    or equal to the malicious threshold.
+  additionalinfo: Threat score, from 0 to 100, at which the ip command marks an IP address as Suspicious. Must be lower than or equal to the malicious threshold.
   section: Collect
 - display: Treat known attackers as Malicious
   name: malicious_on_known_attacker
   defaultvalue: 'true'
   type: 8
   required: false
-  additionalinfo: When enabled, is_known_attacker marks an IP address as Malicious regardless of its threat score.
+  additionalinfo: Whether to mark an IP address as Malicious when is_known_attacker is set, regardless of its threat score.
   section: Collect
   advanced: true
 - display: Treat anonymizing networks as Suspicious
@@ -94,8 +90,7 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
-  additionalinfo: When enabled, a detected VPN, proxy, residential proxy, Tor exit node or relay marks an IP address as Suspicious.
-    Disable this if your users legitimately connect over a VPN.
+  additionalinfo: Whether to mark an IP address as Suspicious when a VPN, proxy, residential proxy, Tor exit node or relay is detected. Disable this if your users legitimately connect over a VPN.
   section: Collect
   advanced: true
 - display: Treat bot and spam activity as Suspicious
@@ -103,18 +98,16 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
-  additionalinfo: When enabled, is_bot or is_spam marks an IP address as Suspicious.
+  additionalinfo: Whether to mark an IP address as Suspicious when is_bot or is_spam is set.
   section: Collect
   advanced: true
 script:
   commands:
   - name: ip
-    description: Returns the IPGeolocation.io reputation of one or more IP addresses. The threat score and the security flags
-      returned by the IP Security API drive the DBotScore, using the thresholds configured on the integration instance. Requires
-      a paid subscription because IP Security data is not available on the Free plan.
+    description: Gets the IPGeolocation.io reputation of one or more IP addresses. The threat score and the security flags returned by the IP Security API drive the DBotScore, using the thresholds configured on the Cortex XSOAR integration instance. Requires a paid subscription because IP Security data is not available on the Free plan.
     arguments:
     - name: ip
-      description: Comma separated list of IPv4 or IPv6 addresses to check.
+      description: A comma-separated list of IPv4 or IPv6 addresses to check.
       required: true
       isArray: true
       default: true
@@ -165,7 +158,7 @@ script:
       description: The category of the owning organization.
       type: String
     - contextPath: IP.Tags
-      description: Security signals detected for the IP address, such as vpn or tor.
+      description: The security signals detected for the IP address, such as vpn or tor.
       type: Unknown
     - contextPath: IP.Malicious.Vendor
       description: The vendor that flagged the IP address as malicious.
@@ -180,359 +173,354 @@ script:
       description: The domain name submitted, returned only for domain based lookups.
       type: String
     - contextPath: IPGeolocation.IP.Hostname
-      description: Reverse DNS hostname of the IP address. The API echoes the IP address when no hostname resolves.
+      description: The reverse DNS hostname of the IP address. The API echoes the IP address when no hostname resolves.
       type: String
     - contextPath: IPGeolocation.IP.Location.ContinentCode
-      description: Two letter continent code, for example EU.
+      description: The two letter continent code, for example EU.
       type: String
     - contextPath: IPGeolocation.IP.Location.ContinentName
-      description: Continent name, for example Europe.
+      description: The continent name, for example Europe.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryCode2
-      description: ISO 3166-1 alpha-2 country code, for example SE.
+      description: The ISO 3166-1 alpha-2 country code, for example SE.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryCode3
-      description: ISO 3166-1 alpha-3 country code, for example SWE.
+      description: The ISO 3166-1 alpha-3 country code, for example SWE.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryName
-      description: Common country name.
+      description: The common country name.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryNameOfficial
-      description: Official country name, when it differs from the common name.
+      description: The official country name, it can differ from the common name.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryCapital
-      description: Capital city of the country.
+      description: The capital city of the country.
       type: String
     - contextPath: IPGeolocation.IP.Location.StateProv
-      description: State, province or region name.
+      description: The state, province or region name.
       type: String
     - contextPath: IPGeolocation.IP.Location.StateCode
-      description: State, province or region code.
+      description: The state, province or region code.
       type: String
     - contextPath: IPGeolocation.IP.Location.District
-      description: District or county name.
+      description: The district or county name.
       type: String
     - contextPath: IPGeolocation.IP.Location.City
-      description: City name.
+      description: The city name.
       type: String
     - contextPath: IPGeolocation.IP.Location.Locality
-      description: Neighborhood or suburb within the city. Requires include=geo_accuracy.
+      description: The neighborhood or suburb within the city. Requires include=geo_accuracy.
       type: String
     - contextPath: IPGeolocation.IP.Location.AccuracyRadius
-      description: Estimated accuracy radius in kilometers around the coordinates. Requires include=geo_accuracy.
+      description: The estimated accuracy radius in kilometers around the coordinates. Requires include=geo_accuracy.
       type: String
     - contextPath: IPGeolocation.IP.Location.Confidence
-      description: Confidence in the accuracy radius, one of low, medium or high. Requires include=geo_accuracy.
+      description: The confidence in the accuracy radius, one of low, medium or high. Requires include=geo_accuracy.
       type: String
     - contextPath: IPGeolocation.IP.Location.DMACode
-      description: Designated Market Area code. Populated for United States IP addresses only, and requires include=dma_code.
+      description: The Designated Market Area code. Populated for United States IP addresses only, and requires include=dma_code.
       type: String
     - contextPath: IPGeolocation.IP.Location.Zipcode
-      description: Postal or ZIP code.
+      description: The postal or ZIP code.
       type: String
     - contextPath: IPGeolocation.IP.Location.Latitude
-      description: Latitude in decimal degrees.
+      description: The latitude in decimal degrees.
       type: String
     - contextPath: IPGeolocation.IP.Location.Longitude
-      description: Longitude in decimal degrees.
+      description: The longitude in decimal degrees.
       type: String
     - contextPath: IPGeolocation.IP.Location.IsEU
-      description: Whether the country is a member of the European Union.
+      description: The indication of whether the country is a member of the European Union.
       type: Boolean
     - contextPath: IPGeolocation.IP.Location.CountryFlag
-      description: URL of the country flag image.
+      description: The URL of the country flag image.
       type: String
     - contextPath: IPGeolocation.IP.Location.GeonameID
-      description: GeoNames identifier of the place.
+      description: The GeoNames identifier of the place.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryEmoji
-      description: Unicode flag emoji of the country.
+      description: The Unicode flag emoji of the country.
       type: String
     - contextPath: IPGeolocation.IP.CountryMetadata.CallingCode
-      description: International dialing prefix of the country.
+      description: The international dialing prefix of the country.
       type: String
     - contextPath: IPGeolocation.IP.CountryMetadata.TLD
-      description: Country code top level domain.
+      description: The country code top level domain.
       type: String
     - contextPath: IPGeolocation.IP.CountryMetadata.Languages
-      description: Language codes commonly spoken in the country.
+      description: The language codes commonly spoken in the country.
       type: Unknown
     - contextPath: IPGeolocation.IP.Currency.Code
-      description: ISO 4217 currency code.
+      description: The ISO 4217 currency code.
       type: String
     - contextPath: IPGeolocation.IP.Currency.Name
-      description: Currency name.
+      description: The currency name.
       type: String
     - contextPath: IPGeolocation.IP.Currency.Symbol
-      description: Currency symbol.
+      description: The currency symbol.
       type: String
     - contextPath: IPGeolocation.IP.Network.ConnectionType
-      description: Network access type, for example Cable or Mobile, when available.
+      description: The network access type, for example Cable or Mobile, when available.
       type: String
     - contextPath: IPGeolocation.IP.Network.Route
-      description: Network prefix in CIDR notation that contains the IP address.
+      description: The network prefix in CIDR notation that contains the IP address.
       type: String
     - contextPath: IPGeolocation.IP.Network.IsAnycast
-      description: Whether the IP address is announced from multiple locations as anycast.
+      description: The indication of whether the IP address is announced from multiple locations as anycast.
       type: Boolean
     - contextPath: IPGeolocation.IP.ASN.ASNumber
-      description: Autonomous System Number of the network, in AS notation, for example AS15169.
+      description: The Autonomous System Number of the network, in AS notation, for example AS15169.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Organization
-      description: Organization that operates the Autonomous System.
+      description: The organization that operates the Autonomous System.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Country
-      description: Country in which the Autonomous System is registered.
+      description: The country in which the Autonomous System is registered.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Type
-      description: Autonomous System category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
+      description: The Autonomous System category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Domain
-      description: Domain name of the Autonomous System operator.
+      description: The domain name of the Autonomous System operator.
       type: String
     - contextPath: IPGeolocation.IP.ASN.DateAllocated
-      description: Date on which the Autonomous System Number was allocated.
+      description: The date on which the Autonomous System Number was allocated, in YYYY-MM-DD format (e.g., 2024-01-15).
       type: String
     - contextPath: IPGeolocation.IP.ASN.RIR
-      description: Regional Internet Registry that allocated the Autonomous System Number.
+      description: The Regional Internet Registry that allocated the Autonomous System Number.
       type: String
     - contextPath: IPGeolocation.IP.Company.Name
-      description: Company mapped to the IP address, often the ISP or network operator.
+      description: The company mapped to the IP address, often the ISP or network operator.
       type: String
     - contextPath: IPGeolocation.IP.Company.Type
-      description: Company category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
+      description: The company category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
       type: String
     - contextPath: IPGeolocation.IP.Company.Domain
-      description: Company domain name.
+      description: The company domain name.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.Name
-      description: Time zone name in IANA format, for example Europe/Stockholm.
+      description: The time zone name in IANA format, for example Europe/Stockholm.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.Offset
-      description: Standard UTC offset in hours.
+      description: The standard UTC offset in hours.
       type: Number
     - contextPath: IPGeolocation.IP.TimeZone.OffsetWithDST
-      description: Effective UTC offset in hours, including daylight saving time when active.
+      description: The effective UTC offset in hours, including daylight saving time when active.
       type: Number
     - contextPath: IPGeolocation.IP.TimeZone.CurrentTime
-      description: Current local date and time at the IP location.
+      description: The current local date and time at the IP location, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.CurrentTimeUnix
-      description: Current local time as Unix epoch seconds.
+      description: The current local time as Unix epoch seconds (e.g., 1705323296).
       type: Number
     - contextPath: IPGeolocation.IP.TimeZone.CurrentTZAbbreviation
-      description: Current time zone abbreviation, for example CET.
+      description: The current time zone abbreviation, for example CET.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.CurrentTZFullName
-      description: Current time zone full name.
+      description: The current time zone full name.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.StandardTZAbbreviation
-      description: Standard, non daylight saving, time zone abbreviation.
+      description: The standard, non daylight saving, time zone abbreviation.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.StandardTZFullName
-      description: Standard, non daylight saving, time zone full name.
+      description: The standard, non daylight saving, time zone full name.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.IsDST
-      description: Whether daylight saving time is currently active.
+      description: The indication of whether daylight saving time is currently active.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTSavings
-      description: Daylight saving time shift in hours.
+      description: The daylight saving time shift in hours.
       type: Number
     - contextPath: IPGeolocation.IP.TimeZone.DSTExists
-      description: Whether the time zone observes daylight saving time at any point in the year.
+      description: The indication of whether the time zone observes daylight saving time at any point in the year.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTTZAbbreviation
-      description: Time zone abbreviation used while daylight saving time is active.
+      description: The time zone abbreviation used while daylight saving time is active.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTTZFullName
-      description: Time zone full name used while daylight saving time is active.
+      description: The time zone full name used while daylight saving time is active.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.UTCTime
-      description: Moment in UTC at which daylight saving time starts.
+      description: The moment in UTC at which daylight saving time starts, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.Duration
-      description: Clock change applied when daylight saving time starts.
+      description: The clock change applied when daylight saving time starts.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.Gap
-      description: Whether local time jumps forward, leaving local times that do not exist.
+      description: The indication of whether local time jumps forward, leaving local times that do not exist.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.DateTimeAfter
-      description: Local date and time immediately after the transition.
+      description: The local date and time immediately after the transition, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.DateTimeBefore
-      description: Local date and time immediately before the transition.
+      description: The local date and time immediately before the transition, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.Overlap
-      description: Whether local times repeat at the transition.
+      description: The indication of whether local times repeat at the transition.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.UTCTime
-      description: Moment in UTC at which daylight saving time ends.
+      description: The moment in UTC at which daylight saving time ends, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.Duration
-      description: Clock change applied when daylight saving time ends.
+      description: The clock change applied when daylight saving time ends.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.Gap
-      description: Whether local time jumps forward at the transition.
+      description: The indication of whether local time jumps forward at the transition.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.DateTimeAfter
-      description: Local date and time immediately after the transition.
+      description: The local date and time immediately after the transition, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.DateTimeBefore
-      description: Local date and time immediately before the transition.
+      description: The local date and time immediately before the transition, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.Overlap
-      description: Whether local times repeat at the transition.
+      description: The indication of whether local times repeat at the transition.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.ThreatScore
-      description: Aggregate risk score from 0 to 100, where 100 is the highest risk.
+      description: The aggregate risk score from 0 to 100, where 100 is the highest risk.
       type: Number
     - contextPath: IPGeolocation.IP.Security.IsTor
-      description: Whether the IP address is a Tor exit node.
+      description: The indication of whether the IP address is a Tor exit node.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsProxy
-      description: Whether the IP address belongs to a proxy network.
+      description: The indication of whether the IP address belongs to a proxy network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.ProxyProviderNames
-      description: Names of the detected proxy providers.
+      description: The names of the detected proxy providers.
       type: Unknown
     - contextPath: IPGeolocation.IP.Security.ProxyConfidenceScore
-      description: Confidence from 0 to 100 in the proxy detection. Defaults to 0 when not detected.
+      description: The confidence from 0 to 100 in the proxy detection. Defaults to 0 when not detected.
       type: Number
     - contextPath: IPGeolocation.IP.Security.ProxyLastSeen
-      description: Date on which proxy activity was last observed, in YYYY-MM-DD format.
+      description: The date on which proxy activity was last observed, in YYYY-MM-DD format (e.g., 2024-01-15).
       type: String
     - contextPath: IPGeolocation.IP.Security.IsResidentialProxy
-      description: Whether the IP address belongs to a residential proxy network.
+      description: The indication of whether the IP address belongs to a residential proxy network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsVPN
-      description: Whether the IP address belongs to a VPN network.
+      description: The indication of whether the IP address belongs to a VPN network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.VPNProviderNames
-      description: Names of the detected VPN providers.
+      description: The names of the detected VPN providers.
       type: Unknown
     - contextPath: IPGeolocation.IP.Security.VPNConfidenceScore
-      description: Confidence from 0 to 100 in the VPN detection. Defaults to 0 when not detected.
+      description: The confidence from 0 to 100 in the VPN detection. Defaults to 0 when not detected.
       type: Number
     - contextPath: IPGeolocation.IP.Security.VPNLastSeen
-      description: Date on which VPN activity was last observed, in YYYY-MM-DD format.
+      description: The date on which VPN activity was last observed, in YYYY-MM-DD format (e.g., 2024-01-15).
       type: String
     - contextPath: IPGeolocation.IP.Security.IsRelay
-      description: Whether the IP address belongs to a privacy relay network.
+      description: The indication of whether the IP address belongs to a privacy relay network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.RelayProviderName
-      description: Name of the detected relay provider.
+      description: The name of the detected relay provider.
       type: String
     - contextPath: IPGeolocation.IP.Security.IsAnonymous
-      description: Whether any anonymizing route was detected, that is a VPN, proxy, Tor or relay.
+      description: The indication of whether any anonymizing route was detected, that is a VPN, proxy, Tor or relay.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsKnownAttacker
-      description: Whether the IP address is flagged for known attacker behavior.
+      description: The indication of whether the IP address is flagged for known attacker behavior.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsBot
-      description: Whether the IP address is associated with suspicious automated activity.
+      description: The indication of whether the IP address is associated with suspicious automated activity.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsSpam
-      description: Whether the IP address is associated with spam activity.
+      description: The indication of whether the IP address is associated with spam activity.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsCloudProvider
-      description: Whether the IP address belongs to a cloud or hosting provider range.
+      description: The indication of whether the IP address belongs to a cloud or hosting provider range.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.CloudProviderName
-      description: Name of the cloud or hosting provider.
+      description: The name of the cloud or hosting provider.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Route
-      description: Abuse handling IP range in CIDR notation.
+      description: The abuse handling IP range in CIDR notation.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Country
-      description: ISO 3166-1 alpha-2 country code in which the abuse contact is registered.
+      description: The ISO 3166-1 alpha-2 country code in which the abuse contact is registered.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Name
-      description: Name of the abuse contact role, team or person.
+      description: The name of the abuse contact role, team or person.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Organization
-      description: Organization that manages the IP address range.
+      description: The organization that manages the IP address range.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Kind
-      description: Contact type reported by the registry, either group or individual.
+      description: The contact type reported by the registry, either group or individual.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Address
-      description: Registered postal address of the organization that owns the IP address.
+      description: The registered postal address of the organization that owns the IP address.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Emails
-      description: Email addresses for reporting abuse.
+      description: The email addresses for reporting abuse.
       type: Unknown
     - contextPath: IPGeolocation.IP.Abuse.PhoneNumbers
-      description: Phone numbers for reporting abuse.
+      description: The phone numbers for reporting abuse.
       type: Unknown
     - contextPath: IPGeolocation.IP.UserAgent.UserAgentString
-      description: Raw User-Agent string that was parsed.
+      description: The raw User-Agent string that was parsed.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Name
-      description: Detected user agent product name.
+      description: The detected user agent product name.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Type
-      description: User agent category, for example Browser, Robot or Hacker.
+      description: The user agent category, for example Browser, Robot or Hacker.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Version
-      description: Full product version.
+      description: The full product version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.VersionMajor
-      description: Major product version.
+      description: The major product version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Device.Name
-      description: Detected device label.
+      description: The detected device label.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Device.Type
-      description: Device category, for example Desktop, Mobile or Tablet.
+      description: The device category, for example Desktop, Mobile or Tablet.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Device.Brand
-      description: Device vendor or brand.
+      description: The device vendor or brand.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Device.CPU
-      description: Detected CPU or architecture.
+      description: The detected CPU or architecture.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Engine.Name
-      description: Rendering engine name.
+      description: The rendering engine name.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Engine.Type
-      description: Rendering engine category.
+      description: The rendering engine category.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Engine.Version
-      description: Full rendering engine version.
+      description: The full rendering engine version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Engine.VersionMajor
-      description: Major rendering engine version.
+      description: The major rendering engine version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.Name
-      description: Operating system name.
+      description: The operating system name.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.Type
-      description: Operating system category.
+      description: The operating system category.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.Version
-      description: Operating system version.
+      description: The operating system version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.VersionMajor
-      description: Major operating system version.
+      description: The major operating system version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.Build
-      description: Operating system build identifier.
+      description: The operating system build identifier.
       type: String
   - name: ipgeolocation-ip-lookup
-    description: Looks up an IPv4 address, an IPv6 address or a domain name with the IP Geolocation API (/v3/ipgeo). Returns
-      location, network, ASN, company, currency, country metadata and time zone data by default, and optionally the security,
-      abuse contact, user agent, geolocation accuracy, DMA code and hostname modules through the include argument.
+    description: Looks up an IPv4 address, an IPv6 address or a domain name with the IP Geolocation API (/v3/ipgeo). Returns location, network, ASN, company, currency, country metadata and time zone data by default, and optionally the security, abuse contact, user agent, geolocation accuracy, DMA code and hostname modules through the include argument.
     arguments:
     - name: ip
-      description: Comma separated list of IPv4 addresses, IPv6 addresses or domain names to look up. Domain lookups require
-        a paid subscription.
+      description: A comma-separated list of IPv4 addresses, IPv6 addresses or domain names to look up. Domain lookups require a paid subscription.
       required: true
       isArray: true
       default: true
     - name: include
-      description: Comma separated list of optional modules to add to the response. Each module has its own credit cost, security
-        adds 2 credits and abuse adds 1 credit on top of the base lookup. All modules require a paid subscription. When more
-        than one hostname option is supplied the API applies the precedence liveHostname, hostname, hostnameFallbackLive.
+      description: A comma-separated list of optional modules to add to the response. Each module has its own credit cost, security adds 2 credits and abuse adds 1 credit on top of the base lookup. All modules require a paid subscription. When more than one hostname option is supplied the API applies the precedence liveHostname, hostname, hostnameFallbackLive.
       isArray: true
       predefined:
       - geo_accuracy
@@ -564,13 +552,11 @@ script:
       auto: PREDEFINED
     - &id001
       name: fields
-      description: Comma separated list of response fields to return, using the documented dot notation, for example location.city.
-        Reduces the response size without changing the credit cost.
+      description: A comma-separated list of response fields to return, using the documented dot notation, for example location.city. Reduces the response size without changing the credit cost.
       isArray: true
     - &id002
       name: excludes
-      description: Comma separated list of response fields or objects to omit, using the documented dot notation, for example
-        currency or location.continent_code. The ip field is always returned.
+      description: A comma-separated list of response fields or objects to omit, using the documented dot notation, for example currency or location.continent_code. The ip field is always returned.
       isArray: true
     outputs:
     - contextPath: IPGeolocation.IP.IP
@@ -580,351 +566,349 @@ script:
       description: The domain name submitted, returned only for domain based lookups.
       type: String
     - contextPath: IPGeolocation.IP.Hostname
-      description: Reverse DNS hostname of the IP address. The API echoes the IP address when no hostname resolves.
+      description: The reverse DNS hostname of the IP address. The API echoes the IP address when no hostname resolves.
       type: String
     - contextPath: IPGeolocation.IP.Location.ContinentCode
-      description: Two letter continent code, for example EU.
+      description: The two letter continent code, for example EU.
       type: String
     - contextPath: IPGeolocation.IP.Location.ContinentName
-      description: Continent name, for example Europe.
+      description: The continent name, for example Europe.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryCode2
-      description: ISO 3166-1 alpha-2 country code, for example SE.
+      description: The ISO 3166-1 alpha-2 country code, for example SE.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryCode3
-      description: ISO 3166-1 alpha-3 country code, for example SWE.
+      description: The ISO 3166-1 alpha-3 country code, for example SWE.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryName
-      description: Common country name.
+      description: The common country name.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryNameOfficial
-      description: Official country name, when it differs from the common name.
+      description: The official country name, when it differs from the common name.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryCapital
-      description: Capital city of the country.
+      description: The capital city of the country.
       type: String
     - contextPath: IPGeolocation.IP.Location.StateProv
-      description: State, province or region name.
+      description: The state, province or region name.
       type: String
     - contextPath: IPGeolocation.IP.Location.StateCode
-      description: State, province or region code.
+      description: The state, province or region code.
       type: String
     - contextPath: IPGeolocation.IP.Location.District
-      description: District or county name.
+      description: The district or county name.
       type: String
     - contextPath: IPGeolocation.IP.Location.City
-      description: City name.
+      description: The city name.
       type: String
     - contextPath: IPGeolocation.IP.Location.Locality
-      description: Neighborhood or suburb within the city. Requires include=geo_accuracy.
+      description: The neighborhood or suburb within the city. Requires include=geo_accuracy.
       type: String
     - contextPath: IPGeolocation.IP.Location.AccuracyRadius
-      description: Estimated accuracy radius in kilometers around the coordinates. Requires include=geo_accuracy.
+      description: The estimated accuracy radius in kilometers around the coordinates. Requires include=geo_accuracy.
       type: String
     - contextPath: IPGeolocation.IP.Location.Confidence
-      description: Confidence in the accuracy radius, one of low, medium or high. Requires include=geo_accuracy.
+      description: The confidence in the accuracy radius, one of low, medium or high. Requires include=geo_accuracy.
       type: String
     - contextPath: IPGeolocation.IP.Location.DMACode
-      description: Designated Market Area code. Populated for United States IP addresses only, and requires include=dma_code.
+      description: The Designated Market Area code. Populated for United States IP addresses only, and requires include=dma_code.
       type: String
     - contextPath: IPGeolocation.IP.Location.Zipcode
-      description: Postal or ZIP code.
+      description: The postal or ZIP code.
       type: String
     - contextPath: IPGeolocation.IP.Location.Latitude
-      description: Latitude in decimal degrees.
+      description: The latitude in decimal degrees.
       type: String
     - contextPath: IPGeolocation.IP.Location.Longitude
-      description: Longitude in decimal degrees.
+      description: The longitude in decimal degrees.
       type: String
     - contextPath: IPGeolocation.IP.Location.IsEU
-      description: Whether the country is a member of the European Union.
+      description: The indication of whether the country is a member of the European Union.
       type: Boolean
     - contextPath: IPGeolocation.IP.Location.CountryFlag
-      description: URL of the country flag image.
+      description: The URL of the country flag image.
       type: String
     - contextPath: IPGeolocation.IP.Location.GeonameID
-      description: GeoNames identifier of the place.
+      description: The GeoNames identifier of the place.
       type: String
     - contextPath: IPGeolocation.IP.Location.CountryEmoji
-      description: Unicode flag emoji of the country.
+      description: The Unicode flag emoji of the country.
       type: String
     - contextPath: IPGeolocation.IP.CountryMetadata.CallingCode
-      description: International dialing prefix of the country.
+      description: The international dialing prefix of the country.
       type: String
     - contextPath: IPGeolocation.IP.CountryMetadata.TLD
-      description: Country code top level domain.
+      description: The country code top level domain.
       type: String
     - contextPath: IPGeolocation.IP.CountryMetadata.Languages
-      description: Language codes commonly spoken in the country.
+      description: The language codes commonly spoken in the country.
       type: Unknown
     - contextPath: IPGeolocation.IP.Currency.Code
-      description: ISO 4217 currency code.
+      description: The ISO 4217 currency code.
       type: String
     - contextPath: IPGeolocation.IP.Currency.Name
-      description: Currency name.
+      description: The currency name.
       type: String
     - contextPath: IPGeolocation.IP.Currency.Symbol
-      description: Currency symbol.
+      description: The currency symbol.
       type: String
     - contextPath: IPGeolocation.IP.Network.ConnectionType
-      description: Network access type, for example Cable or Mobile, when available.
+      description: The network access type, for example Cable or Mobile, when available.
       type: String
     - contextPath: IPGeolocation.IP.Network.Route
-      description: Network prefix in CIDR notation that contains the IP address.
+      description: The network prefix in CIDR notation that contains the IP address.
       type: String
     - contextPath: IPGeolocation.IP.Network.IsAnycast
-      description: Whether the IP address is announced from multiple locations as anycast.
+      description: The indication of whether the IP address is announced from multiple locations as anycast.
       type: Boolean
     - contextPath: IPGeolocation.IP.ASN.ASNumber
-      description: Autonomous System Number of the network, in AS notation, for example AS15169.
+      description: The Autonomous System Number of the network, in AS notation, for example AS15169.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Organization
-      description: Organization that operates the Autonomous System.
+      description: The organization that operates the Autonomous System.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Country
-      description: Country in which the Autonomous System is registered.
+      description: The country in which the Autonomous System is registered.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Type
-      description: Autonomous System category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
+      description: The Autonomous System category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
       type: String
     - contextPath: IPGeolocation.IP.ASN.Domain
-      description: Domain name of the Autonomous System operator.
+      description: The domain name of the Autonomous System operator.
       type: String
     - contextPath: IPGeolocation.IP.ASN.DateAllocated
-      description: Date on which the Autonomous System Number was allocated.
+      description: The date on which the Autonomous System Number was allocated, in YYYY-MM-DD format (e.g., 2024-01-15).
       type: String
     - contextPath: IPGeolocation.IP.ASN.RIR
-      description: Regional Internet Registry that allocated the Autonomous System Number.
+      description: The Regional Internet Registry that allocated the Autonomous System Number.
       type: String
     - contextPath: IPGeolocation.IP.Company.Name
-      description: Company mapped to the IP address, often the ISP or network operator.
+      description: The company mapped to the IP address, often the ISP or network operator.
       type: String
     - contextPath: IPGeolocation.IP.Company.Type
-      description: Company category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
+      description: The company category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
       type: String
     - contextPath: IPGeolocation.IP.Company.Domain
-      description: Company domain name.
+      description: The company domain name.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.Name
-      description: Time zone name in IANA format, for example Europe/Stockholm.
+      description: The time zone name in IANA format, for example Europe/Stockholm.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.Offset
-      description: Standard UTC offset in hours.
+      description: The standard UTC offset in hours.
       type: Number
     - contextPath: IPGeolocation.IP.TimeZone.OffsetWithDST
-      description: Effective UTC offset in hours, including daylight saving time when active.
+      description: The effective UTC offset in hours, including daylight saving time when active.
       type: Number
     - contextPath: IPGeolocation.IP.TimeZone.CurrentTime
-      description: Current local date and time at the IP location.
+      description: The current local date and time at the IP location, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.CurrentTimeUnix
-      description: Current local time as Unix epoch seconds.
+      description: The current local time as Unix epoch seconds (e.g., 1705323296).
       type: Number
     - contextPath: IPGeolocation.IP.TimeZone.CurrentTZAbbreviation
-      description: Current time zone abbreviation, for example CET.
+      description: The current time zone abbreviation, for example CET.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.CurrentTZFullName
-      description: Current time zone full name.
+      description: The current time zone full name.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.StandardTZAbbreviation
-      description: Standard, non daylight saving, time zone abbreviation.
+      description: The standard, non daylight saving, time zone abbreviation.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.StandardTZFullName
-      description: Standard, non daylight saving, time zone full name.
+      description: The standard, non daylight saving, time zone full name.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.IsDST
-      description: Whether daylight saving time is currently active.
+      description: The indication of whether daylight saving time is currently active.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTSavings
-      description: Daylight saving time shift in hours.
+      description: The daylight saving time shift in hours.
       type: Number
     - contextPath: IPGeolocation.IP.TimeZone.DSTExists
-      description: Whether the time zone observes daylight saving time at any point in the year.
+      description: The indication of whether the time zone observes daylight saving time at any point in the year.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTTZAbbreviation
-      description: Time zone abbreviation used while daylight saving time is active.
+      description: The time zone abbreviation used while daylight saving time is active.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTTZFullName
-      description: Time zone full name used while daylight saving time is active.
+      description: The time zone full name used while daylight saving time is active.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.UTCTime
-      description: Moment in UTC at which daylight saving time starts.
+      description: The moment in UTC at which daylight saving time starts, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.Duration
-      description: Clock change applied when daylight saving time starts.
+      description: The clock change applied when daylight saving time starts.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.Gap
-      description: Whether local time jumps forward, leaving local times that do not exist.
+      description: The indication of whether local time jumps forward, leaving local times that do not exist.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.DateTimeAfter
-      description: Local date and time immediately after the transition.
+      description: The local date and time immediately after the transition, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.DateTimeBefore
-      description: Local date and time immediately before the transition.
+      description: The local date and time immediately before the transition, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTStart.Overlap
-      description: Whether local times repeat at the transition.
+      description: The indication of whether local times repeat at the transition.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.UTCTime
-      description: Moment in UTC at which daylight saving time ends.
+      description: The moment in UTC at which daylight saving time ends, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.Duration
-      description: Clock change applied when daylight saving time ends.
+      description: The clock change applied when daylight saving time ends.
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.Gap
-      description: Whether local time jumps forward at the transition.
+      description: The indication of whether local time jumps forward at the transition.
       type: Boolean
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.DateTimeAfter
-      description: Local date and time immediately after the transition.
+      description: The local date and time immediately after the transition, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.DateTimeBefore
-      description: Local date and time immediately before the transition.
+      description: The local date and time immediately before the transition, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: IPGeolocation.IP.TimeZone.DSTEnd.Overlap
-      description: Whether local times repeat at the transition.
+      description: The indication of whether local times repeat at the transition.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.ThreatScore
-      description: Aggregate risk score from 0 to 100, where 100 is the highest risk.
+      description: The aggregate risk score from 0 to 100, where 100 is the highest risk.
       type: Number
     - contextPath: IPGeolocation.IP.Security.IsTor
-      description: Whether the IP address is a Tor exit node.
+      description: The indication of whether the IP address is a Tor exit node.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsProxy
-      description: Whether the IP address belongs to a proxy network.
+      description: The indication of whether the IP address belongs to a proxy network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.ProxyProviderNames
-      description: Names of the detected proxy providers.
+      description: The names of the detected proxy providers.
       type: Unknown
     - contextPath: IPGeolocation.IP.Security.ProxyConfidenceScore
-      description: Confidence from 0 to 100 in the proxy detection. Defaults to 0 when not detected.
+      description: The confidence from 0 to 100 in the proxy detection. Defaults to 0 when not detected.
       type: Number
     - contextPath: IPGeolocation.IP.Security.ProxyLastSeen
-      description: Date on which proxy activity was last observed, in YYYY-MM-DD format.
+      description: The date on which proxy activity was last observed, in YYYY-MM-DD format (e.g., 2024-01-15).
       type: String
     - contextPath: IPGeolocation.IP.Security.IsResidentialProxy
-      description: Whether the IP address belongs to a residential proxy network.
+      description: The indication of whether the IP address belongs to a residential proxy network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsVPN
-      description: Whether the IP address belongs to a VPN network.
+      description: The indication of whether the IP address belongs to a VPN network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.VPNProviderNames
-      description: Names of the detected VPN providers.
+      description: The names of the detected VPN providers.
       type: Unknown
     - contextPath: IPGeolocation.IP.Security.VPNConfidenceScore
-      description: Confidence from 0 to 100 in the VPN detection. Defaults to 0 when not detected.
+      description: The confidence from 0 to 100 in the VPN detection. Defaults to 0 when not detected.
       type: Number
     - contextPath: IPGeolocation.IP.Security.VPNLastSeen
-      description: Date on which VPN activity was last observed, in YYYY-MM-DD format.
+      description: The date on which VPN activity was last observed, in YYYY-MM-DD format (e.g., 2024-01-15).
       type: String
     - contextPath: IPGeolocation.IP.Security.IsRelay
-      description: Whether the IP address belongs to a privacy relay network.
+      description: The indication of whether the IP address belongs to a privacy relay network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.RelayProviderName
-      description: Name of the detected relay provider.
+      description: The name of the detected relay provider.
       type: String
     - contextPath: IPGeolocation.IP.Security.IsAnonymous
-      description: Whether any anonymizing route was detected, that is a VPN, proxy, Tor or relay.
+      description: The indication of whether any anonymizing route was detected, that is a VPN, proxy, Tor or relay.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsKnownAttacker
-      description: Whether the IP address is flagged for known attacker behavior.
+      description: The indication of whether the IP address is flagged for known attacker behavior.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsBot
-      description: Whether the IP address is associated with suspicious automated activity.
+      description: The indication of whether the IP address is associated with suspicious automated activity.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsSpam
-      description: Whether the IP address is associated with spam activity.
+      description: The indication of whether the IP address is associated with spam activity.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsCloudProvider
-      description: Whether the IP address belongs to a cloud or hosting provider range.
+      description: The indication of whether the IP address belongs to a cloud or hosting provider range.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.CloudProviderName
-      description: Name of the cloud or hosting provider.
+      description: The name of the cloud or hosting provider.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Route
-      description: Abuse handling IP range in CIDR notation.
+      description: The abuse handling IP range in CIDR notation.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Country
-      description: ISO 3166-1 alpha-2 country code in which the abuse contact is registered.
+      description: The ISO 3166-1 alpha-2 country code in which the abuse contact is registered.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Name
-      description: Name of the abuse contact role, team or person.
+      description: The name of the abuse contact role, team or person.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Organization
-      description: Organization that manages the IP address range.
+      description: The organization that manages the IP address range.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Kind
-      description: Contact type reported by the registry, either group or individual.
+      description: The contact type reported by the registry, either group or individual.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Address
-      description: Registered postal address of the organization that owns the IP address.
+      description: The registered postal address of the organization that owns the IP address.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Emails
-      description: Email addresses for reporting abuse.
+      description: The email addresses for reporting abuse.
       type: Unknown
     - contextPath: IPGeolocation.IP.Abuse.PhoneNumbers
-      description: Phone numbers for reporting abuse.
+      description: The phone numbers for reporting abuse.
       type: Unknown
     - contextPath: IPGeolocation.IP.UserAgent.UserAgentString
-      description: Raw User-Agent string that was parsed.
+      description: The raw User-Agent string that was parsed.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Name
-      description: Detected user agent product name.
+      description: The detected user agent product name.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Type
-      description: User agent category, for example Browser, Robot or Hacker.
+      description: The user agent category, for example Browser, Robot or Hacker.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Version
-      description: Full product version.
+      description: The full product version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.VersionMajor
-      description: Major product version.
+      description: The major product version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Device.Name
-      description: Detected device label.
+      description: The detected device label.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Device.Type
-      description: Device category, for example Desktop, Mobile or Tablet.
+      description: The device category, for example Desktop, Mobile or Tablet.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Device.Brand
-      description: Device vendor or brand.
+      description: The device vendor or brand.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Device.CPU
-      description: Detected CPU or architecture.
+      description: The detected CPU or architecture.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Engine.Name
-      description: Rendering engine name.
+      description: The rendering engine name.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Engine.Type
-      description: Rendering engine category.
+      description: The rendering engine category.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Engine.Version
-      description: Full rendering engine version.
+      description: The full rendering engine version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.Engine.VersionMajor
-      description: Major rendering engine version.
+      description: The major rendering engine version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.Name
-      description: Operating system name.
+      description: The operating system name.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.Type
-      description: Operating system category.
+      description: The operating system category.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.Version
-      description: Operating system version.
+      description: The operating system version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.VersionMajor
-      description: Major operating system version.
+      description: The major operating system version.
       type: String
     - contextPath: IPGeolocation.IP.UserAgent.OperatingSystem.Build
-      description: Operating system build identifier.
+      description: The operating system build identifier.
       type: String
   - name: ipgeolocation-ip-security
-    description: Returns the IP Security API (/v3/security) threat signals for one or more IP addresses, including the threat
-      score, VPN, proxy, residential proxy, Tor, relay, bot, spam, known attacker and cloud provider flags with their provider
-      names and confidence scores. This command does not set a reputation, use the ip command when a DBotScore is required.
+    description: Gets the IP Security API (/v3/security) threat signals for one or more IP addresses, including the threat score, VPN, proxy, residential proxy, Tor, relay, bot, spam, known attacker and cloud provider flags with their provider names and confidence scores. This command does not set a reputation; use the ip command when a DBotScore is required.
     arguments:
     - name: ip
-      description: Comma separated list of IPv4 or IPv6 addresses. Domain names are not supported by this endpoint.
+      description: A comma-separated list of IPv4 or IPv6 addresses. Domain names are not supported by this endpoint.
       required: true
       isArray: true
       default: true
@@ -935,69 +919,67 @@ script:
       description: The IP address that was looked up.
       type: String
     - contextPath: IPGeolocation.IP.Security.ThreatScore
-      description: Aggregate risk score from 0 to 100, where 100 is the highest risk.
+      description: The aggregate risk score from 0 to 100, where 100 is the highest risk.
       type: Number
     - contextPath: IPGeolocation.IP.Security.IsTor
-      description: Whether the IP address is a Tor exit node.
+      description: The indication of whether the IP address is a Tor exit node.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsProxy
-      description: Whether the IP address belongs to a proxy network.
+      description: The indication of whether the IP address belongs to a proxy network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.ProxyProviderNames
-      description: Names of the detected proxy providers.
+      description: The names of the detected proxy providers.
       type: Unknown
     - contextPath: IPGeolocation.IP.Security.ProxyConfidenceScore
-      description: Confidence from 0 to 100 in the proxy detection. Defaults to 0 when not detected.
+      description: The confidence from 0 to 100 in the proxy detection. Defaults to 0 when not detected.
       type: Number
     - contextPath: IPGeolocation.IP.Security.ProxyLastSeen
-      description: Date on which proxy activity was last observed, in YYYY-MM-DD format.
+      description: The date on which proxy activity was last observed, in YYYY-MM-DD format (e.g., 2024-01-15).
       type: String
     - contextPath: IPGeolocation.IP.Security.IsResidentialProxy
-      description: Whether the IP address belongs to a residential proxy network.
+      description: The indication of whether the IP address belongs to a residential proxy network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsVPN
-      description: Whether the IP address belongs to a VPN network.
+      description: The indication of whether the IP address belongs to a VPN network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.VPNProviderNames
-      description: Names of the detected VPN providers.
+      description: The names of the detected VPN providers.
       type: Unknown
     - contextPath: IPGeolocation.IP.Security.VPNConfidenceScore
-      description: Confidence from 0 to 100 in the VPN detection. Defaults to 0 when not detected.
+      description: The confidence from 0 to 100 in the VPN detection. Defaults to 0 when not detected.
       type: Number
     - contextPath: IPGeolocation.IP.Security.VPNLastSeen
-      description: Date on which VPN activity was last observed, in YYYY-MM-DD format.
+      description: The date on which VPN activity was last observed, in YYYY-MM-DD format (e.g., 2024-01-15).
       type: String
     - contextPath: IPGeolocation.IP.Security.IsRelay
-      description: Whether the IP address belongs to a privacy relay network.
+      description: The indication of whether the IP address belongs to a privacy relay network.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.RelayProviderName
-      description: Name of the detected relay provider.
+      description: The name of the detected relay provider.
       type: String
     - contextPath: IPGeolocation.IP.Security.IsAnonymous
-      description: Whether any anonymizing route was detected, that is a VPN, proxy, Tor or relay.
+      description: The indication of whether any anonymizing route was detected, that is a VPN, proxy, Tor or relay.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsKnownAttacker
-      description: Whether the IP address is flagged for known attacker behavior.
+      description: The indication of whether the IP address is flagged for known attacker behavior.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsBot
-      description: Whether the IP address is associated with suspicious automated activity.
+      description: The indication of whether the IP address is associated with suspicious automated activity.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsSpam
-      description: Whether the IP address is associated with spam activity.
+      description: The indication of whether the IP address is associated with spam activity.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.IsCloudProvider
-      description: Whether the IP address belongs to a cloud or hosting provider range.
+      description: The indication of whether the IP address belongs to a cloud or hosting provider range.
       type: Boolean
     - contextPath: IPGeolocation.IP.Security.CloudProviderName
-      description: Name of the cloud or hosting provider.
+      description: The name of the cloud or hosting provider.
       type: String
   - name: ipgeolocation-abuse-contact
-    description: Returns the abuse contact registered for one or more IP addresses using the Abuse Contact API (/v3/abuse),
-      including the responsible organization, contact emails, phone numbers, registered address and the abuse handling network
-      range. Use it to route an abuse or takedown report to the correct network owner.
+    description: Gets the abuse contact registered for one or more IP addresses using the Abuse Contact API (/v3/abuse), including the responsible organization, contact emails, phone numbers, registered address and the abuse handling network range. Use it to route an abuse or takedown report to the correct network owner.
     arguments:
     - name: ip
-      description: Comma separated list of IPv4 or IPv6 addresses.
+      description: A comma-separated list of IPv4 or IPv6 addresses.
       required: true
       isArray: true
       default: true
@@ -1029,45 +1011,41 @@ script:
       description: The IP address that was looked up.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Route
-      description: Abuse handling IP range in CIDR notation.
+      description: The abuse handling IP range in CIDR notation.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Country
-      description: ISO 3166-1 alpha-2 country code in which the abuse contact is registered.
+      description: The ISO 3166-1 alpha-2 country code in which the abuse contact is registered.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Name
-      description: Name of the abuse contact role, team or person.
+      description: The name of the abuse contact role, team or person.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Organization
-      description: Organization that manages the IP address range.
+      description: The organization that manages the IP address range.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Kind
-      description: Contact type reported by the registry, either group or individual.
+      description: The contact type reported by the registry, either group or individual.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Address
-      description: Registered postal address of the organization that owns the IP address.
+      description: The registered postal address of the organization that owns the IP address.
       type: String
     - contextPath: IPGeolocation.IP.Abuse.Emails
-      description: Email addresses for reporting abuse.
+      description: The email addresses for reporting abuse.
       type: Unknown
     - contextPath: IPGeolocation.IP.Abuse.PhoneNumbers
-      description: Phone numbers for reporting abuse.
+      description: The phone numbers for reporting abuse.
       type: Unknown
   - name: ipgeolocation-asn
-    description: Returns Autonomous System details from the ASN API (/v3/asn), looked up either by ASN or by IP address. Beyond
-      the organization, type, registry and allocation data it can return the announced routes, peers, upstream and downstream
-      Autonomous Systems and the raw WHOIS record.
+    description: Gets Autonomous System details from the ASN API (/v3/asn), looked up either by ASN or by IP address. Beyond the organization, type, registry and allocation data it can return the announced routes, peers, upstream and downstream Autonomous Systems and the raw WHOIS record.
     arguments:
     - name: asn
-      description: Comma separated list of Autonomous System Numbers to look up. Both 24940 and AS24940 are accepted. Mutually
-        exclusive with the ip argument.
+      description: A comma-separated list of Autonomous System Numbers to look up. Both 24940 and AS24940 are accepted. Mutually exclusive with the ip argument.
       isArray: true
     - name: ip
-      description: Comma separated list of IPv4 or IPv6 addresses to resolve to their Autonomous System. Mutually exclusive
-        with the asn argument.
+      description: A comma-separated list of IPv4 or IPv6 addresses to resolve to their Autonomous System. Mutually exclusive with the asn argument.
       isArray: true
       default: true
     - name: include
-      description: Comma separated list of additional routing objects to add to the response.
+      description: A comma-separated list of additional routing objects to add to the response.
       isArray: true
       predefined:
       - peers
@@ -1083,52 +1061,52 @@ script:
       description: The IP address that was looked up.
       type: String
     - contextPath: IPGeolocation.ASN.ASNumber
-      description: Autonomous System Number of the network, in AS notation, for example AS15169.
+      description: The Autonomous System Number of the network, in AS notation, for example AS15169.
       type: String
     - contextPath: IPGeolocation.ASN.Organization
-      description: Organization that operates the Autonomous System.
+      description: The organization that operates the Autonomous System.
       type: String
     - contextPath: IPGeolocation.ASN.Country
-      description: Country in which the Autonomous System is registered.
+      description: The country in which the Autonomous System is registered.
       type: String
     - contextPath: IPGeolocation.ASN.Type
-      description: Autonomous System category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
+      description: The Autonomous System category, for example ISP, HOSTING, BUSINESS, EDUCATION or GOVERNMENT.
       type: String
     - contextPath: IPGeolocation.ASN.Domain
       description: The domain name submitted, returned only for domain based lookups.
       type: String
     - contextPath: IPGeolocation.ASN.DateAllocated
-      description: Date on which the Autonomous System Number was allocated.
+      description: The date on which the Autonomous System Number was allocated, in YYYY-MM-DD format (e.g., 2024-01-15).
       type: String
     - contextPath: IPGeolocation.ASN.RIR
-      description: Regional Internet Registry that allocated the Autonomous System Number.
+      description: The Regional Internet Registry that allocated the Autonomous System Number.
       type: String
     - contextPath: IPGeolocation.ASN.ASNName
-      description: Official Autonomous System handle.
+      description: The official Autonomous System handle.
       type: String
     - contextPath: IPGeolocation.ASN.AllocationStatus
-      description: Current allocation status of the Autonomous System Number.
+      description: The current allocation status of the Autonomous System Number.
       type: String
     - contextPath: IPGeolocation.ASN.NumOfIPv4Routes
-      description: Number of distinct IPv4 prefixes announced by the Autonomous System.
+      description: The number of distinct IPv4 prefixes announced by the Autonomous System.
       type: String
     - contextPath: IPGeolocation.ASN.NumOfIPv6Routes
-      description: Number of distinct IPv6 prefixes announced by the Autonomous System.
+      description: The number of distinct IPv6 prefixes announced by the Autonomous System.
       type: String
     - contextPath: IPGeolocation.ASN.Routes
-      description: IPv4 and IPv6 prefixes announced by the Autonomous System.
+      description: The IPv4 and IPv6 prefixes announced by the Autonomous System.
       type: Unknown
     - contextPath: IPGeolocation.ASN.Peers
-      description: Autonomous Systems that peer directly with this one.
+      description: The Autonomous Systems that peer directly with this one.
       type: Unknown
     - contextPath: IPGeolocation.ASN.Upstreams
-      description: Upstream provider Autonomous Systems.
+      description: The upstream provider Autonomous Systems.
       type: Unknown
     - contextPath: IPGeolocation.ASN.Downstreams
-      description: Downstream customer Autonomous Systems.
+      description: The downstream customer Autonomous Systems.
       type: Unknown
     - contextPath: IPGeolocation.ASN.WhoisResponse
-      description: Raw WHOIS record text for the Autonomous System.
+      description: The raw WHOIS record text for the Autonomous System.
       type: String
   dockerimage: demisto/python3:3.12.13.10404775
   runonce: false
@@ -1139,8 +1117,12 @@ script:
   longRunning: false
   longRunningPort: false
   feed: false
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
 fromversion: 6.10.0
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 tests:
