@@ -1,119 +1,7 @@
-# ---------------------------------------------------------------------------
-# STDOUT FIREWALL - must run before EVERY other import in this file.
-#
-# XSOAR executes this script inside a Docker container in "loop" mode: the
-# server reads the container's stdout and requires EVERY line on it to be a
-# JSON document. demisto-sdk (validate / pre-commit / YmlSplitter / the
-# contribution converter) and its transitive dependencies write plain text to
-# stdout - progress output, rich consoles, "Packs/..." paths - both from Python
-# and directly to the OS-level file descriptor 1. A single leaked line breaks
-# the protocol and the server fails the script with:
-#   "Failed to decode (loop) data from docker code script:
-#    invalid character 'P' looking for beginning of value"
-#
-# `contextlib.redirect_stdout` is NOT sufficient: it only rebinds the
-# Python-level `sys.stdout` object and cannot stop writes coming from a
-# rich.Console that cached the original stream, from C extensions, or from
-# child processes that inherited fd 1. Guarding a single function is also not
-# sufficient, because leaks occur at import time and while the content
-# directory is being prepared.
-#
-# So we duplicate the real stdout onto a private fd and point fd 1 at a capture
-# file for the entire lifetime of the script. Nothing reaches the server by
-# accident. The real channel is restored only inside the `real_stdout()`
-# context manager, which every legitimate `demisto.*` call is routed through
-# (see `_wrap_demisto_ipc`), so logging and file lookups keep working.
-# ---------------------------------------------------------------------------
-import os
-import sys
-import tempfile
-
-# Private duplicate of the real stdout (the XSOAR IPC channel).
-_REAL_STDOUT_FD: int = os.dup(1)
-# Everything written to fd 1 from now on lands here instead of the IPC channel.
-# The PID keeps concurrent executions in the same container from clobbering
-# each other's capture file.
-_STDOUT_CAPTURE_PATH: str = os.path.join(tempfile.gettempdir(), f"validate_content_stdout_{os.getpid()}.log")
-_STDOUT_CAPTURE_FD: int = os.open(_STDOUT_CAPTURE_PATH, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
-_FIREWALL_ARMED: bool = True
-os.dup2(_STDOUT_CAPTURE_FD, 1)
-
-import inspect
 import io
-
-# ---------------------------------------------------------------------------
-# Python 3.11+ compatibility shim for `inspect.formatargspec`.
-#
-# `inspect.formatargspec` was deprecated in Python 3.5 and REMOVED in Python
-# 3.11. The pinned validation Docker image (demisto/xsoar-tools) runs Python
-# 3.12, but some transitive dependency invoked during the demisto-sdk
-# validate / pre-commit run still does `from inspect import formatargspec`,
-# which raises: "cannot import name 'formatargspec' from 'inspect'".
-#
-# We cannot pip-install or patch that dependency at runtime, so we restore a
-# backward-compatible implementation onto the `inspect` module BEFORE any of
-# those lazy imports execute (they happen inside validate_content()). This is
-# the reference reimplementation adapted from CPython 3.10's inspect module.
-if not hasattr(inspect, "formatargspec"):
-
-    def _formatargspec(  # noqa: ANN202
-        args,
-        varargs=None,
-        varkw=None,
-        defaults=None,
-        kwonlyargs=(),
-        kwonlydefaults=None,
-        annotations=None,
-        formatarg=str,
-        formatvarargs=lambda name: "*" + name,
-        formatvarkw=lambda name: "**" + name,
-        formatvalue=lambda value: "=" + repr(value),
-        formatreturns=lambda text: " -> " + text,
-        formatannotation=inspect.formatannotation,
-    ):
-        """Backport of the pre-3.11 ``inspect.formatargspec``."""
-        annotations = annotations or {}
-
-        def formatargandannotation(arg):  # noqa: ANN202
-            result = formatarg(arg)
-            if arg in annotations:
-                result += ": " + formatannotation(annotations[arg])
-            return result
-
-        specs = []
-        if defaults:
-            firstdefault = len(args) - len(defaults)
-        else:
-            firstdefault = len(args)
-        for i, arg in enumerate(args):
-            spec = formatargandannotation(arg)
-            if defaults and i >= firstdefault:
-                spec = spec + formatvalue(defaults[i - firstdefault])
-            specs.append(spec)
-        if varargs is not None:
-            specs.append(formatvarargs(formatargandannotation(varargs)))
-        elif kwonlyargs:
-            specs.append("*")
-        if kwonlyargs:
-            for kwonlyarg in kwonlyargs:
-                spec = formatargandannotation(kwonlyarg)
-                if kwonlydefaults and kwonlyarg in kwonlydefaults:
-                    spec += formatvalue(kwonlydefaults[kwonlyarg])
-                specs.append(spec)
-        if varkw is not None:
-            specs.append(formatvarkw(formatargandannotation(varkw)))
-        result = "(" + ", ".join(specs) + ")"
-        if "return" in annotations:
-            result += formatreturns(formatannotation(annotations["return"]))
-        return result
-
-    inspect.formatargspec = _formatargspec  # type: ignore[attr-defined]
-# ---------------------------------------------------------------------------
-# NOTE: `os`, `sys` and `tempfile` are imported by the stdout firewall above.
-import functools
 import json
+import os
 import re
-import threading
 import shutil
 import traceback
 import types
@@ -133,6 +21,7 @@ from CommonServerPython import *  # noqa: F401
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, FileType
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
+from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from importlib.metadata import version
 from ruamel.yaml import YAML
 
@@ -185,183 +74,6 @@ SKIPPED_HOOKS = [
     "check-yaml",
     "check-json",
 ]
-
-
-# Maximum number of captured characters echoed back as a debug entry. The
-# captured file holds the full pre-commit/validate console output, which can be
-# megabytes; sending all of it back would bloat the war-room entry.
-MAX_CAPTURED_STDOUT_CHARS = 20000
-
-# Guards the fd swap performed by `real_stdout`. Re-entrant because a wrapped
-# `demisto.*` call may be issued from within another one (e.g. debug in error).
-_STDOUT_SWAP_LOCK = threading.RLock()
-
-# Set while demisto-sdk runs `validate` / `pre-commit` on worker threads. See
-# `suspended_ipc` for why fd 1 must never be restored during that window.
-_IPC_SUSPENDED = False
-
-
-def get_yml_splitter():
-    """
-    Resolve demisto-sdk's unified-YAML splitter lazily.
-
-    The class moved between modules across demisto-sdk versions, and importing
-    it at module level makes this script unimportable (so untestable) whenever
-    the installed SDK does not expose that exact path. Resolving it on first use
-    keeps the script working across SDK/Docker image versions.
-    """
-    try:
-        from demisto_sdk.commands.split.ymlsplitter import YmlSplitter  # pylint: disable=import-error,no-name-in-module
-    except ImportError:
-        from demisto_sdk.commands.split_yml.extractor import (  # pylint: disable=import-error,no-name-in-module
-            Extractor as YmlSplitter,
-        )
-    return YmlSplitter
-
-
-def _flush_streams() -> None:
-    """Flush Python-level buffers so they cannot spill across an fd swap."""
-    for stream in (sys.stdout, sys.stderr):
-        try:
-            stream.flush()
-        except Exception:  # noqa: S110 - a broken stream must never fail the run.
-            pass
-
-
-@contextmanager
-def suspended_ipc():
-    """
-    Forbid restoring fd 1 for the duration of the block.
-
-    Restoring fd 1 is only safe while this script is the sole writer. Once
-    demisto-sdk runs `validate` and `pre-commit` on worker threads, its own
-    threads and subprocesses write to fd 1 at arbitrary moments. A lock cannot
-    prevent that - it only serializes OUR code - so any window in which fd 1
-    points at the IPC channel can be filled with library output, which is
-    exactly the corruption this module exists to prevent.
-
-    During the block, `demisto.*` output is written to the capture file instead
-    of being emitted, and is surfaced afterwards via `read_captured_stdout`.
-    Blocking IPC calls (e.g. `getFilePath`) must therefore be made before the
-    block - they are, in `setup_content_dir`, which runs single-threaded.
-    """
-    global _IPC_SUSPENDED
-    with _STDOUT_SWAP_LOCK:
-        # Wait for any in-flight IPC call to finish before suspending, so the
-        # worker threads never start while fd 1 is the real channel.
-        previous = _IPC_SUSPENDED
-        _IPC_SUSPENDED = True
-    try:
-        yield
-    finally:
-        with _STDOUT_SWAP_LOCK:
-            _IPC_SUSPENDED = previous
-
-
-@contextmanager
-def real_stdout():
-    """
-    Temporarily restore fd 1 to the real stdout (the XSOAR IPC channel).
-
-    Every `demisto.*` call runs inside this block - see `_wrap_demisto_ipc`.
-    Anything written to fd 1 outside it is diverted to the capture file by the
-    stdout firewall installed at the top of this module.
-
-    Does nothing while IPC is suspended (see `suspended_ipc`), so concurrent
-    library output can never escape through a restore window.
-    """
-    if not _FIREWALL_ARMED:
-        # Firewall already disarmed - fd 1 is the real channel, nothing to do.
-        yield
-        return
-    with _STDOUT_SWAP_LOCK:
-        if _IPC_SUSPENDED:
-            # Unsafe to restore fd 1 now; let the output go to the capture file.
-            yield
-            return
-        _flush_streams()
-        os.dup2(_REAL_STDOUT_FD, 1)
-        try:
-            yield
-        finally:
-            # Re-arm the firewall even if the caller raised.
-            _flush_streams()
-            if _FIREWALL_ARMED:
-                os.dup2(_STDOUT_CAPTURE_FD, 1)
-
-
-def _wrap_demisto_ipc() -> None:
-    """
-    Route every `demisto.*` call through the real stdout.
-
-    In the XSOAR runtime these helpers are not local no-ops: they serialize a
-    JSON message to stdout, and some of them (notably `getFilePath`) BLOCK
-    waiting for the server's reply on stdin. If the firewall were armed while
-    such a call is in flight, logs would be silently swallowed and file lookups
-    would deadlock until the script's execution timeout. Wrapping them keeps
-    the IPC channel available exactly for the duration of each call, while
-    library noise emitted in between is still captured.
-
-    While IPC is suspended the calls still succeed - their output is captured
-    rather than emitted - so logging never blocks or crashes the validation.
-    """
-    ipc_functions = (
-        "addEntry",
-        "createIncidents",
-        "debug",
-        "error",
-        "executeCommand",
-        "get",
-        "getFilePath",
-        "info",
-        "investigation",
-        "log",
-        "results",
-        "setContext",
-    )
-
-    def make_proxy(func):
-        @functools.wraps(func)
-        def proxy(*args, **kwargs):
-            with real_stdout():
-                return func(*args, **kwargs)
-
-        return proxy
-
-    for func_name in ipc_functions:
-        original = getattr(demisto, func_name, None)
-        if callable(original):
-            setattr(demisto, func_name, make_proxy(original))
-
-
-def read_captured_stdout() -> str:
-    """Return everything libraries wrote to fd 1 while the firewall was armed."""
-    _flush_streams()
-    try:
-        with open(_STDOUT_CAPTURE_PATH, errors="replace") as capture_file:
-            captured = capture_file.read()
-    except Exception as e:
-        return f"<unable to read captured stdout: {e}>"
-    if len(captured) > MAX_CAPTURED_STDOUT_CHARS:
-        omitted = len(captured) - MAX_CAPTURED_STDOUT_CHARS
-        captured = f"{captured[:MAX_CAPTURED_STDOUT_CHARS]}\n...<{omitted} more characters omitted>"
-    return captured
-
-
-def restore_real_stdout() -> None:
-    """Permanently disarm the firewall and remove the capture file."""
-    global _FIREWALL_ARMED
-    with _STDOUT_SWAP_LOCK:
-        if not _FIREWALL_ARMED:
-            return
-        _flush_streams()
-        _FIREWALL_ARMED = False
-        try:
-            os.dup2(_REAL_STDOUT_FD, 1)
-            os.close(_STDOUT_CAPTURE_FD)
-            os.remove(_STDOUT_CAPTURE_PATH)
-        except Exception:  # noqa: S110 - best-effort cleanup, never fail the run.
-            pass
 
 
 class FormattedResultFields:
@@ -531,7 +243,7 @@ def content_item_to_package_format(
             file_type = find_type(content_item_file_path)
             file_type = file_type.value if file_type else file_type
             try:
-                extractor = get_yml_splitter()(
+                extractor = YmlSplitter(
                     input=content_item_file_path,
                     output=content_item_dir,
                     file_type=file_type,
@@ -640,7 +352,7 @@ def prepare_single_content_item_for_validation(file_name: str, data: bytes, pack
     file_type = file_type.value if file_type else file_type
     if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
         return str(file_path)
-    extractor = get_yml_splitter()(input=str(file_path), file_type=file_type, output=containing_dir)
+    extractor = YmlSplitter(input=str(file_path), file_type=file_type, output=containing_dir)
     # Validate the resulting package files, ergo set path_to_validate to the package directory that results
     # from extracting the unified yaml to a package format
     extractor.extract_to_package_format()
@@ -661,28 +373,22 @@ def run_validate(path_to_validate: str, json_output_file: str) -> int:
         int: An exit code indicating the validation status; 0 for success and non-zero for failures.
 
     """
-    # These demisto-sdk modules exist in the runtime image but not in the pinned
-    # lint image (demisto/xsoar-tools:1.0.0.11131287), so pylint cannot resolve them.
-    from demisto_sdk.commands.common.constants import ExecutionMode  # pylint: disable=no-name-in-module
-    from demisto_sdk.commands.validate.config_reader import ConfigReader  # pylint: disable=import-error,no-name-in-module
-    from demisto_sdk.commands.validate.initializer import Initializer  # pylint: disable=import-error,no-name-in-module
+    from demisto_sdk.commands.common.constants import ExecutionMode
+    from demisto_sdk.commands.validate.config_reader import ConfigReader
+    from demisto_sdk.commands.validate.initializer import Initializer
     from demisto_sdk.commands.validate.validate_manager import ValidateManager
-    from demisto_sdk.commands.validate.validation_results import ResultWriter  # pylint: disable=import-error,no-name-in-module
+    from demisto_sdk.commands.validate.validation_results import ResultWriter
 
     result_writer = ResultWriter(json_output_file)
     config_reader = ConfigReader(category=DEFAULT_CONFIG_CATEGORY)
     initializer = Initializer(
         staged=False, committed_only=False, file_path=str(path_to_validate), execution_mode=ExecutionMode.SPECIFIC_FILES
     )
-    # ValidateManager's signature/members differ between the runtime SDK and the pinned lint
-    # image, so pylint reports false E1123/E1101 for the newer API used here.
-    validate_manager = ValidateManager(  # pylint: disable=unexpected-keyword-arg
-        result_writer, config_reader, initializer, allow_autofix=False, ignore=["BA106"]
-    )
-    demisto.debug(f"run_validate validate_manager initialized. Running validations: {validate_manager.validators=}")  # pylint: disable=no-member
+    validate_manager = ValidateManager(result_writer, config_reader, initializer, allow_autofix=False, ignore=["BA106"])
+    demisto.debug(f"run_validate validate_manager initialized. Running validations: {validate_manager.validators=}")
     err_file = io.StringIO()
     with redirect_stderr(err_file):
-        exit_code: int = validate_manager.run_validations()  # pylint: disable=no-member
+        exit_code: int = validate_manager.run_validations()
     demisto.debug(f"run_validate {exit_code=}")
     return exit_code
 
@@ -788,8 +494,7 @@ def run_pre_commit(output_path: Path) -> int:
         int: An exit code indicating the validation status; 0 for success and non-zero for failures.
 
     """
-    # Not resolvable by pylint in the pinned lint image; available at runtime.
-    from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager  # pylint: disable=import-error,no-name-in-module
+    from demisto_sdk.commands.pre_commit.pre_commit_command import pre_commit_manager
 
     os.environ["DEMISTO_SDK_DISABLE_MULTIPROCESSING"] = "true"
     demisto.debug(f"run_pre_commit | {get_skipped_hooks()=} | {PRE_COMMIT_TEMPLATE_PATH=} | {output_path=}")
@@ -1051,9 +756,6 @@ def setup_envvars():
 
 
 def main():
-    # Route demisto.* IPC calls around the stdout firewall before anything else
-    # logs or reads a file entry.
-    _wrap_demisto_ipc()
     setup_envvars()
     # Save working directory for later return, as working directory changes during runtime.
     cwd = os.getcwd()
@@ -1076,42 +778,11 @@ def main():
             demisto.debug(f"created {tmp_dir=}")
 
             # Setup Demisto SDK's logging.
-            # logging_setup's signature differs across demisto-sdk / Docker image
-            # versions. Some versions accept `calling_function`, `console_threshold`
-            # and `propagate`, while others (notably the pinned xsoar-tools image)
-            # require a positional `verbose` argument that has no default. Introspect
-            # the runtime signature and (1) pass only the supported keyword arguments
-            # and (2) supply a value for every required parameter that has no default,
-            # keeping the script compatible across SDK/Docker image versions.
-            debug_mode = is_debug_mode()
-            supported_params = inspect.signature(logging_setup).parameters
-            # Preferred values for parameters we explicitly care about, keyed by name.
-            desired_kwargs: dict = {
-                "calling_function": "ValidateContent",
-                "console_threshold": "DEBUG" if debug_mode else "ERROR",
-                "propagate": True,
-                # Older SDK signatures expose `verbose` (int/bool verbosity level).
-                "verbose": 3 if debug_mode else 0,
-            }
-            logging_setup_kwargs = {key: value for key, value in desired_kwargs.items() if key in supported_params}
-            # Ensure every REQUIRED parameter (no default value) is provided, even if
-            # it is not one of the parameters we explicitly track above. This prevents
-            # "missing required positional argument" errors on SDK versions that add
-            # new mandatory parameters we are not yet aware of.
-            for name, param in supported_params.items():
-                if (
-                    name not in logging_setup_kwargs
-                    and param.default is inspect.Parameter.empty
-                    and param.kind in (inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY)
-                ):
-                    # Fall back to a debug-aware default for any unknown required arg.
-                    logging_setup_kwargs[name] = 3 if debug_mode else 0
-            # Call through an indirect reference so pylint does not statically validate
-            # the keyword arguments against the pinned lint image's signature (which
-            # would otherwise raise a false E1123). The kwargs are already filtered to
-            # only the parameters the runtime signature supports.
-            logging_setup_fn = logging_setup
-            logging_setup_fn(**logging_setup_kwargs)
+            logging_setup(
+                calling_function="ValidateContent",
+                console_threshold="DEBUG" if is_debug_mode() else "ERROR",
+                propagate=True,
+            )
             demisto.debug("Finished setting logger.")
 
             path_to_validate: str = setup_content_dir(filename, data, entry_id, verify_ssl)
@@ -1119,13 +790,7 @@ def main():
 
             # Got to be in content dir when running demisto-sdk commands.
             os.chdir(CONTENT_DIR_PATH)
-            # `validate_content` runs demisto-sdk on worker threads that write to
-            # fd 1 at arbitrary moments. Suspend IPC so fd 1 is never restored
-            # while they run - otherwise their output would escape through a
-            # restore window and corrupt the entry. Logs emitted meanwhile are
-            # captured and reported below.
-            with suspended_ipc():
-                validation_results, raw_outputs = validate_content(path_to_validate)
+            validation_results, raw_outputs = validate_content(path_to_validate)
             os.chdir(cwd)
 
             if not raw_outputs:
@@ -1141,14 +806,6 @@ def main():
                         FormattedResultFields.ERROR_CODE_OR_LINTER,
                     ],
                 )
-            # Surface the library noise that the firewall diverted, so debugging
-            # information is not lost. demisto.debug is already routed through
-            # the real stdout by _wrap_demisto_ipc().
-            demisto.debug(f"Captured stdout during validation:\n{read_captured_stdout()}")
-
-            # Disarm the firewall so the entry itself is written to the real
-            # stdout. From here on no demisto-sdk code runs, so nothing can leak.
-            restore_real_stdout()
             return_results(
                 CommandResults(
                     readable_output=readable_output,
@@ -1157,27 +814,12 @@ def main():
                     raw_response=raw_outputs,
                 )
             )
-            # fd 1 is a pipe, so Python block-buffers it (it is not a tty and is
-            # therefore not line-buffered). The entry above would otherwise sit in
-            # the userspace buffer, the server would never receive it, and the
-            # playbook would hang in `inprogress` until its execution timeout.
-            _flush_streams()
 
         demisto.info("Finished validating content.")
     except Exception as e:
         demisto.error(traceback.format_exc())
-        demisto.error(f"Captured stdout before failure:\n{read_captured_stdout()}")
-        restore_real_stdout()
         return_error(f"Failed to execute ValidateContent. Error: {e!s}")
     finally:
-        # Hand a clean, unredirected stdout back to the runtime wrapper, even if
-        # an early failure skipped the calls above.
-        restore_real_stdout()
-        # Unconditional: `restore_real_stdout` returns early (without flushing)
-        # when the firewall was already disarmed above, so this is the only flush
-        # that is guaranteed to run on every exit path - including the
-        # `return_error` path, which unwinds through here via SystemExit.
-        _flush_streams()
         os.chdir(cwd)
 
 
