@@ -1,11 +1,14 @@
-Enrich IP addresses with geolocation, network, ASN, abuse contact and threat intelligence data from the
-IPGeolocation.io v3 APIs.
+## IPGeolocation.io
+
+To configure an instance of this integration, you need an IPGeolocation.io API key. Get one from the
+[IPGeolocation.io dashboard](https://app.ipgeolocation.io/login), then paste it into the **API Key** field
+and set the **Server URL** if you route traffic through a gateway.
 
 ### Get your API key
 
 1. Sign in to the [IPGeolocation.io dashboard](https://app.ipgeolocation.io/login).
 2. Copy the API key from the dashboard, or create a new one.
-3. Paste it into the **API Key** field below. Storing the key in the Cortex XSOAR credentials manager is
+3. Paste it into the **API Key** field below. Storing the key in the Cortex credentials manager is
    recommended.
 
 ### Plan requirements
@@ -13,13 +16,13 @@ IPGeolocation.io v3 APIs.
 The **Test** button calls `GET /v3/ipgeo` for the sample address `8.8.8.8` and works on the Free plan. A successful
 test therefore confirms the API key, but not that the paid modules are enabled on your subscription.
 
-A paid subscription is required for the following.
+A paid subscription is required for the following:
 
 * The `ip` reputation command and the `ipgeolocation-ip-security` command, because IP Security data is a paid
   feature.
 * The `ipgeolocation-abuse-contact` and `ipgeolocation-asn` commands.
 * The optional modules of `ipgeolocation-ip-lookup` (`security`, `abuse`, `geo_accuracy`, `dma_code`, `user_agent`,
-  `hostname`, `liveHostname`, `hostnameFallbackLive`), domain name lookups and non English responses.
+  `hostname`, `liveHostname`, `hostnameFallbackLive`), domain name lookups and non-English responses.
 
 Requests that ask for a paid feature with a Free plan key are answered by the API with HTTP 401.
 
