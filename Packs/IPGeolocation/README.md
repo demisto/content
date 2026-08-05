@@ -1,12 +1,12 @@
 # IPGeolocation.io
 
-IP intelligence for Cortex XSOAR, powered by the IPGeolocation.io v3 APIs.
+IP intelligence for Cortex, powered by the IPGeolocation.io v3 APIs.
 
-This pack adds IP geolocation, IP security (VPN, proxy, residential proxy, Tor, relay, bot, spam and known attacker
-detection), ASN lookup and abuse contact resolution to your SOC automation workflows, and registers
-IPGeolocation.io as a Cortex XSOAR IP reputation source.
+This pack adds IP Geolocation, IP Security (VPN, proxy, residential proxy, Tor, relay, bot, spam and known attacker
+detection), ASN lookup and Abuse Contact resolution to your SOC automation workflows, and registers
+IPGeolocation.io as a Cortex IP reputation source.
 
-## What is in this pack
+## What does this pack do?
 
 | Content | Name | Purpose |
 | --- | --- | --- |
@@ -26,8 +26,8 @@ IPGeolocation.io as a Cortex XSOAR IP reputation source.
 ## Before you start
 
 You need an IPGeolocation.io API key, created in the
-[IPGeolocation.io dashboard](https://app.ipgeolocation.io/login). A paid subscription is required for IP security,
-abuse contact and ASN data, and for the optional modules of the geolocation lookup. The base geolocation lookup and
+[IPGeolocation.io dashboard](https://app.ipgeolocation.io/login). A paid subscription is required for IP Security,
+Abuse Contact and ASN data, and for the optional modules of the geolocation lookup. The base geolocation lookup and
 the integration test work on the Free plan.
 
 For configuration steps, credit costs, command reference, error handling, troubleshooting and best practices, see
