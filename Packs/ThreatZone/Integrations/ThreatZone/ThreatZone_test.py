@@ -162,6 +162,11 @@ class TestPureHelpers(unittest.TestCase):
         assert integration.normalize_sdk_base_url("https://app.threat.zone") == "https://app.threat.zone/public-api"
         assert integration.normalize_sdk_base_url("https://app.threat.zone/public-api/") == "https://app.threat.zone/public-api"
 
+    def test_extract_api_key_supports_type_9_and_legacy_values(self):
+        assert integration.extract_api_key({"identifier": "", "password": "type-9-key"}) == "type-9-key"
+        assert integration.extract_api_key("legacy-key") == "legacy-key"
+        assert integration.extract_api_key(None) == ""
+
     def test_normalize_sdk_base_url_rejects_missing_url(self):
         with pytest.raises(DemistoException, match="Server URL is required"):
             integration.normalize_sdk_base_url("  ")
@@ -179,6 +184,18 @@ class TestPureHelpers(unittest.TestCase):
         assert integration.parse_bounded_int_argument("500", "limit", minimum=1, maximum=500) == 500
         with pytest.raises(DemistoException, match="between 1 and 500"):
             integration.parse_bounded_int_argument("501", "limit", minimum=1, maximum=500)
+
+    def test_report_pagination_has_a_hard_page_limit(self):
+        fetch_page = MagicMock()
+        fetch_page.return_value = MagicMock(
+            items=[object()],
+            total=integration.MAX_REPORT_FINDINGS_PAGES * integration.REPORT_FINDINGS_PAGE_SIZE + 1,
+        )
+
+        with pytest.raises(DemistoException, match="pagination exceeded"):
+            integration.get_all_report_items(fetch_page, "submission-uuid")
+
+        assert fetch_page.call_count == integration.MAX_REPORT_FINDINGS_PAGES
 
     def test_translate_score_levels(self):
         assert integration.translate_score(None) == 0
@@ -274,8 +291,11 @@ class TestClient(unittest.TestCase):
             api_key="key",
             verify=False,
             proxy=True,
+            reliability="A - Completely reliable",
         )
 
+        assert isinstance(client, integration.ContentClient)
+        assert client.reliability == "A - Completely reliable"
         http_client_kwargs = http_client_mock.call_args.kwargs
         assert http_client_kwargs["verify"] is False
         assert http_client_kwargs["trust_env"] is True
@@ -682,6 +702,7 @@ class TestConfigurationAndSubmissionCommands(unittest.TestCase):
             },
         )[0]
 
+        assert result.outputs_prefix == "ThreatZone.Submission.List"
         assert result.outputs["page"] == 2
         call_kwargs = self.client.sdk.list_submissions.call_args.kwargs
         assert call_kwargs["level"] == ["malicious", "suspicious"]
@@ -960,6 +981,20 @@ class TestDownloads(unittest.TestCase):
             integration.threatzone_download_yara_rule(self.client, {"uuid": "u"})
 
         execute_command_mock.assert_not_called()
+
+    @patch.object(integration.demisto, "executeCommand")
+    @patch.object(integration.time, "monotonic", side_effect=[0.0, 0.0, 0.0])
+    def test_generated_yara_polling_has_an_attempt_limit(self, monotonic_mock, execute_command_mock):
+        self.client.sdk.download_yara_rule.side_effect = YaraRulePendingError("pending", retry_after=0.0)
+
+        with pytest.raises(DemistoException, match="Timed out after 2 seconds"):
+            integration.threatzone_download_yara_rule(self.client, {"uuid": "u", "timeout": "2"})
+
+        assert self.client.sdk.download_yara_rule.call_count == 2
+        assert execute_command_mock.call_args_list == [
+            call("Sleep", {"seconds": str(integration.MIN_YARA_POLL_INTERVAL_SECONDS)}),
+            call("Sleep", {"seconds": str(integration.MIN_YARA_POLL_INTERVAL_SECONDS)}),
+        ]
 
     @patch.object(integration, "fileResult", return_value={"EntryID": "screenshot"})
     def test_screenshot_bytes_become_war_room_file(self, file_result_mock):

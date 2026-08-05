@@ -12,17 +12,18 @@ configuration:
   type: 0
   required: true
   section: Connect
-  additionalinfo: Required ThreatZone instance root or /public-api URL. The integration appends the suffix exactly once.
-- display: ThreatZone API Key
-  name: apikey
-  type: 4
+  additionalinfo: The ThreatZone instance root or /public-api URL. The integration appends the suffix exactly once.
+- name: apikey
+  type: 9
   required: true
   section: Connect
-  additionalinfo: API key generated for the ThreatZone workspace.
+  displaypassword: ThreatZone API Key
+  hiddenusername: true
+  additionalinfo: The API key generated for the ThreatZone workspace.
 - display: Source Reliability
   name: integrationReliability
   type: 15
-  additionalinfo: Reliability of the source.
+  additionalinfo: The reliability of the source providing the intelligence data.
   defaultvalue: A - Completely reliable
   options:
   - A+ - 3rd party enrichment
@@ -40,14 +41,14 @@ configuration:
   type: 8
   required: false
   section: Connect
-  additionalinfo: Disables TLS certificate validation when enabled.
+  additionalinfo: Whether to trust any certificate (not secure) by disabling TLS certificate validation.
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
   required: false
   section: Connect
-  additionalinfo: Routes SDK requests through the system proxy when enabled.
+  additionalinfo: Whether to use the system proxy settings for SDK requests.
 script:
   script: "-"
   type: python
@@ -55,7 +56,7 @@ script:
   - name: tz-sandbox-upload-sample
     arguments:
     - name: entry_id
-      description: Entry ID of the file to submit.
+      description: The entry ID of the file to submit.
       required: true
     - name: environment
       required: false
@@ -67,7 +68,7 @@ script:
       - linux-ubuntu_2204
       - macos-ventura
       - android9
-      description: Choose what environment you want to run your submission.
+      description: The environment to run the submission in.
       defaultValue: w7_x64
     - name: private
       required: false
@@ -75,27 +76,27 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Privacy of the submission. If omitted, the current ThreatZone API-provided default is used.
+      description: Whether the submission is private. If omitted, the current ThreatZone API-provided default is used.
     - name: extension_check
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enforce MIME-based extension correction before sandbox execution. If omitted, the current ThreatZone API-provided default is used.
+      description: Whether to enforce MIME-based extension correction before sandbox execution. If omitted, the current ThreatZone API-provided default is used.
       required: false
     - name: auto
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: When true, automatically selects a sandbox environment based on the uploaded file type and ignores the environment argument.
+      description: Whether to automatically select a sandbox environment based on the uploaded file type, ignoring the environment argument.
       defaultValue: "false"
       required: false
     - name: modules
-      description: Legacy compatibility argument. ThreatZone v3.2 does not support per-submission module selection, so this value is validated but not forwarded.
+      description: The legacy compatibility argument. ThreatZone v3.2 does not support per-submission module selection, so this value is validated but not forwarded.
       required: false
     - name: analyze_config
-      description: Provide raw analyzeConfig JSON to override/add sandbox metafields.
+      description: The raw analyzeConfig JSON used to override or add sandbox metafields.
       required: false
     - name: timeout
       auto: PREDEFINED
@@ -104,7 +105,7 @@ script:
       - "120"
       - "180"
       - "300"
-      description: Duration of the submission analysis. If omitted, the current ThreatZone API-provided default is used.
+      description: The duration of the submission analysis. If omitted, the current ThreatZone API-provided default is used.
     - name: work_path
       auto: PREDEFINED
       predefined:
@@ -119,43 +120,43 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Enable mouse simulation. If omitted, the current ThreatZone API-provided default is used.
+      description: Whether to enable mouse simulation. If omitted, the current ThreatZone API-provided default is used.
     - name: https_inspection
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable HTTPS inspection for encrypted traffic. If omitted, the current ThreatZone API-provided default is used.
+      description: Whether to enable HTTPS inspection for encrypted traffic. If omitted, the current ThreatZone API-provided default is used.
     - name: internet_connection
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable internet connection. If omitted, the current ThreatZone API-provided default is used.
+      description: Whether to enable internet connection. If omitted, the current ThreatZone API-provided default is used.
     - name: raw_logs
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Legacy compatibility argument. ThreatZone v3.2 does not accept this metafield, so it is not forwarded.
+      description: Whether to request raw logs. This legacy compatibility argument is not forwarded because ThreatZone v3.2 does not accept the metafield.
     - name: snapshot
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable Fast Bootup. If omitted, the current ThreatZone API-provided default is used.
+      description: Whether to enable Fast Bootup. If omitted, the current ThreatZone API-provided default is used.
     - name: entrypoint
       required: false
-      description: For archives, specify the filename inside the archive to execute.
+      description: The filename inside the archive to execute (for archives).
     - name: password
       required: false
-      description: Password for password-protected archives.
+      description: The password for password-protected archives.
     - name: configurations
       required: false
-      description: Advanced execution configuration as a JSON object (for example preScript, startArguments, or networkConfig).
+      description: The advanced execution configuration as a JSON object (for example preScript, startArguments, or networkConfig).
     outputs:
     - contextPath: ThreatZone.Submission.Sandbox.UUID
-      description: UUID of sample.
+      description: The UUID of the sample.
       type: String
     - contextPath: ThreatZone.Limits.E_Mail
       description: The owner e-mail of current plan.
@@ -173,7 +174,7 @@ script:
   - name: tz-static-upload-sample
     arguments:
     - name: entry_id
-      description: Entry ID of the file to submit.
+      description: The entry ID of the file to submit.
       required: true
     - name: private
       required: false
@@ -181,7 +182,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: When false, the submission is visible to everyone. When true, it is visible only to members of your workspace.
+      description: Whether the submission is visible only to members of your workspace. When false, the submission is visible to everyone.
       defaultValue: "true"
     - name: extension_check
       required: false
@@ -189,17 +190,17 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Enforce MIME-based extension correction before static scan.
+      description: Whether to enforce MIME-based extension correction before static scan.
       defaultValue: "false"
     - name: entrypoint
       required: false
-      description: For archives, specify the filename inside the archive to analyze.
+      description: The filename inside the archive to analyze (for archives).
     - name: password
       required: false
-      description: Password for password-protected archives.
+      description: The password for password-protected archives.
     outputs:
     - contextPath: ThreatZone.Submission.Static.UUID
-      description: UUID of sample.
+      description: The UUID of the sample.
       type: String
     - contextPath: ThreatZone.Limits.E_Mail
       description: The owner e-mail of current plan.
@@ -217,7 +218,7 @@ script:
   - name: tz-cdr-upload-sample
     arguments:
     - name: entry_id
-      description: Entry ID of the file to submit.
+      description: The entry ID of the file to submit.
       required: true
     - name: private
       required: false
@@ -225,7 +226,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: When false, the submission is visible to everyone. When true, it is visible only to members of your workspace.
+      description: Whether the submission is visible only to members of your workspace. When false, the submission is visible to everyone.
       defaultValue: "true"
     - name: extension_check
       required: false
@@ -233,17 +234,17 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Enforce MIME-based extension correction before sanitization.
+      description: Whether to enforce MIME-based extension correction before sanitization.
       defaultValue: "true"
     - name: entrypoint
       required: false
-      description: For archives, specify the filename inside the archive to sanitize.
+      description: The filename inside the archive to sanitize (for archives).
     - name: password
       required: false
-      description: Password for password-protected archives.
+      description: The password for password-protected archives.
     outputs:
     - contextPath: ThreatZone.Submission.CDR.UUID
-      description: UUID of sample.
+      description: The UUID of the sample.
       type: String
     - contextPath: ThreatZone.Limits.E_Mail
       description: The owner e-mail of current plan.
@@ -264,14 +265,14 @@ script:
     arguments:
     - name: url
       required: true
-      description: URL to analyze.
+      description: The URL to analyze.
     - name: private
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Mark the submission as workspace-private.
+      description: Whether to mark the submission as workspace-private.
       defaultValue: "true"
     - name: safe_browsing
       required: false
@@ -279,11 +280,11 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Start an isolated safe-browsing session alongside URL analysis.
+      description: Whether to start an isolated safe-browsing session alongside URL analysis.
       defaultValue: "false"
     outputs:
     - contextPath: ThreatZone.Submission.URL.UUID
-      description: UUID of the URL submission.
+      description: The UUID of the URL submission.
       type: String
     - contextPath: ThreatZone.Submission.URL.URL
       description: The URL submitted for analysis.
@@ -305,14 +306,14 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: details
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: When true, include inline Indicators, IOCs, YARA matches, artifacts, and configuration data in the readable output.
+      description: Whether to include inline Indicators, IOCs, YARA matches, artifacts, and configuration data in the readable output.
       defaultValue: "false"
     - name: download_sanitized
       required: false
@@ -320,22 +321,22 @@ script:
       predefined:
       - "true"
       - "false"
-      description: When true and the submission is a CDR analysis, download the sanitized file after the analysis completes.
+      description: Whether to download the sanitized file after a CDR analysis completes.
       defaultValue: "false"
     description: Retrieve the analysis result from ThreatZone.
     outputs:
     - contextPath: ThreatZone.Submission
       type: Unknown
-      description: Raw submission data returned by ThreatZone.
+      description: The raw submission data returned by ThreatZone.
     - contextPath: ThreatZone.Analysis.STATUS
       type: Number
-      description: The status of the submission scanning process.
+      description: The status of the submission scanning process as an integer code (0=declined, 1=file received, 2=accepted, 3=running, 4=VM ready, 5=finished).
     - contextPath: ThreatZone.Analysis.LEVEL
       type: Number
-      description: Threat Level of the scanned file. (malicious, suspicious or informative).
+      description: The threat level of the scanned file as an integer code (0=not measured, 1=informative, 2=suspicious, 3=malicious).
     - contextPath: ThreatZone.Analysis.INFO
       type: String
-      description: Contains submission metadata such as file name/URL and privacy status.
+      description: The submission metadata such as file name/URL and privacy status.
     - contextPath: ThreatZone.Analysis.REPORT
       type: String
       description: The analysis report of the submission.
@@ -387,7 +388,7 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: level
       required: false
       auto: PREDEFINED
@@ -395,160 +396,160 @@ script:
       - benign
       - suspicious
       - malicious
-      description: Filter by indicator severity.
+      description: The indicator severity to filter by.
     - name: category
       required: false
-      description: Filter by indicator category.
+      description: The indicator category to filter by.
     - name: pid
       required: false
-      description: Filter by process ID.
+      description: The process ID to filter by.
     - name: attack_code
       required: false
-      description: Filter by MITRE ATT&CK technique code.
+      description: The MITRE ATT&CK technique code to filter by.
     description: Retrieves dynamic behaviour indicators for a submission from ThreatZone.
     outputs:
     - contextPath: ThreatZone.Submission.Indicators.UUID
       description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.Indicators.Data
-      description: Dynamic behaviour indicators returned by ThreatZone.
+      description: The dynamic behaviour indicators returned by ThreatZone.
       type: Unknown
   - name: tz-get-ioc-result
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: type
       required: false
-      description: Filter by IOC type.
+      description: The IOC type to filter by.
     outputs:
     - contextPath: ThreatZone.Submission.IOCs.UUID
       description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.IOCs.Data
-      description: Indicators of Compromise returned by ThreatZone.
+      description: The Indicators of Compromise returned by ThreatZone.
       type: Unknown
     description: Retrieves Indicators of Compromise for a submission from ThreatZone.
   - name: tz-get-yara-result
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: category
       required: false
-      description: Filter by matched YARA rule category.
+      description: The matched YARA rule category to filter by.
     outputs:
     - contextPath: ThreatZone.Submission.YaraMatches.UUID
       description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.YaraMatches.Data
-      description: Matched YARA rules returned by ThreatZone.
+      description: The matched YARA rules returned by ThreatZone.
       type: Unknown
     description: Retrieves YARA rules matched during analysis. Use tz-download-yara-rule for the generated rule file.
   - name: tz-get-artifact-result
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     outputs:
     - contextPath: ThreatZone.Submission.Artifacts.UUID
       description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.Artifacts.Data
-      description: Analysis artifacts returned by ThreatZone.
+      description: The analysis artifacts returned by ThreatZone.
       type: Unknown
     description: Retrieves analysis artifacts for a submission from ThreatZone.
   - name: tz-get-config-result
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     outputs:
     - contextPath: ThreatZone.Submission.Config.UUID
       description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.Config.Data
-      description: Configuration extractor results returned by ThreatZone.
+      description: The configuration extractor results returned by ThreatZone.
       type: Unknown
     description: Retrieves configuration extractor results for a submission from ThreatZone.
   - name: tz-get-sanitized
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Downloads a sanitized file from the ThreatZone API and uploads it to the War Room.
     outputs:
     - contextPath: InfoFile.Extension
       type: String
-      description: Extension of the file sanitized by CDR.
+      description: The extension of the file sanitized by CDR.
     - contextPath: InfoFile.Name
       type: String
       description: The name of the file sanitized by CDR.
     - contextPath: InfoFile.Size
       type: Number
-      description: Size of the file sanitized by CDR.
+      description: The size of the file sanitized by CDR.
     - contextPath: InfoFile.EntryID
       type: String
-      description: EntryID of the file sanitized by CDR.
+      description: The entry ID of the file sanitized by CDR.
     - contextPath: InfoFile.Info
       type: String
-      description: Info of the file sanitized by CDR.
+      description: The info of the file sanitized by CDR.
     - contextPath: InfoFile.MD5
       type: String
-      description: MD5 hash of the file sanitized by CDR.
+      description: The MD5 hash of the file sanitized by CDR.
     - contextPath: InfoFile.SHA1
       type: String
-      description: SHA1 hash of the file sanitized by CDR.
+      description: The SHA1 hash of the file sanitized by CDR.
     - contextPath: InfoFile.SHA256
       type: String
-      description: SHA256 hash of the file sanitized by CDR.
+      description: The SHA256 hash of the file sanitized by CDR.
     - contextPath: InfoFile.SHA512
       type: String
-      description: SHA512 hash of the file sanitized by CDR.
+      description: The SHA512 hash of the file sanitized by CDR.
     - contextPath: InfoFile.SSDeep
       type: String
-      description: SSDeep hash of the file sanitized by CDR.
+      description: The SSDeep hash of the file sanitized by CDR.
   - name: tz-download-html-report
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Downloads the HTML report for a submission and uploads it to the War Room.
     outputs:
     - contextPath: InfoFile.Extension
       type: String
-      description: Extension of the HTML report.
+      description: The extension of the HTML report.
     - contextPath: InfoFile.Name
       type: String
       description: The name of the downloaded HTML report.
     - contextPath: InfoFile.Size
       type: Number
-      description: Size of the downloaded HTML report.
+      description: The size of the downloaded HTML report.
     - contextPath: InfoFile.EntryID
       type: String
-      description: EntryID of the downloaded HTML report.
+      description: The entry ID of the downloaded HTML report.
     - contextPath: InfoFile.Info
       type: String
-      description: Info for the downloaded HTML report.
+      description: The info for the downloaded HTML report.
     - contextPath: InfoFile.MD5
       type: String
-      description: MD5 hash of the downloaded HTML report.
+      description: The MD5 hash of the downloaded HTML report.
     - contextPath: InfoFile.SHA1
       type: String
-      description: SHA1 hash of the downloaded HTML report.
+      description: The SHA1 hash of the downloaded HTML report.
     - contextPath: InfoFile.SHA256
       type: String
-      description: SHA256 hash of the downloaded HTML report.
+      description: The SHA256 hash of the downloaded HTML report.
     - contextPath: InfoFile.SHA512
       type: String
-      description: SHA512 hash of the downloaded HTML report.
+      description: The SHA512 hash of the downloaded HTML report.
     - contextPath: InfoFile.SSDeep
       type: String
-      description: SSDeep hash of the downloaded HTML report.
+      description: The SSDeep hash of the downloaded HTML report.
   - name: tz-get-metafields
     arguments:
     - name: scan_type
-      description: Optional scan type to filter metafields.
+      description: The scan type to filter metafields.
       required: false
       auto: PREDEFINED
       predefined:
@@ -560,31 +561,31 @@ script:
     description: Retrieves available ThreatZone metafields, optionally filtered by scan type.
     outputs:
     - contextPath: ThreatZone.Configuration.Metafields.ScanType
-      description: Scan type used to filter the metafields.
+      description: The scan type used to filter the metafields.
       type: String
     - contextPath: ThreatZone.Configuration.Metafields.Data
-      description: Metafield definitions returned by ThreatZone.
+      description: The metafield definitions returned by ThreatZone.
       type: Unknown
   - name: tz-get-environments
     description: Retrieves available ThreatZone sandbox environments.
     outputs:
     - contextPath: ThreatZone.Configuration.Environments.Data
-      description: Sandbox environment definitions returned by ThreatZone.
+      description: The sandbox environment definitions returned by ThreatZone.
       type: Unknown
   - name: tz-list-network-configs
     description: Lists network configurations available to the current ThreatZone workspace.
     outputs:
     - contextPath: ThreatZone.Configuration.NetworkConfigurations.Data
-      description: Network configuration summaries returned by ThreatZone.
+      description: The network configuration summaries returned by ThreatZone.
       type: Unknown
   - name: tz-open-in-browser
     arguments:
     - name: url
       required: true
-      description: URL to open in an isolated browser environment.
+      description: The URL to open in an isolated browser environment.
     - name: environment
       required: false
-      description: Sandbox environment key for browser execution.
+      description: The sandbox environment key for browser execution.
     - name: auto
       required: false
       auto: PREDEFINED
@@ -592,10 +593,10 @@ script:
       - "true"
       - "false"
       defaultValue: "false"
-      description: Let ThreatZone select the browser environment.
+      description: Whether to let ThreatZone select the browser environment.
     - name: metafields
       required: false
-      description: Open-in-browser metafields as a JSON object.
+      description: The open-in-browser metafields as a JSON object.
     - name: private
       required: false
       auto: PREDEFINED
@@ -603,482 +604,482 @@ script:
       - "true"
       - "false"
       defaultValue: "true"
-      description: Mark the submission as workspace-private.
+      description: Whether to mark the submission as workspace-private.
     - name: configurations
       required: false
-      description: Advanced execution configuration as a JSON object.
+      description: The advanced execution configuration as a JSON object.
     description: Creates a ThreatZone open-in-browser submission.
     outputs:
     - contextPath: ThreatZone.Submission.OpenInBrowser.UUID
-      description: UUID of the open-in-browser submission.
+      description: The UUID of the open-in-browser submission.
       type: String
     - contextPath: ThreatZone.Submission.OpenInBrowser.URL
-      description: URL submitted to ThreatZone.
+      description: The URL submitted to ThreatZone.
       type: String
   - name: tz-list-submissions
     arguments:
     - name: page
       required: false
       defaultValue: "1"
-      description: Page number, starting at 1.
+      description: The page number, starting at 1.
     - name: limit
       required: false
       defaultValue: "20"
-      description: Number of submissions per page (1-100).
+      description: The number of submissions per page (1-100).
     - name: level
       required: false
-      description: Comma-separated threat levels.
+      description: The comma-separated threat levels.
     - name: type
       required: false
       auto: PREDEFINED
       predefined:
       - file
       - url
-      description: Submission type.
+      description: The submission type.
     - name: sha256
       required: false
-      description: SHA256 hash filter.
+      description: The SHA256 hash filter.
     - name: filename
       required: false
-      description: Partial filename filter.
+      description: The partial filename filter.
     - name: start_date
       required: false
-      description: Include submissions created on or after this ISO 8601 date.
+      description: The ISO 8601 date to include submissions created on or after (for example, 2020-01-01T00:11:22Z).
     - name: end_date
       required: false
-      description: Include submissions created on or before this ISO 8601 date.
+      description: The ISO 8601 date to include submissions created on or before (for example, 2020-01-01T00:11:22Z).
     - name: private
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Filter by privacy status.
+      description: Whether to filter by privacy status.
     - name: tags
       required: false
-      description: Comma-separated tag filters.
+      description: The comma-separated tag filters.
     - name: sort
       required: false
-      description: Field used to sort results, such as createdAt.
+      description: The field used to sort results, such as createdAt.
     - name: order
       required: false
       auto: PREDEFINED
       predefined:
       - asc
       - desc
-      description: Sort order.
+      description: The sort order.
     description: Lists ThreatZone submissions with optional filters.
     outputs:
-    - contextPath: ThreatZone.SubmissionList
-      description: Paginated ThreatZone submission results.
+    - contextPath: ThreatZone.Submission.List
+      description: The paginated ThreatZone submission results.
       type: Unknown
   - name: tz-search-submissions-by-sha256
     arguments:
     - name: sha256
       required: true
-      description: SHA256 hash to search for.
+      description: The SHA256 hash to search for.
     description: Searches ThreatZone submissions by SHA256 hash.
     outputs:
     - contextPath: ThreatZone.SubmissionSearch.Data
-      description: Matching submissions.
+      description: The matching submissions.
       type: Unknown
   - name: tz-get-overview-summary
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Retrieves aggregate analysis counts for a submission.
     outputs:
     - contextPath: ThreatZone.Submission.OverviewSummary.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.OverviewSummary.Data
-      description: Aggregate analysis summary.
+      description: The aggregate analysis summary.
       type: Unknown
   - name: tz-get-eml-analysis
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Retrieves parsed EML analysis results.
     outputs:
     - contextPath: ThreatZone.Submission.EMLAnalysis.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.EMLAnalysis.Data
-      description: Parsed EML analysis data.
+      description: The parsed EML analysis data.
       type: Unknown
   - name: tz-get-mitre-techniques
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Retrieves MITRE ATT&CK techniques matched during analysis.
     outputs:
     - contextPath: ThreatZone.Submission.MITRE.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.MITRE.Data
-      description: Matched MITRE ATT&CK techniques.
+      description: The matched MITRE ATT&CK techniques.
       type: Unknown
   - name: tz-get-static-scan-result
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Retrieves the static scan result for a submission.
     outputs:
     - contextPath: ThreatZone.Submission.StaticScan.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.StaticScan.Data
-      description: Static scan result.
+      description: The static scan result.
       type: Unknown
   - name: tz-get-cdr-result
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Retrieves the CDR transformation result for a submission.
     outputs:
     - contextPath: ThreatZone.Submission.CDRResult.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.CDRResult.Data
-      description: CDR transformation result.
+      description: The CDR transformation result.
       type: Unknown
   - name: tz-get-signature-check-result
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Retrieves authenticode and signature-check results.
     outputs:
     - contextPath: ThreatZone.Submission.SignatureCheck.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.SignatureCheck.Data
-      description: Signature-check result.
+      description: The signature-check result.
       type: Unknown
   - name: tz-get-processes
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Retrieves processes captured during dynamic analysis.
     outputs:
     - contextPath: ThreatZone.Submission.Processes.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.Processes.Data
-      description: Captured processes.
+      description: The captured processes.
       type: Unknown
   - name: tz-get-process-tree
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Retrieves the process tree captured during dynamic analysis.
     outputs:
     - contextPath: ThreatZone.Submission.ProcessTree.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.ProcessTree.Data
-      description: Captured process tree.
+      description: The captured process tree.
       type: Unknown
   - name: tz-get-url-analysis-result
     arguments:
     - name: uuid
       required: true
-      description: UUID of the URL or open-in-browser submission.
+      description: The UUID of the URL or open-in-browser submission.
     description: Retrieves the full URL analysis report.
     outputs:
     - contextPath: ThreatZone.Submission.URLAnalysis.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.URLAnalysis.Data
-      description: URL analysis report.
+      description: The URL analysis report.
       type: Unknown
   - name: tz-get-behaviours
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: type
       required: false
-      description: Behaviour event type filter.
+      description: The behaviour event type filter.
     - name: pid
       required: false
-      description: Process ID filter.
+      description: The process ID filter.
     - name: operation
       required: false
-      description: Operation-name filter.
+      description: The operation-name filter.
     - name: process_name
       required: false
-      description: Exact process-name filter.
+      description: The exact process-name filter.
     - name: page
       required: false
       defaultValue: "1"
-      description: Page number, starting at 1.
+      description: The page number, starting at 1.
     - name: limit
       required: false
       defaultValue: "100"
-      description: Number of events to return (1-500).
+      description: The number of events to return (1-500).
     description: Retrieves one bounded page of behaviour telemetry.
     outputs:
     - contextPath: ThreatZone.Submission.Behaviours.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.Behaviours.Data
-      description: Behaviour events and pagination metadata.
+      description: The behaviour events and pagination metadata.
       type: Unknown
   - name: tz-get-syscalls
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: page
       required: false
       defaultValue: "1"
-      description: Page number, starting at 1.
+      description: The page number, starting at 1.
     - name: limit
       required: false
       defaultValue: "500"
-      description: Number of syscall lines to return (1-2000).
+      description: The number of syscall lines to return (1-2000).
     description: Retrieves one bounded page of syscall telemetry.
     outputs:
     - contextPath: ThreatZone.Submission.Syscalls.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.Syscalls.Data
-      description: Syscall lines and pagination metadata.
+      description: The syscall lines and pagination metadata.
       type: Unknown
   - name: tz-get-network-summary
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Retrieves aggregate network activity counts.
     outputs:
     - contextPath: ThreatZone.Submission.NetworkSummary.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.NetworkSummary.Data
-      description: Network activity summary.
+      description: The network activity summary.
       type: Unknown
   - name: tz-get-dns-queries
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: limit
       required: false
-      description: Maximum items to return (0-1000).
+      description: The maximum items to return (0-1000).
     - name: skip
       required: false
-      description: Number of items to skip (0-1000).
+      description: The number of items to skip (0-1000).
     description: Retrieves a bounded window of DNS queries.
     outputs:
     - contextPath: ThreatZone.Submission.DNSQueries.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.DNSQueries.Data
-      description: Captured DNS queries.
+      description: The captured DNS queries.
       type: Unknown
   - name: tz-get-http-requests
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: limit
       required: false
-      description: Maximum items to return (0-1000).
+      description: The maximum items to return (0-1000).
     - name: skip
       required: false
-      description: Number of items to skip (0-1000).
+      description: The number of items to skip (0-1000).
     description: Retrieves a bounded window of HTTP request hosts.
     outputs:
     - contextPath: ThreatZone.Submission.HTTPRequests.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.HTTPRequests.Data
-      description: Captured HTTP request hosts.
+      description: The captured HTTP request hosts.
       type: Unknown
   - name: tz-get-tcp-connections
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: limit
       required: false
-      description: Maximum items to return (0-1000).
+      description: The maximum items to return (0-1000).
     - name: skip
       required: false
-      description: Number of items to skip (0-1000).
+      description: The number of items to skip (0-1000).
     description: Retrieves a bounded window of TCP connections.
     outputs:
     - contextPath: ThreatZone.Submission.TCPConnections.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.TCPConnections.Data
-      description: Captured TCP connections.
+      description: The captured TCP connections.
       type: Unknown
   - name: tz-get-udp-connections
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: limit
       required: false
-      description: Maximum items to return (0-1000).
+      description: The maximum items to return (0-1000).
     - name: skip
       required: false
-      description: Number of items to skip (0-1000).
+      description: The number of items to skip (0-1000).
     description: Retrieves a bounded window of UDP connections.
     outputs:
     - contextPath: ThreatZone.Submission.UDPConnections.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.UDPConnections.Data
-      description: Captured UDP connections.
+      description: The captured UDP connections.
       type: Unknown
   - name: tz-get-network-threats
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: limit
       required: false
-      description: Maximum items to return (0-1000).
+      description: The maximum items to return (0-1000).
     - name: skip
       required: false
-      description: Number of items to skip (0-1000).
+      description: The number of items to skip (0-1000).
     description: Retrieves a bounded window of Suricata network threats.
     outputs:
     - contextPath: ThreatZone.Submission.NetworkThreats.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.NetworkThreats.Data
-      description: Detected network threats.
+      description: The detected network threats.
       type: Unknown
   - name: tz-download-static-scan-strings
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Downloads the static scan strings JSON to the War Room.
     outputs:
     - contextPath: InfoFile.EntryID
-      description: Entry ID of the downloaded file.
+      description: The entry ID of the downloaded file.
       type: String
     - contextPath: InfoFile.Name
-      description: Name of the downloaded file.
+      description: The name of the downloaded file.
       type: String
   - name: tz-download-sample
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Downloads the original submitted sample to the War Room.
     outputs:
     - contextPath: InfoFile.EntryID
-      description: Entry ID of the downloaded file.
+      description: The entry ID of the downloaded file.
       type: String
     - contextPath: InfoFile.Name
-      description: Name of the downloaded file.
+      description: The name of the downloaded file.
       type: String
   - name: tz-download-artifact
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: artifact_id
       required: true
-      description: Artifact ID returned by tz-get-artifact-result.
+      description: The artifact ID returned by tz-get-artifact-result.
     description: Downloads an extracted artifact to the War Room.
     outputs:
     - contextPath: InfoFile.EntryID
-      description: Entry ID of the downloaded file.
+      description: The entry ID of the downloaded file.
       type: String
     - contextPath: InfoFile.Name
-      description: Name of the downloaded file.
+      description: The name of the downloaded file.
       type: String
   - name: tz-download-pcap
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Downloads the network capture to the War Room.
     outputs:
     - contextPath: InfoFile.EntryID
-      description: Entry ID of the downloaded file.
+      description: The entry ID of the downloaded file.
       type: String
     - contextPath: InfoFile.Name
-      description: Name of the downloaded file.
+      description: The name of the downloaded file.
       type: String
   - name: tz-download-yara-rule
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: timeout
       required: false
       defaultValue: "120"
-      description: Maximum seconds to poll for generated YARA rule readiness (1-3600).
+      description: The maximum seconds to poll for generated YARA rule readiness (1-3600).
     description: Polls for and downloads the generated YARA rule file to the War Room.
     outputs:
     - contextPath: InfoFile.EntryID
-      description: Entry ID of the downloaded file.
+      description: The entry ID of the downloaded file.
       type: String
     - contextPath: InfoFile.Name
-      description: Name of the downloaded file.
+      description: The name of the downloaded file.
       type: String
   - name: tz-download-url-screenshot
     arguments:
     - name: uuid
       required: true
-      description: UUID of the URL analysis submission.
+      description: The UUID of the URL analysis submission.
     description: Downloads the URL analysis screenshot to the War Room.
     outputs:
     - contextPath: InfoFile.EntryID
-      description: Entry ID of the downloaded file.
+      description: The entry ID of the downloaded file.
       type: String
     - contextPath: InfoFile.Name
-      description: Name of the downloaded file.
+      description: The name of the downloaded file.
       type: String
   - name: tz-list-media-files
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     description: Lists screenshots and videos available for a submission.
     outputs:
     - contextPath: ThreatZone.Submission.MediaFiles.UUID
-      description: UUID of the submission.
+      description: The UUID of the submission.
       type: String
     - contextPath: ThreatZone.Submission.MediaFiles.Data
-      description: Available media file metadata.
+      description: The available media file metadata.
       type: Unknown
   - name: tz-download-media-file
     arguments:
     - name: uuid
       required: true
-      description: UUID of the submission.
+      description: The UUID of the submission.
     - name: file_id
       required: true
-      description: Media file ID returned by tz-list-media-files.
+      description: The media file ID returned by tz-list-media-files.
     description: Downloads a submission media file to the War Room.
     outputs:
     - contextPath: InfoFile.EntryID
-      description: Entry ID of the downloaded file.
+      description: The entry ID of the downloaded file.
       type: String
     - contextPath: InfoFile.Name
-      description: Name of the downloaded file.
+      description: The name of the downloaded file.
       type: String
   - name: tz-check-limits
     arguments:
     - name: detailed
-      description: When true, include plan file limits, enabled modules, and account metadata.
+      description: Whether to include plan file limits, enabled modules, and account metadata.
       default: false
     description: Check the plan limits from ThreatZone API.
     outputs:
@@ -1095,25 +1096,25 @@ script:
       description: The remaining/total daily submission limits of the current plan.
       type: String
     - contextPath: ThreatZone.Plan.File_Size_Limit_MiB
-      description: Maximum upload size for the workspace plan (MiB).
+      description: The maximum upload size for the workspace plan (MiB).
       type: Number
     - contextPath: ThreatZone.Plan.Allowed_Extensions
       description: The list of permitted file extensions for uploads.
       type: List
     - contextPath: ThreatZone.Plan.Modules
-      description: Enabled ThreatZone modules for the workspace.
+      description: The enabled ThreatZone modules for the workspace.
       type: List
     - contextPath: ThreatZone.Metadata.Full_Name
-      description: Full name of the authenticated user.
+      description: The full name of the authenticated user.
       type: String
     - contextPath: ThreatZone.Metadata.Workspace
-      description: Workspace identifier or name associated with the account.
+      description: The workspace identifier or name associated with the account.
       type: String
     - contextPath: ThreatZone.Metadata.Plan_Name
-      description: Name of the active ThreatZone plan.
+      description: The name of the active ThreatZone plan.
       type: String
     - contextPath: ThreatZone.Metadata.Plan_Status
-      description: Status of the active ThreatZone plan.
+      description: The status of the active ThreatZone plan.
       type: String
   dockerimage: demisto/threatzone-sdk:1.1.1.11256202
   runonce: false

@@ -1,6 +1,8 @@
-# ThreatZone Cortex XSOAR Integration Pack
+# ThreatZone Cortex Platform Integration Pack
 
-Threat.Zone enrichments integrate into sandbox, static-scan, CDR, URL-analysis, and open-in-browser workflows. The integration uses the official ThreatZone Python SDK for configuration discovery, submissions, granular report and bounded telemetry retrieval, and streamed file downloads.
+## Overview
+
+ThreatZone enrichments integrate into sandbox, static-scan, CDR, URL-analysis, and open-in-browser workflows. The integration uses the official ThreatZone Python SDK for configuration discovery, submissions, granular report and bounded telemetry retrieval, and streamed file downloads.
 
 ## Supported commands
 

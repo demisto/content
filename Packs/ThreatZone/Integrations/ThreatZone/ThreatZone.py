@@ -6,6 +6,7 @@ API interaction is delegated to the official `threatzone` Python SDK.
 import json
 import re
 import time
+import traceback
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -14,6 +15,7 @@ from typing import Any, BinaryIO, cast
 import demistomock as demisto  # noqa: F401
 import httpx
 from CommonServerPython import *  # noqa: F401,F403
+from ContentClientApiModule import *  # noqa: F401,F403
 from threatzone import (
     AnalysisTimeoutError,
     APIError,
@@ -35,7 +37,10 @@ INTEGRATION_NAME = "ThreatZone"
 PUBLIC_API_SUFFIX = "/public-api"
 SDK_REQUEST_TIMEOUT_SECONDS = 60.0
 REPORT_FINDINGS_PAGE_SIZE = 100
+MAX_REPORT_FINDINGS_PAGES = 100
 YARA_POLL_INTERVAL_SECONDS = 5.0
+MIN_YARA_POLL_INTERVAL_SECONDS = 1.0
+MAX_YARA_POLL_ATTEMPTS = 3600
 
 # Old integration used integer codes for level/status. Preserved for backward
 # compatibility with playbooks that branch on these numbers.
@@ -80,16 +85,27 @@ def normalize_sdk_base_url(base_url: str) -> str:
     return normalized_base_url + PUBLIC_API_SUFFIX
 
 
-class Client(BaseClient):  # noqa: F405 - BaseClient from CommonServerPython
+def extract_api_key(api_key_param: Any) -> str:
+    """Return an API key from either a type-9 credential or a legacy string value."""
+    if isinstance(api_key_param, dict):
+        return str(api_key_param.get("password") or "")
+    return str(api_key_param or "")
+
+
+class Client(ContentClient):  # noqa: F405 - ContentClient from ContentClientApiModule
     """Thin wrapper over the ThreatZone SDK."""
 
-    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool) -> None:
+    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool, reliability: str | None = None) -> None:
+        self.reliability = reliability
         sdk_base_url = normalize_sdk_base_url(base_url)
         super().__init__(  # noqa: F405
             base_url=sdk_base_url,
             verify=verify,
             proxy=proxy,
             headers={"Authorization": f"Bearer {api_key}"},
+            timeout=SDK_REQUEST_TIMEOUT_SECONDS,
+            client_name=INTEGRATION_NAME,
+            is_multithreaded=False,
         )
         http_client = httpx.Client(
             verify=verify,
@@ -106,10 +122,15 @@ class Client(BaseClient):  # noqa: F405 - BaseClient from CommonServerPython
         self._http_client = http_client
 
     def close(self) -> None:
+        if self._closed:
+            return
         try:
             self.sdk.close()
         finally:
-            self._http_client.close()
+            try:
+                self._http_client.close()
+            finally:
+                super().close()
 
 
 class _OriginalNameFile:
@@ -224,10 +245,9 @@ def parse_json_object_argument(arg_value: str | None, argument_name: str) -> dic
 
 def parse_csv_list_argument(arg_value: str | None) -> list[str] | None:
     """Parse a comma-separated command argument, omitting empty values."""
-    if not arg_value:
-        return None
-    values = [value.strip() for value in arg_value.split(",") if value.strip()]
-    return values or None
+    # argToList does the split/strip; filter empties + `or None` keep the historical contract
+    # the SDK filter kwargs rely on (None = omit filter, not an empty/blank filter value).
+    return [value for value in argToList(arg_value) if value] or None  # noqa: F405
 
 
 def resolve_private_flag(private_arg: str | None, default: bool = True) -> bool:
@@ -375,14 +395,15 @@ def models_to_dicts(items: Any) -> list[dict[str, Any]]:
 def get_all_report_items(fetch_page: Callable[..., Any], uuid: str, **filters: Any) -> list[Any]:
     """Fetch every page from an SDK report endpoint that exposes an item total."""
     items: list[Any] = []
-    page = 1
-    while True:
+    for page in range(1, MAX_REPORT_FINDINGS_PAGES + 1):
         response = fetch_page(uuid, page=page, limit=REPORT_FINDINGS_PAGE_SIZE, **filters)
         page_items = list(response.items)
         items.extend(page_items)
         if not page_items or len(items) >= response.total:
             return items
-        page += 1
+    raise DemistoException(  # noqa: F405
+        f"Report pagination exceeded the supported maximum of {MAX_REPORT_FINDINGS_PAGES} pages."
+    )
 
 
 def parse_file_size_mib(file_size: Any) -> int | float | None:
@@ -645,13 +666,12 @@ def threatzone_submit_url_analysis(client: Client, args: dict[str, Any]) -> list
     return _submission_result("URL", payload, readable, _build_limits_payload(client))
 
 
-def _build_indicator_object(submission: Any, level_int: int | None) -> Any:
+def _build_indicator_object(submission: Any, level_int: int | None, reliability: str | None) -> Any:
     hashes = getattr(submission, "hashes", None)
     sha256 = getattr(hashes, "sha256", None) if hashes else None
     md5 = getattr(hashes, "md5", None) if hashes else None
     sha1 = getattr(hashes, "sha1", None) if hashes else None
     url_value = getattr(submission, "url", None)
-    reliability = demisto.params().get("integrationReliability")
 
     if sha256:
         dbot = build_dbot_score(sha256, level_int, "file", reliability)
@@ -721,7 +741,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any]) -> list[CommandR
     if status_int is not None and status_int != 5:
         warnings.append(f"Submission status is '{status_readable}'; some sections may not yet be available.")
 
-    indicator_obj = _build_indicator_object(submission, level_int)
+    indicator_obj = _build_indicator_object(submission, level_int, client.reliability)
 
     sanitized_file: dict | None = None
     if primary_report and primary_report.type == "cdr" and status_int == 5 and download_sanitized:
@@ -1053,7 +1073,7 @@ def threatzone_list_submissions(client: Client, args: dict[str, Any]) -> list[Co
     serialized = serialize_sdk_data(response)
     return [
         CommandResults(  # noqa: F405
-            outputs_prefix="ThreatZone.SubmissionList",
+            outputs_prefix="ThreatZone.Submission.List",
             outputs=serialized,
             readable_output=tableToMarkdown("ThreatZone Submissions", serialized.get("items", []), removeNull=True),  # noqa: F405
         )
@@ -1181,18 +1201,28 @@ def threatzone_download_yara_rule(client: Client, args: dict[str, Any]) -> dict[
         parse_bounded_int_argument(args.get("timeout"), "timeout", minimum=1, maximum=3600, default=120),
     )
     started_at = time.monotonic()
-    while True:
+    last_pending_error: YaraRulePendingError | None = None
+    max_attempts = min(timeout, MAX_YARA_POLL_ATTEMPTS)
+    for _ in range(max_attempts):
         try:
             download = client.sdk.download_yara_rule(uuid)
             return _save_download(download, f"{uuid}.yar")
         except YaraRulePendingError as exc:
+            last_pending_error = exc
             elapsed = time.monotonic() - started_at
-            retry_after = max(0.0, exc.retry_after) if exc.retry_after is not None else YARA_POLL_INTERVAL_SECONDS
+            retry_after = (
+                max(MIN_YARA_POLL_INTERVAL_SECONDS, exc.retry_after)
+                if exc.retry_after is not None
+                else YARA_POLL_INTERVAL_SECONDS
+            )
             if elapsed >= timeout or retry_after > timeout - elapsed:
                 raise DemistoException(  # noqa: F405
                     f"Timed out after {timeout} seconds waiting for the generated YARA rule."
                 ) from exc
             demisto.executeCommand("Sleep", {"seconds": str(retry_after)})
+    raise DemistoException(  # noqa: F405
+        f"Timed out after {timeout} seconds waiting for the generated YARA rule."
+    ) from last_pending_error
 
 
 def threatzone_download_url_screenshot(client: Client, args: dict[str, Any]) -> dict[str, Any]:
@@ -1334,7 +1364,8 @@ def main() -> None:
     base_url = str(params.get("url") or "")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    api_key = str(params.get("apikey") or "")
+    api_key = extract_api_key(params.get("apikey"))
+    reliability = params.get("integrationReliability")
     handle_proxy()  # noqa: F405 - propagates HTTPS_PROXY env vars when proxy enabled
 
     command = demisto.command()
@@ -1343,14 +1374,15 @@ def main() -> None:
 
     client: Client | None = None
     try:
-        client = Client(base_url=base_url, api_key=api_key, verify=verify, proxy=proxy)
+        client = Client(base_url=base_url, api_key=api_key, verify=verify, proxy=proxy, reliability=reliability)
         handler = COMMAND_HANDLERS.get(command)
         if handler is None:
             raise DemistoException(f"Command '{command}' is not implemented.")  # noqa: F405
         return_results(handler(client, args))  # noqa: F405
     except Exception as exc:
+        demisto.error(traceback.format_exc())
         error_message = _format_sdk_exception(exc) if isinstance(exc, ThreatZoneError) else str(exc)
-        return_error(f"Failed to execute {command} command.\nError:\n{error_message}")  # noqa: F405
+        return_error(f"Failed to execute {command} command.\nError:\n{error_message}", error=exc)  # noqa: F405
     finally:
         if client is not None:
             try:
