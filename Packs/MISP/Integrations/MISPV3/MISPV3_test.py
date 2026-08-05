@@ -1077,7 +1077,7 @@ def test_get_role_info(mocker):
     ),
     [
         ("192.168.0.1", "IP", {}, {}, {}, DBotScoreReliability.A, 50, True, False, Common.IP),
-        ("2001:db8::1", "IP", {}, {}, {}, DBotScoreReliability.A, 50, True, True, Common.IPv6),
+        ("2001:db8::1", "IP", {}, {}, {}, DBotScoreReliability.A, 50, True, True, Common.IP),
     ],
 )
 def test_get_indicator_results(
