@@ -262,10 +262,10 @@ class MagnetAutomateClient(ContentClient):
             case_id (int): The ID of the case.
             run_id (int): The ID of the workflow run to cancel.
         """
-        demisto.debug(f"Sending a PUT Request to /api/v0/cases/{case_id}/runs/{run_id}/cancel.")
+        demisto.debug(f"Sending a PUT Request to /api/v0/cases/{case_id}/runs/{run_id}.")
 
         self.put(
-            url_suffix=f"/api/v0/cases/{case_id}/runs/{run_id}/cancel",
+            url_suffix=f"/api/v0/cases/{case_id}/runs/{run_id}",
             resp_type="text",
         )
 
