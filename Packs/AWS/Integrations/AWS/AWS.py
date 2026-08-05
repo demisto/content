@@ -6179,7 +6179,7 @@ class EKS:
         Args:
             client (BotoClient): The boto3 client for EKS service
             args (Dict[str, Any]): Command arguments including cluster_name, principal_arn,
-                kubernetes_groups, client_request_token, and type
+                kubernetes_groups, client_request_token, type, and tags
 
         Returns:
             CommandResults: Results containing the created access entry details
@@ -6194,6 +6194,7 @@ class EKS:
             "clientRequestToken": args.get("client_request_token"),
             "username": args.get("user_name"),
             "type": args.get("type"),
+            "tags": {tag["Key"]: tag["Value"] for tag in parse_tag_field(args.get("tags"))} if args.get("tags") else None,
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -6206,7 +6207,7 @@ class EKS:
 
         access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))
 
-        headers = ["clusterName", "principalArn", "username", "type", "createdAt"]
+        headers = ["clusterName", "principalArn", "username", "type", "tags", "createdAt"]
         readable_output = tableToMarkdown(
             name="The AWS EKS Access Entry was created successfully",
             t=access_entry,
@@ -11199,6 +11200,7 @@ REQUIRED_ACTIONS: list[str] = [
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "eks:CreateAccessEntry",
+    "eks:TagResource",
     "eks:UpdateAccessEntry",
     "ec2:CreateSecurityGroup",
     "ec2:CreateNetworkAcl",
