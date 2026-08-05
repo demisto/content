@@ -1,6 +1,14 @@
 The eDiscovery APIs in Microsoft Graph only work with eDiscovery (Premium) cases.
 The legacy content search solution has been retired; you can now search by a [case](https://learn.microsoft.com/en-us/purview/ediscovery).
 
+# Fetch
+Use the **Fetch incidents type** parameter to control what this integration ingests. You can select **Alerts**, **Incidents**, or both:
+
+* **Alerts** - Each Microsoft Graph Security alert is fetched on its own. The alert data is mapped into the incident/issue.
+* **Incidents** - Each Microsoft Graph Security incident is fetched on its own, with all of its associated alerts embedded within it and stored as raw JSON. This gives you one grouped incident that already contains its underlying alerts, instead of many separate alert incidents.
+
+Alerts and Incidents are fetched independently, each with its own time window cursor, so selecting both will not cause one to interfere with the other.
+
 # Authentication
 You can authenticate either by Entra ID applications or by Azure Managed Identities.
 
@@ -26,14 +34,4 @@ If you previously had an API V1 configured based on the credentials obtained fro
 
 ### Authentication Based on Azure Managed Identities
 ##### Note: This option is relevant only if the integration is running on Azure VM.
-Follow one of these steps for authentication based on Azure Managed Identities:
-
-- ##### To use System Assigned Managed Identity
-   - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
-
-- ##### To use User Assigned Managed Identity
-   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
-   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.
-   3. Select the **Use Azure Managed Identities** checkbox.
-
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).

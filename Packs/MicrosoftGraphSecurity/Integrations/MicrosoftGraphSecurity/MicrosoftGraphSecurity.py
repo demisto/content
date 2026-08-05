@@ -1146,11 +1146,21 @@ def set_url_suffix_list_incidents(args: dict) -> str:
 """ COMMAND FUNCTIONS """
 
 
-def fetch_incidents_and_alerts(client: MsGraphClient, params: dict):
+def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
+    """
+    Fetches Alerts and/or Incidents, based on the "Fetch incidents type" parameter.
+    Each type has its own last run time, so fetching both does not affect one another.
+    Args:
+        client (MsGraphClient): MsGraphClient client object.
+        params (dict): the integration parameters.
+    Returns:
+        list: all the fetched items (alerts and/or incidents) together.
+    """
     fetch_time = params.get("fetch_time", "1 day")
     fetch_limit = params.get("fetch_limit", 10) or 10
     fetch_service_sources = params.get("fetch_service_sources", "")
-    fetch_filter = params.get("fetch_filter", "")
+    fetch_alerts_filter = params.get("fetch_filter", "")
+    fetch_incidents_filter = params.get("fetch_incidents_filter", "")
     fetch_incidents_type = argToList(params.get("fetch_incidents_type")) or ["Alerts"]
 
     last_run = demisto.getLastRun() or {}
@@ -1162,7 +1172,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict):
             client,
             fetch_time=fetch_time,
             fetch_limit=int(fetch_limit),
-            filter=fetch_filter,
+            filter=fetch_alerts_filter,
             service_sources=fetch_service_sources,
             last_run=last_run.get("alerts_last_run", {}),
         )
@@ -1174,6 +1184,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict):
             client,
             fetch_time=fetch_time,
             fetch_limit=int(fetch_limit),
+            filter=fetch_incidents_filter,
             last_run=last_run.get("incidents_last_run", {}),
         )
         fetched.extend(incidents)
@@ -1183,17 +1194,20 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict):
     return fetched
 
 
-def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, last_run: dict) -> tuple[list, dict]:
+def fetch_incidents(
+    client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, last_run: dict
+) -> tuple[list, dict]:
     """
-    This function will execute each interval (default is 1 minute).
-    This function will return up to the given limit incidents created within the fetch time window.
+    Fetches up to `fetch_limit` incidents created within the fetch time window.
+    Each fetched incident includes its related alerts as raw data.
     Args:
         client (MsGraphClient): MsGraphClient client object.
-        fetch_time (str): time interval for fetch incidents.
-        fetch_limit (int): limit for number of fetch incidents per fetch.
-        last_run (dict): the incidents last run object from the previous fetch.
+        fetch_time (str): how far back to fetch on the first run (e.g. "1 day").
+        fetch_limit (int): the maximum number of incidents to fetch.
+        filter (str): an optional extra filter to add to the time window.
+        last_run (dict): the incidents last run from the previous fetch.
     Returns:
-        tuple[list, dict]: list of fetched incidents, and the updated incidents last run object.
+        tuple[list, dict]: the fetched incidents, and the updated incidents last run.
     """
     severity_map = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0}
 
@@ -1203,10 +1217,15 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, la
     time_from = new_last_run.get("time")
     time_to = datetime.now().strftime(timestamp_format)
 
-    # Get incidents from MS Graph Security, filtered by the createdDateTime time window only.
+    # Fetch incidents within the time window (plus the optional user filter), and include their alerts.
     top = min(fetch_limit, MAX_ITEMS_PER_RESPONSE)
     filter_expression = f"createdDateTime gt {time_from} and createdDateTime le {time_to}"
-    url_suffix = f"security/incidents?$top={top}&$filter={filter_expression}&$orderby=createdDateTime asc"
+    if filter:
+        filter_expression += f" and {filter}"
+    url_suffix = (
+        f"security/incidents?$expand=alerts&$top={top}"
+        f"&$filter={filter_expression}&$orderby=createdDateTime asc"
+    )
     demisto.debug(f"Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}.")
     incidents = client.get_incidents_request(url_suffix, FETCH_INCIDENTS_TIMEOUT).get("value", [])
 
@@ -1238,17 +1257,16 @@ def fetch_alerts(
     client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, service_sources: str, last_run: dict
 ) -> tuple[list, dict]:
     """
-    This function will execute each interval (default is 1 minute).
-    This function will return up to the given limit alerts according to the given filters using the search_alerts function.
+    Fetches up to `fetch_limit` alerts created within the fetch time window, matching the given filters.
     Args:
         client (MsGraphClient): MsGraphClient client object.
-        fetch_time (str): time interval for fetch alerts.
-        fetch_limit (int): limit for number of fetch alerts per fetch.
-        filter (str): configured user filter.
-        service_sources (str): comma separated list of service_sources to fetch alerts by.
-        last_run (dict): the alerts last run object from the previous fetch.
+        fetch_time (str): how far back to fetch on the first run (e.g. "1 day").
+        fetch_limit (int): the maximum number of alerts to fetch.
+        filter (str): an optional user filter.
+        service_sources (str): a comma separated list of service sources to fetch alerts by.
+        last_run (dict): the alerts last run from the previous fetch.
     Returns:
-        tuple[list, dict]: list of fetched alerts, and the updated alerts last run object.
+        tuple[list, dict]: the fetched alerts, and the updated alerts last run.
     """
     filter_query = create_filter_query(filter, service_sources)
     severity_map = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0}

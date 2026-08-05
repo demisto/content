@@ -173,15 +173,22 @@ configuration:
   required: false
   defaultvalue: '10'
 - display: Fetch alerts of the given service sources only.
-  additionalinfo: Relevant only when fetching Alerts (incidents have no service source). Multiple service sources can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, alerts of all service sources will be fetched.
+  additionalinfo: Relevant only when fetching Alerts. Multiple service sources can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, alerts of all service sources will be fetched.
   name: fetch_service_sources
   type: 0
   section: Collect
   advanced: true
   required: false
-- display: Fetched incidents filter
-  additionalinfo: Use this field to filter fetched records according to their properties. Applies to both alerts and incidents. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
+- display: Fetched Alerts filter
+  additionalinfo: Use this field to filter fetched alerts according to their properties. Applies only when fetching Alerts. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   name: fetch_filter
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Fetched Incidents filter
+  additionalinfo: Use this field to filter fetched incidents according to their properties. Applies only when fetching Incidents. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "severity eq 'high' and status eq 'active'".
+  name: fetch_incidents_filter
   type: 0
   section: Collect
   advanced: true
@@ -191,7 +198,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context path.
+  additionalinfo: When selected, the hunting query result is also saved to the Microsoft 365 Defender context path. Relevant only for the msg-advanced-hunting command.
   section: Collect
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
