@@ -15,8 +15,10 @@ def main():
     # list when multiple entries are present.
     result = execute_command("core-api-get", {"uri": f"{account_name}/incidenttype"})
     if isinstance(result, list):
+        demisto.debug(f"result is a list of length {len(result)}")
         res = result[0].get("response", []) if result else []
     else:
+        demisto.debug("result is a dict")
         res = result.get("response", [])
 
     nonLockedTypes = filter_non_locked(res)
