@@ -1835,3 +1835,54 @@ def test_stale_wedged_detector_advances_without_affecting_healthy_detector_xsup_
     )
     # Stuck detector's stale seen_ids cleared; healthy detector remembers its sibling.
     assert new_last_ids == {"det_stuck": [], "det_ok": ["finding_ok"]}, f"Per-detector seen ids incorrect, got {new_last_ids}."
+
+
+def test_z_suffixed_stale_cursor_is_comparable_to_wallclock_now_xsup_71079(mocker):
+    """
+    Given:
+        The cursor is a real GuardDuty timestamp string in UTC "Z" form
+        (e.g. "2020-01-01T08:19:28.960Z"), matching what GuardDuty emits, and the
+        only finding returned is already-seen (fully deduped, not truncated).
+
+    When:
+        get_events evaluates the stale-boundary guard, which compares the parsed
+        cursor second against datetime.utcnow().
+
+    Then:
+        The comparison must not raise (parse_date_string yields a NAIVE UTC
+        datetime for "Z" input, and utcnow() is also naive UTC), and the stale
+        boundary must advance normally. This pins the naive-UTC assumption so a
+        future change to timestamp parsing can't silently break the comparison
+        (e.g. by introducing an offset-aware datetime, which would raise
+        "can't compare offset-naive and offset-aware datetimes").
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — staleness compares the parsed
+        cursor second to naive-UTC now.
+    """
+    t0_z = "2020-01-01T08:19:28.960Z"  # real GuardDuty UTC "Z" form, years past
+    t0_plus_1s = "2020-01-01T08:19:29"
+
+    stale_only = update_finding_id(FINDING.copy(), "finding_X", updated_at=t0_z)
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_X"]}],
+        get_findings_res=[{"Findings": [stale_only]}],
+    )
+
+    with does_not_raise():
+        events, new_last_ids, new_collect_from = get_events(
+            aws_client=client,
+            collect_from={"det1": t0_z},
+            collect_from_default=datetime(2020, 1, 1, 0, 0, 0),
+            last_ids={"det1": ["finding_X"]},
+            severity="Low",
+            limit=10,
+        )
+
+    assert events == [], "The already-seen boundary finding must not be re-ingested."
+    assert new_collect_from == {"det1": t0_plus_1s}, (
+        f"A Z-suffixed stale boundary must compare cleanly to naive-UTC now and advance, " f"got {new_collect_from}."
+    )
+    assert new_last_ids == {"det1": []}, f"Seen ids for the abandoned boundary second must be cleared, got {new_last_ids}."
