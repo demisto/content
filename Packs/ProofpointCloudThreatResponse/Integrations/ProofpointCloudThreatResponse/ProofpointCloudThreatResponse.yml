@@ -158,6 +158,21 @@ script:
       - confidence_high
       - confidence_medium
       - confidence_low
+    - name: priority_filters
+      description: A comma-separated list of priority levels to filter incidents by.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
+    - name: sort
+      description: Sort order for results by creation time.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      defaultValue: desc
     - name: limit
       description: The maximum number of incidents to return. Default is 50.
       defaultValue: '50'
@@ -263,6 +278,466 @@ script:
     - contextPath: ProofPointCloud.Incident.activities
       description: The activities associated with the incident.
       type: Array
+  - name: proofpoint-ctr-workflows-list
+    description: Returns a list of Proofpoint Cloud Threat Response manual workflows.
+    arguments:
+    - name: enabled
+      description: If true, returns only enabled manual workflows.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: type
+      description: Filter workflows by type.
+      auto: PREDEFINED
+      predefined:
+      - incident
+      - message
+    - name: limit
+      description: The maximum number of workflows to return. Default is 50.
+      defaultValue: '50'
+    - name: all_results
+      description: If true, ignore the limit and return all workflows.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: ProofPointCloud.Workflow.id
+      description: The workflow ID.
+      type: String
+    - contextPath: ProofPointCloud.Workflow.name
+      description: The workflow name.
+      type: String
+    - contextPath: ProofPointCloud.Workflow.enabled
+      description: Whether the workflow is enabled.
+      type: Boolean
+    - contextPath: ProofPointCloud.Workflow.type
+      description: The workflow type.
+      type: String
+    - contextPath: ProofPointCloud.Workflow.createdAt
+      description: The workflow creation timestamp.
+      type: Date
+  - name: proofpoint-ctr-run-workflow
+    description: Runs a Proofpoint Cloud Threat Response manual workflow on the specified incident or message IDs, and polls for the run result. Only workflows listed in the Manual Workflows tab (Responses -> Automation Workflows) can be triggered.
+    polling: true
+    arguments:
+    - name: workflow_id
+      description: The ID of the workflow to run.
+      required: true
+    - name: target_ids
+      description: A comma-separated list of incident or message IDs to run the workflow on.
+      required: true
+      isArray: true
+    - name: run_id
+      description: The ID of an existing workflow run to poll. Used internally by the polling mechanism.
+      hidden: true
+    - name: polling
+      description: Use Cortex XSOAR built-in polling to retrieve the result when it is ready.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    - name: interval_in_seconds
+      description: Interval in seconds between each poll.
+      defaultValue: '30'
+    - name: timeout_in_seconds
+      description: The timeout in seconds until polling ends.
+      defaultValue: '600'
+    outputs:
+    - contextPath: ProofPointCloud.Workflow.id
+      description: The workflow run ID.
+      type: String
+    - contextPath: ProofPointCloud.Workflow.state
+      description: The state of the workflow run (IN_PROGRESS, SUCCESS, FAILED, CANCELLED).
+      type: String
+    - contextPath: ProofPointCloud.Workflow.workflowId
+      description: The workflow definition ID.
+      type: String
+    - contextPath: ProofPointCloud.Workflow.createdAt
+      description: The run creation timestamp.
+      type: Date
+    - contextPath: ProofPointCloud.Workflow.updatedAt
+      description: The run last-update timestamp.
+      type: Date
+  - name: proofpoint-ctr-message-list
+    description: Retrieves a single Proofpoint Cloud Threat Response message by its UUID, or a filtered list of messages.
+    arguments:
+    - name: message_id
+      description: The UUID of a single message to retrieve.
+    - name: rfc_message_id
+      description: A comma-separated list of RFC Message IDs to search for.
+      isArray: true
+    - name: recipient_address
+      description: A comma-separated list of recipient email addresses to filter by.
+      isArray: true
+    - name: sender_address
+      description: A comma-separated list of sender email addresses to filter by.
+      isArray: true
+    - name: subject
+      description: A substring to search for in the message subject.
+    - name: start_time
+      description: The start of the time range filter. Accepts a free text date (e.g., `2 hours`, `2024-11-26T16:18:07Z`).
+    - name: end_time
+      description: The end of the time range filter. Accepts a free text date. Defaults to now when omitted.
+    - name: source_filters
+      description: A comma-separated list of sources to filter by.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - abuse_mailbox
+      - tap
+      - smart_search
+      - message_csv_upload
+      - mail_bomb
+    - name: status_filters
+      description: A comma-separated list of message statuses to filter by.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - message_delivered
+      - message_unread
+      - message_read
+      - permitted_click
+    - name: quarantine_filters
+      description: A comma-separated list of remediation statuses to filter by.
+      isArray: true
+    - name: disposition_filters
+      description: A comma-separated list of dispositions to filter by.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - bulk
+      - clean
+      - impostor
+      - in_progress
+      - internal
+      - low_risk
+      - malware
+      - manual_review
+      - not_set
+      - phish
+      - scam
+      - simulated_phish
+      - spam
+      - suspicious
+      - tap_false_positive
+      - toad
+      - vendor
+    - name: confidence_filters
+      description: A comma-separated list of CLEAR confidence levels to filter by.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - confidence_high
+      - confidence_medium
+      - confidence_low
+    - name: verdict_filters
+      description: A comma-separated list of CLEAR verdicts to filter by.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - verdict_failed
+      - verdict_low_risk
+      - verdict_manual_review
+      - verdict_threat
+    - name: tap_threat_id
+      description: A comma-separated list of TAP Threat IDs to filter by.
+      isArray: true
+    - name: tap_threat_type_filters
+      description: A comma-separated list of TAP threat types to filter by.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - tap_threat_type_delivered_attachment_threat
+      - tap_threat_type_delivered_message_threat
+      - tap_threat_type_delivered_url_threat
+      - tap_threat_type_unprotected_url_threat
+    - name: limit
+      description: The maximum number of messages to return. Default is 50.
+      defaultValue: '50'
+    outputs:
+    - contextPath: ProofPointCloud.Message.id
+      description: The message UUID.
+      type: String
+    - contextPath: ProofPointCloud.Message.email_subject
+      description: The message subject.
+      type: String
+    - contextPath: ProofPointCloud.Message.sender_address
+      description: The message sender address.
+      type: String
+    - contextPath: ProofPointCloud.Message.recipient_address
+      description: The message recipient address.
+      type: String
+    - contextPath: ProofPointCloud.Message.received_at
+      description: The timestamp the message was received.
+      type: Date
+    - contextPath: ProofPointCloud.Message.disposition
+      description: The message disposition.
+      type: String
+    - contextPath: ProofPointCloud.Message.remediation_status
+      description: The message remediation status.
+      type: String
+  - name: proofpoint-ctr-incident-upload-message
+    description: Associates an email message with an existing Proofpoint Cloud Threat Response incident.
+    arguments:
+    - name: incident_id
+      description: The ID of the incident to associate the message with.
+      required: true
+    - name: rfc_message_id
+      description: The RFC822 Message-ID of the email. Must include angle brackets.
+      required: true
+    - name: recipient_addresses
+      description: A comma-separated list of recipient email addresses.
+      required: true
+      isArray: true
+    - name: sender
+      description: The sender email address.
+    - name: subject
+      description: The email subject.
+    - name: disposition
+      description: The disposition of the message.
+      auto: PREDEFINED
+      predefined:
+      - bulk
+      - clean
+      - impostor
+      - in_progress
+      - internal
+      - low_risk
+      - malware
+      - manual_review
+      - not_set
+      - phish
+      - scam
+      - simulated_phish
+      - spam
+      - suspicious
+      - tap_false_positive
+      - toad
+      - vendor
+    outputs:
+    - contextPath: ProofPointCloud.Incident.Message.rfcMessageId
+      description: The RFC Message ID of the uploaded message.
+      type: String
+    - contextPath: ProofPointCloud.Incident.Message.incident_id
+      description: The incident ID the message was associated with.
+      type: String
+    - contextPath: ProofPointCloud.Incident.Message.incidentDisplayId
+      description: The incident display ID.
+      type: Number
+    - contextPath: ProofPointCloud.Incident.Message.uploadedRecipientsCount
+      description: The number of recipients uploaded.
+      type: Number
+  - name: proofpoint-ctr-message-download
+    description: Downloads a Proofpoint Cloud Threat Response message as an EML file into the War Room. This feature is currently functional only for CTR instances hosted in the US region.
+    arguments:
+    - name: message_id
+      description: The ID of the message to download.
+      required: true
+    outputs:
+    - contextPath: File.Name
+      description: The name of the downloaded EML file.
+      type: String
+    - contextPath: File.EntryID
+      description: The War Room entry ID of the downloaded file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the downloaded file.
+      type: Number
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the downloaded file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the downloaded file.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the downloaded file.
+      type: String
+  - name: proofpoint-ctr-safelist-list
+    description: Retrieves the organizational Safe List entries.
+    arguments:
+    - name: cluster_id
+      description: The PPS Cluster ID.
+      required: true
+    - name: limit
+      description: The maximum number of entries to return. Default is 50.
+      defaultValue: '50'
+    - name: all_results
+      description: If true, ignore the limit and return all Safe List entries.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: ProofPointCloud.SafeList.attribute
+      description: The entry attribute.
+      type: String
+    - contextPath: ProofPointCloud.SafeList.operator
+      description: The entry operator.
+      type: String
+    - contextPath: ProofPointCloud.SafeList.value
+      description: The entry value.
+      type: String
+    - contextPath: ProofPointCloud.SafeList.comment
+      description: The entry comment.
+      type: String
+  - name: proofpoint-ctr-safelist-add-entry
+    description: Adds an entry to the organizational Safe List.
+    arguments:
+    - name: cluster_id
+      description: The PPS Cluster ID.
+      required: true
+    - name: attribute
+      description: The attribute to filter on.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - from
+      - hfrom
+      - ip
+      - host
+      - helo
+      - rcpt
+    - name: operator
+      description: The operator to use.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - equal
+      - contain
+      - is_in_list
+    - name: value
+      description: The value for the entry.
+      required: true
+    - name: comment
+      description: An optional comment for the entry.
+    outputs: []
+  - name: proofpoint-ctr-safelist-remove-entry
+    description: Removes an entry from the organizational Safe List.
+    arguments:
+    - name: cluster_id
+      description: The PPS Cluster ID.
+      required: true
+    - name: attribute
+      description: The attribute of the entry to remove.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - from
+      - hfrom
+      - ip
+      - host
+      - helo
+      - rcpt
+    - name: operator
+      description: The operator of the entry to remove.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - equal
+      - contain
+      - is_in_list
+    - name: value
+      description: The value for the entry.
+      required: true
+    outputs: []
+  - name: proofpoint-ctr-blocklist-list
+    description: Retrieves the organizational Block List entries.
+    arguments:
+    - name: cluster_id
+      description: The PPS Cluster ID.
+      required: true
+    - name: limit
+      description: The maximum number of entries to return. Default is 50.
+      defaultValue: '50'
+    - name: all_results
+      description: If true, ignore the limit and return all Block List entries.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: ProofPointCloud.BlockList.attribute
+      description: The entry attribute.
+      type: String
+    - contextPath: ProofPointCloud.BlockList.operator
+      description: The entry operator.
+      type: String
+    - contextPath: ProofPointCloud.BlockList.value
+      description: The entry value.
+      type: String
+    - contextPath: ProofPointCloud.BlockList.comment
+      description: The entry comment.
+      type: String
+  - name: proofpoint-ctr-blocklist-add-entry
+    description: Adds an entry to the organizational Block List.
+    arguments:
+    - name: cluster_id
+      description: The PPS Cluster ID.
+      required: true
+    - name: attribute
+      description: The attribute to filter on.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - from
+      - hfrom
+      - ip
+      - host
+      - helo
+      - rcpt
+    - name: operator
+      description: The operator to use.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - equal
+      - not_equal
+      - contain
+      - not_contain
+      - is_in_list
+    - name: value
+      description: The value for the entry.
+      required: true
+    - name: comment
+      description: An optional comment for the entry.
+    outputs: []
+  - name: proofpoint-ctr-blocklist-remove-entry
+    description: Removes an entry from the organizational Block List.
+    arguments:
+    - name: cluster_id
+      description: The PPS Cluster ID.
+      required: true
+    - name: attribute
+      description: The attribute of the entry to remove.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - from
+      - hfrom
+      - ip
+      - host
+      - helo
+      - rcpt
+    - name: operator
+      description: The operator of the entry to remove.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - equal
+      - not_equal
+      - contain
+      - not_contain
+      - is_in_list
+    - name: value
+      description: The value for the entry.
+      required: true
+    outputs: []
   dockerimage: demisto/fastapi:0.125.0.10158186
   isfetch: true
   runonce: false
