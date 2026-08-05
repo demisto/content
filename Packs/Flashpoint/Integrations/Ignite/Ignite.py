@@ -210,6 +210,7 @@ ALERT_RESOURCE_URL = {
     "communities": "/search/context/communities/{}",
     "marketplaces": "/search/context/marketplaces/{}",
     "media": "/search/results/media?include.date=all+time&include.media_id={}",
+    "reports": "/cti/intelligence/report/{}",
 }
 
 ALERT_STATUS_MAPPING = {
@@ -962,10 +963,12 @@ def prepare_incidents_from_alerts_data(
         alert["tag_as_list"] = list(tags.keys())
 
         origin = alert.get("reason", {}).get("origin")
-        source = alert.get("source")
-        resource_url = alert.get("resource", {}).get("url")
+        source = alert.get("source") or ""
+        resource_url = (alert.get("resource") or {}).get("url")
         if not resource_url and origin == "searches":
             resource_url = get_resource_url(source, alert.get("resource", {}).get("id"), platform_url)
+        if source and source.lower() == "vulnerabilities":
+            resource_url = (alert.get("resource") or {}).get("ignite_search_url")
 
         alert["resource"].update({"url": resource_url})
 
@@ -1891,7 +1894,7 @@ def get_resource_url(source: str, resource_id: str, platform_url: str):
     if not resource_id:
         raise ValueError(MESSAGES["MISSING_DATA"].format("alerts"))
 
-    resource_url = platform_url + ALERT_RESOURCE_URL[source].format(resource_id)
+    resource_url = platform_url + ALERT_RESOURCE_URL.get(source, "").format(resource_id)
 
     return resource_url
 
