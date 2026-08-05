@@ -9370,6 +9370,82 @@ class TestSpotlightSeverityBasedFetch:
         assert mock_update_state.called
 
     @pytest.mark.asyncio
+    async def test_parallel_fetch_plumbs_lost_records_from_severities_to_the_seal_line(self, mocker):
+        """
+        Tests that per-severity lost-record counts actually reach the SEAL-GATE line.
+
+        The severity fetcher and the seal log are covered separately, but nothing pins the wiring
+        between them. Deleting the accumulator argument in this orchestrator would silently reduce
+        every seal line to lost_records_total=0, which reads as a healthy snapshot.
+
+        Given:
+            - Two severities report lost records (2 and 5) into the accumulator they are handed.
+        When:
+            - fetch_spotlight_by_severity_parallel runs a full cycle.
+        Then:
+            - The SEAL-GATE line reports the summed total, proving the accumulator created here is
+              the same object passed to the severities and on to finalize_severity_fetch.
+        """
+        from CrowdStrikeFalcon import fetch_spotlight_by_severity_parallel
+
+        mock_client = mocker.AsyncMock()
+        mock_state = mocker.Mock()
+        mock_state.metadata = {}
+
+        verify_lines: list = []
+        mocker.patch(
+            "CrowdStrikeFalcon.log_spotlight_verify",
+            side_effect=lambda line, *args, **kwargs: verify_lines.append(line),
+        )
+
+        # Each severity writes its losses into the accumulator it is given. If the orchestrator
+        # stops passing one, lost_records_by_severity is None here and nothing is recorded.
+        losses = {"CRITICAL": 2, "HIGH": 5}
+
+        async def mock_fetch_by_severity(client, severity, lost_records_by_severity=None, **kwargs):
+            if lost_records_by_severity is not None:
+                lost_records_by_severity[severity] = losses.get(severity, 0)
+            return (10, {f"aid-{severity}"}, set(), [{"id": f"w-{severity}"}])
+
+        mocker.patch(
+            "CrowdStrikeFalcon.fetch_vulnerabilities_by_severity",
+            side_effect=mock_fetch_by_severity,
+        )
+
+        mock_handler_cls = mocker.patch("CrowdStrikeFalcon.AssetsDeviceHandler")
+        mock_handler = mock_handler_cls.return_value
+        mock_handler.flush_remaining = mocker.AsyncMock()
+        mock_handler.processed_aids = set()
+
+        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        await fetch_spotlight_by_severity_parallel(
+            client=mock_client,
+            context_store=mocker.Mock(),
+            spotlight_state=mock_state,
+            snapshot_id="snap123",
+            completed_severities=[],
+        )
+
+        seal_gate = next(line for line in verify_lines if line.startswith("SEAL-GATE"))
+        assert "lost_records_total=7" in seal_gate
+        breakdown = seal_gate.split("lost_by_severity=")[1].split(" withheld_records=")[0]
+        assert "'CRITICAL': 2" in breakdown
+        assert "'HIGH': 5" in breakdown
+
+    @pytest.mark.asyncio
     async def test_fetch_spotlight_by_severity_parallel_one_severity_fails(self, mocker, capfd):
         """
         Tests that if one severity fails, others continue processing.
@@ -10325,6 +10401,124 @@ class TestSpotlightSeverityBasedFetch:
         assert withheld == [vulnerabilities[0]]
 
     @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_reports_lost_records_to_accumulator(self, mocker, capfd):
+        """
+        Tests that a severity reports how many records XSIAM refused, for the snapshot-level seal log.
+
+        The declared total already excludes lost records, so without this accumulator a lossy run and a
+        clean run produce an identical seal line and the loss is invisible at snapshot level.
+
+        Given:
+            - A severity whose only page returns 5 vulnerabilities (1 withheld, 4 sent in one batch).
+            - The send reports that XSIAM stored only 3 of those 4 records.
+            - The caller passes a lost_records_by_severity accumulator.
+        When:
+            - fetch_vulnerabilities_by_severity is called.
+        Then:
+            - The accumulator records exactly 1 lost record under this severity, matching the
+              gap between what was sent (4) and what was stored (3).
+            - The returned total still excludes the lost record, so declared == stored.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        vulnerabilities = [{"id": f"v{i}", "aid": f"aid{i}"} for i in range(1, 6)]
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": vulnerabilities,
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        # 4 records were sent, XSIAM stored 3 -> exactly 1 lost.
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result((1, 3))
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        lost_records_by_severity: dict = {}
+
+        with capfd.disabled():
+            total, _aids, _tasks, _withheld = await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="CRITICAL",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+                lost_records_by_severity=lost_records_by_severity,
+            )
+
+        assert lost_records_by_severity == {"CRITICAL": 1}
+        # The lost record is still excluded from the declared count: 1 withheld + 3 stored.
+        assert total == 4
+
+    @pytest.mark.asyncio
+    async def test_fetch_vulnerabilities_by_severity_reports_zero_lost_on_a_clean_run(self, mocker, capfd):
+        """
+        Tests that a severity with no losses reports 0 rather than being absent from the accumulator.
+
+        An absent key and a zero are both falsy when summed, but only an explicit 0 proves the severity
+        ran and lost nothing; absence is indistinguishable from a severity that never reported.
+
+        Given:
+            - A severity whose only page returns 5 vulnerabilities (1 withheld, 4 sent).
+            - The send reports that XSIAM stored all 4.
+        When:
+            - fetch_vulnerabilities_by_severity is called with an accumulator.
+        Then:
+            - The accumulator holds an explicit 0 for this severity.
+        """
+        from CrowdStrikeFalcon import fetch_vulnerabilities_by_severity
+
+        mock_client = mocker.AsyncMock()
+        mock_handler = mocker.Mock()
+        mock_handler.receive_new_aids = mocker.AsyncMock()
+
+        vulnerabilities = [{"id": f"v{i}", "aid": f"aid{i}"} for i in range(1, 6)]
+        mock_response = mocker.Mock()
+        mock_response.json.return_value = {
+            "resources": vulnerabilities,
+            "meta": {"pagination": {"after": None}},
+        }
+        mock_client._request.return_value = mock_response
+
+        # 4 sent, 4 stored -> nothing lost.
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result((1, 4))
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        lost_records_by_severity: dict = {}
+
+        with capfd.disabled():
+            total, _aids, _tasks, _withheld = await fetch_vulnerabilities_by_severity(
+                client=mock_client,
+                severity="HIGH",
+                context_store=mocker.Mock(),
+                spotlight_state=mocker.Mock(),
+                snapshot_id="snap123",
+                asset_handler=mock_handler,
+                lost_records_by_severity=lost_records_by_severity,
+            )
+
+        assert lost_records_by_severity == {"HIGH": 0}
+        assert total == 5
+
+    @pytest.mark.asyncio
     async def test_fetch_vulnerabilities_by_severity_skips_empty_batches(self, mocker, capfd):
         """
         Tests that a page with nothing left to send does not create a send task.
@@ -10623,6 +10817,141 @@ class TestSpotlightSeverityBasedFetch:
         assert seal_call["data"] != []
         assert seal_call["items_count"] == 1000
         assert seal_call["batch_number"] == 999999
+
+    @pytest.mark.asyncio
+    async def test_finalize_seal_gate_reports_snapshot_level_lost_total(self, mocker):
+        """
+        Tests that the SEAL-GATE line reports the snapshot-level lost-record total.
+
+        The declared count already excludes lost records, so a lossy snapshot seals and looks healthy.
+        Per-severity SEVERITY-DONE lines carry the losses, but nothing sums them, which means finding
+        a shortfall requires manually adding six lines. This total makes a lossy seal self-evident.
+
+        Given:
+            - All severities completed.
+            - Two severities lost records (3 and 4) and the rest lost nothing.
+        When:
+            - finalize_severity_fetch is called with the per-severity lost counts.
+        Then:
+            - The SEAL-GATE line reports lost_records_total=7.
+            - The per-severity breakdown lists only the lossy severities, so a clean seal stays quiet.
+            - The snapshot still seals: lost records do not block the seal.
+        """
+        from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
+
+        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+
+        verify_lines: list = []
+        mocker.patch(
+            "CrowdStrikeFalcon.log_spotlight_verify",
+            side_effect=lambda line, *args, **kwargs: verify_lines.append(line),
+        )
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mock_create_task = mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        mock_handler = mocker.Mock()
+        mock_handler.flush_remaining = mocker.AsyncMock()
+        mock_handler.processed_aids = set()
+
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        lost_records_by_severity = {severity: 0 for severity in SPOTLIGHT_SEVERITIES}
+        lost_records_by_severity["CRITICAL"] = 3
+        lost_records_by_severity["LOW"] = 4
+
+        await finalize_severity_fetch(
+            all_pending_tasks=set(),
+            current_completed_severities=list(SPOTLIGHT_SEVERITIES),
+            total_vulnerabilities=993,
+            all_unique_aids={"aid1"},
+            asset_handler=mock_handler,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            withheld_records=[{"id": "v1", "aid": "aid1"}],
+            lost_records_by_severity=lost_records_by_severity,
+        )
+
+        seal_gate_lines = [line for line in verify_lines if line.startswith("SEAL-GATE")]
+        assert len(seal_gate_lines) == 1
+        seal_gate = seal_gate_lines[0]
+
+        assert "lost_records_total=7" in seal_gate
+        # Scope the breakdown assertions to the lost_by_severity field: severity names also appear
+        # in the completed= list earlier on the same line.
+        breakdown = seal_gate.split("lost_by_severity=")[1].split(" withheld_records=")[0]
+        assert "'CRITICAL': 3" in breakdown
+        assert "'LOW': 4" in breakdown
+        # Only the lossy severities appear, so a clean run does not print six zeros.
+        assert "'HIGH'" not in breakdown
+        # Lost records are non-fatal: the snapshot still seals.
+        assert mock_create_task.called
+
+    @pytest.mark.asyncio
+    async def test_finalize_seal_gate_reports_zero_lost_total_on_a_clean_run(self, mocker):
+        """
+        Tests that a clean run reports an explicit zero lost total with an empty breakdown.
+
+        Given:
+            - All severities completed with no lost records.
+        When:
+            - finalize_severity_fetch is called.
+        Then:
+            - The SEAL-GATE line reports lost_records_total=0 and an empty per-severity breakdown,
+              which is the signal that the snapshot is complete rather than merely consistent.
+        """
+        from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
+
+        mocker.patch("CrowdStrikeFalcon.wait_for_background_tasks", new_callable=mocker.AsyncMock)
+
+        verify_lines: list = []
+        mocker.patch(
+            "CrowdStrikeFalcon.log_spotlight_verify",
+            side_effect=lambda line, *args, **kwargs: verify_lines.append(line),
+        )
+
+        def create_task_side_effect(*args, **kwargs):
+            f = asyncio.Future()
+            f.set_result(1)
+            return f
+
+        mocker.patch(
+            "CrowdStrikeFalcon.create_task_send_batch_to_xsiam_and_save_context",
+            side_effect=create_task_side_effect,
+        )
+
+        mock_handler = mocker.Mock()
+        mock_handler.flush_remaining = mocker.AsyncMock()
+        mock_handler.processed_aids = set()
+
+        mocker.patch("CrowdStrikeFalcon.update_spotlight_state_and_metadata")
+        mocker.patch("CrowdStrikeFalcon.save_spotlight_state")
+
+        await finalize_severity_fetch(
+            all_pending_tasks=set(),
+            current_completed_severities=list(SPOTLIGHT_SEVERITIES),
+            total_vulnerabilities=1000,
+            all_unique_aids={"aid1"},
+            asset_handler=mock_handler,
+            context_store=mocker.Mock(),
+            spotlight_state=mocker.Mock(),
+            snapshot_id="snap123",
+            withheld_records=[{"id": "v1", "aid": "aid1"}],
+            lost_records_by_severity={severity: 0 for severity in SPOTLIGHT_SEVERITIES},
+        )
+
+        seal_gate = next(line for line in verify_lines if line.startswith("SEAL-GATE"))
+        assert "lost_records_total=0" in seal_gate
+        assert "lost_by_severity={}" in seal_gate
 
     @pytest.mark.asyncio
     async def test_finalize_skips_seal_when_no_withheld_records(self, mocker):

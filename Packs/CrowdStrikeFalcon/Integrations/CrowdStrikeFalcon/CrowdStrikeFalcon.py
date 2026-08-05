@@ -4830,6 +4830,7 @@ async def fetch_vulnerabilities_by_severity(
     spotlight_state: ContentClientState,
     snapshot_id: str,
     asset_handler: AssetsDeviceHandler,
+    lost_records_by_severity: dict[str, int] | None = None,
 ) -> tuple[int, set, set[asyncio.Task], list[dict]]:
     """Fetch all vulnerabilities for a single severity level with pagination.
 
@@ -4843,6 +4844,12 @@ async def fetch_vulnerabilities_by_severity(
         spotlight_state: Current Spotlight state object
         snapshot_id: Snapshot ID for asset collection tracking
         asset_handler: AssetsDeviceHandler for AID enrichment
+        lost_records_by_severity: Optional accumulator the caller can pass to collect how many
+            records each severity failed to store, so the seal can report a snapshot-level total.
+            Holds one integer count per severity, never the records themselves, so it is at most
+            len(SPOTLIGHT_SEVERITIES) entries regardless of how many vulnerabilities are fetched.
+            Only written when the severity completes; a severity that raises is not counted here
+            because it also blocks the seal, so there is no seal line for it to appear on.
 
     Returns:
         Tuple of (total_vulnerabilities_fetched, unique_aids, pending_tasks, withheld_records)
@@ -5053,6 +5060,9 @@ async def fetch_vulnerabilities_by_severity(
             f"(withheld_first_record={1 if withheld_records else 0}) batches={batch_counter} "
             f"lost_batches={lost_send_batches} lost_records={lost_send_records} unique_aids={len(unique_aids)}"
         )
+        if lost_records_by_severity is not None:
+            # One integer per severity, not the records themselves.
+            lost_records_by_severity[severity] = lost_send_records
 
         if lost_send_batches:
             # Non-fatal: the severity completes with the records that were stored. The lost records
@@ -5193,6 +5203,7 @@ async def finalize_severity_fetch(
     spotlight_state: ContentClientState,
     snapshot_id: str,
     withheld_records: list[dict] | None = None,
+    lost_records_by_severity: dict[str, int] | None = None,
 ) -> None:
     """Finalize the severity fetch by waiting for background tasks and sealing snapshot if complete.
 
@@ -5208,8 +5219,14 @@ async def finalize_severity_fetch(
         snapshot_id: Snapshot ID for asset collection tracking
         withheld_records: Records withheld during fetching to send as the sealing batch.
             Each record is sent exactly once (only here), so the count stays exact.
+        lost_records_by_severity: Per-severity counts of records XSIAM did not store, collected
+            by the severity fetchers. Counts only, so this stays at most len(SPOTLIGHT_SEVERITIES)
+            entries no matter how large the snapshot is. Only used to report a snapshot-level total
+            on the seal line; it does not affect whether the snapshot seals. Severities that raised
+            are absent, which is why the total is only meaningful when all severities completed.
     """
     withheld_records = withheld_records or []
+    lost_records_by_severity = lost_records_by_severity or {}
 
     # Wait for all background vulnerability send tasks to complete
     log_falcon_assets(f"Waiting for {len(all_pending_tasks)} background vulnerability send tasks...", "info")
@@ -5218,10 +5235,18 @@ async def finalize_severity_fetch(
     # Check if ALL severities have completed (including previously completed ones)
     all_severities_completed = set(current_completed_severities) == set(SPOTLIGHT_SEVERITIES)
 
+    # Snapshot-level view of how many records XSIAM refused across every severity. The declared
+    # count already excludes them (only stored records are counted), so a non-zero total here means
+    # the snapshot seals but is smaller than what Falcon returned.
+    lost_records_total = sum(lost_records_by_severity.values())
+    lossy_severities = {severity: lost for severity, lost in sorted(lost_records_by_severity.items()) if lost}
+
     log_spotlight_verify(
         f"SEAL-GATE completed={sorted(current_completed_severities)} "
         f"required={sorted(SPOTLIGHT_SEVERITIES)} all_complete={all_severities_completed} "
-        f"grand_total={total_vulnerabilities} withheld_records={len(withheld_records)} "
+        f"grand_total={total_vulnerabilities} lost_records_total={lost_records_total} "
+        f"lost_by_severity={lossy_severities} "
+        f"withheld_records={len(withheld_records)} "
         f"will_seal={all_severities_completed and bool(withheld_records)}"
     )
 
@@ -5341,6 +5366,10 @@ async def fetch_spotlight_by_severity_parallel(
     # Track completed severities in this cycle (start with previously completed)
     current_completed_severities = completed_severities.copy()
 
+    # Collected by each severity fetcher so the seal can report a snapshot-level lost total.
+    # One integer per severity (never the records), so this is bounded at 6 entries.
+    lost_records_by_severity: dict[str, int] = {}
+
     # Create asset handler for enrichment
     asset_handler = AssetsDeviceHandler(
         client=client,
@@ -5362,6 +5391,7 @@ async def fetch_spotlight_by_severity_parallel(
                 spotlight_state=spotlight_state,
                 snapshot_id=snapshot_id,
                 asset_handler=asset_handler,
+                lost_records_by_severity=lost_records_by_severity,
             )
         )
         severity_tasks.append((severity, task))
@@ -5394,6 +5424,7 @@ async def fetch_spotlight_by_severity_parallel(
         spotlight_state=spotlight_state,
         snapshot_id=snapshot_id,
         withheld_records=withheld_records,
+        lost_records_by_severity=lost_records_by_severity,
     )
 
     return total_vulnerabilities, all_unique_aids
