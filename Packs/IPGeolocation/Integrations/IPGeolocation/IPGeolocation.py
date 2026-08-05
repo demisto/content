@@ -13,6 +13,7 @@ query parameter or response field is referenced.
 
 import ipaddress
 import re
+import traceback
 from collections.abc import Callable
 from typing import Any
 
@@ -1187,11 +1188,12 @@ def ip_security_command(client: Client, args: dict[str, Any]) -> list[CommandRes
     return results
 
 
-def abuse_contact_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def abuse_contact_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> list[CommandResults]:
     """Run ``ipgeolocation-abuse-contact`` against GET /v3/abuse.
 
     :param client: Configured client.
     :param args: Command arguments.
+    :param params: Integration configuration parameters.
     :return: One CommandResults per requested address.
     """
     targets = argToList(args.get("ip"))
@@ -1200,7 +1202,7 @@ def abuse_contact_command(client: Client, args: dict[str, Any]) -> list[CommandR
 
     fields = ",".join(argToList(args.get("fields"))) or None
     excludes = ",".join(argToList(args.get("excludes"))) or None
-    reliability = demisto.params().get("integrationReliability") or DBotScoreReliability.B
+    reliability = params.get("integrationReliability") or DBotScoreReliability.B
 
     results: list[CommandResults] = []
     for target in targets:
@@ -1400,12 +1402,13 @@ def main() -> None:
         elif command == "ipgeolocation-ip-security":
             return_results(ip_security_command(client, args))
         elif command == "ipgeolocation-abuse-contact":
-            return_results(abuse_contact_command(client, args))
+            return_results(abuse_contact_command(client, args, params))
         elif command == "ipgeolocation-asn":
             return_results(asn_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented by {INTEGRATION_NAME}.")
     except Exception as error:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\n{error}")
 
 
