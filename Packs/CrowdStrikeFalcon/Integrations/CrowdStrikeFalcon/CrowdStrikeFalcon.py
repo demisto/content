@@ -4816,9 +4816,11 @@ async def fetch_spotlight_page_with_shrink(
         f"limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[-1]}. Last error: {last_error}",
         "error",
     )
-    # The ladder is non-empty, so last_error is always set once the loop exits without returning.
-    assert last_error is not None
-    raise last_error
+    # The ladder is non-empty and every iteration either returns, re-raises, or records last_error
+    # before breaking, so the fallback below is defensive only.
+    if last_error:
+        raise last_error
+    raise ContentClientError("fetch_spotlight_page_with_shrink exhausted the ladder without recording an error")
 
 
 async def fetch_vulnerabilities_by_severity(
@@ -5237,6 +5239,13 @@ async def finalize_severity_fetch(
                 f"total-items-count={total_vulnerabilities}",
                 "info",
             )
+            # count_stored is deliberately left False (all-or-nothing) for the seal, unlike the bulk
+            # batches. count_stored=True tolerates a partial send and returns normally; because this
+            # call discards its result, that would let a failed seal fall through to the success path,
+            # which resets snapshot_id and completed_severities. The snapshot would then be left
+            # declaring more than was stored, with the state needed to retry already destroyed.
+            # Raising instead propagates to fetch_spotlight_assets(), which skips the reset, so the
+            # next cycle retries the seal with every severity still marked complete.
             final_task = create_task_send_batch_to_xsiam_and_save_context(
                 data=withheld_records,  # Real data rows so the count lands in BigQuery
                 product=SPOTLIGHT_VULN_PRODUCT,

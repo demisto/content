@@ -12102,6 +12102,130 @@ class TestXsiamSendFailureIsNotCounted:
             )
 
     @pytest.mark.asyncio
+    async def test_batch_counts_only_the_chunks_xsiam_accepted(self, mocker):
+        """
+        Given: A batch split into 3 chunks of 10 records, where XSIAM accepts chunks 1 and 3 but
+               rejects chunk 2 on every attempt.
+        When:  send_batch_to_xsiam_and_save_context runs with count_stored=True.
+        Then:  records_stored counts ONLY the 20 records in the accepted chunks, and the saved batch
+               number does not advance because the batch is not fully stored.
+
+        The other tests in this class fail every chunk, so "stored == 0" would also be satisfied by
+        code that simply gave up on the first bad chunk. This one pins the partial case: the
+        surviving chunks must still be counted and the rejected one must not. Getting it wrong in
+        either direction breaks declared == stored - over-counting leaves the snapshot unsealable
+        (the original bug), under-counting silently discards rows XSIAM did store.
+
+        Note on the setup: chunking is driven by a *byte* budget (XSIAM_EVENT_CHUNK_SIZE is 1 MiB),
+        not a record count, so the split is pinned directly rather than inferred from data size.
+        The chunks are also sent concurrently, so the failure is keyed off the chunk's payload
+        instead of call ordering, which is not deterministic.
+        """
+        import gzip as _gzip
+
+        from CrowdStrikeFalcon import send_batch_to_xsiam_and_save_context
+
+        self._patch_xsiam_env(mocker)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", mocker.AsyncMock())
+
+        records_per_chunk = 10
+        records = [{"id": f"vuln{i}", "aid": "aid1"} for i in range(3 * records_per_chunk)]
+        # Tag the middle chunk so the fault injector can identify it regardless of completion order.
+        for record in records[records_per_chunk : 2 * records_per_chunk]:
+            record["reject_me"] = "yes"
+
+        def fake_split(data_str, _chunk_size):
+            lines = data_str.split("\n") if isinstance(data_str, str) else list(data_str)
+            for start in range(0, len(lines), records_per_chunk):
+                yield lines[start : start + records_per_chunk]
+
+        mocker.patch("CrowdStrikeFalcon.split_data_to_chunks", side_effect=fake_split)
+
+        async def fake_api_call(xsiam_url, zipped_data, headers, num_of_attempts, data_type, **_kwargs):
+            if "reject_me" in _gzip.decompress(zipped_data).decode():
+                raise DemistoException("Failed sending assets to XSIAM. The batch was NOT stored and must not be counted.")
+
+        mocker.patch("CrowdStrikeFalcon.xsiam_api_call_async", side_effect=fake_api_call)
+
+        save_state_callback = mocker.MagicMock()
+
+        saved_batch_number, records_stored = await send_batch_to_xsiam_and_save_context(
+            data=records,
+            vendor="CrowdStrike",
+            product="Falcon_Spotlight_Vulnerabilities",
+            snapshot_id="snap123",
+            items_count=len(records),
+            batch_number=5,
+            last_saved_batch_number=4,
+            context_store=mocker.MagicMock(),
+            state=mocker.MagicMock(),
+            save_state_callback=save_state_callback,
+            data_type="assets",
+            count_stored=True,
+        )
+
+        assert records_stored == 2 * records_per_chunk, "Only the two accepted chunks may be counted"
+        assert saved_batch_number == 4, "A partially stored batch must not advance the saved batch number"
+        save_state_callback.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_chunk_sizes_sum_to_the_record_count_with_the_real_splitter(self, mocker):
+        """
+        Given: A batch sent through the REAL split_data_to_chunks, at a chunk size small enough to
+               force a multi-chunk split, with every chunk accepted.
+        When:  send_batch_to_xsiam_and_save_context runs with count_stored=True.
+        Then:  records_stored equals the number of records sent.
+
+        This underpins the partial-count test above, which patches the splitter and therefore only
+        proves the arithmetic *given* a chunk->record mapping. The counting is only correct if the
+        per-chunk ``chunk_size_val`` genuinely equals the number of vulnerabilities in that chunk.
+        That holds because _normalize_data_to_str emits exactly one line per record (json.dumps
+        escapes any embedded newline), split_data_to_chunks groups whole lines, and chunk_size_val
+        is len(chunk). If a future change made chunking split mid-record, or counted bytes instead
+        of records, declared would silently drift from stored - so the identity is asserted against
+        the real implementation rather than assumed.
+        """
+        from CrowdStrikeFalcon import send_batch_to_xsiam_and_save_context
+
+        self._patch_xsiam_env(mocker)
+
+        record_count = 30
+        # A record whose value contains a newline: json.dumps must escape it, keeping one line each.
+        records = [{"id": f"vuln{i}", "aid": "aid1", "desc": "line1\nline2"} for i in range(record_count)]
+
+        # Small byte budget so the real splitter produces several chunks.
+        mocker.patch("CrowdStrikeFalcon.XSIAM_EVENT_CHUNK_SIZE", 500)
+
+        sent_chunks = []
+
+        async def fake_api_call(xsiam_url, zipped_data, headers, num_of_attempts, data_type, **_kwargs):
+            import gzip as _gzip
+
+            sent_chunks.append(_gzip.decompress(zipped_data).decode())
+
+        mocker.patch("CrowdStrikeFalcon.xsiam_api_call_async", side_effect=fake_api_call)
+
+        _saved_batch_number, records_stored = await send_batch_to_xsiam_and_save_context(
+            data=records,
+            vendor="CrowdStrike",
+            product="Falcon_Spotlight_Vulnerabilities",
+            snapshot_id="snap123",
+            items_count=record_count,
+            batch_number=5,
+            last_saved_batch_number=4,
+            context_store=mocker.MagicMock(),
+            state=mocker.MagicMock(),
+            save_state_callback=mocker.MagicMock(),
+            data_type="assets",
+            count_stored=True,
+        )
+
+        assert len(sent_chunks) > 1, "The chunk size must be small enough to force a real multi-chunk split"
+        assert records_stored == record_count, "Summed chunk sizes must equal the number of records sent"
+        # Every line in every chunk is exactly one record, so no record was split across chunks.
+        assert sum(len(chunk.split("\n")) for chunk in sent_chunks) == record_count
+
+    @pytest.mark.asyncio
     async def test_server_error_is_retried_the_configured_number_of_times(self, mocker):
         """
         Given: XSIAM returns 500 on every attempt and num_of_attempts=3.
