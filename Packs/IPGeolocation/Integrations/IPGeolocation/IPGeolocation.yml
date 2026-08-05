@@ -1122,6 +1122,7 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.10.0
+supportlevelheader: partner
 sectionorder:
 - Connect
 - Collect
