@@ -661,7 +661,7 @@ Update an alert's state.
 | asc_location | The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument. | Required |
 | alert_id | The alert ID. | Required |
 | subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional |
-| alert_update_action_type | The update action type. Possible vales are: dismiss. | Required |
+| alert_update_action_type | The update action type. Possible values are: dismiss. | Required |
 
 #### Context Output
 
