@@ -1,3 +1,4 @@
+import time
 from collections.abc import Callable
 from itertools import chain
 
@@ -16,6 +17,20 @@ DEFAULT_LIMIT = 250
 MAX_FETCH = 5000
 VENDOR = "CyberArk"
 PRODUCT = "EPM"
+
+# Authentication methods
+AUTH_METHOD_OAUTH = "Idira OAuth"
+AUTH_METHOD_EPM = "EPM"
+AUTH_METHOD_SAML = "SAML"
+
+# OAuth (CyberArk Identity / Idira ISPSS) constants
+GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
+ACCESS_TOKEN = "access_token"
+EXPIRES_IN = "expires_in"
+VALID_UNTIL = "valid_until"
+TENANT_URL = "tenantUrl"
+DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
+CACHE_BUFFER_SECONDS = 60
 XSIAM_EVENT_TYPE = {
     "policy_audits": "policy audit raw event details",
     "admin_audits": "set admin audit data",
@@ -38,6 +53,9 @@ class Client(BaseClient):
         proxy=False,
         policy_audits_event_type=None,
         raw_events_event_type=None,
+        auth_method=None,
+        identity_url=None,
+        web_app_id=None,
     ):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._headers = {
@@ -49,12 +67,119 @@ class Client(BaseClient):
         self.application_id = application_id
         self.authentication_url = authentication_url
         self.application_url = application_url
-        if self.authentication_url and self.application_url:
+        self.identity_url = identity_url
+        self.web_app_id = web_app_id
+        # Resolve the authentication method. When `auth_method` is not provided (e.g. instances
+        # created before the parameter existed), fall back to the legacy behavior: SAML when both
+        # SAML URLs are set, otherwise EPM. This keeps existing instances backward compatible.
+        if not auth_method:
+            auth_method = AUTH_METHOD_SAML if (self.authentication_url and self.application_url) else AUTH_METHOD_EPM
+        self.auth_method = auth_method
+
+        if self.auth_method == AUTH_METHOD_OAUTH:
+            self.oauth_auth_to_cyber_ark()
+        elif self.auth_method == AUTH_METHOD_SAML:
             self.saml_auth_to_cyber_ark()
         else:
             self.epm_auth_to_cyber_ark()
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
+
+    def _get_access_token(self) -> str:
+        """Get or refresh the OAuth2 access token, with caching in the integration context."""
+        current_timestamp = int(time.time())
+        cached_context = get_integration_context() or {}
+        cached_token = cached_context.get(ACCESS_TOKEN)
+        cached_valid_until = cached_context.get(VALID_UNTIL)
+
+        # Return the cached token if it is still valid.
+        if cached_token and cached_valid_until:
+            try:
+                valid_until_timestamp = int(float(cached_valid_until))
+                if current_timestamp < valid_until_timestamp:
+                    demisto.debug("[Token Cache] Hit! Token is still valid.")
+                    return cached_token
+                demisto.debug("[Token Cache] Miss. Token expired.")
+            except (ValueError, TypeError):
+                demisto.debug("[Token Cache] Error parsing cache. Ignoring.")
+
+        if not self.identity_url or not self.web_app_id:
+            raise DemistoException("Identity URL and Web App ID are required for OAuth authentication.")
+        token_url = f"{self.identity_url.rstrip('/')}/oauth2/token/{self.web_app_id}"
+        demisto.debug(f"[Token Request] Requesting new token from {token_url}")
+
+        token_data = {"grant_type": GRANT_TYPE_CLIENT_CREDENTIALS}
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+        try:
+            token_response = self._http_request(
+                method="POST",
+                full_url=token_url,
+                data=token_data,
+                headers=headers,
+                auth=(self.username, self.password),
+                resp_type="json",
+            )
+        except DemistoException as error:
+            error_msg = str(error)
+            demisto.error(f"[Token Request] Failed: {error_msg}")
+            raise DemistoException(f"Failed to obtain access token: {error_msg}")
+
+        access_token = token_response.get(ACCESS_TOKEN)
+        if not access_token:
+            raise DemistoException("Failed to obtain access token. Response missing access_token.")
+
+        token_expires_in = token_response.get(EXPIRES_IN, DEFAULT_TOKEN_TTL_SECONDS)
+        token_valid_until = current_timestamp + token_expires_in - CACHE_BUFFER_SECONDS
+        demisto.debug(f"[Token Request] Success. Expires in {token_expires_in}s.")
+
+        cached_context[ACCESS_TOKEN] = access_token
+        cached_context[VALID_UNTIL] = str(token_valid_until)
+        set_integration_context(cached_context)
+
+        return access_token
+
+    def _get_tenant_url(self, access_token: str) -> str:
+        """Discover (and cache) the EPM tenant URL used for subsequent EPM data calls."""
+        cached_context = get_integration_context() or {}
+        cached_tenant_url = cached_context.get(TENANT_URL)
+        if cached_tenant_url:
+            return cached_tenant_url
+
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+        try:
+            tenant_url_response = self._http_request(
+                method="GET",
+                full_url=f"{self._base_url.rstrip('/')}/EPM/API/accounts/tenanturl",
+                headers=headers,
+                resp_type="json",
+            )
+        except DemistoException as error:
+            error_msg = str(error)
+            demisto.error(f"[Tenant URL Request] Failed: {error_msg}")
+            raise DemistoException(f"Failed to obtain tenant URL: {error_msg}")
+
+        tenant_url = tenant_url_response.get(TENANT_URL)
+        if not tenant_url:
+            raise DemistoException("Failed to obtain tenant URL. Response missing tenant URL.")
+
+        tenant_url = tenant_url.rstrip("/")
+        demisto.debug(f"[Tenant URL Request] Success. tenant URL: {tenant_url}.")
+        cached_context[TENANT_URL] = tenant_url
+        set_integration_context(cached_context)
+
+        return tenant_url
+
+    def oauth_auth_to_cyber_ark(self):  # pragma: no cover
+        # Reference: CyberArk Identity (Idira ISPSS) OAuth2 client_credentials flow.
+        access_token = self._get_access_token()
+        tenant_url = self._get_tenant_url(access_token)
+        self._base_url = urljoin(tenant_url, "/EPM/API/")
+        self._headers["Authorization"] = f"Bearer {access_token}"
 
     def epm_auth_to_cyber_ark(self):  # pragma: no cover
         data = {
@@ -511,8 +636,29 @@ def main():  # pragma: no cover
     application_id = params.get("application_id")
     authentication_url = params.get("authentication_url")
     application_url = params.get("application_url")
+    auth_method = params.get("authentication_method")
+    identity_url = params.get("identity_url")
+    web_app_id = params.get("web_app_id")
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
+
+    # Validate the parameters required for the selected authentication method.
+    if not auth_method:
+        return_error("Authentication Method is required.")
+    if auth_method == AUTH_METHOD_OAUTH:
+        if not identity_url or not web_app_id:
+            return_error("Identity URL and Web App ID are required for Idira OAuth authentication.")
+        if "/oauth2/token" in identity_url:
+            return_error(
+                "Identity URL must be the bare FQDN (e.g. https://<sub-domain>.id.cyberark.cloud) "
+                "without a '/oauth2/token' suffix."
+            )
+    elif auth_method == AUTH_METHOD_SAML:
+        if not base_url or not authentication_url or not application_url:
+            return_error("SAML/EPM Logon URL, Authentication URL, and Application URL are required for SAML authentication.")
+    else:  # AUTH_METHOD_EPM
+        if not base_url:
+            return_error("SAML/EPM Logon URL is required for EPM authentication.")
     set_names = argToList(params.get("set_name"))
     enable_admin_audits = argToBoolean(params.get("enable_admin_audits", False))
     policy_audits_event_type = argToList(params.get("policy_audits_event_type"))
@@ -545,6 +691,9 @@ def main():  # pragma: no cover
             application_url=application_url,
             policy_audits_event_type=policy_audits_event_type,
             raw_events_event_type=raw_events_event_type,
+            auth_method=auth_method,
+            identity_url=identity_url,
+            web_app_id=web_app_id,
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)

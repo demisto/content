@@ -7,10 +7,33 @@ commonfields:
   id: CyberArkEPMEventCollector
   version: -1
 configuration:
-- additionalinfo: 'SAML example: https://login.epm.cyberark.com/SAML/Logon.'
+- display: Authentication Method
+  name: authentication_method
+  additionalinfo: The authentication method to use when connecting to CyberArk EPM.
+  required: true
+  defaultvalue: EPM
+  type: 15
+  options:
+  - Idira OAuth
+  - EPM
+  - SAML
+  section: Connect
+- additionalinfo: 'Required for EPM and SAML authentication methods only. SAML example: https://login.epm.cyberark.com/SAML/Logon.'
   display: SAML/EPM Logon URL
   name: url
-  required: true
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: 'Required for Idira OAuth authentication only. The CyberArk Identity FQDN, e.g. https://<sub-domain>.id.cyberark.cloud. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'
+  display: Identity URL
+  name: identity_url
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: 'Required for Idira OAuth authentication only. The registered OAuth2 web-app identifier in CyberArk Identity Administration, used as a URL path segment on the token endpoint (/oauth2/token/<web_app_id>).'
+  display: Web App ID
+  name: web_app_id
+  required: false
   type: 0
   section: Connect
 - display: Username
