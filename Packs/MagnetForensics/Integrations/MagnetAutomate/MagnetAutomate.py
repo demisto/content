@@ -325,9 +325,10 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: The started merge workflow run.
         """
-        json_data: dict[str, Any] = assign_params(
-            runIds=run_ids, workflowId=workflow_id, outputPath=output_path, assignedNodeName=assigned_node_name
-        )
+        json_data: dict[str, Any] = {
+            "runIds": run_ids,
+            "mergeWorkflow": assign_params(workflowId=workflow_id, outputPath=output_path, assignedNodeName=assigned_node_name),
+        }
 
         demisto.debug(f"Sending a POST Request to /api/v0/cases/{case_id}/merge with {json_data=}.")
 
