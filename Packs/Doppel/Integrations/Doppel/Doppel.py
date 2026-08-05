@@ -270,14 +270,10 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
         demisto.debug(f"Doppel - No alert data returned for {doppel_alert_id}.")
         return None, []
     updated_doppel_alert["id"] = doppel_alert_id
-<<<<<<< Updated upstream
-=======
+
     # Shape entity_content for the grid incident field (mapper expects a list of row dicts).
     if "entity_content" in updated_doppel_alert:
-        updated_doppel_alert["entity_content"] = _normalize_entity_content_for_grid(
-            updated_doppel_alert.get("entity_content")
-        )
->>>>>>> Stashed changes
+        updated_doppel_alert["entity_content"] = _normalize_entity_content_for_grid(updated_doppel_alert.get("entity_content"))
 
     # Attach the most recent audit-log event as a War Room note when available, but never
     # let a missing/empty audit trail discard the field updates themselves.
@@ -416,8 +412,8 @@ def doppel_update_alert_command(client: Client, args: dict[str, Any]) -> Command
     :return: CommandResults object.
     """
     demisto.debug(f"Update Alert cmd params: {args}")
-    alert_id: str = args.get("alert_id")
-    entity: str = args.get("entity")
+    alert_id = args.get("alert_id", "")
+    entity = args.get("entity", "")
     queue_state = args.get("queue_state", "")
     entity_state = args.get("entity_state", "")
     comment = args.get("comment", "")
@@ -628,7 +624,7 @@ def _alert_to_incident(alert, mirroring_object):
     if created_at_datetime is None:
         created_at_datetime = datetime.now(UTC)
     severity = _xsoar_severity(alert)
-    
+
     # Shape entity_content for the grid incident field before it is mapped from rawJSON.
     if "entity_content" in alert:
         alert["entity_content"] = _normalize_entity_content_for_grid(alert.get("entity_content"))
@@ -828,7 +824,6 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
 
     :rtype: ``str``
     """
-    demisto.debug(f"Arguments for the update-remote-system is: {args}")
     parsed_args = UpdateRemoteSystemArgs(args)
     remote_incident_id = parsed_args.remote_incident_id
 
@@ -864,8 +859,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
             alert_id=remote_incident_id,
         )
         demisto.debug(
-            f"Doppel - Archived remote alert [{remote_incident_id}] "
-            f"with entity_state={entity_state!r} comment={comment!r}."
+            f"Doppel - Archived remote alert [{remote_incident_id}] " f"with entity_state={entity_state!r} comment={comment!r}."
         )
     except Exception as e:
         demisto.error(f"Doppel - Error in outgoing mirror for incident {remote_incident_id} \nError message: {str(e)}")
@@ -887,7 +881,6 @@ def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappi
     Returns:
         GetMappingFieldsResponse: The mapping response containing field definitions.
     """
-    demisto.debug("Executing get_mapping_fields_command")
 
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=DOPPEL_ALERT)
     doppel_fields = {

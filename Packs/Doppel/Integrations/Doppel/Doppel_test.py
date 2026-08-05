@@ -537,9 +537,7 @@ def test_get_remote_updated_incident_data_normalizes_entity_content():
         "audit_logs": [],
     }
 
-    updated_alert, _entries = _get_remote_updated_incident_data_with_entry(
-        mock_client, "TST-3620", "2025-02-24T14:30:00.120000Z"
-    )
+    updated_alert, _entries = _get_remote_updated_incident_data_with_entry(mock_client, "TST-3620", "2025-02-24T14:30:00.120000Z")
 
     assert updated_alert is not None
     assert updated_alert["entity_content"] == [{"domain": "1.com"}]

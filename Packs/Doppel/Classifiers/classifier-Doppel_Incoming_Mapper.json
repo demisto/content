@@ -18,7 +18,10 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Doppel Audit Logs": {
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+		        "Doppel Audit Logs": {
 					"simple": "audit_logs"
 				},
 				"Block Indicators Status": {
@@ -89,7 +92,10 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Doppel Audit Logs": {
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+		        "Doppel Audit Logs": {
 					"simple": "audit_logs"
 				},
 				"Block Indicators Status": {
@@ -185,7 +191,10 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Doppel Audit Logs": {
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+		        "Doppel Audit Logs": {
 					"simple": "audit_logs"
 				},
 				"Block Indicators Status": {
@@ -259,7 +268,10 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Doppel Audit Logs": {
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+                "Doppel Audit Logs": {
 					"simple": "audit_logs"
 				},
 				"Block Indicators Status": {
@@ -352,7 +364,10 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Doppel Audit Logs": {
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+                "Doppel Audit Logs": {
 					"simple": "audit_logs"
 				},
 				"Block Indicators Status": {
@@ -426,7 +441,10 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Doppel Audit Logs": {
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+                "Doppel Audit Logs": {
 					"simple": "audit_logs"
 				},
 				"Block Indicators Status": {
@@ -519,7 +537,10 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Doppel Audit Logs": {
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+                "Doppel Audit Logs": {
 					"simple": "audit_logs"
 				},
 				"Block Indicators Status": {
@@ -593,7 +614,10 @@
 				"Alert tags": {
 					"simple": "tags"
 				},
-				"Doppel Audit Logs": {
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+                "Doppel Audit Logs": {
 					"simple": "audit_logs"
 				},
 				"Block Indicators Status": {
@@ -686,7 +710,10 @@
 				"Alert Source": {
 					"simple": "source"
 				},
-				"Doppel Audit Logs": {
+				"Audit Logs": {
+					"simple": "audit_logs.[]."
+				},
+                "Doppel Audit Logs": {
 					"simple": "audit_logs"
 				},
 				"Block Indicators Status": {
