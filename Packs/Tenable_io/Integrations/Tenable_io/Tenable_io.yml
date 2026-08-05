@@ -49,6 +49,25 @@ configuration:
   required: false
   advanced: true
   section: Connect
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+- display: Fetch assets and vulnerabilities
+  name: isFetchAssets
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+  - exposure_management
 - defaultvalue: 7 days
   display: Events first fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -93,7 +112,8 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
-description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
+  - exposure_management
+description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications. Fetch capabilities are only available for certain licenses.
 display: Tenable Vulnerability Management (formerly Tenable.io)
 name: Tenable.io
 script:
