@@ -130,7 +130,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.post(
             url_suffix="/cases",
-            json=json_data,
+            json_data=json_data,
             resp_type="json",
         )
 
@@ -235,7 +235,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.post(
             url_suffix=f"/cases/{case_id}/runs",
-            json=json_data,
+            json_data=json_data,
             resp_type="json",
         )
 
@@ -333,7 +333,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.post(
             url_suffix=f"/cases/{case_id}/merge",
-            json=json_data,
+            json_data=json_data,
             resp_type="json",
         )
 
@@ -409,7 +409,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.post(
             url_suffix="/nodes",
-            json=json_data,
+            json_data=json_data,
             resp_type="json",
         )
 
@@ -452,7 +452,7 @@ class MagnetAutomateClient(ContentClient):
 
         return self.put(
             url_suffix=f"/nodes/{node_id}",
-            json=json_data,
+            json_data=json_data,
             resp_type="json",
         )
 
