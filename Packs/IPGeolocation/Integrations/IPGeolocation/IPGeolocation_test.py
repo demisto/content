@@ -365,9 +365,8 @@ def test_ip_security_clean_ip_keeps_zero_scores(requests_mock, client):
 
 def test_abuse_contact_success(requests_mock, client, mocker):
     """Abuse contacts populate both the branded context and the IP indicator."""
-    mocker.patch.object(__import__("IPGeolocation").demisto, "params", return_value={})
     requests_mock.get(f"{BASE_URL}/v3/abuse", json=load_test_data("abuse"))
-    result = abuse_contact_command(client, {"ip": "1.0.0.0"})[0]
+    result = abuse_contact_command(client, {"ip": "1.0.0.0"}, {})[0]
 
     assert result.outputs["Abuse"]["Emails"] == ["helpdesk@apnic.net"]
     assert result.outputs["Abuse"]["Route"] == "1.0.0.0/24"
