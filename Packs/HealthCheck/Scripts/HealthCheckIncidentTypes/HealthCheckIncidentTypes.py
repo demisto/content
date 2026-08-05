@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def filter_non_locked(res):
-    nonLockedTypes = list(filter(lambda x: x["locked"] is False or x["detached"] is True, res))
+    nonLockedTypes = list(filter(lambda x: x.get("locked") is False or x.get("detached") is True, res))
     return nonLockedTypes
 
 
@@ -11,23 +11,27 @@ def main():
     incident = demisto.incidents()[0]
     account_name = incident.get("account")
     account_name = f"acc_{account_name}" if account_name != "" else ""
-    if is_demisto_version_ge("8.0.0"):
-        res = execute_command("core-api-get", {"uri": f"{account_name}/incidenttype"})[0]["response"]
+    # `execute_command` collapses a single result entry to a dict but returns a
+    # list when multiple entries are present.
+    result = execute_command("core-api-get", {"uri": f"{account_name}/incidenttype"})
+    if isinstance(result, list):
+        res = result[0]["response"] if result else []
     else:
-        res = execute_command("core-api-get", {"uri": f"{account_name}/incidenttype"})["response"]
+        res = result.get("response", [])
 
     nonLockedTypes = filter_non_locked(res)
 
     table = []
     for incident_type in nonLockedTypes:
         newEntry = {}
-        extract_settings = incident_type["extractSettings"]
-        if extract_settings["mode"] == "All":
-            newEntry["incidenttype"] = incident_type["prevName"]
+        extract_settings = incident_type.get("extractSettings") or {}
+        mode = extract_settings.get("mode")
+        if mode == "All":
+            newEntry["incidenttype"] = incident_type.get("prevName")
             newEntry["detection"] = "Indicators extraction defined on all fields"
             table.append(newEntry)
-        elif extract_settings["mode"] == "Specific" and extract_settings["fieldCliNameToExtractSettings"]:
-            newEntry["incidenttype"] = incident_type["prevName"]
+        elif mode == "Specific" and extract_settings.get("fieldCliNameToExtractSettings"):
+            newEntry["incidenttype"] = incident_type.get("prevName")
             newEntry["detection"] = "No indicators extraction defined on all fields"
             table.append(newEntry)
         else:
