@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import demistomock as demisto  # noqa: F401
@@ -16,6 +16,12 @@ CLIENT_SERVICE = "guardduty"
 MAX_IDS_PER_REQ = 50
 MAX_RESULTS = 50
 GD_SEVERITY_DICT = {"Low": 1, "Medium": 4, "High": 7}
+
+# XSUP-71079: a fully-deduped cursor boundary second is only escaped once it is
+# at least this far in the past relative to the fetch start time. This keeps a
+# still-current second pinned (so a genuine later same-second update is still
+# catchable) while breaking a boundary that has clearly gone stale.
+STALE_BOUNDARY_MARGIN = timedelta(minutes=2)
 
 PRODUCT = "guardduty"
 VENDOR = "aws"
@@ -101,6 +107,35 @@ def _build_finding_criterion(updated_at: Optional[datetime], severity: str, excl
 def _event_updated_at(event: dict) -> Any:
     """Return the timestamp used as the fetch cursor for a single finding."""
     return event.get("UpdatedAt", event.get("CreatedAt"))
+
+
+def _cursor_second(value: Any) -> datetime:
+    """Return the whole-second (microseconds truncated) datetime for a timestamp.
+
+    XSUP-73410: GuardDuty findings carry MILLISECOND-precision ``UpdatedAt``
+    values, and several findings routinely share the same whole second while
+    differing in their milliseconds. The fetch cursor and the same-second
+    sibling dedup (XSUP-67097 / 71079 / 72455) are defined at SECOND resolution,
+    so all comparisons and grouping must truncate sub-second precision. Doing so
+    keeps the cursor deterministic (independent of AWS ``get_findings`` ordering)
+    and lets every finding sharing the cursor second be recognized as an
+    already-seen sibling on the inclusive ``Gte`` re-query.
+
+    Args:
+        value: A timestamp string or a ``datetime``. Every GuardDuty finding
+            carries a real ``UpdatedAt``/``CreatedAt``, so a value is always present.
+
+    Returns:
+        The corresponding ``datetime`` truncated to whole seconds.
+
+    Raises:
+        ValueError: If ``value`` is not a parseable timestamp. This is not
+            expected from real GuardDuty data and surfaces loudly rather than
+            silently corrupting the fetch cursor.
+    """
+    if isinstance(value, datetime):
+        return value.replace(microsecond=0)
+    return parse_date_string(value).replace(microsecond=0)
 
 
 def get_events(
@@ -213,19 +248,31 @@ def get_events(
         # ingested. The previous ID-only dedup dropped it because its id was in last_ids, which produced an
         # empty result and, because the cursor only advances when events are ingested, pinned the fetch
         # behind that finding indefinitely.
+        # XSUP-73410: compare at whole-second resolution. GuardDuty UpdatedAt values carry
+        # milliseconds and several findings share the same second at different ms, so an
+        # exact-microsecond comparison treats same-second siblings as distinct and never dedups them.
+        cursor_second = _cursor_second(updated_at)
         if seen_ids:
             before_ids = [ev.get("Id") for ev in detector_events]
             detector_events = [
                 ev
                 for ev in detector_events
-                if ev.get("Id") not in seen_ids or parse_date_string(_event_updated_at(ev)) != updated_at
+                if ev.get("Id") not in seen_ids or _cursor_second(_event_updated_at(ev)) != cursor_second
             ]
             after_ids = [ev.get("Id") for ev in detector_events]
             if before_ids != after_ids:
                 demisto.debug(
                     f"AWSGuardDutyEventCollector - Dedup removed already-seen same-second findings "
                     f"for {detector_id=}. Before: {before_ids}, after: {after_ids}, removed via {seen_ids=} "
-                    f"at cursor second {updated_at=}."
+                    f"at cursor second {cursor_second=}."
+                )
+            else:
+                # XSUP-73410: dedup ran but nothing matched — log it so we can distinguish "dedup did not
+                # execute" from "dedup executed and found no already-seen same-second findings to drop".
+                demisto.debug(
+                    f"AWSGuardDutyEventCollector - Dedup ran for {detector_id=} at cursor second "
+                    f"{cursor_second=} but removed nothing ({len(before_ids)} findings kept, "
+                    f"{len(seen_ids)} seen ids carried in)."
                 )
 
         demisto.debug(f"AWSGuardDutyEventCollector - {detector_id=} findings found ({len(detector_events)}): {detector_events}")
@@ -247,40 +294,92 @@ def get_events(
         #      truncated second from its start and makes forward progress.
         truncated_by_limit = bool(next_token)  # loop exited with a pending token => stopped due to limit
         if detector_events:
-            last_cursor_ts = _event_updated_at(detector_events[-1])
-            cursor_ts = last_cursor_ts
+            # XSUP-73410: choose the cursor deterministically at WHOLE-SECOND resolution, independent of AWS
+            # get_findings ordering. Group every ingested finding by its UpdatedAt second; the latest such
+            # second is the boundary, and the cursor string is the max UpdatedAt within it — a single
+            # deterministic representative, so millisecond siblings no longer make the cursor churn.
+            event_seconds = [(ev, _cursor_second(_event_updated_at(ev))) for ev in detector_events]
+            latest_second = max(sec for _, sec in event_seconds)
+            cursor_second_target = latest_second
             if truncated_by_limit:
-                # Find the latest second strictly older than the last (partial) second.
-                distinct_seconds = {_event_updated_at(ev) for ev in detector_events}
-                fully_drained = sorted((s for s in distinct_seconds if s != last_cursor_ts), key=parse_date_string)
+                # Find the latest whole-second strictly older than the last (partial) second.
+                distinct_seconds = {sec for _, sec in event_seconds}
+                fully_drained = sorted(s for s in distinct_seconds if s != latest_second)
                 if fully_drained:
-                    cursor_ts = fully_drained[-1]
+                    cursor_second_target = fully_drained[-1]
                     demisto.debug(
                         f"AWSGuardDutyEventCollector - Fetch truncated by limit for {detector_id=}. "
-                        f"Rolling cursor back from partial second {last_cursor_ts} to last fully-drained "
-                        f"second {cursor_ts} to avoid skipping same-second siblings."
+                        f"Rolling cursor back from partial second {latest_second} to last fully-drained "
+                        f"second {cursor_second_target} to avoid skipping same-second siblings."
                     )
                 else:
                     # The entire page is a single second that we could not fully drain. Keep the cursor
                     # on that second and accumulate seen ids so progress happens via dedup next run.
                     demisto.debug(
                         f"AWSGuardDutyEventCollector - Fetch truncated by limit for {detector_id=} within a "
-                        f"single second {last_cursor_ts}; keeping cursor and accumulating seen ids."
+                        f"single second {latest_second}; keeping cursor and accumulating seen ids."
                     )
+            # Events sharing the target whole-second are the cursor's same-second siblings.
+            cursor_second_events = [ev for ev, sec in event_seconds if sec == cursor_second_target]
+            cursor_ts = max(_event_updated_at(ev) for ev in cursor_second_events)
             new_collect_from[detector_id] = cursor_ts
-            cursor_sibling_ids = {ev.get("Id") for ev in detector_events if _event_updated_at(ev) == cursor_ts}
+            cursor_sibling_ids = {ev.get("Id") for ev in cursor_second_events}
             cursor_sibling_ids.discard(None)
             # Carry forward previously-seen ids when the cursor second did not advance past them,
             # so we never forget same-second siblings across runs.
-            if seen_ids and parse_date_string(cursor_ts) == updated_at:
+            carried_forward = seen_ids and cursor_second_target == cursor_second
+            if carried_forward:
                 cursor_sibling_ids |= seen_ids
+            # XSUP-73410: log the chosen whole-second boundary, the deterministic max-in-second cursor
+            # value, and how many same-second sibling ids are remembered — so future troubleshooting can
+            # confirm the cursor no longer churns within a second and all siblings are tracked for dedup.
+            demisto.debug(
+                f"AWSGuardDutyEventCollector - Cursor advance for {detector_id=}: "
+                f"boundary_second={cursor_second_target}, cursor_ts={cursor_ts!r}, "
+                f"same_second_sibling_count={len(cursor_sibling_ids)}, {carried_forward=}."
+            )
             # Stored as list so demisto.setLastRun can JSON-serialize it; round-trips via
             # _normalize_last_ids_entry on the next call.
             new_last_ids[detector_id] = sorted(cursor_sibling_ids)
         elif finding_ids:
-            # No detector_events but we did see ids — keep the prior seen_ids as-is so
-            # we don't forget about them on the next fetch.
-            new_last_ids[detector_id] = sorted(seen_ids) if seen_ids else []
+            # No detector_events but we did see ids — everything AWS returned at/after the cursor
+            # second deduped away as already-seen same-second siblings.
+            #
+            # XSUP-71079 (fully-deduped stale boundary): when this fetch was NOT truncated by limit
+            # (AWS returned everything at/after the cursor and there is nothing newer) AND the cursor
+            # boundary second is safely in the PAST, leaving the cursor unchanged wedges the fetch
+            # forever — every cycle re-lists the same already-seen finding, ingests nothing, and the
+            # cursor (which only advances on ingestion) never moves. To break the dead-end, step the
+            # cursor one whole second past the drained boundary and drop the now-stale seen ids. A
+            # RECENT boundary is left pinned so a genuine later same-second update is still catchable.
+            fetch_start = collect_from_default or datetime.utcnow()
+            boundary_is_stale = cursor_second < (fetch_start - STALE_BOUNDARY_MARGIN)
+            if not truncated_by_limit and boundary_is_stale:
+                next_second = cursor_second + timedelta(seconds=1)
+                new_collect_from[detector_id] = next_second.isoformat()
+                new_last_ids[detector_id] = []
+                demisto.debug(
+                    f"AWSGuardDutyEventCollector - Fully-deduped STALE boundary for {detector_id=}: "
+                    f"{len(finding_ids)} finding id(s) listed but all deduped, nothing newer, and the "
+                    f"boundary second {cursor_second} is older than {STALE_BOUNDARY_MARGIN} before "
+                    f"{fetch_start}. Advancing cursor to {next_second.isoformat()} and clearing seen ids "
+                    f"to break the stall."
+                )
+            else:
+                # Keep the prior seen_ids as-is so we don't forget them next fetch. This is the correct
+                # bounded pause for a still-current boundary, or when a limit-truncated page may still
+                # have un-fetched siblings at this second.
+                new_last_ids[detector_id] = sorted(seen_ids) if seen_ids else []
+                demisto.debug(
+                    f"AWSGuardDutyEventCollector - No new events for {detector_id=}: {len(finding_ids)} finding "
+                    f"id(s) were listed but all were deduped as already-seen. Cursor left unchanged "
+                    f"({truncated_by_limit=}, {boundary_is_stale=}); {len(seen_ids)} seen id(s) carried forward."
+                )
+        else:
+            # Neither events nor finding ids — nothing matched the query this cycle. Cursor unchanged.
+            demisto.debug(
+                f"AWSGuardDutyEventCollector - No findings returned for {detector_id=} this cycle. " f"Cursor left unchanged."
+            )
 
     demisto.debug(f"AWSGuardDutyEventCollector - Total number of events is {len(events)}")
     # XSUP-73410: log the outgoing cursor value+type that will be persisted via setLastRun, so we can

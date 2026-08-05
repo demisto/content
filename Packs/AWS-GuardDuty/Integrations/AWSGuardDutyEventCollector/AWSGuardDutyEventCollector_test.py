@@ -1,5 +1,5 @@
 from contextlib import nullcontext as does_not_raise
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import call
 
 import demistomock as demisto
@@ -1353,3 +1353,453 @@ def test_emitted_events_expose_updated_at_for_time_mapping(mocker):
 
     # Each event's _time source is the expected, distinct UpdatedAt value.
     assert sorted(_event_updated_at(e) for e in events) == [ts_1, ts_2]
+
+
+# ---------------------------------------------------------------------------
+# Regression test for XSUP-73410 — sub-second (millisecond) cursor churn.
+#
+# Production GuardDuty findings carry MILLISECOND-precision UpdatedAt values
+# (e.g. "...:23.311Z", "...:23.936Z"). Several findings routinely share the
+# same whole SECOND while differing in their milliseconds. The fetch cursor is
+# meant to be a per-second boundary (see XSUP-67097 / 71079 / 72455), and every
+# finding sharing the cursor's second must be remembered so the inclusive Gte
+# re-query can dedup them.
+#
+# Two defects combined to re-ingest the whole second on every run (observed in
+# live telemetry: the same (Id, UpdatedAt) pair ingested up to 1440x/day):
+#   1. The cursor was set from detector_events[-1] (LIST order), not the max
+#      timestamp. AWS get_findings does NOT preserve the requested id order, so
+#      the cursor oscillated between the earliest/latest ms of the same second.
+#   2. The remembered sibling set was scoped to the EXACT-microsecond cursor
+#      value, so only the one finding at that precise ms was remembered — the
+#      other same-second siblings were forgotten and re-ingested next run.
+#
+# This test reproduces the loop: three findings in one second at different ms,
+# returned by get_findings in a NON-sorted order, run across two fetch cycles
+# with the state round-tripped as a list (as setLastRun would persist it).
+# ---------------------------------------------------------------------------
+
+
+def test_millisecond_siblings_not_reingested_xsup_73410(mocker):
+    """
+    Given:
+        Three findings (A, B, C) on one detector, all sharing the same whole
+        SECOND 13:18:23 but with different MILLISECONDS (.311 / .627 / .936).
+        get_findings returns them in a NON-sorted order — valid AWS behavior,
+        since get_findings does not preserve FindingIds order.
+
+    When:
+        Run 1 fetches from before the second and ingests all three.
+        Run 2 re-queries with the persisted cursor (state round-tripped as a
+        list, as setLastRun serializes it). The inclusive Gte re-returns the
+        same three findings, again in a non-sorted order.
+
+    Then:
+        Run 1 ingests A, B, C exactly once.
+        Run 2 ingests NOTHING — all three are recognized as the same
+        already-seen same-second findings and deduped.
+        The persisted cursor is deterministic (the max, .936) and stable across
+        runs (no oscillation), and last_ids remembers ALL three siblings.
+
+        With the pre-fix code, run 2 re-ingests all three and the cursor
+        oscillates within the second, so these assertions fail — proving the
+        millisecond-churn re-ingestion bug.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — cursor advance + same-second
+        sibling dedup must operate at whole-second resolution.
+    """
+    ts_a = "2026-08-01T13:18:23.311000"
+    ts_b = "2026-08-01T13:18:23.627000"
+    ts_c = "2026-08-01T13:18:23.936000"
+
+    def make_findings():
+        # Fresh copies each run so mutations never leak between cycles.
+        finding_a = update_finding_id(FINDING.copy(), "finding_A", updated_at=ts_a)
+        finding_b = update_finding_id(FINDING.copy(), "finding_B", updated_at=ts_b)
+        finding_c = update_finding_id(FINDING.copy(), "finding_C", updated_at=ts_c)
+        return finding_a, finding_b, finding_c
+
+    # ------------------------------------------------------------------ Run 1
+    fa1, fb1, fc1 = make_findings()
+    run1_client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_A", "finding_B", "finding_C"]}],
+        # get_findings returns them in a DIFFERENT order than requested.
+        get_findings_res=[{"Findings": [fc1, fa1, fb1]}],
+    )
+
+    events_run1, last_ids_after_run1, collect_from_after_run1 = get_events(
+        aws_client=run1_client,
+        collect_from={},
+        collect_from_default=datetime(2026, 8, 1, 13, 18, 0),
+        last_ids={},
+        severity="Low",
+        limit=10,
+    )
+
+    assert sorted(e["Id"] for e in events_run1) == [
+        "finding_A",
+        "finding_B",
+        "finding_C",
+    ], "Sanity: run 1 must ingest all three same-second findings."
+    # The cursor must be the MAX timestamp of the second — deterministic, not
+    # whichever finding happened to be last in get_findings order.
+    assert collect_from_after_run1 == {
+        "det1": ts_c
+    }, f"Cursor must advance to the max same-second timestamp, got {collect_from_after_run1}."
+    # Every finding sharing the cursor second must be remembered for dedup.
+    assert last_ids_after_run1 == {
+        "det1": ["finding_A", "finding_B", "finding_C"]
+    }, f"All same-second siblings must be remembered, got {last_ids_after_run1}."
+
+    # ------------------------------------------------------------------ Run 2
+    # The inclusive Gte re-query returns the same three findings again, in yet
+    # another order. State is round-tripped as a list (setLastRun serialization).
+    mocker.resetall()
+    fa2, fb2, fc2 = make_findings()
+    run2_client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_A", "finding_B", "finding_C"]}],
+        get_findings_res=[{"Findings": [fb2, fc2, fa2]}],
+    )
+
+    events_run2, last_ids_after_run2, collect_from_after_run2 = get_events(
+        aws_client=run2_client,
+        collect_from=collect_from_after_run1,
+        collect_from_default=datetime(2026, 8, 1, 13, 18, 0),
+        last_ids=last_ids_after_run1,
+        severity="Low",
+        limit=10,
+    )
+
+    # ------------------------------------------------------------ Assertion
+    # Nothing new happened — the same second's findings must NOT be re-ingested.
+    assert events_run2 == [], (
+        f"XSUP-73410 millisecond re-ingest: the same same-second findings were "
+        f"re-ingested on run 2, got {[e['Id'] for e in events_run2]}. The inclusive "
+        f"Gte re-query returns them and they must all be deduped as already-seen."
+    )
+    # The cursor must be STABLE — no oscillation within the second across runs.
+    assert collect_from_after_run2 == {"det1": ts_c}, (
+        f"Cursor must remain stable at the max same-second timestamp across runs, "
+        f"got {collect_from_after_run2} (oscillation indicates the churn bug)."
+    )
+    assert last_ids_after_run2 == {"det1": ["finding_A", "finding_B", "finding_C"]}
+
+
+# ---------------------------------------------------------------------------
+# Regression test for XSUP-71079 (continued) — the FULLY-DEDUPED STALE BOUNDARY
+# dead-end (observed live on the BAY ap-southeast-7 detector).
+#
+# The cursor is second-resolution and the updatedAt query is inclusive (Gte).
+# On a quiet detector the fetch can reach a state where the ONLY finding at/after
+# the cursor second is one already in last_ids. Every cycle then:
+#   1. list_findings returns just that one already-seen id (nothing newer),
+#   2. dedup drops it as a same-second sibling -> 0 events,
+#   3. the cursor only advances when events are ingested -> it never moves.
+# The fetch is wedged forever, even though the boundary second is long in the
+# past. Live evidence: the cursor sat frozen at a single second for 9+ hours,
+# re-querying one finding, ingesting nothing.
+#
+# The fix is time-gated: when a fetch is NOT truncated by limit (AWS returned
+# everything at/after the cursor) and everything deduped away, AND the boundary
+# second is safely in the PAST relative to collect_from_default (so no new
+# same-second finding can still arrive), advance the cursor one second past the
+# boundary and drop the stale seen_ids. A RECENT boundary must still stay pinned
+# (that bounded pause is required by test_same_boundary_reupdate_...).
+# ---------------------------------------------------------------------------
+
+
+def test_stale_fully_deduped_boundary_advances_cursor_xsup_71079(mocker):
+    """
+    Given:
+        A quiet detector whose cursor sits at a second T0 that is well in the
+        PAST (hours before collect_from_default/"now"). The only finding the
+        inclusive Gte query returns is finding_X, which is already in last_ids
+        (an already-ingested same-second finding). The fetch is NOT truncated by
+        limit — AWS returned everything at/after T0 and there is nothing newer.
+
+    When:
+        get_events runs this cycle.
+
+    Then:
+        Nothing is ingested (finding_X is correctly deduped), but because the
+        boundary second is stale and fully drained, the cursor MUST advance one
+        second past T0 so the next run queries strictly after the dead boundary,
+        and the stale seen_ids for that detector MUST be cleared. This breaks the
+        perpetual freeze.
+
+        With the pre-fix code the elif-finding_ids branch leaves the cursor and
+        seen_ids unchanged, so the cursor stays frozen at T0 forever — these
+        assertions fail, proving the dead-end.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — the fully-deduped-boundary
+        advance guard (time-gated so a recent boundary still pins).
+    """
+    # collect_from_default is "now" (as it is in production). Make the boundary
+    # second sit safely in the past so the time-gate fires.
+    now = datetime(2026, 8, 4, 18, 0, 0)
+    t0 = "2026-08-04T08:19:28.960000"  # ~10 hours before "now" — clearly stale
+    t0_plus_1s = "2026-08-04T08:19:29"  # cursor must step to the next second
+
+    stale_only = update_finding_id(FINDING.copy(), "finding_X", updated_at=t0)
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        # Only the already-seen boundary finding is returned; NO NextToken -> not
+        # truncated by limit, so AWS has nothing newer at/after T0.
+        list_finding_ids_res=[{"FindingIds": ["finding_X"]}],
+        get_findings_res=[{"Findings": [stale_only]}],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={"det1": t0},
+        collect_from_default=now,
+        last_ids={"det1": ["finding_X"]},
+        severity="Low",
+        limit=10,
+    )
+
+    # Nothing new happened this cycle — the one boundary finding is deduped.
+    assert events == [], "The already-seen boundary finding must not be re-ingested."
+    # The wedge must break: the cursor steps one whole second past the stale
+    # boundary so the next inclusive Gte query starts strictly after it.
+    assert new_collect_from == {"det1": t0_plus_1s}, (
+        f"Stale fully-deduped boundary must advance the cursor past T0, got "
+        f"{new_collect_from} (unchanged == the XSUP-71079 permanent freeze)."
+    )
+    # The stale seen_ids belonged to the dead boundary second; the new second has
+    # no known siblings, so they must be cleared.
+    assert new_last_ids == {"det1": []}, f"Seen ids for the abandoned boundary second must be cleared, got {new_last_ids}."
+
+
+def test_recent_fully_deduped_boundary_stays_pinned_xsup_71079(mocker):
+    """
+    Given:
+        The same fully-deduped single-finding situation as the stale-boundary
+        test, but the cursor second is RECENT — only moments before
+        collect_from_default/"now". A genuine later-same-second update could
+        still arrive, so the cursor must not jump past it yet.
+
+    When:
+        get_events runs this cycle.
+
+    Then:
+        Nothing is ingested and the cursor stays PINNED at the boundary second
+        with its seen_ids preserved (the bounded, correct pause). This guards the
+        time-gate: the freeze-breaking advance must fire ONLY for stale
+        boundaries, never for a still-current second.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — the fully-deduped-boundary
+        advance is time-gated; a recent boundary keeps the existing pin behavior.
+    """
+    now = datetime(2026, 8, 4, 18, 0, 0)
+    # Boundary is only a few seconds before "now" — still current.
+    t_recent = (now - timedelta(seconds=3)).strftime("%Y-%m-%dT%H:%M:%S.%f")
+
+    recent_only = update_finding_id(FINDING.copy(), "finding_X", updated_at=t_recent)
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_X"]}],
+        get_findings_res=[{"Findings": [recent_only]}],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={"det1": t_recent},
+        collect_from_default=now,
+        last_ids={"det1": ["finding_X"]},
+        severity="Low",
+        limit=10,
+    )
+
+    assert events == [], "The already-seen finding must not be re-ingested."
+    # Recent boundary: keep the bounded pause so a later same-second update is
+    # still catchable — cursor and seen_ids unchanged.
+    assert new_collect_from == {"det1": t_recent}, f"A recent fully-deduped boundary must stay pinned, got {new_collect_from}."
+    assert new_last_ids == {
+        "det1": ["finding_X"]
+    }, f"Seen ids for a still-current boundary must be preserved, got {new_last_ids}."
+
+
+def test_stale_boundary_with_a_genuinely_new_finding_ingests_and_does_not_skip_xsup_71079(mocker):
+    """
+    Given:
+        A stale cursor second T0. This cycle the inclusive Gte query returns the
+        already-seen boundary finding (finding_old, in last_ids at T0) AND a
+        genuinely new finding (finding_new) whose UpdatedAt is a strictly-later
+        second T1 — a real occurrence that must be ingested.
+
+    When:
+        get_events runs.
+
+    Then:
+        finding_new is ingested (it is NOT deduped — its second is past the
+        cursor) and the cursor advances to T1 via the NORMAL ingest path. The
+        stale-boundary freeze-breaker must NOT fire here (there are events), and
+        crucially nothing is skipped: a real update at a stale boundary is never
+        lost by the freeze-breaking logic.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — the stale-boundary advance lives
+        in the elif-finding_ids (zero-events) branch only; any real ingestion
+        takes the normal path and is unaffected.
+    """
+    now = datetime(2026, 8, 4, 18, 0, 0)
+    t0 = "2026-08-04T08:19:28.960000"  # stale boundary (already seen)
+    t1 = "2026-08-04T08:19:45.100000"  # a genuinely newer second
+
+    finding_old = update_finding_id(FINDING.copy(), "finding_old", updated_at=t0)
+    finding_new = update_finding_id(FINDING.copy(), "finding_new", updated_at=t1)
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_old", "finding_new"]}],
+        get_findings_res=[{"Findings": [finding_old, finding_new]}],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={"det1": t0},
+        collect_from_default=now,
+        last_ids={"det1": ["finding_old"]},
+        severity="Low",
+        limit=10,
+    )
+
+    # The genuinely new finding must be ingested (the old boundary one is deduped).
+    assert [e["Id"] for e in events] == [
+        "finding_new"
+    ], f"A real new finding at a stale boundary must be ingested, got {[e['Id'] for e in events]}."
+    # Cursor advances to the new finding's second via the normal ingest path —
+    # NOT via the freeze-breaker (+1s), proving the guard did not fire.
+    assert new_collect_from == {"det1": t1}, f"Cursor must advance to the ingested finding's timestamp, got {new_collect_from}."
+    assert new_last_ids == {
+        "det1": ["finding_new"]
+    }, f"Only the new cursor-second sibling should be remembered, got {new_last_ids}."
+
+
+def test_truncated_stale_fully_deduped_boundary_does_not_advance_xsup_71079(mocker):
+    """
+    Given:
+        A stale cursor second T0 whose only returned finding is already-seen (so
+        it dedups to zero events), BUT the finding-id listing was TRUNCATED by
+        limit — list_findings returned a NextToken, meaning AWS still has
+        un-fetched findings that may sit at this same boundary second.
+
+    When:
+        get_events runs.
+
+    Then:
+        The cursor must NOT advance and seen_ids must be preserved. Even though
+        the boundary is stale, advancing past a limit-truncated second could skip
+        the un-fetched findings still sitting there. The freeze-breaker is gated
+        on `not truncated_by_limit` precisely to prevent that data loss.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — the stale-boundary advance
+        requires a fully-drained (non-truncated) page.
+    """
+    now = datetime(2026, 8, 4, 18, 0, 0)
+    t0 = "2026-08-04T08:19:28.960000"  # stale boundary
+
+    stale_seen = update_finding_id(FINDING.copy(), "finding_X", updated_at=t0)
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        # NextToken present => the id-listing loop stops on limit with more to
+        # fetch, so truncated_by_limit is True.
+        list_finding_ids_res=[{"FindingIds": ["finding_X"], "NextToken": "more"}],
+        get_findings_res=[{"Findings": [stale_seen]}],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={"det1": t0},
+        collect_from_default=now,
+        last_ids={"det1": ["finding_X"]},
+        severity="Low",
+        limit=1,  # force the listing loop to stop with the NextToken still pending
+    )
+
+    assert events == [], "Nothing new should be ingested."
+    # Truncated page => must NOT advance past the boundary (un-fetched siblings
+    # may still be there); cursor and seen_ids stay put.
+    assert new_collect_from == {
+        "det1": t0
+    }, f"A limit-truncated stale boundary must NOT advance the cursor, got {new_collect_from}."
+    assert new_last_ids == {
+        "det1": ["finding_X"]
+    }, f"Seen ids must be preserved when the boundary page was truncated, got {new_last_ids}."
+
+
+def test_stale_wedged_detector_advances_without_affecting_healthy_detector_xsup_71079(mocker):
+    """
+    Given:
+        Two detectors on one instance:
+          - det_stuck: wedged at a stale fully-deduped boundary (only its
+            already-seen finding is returned).
+          - det_ok: healthy, returning a brand-new finding to ingest.
+
+    When:
+        get_events runs over both detectors in one cycle.
+
+    Then:
+        det_stuck's cursor is unwedged (advances one second past its stale
+        boundary, seen_ids cleared) while det_ok ingests its new finding and
+        advances normally. The freeze-breaker is per-detector and must not
+        disturb a healthy detector processed in the same run.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — per-detector cursor/seen-ids
+        handling; the stale-boundary advance is scoped to the affected detector.
+    """
+    now = datetime(2026, 8, 4, 18, 0, 0)
+    t_stale = "2026-08-04T08:19:28.960000"
+    t_stale_plus_1s = "2026-08-04T08:19:29"
+    t_new = "2026-08-04T17:59:10.500000"  # recent, healthy detector's new finding
+
+    stuck_seen = update_finding_id(FINDING.copy(), "finding_stuck", updated_at=t_stale)
+    ok_new = update_finding_id(FINDING.copy(), "finding_ok", updated_at=t_new)
+
+    # Detectors are processed in listing order: det_stuck first, then det_ok.
+    client, _, _, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det_stuck", "det_ok"]}],
+        list_finding_ids_res=[
+            {"FindingIds": ["finding_stuck"]},  # det_stuck listing
+            {"FindingIds": ["finding_ok"]},  # det_ok listing
+        ],
+        get_findings_res=[
+            {"Findings": [stuck_seen]},  # det_stuck get_findings
+            {"Findings": [ok_new]},  # det_ok get_findings
+        ],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={"det_stuck": t_stale},  # det_ok has no prior cursor
+        collect_from_default=now,
+        last_ids={"det_stuck": ["finding_stuck"]},
+        severity="Low",
+        limit=10,
+    )
+
+    # Only the healthy detector's new finding is ingested.
+    assert [e["Id"] for e in events] == [
+        "finding_ok"
+    ], f"Healthy detector's new finding must be ingested, got {[e['Id'] for e in events]}."
+    # Stuck detector unwedged; healthy detector advanced normally to its finding.
+    assert new_collect_from == {"det_stuck": t_stale_plus_1s, "det_ok": t_new}, (
+        f"Stuck detector must advance past its stale boundary and healthy detector "
+        f"must advance to its ingested finding, got {new_collect_from}."
+    )
+    # Stuck detector's stale seen_ids cleared; healthy detector remembers its sibling.
+    assert new_last_ids == {"det_stuck": [], "det_ok": ["finding_ok"]}, f"Per-detector seen ids incorrect, got {new_last_ids}."
