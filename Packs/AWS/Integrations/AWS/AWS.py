@@ -8157,6 +8157,96 @@ class Lambda:
         return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
+    def get_function_concurrency_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Retrieves the reserved concurrency configuration for a Lambda function.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service.
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name or ARN of the Lambda function.
+
+        Returns:
+            CommandResults: Results of the operation with the reserved concurrency details.
+        """
+        function_name = args.get("function_name")
+        kwargs = {"FunctionName": function_name}
+
+        print_debug_logs(client, f"Calling get_function_concurrency with {kwargs=}")
+        response = client.get_function_concurrency(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        reserved = response.get("ReservedConcurrentExecutions")
+        outputs = {"FunctionName": function_name, "ReservedConcurrentExecutions": reserved}
+
+        human_readable = tableToMarkdown(
+            f"Lambda Function Concurrency: {function_name}",
+            outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionConcurrency",
+            outputs_key_field="FunctionName",
+            outputs=outputs,
+            readable_output=human_readable,
+            raw_response=response,
+        )
+
+    @staticmethod
+    def put_function_concurrency_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Sets the reserved concurrency configuration for a Lambda function.
+
+        Setting the reserved concurrency to 0 effectively disables the function by throttling
+        all invocations.
+
+        Args:
+            client (BotoClient): The boto3 client for Lambda service.
+            args (Dict[str, Any]): Command arguments including:
+                - function_name (str): The name or ARN of the Lambda function.
+                - reserved_concurrent_executions (int): The number of simultaneous executions
+                  to reserve for the function. Set to 0 to throttle (disable) the function.
+
+        Returns:
+            CommandResults: Results of the operation with the updated reserved concurrency details.
+        """
+        function_name = args.get("function_name")
+        reserved_concurrent_executions = arg_to_number(args.get("reserved_concurrent_executions"))
+
+        kwargs = {
+            "FunctionName": function_name,
+            "ReservedConcurrentExecutions": reserved_concurrent_executions,
+        }
+
+        print_debug_logs(client, f"Calling put_function_concurrency with {kwargs=}")
+        response = client.put_function_concurrency(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        reserved = response.get("ReservedConcurrentExecutions")
+        outputs = {"FunctionName": function_name, "ReservedConcurrentExecutions": reserved}
+
+        human_readable = tableToMarkdown(
+            f"Lambda Function Concurrency Updated: {function_name}",
+            outputs,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+        return CommandResults(
+            outputs_prefix="AWS.Lambda.FunctionConcurrency",
+            outputs_key_field="FunctionName",
+            outputs=outputs,
+            readable_output=human_readable,
+            raw_response=response,
+        )
+
+    @staticmethod
     def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]):
         """
         Deletes a version of a Lambda layer.
@@ -11037,6 +11127,8 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-lambda-function-url-config-update": Lambda.update_function_url_configuration_command,
     "aws-lambda-function-configuration-update": Lambda.update_function_configuration_command,
     "aws-lambda-function-get": Lambda.get_function_command,
+    "aws-lambda-function-concurrency-get": Lambda.get_function_concurrency_command,
+    "aws-lambda-function-concurrency-put": Lambda.put_function_concurrency_command,
     "aws-lambda-functions-list": Lambda.list_functions_command,
     "aws-lambda-aliases-list": Lambda.list_aliases_command,
     "aws-lambda-account-settings-get": Lambda.get_account_settings_command,

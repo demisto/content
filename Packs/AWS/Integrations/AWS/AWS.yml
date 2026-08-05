@@ -10020,6 +10020,125 @@ script:
       description: The function’s tenant isolation configuration settings. Determines whether the Lambda function runs on a shared or dedicated infrastructure per unique tenant.
       type: Unknown
 
+  - name: aws-lambda-function-concurrency-get
+    description: "Returns details about the reserved concurrency configuration for a Lambda function. Required IAM Permission: lambda:GetFunctionConcurrency."
+    arguments:
+    - name: account_id
+      required: false
+      required:platform: true
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: region
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: function_name
+      required: true
+      description: The name or ARN of the Lambda function.
+    outputs:
+    - contextPath: AWS.Lambda.FunctionConcurrency.FunctionName
+      description: The name or ARN of the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConcurrency.ReservedConcurrentExecutions
+      description: The number of simultaneous executions that are reserved for the function.
+      type: Number
+
+  - name: aws-lambda-function-concurrency-put
+    description: "Sets the maximum number of simultaneous executions for a Lambda function, and reserves capacity for that concurrency level. Set the value to 0 to throttle (effectively disable) the function so it stops processing invocations. Required IAM Permission: lambda:PutFunctionConcurrency."
+    arguments:
+    - name: account_id
+      required: false
+      required:platform: true
+      description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: region
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+      - us-gov-east-1
+      - us-gov-west-1
+    - name: function_name
+      required: true
+      description: The name or ARN of the Lambda function.
+    - name: reserved_concurrent_executions
+      required: true
+      description: The number of simultaneous executions to reserve for the function. Set to 0 to throttle (effectively disable) the function so it stops processing invocations.
+    outputs:
+    - contextPath: AWS.Lambda.FunctionConcurrency.FunctionName
+      description: The name or ARN of the Lambda function.
+      type: String
+    - contextPath: AWS.Lambda.FunctionConcurrency.ReservedConcurrentExecutions
+      description: The number of simultaneous executions that are reserved for the function.
+      type: Number
+
   - arguments:
     - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
