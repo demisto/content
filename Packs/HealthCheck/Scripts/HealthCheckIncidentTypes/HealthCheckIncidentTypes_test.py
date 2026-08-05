@@ -1,5 +1,4 @@
 import demistomock as demisto
-import HealthCheckIncidentTypes
 from HealthCheckIncidentTypes import filter_non_locked, main
 
 

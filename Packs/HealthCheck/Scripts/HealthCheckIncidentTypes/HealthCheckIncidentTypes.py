@@ -15,7 +15,7 @@ def main():
     # list when multiple entries are present.
     result = execute_command("core-api-get", {"uri": f"{account_name}/incidenttype"})
     if isinstance(result, list):
-        res = result[0]["response"] if result else []
+        res = result[0].get("response", []) if result else []
     else:
         res = result.get("response", [])
 
