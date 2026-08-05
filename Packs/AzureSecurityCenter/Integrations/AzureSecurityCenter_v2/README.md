@@ -69,6 +69,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 ***
 
 Lists alerts for the subscription according to the specified filters.
+The OData select, expand, and filter arguments are deprecated, as they are no longer supported by Microsoft Defender for Cloud and have no effect.
 
 *Require Subscription ID*
 
