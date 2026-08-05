@@ -38,6 +38,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Incident type
   name: incidentType
   type: 13
@@ -58,6 +61,15 @@ configuration:
   name: fetchInterval
   defaultvalue: "5"
   type: 0
+  required: false
+  section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
   required: false
   section: Collect
   supportedModules:
@@ -93,8 +105,138 @@ script:
       required: true
       description: Description of the finding that justifies the takedown request.
     description: Submits a takedown request for a specific Threatmon finding. Eligible finding types include Phishing Domain Detected, Rogue Mobile App Detected, Fake SM Account Detected, and similar alarm types.
+  - name: threatmon_list_cves
+    arguments:
+    - name: page
+      description: Page number to retrieve (0-based). Each page contains up to 100 CVEs, sorted by last update time (descending).
+      defaultValue: "0"
+    - name: cvss
+      description: Filter CVEs by CVSS v3 severity.
+      auto: PREDEFINED
+      predefined:
+      - NONE
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    outputs:
+    - contextPath: ThreatMon.CVE.cve
+      description: CVE identifier.
+      type: String
+    - contextPath: ThreatMon.CVE.summary
+      description: CVE summary.
+      type: String
+    - contextPath: ThreatMon.CVE.cvssV2
+      description: CVSS v2 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.severityV2
+      description: CVSS v2 severity level.
+      type: String
+    - contextPath: ThreatMon.CVE.cvssV3
+      description: CVSS v3 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.severityV3
+      description: CVSS v3 severity level.
+      type: String
+    - contextPath: ThreatMon.CVE.cvssV3_1
+      description: CVSS v3.1 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.severityV3_1
+      description: CVSS v3.1 severity level.
+      type: String
+    - contextPath: ThreatMon.CVE.cvssV4
+      description: CVSS v4 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.severityV4
+      description: CVSS v4 severity level.
+      type: String
+    - contextPath: ThreatMon.CVE.vendors
+      description: Map of vendor names to affected product names.
+      type: Unknown
+    - contextPath: ThreatMon.CVE.exploit
+      description: Whether a known exploit exists for this CVE.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.knownRansomwareCampaignUse
+      description: Known ransomware campaign associated with this CVE, if any.
+      type: String
+    - contextPath: ThreatMon.CVE.zeroday
+      description: Whether this CVE was disclosed as a zero-day.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.createdAt
+      description: Date the CVE record was created in ThreatMon.
+      type: Date
+    - contextPath: ThreatMon.CVE.updatedAt
+      description: Date the CVE record was last updated in ThreatMon.
+      type: Date
+    description: Retrieves a paginated list of all CVEs monitored by ThreatMon.
+  - name: threatmon_list_subscribed_cves
+    arguments:
+    - name: page
+      description: Page number to retrieve (0-based). Each page contains up to 100 CVEs, sorted by last update time (descending).
+      defaultValue: "0"
+    - name: cvss
+      description: Filter CVEs by CVSS v3 severity.
+      auto: PREDEFINED
+      predefined:
+      - NONE
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    - name: customer_name
+      description: For MSSP accounts, retrieves subscribed CVEs on behalf of the specified child customer instead of the authenticated company.
+    outputs:
+    - contextPath: ThreatMon.CVE.cve
+      description: CVE identifier.
+      type: String
+    - contextPath: ThreatMon.CVE.summary
+      description: CVE summary.
+      type: String
+    - contextPath: ThreatMon.CVE.cvssV2
+      description: CVSS v2 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.severityV2
+      description: CVSS v2 severity level.
+      type: String
+    - contextPath: ThreatMon.CVE.cvssV3
+      description: CVSS v3 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.severityV3
+      description: CVSS v3 severity level.
+      type: String
+    - contextPath: ThreatMon.CVE.cvssV3_1
+      description: CVSS v3.1 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.severityV3_1
+      description: CVSS v3.1 severity level.
+      type: String
+    - contextPath: ThreatMon.CVE.cvssV4
+      description: CVSS v4 score.
+      type: Number
+    - contextPath: ThreatMon.CVE.severityV4
+      description: CVSS v4 severity level.
+      type: String
+    - contextPath: ThreatMon.CVE.vendors
+      description: Map of vendor names to affected product names.
+      type: Unknown
+    - contextPath: ThreatMon.CVE.exploit
+      description: Whether a known exploit exists for this CVE.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.knownRansomwareCampaignUse
+      description: Known ransomware campaign associated with this CVE, if any.
+      type: String
+    - contextPath: ThreatMon.CVE.zeroday
+      description: Whether this CVE was disclosed as a zero-day.
+      type: Boolean
+    - contextPath: ThreatMon.CVE.createdAt
+      description: Date the CVE record was created in ThreatMon.
+      type: Date
+    - contextPath: ThreatMon.CVE.updatedAt
+      description: Date the CVE record was last updated in ThreatMon.
+      type: Date
+    description: Retrieves a paginated list of CVEs affecting products that the authenticated company (or a specified child customer) is actively subscribed to.
   isfetch: true
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.10404775
 fromversion: 5.0.0
 tests:
 - No tests

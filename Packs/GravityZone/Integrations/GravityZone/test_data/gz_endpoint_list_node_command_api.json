@@ -1,0 +1,69 @@
+[
+  {
+    "request": {
+      "url": "/api/v1.1/jsonrpc/network",
+      "method": "getNetworkInventoryItems",
+      "payload": {
+        "jsonrpc": "2.0",
+        "method": "getNetworkInventoryItems",
+        "params": {
+          "parentId": "COMPANY_ID",
+          "page": 1,
+          "perPage": 100,
+          "filters": {
+            "type": {
+                "computers": true,
+                "virtualMachines": true
+            },
+            "depth": {
+                "allItemsRecursively": true
+            },
+            "security": {
+                "management": {
+                    "managedWithBest": true
+                }
+            }
+          }
+        },
+        "id": 1
+      }
+    },
+    "response": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "total": 4,
+        "page": 1,
+        "perPage": 100,
+        "pagesCount": 1,
+        "items": [
+          {
+            "id": "6940eb0b646e8e69399ce4a6",
+            "name": "ABC",
+            "parentId": "GROUP_ID",
+            "companyId": "COMPANY_ID",
+            "details": {
+              "label": "",
+              "fqdn": "ABC",
+              "groupId": "GROUP_ID",
+              "isManaged": true,
+              "machineType": 2,
+              "operatingSystemVersion": "Windows 10 Enterprise",
+              "ip": "IP_214",
+              "macs": [
+                "ABC_MAC"
+              ],
+              "ssid": "",
+              "managedWithBest": true,
+              "policy": {
+                "id": "63171c4569cad087a809a316",
+                "name": "POLICY_NAME",
+                "applied": true
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+]
