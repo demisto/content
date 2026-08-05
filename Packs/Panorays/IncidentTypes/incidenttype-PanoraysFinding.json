@@ -6,7 +6,6 @@
     "description": "A security finding detected by Panorays.",
     "color": "#295AFF",
     "playbookId": "Panorays Finding - Triage and Response",
-    "layout": "Indicator Feed",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -22,5 +21,5 @@
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.10.0"
 }

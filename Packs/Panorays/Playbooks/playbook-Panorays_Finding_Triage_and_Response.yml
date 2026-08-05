@@ -7,12 +7,14 @@ description: |-
   Flow:
   1. Checks for an existing open incident on the same Panorays Finding ID and closes duplicates.
   2. Branches on finding severity.
-     - Low / Informational: auto-closed, no action required.
+     - Low / Informational: auto-closed, no action required (closeReason/closeNotes configurable via inputs).
      - Medium: a Cortex XSOAR task is created for an analyst to review.
      - Critical / High: a notification is sent (via whatever mail/chat integration implementing the generic
        send-notification command is enabled) and a remediation task with an SLA is created natively in Cortex XSOAR.
-  3. Optionally routes Critical/High findings to an external ticketing system, controlled entirely by the
-     CreateExternalTicket input - if left false (default), remediation is tracked with native Cortex XSOAR tasks only.
+     - Any other/unexpected value (including empty): routed to a manual review task instead of being auto-closed,
+       since this field is free-form text from the API with no normalization.
+  3. Remediation is tracked entirely with native Cortex XSOAR tasks - this pack does not assume a specific
+     external ticketing product. See the README for how to extend this playbook with your own ITSM hand-off.
   4. Reminds the analyst to update the finding status back in Panorays once resolved (a future
      panorays-finding-update command can automate this step).
 starttaskid: "0"
@@ -55,7 +57,7 @@ tasks:
       brand: Builtin
     scriptarguments:
       query:
-        simple: type:"Panorays Finding" and status:1 and panoraysfindingid:${incident.panoraysfindingid} and -id:${incident.id}
+        simple: type:"Panorays Finding" and status:1 and panoraysfindingid:"${incident.panoraysfindingid}" and -id:${incident.id}
       size:
         simple: "1"
     continueonerror: true
@@ -180,6 +182,28 @@ tasks:
             value:
               simple: Medium
           ignorecase: true
+    - label: "Low"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.panoraysfindingseverity
+            iscontext: true
+          right:
+            value:
+              simple: Low
+          ignorecase: true
+    - label: "Informational"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.panoraysfindingseverity
+            iscontext: true
+          right:
+            value:
+              simple: Informational
+          ignorecase: true
     nexttasks:
       "Critical":
       - "12"
@@ -187,8 +211,12 @@ tasks:
       - "12"
       "Medium":
       - "8"
-      '#default#':
+      "Low":
       - "7"
+      "Informational":
+      - "7"
+      '#default#':
+      - "13"
     separatecontext: false
     view: |-
       {
@@ -289,7 +317,7 @@ tasks:
       minutes: 240
     nexttasks:
       '#none#':
-      - "9"
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -314,9 +342,9 @@ tasks:
       brand: Builtin
     scriptarguments:
       closeReason:
-        simple: Resolved
+        simple: ${inputs.AutoCloseReason}
       closeNotes:
-        simple: Auto-closed by playbook - low/informational severity, no remediation required.
+        simple: ${inputs.AutoCloseNotes}
     nexttasks:
       '#none#': []
     separatecontext: false
@@ -356,72 +384,6 @@ tasks:
         }
       }
 
-  "9":
-    id: "9"
-    taskid: 420f69b1-e059-4213-8b03-e22c2b51bce5
-    type: condition
-    task:
-      id: 420f69b1-e059-4213-8b03-e22c2b51bce5
-      version: -1
-      name: Route to external ticketing system?
-      description: Controlled by the CreateExternalTicket input. Defaults to false - remediation stays native to Cortex XSOAR.
-      type: condition
-      iscommand: false
-      brand: ""
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.CreateExternalTicket
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
-    nexttasks:
-      "yes":
-      - "10"
-      '#default#':
-      - "11"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 100,
-          "y": 1080
-        }
-      }
-
-  "10":
-    id: "10"
-    taskid: 326d055b-e70b-46c3-9e0f-95945abd1ec5
-    type: regular
-    task:
-      id: 326d055b-e70b-46c3-9e0f-95945abd1ec5
-      version: -1
-      name: 'CUSTOMIZE: create ticket in external ITSM'
-      description: >-
-        Placeholder task. This pack intentionally does not assume a specific ticketing product. If
-        CreateExternalTicket is set to true, replace this task with a command/sub-playbook for your own
-        ITSM (e.g. servicenow-create-ticket, jira-create-issue) before enabling it in production.
-      type: regular
-      iscommand: false
-      brand: ""
-    continueonerror: true
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -150,
-          "y": 1250
-        }
-      }
-
   "11":
     id: "11"
     taskid: 0b93c75d-8e48-4213-bd98-e494864e4dfe
@@ -447,6 +409,34 @@ tasks:
         }
       }
 
+  "13":
+    id: "13"
+    taskid: 6f4a1b2e-9c3d-4e5f-8a6b-7d8e9f0a1b2c
+    type: regular
+    task:
+      id: 6f4a1b2e-9c3d-4e5f-8a6b-7d8e9f0a1b2c
+      version: -1
+      name: 'Manual task: review unrecognized severity'
+      description: >-
+        The Panorays Finding Severity field on this incident did not match any of the known values
+        (Critical, High, Medium, Low, Informational). This can happen if the value is empty or the API
+        returns an unexpected value, since this field is free-form text with no normalization. Manually
+        review the finding and set the severity or disposition of this incident - it will not be
+        auto-closed. Mark this task complete once reviewed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#': []
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 560
+        }
+      }
+
 view: |-
   {
     "linkLabelsPosition": {},
@@ -469,13 +459,19 @@ inputs:
     matches the notification integration you have enabled). Leave empty to skip notification and rely on the
     manual remediation task alone.
   playbookInputQuery:
-- key: CreateExternalTicket
+- key: AutoCloseReason
   value:
-    simple: "false"
+    simple: Resolved
   required: false
   description: >-
-    Set to "true" to route Critical/High findings to an external ticketing system (after you customize the
-    placeholder task). Defaults to "false", which keeps remediation entirely inside native Cortex XSOAR tasks.
+    closeReason used when auto-closing Low/Informational severity findings. Align this to your own close-reason
+    taxonomy if needed.
+  playbookInputQuery:
+- key: AutoCloseNotes
+  value:
+    simple: Auto-closed by playbook - low/informational severity, no remediation required.
+  required: false
+  description: closeNotes used when auto-closing Low/Informational severity findings.
   playbookInputQuery:
 outputs: []
 fromversion: 6.10.0
