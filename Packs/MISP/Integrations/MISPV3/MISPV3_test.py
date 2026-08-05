@@ -1175,7 +1175,7 @@ def test_get_indicator_results_ipv6_accepted_when_accept_v6_ips_enabled(mocker):
         True,
         accept_v6_ips=True,
     )
-    assert isinstance(result.indicator, Common.IPv6)
+    assert isinstance(result.indicator, Common.IP)
     assert result.indicator.dbot_score.score == Common.DBotScore.GOOD
 
 
