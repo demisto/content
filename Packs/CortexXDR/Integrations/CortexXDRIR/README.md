@@ -4480,7 +4480,7 @@ Returns a list of cases based on the specified filters.
 | PaloAltoNetworksXDR.Case.rule_based_score | Number | The rule-based risk score of the case. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.predicted_score | Number | The predicted risk score of the case. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.issue_count | Number | The total number of issues associated with the case. Returned when extra_data is set to true. |
-| PaloAltoNetworksXDR.Case.Issues.issue_id | String | The unique identifier of the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.alert_id | String | The unique identifier of the issue. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.Issues.case_id | String | The identifier of the case the issue belongs to. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.Issues.detection_timestamp | Number | The detection time of the issue. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.Issues.name | String | The name of the issue. Returned when extra_data is set to true. |
