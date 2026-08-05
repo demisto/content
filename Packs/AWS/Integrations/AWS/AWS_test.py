@@ -21671,6 +21671,11 @@ def _is_included_command(command_name: str) -> bool:
 def _load_yml_spec() -> dict:
     """Parse the integration YML and return its command specifications.
 
+    Arguments marked ``hidden: true`` in the YML are excluded: they are not
+    user-facing (they carry internal polling state or a fixed defaultValue for a
+    quick action) and are frequently consumed by shared/platform code rather
+    than read directly in the command handler.
+
     Returns:
         dict mapping command_name -> {"args": [arg_names], "outputs": [contextPaths]}
         for every non-quick-action, non-test-module command.
@@ -21685,7 +21690,7 @@ def _load_yml_spec() -> dict:
         name = command.get("name", "")
         if not _is_included_command(name):
             continue
-        arg_names = [arg["name"] for arg in (command.get("arguments") or []) if arg.get("name")]
+        arg_names = [arg["name"] for arg in (command.get("arguments") or []) if arg.get("name") and not arg.get("hidden")]
         context_paths = [out["contextPath"] for out in (command.get("outputs") or []) if out.get("contextPath")]
         spec[name] = {"args": arg_names, "outputs": context_paths}
     return spec
@@ -21797,11 +21802,7 @@ def _collect_arg_names(node, qualified: dict, short: dict, depth: int = 6, seen=
 def _collect_output_prefixes(node, qualified: dict, short: dict, depth: int = 4, seen=None) -> set:
     """Collect context-path-like literals produced by a handler and its helpers."""
     seen = seen if seen is not None else set()
-    found = {
-        re.sub(r"\(.*\)$", "", literal)
-        for literal in _string_literals(node)
-        if "." in literal
-    }
+    found = {re.sub(r"\(.*\)$", "", literal) for literal in _string_literals(node) if "." in literal}
     if depth <= 0:
         return found
     for child in ast.walk(node):
@@ -21832,18 +21833,14 @@ def test_yml_commands_are_wired_in_py():
     # Then
     missing = sorted(name for name in yml_spec if name not in command_map)
     assert not missing, (
-        "The following commands are declared in AWS.yml but are NOT wired in "
-        f"COMMANDS_MAPPING in AWS.py: {missing}"
+        "The following commands are declared in AWS.yml but are NOT wired in " f"COMMANDS_MAPPING in AWS.py: {missing}"
     )
 
     unresolved = sorted(
-        f"{command} -> {handler}"
-        for command, handler in command_map.items()
-        if _resolve(handler, qualified, short) is None
+        f"{command} -> {handler}" for command, handler in command_map.items() if _resolve(handler, qualified, short) is None
     )
     assert not unresolved, (
-        "The following COMMANDS_MAPPING handlers do not resolve to a function "
-        f"defined in AWS.py: {unresolved}"
+        "The following COMMANDS_MAPPING handlers do not resolve to a function " f"defined in AWS.py: {unresolved}"
     )
 
 
