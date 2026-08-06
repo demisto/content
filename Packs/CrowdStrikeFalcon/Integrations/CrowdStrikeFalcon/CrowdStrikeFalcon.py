@@ -3377,13 +3377,14 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
         tuple: A tuple containing a list of detections and the updated fetch information dictionary.
     """
     detections = []
-    fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
+    # The configured per-run limit (10000 for XSIAM, "Max incidents per fetch" for XSOAR).
+    base_fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
 
     detections_offset: int = current_fetch_info_detections.get("offset") or 0
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
-    fetch_limit = current_fetch_info_detections.get("limit") or fetch_limit
+    fetch_limit = current_fetch_info_detections.get("limit") or base_fetch_limit
     incident_type = "detection"
 
     fetch_query = demisto.params().get("fetch_query")
@@ -3432,7 +3433,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     current_fetch_info_detections = update_last_run_object(
         last_run=current_fetch_info_detections,
         incidents=detections,
-        fetch_limit=INCIDENTS_PER_FETCH,
+        fetch_limit=base_fetch_limit,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -5291,13 +5292,14 @@ def fetch_detections_by_product_type(
         tuple[List, dict]: The list of the fetched incidents and the updated last object.
     """
     detections: List = []
-    fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
+    # The configured per-run limit (10000 for XSIAM, "Max incidents per fetch" for XSOAR).
+    base_fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
     offset: int = current_fetch_info.get("offset") or 0
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
 
-    fetch_limit = current_fetch_info.get("limit") or fetch_limit
+    fetch_limit = current_fetch_info.get("limit") or base_fetch_limit
 
     # Build the base product/type filter clauses.
     # Most product types (e.g. idp, mobile, ngsiem, xdr, automated-lead, thirdparty) map to a single
@@ -5350,14 +5352,14 @@ def fetch_detections_by_product_type(
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
-            incidents_res=detections, last_run=current_fetch_info, fetch_limit=INCIDENTS_PER_FETCH, id_field="name"
+            incidents_res=detections, last_run=current_fetch_info, fetch_limit=fetch_limit, id_field="name"
         )
 
     demisto.debug(f"CrowdstrikeFalconMsg: last_run before update: {current_fetch_info}")
     current_fetch_info = update_last_run_object(
         last_run=current_fetch_info,
         incidents=detections,
-        fetch_limit=INCIDENTS_PER_FETCH,
+        fetch_limit=base_fetch_limit,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
