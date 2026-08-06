@@ -17,7 +17,6 @@
     "isAllFeeds": false,
     "fromVersion": "6.10.0",
     "supportedModules": [
-        "xsoar",
         "xsiam",
         "agentix"
     ]
