@@ -1,0 +1,23 @@
+{
+  "involvedEntities": [
+    {
+      "id": "376359",
+      "type": "ADDRESS",
+      "suspicious": true,
+      "internal": true,
+      "networkPriority": 0,
+      "attacker": false,
+      "pivot": false,
+      "environment": "Default Environment",
+      "manuallyCreated": false,
+      "enriched": false,
+      "artifact": false,
+      "vulnerable": false,
+      "alertIdentifier": "Testing Alert_62923d4f-05f0-47bf-9290-d0c94406e775",
+      "caseId": 306082,
+      "identifier": "999.999.999.999"
+    }
+  ],
+  "nextPageToken": "mock-entity-page-token",
+  "totalSize": 5
+}
