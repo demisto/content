@@ -18,6 +18,7 @@ PAGE_SIZE_LIMIT = 2000
 THREAT_ASSESSMENT_URL_PREFIX = "informationProtection/threatAssessmentRequests"
 MAX_ITEMS_PER_RESPONSE = 50
 FETCH_INCIDENTS_TIMEOUT = 60
+TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 # Maps Microsoft Graph Security severity to Cortex XSOAR severity (used for both fetched alerts and incidents).
 SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0.5}
 
@@ -1211,11 +1212,10 @@ def fetch_incidents(
     Returns:
         tuple[list, dict]: the fetched incidents, and the updated incidents last run.
     """
-    timestamp_format = "%Y-%m-%dT%H:%M:%S.%fZ"
-    new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=timestamp_format)[0]}
+    new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]}
     demisto_incidents: list = []
     time_from = new_last_run.get("time")
-    time_to = datetime.now().strftime(timestamp_format)
+    time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
 
     # Fetch incidents within the time window (plus the optional user filter), and include their alerts.
     top = min(fetch_limit, MAX_ITEMS_PER_RESPONSE)
@@ -1270,11 +1270,10 @@ def fetch_alerts(
     """
     filter_query = create_filter_query(filter, service_sources)
 
-    timestamp_format = "%Y-%m-%dT%H:%M:%S.%fZ"
-    new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=timestamp_format)[0]}
+    new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]}
     demisto_alerts: list = []
     time_from = new_last_run.get("time")
-    time_to = datetime.now().strftime(timestamp_format)
+    time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
 
     # Get alerts from MS Graph Security
     demisto.debug(f"Fetching MS Graph Security alerts. From: {time_from}. To: {time_to}. Filter: {filter_query}")
@@ -2255,9 +2254,8 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
             fetch_service_sources = params.get("fetch_service_sources", "")
 
             filter_query = create_filter_query(fetch_filter, fetch_service_sources)
-            timestamp_format = "%Y-%m-%dT%H:%M:%S.%fZ"
-            time_from = parse_date_range(fetch_time, date_format=timestamp_format)[0]
-            time_to = datetime.now().strftime(timestamp_format)
+            time_from = parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]
+            time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
             args = {"time_to": time_to, "time_from": time_from, "filter": filter_query}
             params = create_search_alerts_filters(args, is_fetch=True)
             try:
