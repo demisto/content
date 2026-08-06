@@ -571,6 +571,7 @@ class MsGraphClient:
         self,
         url_suffix: str,
         timeout: int,
+        headers: dict | None = None,
     ) -> dict:
         """
         Perform a GET request to retrieve incidents.
@@ -578,6 +579,7 @@ class MsGraphClient:
         Args:
             url_suffix (str): The URL suffix for the request, including any filters or additional parameters.
             timeout (int): The timeout for the request in seconds.
+            headers (dict | None): Optional request headers to send with the request.
 
         Returns:
             dict: The request results as a dictionary, containing:
@@ -585,7 +587,7 @@ class MsGraphClient:
                 - 'value': The updated incident(s).
         """
 
-        incident = self.ms_client.http_request(method="GET", url_suffix=url_suffix, timeout=timeout)
+        incident = self.ms_client.http_request(method="GET", url_suffix=url_suffix, timeout=timeout, headers=headers)
         return incident
 
     def update_incident_request(
@@ -1124,23 +1126,27 @@ def set_url_suffix_list_incidents(args: dict) -> str:
     """
     limit = arg_to_number(args["limit"])  # default value is defined
     top = limit if limit <= MAX_ITEMS_PER_RESPONSE else None  # type:ignore[operator]
+    # Typed args are wrapped as "{property} eq '{value}'" clauses.
     args_for_filter = {
         "status": args.get("status"),
         "assigned_to": args.get("assigned_to"),
         "severity": args.get("severity"),
         "classification": args.get("classification"),
-        "odata": args.get("odata"),
     }
+    # The "odata" arg is a raw OData $filter expression and is appended as-is (not wrapped).
+    odata = args.get("odata")
 
     filters = []
     url_suffix = "security/incidents?"
     if top:
         url_suffix += f"$top={top!s}"
-    if any(args_for_filter.values()):
+    if any(args_for_filter.values()) or odata:
         url_suffix += "&$filter="
         for key, value in args_for_filter.items():
             if value:
                 filters.append(f"{key} eq '{value}'")
+        if odata:
+            filters.append(odata)
         url_suffix += " and ".join(filters)
 
     return url_suffix
@@ -1226,8 +1232,10 @@ def fetch_incidents(
         f"security/incidents?$expand=alerts&$top={top}"
         f"&$filter={filter_expression}&$orderby=createdDateTime asc"
     )
+    # This header maps unknownFutureValue enum values to the appropriate real value (e.g. new service sources).
+    headers = {"Prefer": "include-unknown-enum-members"}
     demisto.debug(f"Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}.")
-    incidents = client.get_incidents_request(url_suffix, FETCH_INCIDENTS_TIMEOUT).get("value", [])
+    incidents = client.get_incidents_request(url_suffix, FETCH_INCIDENTS_TIMEOUT, headers=headers).get("value", [])
 
     if incidents:
         count = 0

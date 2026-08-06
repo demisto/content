@@ -9,6 +9,8 @@ Use the **Fetch incidents type** parameter to control what this integration inge
 
 Alerts and Incidents are fetched independently, each with its own time window cursor, so selecting both will not cause one to interfere with the other.
 
+You can narrow what is fetched using the **Fetched Alerts filter** and **Fetched Incidents filter** parameters. These accept an OData `$filter` expression, for example `severity eq 'medium' and status eq 'active'`. For the supported syntax and operators, see [Microsoft query parameters](https://learn.microsoft.com/en-us/graph/query-parameters?tabs=http).
+
 # Authentication
 You can authenticate either by Entra ID applications or by Azure Managed Identities.
 
