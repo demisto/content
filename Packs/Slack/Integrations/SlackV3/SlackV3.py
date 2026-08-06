@@ -374,9 +374,10 @@ class SlackAssistantHandler(AssistantMessagingHandler):
                 return {"ts": response.get("ts")}
             return {}
         except SlackApiError as e:
-            # If blocks/attachments are invalid, send as plain text
-            if "invalid_blocks" in str(e):
-                demisto.error(f"Invalid blocks format, sending as plain text: {e}")
+            # If blocks or attachments are invalid, send as plain text so the message isn't lost.
+            error_str = str(e)
+            if "invalid_blocks" in error_str or "invalid_attachments" in error_str:
+                demisto.error(f"Invalid blocks/attachments format, sending as plain text: {e}")
                 if fallback_text:
                     response = send_message_to_destinations(
                         [channel_id], fallback_text, thread_id, bot_name=AssistantMessages.BOT_DISPLAY_NAME

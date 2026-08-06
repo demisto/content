@@ -105,8 +105,10 @@ def parse_md_to_rich_text_elements(text: str) -> list[dict]:
     BOLD_PATTERN = r"\*\*.*?\*\*"  # **text**
     CODE_PATTERN = r"`[^`]+`"  # `text`
     STRIKE_PATTERN = r"~~.*?~~"  # ~~text~~
-    ITALIC_DOUBLE_PATTERN = r"__.*?__"  # __text__
-    ITALIC_SINGLE_PATTERN = r"_.*?_"  # _text_
+    # Italic underscores are boundary-aware: a delimiter adjacent to a word char is NOT emphasis,
+    # so intraword underscores (e.g. "run__script", "first_name") stay literal.
+    ITALIC_DOUBLE_PATTERN = r"(?<!\w)__(?!\s).+?(?<!\s)__(?!\w)"  # __text__
+    ITALIC_SINGLE_PATTERN = r"(?<!\w)_(?!\s).+?(?<!\s)_(?!\w)"  # _text_
 
     # Combine all patterns with alternation (|) - each in its own capture group
     # This allows us to identify which pattern matched
@@ -149,10 +151,10 @@ def parse_md_to_rich_text_elements(text: str) -> list[dict]:
         elif re.match(STRIKE_PATTERN, part):
             content = part[2:-2]  # Remove ~~ from both sides
             style["strike"] = True
-        elif re.match(ITALIC_DOUBLE_PATTERN, part):
+        elif re.fullmatch(ITALIC_DOUBLE_PATTERN, part):
             content = part[2:-2]  # Remove __ from both sides
             style["italic"] = True
-        elif re.match(ITALIC_SINGLE_PATTERN, part):
+        elif re.fullmatch(ITALIC_SINGLE_PATTERN, part):
             content = part[1:-1]  # Remove _ from both sides
             style["italic"] = True
 

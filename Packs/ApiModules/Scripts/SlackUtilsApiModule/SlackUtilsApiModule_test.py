@@ -230,6 +230,46 @@ def test_parse_md_empty_bold_delimiters_kept_as_literal_text():
     assert joined == "before****after"
 
 
+def test_parse_md_intraword_underscores_not_italicized():
+    """
+    Given:
+        Text where underscores are adjacent to word characters, e.g. a token like
+        "run__script" or "first_name". These must NOT be treated as italic
+        emphasis (which would strip the underscores and, in the empty-content case,
+        cause the Slack `invalid_attachments`/`invalid_blocks` error).
+    When:
+        Parsing to rich text elements.
+    Then:
+        The underscores are preserved literally, no element is italicized, and no
+        element has an empty "text".
+    """
+    result = parse_md_to_rich_text_elements("Use the run__script and first_name now")
+
+    for element in result:
+        assert element.get("text")
+        assert "style" not in element
+
+    joined = "".join(element["text"] for element in result)
+    assert joined == "Use the run__script and first_name now"
+
+
+def test_parse_md_italic_with_surrounding_spaces_still_works():
+    """
+    Given:
+        Legitimate italic markdown where the underscore delimiters are bounded by
+        whitespace/edges (e.g. "_italic_" and "__also italic__").
+    When:
+        Parsing to rich text elements.
+    Then:
+        The emphasized text is italicized and the delimiters are removed.
+    """
+    result = parse_md_to_rich_text_elements("This is _italic_ and __also italic__ end")
+
+    italic_texts = [element["text"] for element in result if element.get("style", {}).get("italic")]
+    assert "italic" in italic_texts
+    assert "also italic" in italic_texts
+
+
 # ============================================================================
 # Test create_rich_cell
 # ============================================================================
