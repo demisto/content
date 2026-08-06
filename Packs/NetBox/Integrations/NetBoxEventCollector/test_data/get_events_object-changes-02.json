@@ -1,11 +1,11 @@
 {
     "count": 10,
-    "next": "https://www.example.com/api/extras/object-changes/?id__gte=0&limit=2&offset=4&ordering=",
-    "previous": "https://www.example.com/api/extras/object-changes/?id__gte=0&limit=2&ordering=",
+    "next": "https://www.example.com/api/core/object-changes/?id__gte=0&limit=2&offset=4&ordering=",
+    "previous": "https://www.example.com/api/core/object-changes/?id__gte=0&limit=2&ordering=",
     "results": [
         {
             "id": 8,
-            "url": "https://www.example.com/api/extras/object-changes/8/",
+            "url": "https://www.example.com/api/core/object-changes/8/",
             "display": "extras | journal entry 2022-12-04 14:33 () created by netbox",
             "time": "2022-12-04T14:33:49.440462Z",
             "user": {
@@ -43,7 +43,7 @@
         },
         {
             "id": 7,
-            "url": "https://www.example.com/api/extras/object-changes/7/",
+            "url": "https://www.example.com/api/core/object-changes/7/",
             "display": "extras | journal entry 2022-12-04 14:32 () created by netbox",
             "time": "2022-12-04T14:32:47.723223Z",
             "user": {
