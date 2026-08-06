@@ -20,7 +20,7 @@ You can use the guide from [Box V2](https://xsoar.pan.dev/docs/reference/integra
 | Credentials JSON | True |
 | Fetch Events | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-| The maximum amount of events to fetch at once. 500 is maximum | False |
+| Maximum number of events per fetch | False |
 
 ## Commands
 
