@@ -1,0 +1,39 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Elasticsearch Case"
+    ],
+    "caseInsensitive": true,
+    "cliName": "elasticsearchcaseclosereason",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_elasticsearchcaseclosereason",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Elasticsearch Case Close Reason",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "false_positive",
+        "duplicate",
+        "true_positive",
+        "benign_positive",
+        "automated_closure",
+        "other"
+    ],
+    "defaultValue": "other",
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

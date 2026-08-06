@@ -1,0 +1,37 @@
+{
+    "description": "Classifies Elasticsearch entities: 'signal' (event.kind) is classified as Elasticsearch Security Alert, 'securitySolution' (owner) is classified as Elasticsearch Case, and any other value falls back to the default Elasticsearch incident type.",
+    "feed": false,
+    "id": "Elasticsearch",
+    "name": "Elasticsearch",
+    "type": "classification",
+    "defaultIncidentType": "Elasticsearch",
+    "keyTypeMap": {
+        "signal": "Elasticsearch Security Alert",
+        "securitySolution": "Elasticsearch Case"
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "event.kind",
+            "transformers": [
+                {
+                    "args": {
+                        "applyIfEmpty": {},
+                        "defaultValue": {
+                            "value": {
+                                "simple": "owner"
+                            },
+                            "isContext": true
+                        },
+                        "value": {}
+                    },
+                    "operator": "SetIfEmpty"
+                }
+            ]
+        },
+        "simple": ""
+    },
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
