@@ -11040,7 +11040,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.8931184
+  dockerimage: demisto/crypto:1.0.0.10120494
 source: 'cooc'
 fromversion: 8.11.0
 supportsquickactions: true
