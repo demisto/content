@@ -4359,7 +4359,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.Case.issue_count
       description: The total number of issues associated with the case. Returned when extra_data is set to true.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.Case.Issues.issue_id
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.alert_id
       description: The unique identifier of the issue. Returned when extra_data is set to true.
       type: String
     - contextPath: PaloAltoNetworksXDR.Case.Issues.case_id
