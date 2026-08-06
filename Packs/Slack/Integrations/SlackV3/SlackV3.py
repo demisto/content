@@ -542,6 +542,23 @@ def send_agent_response():
     if isinstance(raw_messages, str):
         raw_messages = json.loads(raw_messages)
 
+    messages_metadata = [
+        {
+            "response_type": message.get("response_type"),
+            "is_final": message.get("is_final"),
+            "message_id": message.get("message_id"),
+            "content_length": len(message.get("content", "")),
+        }
+        for message in raw_messages
+        if isinstance(message, dict)
+    ]
+    demisto.debug(
+        "send_agent_response called with "
+        f"channel_id={channel_id}, thread_id={thread_id}, agent_name={agent_name}, "
+        f"user_id={user_id}, messages_count={len(raw_messages)}, "
+        f"messages_metadata={messages_metadata}"
+    )
+
     # Call the handler's send_agent_response method
     slack_assistant_handler.send_agent_response(
         channel_id=channel_id,

@@ -156,6 +156,11 @@ def parse_md_to_rich_text_elements(text: str) -> list[dict]:
             content = part[1:-1]  # Remove _ from both sides
             style["italic"] = True
 
+        # Empty delimiters (e.g. "__"/"****") -> keep the original chars as literal text; Slack rejects an empty "text".
+        if not content:
+            content = part
+            style = {}
+
         # Create text element with optional style
         element = {"type": "text", "text": content}
         if style:
