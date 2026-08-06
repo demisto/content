@@ -41,18 +41,21 @@ INCIDENT_TYPE = {
     5: "SpyCloud Informative Data",
     20: "SpyCloud Breach Data",
     25: "SpyCloud Malware Data",
+    30: "SpyCloud Access Data",
 }
 INCIDENT_NAME = {
     2: "SpyCloud Informative Alert on",
     5: "SpyCloud Informative Alert on",
     20: "SpyCloud Breach Alert on",
     25: "SpyCloud Malware Alert on",
+    30: "SpyCloud Access Alert on",
 }
 SEVERITY_VALUE = {
     2: IncidentSeverity.INFO,
     5: IncidentSeverity.INFO,
     20: IncidentSeverity.HIGH,
     25: IncidentSeverity.CRITICAL,
+    30: IncidentSeverity.CRITICAL,
 }
 
 
@@ -172,9 +175,9 @@ def create_spycloud_args(args: dict, client: Client) -> dict:
         until_modification_date = until
 
     severity_list = argToList(args.get("severity", []))
-    supported_severities = {"2", "5", "25", "20"}
+    supported_severities = {"2", "5", "25", "20", "30"}
     if any(sev not in supported_severities for sev in severity_list):
-        raise DemistoException("Invalid input error: supported values for severity are: 2, 5, 20, 25")
+        raise DemistoException("Invalid input error: supported values for severity are: 2, 5, 20, 25, 30")
 
     return {
         "type": args.get("type", ""),
