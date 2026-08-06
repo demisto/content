@@ -8547,25 +8547,28 @@ def test_get_enterprise_security_version_app_not_installed():
 
 
 @pytest.mark.parametrize(
-    "version, expected",
+    "version, target_version, expected",
     [
-        ("8.2", True),
-        ("8.2.0", True),
-        ("8.2.5", True),
-        ("8.1.9", False),
-        ("8.3.0", False),
-        ("9.0.0", False),
-        ("unknown", False),
-        ("", False),
+        ("8.2", "8.2", True),
+        ("8.2.0", "8.2", True),
+        ("8.2.5", "8.2", True),
+        ("8.1.9", "8.2", False),
+        ("8.3.0", "8.2", False),
+        ("9.0.0", "8.2", False),
+        ("unknown", "8.2", False),
+        ("", "8.2", False),
+        ("8.3.1", "8.3", True),
+        ("8.2.5", "8.3", False),
+        ("8.2", "unknown", False),
     ],
 )
-def test_is_es_version_8_2(version, expected):
+def test_is_es_version(version, target_version, expected):
     """
-    Given: An Enterprise Security version string.
-    When: is_es_version_8_2 is called.
-    Then: True is returned only for 8.2.x versions; unparseable values return False.
+    Given: An Enterprise Security version string and a target version.
+    When: is_es_version is called.
+    Then: True is returned only when the major/minor match; unparseable values return False.
     """
-    assert splunk.is_es_version_8_2(version) is expected
+    assert splunk.is_es_version(version, target_version) is expected
 
 
 def test_get_finding_time_for_es_notable_time_returns_time_on_8_2(mocker: MockerFixture):

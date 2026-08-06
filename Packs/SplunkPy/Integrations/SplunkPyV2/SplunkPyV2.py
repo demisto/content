@@ -3322,26 +3322,29 @@ def get_enterprise_security_version(service: client.Service) -> str:
         return "unknown"
 
 
-def is_es_version_8_2(version: str) -> bool:
-    """Return True when ``version`` is an ES 8.2.x release.
+def is_es_version(version: str, target_version: str) -> bool:
+    """Return True when ``version`` matches ``target_version`` on major/minor.
 
-    Uses ``packaging.version.Version`` for robust semantic comparison and
-    checks that the major/minor is exactly ``8.2`` (so ``8.2``, ``8.2.0``,
-    ``8.2.5`` all match, while ``8.3.0`` does not). Returns False when the
-    version is unparseable (e.g. "unknown"). Used to gate the finding_time
-    (notable_time) behaviour to ES ``8.2.x``.
+    Uses ``packaging.version.Version`` for robust semantic comparison, relying
+    on the library's own ``.major``/``.minor`` properties, and checks that the
+    major/minor of ``version`` equals that of ``target_version`` (so for
+    ``target_version="8.2"``, the values ``8.2``, ``8.2.0``, ``8.2.5`` all
+    match, while ``8.3.0`` does not). Returns False when either version is
+    unparseable (e.g. "unknown"). Used to gate version-specific behaviour such
+    as the finding_time (notable_time) handling on ES ``8.2.x``.
     """
     try:
-        return Version(version).release[:2] == (8, 2)
+        parsed, target = Version(version), Version(target_version)
+        return (parsed.major, parsed.minor) == (target.major, target.minor)
     except InvalidVersion:
         return False
 
 
 def get_finding_time_for_es_notable_time(service: client.Service, data: dict[str, Any] | None) -> str | None:
-    """Return the finding's event time to use as ``notable_time`` on ES ``>=8.2 <8.3``.
+    """Return the finding's event time to use as ``_time`` on ES ``>=8.2 <8.3``.
 
     On ES 8.2.x the v2 investigations update endpoint requires the finding's
-    original event time (``notable_time``). On 8.3+ this is not needed. The
+    original event time (``_time``). On 8.3+ this is not needed. The
     finding's time is mirrored into the incident as the ``notable_time`` field
     (mapped from the incident's ``occurred`` in the outgoing mapper), so no
     extra Splunk query is required.
@@ -3355,8 +3358,7 @@ def get_finding_time_for_es_notable_time(service: client.Service, data: dict[str
         ES version is out of range or no time is available in the data.
     """
     es_version = get_enterprise_security_version(service)
-    if not is_es_version_8_2(es_version):
-        demisto.debug(f"mirror-out: ES version {es_version} is not 8.2.x; not sending finding_time.")
+    if not is_es_version(es_version, "8.2"):
         return None
 
     finding_time = (data or {}).get("notable_time")
@@ -3393,11 +3395,11 @@ def update_remote_system_command(
     delta = parsed_args.delta
     entity_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
+    demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta} data:{parsed_args.data}")
     # On ES >=8.2 <8.3 the v2 investigations update endpoint requires the finding's
-    # original event time (notable_time). The finding time is mirrored into the
-    # incident as the `time` field, so no extra Splunk query is needed. Returns
-    # None on ES 8.3+ (or when unavailable), preserving the existing behaviour.
+    # original event time (_time). The notable_time is mapped from the the incident's `occured`
+    # so it's available in `parsed_args.delta`.
+    # return None on ES 8.3+ (or when unavailable), preserving the existing behaviour.
     finding_time = get_finding_time_for_es_notable_time(service, parsed_args.data)
     if parsed_args.incident_changed and delta:
         demisto.debug(f"Got the following delta keys {list(delta.keys())} to update incident corresponding to entity {entity_id}")
