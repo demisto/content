@@ -32,7 +32,6 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Close Mirrored XSOAR Incident | When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR. | False |
 | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored. | False |
 | Fetch types | Choose what to fetch -  You can choose any combination. Note:<br/>Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
-| Fetch types | Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
 | Fetch Asset types | The asset sources to ingest into the Cortex Unified Asset Inventory. | False |
 | Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
 | Incidents Fetch Interval | Supported in Cortex XSOAR only. | False |
