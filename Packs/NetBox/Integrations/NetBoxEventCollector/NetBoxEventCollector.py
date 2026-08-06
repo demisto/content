@@ -14,6 +14,19 @@ PRODUCT = "IRM"
 LOG_TYPES = ["journal-entries", "object-changes"]
 DEFAULT_LIMIT = "1000"
 
+# NetBox 4.1 moved the change-log resource from /api/extras/object-changes/ to /api/core/object-changes/.
+# Journal entries were NOT moved and are still served from /api/extras/.
+# See https://netboxlabs.com/docs/netbox/release-notes/version-4.1/
+LOG_TYPE_PATHS = {
+    "journal-entries": "extras/journal-entries",
+    "object-changes": "core/object-changes",
+}
+
+# Paths used by NetBox versions earlier than 4.1, tried only if the modern path returns 404.
+LEGACY_LOG_TYPE_PATHS = {
+    "object-changes": "extras/object-changes",
+}
+
 """ CLIENT CLASS """
 
 
@@ -22,8 +35,45 @@ class Client(BaseClient):
     Client class to interact with the service API
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Resolved per log type on first use, so the fallback probe happens at most once per run.
+        self._resolved_paths: dict[str, str] = {}
+
     def http_request(self, url_suffix=None, full_url=None, params=None):
         return self._http_request(method="GET", url_suffix=url_suffix, full_url=full_url, params=params)
+
+    def resolve_path(self, log_type: str, params: dict | None = None) -> str:
+        """
+        Resolves the API path for a log type, accounting for the NetBox 4.1 namespace move.
+
+        Tries the modern path first. If the server returns 404 and a legacy path exists for this
+        log type (NetBox < 4.1), falls back to it. The result is cached for the lifetime of the client.
+
+        Args:
+            log_type: str, the log type to resolve (a key of LOG_TYPE_PATHS).
+            params: dict, optional params to use for the probe request.
+        Returns:
+            str: The API path to use for this log type.
+        """
+        if log_type in self._resolved_paths:
+            return self._resolved_paths[log_type]
+
+        path = LOG_TYPE_PATHS[log_type]
+        legacy_path = LEGACY_LOG_TYPE_PATHS.get(log_type)
+
+        if legacy_path:
+            try:
+                self.http_request(url_suffix=path, params={"limit": 1} | (params or {}))
+            except DemistoException as e:
+                if "[404]" not in str(e):
+                    raise
+                demisto.debug(f"[API] {log_type}: {path} returned 404, falling back to legacy path {legacy_path}")
+                path = legacy_path
+
+        demisto.debug(f"[API] {log_type}: resolved to {path}")
+        self._resolved_paths[log_type] = path
+        return path
 
     def search_events(
         self, url_suffix: str, limit: int, prev_id: int = 0, ordering: str = ""
@@ -112,7 +162,10 @@ def test_module_command(client: Client) -> str:
     """
 
     try:
-        client.search_events(url_suffix=LOG_TYPES[0], limit=1)
+        # Probe EVERY log type. Probing only the first one hides a broken endpoint behind a
+        # passing Test button, which is how the NetBox 4.1 namespace move reached production.
+        for log_type in LOG_TYPES:
+            client.search_events(url_suffix=client.resolve_path(log_type), limit=1)
 
     except Exception as e:
         if "Forbidden" in str(e):
@@ -136,7 +189,7 @@ def get_events_command(client: Client, limit: int) -> tuple[list[dict[str, Any]]
     events: list[dict] = []
     hr = ""
     for log_type in LOG_TYPES:
-        _, events_ = client.search_events(url_suffix=log_type, limit=limit)
+        _, events_ = client.search_events(url_suffix=client.resolve_path(log_type), limit=limit)
         if events_:
             hr += tableToMarkdown(name=f"{log_type} Events", t=events_)
             events += events_
@@ -166,21 +219,36 @@ def fetch_events_command(
     }
     for log_type in LOG_TYPES:
         if last_run.get(log_type) is None:
-            last_run[log_type] = client.get_first_fetch_id(url_suffix=log_type, params=params[log_type])
+            last_run[log_type] = client.get_first_fetch_id(
+                url_suffix=client.resolve_path(log_type, params=params[log_type]), params=params[log_type]
+            )
 
     next_run = last_run.copy()
     events = []
+    failures: list[str] = []
 
     for log_type in LOG_TYPES:
         if last_run[log_type] is None:
             continue
-        next_run[log_type], events_ = client.search_events(
-            url_suffix=log_type,
-            limit=max_fetch,
-            ordering="id",
-            prev_id=last_run[log_type],
-        )
+        # Isolate each log type: one broken endpoint must not discard the events already
+        # collected from the others, nor block their cursors from advancing.
+        try:
+            next_run[log_type], events_ = client.search_events(
+                url_suffix=client.resolve_path(log_type),
+                limit=max_fetch,
+                ordering="id",
+                prev_id=last_run[log_type],
+            )
+        except Exception as e:
+            demisto.error(f"[Fetch] {log_type} failed, keeping its cursor at {last_run[log_type]}: {e}")
+            failures.append(f"{log_type}: {e}")
+            continue
+        demisto.debug(f"[Fetch] {log_type}: fetched {len(events_)} event(s) from id {last_run[log_type]}")
         events += events_
+
+    # Only fail the whole fetch if nothing could be collected at all.
+    if failures and not events:
+        raise DemistoException("Failed to fetch events for all log types. " + " | ".join(failures))
 
     demisto.info(f'Fetched events with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in last_run.items())}.')
 
@@ -201,7 +269,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     api_key = params.get("credentials", {}).get("password")
-    base_url = urljoin(params.get("url"), "/api/extras")
+    # The namespace is NOT part of the base URL - it varies per log type (see LOG_TYPE_PATHS).
+    base_url = urljoin(params.get("url"), "/api")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

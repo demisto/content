@@ -1,11 +1,11 @@
 {
     "count": 10,
-    "next": "https://www.example.com/api/extras/object-changes/?id__gte=0&limit=2&offset=2&ordering=",
+    "next": "https://www.example.com/api/core/object-changes/?id__gte=0&limit=2&offset=2&ordering=",
     "previous": null,
     "results": [
         {
             "id": 9,
-            "url": "https://www.example.com/api/extras/object-changes/9/",
+            "url": "https://www.example.com/api/core/object-changes/9/",
             "display": "extras | journal entry 2022-12-04 14:33 () created by netbox",
             "time": "2022-12-04T14:33:52.071214Z",
             "user": {
@@ -43,7 +43,7 @@
         },
         {
             "id": 10,
-            "url": "https://www.example.com/api/extras/object-changes/10/",
+            "url": "https://www.example.com/api/core/object-changes/10/",
             "display": "extras | journal entry 2022-12-04 14:33 (Info) updated by netbox",
             "time": "2022-12-07T08:19:57.810348Z",
             "user": {
