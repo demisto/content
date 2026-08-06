@@ -247,7 +247,7 @@ class TestSearchIPCommand:
         client = MagicMock()
         results = search_ip_command(client, {"ip": "192.168.1.100"})
         assert len(results) == 1
-        assert results[0].indicator.address == "192.168.1.100"
+        assert results[0].indicator.ip == "192.168.1.100"
         assert results[0].indicator.dbot_score.score == 3
 
     def test_ip_not_found_returns_none_score(self, mocker):
