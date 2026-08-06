@@ -1,0 +1,18 @@
+commonfields:
+  id: GRAAlertHistoryDisplay
+  version: -1
+name: GRAAlertHistoryDisplay
+script: '-'
+type: python
+tags:
+- dynamic-section
+comment: Retrieve update history for a GRA alert and display it on the layout.
+enabled: true
+scripttarget: 0
+subtype: python3
+timeout: 900ns
+dockerimage: demisto/python3:3.12.8.3296088
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

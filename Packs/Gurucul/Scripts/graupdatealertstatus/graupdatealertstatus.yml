@@ -1,0 +1,23 @@
+commonfields:
+  id: GRAUpdateAlertStatus
+  version: -1
+name: GRAUpdateAlertStatus
+script: '-'
+type: python
+tags:
+- post-processing
+comment: GRA Update Alert Status (close only; reopen is not supported by GRA Alerts API).
+enabled: true
+args:
+- name: closeNotes
+  description: Close Note.
+- name: closeReason
+  description: Close reason.
+scripttarget: 0
+subtype: python3
+timeout: 60ns
+dockerimage: demisto/python3:3.12.8.3296088
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
