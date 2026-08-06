@@ -1,0 +1,74 @@
+{
+  "items": [
+    {
+      "brew_category_koi": "Command Line Tools & Utilities",
+      "browser_category_koi": "Developer Tools",
+      "categories": [
+        "Developer Tools"
+      ],
+      "chocolatey_category_koi": "Command Line Tools & Utilities",
+      "endpoint_count": 42,
+      "findings": [
+        "malware",
+        "permissions"
+      ],
+      "first_seen": "2024-01-01T10:00:00Z",
+      "governed_details": {
+        "group-uuid-123": {
+          "policy_id": "policy-uuid-456",
+          "action": "allow"
+        }
+      },
+      "ide_category_koi": "Language Support & Tooling",
+      "installation_method": "marketplace",
+      "installs_count": 1000000,
+      "is_first_party": false,
+      "is_signed": true,
+      "item_display_name": "React Developer Tools",
+      "item_id": "abc123",
+      "last_seen": "2024-10-15T10:00:00Z",
+      "last_used": "2025-06-15T10:00:00Z",
+      "marketplace": "chrome_web_store",
+      "platforms": [
+        "chrome",
+        "edge"
+      ],
+      "publisher_name": "Meta",
+      "released_at": "2023-01-15",
+      "risk": 5,
+      "risk_level": "high",
+      "short_description": "React debugging tools",
+      "software_category_koi": "Docs tools",
+      "status": "APPROVED",
+      "version": "1.0.0"
+    },
+    {
+      "categories": [
+        "Productivity"
+      ],
+      "endpoint_count": 15,
+      "findings": [],
+      "first_seen": "2024-03-10T08:30:00Z",
+      "governed_details": {},
+      "installation_method": "manual",
+      "installs_count": 500000,
+      "is_first_party": true,
+      "is_signed": true,
+      "item_display_name": "Prettier - Code formatter",
+      "item_id": "def456",
+      "last_seen": "2024-11-01T14:00:00Z",
+      "marketplace": "vscode",
+      "platforms": [
+        "vscode"
+      ],
+      "publisher_name": "Prettier",
+      "released_at": "2022-06-01",
+      "risk": 2,
+      "risk_level": "low",
+      "short_description": "Code formatter using prettier",
+      "status": "APPROVED",
+      "version": "10.1.0"
+    }
+  ],
+  "total_count": 450
+}

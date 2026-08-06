@@ -1,4 +1,6 @@
+import os
 import shutil
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -17,14 +19,15 @@ URL = "http://api.qrserver.com/"
 def read_qr_code(verify=True):
     entry_id = demisto.args().get("entry_id")
     file_path = demisto.getFilePath(entry_id)["path"]
-    file_name = demisto.getFilePath(entry_id)["name"]
+    file_name = os.path.basename(demisto.getFilePath(entry_id)["name"])
 
     try:
-        shutil.copy(file_path, file_name)
-    except Exception:
-        raise Exception("Failed to prepare file for upload.")
+        try:
+            shutil.copy(file_path, file_name)
+        except Exception as e:
+            demisto.error(f"Failed to copy file: {e}\n{traceback.format_exc()}")
+            raise Exception("Failed to prepare file for upload.")
 
-    try:
         multipart_file = {"file": open(file_name, "rb")}
         data = {"outputformat": "json"}
         res = requests.post(URL + "/v1/read-qr-code/", data=data, files=multipart_file, verify=verify)
@@ -34,7 +37,11 @@ def read_qr_code(verify=True):
             return_error(str(res.text))
 
     finally:
-        shutil.rmtree(file_name, ignore_errors=True)
+        if os.path.exists(file_name):
+            demisto.debug(f"Removing temporary file: {file_name}")
+            os.remove(file_name)
+        else:
+            demisto.debug(f"Temporary file not found, skipping removal: {file_name}")
 
 
 def test_qr_api(verify=True):

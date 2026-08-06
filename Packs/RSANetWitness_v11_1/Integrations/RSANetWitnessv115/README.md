@@ -58,17 +58,22 @@ Commands affected by this limitation are:
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g., <https://192.168.0.1>) |  | True |
+| Server URL (e.g https://192.168.0.1) |  | True |
 | User name |  | True |
 | Password |  | True |
 | Service Id | The service ID that is automatically used in every command where service ID is required. Retrieve all service IDs with the rsa-nw-services-list command. To overwrite with another service ID, use the command argument 'service_id'. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 | Fetch Limit | The maximum number of incidents to fetch | False |
-| Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, for example, 12 hours, 7 days\) | False |
+| Fetch Time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days\) |  |
+| On 'Fetch incidents' import all alerts related to the incident |  |  |
+| Alerts Limit | The maximum number of alerts to fetch for each incident. The maximum allowed is 50. | False |
 | Incident type |  | False |
 | Fetch incidents |  | False |
-| On 'Fetch incidents' import all alerts related to the incident | | False |
+| Incidents Fetch Interval |  | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from RSA to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to RSA\), or Incoming and Outgoing \(from/to Cortex XSOAR and RSA\). Cortex XSOAR only parameter. | False |
+| Close Mirrored XSOAR Incident | Check to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness. Cortex XSOAR only parameter. | False |
+| Mirroring Days Limit | This parameter represents the number of days the integration will mirror RSA incidents. The default value is 3 days, the maximum is 24 days. | False |
 
 ### Configure incident mirroring
 

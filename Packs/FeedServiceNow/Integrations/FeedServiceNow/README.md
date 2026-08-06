@@ -7,8 +7,8 @@ This is a feed integration for extracting indicators from ServiceNow.
 | Server URL | The format should be https://company.service-now.com/ | True |
 | Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
 | Use JWT Authentication | Select this checkbox to use JWT authentication. See \(?\) for more information. | False |
-| Password |  | True |
-| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Username / Client ID |  | True |
+| Password / Client Secret |  | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch indicators |  | True |
@@ -17,7 +17,7 @@ This is a feed integration for extracting indicators from ServiceNow.
 | Feed Expiration Policy |  | False |
 | Feed Fetch Interval |  | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-| Tags | The tag applied to the indicator when being forwarded into the TIM | False |
+| Tags | The tag applied to the indicator when being forwarded into the TIM. | False |
 | Query URL | The API route of the requested information in ServiceNow | True |
 | Indicator Field | The field needed from the ServiceNow response which contains the indicator value | True |
 

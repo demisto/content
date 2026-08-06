@@ -2,7 +2,7 @@ comment: 'Post Processing Script that will close linked Incidents when the Incid
 commonfields:
   id: CloseLinkedIncidentsPostProcessing
   version: -1
-dockerimage: demisto/python3:3.12.12.6204436
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: CloseLinkedIncidentsPostProcessing
 runas: DBotWeakRole

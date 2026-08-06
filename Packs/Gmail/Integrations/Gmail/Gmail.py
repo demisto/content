@@ -36,6 +36,40 @@ from apiclient import discovery
 from google.oauth2 import service_account
 from googleapiclient.errors import HttpError
 
+""" HELPER FUNCTIONS """
+
+
+def validate_gmail_message_id(message_id: str | None) -> str:
+    """Validate that the message-id is a valid Gmail internal ID.
+
+    Gmail internal message IDs are alphanumeric strings (e.g., '18a1b2c3d4e5f6g7').
+    They should NOT be RFC 822 Message-ID headers (e.g., '<local-part@domain>'),
+    which contain angle brackets, '@', or spaces.
+
+    Args:
+        message_id: The message ID to validate.
+
+    Returns:
+        The validated message ID (stripped of whitespace).
+
+    Raises:
+        ValueError: If the message ID is missing or appears to be an RFC 822 Message-ID.
+    """
+    message_id = (message_id or "").strip()
+    if not message_id:
+        raise ValueError("'message-id' argument is required.")
+
+    if re.search(r"[<>@\s]", message_id):  # pylint: disable=E1101
+        raise ValueError(
+            f"Invalid Gmail message ID: '{message_id}'. "
+            "Gmail internal message IDs are alphanumeric strings (e.g., '18a1b2c3d4e5f6g7'). "
+            "If you have an RFC 822 Message-ID (e.g., '<...@domain>'), "
+            "use 'gmail-search' with the 'Rfc822msgid:' query operator to find the internal ID first."
+        )
+
+    return message_id
+
+
 """ GLOBAL VARS """
 
 ADMIN_EMAIL = ""  # set from params later on
@@ -1546,6 +1580,9 @@ def search(
     Note:
         - When only_return_account_names is True and no messages are found, returns (False, query, None).
         - The function constructs a Gmail search query from the individual filter parameters.
+        - Security: The ``query`` parameter is passed directly to the Gmail API search.
+          Callers must validate or sanitize any external/untrusted input before including it
+          in the query string to avoid unintended search results.
     """
     query_values = {
         "subject": subject,
@@ -1593,7 +1630,7 @@ def search(
 def get_mail_command():
     args = demisto.args()
     user_id = args.get("user-id", ADMIN_EMAIL)
-    _id = args.get("message-id")
+    _id = validate_gmail_message_id(args.get("message-id"))
     _format = args.get("format")
     should_run_get_attachments = argToBoolean(args.get("include-attachments", "false"))
 
@@ -1624,7 +1661,7 @@ def get_mail(user_id, _id, _format, service=None):
 def get_attachments_command():
     args = demisto.args()
     user_id = args.get("user-id")
-    _id = args.get("message-id")
+    _id = validate_gmail_message_id(args.get("message-id"))
 
     attachments = get_attachments(user_id, _id)
 
@@ -1657,7 +1694,7 @@ def get_attachments(user_id, _id):
 def move_mail_command():
     args = demisto.args()
     user_id = args.get("user-id")
-    _id = args.get("message-id")
+    _id = validate_gmail_message_id(args.get("message-id"))
     add_labels = [lbl for lbl in args.get("add-labels", "").split(",") if lbl != ""]
     remove_labels = [lbl for lbl in args.get("remove-labels", "").split(",") if lbl != ""]
 
@@ -1683,7 +1720,7 @@ def move_mail(user_id, _id, add_labels, remove_labels):
 def move_mail_to_mailbox_command():
     args = demisto.args()
     src_user_id = args.get("src-user-id")
-    message_id = args.get("message-id")
+    message_id = validate_gmail_message_id(args.get("message-id"))
     dst_user_id = args.get("dst-user-id")
 
     new_mail_id = move_mail_to_mailbox(src_user_id, message_id, dst_user_id)
@@ -1715,7 +1752,7 @@ def move_mail_to_mailbox(src_mailbox, message_id, dst_mailbox):
 def delete_mail_command():
     args = demisto.args()
     user_id = args["user-id"]
-    _id = args["message-id"]
+    _id = validate_gmail_message_id(args.get("message-id"))
     permanent = argToBoolean(args.get("permanent", "false"))
 
     return delete_mail(user_id, _id, permanent)

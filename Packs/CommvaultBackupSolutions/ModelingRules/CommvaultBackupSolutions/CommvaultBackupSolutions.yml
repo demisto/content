@@ -4,3 +4,5 @@ name: Commvault Backup Solutions Modeling Rule
 rules: ''
 schema: ''
 tags:
+supportedModules:
+- xsiam

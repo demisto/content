@@ -21,7 +21,7 @@ def prepare_query_params(params: dict) -> dict:
     Parses the given inputs into Slack Audit Logs API expected format.
     """
     query_params = {
-        "limit": arg_to_number(params.get("limit")) or 1000,
+        "limit": arg_to_number(params.get("limit") or 1000),
         "oldest": arg_to_timestamp(params.get("oldest")),
         "latest": arg_to_timestamp(params.get("latest")),
         "action": params.get("action"),

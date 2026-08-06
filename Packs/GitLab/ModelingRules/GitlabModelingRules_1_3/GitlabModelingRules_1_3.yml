@@ -4,3 +4,5 @@ name: Gitlab Mapping Rules
 rules: ''
 schema: ''
 tags: gitlab
+supportedModules:
+- xsiam

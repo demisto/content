@@ -1793,3 +1793,42 @@ def test_replace_atlassian_tags():
     # No tags remain unchanged
     input_md4 = "No tags here"
     assert replace_atlassian_tags(input_md4) == input_md4
+
+
+class TestGetReplyBodyXSSPrevention:
+    """Tests for XSS prevention in attachment names within get_reply_body."""
+
+    def test_attachment_names_escaped_in_reply_body(self, mocker):
+        """
+        Given
+        - A note with content and attachments containing XSS payloads in filenames
+        When
+        - get_reply_body is called
+        Then
+        - Validate that attachment names in the reply body are HTML-escaped
+        """
+        from SendEmailReply import get_reply_body
+
+        notes = [{"Metadata": {"user": "admin"}, "Contents": "Test reply", "ID": "1"}]
+        malicious_attachments = [
+            {"name": "<script>alert(1)</script>"},
+            {"name": "<img src=x onerror=alert(1)>"},
+        ]
+
+        mocker.patch(
+            "SendEmailReply.execute_command",
+            side_effect=[
+                (True, [{"Contents": {"name": "Admin User"}}]),  # getUserByUsername
+                (True, None),  # core-api-post (entry/note)
+                (True, None),  # addEntries
+            ],
+        )
+        mocker.patch.object(demisto, "incident", return_value={"CustomFields": {"sendbodyasrawnomarkdown": False}})
+
+        reply_body, context_html, reply_html = get_reply_body(notes, "123", malicious_attachments)
+
+        # Attachment names must be escaped in the reply body
+        assert "&lt;script&gt;" in reply_body
+        assert "<script>alert(1)</script>" not in reply_body
+        assert "&lt;img src=x onerror=alert(1)&gt;" in reply_body
+        assert "<img src=x onerror=" not in reply_body

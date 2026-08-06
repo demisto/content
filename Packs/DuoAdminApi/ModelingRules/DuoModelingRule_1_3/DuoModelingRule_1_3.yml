@@ -5,3 +5,5 @@ rules: ''
 schema: ''
 tags: duo
 toversion: 8.3.0
+supportedModules:
+- xsiam

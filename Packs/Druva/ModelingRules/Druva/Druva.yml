@@ -4,3 +4,5 @@ name: Druva Druva Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

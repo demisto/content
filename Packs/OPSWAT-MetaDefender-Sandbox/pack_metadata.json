@@ -1,8 +1,8 @@
 {
-    "name": "MetaDefender Sandbox",
-    "description": "Unique adaptive threat analysis technology",
+    "name": "MetaDefender Sandbox (Deprecated)",
+    "description": "Deprecated. Use MetaDefender Aether instead.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "OPSWAT",
     "url": "https://docs.opswat.com/filescan",
     "email": "threatintel@opswat.com",

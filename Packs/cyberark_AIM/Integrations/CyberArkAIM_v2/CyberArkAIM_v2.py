@@ -73,11 +73,12 @@ class Client(BaseClient):
         body = {
             "AppID": self._app_id,
             "Safe": self._safe,
-            "Folder": self._folder,
             "Object": creds_object,
         }
+        if self._folder:
+            body["Folder"] = self._folder
 
-        return self._http_request("POST", url_suffix, json=body, auth=self.auth, cert=self.crt)
+        return self._http_request("POST", url_suffix, json_data=body, auth=self.auth, cert=self.crt)
 
     def list_credentials(self):
         credential_result = [self.get_credentials(credentials) for credentials in self._credentials_list]

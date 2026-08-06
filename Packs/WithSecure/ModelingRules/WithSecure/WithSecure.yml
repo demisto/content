@@ -4,3 +4,5 @@ name: Endpoint Protection WithSecure Modeling Rule
 rules: ''
 schema: ''
 tags: Endpoint_Protection
+supportedModules:
+- xsiam

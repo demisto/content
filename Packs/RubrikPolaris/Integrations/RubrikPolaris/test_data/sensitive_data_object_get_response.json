@@ -1,0 +1,649 @@
+{
+    "api_response": {
+        "data": {
+            "policyObj": {
+                "id": "00000000-0000-0000-0000-000000000001",
+                "snapshotFid": "00000000-0000-0000-0000-000000000001",
+                "snapshotTimestamp": 1782272126524,
+                "shareType": "UNKNOWN_SHARE_TYPE",
+                "riskLevel": "HIGH_RISK",
+                "objectStatus": {
+                    "policyStatuses": [
+                        {
+                            "status": "UP_TO_DATE",
+                            "__typename": "PolicyStatus"
+                        },
+                        {
+                            "status": "UP_TO_DATE",
+                            "__typename": "PolicyStatus"
+                        }
+                    ],
+                    "latestSnapshotResult": {
+                        "snapshotTime": 1782444911010,
+                        "snapshotFid": "00000000-0000-0000-0000-000000000002",
+                        "__typename": "SnapshotResult"
+                    },
+                    "__typename": "ObjectStatus"
+                },
+                "rootFileResult": {
+                    "hits": {
+                        "totalHits": 40,
+                        "violations": 40,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "analyzerGroupResults": [
+                        {
+                            "analyzerGroup": {
+                                "groupType": "CUSTOM",
+                                "id": "00000000-0000-0000-0000-000000000003",
+                                "name": "GLBA",
+                                "__typename": "AnalyzerGroup"
+                            },
+                            "analyzerResults": [
+                                {
+                                    "hits": {
+                                        "totalHits": 2,
+                                        "violations": 2,
+                                        "__typename": "Hits"
+                                    },
+                                    "analyzer": {
+                                        "id": "00000000-0000-0000-0000-000000000004",
+                                        "name": "Bank Account Number",
+                                        "analyzerType": "US_BANK_ACCT",
+                                        "__typename": "Analyzer"
+                                    },
+                                    "__typename": "AnalyzerResult"
+                                }
+                            ],
+                            "hits": {
+                                "totalHits": 2,
+                                "violations": 2,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            },
+                            "__typename": "AnalyzerGroupResult"
+                        },
+                        {
+                            "analyzerGroup": {
+                                "groupType": "CUSTOM",
+                                "id": "00000000-0000-0000-0000-000000000005",
+                                "name": "Financial",
+                                "__typename": "AnalyzerGroup"
+                            },
+                            "analyzerResults": [
+                                {
+                                    "hits": {
+                                        "totalHits": 1,
+                                        "violations": 1,
+                                        "__typename": "Hits"
+                                    },
+                                    "analyzer": {
+                                        "id": "00000000-0000-0000-0000-000000000006",
+                                        "name": "ABA Routing Number",
+                                        "analyzerType": "ABA_ROUTING_NUMBER",
+                                        "__typename": "Analyzer"
+                                    },
+                                    "__typename": "AnalyzerResult"
+                                },
+                                {
+                                    "hits": {
+                                        "totalHits": 2,
+                                        "violations": 2,
+                                        "__typename": "Hits"
+                                    },
+                                    "analyzer": {
+                                        "id": "00000000-0000-0000-0000-000000000004",
+                                        "name": "Bank Account Number",
+                                        "analyzerType": "US_BANK_ACCT",
+                                        "__typename": "Analyzer"
+                                    },
+                                    "__typename": "AnalyzerResult"
+                                }
+                            ],
+                            "hits": {
+                                "totalHits": 3,
+                                "violations": 3,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            },
+                            "__typename": "AnalyzerGroupResult"
+                        },
+                        {
+                            "analyzerGroup": {
+                                "groupType": "CUSTOM",
+                                "id": "00000000-0000-0000-0000-000000000007",
+                                "name": "U.S. Financials",
+                                "__typename": "AnalyzerGroup"
+                            },
+                            "analyzerResults": [
+                                {
+                                    "hits": {
+                                        "totalHits": 1,
+                                        "violations": 1,
+                                        "__typename": "Hits"
+                                    },
+                                    "analyzer": {
+                                        "id": "00000000-0000-0000-0000-000000000006",
+                                        "name": "ABA Routing Number",
+                                        "analyzerType": "ABA_ROUTING_NUMBER",
+                                        "__typename": "Analyzer"
+                                    },
+                                    "__typename": "AnalyzerResult"
+                                },
+                                {
+                                    "hits": {
+                                        "totalHits": 2,
+                                        "violations": 2,
+                                        "__typename": "Hits"
+                                    },
+                                    "analyzer": {
+                                        "id": "00000000-0000-0000-0000-000000000004",
+                                        "name": "Bank Account Number",
+                                        "analyzerType": "US_BANK_ACCT",
+                                        "__typename": "Analyzer"
+                                    },
+                                    "__typename": "AnalyzerResult"
+                                }
+                            ],
+                            "hits": {
+                                "totalHits": 3,
+                                "violations": 3,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            },
+                            "__typename": "AnalyzerGroupResult"
+                        }
+                    ],
+                    "filesWithHits": {
+                        "totalHits": 11,
+                        "violations": 11,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFolders": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessFilesWithHits": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "staleFilesWithHits": {
+                        "totalHits": 8,
+                        "violations": 8,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "openAccessStaleFiles": {
+                        "totalHits": 0,
+                        "violations": 0,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "analyzerResults": [
+                        {
+                            "analyzer": {
+                                "id": "00000000-0000-0000-0000-000000000004",
+                                "name": "Bank Account Number"
+                            },
+                            "hits": {
+                                "totalHits": 2,
+                                "violations": 2,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            }
+                        },
+                        {
+                            "analyzer": {
+                                "id": "00000000-0000-0000-0000-000000000006",
+                                "name": "ABA Routing Number"
+                            },
+                            "hits": {
+                                "totalHits": 1,
+                                "violations": 1,
+                                "violationsDelta": 0,
+                                "totalHitsDelta": 0,
+                                "__typename": "Hits"
+                            }
+                        }
+                    ],
+                    "sensitiveHits": {
+                        "highRiskHits": {
+                            "totalHits": 20,
+                            "violatedHits": 20,
+                            "__typename": "SummaryHits"
+                        },
+                        "mediumRiskHits": {
+                            "totalHits": 10,
+                            "violatedHits": 10,
+                            "__typename": "SummaryHits"
+                        },
+                        "lowRiskHits": {
+                            "totalHits": 5,
+                            "violatedHits": 5,
+                            "__typename": "SummaryHits"
+                        },
+                        "noRiskHits": {
+                            "totalHits": 5,
+                            "violatedHits": 5,
+                            "__typename": "SummaryHits"
+                        },
+                        "totalHits": {
+                            "totalHits": 40,
+                            "violatedHits": 40,
+                            "__typename": "SummaryHits"
+                        },
+                        "__typename": "SensitiveHits"
+                    },
+                    "numActivities": 0,
+                    "numActivitiesDelta": 0,
+                    "__typename": "FileResult"
+                },
+                "snappable": {
+                    "id": "00000000-0000-0000-0000-000000000008",
+                    "name": "ran test",
+                    "objectType": "O365Site",
+                    "slaAssignment": "Direct",
+                    "logicalPath": [
+                        {
+                            "fid": "00000000-0000-0000-0000-000000000009",
+                            "name": "Rubrik Inc",
+                            "objectType": "O365Org",
+                            "__typename": "PathNode"
+                        },
+                        {
+                            "fid": "00000000-0000-0000-0000-000000000010",
+                            "name": "rubrik-tme-lab",
+                            "objectType": "AwsNativeAccount",
+                            "__typename": "PathNode"
+                        }
+                    ],
+                    "physicalPath": [],
+                    "effectiveSlaDomain": {
+                        "id": "00000000-0000-0000-0000-000000000001",
+                        "name": "Silver",
+                        "isRetentionLockedSla": false,
+                        "retentionLockMode": "NO_MODE",
+                        "haPolicy": null,
+                        "__typename": "GlobalSlaReply",
+                        "description": "Rubrik default Silver level SLA Domain policy"
+                    },
+                    "rscNativeObjectPendingSla": null,
+                    "__typename": "O365Site"
+                },
+                "__typename": "PolicyObj",
+                "osType": "NONE",
+                "isUserAccessEnabledObject": true,
+                "policySummaries": [
+                    {
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "name": "GLBA",
+                        "colorEnum": "COLOR_003",
+                        "__typename": "ClassificationPolicySummary"
+                    },
+                    {
+                        "id": "00000000-0000-0000-0000-000000000005",
+                        "name": "Financial",
+                        "colorEnum": "COLOR_013",
+                        "__typename": "ClassificationPolicySummary"
+                    },
+                    {
+                        "id": "00000000-0000-0000-0000-000000000007",
+                        "name": "Financials",
+                        "colorEnum": "COLOR_005",
+                        "__typename": "ClassificationPolicySummary"
+                    }
+                ]
+            }
+        }
+    },
+    "context": {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "snapshotFid": "00000000-0000-0000-0000-000000000001",
+        "snapshotTimestamp": 1782272126524,
+        "shareType": "UNKNOWN_SHARE_TYPE",
+        "riskLevel": "HIGH_RISK",
+        "objectStatus": {
+            "policyStatuses": [
+                {
+                    "status": "UP_TO_DATE",
+                    "__typename": "PolicyStatus"
+                },
+                {
+                    "status": "UP_TO_DATE",
+                    "__typename": "PolicyStatus"
+                }
+            ],
+            "latestSnapshotResult": {
+                "snapshotTime": 1782444911010,
+                "snapshotFid": "00000000-0000-0000-0000-000000000002",
+                "__typename": "SnapshotResult"
+            },
+            "__typename": "ObjectStatus"
+        },
+        "rootFileResult": {
+            "hits": {
+                "totalHits": 40,
+                "violations": 40,
+                "violationsDelta": 0,
+                "totalHitsDelta": 0,
+                "__typename": "Hits"
+            },
+            "analyzerGroupResults": [
+                {
+                    "analyzerGroup": {
+                        "groupType": "CUSTOM",
+                        "id": "00000000-0000-0000-0000-000000000003",
+                        "name": "GLBA",
+                        "__typename": "AnalyzerGroup"
+                    },
+                    "analyzerResults": [
+                        {
+                            "hits": {
+                                "totalHits": 2,
+                                "violations": 2,
+                                "__typename": "Hits"
+                            },
+                            "analyzer": {
+                                "id": "00000000-0000-0000-0000-000000000004",
+                                "name": "Bank Account Number",
+                                "analyzerType": "US_BANK_ACCT",
+                                "__typename": "Analyzer"
+                            },
+                            "__typename": "AnalyzerResult"
+                        }
+                    ],
+                    "hits": {
+                        "totalHits": 2,
+                        "violations": 2,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "__typename": "AnalyzerGroupResult"
+                },
+                {
+                    "analyzerGroup": {
+                        "groupType": "CUSTOM",
+                        "id": "00000000-0000-0000-0000-000000000005",
+                        "name": "Financial",
+                        "__typename": "AnalyzerGroup"
+                    },
+                    "analyzerResults": [
+                        {
+                            "hits": {
+                                "totalHits": 1,
+                                "violations": 1,
+                                "__typename": "Hits"
+                            },
+                            "analyzer": {
+                                "id": "00000000-0000-0000-0000-000000000006",
+                                "name": "ABA Routing Number",
+                                "analyzerType": "ABA_ROUTING_NUMBER",
+                                "__typename": "Analyzer"
+                            },
+                            "__typename": "AnalyzerResult"
+                        },
+                        {
+                            "hits": {
+                                "totalHits": 2,
+                                "violations": 2,
+                                "__typename": "Hits"
+                            },
+                            "analyzer": {
+                                "id": "00000000-0000-0000-0000-000000000004",
+                                "name": "Bank Account Number",
+                                "analyzerType": "US_BANK_ACCT",
+                                "__typename": "Analyzer"
+                            },
+                            "__typename": "AnalyzerResult"
+                        }
+                    ],
+                    "hits": {
+                        "totalHits": 3,
+                        "violations": 3,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "__typename": "AnalyzerGroupResult"
+                },
+                {
+                    "analyzerGroup": {
+                        "groupType": "CUSTOM",
+                        "id": "00000000-0000-0000-0000-000000000007",
+                        "name": "U.S. Financials",
+                        "__typename": "AnalyzerGroup"
+                    },
+                    "analyzerResults": [
+                        {
+                            "hits": {
+                                "totalHits": 1,
+                                "violations": 1,
+                                "__typename": "Hits"
+                            },
+                            "analyzer": {
+                                "id": "00000000-0000-0000-0000-000000000006",
+                                "name": "ABA Routing Number",
+                                "analyzerType": "ABA_ROUTING_NUMBER",
+                                "__typename": "Analyzer"
+                            },
+                            "__typename": "AnalyzerResult"
+                        },
+                        {
+                            "hits": {
+                                "totalHits": 2,
+                                "violations": 2,
+                                "__typename": "Hits"
+                            },
+                            "analyzer": {
+                                "id": "00000000-0000-0000-0000-000000000004",
+                                "name": "Bank Account Number",
+                                "analyzerType": "US_BANK_ACCT",
+                                "__typename": "Analyzer"
+                            },
+                            "__typename": "AnalyzerResult"
+                        }
+                    ],
+                    "hits": {
+                        "totalHits": 3,
+                        "violations": 3,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    },
+                    "__typename": "AnalyzerGroupResult"
+                }
+            ],
+            "filesWithHits": {
+                "totalHits": 11,
+                "violations": 11,
+                "violationsDelta": 0,
+                "totalHitsDelta": 0,
+                "__typename": "Hits"
+            },
+            "openAccessFiles": {
+                "totalHits": 0,
+                "violations": 0,
+                "violationsDelta": 0,
+                "totalHitsDelta": 0,
+                "__typename": "Hits"
+            },
+            "openAccessFolders": {
+                "totalHits": 0,
+                "violations": 0,
+                "violationsDelta": 0,
+                "totalHitsDelta": 0,
+                "__typename": "Hits"
+            },
+            "openAccessFilesWithHits": {
+                "totalHits": 0,
+                "violations": 0,
+                "violationsDelta": 0,
+                "totalHitsDelta": 0,
+                "__typename": "Hits"
+            },
+            "staleFiles": {
+                "totalHits": 0,
+                "violations": 0,
+                "violationsDelta": 0,
+                "totalHitsDelta": 0,
+                "__typename": "Hits"
+            },
+            "staleFilesWithHits": {
+                "totalHits": 8,
+                "violations": 8,
+                "violationsDelta": 0,
+                "totalHitsDelta": 0,
+                "__typename": "Hits"
+            },
+            "openAccessStaleFiles": {
+                "totalHits": 0,
+                "violations": 0,
+                "violationsDelta": 0,
+                "totalHitsDelta": 0,
+                "__typename": "Hits"
+            },
+            "analyzerResults": [
+                {
+                    "analyzer": {
+                        "id": "00000000-0000-0000-0000-000000000004",
+                        "name": "Bank Account Number"
+                    },
+                    "hits": {
+                        "totalHits": 2,
+                        "violations": 2,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    }
+                },
+                {
+                    "analyzer": {
+                        "id": "00000000-0000-0000-0000-000000000006",
+                        "name": "ABA Routing Number"
+                    },
+                    "hits": {
+                        "totalHits": 1,
+                        "violations": 1,
+                        "violationsDelta": 0,
+                        "totalHitsDelta": 0,
+                        "__typename": "Hits"
+                    }
+                }
+            ],
+            "sensitiveHits": {
+                "highRiskHits": {
+                    "totalHits": 20,
+                    "violatedHits": 20,
+                    "__typename": "SummaryHits"
+                },
+                "mediumRiskHits": {
+                    "totalHits": 10,
+                    "violatedHits": 10,
+                    "__typename": "SummaryHits"
+                },
+                "lowRiskHits": {
+                    "totalHits": 5,
+                    "violatedHits": 5,
+                    "__typename": "SummaryHits"
+                },
+                "noRiskHits": {
+                    "totalHits": 5,
+                    "violatedHits": 5,
+                    "__typename": "SummaryHits"
+                },
+                "totalHits": {
+                    "totalHits": 40,
+                    "violatedHits": 40,
+                    "__typename": "SummaryHits"
+                },
+                "__typename": "SensitiveHits"
+            },
+            "numActivities": 0,
+            "numActivitiesDelta": 0,
+            "__typename": "FileResult"
+        },
+        "snappable": {
+            "id": "00000000-0000-0000-0000-000000000008",
+            "name": "ran test",
+            "objectType": "O365Site",
+            "slaAssignment": "Direct",
+            "logicalPath": [
+                {
+                    "fid": "00000000-0000-0000-0000-000000000009",
+                    "name": "Rubrik Inc",
+                    "objectType": "O365Org",
+                    "__typename": "PathNode"
+                },
+                {
+                    "fid": "00000000-0000-0000-0000-000000000010",
+                    "name": "rubrik-tme-lab",
+                    "objectType": "AwsNativeAccount",
+                    "__typename": "PathNode"
+                }
+            ],
+            "effectiveSlaDomain": {
+                "id": "00000000-0000-0000-0000-000000000001",
+                "name": "Silver",
+                "isRetentionLockedSla": false,
+                "retentionLockMode": "NO_MODE",
+                "__typename": "GlobalSlaReply",
+                "description": "Rubrik default Silver level SLA Domain policy"
+            },
+            "__typename": "O365Site"
+        },
+        "__typename": "PolicyObj",
+        "osType": "NONE",
+        "isUserAccessEnabledObject": true,
+        "policySummaries": [
+            {
+                "id": "00000000-0000-0000-0000-000000000003",
+                "name": "GLBA",
+                "colorEnum": "COLOR_003",
+                "__typename": "ClassificationPolicySummary"
+            },
+            {
+                "id": "00000000-0000-0000-0000-000000000005",
+                "name": "Financial",
+                "colorEnum": "COLOR_013",
+                "__typename": "ClassificationPolicySummary"
+            },
+            {
+                "id": "00000000-0000-0000-0000-000000000007",
+                "name": "Financials",
+                "colorEnum": "COLOR_005",
+                "__typename": "ClassificationPolicySummary"
+            }
+        ]
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "name": "DFIRe",
+    "description": "Automate DFIRe forensic case management and IOC indicator synchronization from Cortex XSIAM and Cortex XSOAR.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Harri Ruuttila",
+    "url": "",
+    "email": "harri.ruuttila@gmail.com",
+    "githubUser": [
+        "Hruuttila"
+    ],
+    "created": "2026-04-29T00:00:00Z",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "DFIRe",
+        "DFIR",
+        "forensics",
+        "incident response",
+        "IOC"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}

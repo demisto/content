@@ -1,0 +1,28 @@
+commonfields:
+  id: RubrikPullDSPMViolationFileInformation
+  version: -1
+name: RubrikPullDSPMViolationFileInformation
+script: ''
+type: python
+tags: []
+comment: Syncs the violation file information from RSC to XSOAR.
+enabled: true
+args:
+- name: violation_id
+  description: "The ID of the DSPM Violation.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+- name: object_id
+  description: "The Object ID.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+- name: snapshot_id
+  description: "The Snapshot ID.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+- name: limit
+  description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+  defaultValue: '1000'
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.13.8428455
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

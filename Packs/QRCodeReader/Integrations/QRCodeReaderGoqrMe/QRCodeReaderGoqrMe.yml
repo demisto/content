@@ -1,5 +1,7 @@
 category: Utilities
 provider: Open Source
+sectionorder:
+- Connect
 commonfields:
   id: QR Code Reader - goqr.me
   version: -1
@@ -9,6 +11,7 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 description: Read QR Code from image file.
 display: QR Code Reader - goqr.me
 name: QR Code Reader - goqr.me
@@ -27,7 +30,7 @@ script:
       description: Errors reading QR code.
     - contextPath: GoQRCodeData.seq
       description: Sequence numbers read from code.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.8319994
   runonce: false
   script: ''
   subtype: python3

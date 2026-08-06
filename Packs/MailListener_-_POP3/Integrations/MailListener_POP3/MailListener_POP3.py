@@ -16,7 +16,7 @@ SERVER = demisto.params().get("server", "")
 EMAIL = demisto.params().get("email", "")
 
 PORT = int(demisto.params().get("port", "995"))
-SSL = demisto.params().get("ssl")
+SSL = demisto.params().get("ssl", True)
 FETCH_TIME = demisto.params().get("fetch_time", "7 days")
 
 # pop3 server connection object.

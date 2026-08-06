@@ -1,0 +1,18 @@
+{
+  "trigger_id": "8923b166f70d0fbec1bb22802225a515",
+  "trigger_name": "Trigger - AWS Network Exposure",
+  "playbook_id": "AWS Network Exposure - Auto-remediate",
+  "suggestion_reason": "Apply this rule to automatically remediate the network exposure of AWS resources by updating the AWS asset with a new security group which is a copy of the original but without the offending security rule that causes public exposure.",
+  "description": "Recommends the AWS Network Exposure - Auto-remediate playbook to automatically remediate the network exposure of AWS resources by updating the AWS asset with a new security group which is a copy of the original but without the offending security rule that causes public exposure.",
+  "alerts_filter": {
+    "filter": {
+        "OR": [
+            {
+            "SEARCH_FIELD": "matching_service_rule_id",
+            "SEARCH_TYPE": "WILDCARD",
+            "SEARCH_VALUE": "e9ce22c1-9ec5-47d6-a11e-f2cfd64b5cbd"
+            }
+        ]
+        }
+    }
+}

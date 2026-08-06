@@ -2,7 +2,7 @@ comment: Trend graph for incident creation.
 commonfields:
   id: HealthCheckIncidentsCreatedWeekly
   version: -1
-dockerimage: demisto/python3:3.12.12.6204436
+dockerimage: demisto/python3:3.12.13.8428455
 enabled: true
 name: HealthCheckIncidentsCreatedWeekly
 runas: DBotWeakRole

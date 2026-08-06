@@ -1,0 +1,1020 @@
+{
+	"description": "Google Threat Intelligence RS Alert Layout.",
+	"detailsV2": {
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 22,
+								"id": "incident-sourceBrand-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 22,
+								"id": "incident-sourceInstance-field",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Evidence",
+						"static": false,
+						"type": "evidence",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Indicators",
+						"query": "",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 2,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 22,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 22,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 22,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 22,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 22,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 22,
+								"id": "incident-details-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "rsalertdata",
+				"name": "RS Alert Data",
+				"sections": [
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 4,
+						"hideName": false,
+						"i": "rsalertdata-alert-info-section",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertdisplayname",
+								"height": 53,
+								"id": "rs-displayname-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertstate",
+								"height": 53,
+								"id": "rs-state-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertdetailtype",
+								"height": 53,
+								"id": "rs-detailtype-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gtirsalertfindingcount",
+								"height": 53,
+								"id": "rs-findingcount-field",
+								"index": 3,
+								"listId": "rsalertdata-findings-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gtirsalertduplicateof",
+								"height": 53,
+								"id": "rs-duplicateof-field",
+								"index": 4,
+								"listId": "rsalertdata-alert-info-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gtirsalertduplicatedby",
+								"height": 53,
+								"id": "rs-duplicatedby-field",
+								"index": 5,
+								"listId": "rsalertdata-alert-info-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "incidentlink",
+								"height": 53,
+								"id": "8edac660-484d-11f1-9ab0-292e9e43ad9b",
+								"index": 0,
+								"listId": "rsalertdata-alert-info-section",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "severity",
+								"height": 53,
+								"id": "rs-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "gtirsalertetag",
+								"height": 53,
+								"id": "rs-etag-field",
+								"index": 2,
+								"listId": "rsalertdata-alert-info-section",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"endCol": 4,
+								"fieldId": "gtirsalertexternalid",
+								"height": 53,
+								"id": "rs-externalid-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "gtirsalertfindings",
+								"height": 53,
+								"id": "rs-findings-field",
+								"index": 4,
+								"listId": "rsalertdata-alert-info-section",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "gtirsalertconfigurations",
+								"height": 53,
+								"id": "rs-configurations-field",
+								"index": 5,
+								"listId": "rsalertdata-alert-info-section",
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Alert Information",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": false,
+						"i": "rsalertdata-audit-section",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertauditcreatetime",
+								"height": 53,
+								"id": "rs-auditcreatetime-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertauditupdatetime",
+								"height": 53,
+								"id": "rs-auditupdatetime-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertauditcreator",
+								"height": 53,
+								"id": "rs-auditcreator-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertauditupdater",
+								"height": 53,
+								"id": "rs-auditupdater-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Alert Audit",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "rsalertdata-aisummary-section",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "gtirsalertaisummary",
+								"height": 106,
+								"id": "rs-aisummary-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Alert AI Summary",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 4,
+						"hideName": false,
+						"i": "rsalertdata-relevance-section",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertrelevancelevel",
+								"height": 53,
+								"id": "rs-relevancelevel-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gtirsalertrelevanceconfidence",
+								"height": 53,
+								"id": "rs-relevanceconfidence-field",
+								"index": 1,
+								"listId": "rsalertdata-relevance-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gtirsalertrelevancereasoning",
+								"height": 106,
+								"id": "rs-relevancereasoning-field",
+								"index": 2,
+								"listId": "rsalertdata-relevance-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertrelevancerelevant",
+								"height": 53,
+								"id": "rs-relevancerelevant-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertrelevancecommonthemes",
+								"height": 53,
+								"id": "rs-relevancecommonthemes-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertrelevancedistinctthemes",
+								"height": 53,
+								"id": "rs-relevancedistinctthemes-field",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Relevance Analysis",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 7
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 4,
+						"hideName": false,
+						"i": "rsalertdata-severity-section",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertseverityanalysislevel",
+								"height": 53,
+								"id": "rs-severitylevel-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertseverityanalysisconfidence",
+								"height": 53,
+								"id": "rs-severityconfidence-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gtirsalertseverityanalysisreasoning",
+								"height": 106,
+								"id": "rs-severityreasoning-field",
+								"index": 2,
+								"listId": "rsalertdata-severity-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Severity Analysis",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 7
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 4,
+						"hideName": false,
+						"i": "rsalertdata-priority-section",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertpriorityanalysislevel",
+								"height": 53,
+								"id": "rs-prioritylevel-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertpriorityanalysisconfidence",
+								"height": 53,
+								"id": "rs-priorityconfidence-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "gtirsalertpriorityanalysisreasoning",
+								"height": 106,
+								"id": "rs-priorityreasoning-field",
+								"index": 2,
+								"listId": "rsalertdata-priority-section",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Priority Analysis",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 7
+					},
+					{
+						"description": "",
+						"displayType": "CARD",
+						"h": 4,
+						"hideName": false,
+						"i": "rsalertdata-details-section",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertinitialaccessbrokerseverity",
+								"height": 53,
+								"id": "rs-iabseverity-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertinitialaccessbrokerdiscoverydocumentids",
+								"height": 53,
+								"id": "rs-iabdocumentids-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertdataleakseverity",
+								"height": 53,
+								"id": "rs-dataleakseverity-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "gtirsalertdataleakdiscoverydocumentids",
+								"height": 53,
+								"id": "rs-dldocumentids-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "gtirsalertinsiderthreatseverity",
+								"height": 53,
+								"id": "rs-insiderthreatseverity-field",
+								"index": 0,
+								"listId": "rsalertdata-details-section",
+								"sectionItemType": "field",
+								"startCol": 2
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "gtirsalertinsiderthreatdiscoverydocumentids",
+								"height": 53,
+								"id": "rs-itdocumentids-field",
+								"index": 4,
+								"listId": "rsalertdata-details-section",
+								"sectionItemType": "field",
+								"startCol": 2
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Alert Detail Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"group": "incident",
+	"id": "Google Threat Intelligence RS Alert",
+	"name": "Google Threat Intelligence RS Alert",
+	"quickView": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_gtirsalertdisplayname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_incidentlink",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertstate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertdetailtype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertexternalid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertetag",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertfindingcount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertfindings",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertconfigurations",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertduplicateof",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertduplicatedby",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Alert Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_gtirsalertauditcreatetime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertauditupdatetime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertauditcreator",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertauditupdater",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Alert Audit",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_gtirsalertaisummary",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Alert AI Summary",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_gtirsalertdataleakseverity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertdataleakdiscoverydocumentids",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertinsiderthreatseverity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertinsiderthreatdiscoverydocumentids",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertinitialaccessbrokerseverity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertinitialaccessbrokerdiscoverydocumentids",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Alert Detail Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_gtirsalertseverityanalysislevel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertseverityanalysisconfidence",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertseverityanalysisreasoning",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertpriorityanalysislevel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertpriorityanalysisconfidence",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertpriorityanalysisreasoning",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertrelevancelevel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertrelevanceconfidence",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertrelevancereasoning",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertrelevancerelevant",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertrelevancecommonthemes",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_gtirsalertrelevancedistinctthemes",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Alert Analysis",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"system": false,
+	"version": -1,
+	"fromVersion": "6.10.0",
+	"marketplaces": [
+		"xsoar"
+	]
+}

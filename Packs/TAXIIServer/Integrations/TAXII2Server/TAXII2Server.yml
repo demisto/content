@@ -98,6 +98,46 @@ configuration:
   type: 12
   additionalinfo: "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support."
   section: Connect
+- additionalinfo: How often to refresh the list (e.g., less than 1 minute, 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value at less than 1 minute.
+  defaultvalue: 30 minutes
+  display: Refresh Rate
+  name: cache_refresh_rate
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: 'The parameter is deprecated and no longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.'
+  defaultvalue: 1h
+  display: Cache Lock Timeout (Deprecated)
+  name: cache_lock_timeout
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  hidden: true
+- additionalinfo: 'The parameter is deprecated and no longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.'
+  defaultvalue: 1h
+  display: Cache Lock Age (Deprecated)
+  name: cache_lock_age
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+  hidden: true
+- additionalinfo: The TTL for 404 responses in the cache.
+  defaultvalue: 1m
+  display: Cache 404 TTL
+  name: cache_404_ttl
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: The default TTL for responses in the cache.
+  defaultvalue: 1m
+  display: Cache Default TTL
+  name: cache_default_ttl
+  type: 0
+  section: Connect
   advanced: true
   required: false
 - display: STIX types for STIX indicator Domain Object
@@ -160,7 +200,7 @@ script:
     - contextPath: TAXIIServer.ServerInfo.description
       description: The server description.
       type: String
-  dockerimage: demisto/flask-nginx:1.0.0.6091652
+  dockerimage: demisto/flask-nginx:1.0.0.11047721
   longRunning: true
   longRunningPort: true
   script: '-'
@@ -170,13 +210,13 @@ tests:
 - TAXII2 Server Performance Test
 fromversion: 6.1.0
 triggers:
-  - conditions:
-      - name: engine
-        operator: not_exists
-      - name: isEngineGroup
-        operator: not_exists
-    effects:
-      - name: longRunningPort
-        action:
-          hidden: true
-          required: false
+- conditions:
+  - name: engine
+    operator: not_exists
+  - name: isEngineGroup
+    operator: not_exists
+  effects:
+  - name: longRunningPort
+    action:
+      hidden: true
+      required: false

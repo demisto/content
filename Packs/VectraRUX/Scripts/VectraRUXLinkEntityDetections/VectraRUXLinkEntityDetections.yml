@@ -1,0 +1,26 @@
+commonfields:
+  id: VectraRUXLinkEntityDetections
+  version: -1
+name: VectraRUXLinkEntityDetections
+script: ''
+type: python
+tags:
+- incident-action-button
+comment: Link the Detections which have the same entity ID.
+enabled: true
+args:
+- name: incident_entity_id
+  required: true
+  description: Incident Entity ID.
+- name: incident_detection_id
+  required: true
+  description: Incident Detection ID.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.13.8927230
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

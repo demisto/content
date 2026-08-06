@@ -1,7 +1,7 @@
 id: Trend Micro CAS - Take Action On Emails
 version: -1
 name: Trend Micro CAS - Take Action On Emails
-description: This playbook runs various actions on emails, such as deleting and quarantine email messages, using the "trendmicro-cas-email-take-action" command and returns the results from the "trendmicro-cas-email-action-result-query" command.
+description: This playbook runs various actions on emails using TrendAI™ Cloud App Security, such as deleting and quarantine email messages, using the "trendmicro-cas-email-take-action" command and returns the results from the "trendmicro-cas-email-action-result-query" command.
 starttaskid: "0"
 tasks:
   "0":
@@ -269,6 +269,6 @@ outputs:
 - contextPath: TrendMicroCAS.EmailActionResult.mailbox
   description: The email address of an email message on which an action was taken.
   type: string
-fromversion: 5.0.0
 tests:
-- playbook_TrendmicroCAS_Test
+- No tests (auto formatted)
+fromversion: 5.0.0

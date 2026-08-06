@@ -223,6 +223,26 @@ script:
       description: Basic information of the file.
       type: String
   - arguments:
+    - description: |-
+        The search string to match against users and groups. For users, performs a case-insensitive substring match on display name and email address. For groups, performs a case-sensitive substring match on group name.
+        Note: if a user has hidden their email address, an exact email match is required.
+      type: String
+      name: query
+      required: true
+    - description: The maximum number of results to return.
+      type: Number
+      name: limit
+      defaultValue: '50'
+    description: Searches for users and groups in Jira that match the query string.
+    name: jira-user-group-search
+    outputs:
+    - contextPath: Jira.UsersAndGroups.Users
+      description: The users that match the query string.
+      type: Object
+    - contextPath: Jira.UsersAndGroups.Groups
+      description: The groups that match the query string.
+      type: Object
+  - arguments:
     - description: Deprecated. Please use issue_id or issue_key.
       name: issueIdOrKey
       hidden: true
@@ -1835,7 +1855,7 @@ script:
       type: String
   - name: jira-reset-timezone-cache
     description: Clears the cached Jira user timezone used for fetching incidents and mirroring from the internal cache. Use if the timezone settings tied to the chosen authentication method were changed.
-  dockerimage: demisto/btfl-soup:1.0.1.8187750
+  dockerimage: demisto/btfl-soup:1.0.1.10120494
   isfetch: true
   ismappable: true
   isremotesyncin: true

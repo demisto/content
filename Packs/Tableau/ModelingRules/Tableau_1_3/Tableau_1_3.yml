@@ -4,3 +4,5 @@ name: Tableau
 rules: ''
 schema: ''
 tags: Tableau
+supportedModules:
+- xsiam

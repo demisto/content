@@ -26,9 +26,9 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| endpoint_name | The FQDN of the target endpoint. |  | Required |
-| endpoint_external_ip | The external IP of the target endpoint. |  | Required |
-| risk_plan | The name of the risk plan to remove \(Medium_Risk_Plan or High_Risk_Plan\). |  | Required |
+| endpoint_name | The Hostname of the target endpoint. |  | Required |
+| logged_in_user | The logged-in user of the target endpoint. |  | Required |
+| risk_plan | The name of the risk plan to remove \(i.e. Medium_Risk_Endpoint or High_Risk_Endpoint\). |  | Required |
 
 ## Playbook Outputs
 

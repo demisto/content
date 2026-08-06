@@ -38,7 +38,8 @@ from Qualysv2 import (
     ASSETS_FETCH_FROM,
     ASSETS_DATE_FORMAT,
     HOST_LIMIT,
-    API_SUFFIX,
+    API_SUFFIX_DETECTION,
+    API_SUFFIX_KNOWLEDGEBASE,
     VENDOR,
     DEFAULT_LAST_ASSETS_RUN,
 )
@@ -168,7 +169,7 @@ def test_fetch_assets_command(requests_mock: RequestsMocker, client: Client):
     with open("./test_data/host_list_detections_raw.xml") as f:
         assets = f.read()
     requests_mock.get(
-        f"{BASE_URL}api/2.0/fo/asset/host/vm/detection/"
+        f"{BASE_URL}api/5.0/fo/asset/host/vm/detection/"
         f"?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after="
         f"{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}",
         text=assets,
@@ -193,7 +194,7 @@ def test_fetch_assets_command_time_out(requests_mock: RequestsMocker, mocker, cl
     with open("./test_data/host_list_detections_raw.xml") as f:
         assets = f.read()
     requests_mock.get(
-        f"{BASE_URL}api/2.0/fo/asset/host/vm/detection/"
+        f"{BASE_URL}api/5.0/fo/asset/host/vm/detection/"
         f"?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after="
         f"{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}",
         exc=requests.exceptions.ReadTimeout,
@@ -222,7 +223,7 @@ def test_fetch_vulnerabilities_command_by_date(requests_mock: RequestsMocker, cl
     since_datetime = arg_to_datetime("2025-01-25").strftime(ASSETS_DATE_FORMAT)
     last_run = {"since_datetime": since_datetime}
     requests_mock.post(
-        f"{BASE_URL}api/2.0/fo/knowledge_base/vuln/?action=list&last_modified_after={since_datetime}", text=raw_response
+        f"{BASE_URL}api/4.0/fo/knowledge_base/vuln/?action=list&last_modified_after={since_datetime}", text=raw_response
     )
 
     vulnerabilities, next_run = fetch_vulnerabilities(client=client, last_run=last_run)
@@ -248,7 +249,7 @@ def test_fetch_vulnerabilities_command_by_qid(requests_mock: RequestsMocker, cli
     expected_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
 
     detection_qids = ["10052", "10186"]
-    requests_mock.post(f'{BASE_URL}api/2.0/fo/knowledge_base/vuln/?action=list&ids={",".join(detection_qids)}', text=raw_response)
+    requests_mock.post(f'{BASE_URL}api/4.0/fo/knowledge_base/vuln/?action=list&ids={",".join(detection_qids)}', text=raw_response)
 
     vulnerabilities, next_run = fetch_vulnerabilities(client=client, last_run={}, detection_qids=detection_qids)
 
@@ -1086,6 +1087,20 @@ class TestClientClass:
             "Error in API call [500] - None\nError Code: 999\nError Message: Internal error. Please contact customer support.",
         ),
         (MockResponse("Invalid XML", 500), "Error in API call [500] - None\nInvalid XML"),
+        (
+            MockResponse(
+                """<?xml version="1.0" encoding="UTF-8" ?>
+<SIMPLE_RETURN>
+  <RESPONSE>
+    <CODE>1965</CODE>
+    <TEXT>This API cannot be run again for another 40 seconds.</TEXT>
+  </RESPONSE>
+</SIMPLE_RETURN>""",
+                409,
+            ),
+            "Rate limit reached - the Qualys API rate limit was exceeded.\nError in API call [409] - None\n"
+            "Error Code: 1965\nError Message: This API cannot be run again for another 40 seconds.",
+        ),
     ]
 
     @pytest.mark.parametrize("response, error_message", ERROR_HANDLER_INPUTS)
@@ -1121,7 +1136,7 @@ class TestClientClass:
         assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
         assert http_request_kwargs["url_suffix"] == urljoin(
-            API_SUFFIX, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
+            API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
         )
         assert http_request_kwargs["params"] == {
             "truncation_limit": HOST_LIMIT,
@@ -1159,8 +1174,29 @@ class TestClientClass:
 
         assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "POST"
-        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+        assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
+
+    @pytest.mark.parametrize(
+        "exception",
+        [
+            pytest.param(requests.exceptions.ReadTimeout, id="ReadTimeout"),
+            pytest.param(requests.exceptions.ChunkedEncodingError, id="ChunkedEncodingError"),
+        ],
+    )
+    def test_get_vulnerabilities_timeout(self, mocker: MockerFixture, exception: type) -> None:
+        """
+        Given:
+            - A ReadTimeout or ChunkedEncodingError raised by the HTTP request.
+        When:
+            - Calling client.get_vulnerabilities.
+        Assert:
+            - The exception is re-raised after logging.
+        """
+        mocker.patch.object(self.client, "_http_request", side_effect=exception())
+        mocker.patch("Qualysv2.demisto.error")
+        with pytest.raises(exception):
+            self.client.get_vulnerabilities(since_datetime="2024-12-12")
 
 
 class TestInputValidations:
@@ -1659,7 +1695,7 @@ def test_get_vulnerabilities_valid_inputs(
     http_request_kwargs = client_http_request.call_args.kwargs
 
     assert http_request_kwargs["method"] == "POST"
-    assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
+    assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list")
     assert http_request_kwargs["params"] == expected_params
 
 
@@ -1697,6 +1733,10 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     Assert:
         - Ensure correct sending to XSIAM and correctly set next assets run.
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 100
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
 
@@ -1770,6 +1810,10 @@ def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFi
         - Ensure no data is sent to XSIAM and module health is not updated.
         - Ensure assets next run is correctly set with the half of the original host limit, same snapshot ID, and next trigger 0.
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 10
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
 
@@ -1810,6 +1854,10 @@ def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, cl
         - Ensure correct sending of assets and vulnerabilities to XSIAM.
         - Ensure correct last run that preserves snapshot ID, sets next trigger to 0, and updates total counts.
     """
+    from contextlib import nullcontext
+
+    mocker.patch("Qualysv2.ExecutionTimeout", return_value=nullcontext(), create=True)
+
     last_total_assets = 100
     last_total_vulns = 66
     last_run = {"total_assets": last_total_assets, "total_vulnerabilities": last_total_vulns, "snapshot_id": SNAPSHOT_ID}
@@ -2068,3 +2116,81 @@ def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: Mocker
     assert next_run["stage"] == "vulnerabilities"
     assert next_run["total_assets"] == last_total_assets
     assert next_run["snapshot_id"] == SNAPSHOT_ID
+
+
+def _make_rate_limit_exception(wait_seconds: str | None = "40") -> Qualysv2.DemistoException:
+    """Build a DemistoException mimicking a Qualys 409 rate-limit response."""
+    response = Mock()
+    response.status_code = Qualysv2.RATE_LIMIT_STATUS_CODE
+    response.headers = {Qualysv2.RATE_LIMIT_TO_WAIT_HEADER: wait_seconds} if wait_seconds is not None else {}
+    return Qualysv2.DemistoException("rate limited", res=response)
+
+
+class TestRateLimitRetry:
+    def test_retry_then_success(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a first 409 rate-limit response followed by a successful response.
+        When:  _http_request_with_rate_limit_retry is called.
+        Then:  it waits using the header value and returns the successful result.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(client, "_http_request", side_effect=[_make_rate_limit_exception("40"), "ok"])
+
+        result = client._http_request_with_rate_limit_retry(method="GET", url_suffix="x")
+
+        assert result == "ok"
+        assert http_mock.call_count == 2
+        sleep_mock.assert_called_once_with(42)  # 40 + RATE_LIMIT_WAIT_BUFFER_SEC
+
+    def test_retry_exhausted_raises(self, mocker: MockerFixture, client: Client):
+        """
+        Given: 409 rate-limit responses on both the initial call and the single retry.
+        When:  _http_request_with_rate_limit_retry is called.
+        Then:  the rate-limit DemistoException is raised after one retry.
+        """
+        mocker.patch.object(Qualysv2.time, "sleep")
+        http_mock = mocker.patch.object(
+            client, "_http_request", side_effect=[_make_rate_limit_exception("10"), _make_rate_limit_exception("10")]
+        )
+
+        with pytest.raises(Qualysv2.DemistoException):
+            client._http_request_with_rate_limit_retry(method="GET", url_suffix="x")
+
+        assert http_mock.call_count == 2
+
+    def test_non_rate_limit_error_raised_immediately(self, mocker: MockerFixture, client: Client):
+        """
+        Given: a non-409 error on the first call.
+        When:  _http_request_with_rate_limit_retry is called.
+        Then:  the error is raised immediately without retrying or sleeping.
+        """
+        sleep_mock = mocker.patch.object(Qualysv2.time, "sleep")
+        other_response = Mock()
+        other_response.status_code = 500
+        http_mock = mocker.patch.object(
+            client, "_http_request", side_effect=Qualysv2.DemistoException("server error", res=other_response)
+        )
+
+        with pytest.raises(Qualysv2.DemistoException):
+            client._http_request_with_rate_limit_retry(method="GET", url_suffix="x")
+
+        assert http_mock.call_count == 1
+        sleep_mock.assert_not_called()
+
+    @pytest.mark.parametrize(
+        "raw_wait, expected",
+        [
+            ("40", 42),  # header value + buffer
+            ("100", Qualysv2.RATE_LIMIT_MAX_WAIT_SEC),  # capped
+            (
+                "not-a-number",
+                Qualysv2.RATE_LIMIT_DEFAULT_WAIT_SEC + Qualysv2.RATE_LIMIT_WAIT_BUFFER_SEC,
+            ),  # unparseable -> default
+            (None, Qualysv2.RATE_LIMIT_DEFAULT_WAIT_SEC + Qualysv2.RATE_LIMIT_WAIT_BUFFER_SEC),  # missing header -> default
+        ],
+    )
+    def test_get_rate_limit_wait_seconds(self, raw_wait, expected):
+        """Validate parsing of X-RateLimit-ToWait-Sec into a bounded wait value."""
+        response = Mock()
+        response.headers = {Qualysv2.RATE_LIMIT_TO_WAIT_HEADER: raw_wait} if raw_wait is not None else {}
+        assert Client._get_rate_limit_wait_seconds(response) == expected

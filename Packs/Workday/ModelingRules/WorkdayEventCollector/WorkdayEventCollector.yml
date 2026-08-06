@@ -5,5 +5,4 @@ rules: ''
 schema: ''
 tags: workday
 supportedModules:
-- agentix
 - xsiam

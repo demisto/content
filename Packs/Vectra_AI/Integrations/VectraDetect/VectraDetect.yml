@@ -176,11 +176,18 @@ configuration:
   type: 8
   required: false
   section: Collect
+- defaultvalue: 'false'
+  display: 'Re-Fetch Account/Host entity and Detection for new activity/event'
+  additionalinfo: "Whether to create multiple incidents for the same entity (Account or Host) or Detection if new detection activity occurs for the entity (Account or Host) or a new event is detected for the detection."
+  name: create_multiple_incidents_by_timestamp
+  type: 8
+  required: false
+  section: Collect
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.9059085
   isfetch: true
   commands:
     # Search Accounts / Hosts / Detections / Users / Outcomes (Assignment outcomes) / Assignments

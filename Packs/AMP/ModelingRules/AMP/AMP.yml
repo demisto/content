@@ -4,3 +4,5 @@ name: AMP Modeling Rule
 rules: ''
 schema: ''
 tags:
+supportedModules:
+- xsiam

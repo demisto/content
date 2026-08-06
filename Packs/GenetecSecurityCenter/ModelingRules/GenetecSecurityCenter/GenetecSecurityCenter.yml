@@ -4,3 +4,5 @@ name: Genetec Security Center Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

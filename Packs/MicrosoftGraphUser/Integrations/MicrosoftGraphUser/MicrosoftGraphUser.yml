@@ -1303,12 +1303,14 @@ script:
       secret: true
     description: Pops a synchronous MFA request for the given user. This is a blocking call that waits for user response or timeout.
     name: msgraph-user-request-mfa
+    hidden: true
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
       required: true
     description: Retrieves the authentication preferences for a user, including the default method.
     name: msgraph-user-get-user-default-auth-method
+    hidden: true
     outputs:
     - contextPath: MSGraphUser.AuthMethod.User
       description: The user principal name.

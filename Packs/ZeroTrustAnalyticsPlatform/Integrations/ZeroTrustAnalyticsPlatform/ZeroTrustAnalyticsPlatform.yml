@@ -76,6 +76,10 @@ configuration:
   name: close_incident
   type: 8
   required: false
+  additionalinfo: Cortex XSOAR only parameter.
+  hidden:
+  - marketplacev2
+  - platform
 - display: Sync reopening incidents with ZTAP
   defaultvalue: 'false'
   name: reopen_incident

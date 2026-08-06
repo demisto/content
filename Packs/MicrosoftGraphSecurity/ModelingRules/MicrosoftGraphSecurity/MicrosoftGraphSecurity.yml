@@ -4,6 +4,5 @@ name: Microsoft Graph Security Modeling Rules
 rules: ''
 schema: ''
 supportedModules:
-- agentix
 - xsiam
 tags: ''
