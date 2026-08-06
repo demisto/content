@@ -548,7 +548,7 @@ def send_agent_response():
             "response_type": message.get("response_type"),
             "is_final": message.get("is_final"),
             "message_id": message.get("message_id"),
-            "content_length": len(message.get("content", "")),
+            "content_length": len(message.get("content") or ""),
         }
         for message in raw_messages
         if isinstance(message, dict)
