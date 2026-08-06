@@ -19,9 +19,7 @@ def create_grids(custom_fields, linked_incident):
         if not main_row.get("analystnote"):
             last_analyst_note = integrations_data.get(main_row.get("instance"), "")
             if last_analyst_note:
-                main_row["analystnote"] = (
-                    f'({str(linked_created_date)}) {integrations_data.get(main_row.get("instance"), "")}'
-                )
+                main_row["analystnote"] = f'({str(linked_created_date)}) {integrations_data.get(main_row.get("instance"), "")}'
 
     incidents_data: dict[str, tuple] = {}
     linked_incidentsD_data = linked_content.get("CustomFields").get("playbooktaskserrors", {})  # table of the linked incident
