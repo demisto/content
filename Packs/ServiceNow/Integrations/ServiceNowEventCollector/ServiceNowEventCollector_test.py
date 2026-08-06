@@ -540,6 +540,133 @@ class TestFetchActivity:
         called_kwargs = mock_http_request.call_args.kwargs
         assert called_kwargs["params"]["sysparm_query"] == "ORDERBYsys_created_on^sys_created_on>2025-01-01 00:00:00"
 
+    # ------------- Test Client.search_events sysparm_no_count (XSUP-71435) ------------- #
+    @pytest.mark.parametrize(
+        "log_type",
+        [LogType.AUDIT, LogType.SYSLOG_TRANSACTIONS, LogType.OUTBOUND_HTTP_LOG],
+    )
+    def test_search_events_table_api_sends_sysparm_no_count(self, mocker, log_type):
+        """
+
+        Given:
+            - A Table API log type (audit, syslog transactions, or outbound HTTP log).
+        When:
+            - search_events builds the ServiceNow query.
+        Then:
+            - The request includes 'sysparm_no_count=true' so ServiceNow skips the expensive
+              total-count aggregate that caused "Transaction cancelled: maximum execution time
+              exceeded" timeouts on large instances.
+        """
+        mock_http_request = mocker.patch.object(self.client.sn_client, "http_request", return_value={"result": []})
+
+        self.client.search_events(from_time="2025-01-01 00:00:00", log_type=log_type, limit=1)
+
+        called_kwargs = mock_http_request.call_args.kwargs
+        assert called_kwargs["params"].get("sysparm_no_count") == "true"
+
+    def test_search_events_non_table_api_omits_sysparm_no_count(self, mocker):
+        """
+
+        Given:
+            - The CASE log type, which is served by the scoped Customer Service API
+              (/api/sn_customerservice/) and not the Table API.
+        When:
+            - search_events builds the ServiceNow query.
+        Then:
+            - 'sysparm_no_count' is NOT sent, since it is only supported by the Table API.
+        """
+        mock_http_request = mocker.patch.object(self.client.sn_client, "http_request", return_value={"result": []})
+
+        self.client.search_events(from_time="2025-01-01 00:00:00", log_type=LogType.CASE, limit=1)
+
+        called_kwargs = mock_http_request.call_args.kwargs
+        assert "sysparm_no_count" not in called_kwargs["params"]
+
+    @pytest.mark.parametrize(
+        "log_type",
+        [LogType.AUDIT, LogType.SYSLOG_TRANSACTIONS, LogType.OUTBOUND_HTTP_LOG],
+    )
+    def test_is_table_api_returns_true_for_table_api_log_types(self, log_type):
+        """
+        Given:
+            - A Table API log type (audit, syslog transactions, or outbound HTTP log).
+        When:
+            - _is_table_api is called.
+        Then:
+            - It returns True.
+        """
+        assert Client._is_table_api(log_type) is True
+
+    def test_is_table_api_returns_false_for_scoped_api_log_type(self):
+        """
+        Given:
+            - The CASE log type, served by the scoped Customer Service API
+              (/api/sn_customerservice/) and not the Table API.
+        When:
+            - _is_table_api is called.
+        Then:
+            - It returns False.
+        """
+        assert Client._is_table_api(LogType.CASE) is False
+
+    @pytest.mark.parametrize(
+        "log_type",
+        [LogType.AUDIT, LogType.SYSLOG_TRANSACTIONS, LogType.OUTBOUND_HTTP_LOG],
+    )
+    def test_is_table_api_true_regardless_of_api_version(self, log_type):
+        """
+        Given:
+            - A Table API log type and a client configured with a non-empty api_version.
+        When:
+            - _is_table_api is called.
+        Then:
+            - It still returns True. This guards the invariant that the version-based URL
+              mutation performed in _get_api_url never leaks into the _is_table_api decision,
+              since _is_table_api reads the raw log_type.api_base rather than the built URL.
+        """
+        self.client.api_version = "v2"
+
+        # Sanity: the built URL is versioned, proving api_version is in effect.
+        assert "/v2/" in self.client._get_api_url(log_type)
+        # Invariant: detection is unaffected by the version.
+        assert Client._is_table_api(log_type) is True
+
+    def test_search_events_table_api_sends_sysparm_no_count_with_api_version(self, mocker):
+        """
+        Given:
+            - A Table API log type and a client configured with a non-empty api_version.
+        When:
+            - search_events builds the ServiceNow query.
+        Then:
+            - 'sysparm_no_count=true' is still sent, proving api_version does not suppress
+              the timeout mitigation on the Table API.
+        """
+        self.client.api_version = "v2"
+        mock_http_request = mocker.patch.object(self.client.sn_client, "http_request", return_value={"result": []})
+
+        self.client.search_events(from_time="2025-01-01 00:00:00", log_type=LogType.AUDIT, limit=1)
+
+        called_kwargs = mock_http_request.call_args.kwargs
+        assert "/v2/" in called_kwargs["full_url"]
+        assert called_kwargs["params"].get("sysparm_no_count") == "true"
+
+    def test_search_events_non_table_api_omits_sysparm_no_count_with_api_version(self, mocker):
+        """
+        Given:
+            - The CASE log type (scoped API) and a client configured with a non-empty api_version.
+        When:
+            - search_events builds the ServiceNow query.
+        Then:
+            - 'sysparm_no_count' is NOT sent, even when a version is configured.
+        """
+        self.client.api_version = "v2"
+        mock_http_request = mocker.patch.object(self.client.sn_client, "http_request", return_value={"result": []})
+
+        self.client.search_events(from_time="2025-01-01 00:00:00", log_type=LogType.CASE, limit=1)
+
+        called_kwargs = mock_http_request.call_args.kwargs
+        assert "sysparm_no_count" not in called_kwargs["params"]
+
     # ------------- Test Client._get_api_url --------------------- #
     @pytest.mark.parametrize(
         "log_type, api_version, expected_url",
