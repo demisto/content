@@ -24,7 +24,7 @@ configuration:
   section: Collect
 - defaultvalue: Incidents
   display: Module To Use
-  additionalinfo: "Choose the module you want to use: Incidents, Compromised Cards, Breached Credentials, and Domain/Subdomain Infringements."
+  additionalinfo: "The module to use: Incidents, Compromised Cards, Breached Credentials, Malware Logs, Domain/Subdomain Infringements, Social Media Fraud, Gambling Sites, or Money Mules."
   name: module_to_use
   required: false
   type: 15
@@ -35,10 +35,10 @@ configuration:
   - Malware Logs
   - Domain Infringement
   - Subdomain Infringement
+  - Social Media Fraud
+  - Gambling Sites
+  - Money Mules
   section: Collect
-  hidden:
-  - marketplacev2
-  - platform
 - name: retrieve_screenshots
   required: false
   type: 8
@@ -139,7 +139,7 @@ script:
       required: true
     outputs:
     - contextPath: CyberBlindspot.RemoteIncident.id
-      description: Unique ID for the incident record.
+      description: The unique ID for the incident record.
     - contextPath: CyberBlindspot.RemoteIncident.brand
       description: The organization the incident is associated with.
     - contextPath: CyberBlindspot.RemoteIncident.coa
@@ -151,11 +151,11 @@ script:
     - contextPath: CyberBlindspot.RemoteIncident.severity
       description: The severity of the incident.
     - contextPath: CyberBlindspot.RemoteIncident.subject
-      description: Asset or title of incident.
+      description: The asset or title of the incident.
     - contextPath: CyberBlindspot.RemoteIncident.type
-      description: Incident type on remote server.
+      description: The incident type on the remote server.
     - contextPath: CyberBlindspot.RemoteIncident.remarks
-      description: Remarks about the incident.
+      description: The remarks about the incident.
     - contextPath: CyberBlindspot.RemoteIncident.created_date
       description: The creation date of the incident (legacy).
     - contextPath: CyberBlindspot.RemoteIncident.updated_date
@@ -179,13 +179,13 @@ script:
     - contextPath: CyberBlindspot.RemoteIncident.domain
       description: The domain related to the breached data or compromised device.
     - contextPath: CyberBlindspot.RemoteIncident.email
-      description: Email found in the breached data.
+      description: The email found in the breached data.
     - contextPath: CyberBlindspot.RemoteIncident.username
-      description: Username found in the breached data.
+      description: The username found in the breached data.
     - contextPath: CyberBlindspot.RemoteIncident.password
-      description: Password found in the breached data or compromised account.
+      description: The password found in the breached data or compromised account.
     - contextPath: CyberBlindspot.RemoteIncident.executive_name
-      description: Executive member's name related to the breached data.
+      description: The executive member's name related to the breached data.
     - contextPath: CyberBlindspot.RemoteIncident.confirmation_time
       description: The time of infringement confirmation.
     - contextPath: CyberBlindspot.RemoteIncident.risks
@@ -213,7 +213,7 @@ script:
     - contextPath: CyberBlindspot.RemoteIncident.user_domain
       description: The domain of the compromised user.
     - contextPath: CyberBlindspot.RemoteIncident.website
-      description: The website compromised.
+      description: The website that was compromised.
     - contextPath: CyberBlindspot.RemoteIncident.sources
       description: The sources reporting the compromise.
     - contextPath: CyberBlindspot.RemoteIncident.source_uri
@@ -226,6 +226,58 @@ script:
       description: The external link to the remote platform.
     - contextPath: CyberBlindspot.RemoteIncident.compromise_details
       description: The details of the compromise.
+    - contextPath: CyberBlindspot.RemoteIncident.platform
+      description: The social network platform for social media fraud findings.
+    - contextPath: CyberBlindspot.RemoteIncident.risk_score
+      description: The numeric risk score from CBS.
+    - contextPath: CyberBlindspot.RemoteIncident.money_mule_id
+      description: The CBS money mule finding ID.
+    - contextPath: CyberBlindspot.RemoteIncident.account_identifier
+      description: The account identifier tied to the money mule.
+    - contextPath: CyberBlindspot.RemoteIncident.suspect_names
+      description: The names associated with the money mule.
+    - contextPath: CyberBlindspot.RemoteIncident.suspect_emails
+      description: The email addresses associated with the money mule.
+    - contextPath: CyberBlindspot.RemoteIncident.suspect_phones
+      description: The phone numbers associated with the money mule.
+    - contextPath: CyberBlindspot.RemoteIncident.transfer_amount
+      description: The transfer amount when present.
+    - contextPath: CyberBlindspot.RemoteIncident.transfer_currency
+      description: The currency code for the transfer.
+    - contextPath: CyberBlindspot.RemoteIncident.bank_account_holder_name
+      description: The name on the bank account.
+    - contextPath: CyberBlindspot.RemoteIncident.bank_name
+      description: The bank name tied to the money mule.
+    - contextPath: CyberBlindspot.RemoteIncident.bank_account_country
+      description: The country of the bank account.
+    - contextPath: CyberBlindspot.RemoteIncident.bic
+      description: The Bank Identifier Code.
+    - contextPath: CyberBlindspot.RemoteIncident.finding_id
+      description: The CBS gambling-site finding ID.
+    - contextPath: CyberBlindspot.RemoteIncident.url
+      description: The primary gambling site URL.
+    - contextPath: CyberBlindspot.RemoteIncident.submitted_url
+      description: The URL submitted to CBS for scanning.
+    - contextPath: CyberBlindspot.RemoteIncident.landing_url
+      description: The landing page URL observed for the site.
+    - contextPath: CyberBlindspot.RemoteIncident.title
+      description: The page title observed during scan.
+    - contextPath: CyberBlindspot.RemoteIncident.resolving_ip
+      description: The resolved IP for the gambling site.
+    - contextPath: CyberBlindspot.RemoteIncident.tags
+      description: The tags applied to the gambling site finding.
+    - contextPath: CyberBlindspot.RemoteIncident.status_code
+      description: The HTTP status code from scan.
+    - contextPath: CyberBlindspot.RemoteIncident.url_status
+      description: The URL reachability status.
+    - contextPath: CyberBlindspot.RemoteIncident.scan_status
+      description: The scan completion status.
+    - contextPath: CyberBlindspot.RemoteIncident.enrichment
+      description: The DNS enrichment payload.
+    - contextPath: CyberBlindspot.RemoteIncident.external_links
+      description: The external links discovered on the gambling site.
+    - contextPath: CyberBlindspot.RemoteIncident.internal_links
+      description: The internal links discovered on the gambling site.
   - name: ctm360-cbs-incident-retrieve-screenshots
     arguments:
     - description: The files to retrieve.
@@ -278,7 +330,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4095827
+  dockerimage: demisto/python3:3.12.13.9059085
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
