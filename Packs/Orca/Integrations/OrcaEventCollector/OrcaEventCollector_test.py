@@ -1,59 +1,71 @@
-import json
-
 import demistomock as demisto
 import pytest
 from freezegun import freeze_time
 
-from OrcaEventCollector import Client, get_alerts, add_time_key_to_alerts, orca_test_module, main
+from OrcaEventCollector import (
+    Client,
+    DEFAULT_PAGE_SIZE,
+    TEST_MODULE_LIMIT,
+    get_alerts,
+    add_time_key_to_alerts,
+    add_entry_status_to_alerts,
+    dedup_alerts,
+    get_boundary_ids,
+    orca_test_module,
+    main,
+)
 from CommonServerPython import DemistoException
 
 
 # --- MOCK DATA ---
 
+# 'now' used by freeze_time across the main tests; the run-start upper bound (end_time) equals this.
+FROZEN_NOW = "2023-01-04T00:00:00"
+END_TIME = "2023-01-04T00:00:00Z"
 
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
 
-
-MOCK_API_RESPONSES = util_load_json("test_data/get_alerts_test.json")
+def _make_alerts(count: int) -> list:
+    """Build a list of ``count`` minimal alert dicts with unique AlertId/LastUpdated values."""
+    return [
+        {
+            "id": f"alert-{i}",
+            "data": {
+                "AlertId": {"value": f"alert-{i}"},
+                "CreatedAt": {"value": f"2023-01-01T00:00:{i:02d}Z"},
+                "LastUpdated": {"value": f"2023-01-01T00:00:{i:02d}Z"},
+            },
+        }
+        for i in range(count)
+    ]
 
 
 # --- CLIENT CLASS TESTS ---
 
 
 @pytest.mark.parametrize(
-    "next_page_token, expected_start_index",
-    [
-        (None, 0),
-        ("100", 100),
-        ("abc", 0),  # Invalid token defaults to 0
-    ],
+    "start_index",
+    [0, 100, 250],
 )
-def test_client_get_alerts_request_payload(mocker, next_page_token, expected_start_index):
+def test_client_get_alerts_request_payload(mocker, start_index):
     """
     Given:
-        - A last_fetch time and various next_page_tokens.
+        - A last_fetch (lower bound), end_time (upper bound) and a start_at_index (SQL OFFSET).
     When:
         - Calling get_alerts_request.
     Then:
-        - Ensure the _http_request method is called with the correct POST payload.
-        - Ensure pagination (start_at_index) is handled correctly.
+        - Ensure the _http_request method is called with the correct POST payload:
+          a two-sided LastUpdated window (gte/lt, no value_type), offset-based start_at_index,
+          order_by LastUpdated, and LastUpdated present in the select list.
     """
-    mocker.patch.object(demisto, "info")  # Mock demisto.info for the invalid token case
     mock_http_request = mocker.patch.object(Client, "_http_request")
 
     client = Client(server_url="https://test.com/api", headers={})
     last_fetch = "2023-01-01T00:00:00Z"
-    max_fetch = 150
+    end_time = "2023-01-04T00:00:00Z"
+    page_size = 150
 
-    client.get_alerts_request(max_fetch, last_fetch, next_page_token)
+    client.get_alerts_request(page_size, start_index, last_fetch, end_time)
 
-    # Verify the invalid token case logs an info message
-    if next_page_token == "abc":
-        demisto.info.assert_called_with("Invalid next_page_token (expected integer for start_at_index): abc. Defaulting to 0.")
-
-    # Verify the payload sent to _http_request
     expected_payload = {
         "query": {
             "models": ["Alert"],
@@ -62,13 +74,14 @@ def test_client_get_alerts_request_payload(mocker, next_page_token, expected_sta
                 "type": "operation",
                 "operator": "and",
                 "values": [
-                    {"key": "CreatedAt", "values": [last_fetch], "type": "datetime", "operator": "date_gte", "value_type": "days"}
+                    {"key": "LastUpdated", "values": [last_fetch], "type": "datetime", "operator": "gte"},
+                    {"key": "LastUpdated", "values": [end_time], "type": "datetime", "operator": "lt"},
                 ],
             },
         },
-        "limit": max_fetch,
-        "start_at_index": expected_start_index,
-        "order_by[]": ["CreatedAt"],
+        "limit": page_size,
+        "start_at_index": start_index,
+        "order_by[]": ["LastUpdated"],
         "select": [
             "AlertId",
             "AlertType",
@@ -83,6 +96,7 @@ def test_client_get_alerts_request_payload(mocker, next_page_token, expected_sta
             "Source",
             "Status",
             "CreatedAt",
+            "LastUpdated",
             "LastSeen",
             "Labels",
         ],
@@ -95,69 +109,270 @@ def test_client_get_alerts_request_payload(mocker, next_page_token, expected_sta
 
 
 @freeze_time("2023-01-04T00:00:00")
-def test_add_time_key_to_alerts_corrected(mocker):
+def test_add_time_key_to_alerts_uses_last_updated(mocker):
     """
     Given:
-        - A list of alerts in the actual API response format.
+        - Alerts with LastUpdated and/or CreatedAt values.
     When:
-        - Calling add_time_key_to_alerts (the corrected version).
+        - Calling add_time_key_to_alerts.
     Then:
-        - Ensure _time key is added and correctly formatted from 'data.CreatedAt.value'.
-        - Ensure _time key is None for alerts with missing timestamps.
+        - _time is taken from LastUpdated when present.
+        - Falls back to CreatedAt when LastUpdated is missing.
+        - Falls back to 'now' when both are missing/unparseable.
     """
-    mocker.patch.object(demisto, "debug")  # Mock debug calls
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
     alerts = [
-        {"data": {"CreatedAt": {"value": "2023-01-01T12:00:00Z"}}},
-        {"data": {"CreatedAt": {"value": "2023-01-02T13:00:00+00:00"}}},  # Test timezone
-        {"data": {"CreatedAt": {"value": None}}},
-        {"data": {"CreatedAt": {}}},  # Missing 'value'
-        {"data": {}},  # Missing 'CreatedAt'
-        {},  # Empty alert
+        # LastUpdated present -> used for _time.
+        {"data": {"CreatedAt": {"value": "2023-01-01T12:00:00Z"}, "LastUpdated": {"value": "2023-01-02T09:00:00Z"}}},
+        # LastUpdated with timezone offset -> normalized to Z.
+        {"data": {"LastUpdated": {"value": "2023-01-02T13:00:00+00:00"}}},
+        # LastUpdated missing -> fall back to CreatedAt.
+        {"data": {"CreatedAt": {"value": "2023-01-01T05:00:00Z"}}},
+        # Both missing -> fall back to now.
+        {"data": {}},
+        {},  # Empty alert -> now.
     ]
 
     expected = [
-        {"data": {"CreatedAt": {"value": "2023-01-01T12:00:00Z"}}, "_time": "2023-01-01T12:00:00Z"},
-        {"data": {"CreatedAt": {"value": "2023-01-02T13:00:00+00:00"}}, "_time": "2023-01-02T13:00:00Z"},
-        {"data": {"CreatedAt": {"value": None}}, "_time": "2023-01-04T00:00:00Z"},
-        {"data": {"CreatedAt": {}}, "_time": "2023-01-04T00:00:00Z"},
+        {
+            "data": {"CreatedAt": {"value": "2023-01-01T12:00:00Z"}, "LastUpdated": {"value": "2023-01-02T09:00:00Z"}},
+            "_time": "2023-01-02T09:00:00Z",
+        },
+        {"data": {"LastUpdated": {"value": "2023-01-02T13:00:00+00:00"}}, "_time": "2023-01-02T13:00:00Z"},
+        {"data": {"CreatedAt": {"value": "2023-01-01T05:00:00Z"}}, "_time": "2023-01-01T05:00:00Z"},
         {"data": {}, "_time": "2023-01-04T00:00:00Z"},
         {"_time": "2023-01-04T00:00:00Z"},
     ]
 
-    result = add_time_key_to_alerts(alerts)
-    assert result == expected
-
-    # Test empty list
+    assert add_time_key_to_alerts(alerts) == expected
     assert add_time_key_to_alerts([]) == []
+
+
+def test_add_entry_status_to_alerts(mocker):
+    """
+    Given:
+        - Alerts with various CreatedAt/LastUpdated relationships.
+    When:
+        - Calling add_entry_status_to_alerts.
+    Then:
+        - _ENTRY_STATUS is 'new' when LastUpdated == CreatedAt.
+        - _ENTRY_STATUS is 'updated' when LastUpdated > CreatedAt.
+        - _ENTRY_STATUS defaults to 'new' when a timestamp is missing.
+    """
+    mocker.patch.object(demisto, "debug")
+    alerts = [
+        # Equal -> new.
+        {
+            "data": {
+                "AlertId": {"value": "a"},
+                "CreatedAt": {"value": "2023-01-01T12:00:00Z"},
+                "LastUpdated": {"value": "2023-01-01T12:00:00Z"},
+            }
+        },
+        # LastUpdated later -> updated.
+        {
+            "data": {
+                "AlertId": {"value": "b"},
+                "CreatedAt": {"value": "2023-01-01T12:00:00Z"},
+                "LastUpdated": {"value": "2023-01-02T12:00:00Z"},
+            }
+        },
+        # Missing LastUpdated -> new (safe default).
+        {"data": {"AlertId": {"value": "c"}, "CreatedAt": {"value": "2023-01-01T12:00:00Z"}}},
+        # Missing both -> new.
+        {"data": {"AlertId": {"value": "d"}}},
+    ]
+
+    result = add_entry_status_to_alerts(alerts)
+
+    assert [a["_ENTRY_STATUS"] for a in result] == ["new", "updated", "new", "new"]
+    assert add_entry_status_to_alerts([]) == []
+
+
+def test_dedup_alerts_removes_boundary_duplicates(mocker):
+    """
+    Given:
+        - Alerts where some share the previous run's boundary second and were already seen.
+    When:
+        - Calling dedup_alerts with the seen IDs and boundary time.
+    Then:
+        - Only alerts whose (LastUpdated == boundary AND AlertId in seen) are removed.
+    """
+    mocker.patch.object(demisto, "debug")
+    boundary = "2023-01-01T00:00:05Z"
+    alerts = [
+        {"data": {"AlertId": {"value": "seen-1"}, "LastUpdated": {"value": boundary}}},  # dup -> removed
+        {"data": {"AlertId": {"value": "seen-2"}, "LastUpdated": {"value": boundary}}},  # dup -> removed
+        {"data": {"AlertId": {"value": "new-1"}, "LastUpdated": {"value": boundary}}},  # same second, not seen -> kept
+        {"data": {"AlertId": {"value": "new-2"}, "LastUpdated": {"value": "2023-01-01T00:00:06Z"}}},  # later -> kept
+    ]
+
+    result = dedup_alerts(alerts, ["seen-1", "seen-2"], boundary)
+
+    kept_ids = [a["data"]["AlertId"]["value"] for a in result]
+    assert kept_ids == ["new-1", "new-2"]
+
+
+def test_dedup_alerts_noop_when_no_seen_ids():
+    """
+    Given:
+        - No previously-seen boundary IDs (e.g., first run).
+    When:
+        - Calling dedup_alerts.
+    Then:
+        - The alerts list is returned unchanged.
+    """
+    alerts = _make_alerts(3)
+    assert dedup_alerts(alerts, [], "2023-01-01T00:00:00Z") == alerts
+    assert dedup_alerts([], ["x"], "2023-01-01T00:00:00Z") == []
+
+
+def test_get_boundary_ids():
+    """
+    Given:
+        - Alerts ordered by LastUpdated with several sharing the newest second.
+    When:
+        - Calling get_boundary_ids with the newest LastUpdated value.
+    Then:
+        - Only AlertIds sharing that boundary second are returned.
+    """
+    boundary = "2023-01-01T00:00:09Z"
+    alerts = [
+        {"data": {"AlertId": {"value": "old"}, "LastUpdated": {"value": "2023-01-01T00:00:08Z"}}},
+        {"data": {"AlertId": {"value": "b1"}, "LastUpdated": {"value": boundary}}},
+        {"data": {"AlertId": {"value": "b2"}, "LastUpdated": {"value": boundary}}},
+    ]
+
+    assert get_boundary_ids(alerts, boundary) == ["b1", "b2"]
 
 
 # --- COMMAND FUNCTION TESTS ---
 
 
-def test_get_alerts(mocker):
+def test_get_alerts_single_page(mocker):
     """
     Given:
-        - A mock client and a mock response from the file.
+        - An API that returns a single short page (fewer rows than the page size).
     When:
-        - Calling get_alerts command.
+        - Calling get_alerts.
     Then:
-        - The list of alerts and the next page token is returned.
+        - All alerts from the single page are returned.
+        - Only one API request is made (no extra page requested after a short page).
     """
-    # Load data from our mock file
-    MOCK_API_RESPONSES = util_load_json("test_data/get_alerts_test.json")
-    mock_response = MOCK_API_RESPONSES["page_1_with_more"]
-
-    # Mock the client's get_alerts_request method
     client = Client(server_url="https://test.com/api", headers={})
-    mocker.patch.object(client, "get_alerts_request", return_value=mock_response)
+    page = _make_alerts(3)
+    mock_request = mocker.patch.object(client, "get_alerts_request", return_value={"status": "success", "data": page})
+    mocker.patch.object(demisto, "debug")
 
-    expected_alerts = mock_response.get("data", [])
-    expected_next_page_token = mock_response.get("next_page_token")
+    alerts = get_alerts(client, max_fetch=1000, last_fetch="2023-01-01T00:00:00Z", end_time=END_TIME, page_size=DEFAULT_PAGE_SIZE)
 
-    alerts, next_page_token = get_alerts(client, 1, "2023-01-01T00:00:00Z", None)
+    assert alerts == page
+    mock_request.assert_called_once()
+    # First (and only) page is requested at offset 0 (start_index is the 2nd positional arg).
+    assert mock_request.call_args.args[1] == 0
+    # The end_time upper bound is passed through.
+    assert mock_request.call_args.args[3] == END_TIME
 
-    assert alerts == expected_alerts
-    assert next_page_token == expected_next_page_token
+
+def test_get_alerts_paginates_multiple_pages(mocker):
+    """
+    Given:
+        - An API with more results than a single page (offset-based pagination, no token).
+    When:
+        - Calling get_alerts with a small page_size.
+    Then:
+        - The offset (start_at_index) advances by the number of rows returned each page.
+        - Pagination stops on the first short page.
+        - All alerts across pages are returned in order.
+    """
+    client = Client(server_url="https://test.com/api", headers={})
+    full_page_1 = _make_alerts(2)
+    full_page_2 = _make_alerts(2)
+    short_page_3 = _make_alerts(1)
+    responses = [
+        {"status": "success", "data": full_page_1},
+        {"status": "success", "data": full_page_2},
+        {"status": "success", "data": short_page_3},
+    ]
+    mock_request = mocker.patch.object(client, "get_alerts_request", side_effect=responses)
+    mocker.patch.object(demisto, "debug")
+
+    alerts = get_alerts(client, max_fetch=1000, last_fetch="2023-01-01T00:00:00Z", end_time=END_TIME, page_size=2)
+
+    assert len(alerts) == 5
+    assert alerts == full_page_1 + full_page_2 + short_page_3
+    # Three pages requested at offsets 0, 2, 4 (advance by rows returned).
+    assert mock_request.call_count == 3
+    assert [call.args[1] for call in mock_request.call_args_list] == [0, 2, 4]
+
+
+def test_get_alerts_stops_on_empty_page(mocker):
+    """
+    Given:
+        - A full page followed by an empty page (exact multiple of page_size).
+    When:
+        - Calling get_alerts.
+    Then:
+        - The empty page ends pagination and only the first page's alerts are returned.
+    """
+    client = Client(server_url="https://test.com/api", headers={})
+    full_page = _make_alerts(2)
+    responses = [
+        {"status": "success", "data": full_page},
+        {"status": "success", "data": []},
+    ]
+    mock_request = mocker.patch.object(client, "get_alerts_request", side_effect=responses)
+    mocker.patch.object(demisto, "debug")
+
+    alerts = get_alerts(client, max_fetch=1000, last_fetch="2023-01-01T00:00:00Z", end_time=END_TIME, page_size=2)
+
+    assert alerts == full_page
+    assert mock_request.call_count == 2
+
+
+def test_get_alerts_respects_max_fetch(mocker):
+    """
+    Given:
+        - An API that would return more results than max_fetch.
+    When:
+        - Calling get_alerts with a max_fetch smaller than the available data.
+    Then:
+        - No more than max_fetch alerts are returned.
+        - The last page request is capped to the remaining number of events.
+    """
+    client = Client(server_url="https://test.com/api", headers={})
+    responses = [
+        {"status": "success", "data": _make_alerts(2)},
+        {"status": "success", "data": _make_alerts(1)},
+    ]
+    mock_request = mocker.patch.object(client, "get_alerts_request", side_effect=responses)
+    mocker.patch.object(demisto, "debug")
+
+    alerts = get_alerts(client, max_fetch=3, last_fetch="2023-01-01T00:00:00Z", end_time=END_TIME, page_size=2)
+
+    assert len(alerts) == 3
+    # Second call requests only the remaining 1 event (max_fetch - already collected).
+    assert mock_request.call_args_list[1].args[0] == 1
+
+
+def test_get_alerts_empty_first_page(mocker):
+    """
+    Given:
+        - An API that returns no results at all.
+    When:
+        - Calling get_alerts.
+    Then:
+        - An empty list is returned and only one request is made.
+    """
+    client = Client(server_url="https://test.com/api", headers={})
+    mock_request = mocker.patch.object(client, "get_alerts_request", return_value={"status": "success", "data": []})
+    mocker.patch.object(demisto, "debug")
+
+    alerts = get_alerts(client, max_fetch=1000, last_fetch="2023-01-01T00:00:00Z", end_time=END_TIME)
+
+    assert alerts == []
+    mock_request.assert_called_once()
 
 
 def test_orca_test_module(mocker):
@@ -167,27 +382,29 @@ def test_orca_test_module(mocker):
     When:
         - Calling test-module.
     Then:
-        - Return 'ok' on success.
+        - Return 'ok' on success and request only TEST_MODULE_LIMIT events at offset 0
+          with the two-sided window (last_fetch, end_time).
         - Raise the correct exception on failure (404).
         - Raise a generic exception on other failures.
     """
     client = Client(server_url="https://test.com/api", headers={})
 
     # Test success
-    mocker.patch.object(client, "get_alerts_request", return_value={})
-    assert orca_test_module(client, "2023-01-01T00:00:00Z", 1) == "ok"
+    mock_request = mocker.patch.object(client, "get_alerts_request", return_value={"status": "success", "data": []})
+    assert orca_test_module(client, "2023-01-01T00:00:00Z", END_TIME) == "ok"
+    mock_request.assert_called_once_with(TEST_MODULE_LIMIT, 0, "2023-01-01T00:00:00Z", END_TIME)
 
     # Test 404 failure
     mocker.patch.object(client, "get_alerts_request", side_effect=DemistoException("Error in API call [404] - Not Found"))
     with pytest.raises(Exception) as e:
-        orca_test_module(client, "2023-01-01T00:00:00Z", 1)
+        orca_test_module(client, "2023-01-01T00:00:00Z", END_TIME)
     assert "Error in API call [404] - Not Found" in str(e.value)
     assert "URL is invalid" in str(e.value)
 
     # Test other failure
     mocker.patch.object(client, "get_alerts_request", side_effect=DemistoException("Some other error"))
     with pytest.raises(Exception) as e:
-        orca_test_module(client, "2023-01-01T00:00:00Z", 1)
+        orca_test_module(client, "2023-01-01T00:00:00Z", END_TIME)
     assert "Some other error" in str(e.value)
 
 
@@ -204,64 +421,51 @@ BASE_PARAMS = {
 }
 
 
-@freeze_time("2023-01-04T00:00:00")  # Set a consistent 'now' for '3 days'
+def _alert(alert_id: str, last_updated: str, created: str | None = None) -> dict:
+    """Build an alert with LastUpdated (and optional CreatedAt) for main() tests."""
+    data = {"AlertId": {"value": alert_id}, "LastUpdated": {"value": last_updated}}
+    data["CreatedAt"] = {"value": created if created is not None else last_updated}
+    return {"data": data}
+
+
+@freeze_time(FROZEN_NOW)  # Set a consistent 'now' for '3 days' and end_time
 @pytest.mark.parametrize(
-    "test_name, last_run_in, mock_data_key, expected_last_fetch_arg, "
-    "expected_token_arg, expected_set_last_run, expected_events_sent_count",
+    "test_name, last_run_in, alerts, expected_last_fetch_arg, expected_set_last_run, expected_events_sent_count",
     [
         (
-            "1. First Run (fetches events, last page)",
+            "1. First Run (fetches events)",
             {},  # No last run
-            "page_2_last",  # Mocks 2 alerts, no more pages
+            [
+                _alert("a", "2023-01-01T12:00:00Z"),
+                _alert("b", "2023-01-01T13:00:00Z"),
+            ],
             "2023-01-01T00:00:00Z",  # '3 days' before freeze_time
-            None,
-            {"lastRun": "2023-01-01T13:00:00Z", "next_page_token": None},  # Sets lastRun to last event
+            {"lastRun": "2023-01-01T13:00:00Z", "lastRunIds": ["b"]},  # newest LastUpdated + boundary ids
             2,
         ),
         (
             "2. First Run (no events)",
             {},  # No last run
-            "empty",  # Mocks 0 alerts
-            "2023-01-01T00:00:00Z",  # '3 days' before freeze_time
-            None,
-            {"lastRun": "2023-01-01T00:00:00Z", "next_page_token": None},  # Sets lastRun back to first_fetch time
+            [],  # No alerts
+            "2023-01-01T00:00:00Z",
+            {"lastRun": "2023-01-01T00:00:00Z", "lastRunIds": []},  # Keeps first_fetch time, no ids
             0,
         ),
         (
             "3. Second Run (fetches new events)",
-            {"lastRun": "2023-01-01T09:00:00Z", "next_page_token": None},  # Last run was T1
-            "single_alert_no_more",  # Mocks 1 alert, no more pages
+            {"lastRun": "2023-01-01T09:00:00Z", "lastRunIds": ["z"]},
+            [_alert("c", "2023-01-02T10:00:00Z")],
             "2023-01-01T09:00:00Z",  # Uses lastRun time
-            None,
-            {"lastRun": "2023-01-02T10:00:00Z", "next_page_token": None},  # Sets lastRun to last event
+            {"lastRun": "2023-01-02T10:00:00Z", "lastRunIds": ["c"]},
             1,
         ),
         (
             "4. Second Run (no new events)",
-            {"lastRun": "2023-01-01T09:00:00Z", "next_page_token": None},
-            "empty",  # Mocks 0 alerts
+            {"lastRun": "2023-01-01T09:00:00Z", "lastRunIds": ["z"]},
+            [],  # No alerts
             "2023-01-01T09:00:00Z",
-            None,
-            {"lastRun": "2023-01-01T09:00:00Z", "next_page_token": None},  # lastRun time is unchanged
+            {"lastRun": "2023-01-01T09:00:00Z", "lastRunIds": ["z"]},  # unchanged, ids preserved
             0,
-        ),
-        (
-            "5. Pagination (Page 1)",
-            {"lastRun": "2023-01-01T09:00:00Z", "next_page_token": None},
-            "page_1_with_more",  # Mocks 2 alerts, has next_page_token
-            "2023-01-01T09:00:00Z",
-            None,
-            {"lastRun": "2023-01-01T09:00:00Z", "next_page_token": "100"},  # lastRun time unchanged, token added
-            2,
-        ),
-        (
-            "6. Pagination (Page 2 - last page)",
-            {"lastRun": "2023-01-01T09:00:00Z", "next_page_token": "100"},  # Has page token
-            "page_2_last",  # Mocks 2 alerts, no more pages
-            "2023-01-01T09:00:00Z",  # Uses lastRun time
-            "100",  # Uses lastRun token
-            {"lastRun": "2023-01-01T13:00:00Z", "next_page_token": None},  # Sets lastRun to last event, token cleared
-            2,
         ),
     ],
 )
@@ -269,47 +473,41 @@ def test_main_fetch_events_scenarios(
     mocker,
     test_name,
     last_run_in,
-    mock_data_key,
+    alerts,
     expected_last_fetch_arg,
-    expected_token_arg,
     expected_set_last_run,
     expected_events_sent_count,
 ):
     """
     Given:
-        - Various 'fetch-events' scenarios (first run, second run, pagination, no events).
+        - Various 'fetch-events' scenarios (first run, second run, no events).
     When:
         - Calling main() with the 'fetch-events' command.
     Then:
-        - Ensure get_alerts is called with the correct time and token.
+        - Ensure get_alerts is called with (client, max_fetch, last_fetch, end_time).
         - Ensure send_events_to_xsiam is called with the correct number of events.
-        - Ensure setLastRun is called with the correct new lastRun object.
+        - Ensure setLastRun persists both lastRun (newest LastUpdated) and lastRunIds.
     """
-    # Load mock data from file and select the scenario
-    api_response = MOCK_API_RESPONSES[mock_data_key]
-
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(demisto, "params", return_value=BASE_PARAMS)
     mocker.patch.object(demisto, "getLastRun", return_value=last_run_in)
     mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
     mock_send_events = mocker.patch("OrcaEventCollector.send_events_to_xsiam")
 
-    # Mock get_alerts to return the specific data and token for this scenario
-    mock_get_alerts = mocker.patch(
-        "OrcaEventCollector.get_alerts", return_value=(api_response.get("data"), api_response.get("next_page_token"))
-    )
+    # Mock get_alerts to return the scenario's alerts (returns a plain list).
+    mock_get_alerts = mocker.patch("OrcaEventCollector.get_alerts", return_value=alerts)
 
-    mocker.patch.object(demisto, "debug")  # Mock debug calls
-    mocker.patch.object(demisto, "info")  # Mock info calls
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
 
     main()
 
-    # 1. Verify get_alerts call
+    # 1. Verify get_alerts call (client, max_fetch, last_fetch, end_time).
     mock_get_alerts.assert_called_once_with(
         mocker.ANY,  # the client instance
         1000,  # max_fetch from BASE_PARAMS
         expected_last_fetch_arg,
-        expected_token_arg,
+        END_TIME,
     )
 
     # 2. Verify send_events call
@@ -317,17 +515,52 @@ def test_main_fetch_events_scenarios(
         mock_send_events.assert_called_once()
         sent_alerts = mock_send_events.call_args[0][0]
         assert len(sent_alerts) == expected_events_sent_count
-        # Check that _time was added correctly
-        assert "_time" in sent_alerts[0]
-        assert sent_alerts[0]["_time"] is not None
+        # Check that _time and _ENTRY_STATUS were added.
+        assert sent_alerts[0].get("_time") is not None
+        assert sent_alerts[0].get("_ENTRY_STATUS") == "new"
     else:
         mock_send_events.assert_not_called()
 
-    # 3. Verify last_run was set
+    # 3. Verify last_run was set with both keys.
     mock_set_last_run.assert_called_once_with(expected_set_last_run)
 
 
-@freeze_time("2023-01-04T00:00:00")
+@freeze_time(FROZEN_NOW)
+def test_main_fetch_events_dedup(mocker):
+    """
+    Given:
+        - A subsequent run whose fetched alerts include one already emitted at the previous
+          run's boundary second (present in lastRunIds).
+    When:
+        - Calling main() with 'fetch-events'.
+    Then:
+        - The boundary duplicate is dropped before sending.
+        - Only the genuinely-new alert is sent to XSIAM.
+    """
+    boundary = "2023-01-02T10:00:00Z"
+    last_run_in = {"lastRun": boundary, "lastRunIds": ["dup"]}
+    fetched = [
+        _alert("dup", boundary),  # already seen at boundary -> removed
+        _alert("fresh", "2023-01-02T10:00:01Z"),  # new -> kept
+    ]
+
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "params", return_value=BASE_PARAMS)
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run_in)
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mock_send_events = mocker.patch("OrcaEventCollector.send_events_to_xsiam")
+    mocker.patch("OrcaEventCollector.get_alerts", return_value=fetched)
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+
+    main()
+
+    sent_alerts = mock_send_events.call_args[0][0]
+    assert [a["data"]["AlertId"]["value"] for a in sent_alerts] == ["fresh"]
+    mock_set_last_run.assert_called_once_with({"lastRun": "2023-01-02T10:00:01Z", "lastRunIds": ["fresh"]})
+
+
+@freeze_time(FROZEN_NOW)
 def test_main_get_events_command(mocker):
     """
     Given:
@@ -335,13 +568,13 @@ def test_main_get_events_command(mocker):
     When:
         - Calling main.
     Then:
-        - Fetches events.
-        - Does *not* send events to XSIAM.
+        - Fetches events (with end_time upper bound).
+        - Does *not* send events to XSIAM (should_push_events is false).
+        - Does *not* dedup (stateless debug command).
         - Returns results via return_results.
-        - Still sets last_run correctly (using new logic).
+        - Does *not* call setLastRun.
     """
-    # Load mock data
-    api_response = MOCK_API_RESPONSES["single_alert_no_more"]
+    alerts = [_alert("c", "2023-01-02T10:00:00Z")]
 
     mocker.patch.object(demisto, "command", return_value="orca-security-get-events")
     mocker.patch.object(demisto, "params", return_value=BASE_PARAMS)
@@ -353,19 +586,16 @@ def test_main_get_events_command(mocker):
     mocker.patch.object(demisto, "debug")
     mocker.patch.object(demisto, "info")
 
-    # Mock get_alerts to return the specific data and token
-    mocker.patch("OrcaEventCollector.get_alerts", return_value=(api_response.get("data"), api_response.get("next_page_token")))
+    mocker.patch("OrcaEventCollector.get_alerts", return_value=alerts)
 
     main()
 
     # 1. Verify results were returned
     mock_return_results.assert_called_once()
-    # Check that the raw_response in CommandResults is the list of alerts
-    assert mock_return_results.call_args[0][0].raw_response == api_response.get("data")
+    assert mock_return_results.call_args[0][0].raw_response == alerts
 
     # 2. Verify events were *not* sent
     mock_send_events.assert_not_called()
 
-    # 3. Verify last_run was still set correctly
-    expected_last_run = {"lastRun": "2023-01-02T10:00:00Z", "next_page_token": None}  # From last event
-    mock_set_last_run.assert_called_once_with(expected_last_run)
+    # 3. Verify last_run was NOT touched by the manual get-events command.
+    mock_set_last_run.assert_not_called()
