@@ -3646,6 +3646,135 @@ class TestUniversalCommand:
             "warnings": None,
         }
 
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_terminal(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true, a single job id, and a job whose status is 'FIN'.
+        When: get_jobs_command is invoked.
+        Then: The returned CommandResults have no scheduled_command (polling stops).
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="2024/08/25 22:09:00",
+            status="FIN",
+            result="OK",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=100,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"polling": "true", "id": "7"})
+
+        assert result.scheduled_command is None
+        assert result.outputs["status"] == "FIN"
+        assert result.outputs["result"] == "OK"
+        assert result.outputs["id"] == 7
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_still_running(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true, a single job id, and a job whose status is 'ACT' (still running).
+        When: get_jobs_command is invoked.
+        Then: The returned CommandResults have a scheduled_command (polling continues).
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="",
+            status="ACT",
+            result="PEND",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=50,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"polling": "true", "id": "7"})
+
+        assert result.scheduled_command is not None
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_no_polling(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: no polling argument (defaults to false).
+        When: get_jobs_command is invoked without polling.
+        Then: The returned CommandResults have no scheduled_command regardless of status.
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="",
+            status="ACT",
+            result="PEND",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=50,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"id": "7"})
+
+        assert result.scheduled_command is None
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_no_id(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true but no id argument (list mode).
+        When: get_jobs_command is invoked.
+        Then: Polling is skipped because there is no deterministic terminal condition.
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = [
+            ShowJobsAllResultData(
+                hostid="fw1",
+                id=1,
+                type="Commit",
+                tfin="",
+                status="ACT",
+                result="PEND",
+                user="admin",
+                tenq="2024/08/25 22:07:53",
+                stoppable="no",
+                positionInQ=0,
+                progress=50,
+                warnings=None,
+                description="",
+            )
+        ]
+
+        result = get_jobs_command({"polling": "true"})
+
+        assert result.scheduled_command is None
+
     def test_download_software(self, mock_topology):
         """
         Test the download software function returns the correct data.
