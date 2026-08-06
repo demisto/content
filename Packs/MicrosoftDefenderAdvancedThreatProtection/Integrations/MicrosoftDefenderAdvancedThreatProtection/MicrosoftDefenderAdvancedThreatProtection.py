@@ -41,9 +41,8 @@ def get_defender_scope(endpoint_type: str) -> str:
     """
     if endpoint_type in GOVERNMENT_ENDPOINT_TYPES:
         return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type], "/.default")
-    return urljoin(
-        MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[endpoint_type], "/windowsatpservice/.default"
-    )
+    return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[endpoint_type], "/windowsatpservice/.default")
+
 
 SEVERITY_TO_NUMBER = {"Informational": 0, "Low": 1, "MediumLow": 2, "MediumHigh": 3, "High": 4}
 
