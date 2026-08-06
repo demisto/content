@@ -10921,3 +10921,155 @@ class TestSynchronousCompression:
         )
 
         assert tasks == [], "Empty non-asset data should return no tasks"
+
+
+class TestModuleTestConnectionErrors:
+    """Tests for module_test() error handling (CRTX-269894)."""
+
+    # The message CommonServerPython's BaseClient builds when a requests ConnectionError occurs,
+    # matching the format at CommonServerPython.py:10625 (see CRTX-269894).
+    DNS_FAILURE_MESSAGE = (
+        "Verify that the server URL parameter is correct and that you have access to the server from your host."
+        "\nError Type: <requests.exceptions.ConnectionError>"
+        "\nHTTPSConnectionPool(host='api.crowdstrike.cominvalid-domain-000', port=443): Max retries exceeded with url:"
+        " /oauth2/token (Caused by NameResolutionError: Failed to resolve 'api.crowdstrike.cominvalid-domain-000')"
+    )
+
+    def test_returns_friendly_message_when_server_url_cannot_be_resolved(self, mocker):
+        """
+        Given:
+            - A Server URL whose host cannot be resolved (as reported in CRTX-269894).
+        When:
+            - Running the test-module command, and the token request fails with a DemistoException
+              wrapping a NameResolutionError.
+        Then:
+            - A friendly message is returned instead of the exception propagating.
+            - The raw connection internals are not exposed to the user.
+        """
+        from CrowdStrikeFalcon import module_test
+
+        mocker.patch("CrowdStrikeFalcon.get_token", side_effect=DemistoException(self.DNS_FAILURE_MESSAGE))
+
+        result = module_test()
+
+        assert result != "ok"
+        assert "HTTPSConnectionPool" not in result
+        assert "NameResolutionError" not in result
+        assert "Max retries exceeded" not in result
+        assert "Server URL" in result
+
+    def test_returns_friendly_message_on_connection_error(self, mocker):
+        """
+        Given:
+            - A server that cannot be reached (network/proxy/firewall failure rather than a bad URL).
+        When:
+            - Running the test-module command and the token request raises a requests ConnectionError.
+        Then:
+            - A friendly message is returned rather than the exception propagating.
+        """
+        from CrowdStrikeFalcon import module_test
+
+        mocker.patch("CrowdStrikeFalcon.get_token", side_effect=requests.exceptions.ConnectionError("connection refused"))
+
+        result = module_test()
+
+        assert result != "ok"
+        assert "Server URL" in result
+
+    def test_message_does_not_blame_the_url_exclusively(self, mocker):
+        """
+        Given:
+            - A connection failure, which may be caused by a wrong URL OR by network/DNS problems.
+        When:
+            - Running the test-module command.
+        Then:
+            - The message mentions connectivity as well as the URL, so users are not misdirected
+              when the URL is correct but the host is unreachable.
+        """
+        from CrowdStrikeFalcon import module_test
+
+        mocker.patch("CrowdStrikeFalcon.get_token", side_effect=DemistoException(self.DNS_FAILURE_MESSAGE))
+
+        result = module_test().lower()
+
+        assert "connectivity" in result or "reach" in result
+
+    def test_still_returns_ok_on_success(self, mocker):
+        """
+        Given:
+            - Valid credentials and a reachable server.
+        When:
+            - Running the test-module command.
+        Then:
+            - "ok" is returned (no regression from the widened error handling).
+        """
+        from CrowdStrikeFalcon import module_test
+
+        mocker.patch("CrowdStrikeFalcon.get_token", return_value="token")
+
+        assert module_test() == "ok"
+
+    def test_value_error_still_handled(self, mocker):
+        """
+        Given:
+            - A token request that fails with a ValueError (the originally handled case).
+        When:
+            - Running the test-module command.
+        Then:
+            - A friendly message is returned, preserving the pre-existing behavior.
+        """
+        from CrowdStrikeFalcon import module_test
+
+        mocker.patch("CrowdStrikeFalcon.get_token", side_effect=ValueError("bad json"))
+
+        result = module_test()
+
+        assert result != "ok"
+        assert "Server URL" in result
+
+    def test_fetch_filter_errors_are_still_reported_separately(self, mocker):
+        """
+        Given:
+            - Valid credentials but invalid fetch filters.
+        When:
+            - Running the test-module command with isFetch enabled.
+        Then:
+            - The fetch-specific error message is returned, not the connection error message.
+        """
+        from CrowdStrikeFalcon import module_test
+
+        mocker.patch("CrowdStrikeFalcon.get_token", return_value="token")
+        mocker.patch.object(demisto, "params", return_value={"url": SERVER_URL, "isFetch": True})
+        mocker.patch("CrowdStrikeFalcon.fetch_items", side_effect=ValueError("bad filter"))
+
+        result = module_test()
+
+        assert "filters" in result
+
+    def test_csp_connection_error_is_handled_before_the_generic_main_handler(self, mocker):
+        """
+        Given:
+            - An unresolvable Server URL, reproducing CRTX-269894 through main(), using the
+              DemistoException that CommonServerPython raises for a requests ConnectionError.
+        When:
+            - The test-module command runs via main().
+        Then:
+            - The CommonServerPython message is not surfaced to the user.
+            - main()'s generic "Failed to execute ... command." handler is never reached,
+              which is the prefix shown in the reported error.
+        """
+        import CrowdStrikeFalcon
+
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch("CrowdStrikeFalcon.get_token", side_effect=DemistoException(self.DNS_FAILURE_MESSAGE))
+        return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+        results_mock = mocker.patch.object(CrowdStrikeFalcon, "return_results")
+
+        CrowdStrikeFalcon.main()
+
+        return_error_mock.assert_not_called()
+        reported = str(results_mock.call_args)
+        assert "Failed to execute" not in reported
+        assert "Verify that the server URL parameter" not in reported
+        assert "HTTPSConnectionPool" not in reported
+        assert "NameResolutionError" not in reported
