@@ -11,6 +11,7 @@ from OrcaEventCollector import (
     add_entry_status_to_alerts,
     dedup_alerts,
     get_boundary_ids,
+    normalize_last_updated,
     orca_test_module,
     main,
 )
@@ -194,18 +195,23 @@ def test_dedup_alerts_removes_boundary_duplicates(mocker):
     """
     Given:
         - Alerts where some share the previous run's boundary second and were already seen.
+        - The alerts' LastUpdated uses the API's '+00:00' offset form while the boundary
+          cursor uses the normalized '...Z' form (the two must still compare equal).
     When:
         - Calling dedup_alerts with the seen IDs and boundary time.
     Then:
-        - Only alerts whose (LastUpdated == boundary AND AlertId in seen) are removed.
+        - Only alerts whose (LastUpdated == boundary AND AlertId in seen) are removed,
+          regardless of the timestamp string format.
     """
     mocker.patch.object(demisto, "debug")
+    # Cursor is normalized ('...Z'); API payloads use '+00:00'. These are the same instant.
     boundary = "2023-01-01T00:00:05Z"
+    boundary_api = "2023-01-01T00:00:05+00:00"
     alerts = [
-        {"data": {"AlertId": {"value": "seen-1"}, "LastUpdated": {"value": boundary}}},  # dup -> removed
-        {"data": {"AlertId": {"value": "seen-2"}, "LastUpdated": {"value": boundary}}},  # dup -> removed
-        {"data": {"AlertId": {"value": "new-1"}, "LastUpdated": {"value": boundary}}},  # same second, not seen -> kept
-        {"data": {"AlertId": {"value": "new-2"}, "LastUpdated": {"value": "2023-01-01T00:00:06Z"}}},  # later -> kept
+        {"data": {"AlertId": {"value": "seen-1"}, "LastUpdated": {"value": boundary_api}}},  # dup -> removed
+        {"data": {"AlertId": {"value": "seen-2"}, "LastUpdated": {"value": boundary_api}}},  # dup -> removed
+        {"data": {"AlertId": {"value": "new-1"}, "LastUpdated": {"value": boundary_api}}},  # same second, not seen -> kept
+        {"data": {"AlertId": {"value": "new-2"}, "LastUpdated": {"value": "2023-01-01T00:00:06+00:00"}}},  # later -> kept
     ]
 
     result = dedup_alerts(alerts, ["seen-1", "seen-2"], boundary)
@@ -232,19 +238,61 @@ def test_get_boundary_ids():
     """
     Given:
         - Alerts ordered by LastUpdated with several sharing the newest second.
+        - Alert LastUpdated uses the API '+00:00' form while the boundary uses '...Z'.
     When:
         - Calling get_boundary_ids with the newest LastUpdated value.
     Then:
-        - Only AlertIds sharing that boundary second are returned.
+        - Only AlertIds sharing that boundary second are returned, despite the format difference.
     """
     boundary = "2023-01-01T00:00:09Z"
+    boundary_api = "2023-01-01T00:00:09+00:00"
     alerts = [
-        {"data": {"AlertId": {"value": "old"}, "LastUpdated": {"value": "2023-01-01T00:00:08Z"}}},
-        {"data": {"AlertId": {"value": "b1"}, "LastUpdated": {"value": boundary}}},
-        {"data": {"AlertId": {"value": "b2"}, "LastUpdated": {"value": boundary}}},
+        {"data": {"AlertId": {"value": "old"}, "LastUpdated": {"value": "2023-01-01T00:00:08+00:00"}}},
+        {"data": {"AlertId": {"value": "b1"}, "LastUpdated": {"value": boundary_api}}},
+        {"data": {"AlertId": {"value": "b2"}, "LastUpdated": {"value": boundary_api}}},
     ]
 
     assert get_boundary_ids(alerts, boundary) == ["b1", "b2"]
+
+
+def test_normalize_last_updated():
+    """
+    Given:
+        - LastUpdated values in different valid forms (API '+00:00', normalized '...Z', None, junk).
+    When:
+        - Calling normalize_last_updated.
+    Then:
+        - Equivalent instants normalize to the same canonical '...Z' string; unparseable -> None.
+    """
+    assert normalize_last_updated("2026-08-05T22:26:13+00:00") == "2026-08-05T22:26:13Z"
+    assert normalize_last_updated("2026-08-05T22:26:13Z") == "2026-08-05T22:26:13Z"
+    # Same instant, two formats -> equal after normalization (the core of the fix).
+    assert normalize_last_updated("2026-08-05T22:26:13+00:00") == normalize_last_updated("2026-08-05T22:26:13Z")
+    assert normalize_last_updated(None) is None
+    assert normalize_last_updated("") is None
+
+
+def test_dedup_alerts_regression_boundary_format_mismatch(mocker):
+    """
+    Regression for the stuck-cursor bug: the boundary duplicate arrives from the API with a
+    '+00:00' offset while the persisted seen boundary cursor is '...Z'. Before normalization
+    these strings did not compare equal, so the duplicate was never dropped and the cursor
+    re-fetched the same boundary events every cycle forever.
+
+    Given:
+        - A single boundary-second alert whose AlertId is in seen_ids, in '+00:00' form.
+        - The boundary cursor in normalized '...Z' form.
+    When:
+        - Calling dedup_alerts.
+    Then:
+        - The duplicate is removed (result is empty), proving the format mismatch is handled.
+    """
+    mocker.patch.object(demisto, "debug")
+    alerts = [{"data": {"AlertId": {"value": "orca-7679203"}, "LastUpdated": {"value": "2026-08-05T22:26:13+00:00"}}}]
+
+    result = dedup_alerts(alerts, ["orca-7679203"], "2026-08-05T22:26:13Z")
+
+    assert result == []
 
 
 # --- COMMAND FUNCTION TESTS ---
@@ -558,6 +606,48 @@ def test_main_fetch_events_dedup(mocker):
     sent_alerts = mock_send_events.call_args[0][0]
     assert [a["data"]["AlertId"]["value"] for a in sent_alerts] == ["fresh"]
     mock_set_last_run.assert_called_once_with({"lastRun": "2023-01-02T10:00:01Z", "lastRunIds": ["fresh"]})
+
+
+@freeze_time(FROZEN_NOW)
+def test_main_fetch_events_stuck_cursor_regression(mocker):
+    """
+    Regression for the live tenant stuck-cursor loop: the previous run persisted the boundary
+    AlertIds (normalized '...Z'), and the API keeps returning ONLY those same boundary events,
+    but with a '+00:00' offset. Before the normalization fix the format mismatch meant dedup
+    never matched, so the same events were re-sent every cycle and the cursor never moved.
+
+    Given:
+        - lastRun holds the boundary '...Z' cursor and its two boundary AlertIds.
+        - get_alerts returns exactly those two events again, in '+00:00' form, nothing newer.
+    When:
+        - Calling main() with 'fetch-events'.
+    Then:
+        - Both are recognized as duplicates and dropped -> nothing is sent to XSIAM.
+        - The cursor is held (not re-advanced onto the same second) with the ids preserved.
+    """
+    boundary_z = "2026-08-05T22:26:13Z"
+    boundary_api = "2026-08-05T22:26:13+00:00"
+    last_run_in = {"lastRun": boundary_z, "lastRunIds": ["orca-7679203", "orca-7704352"]}
+    fetched = [
+        _alert("orca-7679203", boundary_api),
+        _alert("orca-7704352", boundary_api),
+    ]
+
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "params", return_value=BASE_PARAMS)
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run_in)
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mock_send_events = mocker.patch("OrcaEventCollector.send_events_to_xsiam")
+    mocker.patch("OrcaEventCollector.get_alerts", return_value=fetched)
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "info")
+
+    main()
+
+    # Nothing is re-sent: both boundary events were recognized as duplicates.
+    mock_send_events.assert_not_called()
+    # Cursor is held on the boundary second with its ids preserved (no forward loop onto itself).
+    mock_set_last_run.assert_called_once_with({"lastRun": boundary_z, "lastRunIds": ["orca-7679203", "orca-7704352"]})
 
 
 @freeze_time(FROZEN_NOW)

@@ -272,12 +272,37 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, end_time: str, p
     return alerts
 
 
+def normalize_last_updated(raw_value: Optional[str]) -> Optional[str]:
+    """Normalize a ``LastUpdated`` string to the canonical ``DATE_FORMAT`` (``...Z``).
+
+    The Orca API returns timestamps with a ``+00:00`` offset (e.g.
+    ``2026-08-05T22:26:13+00:00``) while the persisted cursor uses ``DATE_FORMAT``
+    (``2026-08-05T22:26:13Z``). These represent the same instant but are different
+    strings, so any raw string comparison between them fails. Both boundary comparisons
+    (:func:`dedup_alerts` and :func:`get_boundary_ids`) MUST normalize both sides through
+    this helper before comparing, otherwise boundary de-duplication silently no-ops and
+    the cursor gets stuck re-fetching the boundary-second events forever.
+
+    Args:
+        raw_value: A raw ``LastUpdated`` value (any ISO 8601 form) or ``None``.
+    Returns:
+        The value formatted as ``DATE_FORMAT``, or ``None`` if it is missing/unparseable.
+    """
+    if not raw_value:
+        return None
+    parsed = arg_to_datetime(arg=raw_value)
+    return parsed.strftime(DATE_FORMAT) if parsed else None
+
+
 def dedup_alerts(alerts: List[Dict[str, Any]], seen_ids: List[str], boundary_time: Optional[str]) -> List[Dict[str, Any]]:
     """Remove alerts already returned at the previous window's upper boundary.
 
     Because the lower bound is inclusive (``LastUpdated >= last_fetch``), any alert whose
     ``LastUpdated`` equals the previous run's boundary second would be re-fetched. We drop
     exactly those alerts whose ``AlertId`` was already emitted at that boundary second.
+
+    Timestamps are normalized via :func:`normalize_last_updated` before comparison so that
+    the API's ``+00:00`` form matches the persisted ``...Z`` cursor.
 
     Args:
         alerts: Alerts fetched this run (ordered by ``LastUpdated`` ascending).
@@ -289,16 +314,17 @@ def dedup_alerts(alerts: List[Dict[str, Any]], seen_ids: List[str], boundary_tim
     if not alerts or not seen_ids or not boundary_time:
         return alerts
 
+    normalized_boundary = normalize_last_updated(boundary_time)
     seen = set(seen_ids)
     deduped = [
         alert
         for alert in alerts
         if not (
-            alert.get("data", {}).get("LastUpdated", {}).get("value") == boundary_time
+            normalize_last_updated(alert.get("data", {}).get("LastUpdated", {}).get("value")) == normalized_boundary
             and alert.get("data", {}).get("AlertId", {}).get("value") in seen
         )
     ]
-    demisto.debug(f"Dedup removed {len(alerts) - len(deduped)} boundary duplicate(s) at {boundary_time}")
+    demisto.debug(f"Dedup removed {len(alerts) - len(deduped)} boundary duplicate(s) at {normalized_boundary}")
     return deduped
 
 
@@ -306,6 +332,9 @@ def get_boundary_ids(alerts: List[Dict[str, Any]], boundary_time: str) -> List[s
     """Collect AlertIds whose ``LastUpdated`` equals the given boundary second.
 
     These IDs are persisted so the next run can skip them (see :func:`dedup_alerts`).
+    Timestamps are normalized via :func:`normalize_last_updated` before comparison so that
+    the API's ``+00:00`` form matches the persisted ``...Z`` cursor - without this the list
+    comes back empty and the cursor stalls on the boundary second.
 
     Args:
         alerts: Alerts emitted this run.
@@ -313,10 +342,11 @@ def get_boundary_ids(alerts: List[Dict[str, Any]], boundary_time: str) -> List[s
     Returns:
         A list of AlertIds sharing ``boundary_time`` as their ``LastUpdated``.
     """
+    normalized_boundary = normalize_last_updated(boundary_time)
     return [
         alert_id
         for alert in alerts
-        if alert.get("data", {}).get("LastUpdated", {}).get("value") == boundary_time
+        if normalize_last_updated(alert.get("data", {}).get("LastUpdated", {}).get("value")) == normalized_boundary
         and (alert_id := alert.get("data", {}).get("AlertId", {}).get("value"))
     ]
 
