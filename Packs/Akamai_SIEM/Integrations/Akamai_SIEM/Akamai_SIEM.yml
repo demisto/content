@@ -1,3 +1,5 @@
+name: Akamai WAF SIEM
+display: Akamai WAF SIEM
 category: Analytics & SIEM
 provider: Akamai Technologies
 sectionorder:
@@ -71,7 +73,7 @@ configuration:
   type: 0
   defaultvalue: '20'
   required: false
-  additionalinfo: Limit on the number of incidents retrieved in a single fetch. The maximum is 80k.
+  additionalinfo: The maximum total number of items to retrieve per fetch. For incident fetching (Cortex XSOAR) the maximum is 2000. For event collection (Cortex XSIAM) you can use a larger value, up to 80k.
   section: Collect
 - display: Akamai Page size
   name: page_size
@@ -79,7 +81,7 @@ configuration:
   required: false
   section: Collect
   defaultvalue: '20000'
-  additionalinfo: The number of events to fetch per request to akamai (multiple requests are made for each fetch). If you're getting aggregated delays, increase the number. The maximum is 80k. Note that if your API has higher ingestion rate, the integration will be able to detect it and immediately starts the next run in order to fetch events quicker.
+  additionalinfo: The number of events to fetch per single request to Akamai (multiple requests may be made in each fetch, up to the total Fetch limit). If you're getting aggregated delays, increase this value. The maximum per request is 20k. Note that if your API has a higher ingestion rate, the integration will detect it and immediately start the next run in order to fetch events quicker.
   hidden:
   - xsoar
   supportedModules:
@@ -173,8 +175,6 @@ configuration:
   supportedModules:
   - xsiam
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
-display: Akamai WAF SIEM
-name: Akamai WAF SIEM
 script:
   commands:
   - description: Reset the last offset to start fetching from the first fetch timestamp, use this command when the instance is disabled.

@@ -658,7 +658,7 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
 @pytest.mark.parametrize(
     "mime_content, expected_data, expected_attachmentSHA256",
     [
-        (b"\xc400", "\r\nÄ00", "90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8"),
+        (b"\xc400", "\r\nД00", "90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8"),
         (
             "Hello, this is a sample email with non-ASCII characters: é, ñ, ü.",
             "\r\nHello, this is a sample email with non-ASCII characters: é, ñ, ü.",

@@ -1,8 +1,9 @@
 {
     "name": "CTM360",
+    "created": "2024-02-04T14:36:26Z",
     "description": "Take action on incidents derived from threat intelligence that is directly linked to your organization.",
     "support": "partner",
-    "currentVersion": "2.3.4",
+    "currentVersion": "2.3.5",
     "author": "CTM360",
     "url": "https://www.ctm360.com",
     "email": "xsoar@ctm360.com",
@@ -19,6 +20,7 @@
     ],
     "useCases": [],
     "keywords": [
+        "CTM360",
         "HackerView",
         "CyberBlindspot"
     ],

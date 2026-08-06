@@ -1,0 +1,40 @@
+[
+    {
+        "id": "HVI-99912344",
+        "ticket_id": "HVI-99912344",
+        "timestamp": 1717067813000,
+        "first_seen": 1717067813000,
+        "last_seen": 1730279622000,
+        "progress_status": "New",
+        "severity": "medium",
+        "asset": "172.16.20.1:443",
+        "ip": "172.16.20.1",
+        "port": 443,
+        "uri": "http://172.16.20.1/wp-admin/admin-ajax.php?action=30643345fe3b00db637aaf895ca3d2f4",
+        "url": "http://172.16.20.1",
+        "issue_name": "WordPress Redux Framework <=4.2.11 - Information Disclosure (CVE-2021-38314)",
+        "issue_type": "Vulnerability",
+        "issue_description": "WordPress Redux Framework plugin through 4.2.11 is susceptible to information disclosure.",
+        "cpe": "cpe:2.3:a:redux:gutenberg_template_library_\\&_redux_framework:*:*:*:*:*:wordpress:*:*",
+        "cve_id": [
+            "cve-2021-38314"
+        ],
+        "cvss_metrics": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+        "cvss_score": 5.3,
+        "epss_score": 0.00153,
+        "known_exploited": false,
+        "hackerview_link": "https://platform.ctm360.com/hackerview/deepscan/issues/resolved/HVI-99912344",
+        "evidence": {
+            "request": "GET /wp-admin/admin-ajax.php?action=x HTTP/1.1\r\nHost: 172.16.20.1\r\n\r\n",
+            "response": "HTTP/1.1 200 OK\r\n\r\n",
+            "curl_command": "curl -X GET 'http://172.16.20.1/wp-admin/admin-ajax.php?action=x'"
+        },
+        "domain": "",
+        "asset_type": "services",
+        "host": [
+            "example.com",
+            "www.example.com"
+        ],
+        "brand": "REPERSEA"
+    }
+]
