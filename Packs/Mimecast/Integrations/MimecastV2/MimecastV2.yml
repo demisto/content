@@ -2590,8 +2590,6 @@ script:
       - profile_group
       - address_attribute_value
       - individual_email_address
-      - free_mail_domains
-      - header_display_name
     - auto: PREDEFINED
       description: The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email_domain.
       name: toType
@@ -2619,43 +2617,16 @@ script:
       - envelope_from
       - header_from
       - both
-    outputs:
-    - contextPath: Mimecast.BlockedSendersPolicy.ID
-      description: Policy ID.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Address
-      description: Block sender by email address value.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Domain
-      description: Block sender by domain value.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Group
-      description: Block sender by group value.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Bidirectional
-      description: Whether the blocked policy is bidirectional.
-      type: boolean
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Address
-      description: Block emails to receiver type address.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Domain
-      description: Block emails to receiver type domain.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Group
-      description: Block emails to receiver type group.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Fromdate
-      description: The policy validation start date.
-      type: date
-    - contextPath: Mimecast.BlockedSendersPolicy.Todate
-      description: The policy expiration date.
-      type: date
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Type
-      description: The sender type.
-      type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Type
-      description: The receiver type.
-      type: String
+    - auto: PREDEFINED
+      description: Whether to confirm blocking all senders. Must be 'true' when fromType is 'everyone' to prevent accidental blocking of all senders.
+      name: confirm_block_all
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The policy start date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      name: from_date
+    - description: The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      name: to_date
   - name: mimecast-list-policies
     description: List all existing Mimecast blocked sender policies.
     arguments:
@@ -3418,7 +3389,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.10404775
 tests:
 - Mimecast test
 - Mimecast Test api 2.0

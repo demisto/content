@@ -1446,3 +1446,231 @@ class TestFetchIncidents:
         MimecastV2.fetch_incidents()
 
         assert set_last_run_mock.called
+
+
+class TestHttpRequestErrorHandling:
+    """Tests for the v2 error-envelope parsing in http_request."""
+
+    def test_success_returns_json(self, requests_mock):
+        """200 response returns parsed JSON."""
+        requests_mock.get("http://test.com/api/test", json={"key": "value"})
+        result = MimecastV2.http_request("GET", "/api/test")
+        assert result == {"key": "value"}
+
+    def test_is_file_returns_response_object(self, requests_mock):
+        """is_file=True returns the raw response object, not json()."""
+        requests_mock.get("http://test.com/api/test", content=b"binary")
+        result = MimecastV2.http_request("GET", "/api/test", is_file=True)
+        assert result.content == b"binary"
+
+    def test_v2_error_envelope_raises_demisto_exception(self, requests_mock):
+        """400 with v2 error envelope raises DemistoException with the message."""
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=400,
+            json={"error": [{"code": "err_test", "message": "Something went wrong"}]},
+        )
+        with pytest.raises(DemistoException, match="Something went wrong"):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+    def test_v2_multiple_errors_joined(self, requests_mock):
+        """Multiple errors in the v2 envelope are joined with '; '."""
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=400,
+            json={
+                "error": [
+                    {"code": "err_a", "message": "First error"},
+                    {"code": "err_b", "message": "Second error"},
+                ]
+            },
+        )
+        with pytest.raises(DemistoException, match="First error; Second error"):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+    def test_non_v2_4xx_reraises_http_error(self, requests_mock):
+        """4xx without v2 error key re-raises the original HTTPError."""
+        import requests
+
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=403,
+            json={"message": "Forbidden"},
+        )
+        with pytest.raises(requests.exceptions.HTTPError):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+    def test_json_parse_failure_reraises_http_error(self, requests_mock):
+        """If the error body is not JSON, re-raises the original HTTPError."""
+        import requests
+
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=400,
+            text="not json",
+            headers={"Content-Type": "text/plain"},
+        )
+        with pytest.raises(requests.exceptions.HTTPError):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+
+class TestUpdateBlockSenderPolicyCommand:
+    """Tests for update_block_sender_policy_command."""
+
+    def test_missing_policy_id_raises(self):
+        with pytest.raises(DemistoException, match="policy ID"):
+            MimecastV2.update_block_sender_policy_command({})
+
+    def test_everyone_without_confirm_raises(self):
+        with pytest.raises(DemistoException, match="confirm_block_all"):
+            MimecastV2.update_block_sender_policy_command({"policy_id": "pid", "fromType": "everyone"})
+
+    def test_everyone_with_confirm_false_raises(self):
+        with pytest.raises(DemistoException, match="confirm_block_all"):
+            MimecastV2.update_block_sender_policy_command(
+                {"policy_id": "pid", "fromType": "everyone", "confirm_block_all": "false"}
+            )
+
+    def test_everyone_with_confirm_true_succeeds(self, requests_mock):
+        requests_mock.patch(
+            "http://test.com/policy-management/cloud-gateway/v1/blocked-senders/policies/pid", status_code=204, text=""
+        )
+        result = MimecastV2.update_block_sender_policy_command(
+            {"policy_id": "pid", "fromType": "everyone", "confirm_block_all": "true"}
+        )
+        assert "pid" in result.readable_output
+
+    def test_success_returns_readable_output(self, requests_mock):
+        requests_mock.patch(
+            "http://test.com/policy-management/cloud-gateway/v1/blocked-senders/policies/abc123", status_code=204, text=""
+        )
+        result = MimecastV2.update_block_sender_policy_command({"policy_id": "abc123", "description": "updated"})
+        assert "abc123" in result.readable_output
+        assert result.outputs is None
+
+    def test_patch_body_contains_from_object(self, requests_mock):
+        adapter = requests_mock.patch(
+            "http://test.com/policy-management/cloud-gateway/v1/blocked-senders/policies/pid",
+            status_code=204,
+            text="",
+        )
+        MimecastV2.update_block_sender_policy_command(
+            {"policy_id": "pid", "fromType": "email_domain", "fromValue": "example.com"}
+        )
+        sent_body = adapter.last_request.json()
+        assert sent_body["from"] == {"type": "email_domain", "domain": "example.com"}
+
+
+class TestOAuth2TokenManagement:
+    """Tests for token_oauth2_request and updating_token_oauth2."""
+
+    # --- token_oauth2_request ---
+
+    def test_token_oauth2_request_returns_token_and_expires_in(self, requests_mock):
+        """Successful token fetch returns (access_token, expires_in) tuple."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "tok123", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        token, expires_in = MimecastV2.token_oauth2_request()
+        assert token == "tok123"
+        assert expires_in == 1799
+
+    def test_token_oauth2_request_defaults_expires_in_when_missing(self, requests_mock):
+        """If expires_in is absent from the response, defaults to 1799."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "tok456", "token_type": "Bearer"},
+        )
+        token, expires_in = MimecastV2.token_oauth2_request()
+        assert token == "tok456"
+        assert expires_in == 1799
+
+    # --- updating_token_oauth2 ---
+
+    def test_updating_token_fetches_when_no_context(self, mocker, requests_mock):
+        """Fetches a new token when integration context is empty."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "new_tok", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+        set_ctx = mocker.patch.object(demisto, "setIntegrationContext")
+
+        MimecastV2.updating_token_oauth2()
+
+        assert MimecastV2.TOKEN_OAUTH2 == "new_tok"
+        ctx = set_ctx.call_args[0][0]
+        assert ctx["value"] == "new_tok"
+        assert ctx["expires_in"] == 1799
+        assert "last_update" in ctx
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_reuses_valid_token(self, mocker):
+        """Does not fetch a new token when the existing one is still valid."""
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "cached_tok", "last_update": now - 60, "expires_in": 1799},
+        )
+        fetch_mock = mocker.patch.object(MimecastV2, "token_oauth2_request")
+
+        MimecastV2.updating_token_oauth2()
+
+        fetch_mock.assert_not_called()
+        assert MimecastV2.TOKEN_OAUTH2 == "cached_tok"
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_refreshes_when_expired(self, mocker, requests_mock):
+        """Fetches a new token when the existing one has expired."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "refreshed_tok", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "old_tok", "last_update": now - 1799, "expires_in": 1799},
+        )
+        mocker.patch.object(demisto, "setIntegrationContext")
+
+        MimecastV2.updating_token_oauth2()
+
+        assert MimecastV2.TOKEN_OAUTH2 == "refreshed_tok"
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_uses_expires_in_from_context(self, mocker):
+        """Uses the expires_in stored in context, not a hardcoded value."""
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "short_ttl_tok", "last_update": now - 200, "expires_in": 300},
+        )
+        fetch_mock = mocker.patch.object(MimecastV2, "token_oauth2_request")
+
+        MimecastV2.updating_token_oauth2()
+
+        fetch_mock.assert_not_called()
+        assert MimecastV2.TOKEN_OAUTH2 == "short_ttl_tok"
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_refreshes_within_safety_margin(self, mocker, requests_mock):
+        """Refreshes when fewer than 60s remain before expiry."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "margin_tok", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "expiring_tok", "last_update": now - 1750, "expires_in": 1799},
+        )
+        mocker.patch.object(demisto, "setIntegrationContext")
+
+        MimecastV2.updating_token_oauth2()
+
+        assert MimecastV2.TOKEN_OAUTH2 == "margin_tok"

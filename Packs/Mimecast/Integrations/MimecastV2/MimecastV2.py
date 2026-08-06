@@ -284,9 +284,11 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             return res
         return res.json()
 
-    except HTTPError as e:
+    except (HTTPError, requests.exceptions.HTTPError) as e:
         LOG(e)
-        if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
+        response = getattr(e, "response", None)
+        status_code = getattr(response, "status_code", None)
+        if status_code == 418:
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
                 raise Exception(
                     "Credentials provided are expired, could not automatically refresh tokens."
@@ -294,6 +296,14 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
                     "+ Password are required."
                 )
         else:
+            # Attempt to parse v2 error envelope: {"error": [{"code": ..., "message": ...}]}
+            try:
+                error_body = response.json() if response is not None else None
+                if error_body and (errors := error_body.get("error")):
+                    messages = "; ".join(err.get("message", str(err)) for err in errors)
+                    raise DemistoException(messages) from e
+            except (ValueError, AttributeError):
+                demisto.debug("Could not parse v2 error body; re-raising original HTTPError")
             raise
 
     except Exception as e:
@@ -301,14 +311,15 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         raise
 
 
-def token_oauth2_request():
+def token_oauth2_request() -> tuple[str, int]:
+    """Fetch a new OAuth2 token and return (access_token, expires_in)."""
     api_endpoint = "/oauth/token"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET, "grant_type": "client_credentials"}
     response = http_request("POST", api_endpoint, user_auth=False, headers=headers, data=data)
     if failure_response := response.get("fail"):
         handle_error_response(failure_response, error_key="message")
-    return response.get("access_token")
+    return response.get("access_token"), int(response.get("expires_in", 1799))
 
 
 def search_message_request(args):
@@ -525,24 +536,17 @@ def auto_refresh_token():
 
 
 def updating_token_oauth2():
-    """
-    Ensures the OAuth2 token is up to date, refreshing it if necessary.
-
-    Returns:
-        str: The updated OAuth2 token.
-    """
+    """Ensures the OAuth2 token is up to date, refreshing it if necessary."""
     global TOKEN_OAUTH2
-    global USE_SSL
-    USE_SSL = False
 
     integration_context = demisto.getIntegrationContext()
     current_ts = epoch_seconds()
     last_update_ts = integration_context.get("last_update")
-    if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
-        TOKEN_OAUTH2 = token_oauth2_request()
+    expires_in = integration_context.get("expires_in", 1799)
+    if last_update_ts is None or (current_ts - last_update_ts >= expires_in - 60):
+        TOKEN_OAUTH2, expires_in = token_oauth2_request()
         if TOKEN_OAUTH2:
-            token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
-            demisto.setIntegrationContext(token_oauth2)
+            demisto.setIntegrationContext({"value": TOKEN_OAUTH2, "last_update": current_ts, "expires_in": expires_in})
     else:
         TOKEN_OAUTH2 = integration_context.get("value")
 
@@ -1432,67 +1436,64 @@ def update_policy_command():
     return results
 
 
-def update_block_sender_policy_command(policy_args):
+def build_policy_v2_patch_body(args: dict) -> dict:
+    """Build a partial-update body for v2 blocked-senders PATCH endpoint."""
+    from_date_str = arg_to_datetime(args["from_date"]).strftime(DATE_FORMAT) if args.get("from_date") else None  # type: ignore
+    to_date_str = arg_to_datetime(args["to_date"]).strftime(DATE_FORMAT) if args.get("to_date") else None  # type: ignore
+
+    body: dict = assign_params(
+        description=args.get("description"),
+        option=args.get("option"),
+        fromPart=args.get("fromPart"),
+        fromDateTime=from_date_str,
+        toDateTime=to_date_str,
+    )
+
+    from_type = args.get("fromType")
+    if from_type is not None:
+        from_value = args.get("fromValue")
+        body["from"] = assign_params(
+            type=from_type,
+            domain=from_value if from_type == "email_domain" else None,
+            emailAddress=from_value if from_type == "individual_email_address" else None,
+            groupId=from_value if from_type == "profile_group" else None,
+        )
+
+    to_type = args.get("toType")
+    if to_type is not None:
+        to_value = args.get("toValue")
+        body["to"] = assign_params(
+            type=to_type,
+            domain=to_value if to_type == "email_domain" else None,
+            emailAddress=to_value if to_type == "individual_email_address" else None,
+            groupId=to_value if to_type == "profile_group" else None,
+        )
+
+    return body
+
+
+def update_block_sender_policy_command(policy_args: dict) -> CommandResults:
     """
-    Update policy according to policy ID
+    Update an existing Blocked Senders policy using the v2 PATCH API.
+    Only fields explicitly provided are sent (partial update semantics).
     """
-    headers = ["Policy ID", "Description", "Sender", "Receiver", "Bidirectional", "Start", "End"]
-    policy_obj, option = get_arguments_for_policy_command(policy_args)
     policy_id = str(policy_args.get("policy_id", ""))
     if not policy_id:
-        raise Exception("You need to enter policy ID")
-    policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
-    response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
-    policy = response.get("policy")
-    title = "Mimecast Update Policy: \n Policy Was Updated Successfully!"
-    sender = policy.get("from")
-    receiver = policy.get("to")
-    description = policy.get("description")
-    contents = {
-        "Policy ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Email Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "Start": policy.get("fromDate"),
-        "End": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
-    policies_context = {
-        "ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "FromDate": policy.get("fromDate"),
-        "ToDate": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
+        raise DemistoException("You need to enter policy ID")
 
-    return CommandResults(
-        outputs_prefix="Mimecast.BlockedSendersPolicy",
-        outputs=policies_context,
-        readable_output=tableToMarkdown(title, contents, headers),
-        outputs_key_field="id",
-    )
+    from_type = policy_args.get("fromType")
+    confirm_block_all = policy_args.get("confirm_block_all")
+
+    if from_type == "everyone" and not (confirm_block_all and argToBoolean(confirm_block_all)):
+        raise DemistoException("Blocking all senders requires confirm_block_all=true")
+
+    body = build_policy_v2_patch_body(policy_args)
+
+    api_endpoint = f"/policy-management/cloud-gateway/v1/blocked-senders/policies/{policy_id}"
+    # is_file=True returns the raw response without parsing JSON, as the endpoint returns 204 No Content
+    http_request("PATCH", api_endpoint, payload=body, is_file=True)
+
+    return CommandResults(readable_output=f"Policy {policy_id} was updated successfully!")
 
 
 def create_or_update_policy_request(policy, option, policy_id=None, policy_type="blockedsenders"):

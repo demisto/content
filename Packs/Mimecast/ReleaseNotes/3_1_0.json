@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The ***mimecast-update-block-sender-policy*** command no longer emits context outputs. The *fromType* argument no longer accepts `free_mail_domains` or `header_display_name`."
+}
