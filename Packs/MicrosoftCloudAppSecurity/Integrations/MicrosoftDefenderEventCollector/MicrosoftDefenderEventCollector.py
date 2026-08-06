@@ -1,3 +1,4 @@
+import traceback
 from abc import ABC
 from collections.abc import Callable
 from enum import Enum
@@ -187,19 +188,24 @@ class IntegrationGetEvents(ABC):
             try:
                 for logs in self._iter_events(event_type_name, endpoint_details):
                     stored_per_type.extend(logs)
-                    if self.options.limit and len(stored_per_type) >= self.options.limit:
-                        demisto.debug(f"MD: reached {self.options.limit=} for {event_type_name=}, slicing per type.")
+                    if len(stored_per_type) >= self.options.limit:
+                        demisto.debug(
+                            f"[MicrosoftDefender] reached {self.options.limit=} for {event_type_name=}, slicing per type."
+                        )
                         stored_per_type = stored_per_type[: self.options.limit]
                         break
             except Exception as e:
                 # Discard this type's partial batch so its watermark is NOT advanced past
                 # unfetched events (no data loss); it will be retried on the next cycle.
                 # Other event types continue unaffected.
-                demisto.error(f"MD: failed fetching {event_type_name=}, skipping it this cycle. Error: {e!s}")
+                demisto.error(
+                    f"[MicrosoftDefender] failed fetching {event_type_name=}, skipping it this cycle. "
+                    f"Error: {e!s}\n{traceback.format_exc()}"
+                )
                 continue
             final_stored_all_types.extend(stored_per_type)
-            demisto.debug(f"MD: kept {len(stored_per_type)} events for {event_type_name=}")
-        demisto.debug(f"MD: keeping {len(final_stored_all_types)} events from all event types")
+            demisto.debug(f"[MicrosoftDefender] kept {len(stored_per_type)} events for {event_type_name=}")
+        demisto.debug(f"[MicrosoftDefender] keeping {len(final_stored_all_types)} events from all event types")
         return final_stored_all_types
 
     def call(self) -> requests.Response:

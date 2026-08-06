@@ -2,6 +2,7 @@
 
 import demistomock as demisto
 import pytest
+from pydantic import ValidationError
 
 from MicrosoftDefenderEventCollector import (
     DEFAULT_LIMIT,
@@ -51,7 +52,7 @@ class TestIntegrationOptionsLimit:
 
     def test_limit_above_max_is_rejected(self):
         """Values above MAX_LIMIT are rejected by validation."""
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             IntegrationOptions.parse_obj({"limit": MAX_LIMIT + 1})
 
 
