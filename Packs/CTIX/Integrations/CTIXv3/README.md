@@ -7,24 +7,25 @@ The Cyware Intel Exchange integration allows users to fetch threat intelligence 
 | Endpoint URL | Enter the endpoint URL of your Cyware Intel Exchange instance, e.g. <https://example.cyware.com/ctixapi/>. | True |
 | Access Key | Enter the Access Key from the Cyware Intel Exchange application. | True |
 | Secret Key | Enter the Secret Key from the Cyware Intel Exchange application. | True |
-| Timeout | Enter the maximum time in seconds that Cortex XSOAR should wait for a response from Cyware Intel Exchange. Default is 180 seconds. | False |
 | Trust any certificate (not secure) | Specify whether to trust any certificate (not secure). | False |
 | Use system proxy settings | Specify whether to use system proxy settings. | False |
-| Source Reliability | Reliability of the source providing the intelligence data. Default is "C - Fairly reliable". | False |
+| Timeout | The connection timeout, in seconds. Default is 180 seconds. | False |
 | Fetch incidents | Enable to fetch CTIX reports as Cortex XSOAR incidents. | False |
-| Fetch indicators | Enable to fetch CTIX indicators from Saved Result Sets. | False |
-| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Incident type | The incident type to assign to fetched CTIX reports. Default is "CTIX Intel". | False |
-| First fetch time | How far back to fetch on the first run (e.g., 3 days, 7 days, 1 month). Default is "3 days". | False |
-| Incident Fetch CQL Query | Custom CQL query used when fetching incidents. Updates the default CQL query. For example, type = "report" AND confidence_score = "90". | False |
+| Source Reliability | Reliability of the source providing the intelligence data. Applies to fetched incidents and to the reliability of results returned by the domain, URL, IP, file, and CVE reputation commands — not to indicators fetched via the indicator feed (see the separate Source Reliability parameter below). Default is "C - Fairly reliable". | False |
+| First fetch time | How far back to fetch on the first run (e.g., 3 days, 7 days, 1 month). Used as the initial lookback window for both incident fetch and indicator feed fetch when no previous run exists. Default is "3 days". | False |
+| Maximum number of incidents per fetch | The maximum number of incidents to return per fetch run. Allowed range is 1-200. Default is 10. | False |
+| Incident Fetch CQL Query | The custom CQL query used when fetching incidents. Updates the default CQL query. For example, type = "report" AND confidence_score = "90". | False |
+| Fetch indicators | Enable to fetch CTIX indicators from Saved Result Sets. | False |
 | Saved Result Set Label | The label name of the Saved Result Set to pull indicators from. | False |
 | Saved Result Set Version | The version of Saved Result Set to use. Possible values are: v2, v3. | False |
-| Retrieve Enriched Data | If enabled, indicators will be enriched via bulk IOC lookup (with relations and enrichment data) before ingestion. | False |
-| Feed Fetch Interval | How often the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the XSOAR feed scheduler cadence. Default is "12 hours". | False |
-| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-| Tags | Tags to apply to fetched indicators. Supports CSV values. | False |
+| Retrieve Enriched Data | Whether to enrich indicators via bulk IOC lookup (with relations and enrichment data) before ingestion. | False |
+| Feed Fetch Interval | The frequency at which the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the Cortex XSOAR feed scheduler cadence. Default is "12 hours". | False |
+| Source Reliability | Reliability of the source providing the intelligence data. Applies only to indicators retrieved via the indicator feed — not to fetched incidents or reputation commands (see the separate Source Reliability parameter above). Default is "A - Completely reliable". | True |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Possible values are: RED, AMBER, GREEN, WHITE. | False |
-| Max Fetch | Maximum number of incidents to return per fetch run. Allowed Range is 1-200. Default is 10. | False |
+| Bypass exclusion list | Whether to ignore the exclusion list for indicators from this feed. If enabled, an indicator from this feed that is on the exclusion list might still be added to the system. | False |
+| Tags | A comma-separated list of tags to apply to indicators fetched via the indicator feed. | False |
 
 ## Commands
 
@@ -45,7 +46,7 @@ Create a new tag in the Cyware Intel Exchange platform
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tag_name | Enter the tag name. | Required |
-| color_code | Enter the tag’s hex color code. For example, #111111. | Required |
+| color | New tag's name for the defined colour. If no colour selected, colour grey will be given. Possible values are: blue, purple, orange, red, green, yellow, turquoise, pink, light-red, grey. | Required |
 
 #### Context Output
 
@@ -60,7 +61,7 @@ Create a new tag in the Cyware Intel Exchange platform
 
 #### Command Example
 
-```!ctix-create-tag tag_name=xsoar_test_trial color_code=#95A1B1```
+```!ctix-create-tag tag_name=xsoar_test_trial color=blue```
 
 #### Context Example
 
@@ -1500,7 +1501,6 @@ Get or create threat data
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | Type of the object. | Optional |
 | object_names | Will contain the SDO values. For example: If you need to get the object_ids of indicator 127.0.0.1 then the value will be 127.0.0.1. | Required |
 | page_size | Page size for pagination. Default value is 10. | Optional |
 | source | The source of the threat data. | Optional |
@@ -2950,12 +2950,14 @@ Performs a bulk lookup for threat data objects in Cyware Intel Exchange and retr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | object_type | The SDO object type to look up (e.g. indicator, malware, threat-actor). | Required |
-| value | Comma-separated list of up to 100 threat data object values to look up. | Optional |
-| object_id | Comma-separated list of up to 100 threat data object IDs to look up. | Optional |
+| values | Comma-separated list of up to 100 threat data object values to look up. | Optional |
+| object_ids | Comma-separated list of up to 100 threat data object IDs to look up. | Optional |
 | enrichment_data | Pass true to retrieve the latest five enrichment data objects. Default is false. Possible values are: true, false. | Optional |
 | relation_data | Pass true to retrieve the latest 100 relation details. Default is false. Possible values are: true, false. | Optional |
 | enrichment_tools | Comma-separated list of up to five enrichment tool names to filter enrichment data. | Optional |
 | fields | Comma-separated list of field names to retrieve specific details. By default all fields are retrieved. | Optional |
+| page | Enter the Page number for pagination. | Optional |
+| page_size | Enter the Page Size for pagination. | Optional |
 
 #### Context Output
 
