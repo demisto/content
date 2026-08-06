@@ -21607,3 +21607,317 @@ def test_parse_stateful_rule_group_references_field_invalid_arn_raises():
     # When / Then
     with pytest.raises(ValueError, match="ResourceArn must be a valid ARN"):
         parse_stateful_rule_group_references_field(refs_string)
+
+
+# ---------------------------------------------------------------------------
+# YML <-> PY wiring assertion tests
+#
+# These tests read the integration's .yml and .py from disk and assert that
+# every command, its arguments, and its output prefixes declared in the YML are
+# actually wired up in the Python code. This proves the command, its args, and
+# its outputs are implemented as declared.
+#
+# The comparison is PER-COMMAND: each YML command is resolved to its handler
+# function via COMMANDS_MAPPING in AWS.py. Unlike the GCP integration (whose
+# handlers are plain module-level functions), AWS handlers are `@staticmethod`s
+# on service classes (e.g. ``S3.buckets_list_command``), and they frequently
+# delegate argument parsing to shared builders (e.g.
+# ``aws_ec2_fleet_create_args_builder(args)``). The analysis is therefore done
+# with the ``ast`` module and follows those delegations transitively, so an
+# argument read inside a helper still counts as wired.
+#
+# Quick-action commands (names ending in "-quick-action") and the built-in
+# "test-module" command are intentionally excluded.
+#
+# NOTE: these tests are pure static analysis - they only parse the .yml/.py
+# text. They perform no network/API calls, read no environment variables, and
+# are independent of execution order and of the system clock.
+# ---------------------------------------------------------------------------
+
+import ast
+import os
+import re
+
+QUICK_ACTION_SUFFIX = "-quick-action"
+_INTEGRATION_DIR = os.path.dirname(os.path.abspath(__file__))
+_YML_PATH = os.path.join(_INTEGRATION_DIR, "AWS.yml")
+_PY_PATH = os.path.join(_INTEGRATION_DIR, "AWS.py")
+
+# Platform-standard arguments that are resolved centrally rather than read with
+# args.get(...) inside each command handler:
+#   - region / account_id -> consumed by get_service_client() when building the
+#     boto3 client and by the multi-account fan-out in execute_aws_command().
+#   - limit / next_token  -> consumed by the shared build_pagination_kwargs().
+#   - polling_timeout / interval_in_seconds / hide_polling_output -> consumed by
+#     the @polling_function decorator, not by the handler body.
+PLATFORM_STANDARD_ARGS = {
+    "region",
+    "account_id",
+    "limit",
+    "next_token",
+    "polling_timeout",
+    "interval_in_seconds",
+    "hide_polling_output",
+}
+
+# Output roots produced by platform helpers rather than by an explicit
+# outputs_prefix in the handler. `File.*` entries come from fileResult().
+PLATFORM_STANDARD_OUTPUT_ROOTS = ("File.",)
+
+
+def _is_included_command(command_name: str) -> bool:
+    """Return True if the command should be checked (not test-module / quick-action)."""
+    return command_name != "test-module" and not command_name.endswith(QUICK_ACTION_SUFFIX)
+
+
+def _load_yml_spec() -> dict:
+    """Parse the integration YML and return its command specifications.
+
+    Arguments marked ``hidden: true`` in the YML are excluded: they are not
+    user-facing (they carry internal polling state or a fixed defaultValue for a
+    quick action) and are frequently consumed by shared/platform code rather
+    than read directly in the command handler.
+
+    Returns:
+        dict mapping command_name -> {"args": [arg_names], "outputs": [contextPaths]}
+        for every non-quick-action, non-test-module command.
+    """
+    import yaml
+
+    with open(_YML_PATH, encoding="utf-8") as f:
+        yml = yaml.safe_load(f)
+
+    spec: dict = {}
+    for command in yml.get("script", {}).get("commands", []):
+        name = command.get("name", "")
+        if not _is_included_command(name):
+            continue
+        arg_names = [arg["name"] for arg in (command.get("arguments") or []) if arg.get("name") and not arg.get("hidden")]
+        context_paths = [out["contextPath"] for out in (command.get("outputs") or []) if out.get("contextPath")]
+        spec[name] = {"args": arg_names, "outputs": context_paths}
+    return spec
+
+
+def _load_py_tree() -> ast.Module:
+    """Parse the integration .py file into an AST."""
+    with open(_PY_PATH, encoding="utf-8") as f:
+        return ast.parse(f.read())
+
+
+def _parse_commands_mapping(tree: ast.Module) -> dict:
+    """Parse ``COMMANDS_MAPPING`` in AWS.py, mapping command name -> handler name.
+
+    ``COMMANDS_MAPPING`` is an annotated assignment (``: dict[str, Callable]``),
+    so both ``Assign`` and ``AnnAssign`` nodes are considered.
+
+    Returns:
+        dict mapping command_name -> dotted handler name (e.g. "S3.buckets_list_command").
+    """
+    mapping: dict = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = [node.target.id]
+        else:
+            continue
+        if "COMMANDS_MAPPING" not in targets or not isinstance(node.value, ast.Dict):
+            continue
+        for key, value in zip(node.value.keys, node.value.values):
+            if isinstance(key, ast.Constant) and isinstance(key.value, str) and _is_included_command(key.value):
+                mapping[key.value] = ast.unparse(value)
+    return mapping
+
+
+def _index_functions(tree: ast.Module) -> tuple:
+    """Index every function in the module by qualified name and by short name.
+
+    Returns:
+        (qualified_index, short_index) where qualified names look like
+        "S3.buckets_list_command" and short names look like "buckets_list_command".
+    """
+    qualified: dict = {}
+    short: dict = {}
+
+    def walk(node, prefix=""):
+        for child in node.body:
+            if isinstance(child, ast.ClassDef):
+                walk(child, f"{prefix}{child.name}.")
+            elif isinstance(child, ast.FunctionDef | ast.AsyncFunctionDef):
+                name = f"{prefix}{child.name}"
+                qualified[name] = child
+                short.setdefault(child.name, child)
+                walk(child, f"{name}.")
+
+    walk(tree)
+    return qualified, short
+
+
+def _resolve(name: str, qualified: dict, short: dict):
+    """Resolve a (possibly dotted) callee name to its FunctionDef node."""
+    return qualified.get(name) or short.get(name.split(".")[-1])
+
+
+def _camel_to_snake(value: str) -> str:
+    return re.sub(r"(?<!^)(?=[A-Z])", "_", value).lower()
+
+
+def _string_literals(node) -> set:
+    """All string literals in a function, plus their snake_case forms.
+
+    Some handlers derive the argument name from a CamelCase AWS API key, e.g.
+    ``camel_case_to_underscore("Runtime")`` -> ``"runtime"``, so the snake_case
+    variants are included to avoid false positives.
+    """
+    literals = {n.value for n in ast.walk(node) if isinstance(n, ast.Constant) and isinstance(n.value, str)}
+    return literals | {_camel_to_snake(v) for v in literals}
+
+
+def _callees_receiving_args(node) -> list:
+    """Names of functions this function calls while forwarding its ``args`` dict."""
+    callees = []
+    for child in ast.walk(node):
+        if not isinstance(child, ast.Call):
+            continue
+        forwards_args = any(isinstance(a, ast.Name) and a.id == "args" for a in child.args) or any(
+            isinstance(kw.value, ast.Name) and kw.value.id == "args" for kw in child.keywords
+        )
+        if forwards_args:
+            callees.append(ast.unparse(child.func))
+    return callees
+
+
+def _collect_arg_names(node, qualified: dict, short: dict, depth: int = 6, seen=None) -> set:
+    """Collect argument names read by a handler, following ``args`` delegation."""
+    seen = seen if seen is not None else set()
+    found = _string_literals(node)
+    if depth <= 0:
+        return found
+    for callee in _callees_receiving_args(node):
+        target = _resolve(callee, qualified, short)
+        if target is not None and id(target) not in seen:
+            seen.add(id(target))
+            found |= _collect_arg_names(target, qualified, short, depth - 1, seen)
+    return found
+
+
+def _collect_output_prefixes(node, qualified: dict, short: dict, depth: int = 4, seen=None) -> set:
+    """Collect context-path-like literals produced by a handler and its helpers."""
+    seen = seen if seen is not None else set()
+    found = {re.sub(r"\(.*\)$", "", literal) for literal in _string_literals(node) if "." in literal}
+    if depth <= 0:
+        return found
+    for child in ast.walk(node):
+        if not isinstance(child, ast.Call):
+            continue
+        target = _resolve(ast.unparse(child.func), qualified, short)
+        if target is not None and id(target) not in seen:
+            seen.add(id(target))
+            found |= _collect_output_prefixes(target, qualified, short, depth - 1, seen)
+    return found
+
+
+def test_yml_commands_are_wired_in_py():
+    """
+    Given: The integration YML declaring command names.
+    When: Comparing against the COMMANDS_MAPPING wired in AWS.py.
+    Then: Every non-quick-action YML command must be wired in the .py, and every
+          wired handler must resolve to a real function.
+    """
+    # Given
+    yml_spec = _load_yml_spec()
+    tree = _load_py_tree()
+
+    # When
+    command_map = _parse_commands_mapping(tree)
+    qualified, short = _index_functions(tree)
+
+    # Then
+    missing = sorted(name for name in yml_spec if name not in command_map)
+    assert not missing, (
+        "The following commands are declared in AWS.yml but are NOT wired in " f"COMMANDS_MAPPING in AWS.py: {missing}"
+    )
+
+    unresolved = sorted(
+        f"{command} -> {handler}" for command, handler in command_map.items() if _resolve(handler, qualified, short) is None
+    )
+    assert not unresolved, (
+        "The following COMMANDS_MAPPING handlers do not resolve to a function " f"defined in AWS.py: {unresolved}"
+    )
+
+
+def test_yml_args_match_py_handler_verbatim():
+    """
+    Given: The arguments declared per command in the integration YML.
+    When: Comparing (verbatim) against the argument names read in that command's
+          resolved handler in AWS.py, following delegation into shared builders.
+    Then: Each YML argument name must appear exactly as-is in the handler.
+          Any naming difference (snake_case vs camelCase, casing) fails, except
+          for platform-standard args.
+    """
+    # Given
+    yml_spec = _load_yml_spec()
+    tree = _load_py_tree()
+    command_map = _parse_commands_mapping(tree)
+    qualified, short = _index_functions(tree)
+
+    # When
+    mismatches: list = []
+    for command_name in sorted(yml_spec):
+        handler = command_map.get(command_name)
+        node = _resolve(handler, qualified, short) if handler else None
+        if node is None:
+            # Missing wiring is reported by test_yml_commands_are_wired_in_py.
+            continue
+        handler_args = _collect_arg_names(node, qualified, short)
+        for arg_name in yml_spec[command_name]["args"]:
+            if arg_name in PLATFORM_STANDARD_ARGS:
+                continue
+            if arg_name not in handler_args:
+                mismatches.append(f'{command_name} (handler {handler}) -> args.get("{arg_name}")')
+
+    # Then
+    assert not mismatches, (
+        "The following YML arguments are NOT read verbatim from args in their "
+        "command's handler in AWS.py (a naming difference such as snake_case vs "
+        "camelCase means the YML and PY are out of sync):\n" + "\n".join(mismatches)
+    )
+
+
+def test_yml_output_prefixes_match_py_handler():
+    """
+    Given: The output contextPaths declared per command in the integration YML.
+    When: Comparing against the output prefixes declared in that command's
+          resolved handler in AWS.py.
+    Then: Every YML output contextPath must be covered by an output prefix
+          declared in the handler (the prefix must be a leading segment of the
+          contextPath), except for platform-produced outputs.
+    """
+    # Given
+    yml_spec = _load_yml_spec()
+    tree = _load_py_tree()
+    command_map = _parse_commands_mapping(tree)
+    qualified, short = _index_functions(tree)
+
+    def _is_covered(context_path: str, prefixes: set) -> bool:
+        return any(context_path == prefix or context_path.startswith(prefix + ".") for prefix in prefixes)
+
+    # When
+    uncovered: list = []
+    for command_name in sorted(yml_spec):
+        handler = command_map.get(command_name)
+        node = _resolve(handler, qualified, short) if handler else None
+        if node is None:
+            continue
+        handler_prefixes = _collect_output_prefixes(node, qualified, short)
+        for context_path in yml_spec[command_name]["outputs"]:
+            if context_path.startswith(PLATFORM_STANDARD_OUTPUT_ROOTS):
+                continue
+            if not _is_covered(context_path, handler_prefixes):
+                uncovered.append(f"{command_name} (handler {handler}) -> {context_path}")
+
+    # Then
+    assert not uncovered, (
+        "The following YML output contextPaths are NOT covered by any output "
+        "prefix declared in their command's handler in AWS.py:\n" + "\n".join(uncovered)
+    )

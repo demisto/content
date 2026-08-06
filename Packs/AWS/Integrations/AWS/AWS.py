@@ -649,6 +649,8 @@ def aws_ec2_block_device_mapping_args_builder(args: Dict[str, Any]) -> List[Dict
                 "VolumeSize": arg_to_number(args.get("ebs_volume_size")),
                 "VolumeType": args.get("ebs_volume_type"),
                 "Throughput": arg_to_number(args.get("ebs_throughput")),
+                "EbsCardIndex": arg_to_number(args.get("ebs_card_index")),
+                "VolumeInitializationRate": arg_to_number(args.get("ebs_initialization_rate")),
             },
             "NoDevice": args.get("block_device_mappings_no_device"),
             "VirtualName": args.get("block_device_mappings_virtual_name"),
@@ -1772,7 +1774,7 @@ class S3:
             filename = key.rsplit("/", 1)[-1]
             return fileResult(filename, data)
         except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
+            return AWSErrorHandler.handle_client_error(err)
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
 
@@ -1801,13 +1803,13 @@ class S3:
                 client.upload_fileobj(data, bucket, key)
                 return CommandResults(readable_output=f"File {key} was uploaded successfully to {bucket}")
         except ClientError as err:
-            AWSErrorHandler.handle_client_error(err)
+            return AWSErrorHandler.handle_client_error(err)
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
         return CommandResults(readable_output="Failed to upload file")
 
     @staticmethod
-    def get_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def get_bucket_website_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Retrieves the website configuration for a specified Amazon S3 bucket.
         The function calls the AWS S3 'get_bucket_website' API to check if the bucket
@@ -1827,7 +1829,7 @@ class S3:
 
         response = client.get_bucket_website(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response["WebsiteConfiguration"] = {
             "ErrorDocument": response.get("ErrorDocument"),
@@ -1851,7 +1853,7 @@ class S3:
         )
 
     @staticmethod
-    def get_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def get_bucket_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Retrieves the Access Control List (ACL) of a specified Amazon S3 bucket.
 
@@ -1872,7 +1874,7 @@ class S3:
 
         response = client.get_bucket_acl(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response["AccessControlPolicy"] = {
             "Grants": response.get("Grants"),
@@ -1893,7 +1895,7 @@ class S3:
         )
 
     @staticmethod
-    def bucket_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def bucket_create_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a new S3 bucket.
 
@@ -1907,6 +1909,7 @@ class S3:
         bucket_name = args.get("bucket_name")
         location = args.get("location_constraint") or args.get("region", "")
         kwargs = {
+            "ACL": args.get("acl"),
             "Bucket": bucket_name,
             "GrantFullControl": args.get("grant_full_control"),
             "GrantRead": args.get("grant_read"),
@@ -1925,7 +1928,7 @@ class S3:
         demisto.debug(f"{response=}")
 
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         output = {"Location": response.get("Location"), "BucketArn": response.get("BucketArn"), "BucketName": bucket_name}
 
@@ -1938,7 +1941,7 @@ class S3:
         )
 
     @staticmethod
-    def buckets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def buckets_list_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Returns a list of all buckets owned by the authenticated sender of the request.
 
@@ -1958,7 +1961,7 @@ class S3:
         response = client.list_buckets(**kwargs)
 
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         buckets = response.get("Buckets", [])
         for bucket in buckets:
@@ -2599,7 +2602,7 @@ class EC2:
         return CommandResults(readable_output=f"Snapshot {args.get('snapshot_id')} permissions were successfully updated.")
 
     @staticmethod
-    def describe_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Retrieves detailed information about EC2 instances including status, configuration, and metadata.
 
@@ -2629,7 +2632,7 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         response = client.describe_instances(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         response = serialize_response_with_datetime_encoding(response)
         # Extract instances from reservations
         reservations = response.get("Reservations", [])
@@ -2655,7 +2658,7 @@ class EC2:
         )
 
     @staticmethod
-    def run_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def run_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Runs one or more Amazon EC2 instances.
 
@@ -2759,7 +2762,7 @@ class EC2:
         response = client.run_instances(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         response = serialize_response_with_datetime_encoding(response)
         instances = response.get("Instances", [])
         if not instances:
@@ -3166,7 +3169,7 @@ class EC2:
         return command_results
 
     @staticmethod
-    def get_latest_ami_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def get_latest_ami_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Retrieves information about the latest Amazon Machine Image (AMI) based on provided filters.
         The function calls the AWS EC2 'describe_images' API, sorts the results by
@@ -3193,7 +3196,7 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         response = client.describe_images(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         amis = response.get("Images", [])
         iterates = 1
 
@@ -3202,7 +3205,7 @@ class EC2:
             kwargs["NextToken"] = response.get("nextToken")
             response = client.describe_images(**kwargs)
             if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-                AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+                return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
             amis.extend(response.get("Images", []))
             iterates += 1
 
@@ -3233,7 +3236,7 @@ class EC2:
         )
 
     @staticmethod
-    def create_network_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_network_acl_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a Network Access Control List (Network ACL) for the specified VPC.
         The function calls the AWS EC2 'create_network_acl' API. It requires the ID
@@ -3262,7 +3265,7 @@ class EC2:
 
         response = client.create_network_acl(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         network_acl = response.get("NetworkAcl")
         readable_data = {
@@ -3293,7 +3296,7 @@ class EC2:
         )
 
     @staticmethod
-    def get_ipam_discovered_public_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def get_ipam_discovered_public_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         aws-ec2-get-ipam-discovered-public-addresses: Gets the public IP addresses that have been discovered by IPAM.
 
@@ -3316,7 +3319,7 @@ class EC2:
         remove_nulls_from_dictionary(kwargs)
         response = client.get_ipam_discovered_public_addresses(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
         if not response.get("IpamDiscoveredPublicAddresses"):
             return CommandResults(readable_output="No Ipam Discovered Public Addresses were found.")
 
@@ -3336,7 +3339,7 @@ class EC2:
         )
 
     @staticmethod
-    def create_tags_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_tags_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Adds or overwrites one or more tags for the specified AWS resources.
 
@@ -3360,12 +3363,12 @@ class EC2:
 
         response = client.create_tags(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output="The resources where tagged successfully")
 
     @staticmethod
-    def network_interface_attribute_modify_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def network_interface_attribute_modify_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Modifies the specified network interface attribute.
         Args:
@@ -3381,7 +3384,7 @@ class EC2:
         response = client.modify_network_interface_attribute(**kwargs)
 
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         demisto.debug(f"{response=}")
         outputs = {
@@ -3400,7 +3403,7 @@ class EC2:
         )
 
     @staticmethod
-    def regions_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def regions_describe_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes the Regions that are enabled for your account, or all Regions.
 
@@ -3428,7 +3431,7 @@ class EC2:
         demisto.debug(f"{kwargs=}")
         response = client.describe_regions(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] not in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         regions = response.get("Regions")
         readable_output = tableToMarkdown(
@@ -3576,7 +3579,7 @@ class EC2:
             return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def describe_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_addresses_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes one or more Elastic IP addresses.
 
@@ -3610,7 +3613,7 @@ class EC2:
         response = client.describe_addresses(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         addresses = response.get("Addresses", [])
         if not addresses:
@@ -3643,7 +3646,7 @@ class EC2:
         )
 
     @staticmethod
-    def allocate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def allocate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Allocates an Elastic IP address to your AWS account.
 
@@ -3673,7 +3676,7 @@ class EC2:
         print_debug_logs(client, f"Allocating address with parameters: {kwargs}")
         response = client.allocate_address(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
@@ -3694,7 +3697,7 @@ class EC2:
         )
 
     @staticmethod
-    def associate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def associate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Associates an Elastic IP address with an instance or a network interface.
 
@@ -3723,7 +3726,7 @@ class EC2:
         response = client.associate_address(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Build output data
         output_data = {
@@ -3746,7 +3749,7 @@ class EC2:
         )
 
     @staticmethod
-    def disassociate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def disassociate_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Disassociates an Elastic IP address from the instance or network interface it's associated with.
 
@@ -3764,7 +3767,7 @@ class EC2:
         response = client.disassociate_address(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             readable_output=f"Successfully disassociated Elastic IP address (Association ID: {args.get('association_id')})",
@@ -3772,7 +3775,7 @@ class EC2:
         )
 
     @staticmethod
-    def release_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def release_address_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Releases the specified Elastic IP address.
 
@@ -3796,7 +3799,7 @@ class EC2:
         response = client.release_address(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             readable_output=f"Successfully released Elastic IP address (Allocation ID: {args.get('allocation_id')})",
@@ -3846,7 +3849,7 @@ class EC2:
             return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def describe_images_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_images_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes one or more Amazon Machine Images (AMIs) available to you.
 
@@ -3901,7 +3904,7 @@ class EC2:
         response = client.describe_images(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         images = response.get("Images", [])
         if not images:
@@ -3935,7 +3938,7 @@ class EC2:
         )
 
     @staticmethod
-    def create_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates an Amazon EBS-backed AMI from an Amazon EBS-backed instance.
 
@@ -3978,7 +3981,7 @@ class EC2:
 
         response = client.create_image(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
@@ -4006,7 +4009,7 @@ class EC2:
         )
 
     @staticmethod
-    def deregister_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def deregister_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deregisters the specified Amazon Machine Image (AMI).
 
@@ -4026,7 +4029,7 @@ class EC2:
         response = client.deregister_image(ImageId=image_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             readable_output=f"Successfully deregistered AMI: {image_id}",
@@ -4034,7 +4037,7 @@ class EC2:
         )
 
     @staticmethod
-    def copy_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def copy_image_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Copy an Amazon Machine Image (AMI) from a source region to the current region.
 
@@ -4076,7 +4079,7 @@ class EC2:
         response = client.copy_image(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         region = args.get("region", "")
 
@@ -4189,7 +4192,7 @@ class EC2:
         response = client.monitor_instances(InstanceIds=instance_ids)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         instance_monitorings = response.get("InstanceMonitorings", [])
 
@@ -4237,7 +4240,7 @@ class EC2:
         response = client.unmonitor_instances(InstanceIds=instance_ids)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         instance_monitorings = response.get("InstanceMonitorings", [])
 
@@ -4285,7 +4288,7 @@ class EC2:
         response = client.reboot_instances(InstanceIds=instance_ids)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             readable_output=f"Successfully initiated reboot for instances: {', '.join(instance_ids)}", raw_response=response
@@ -4473,7 +4476,7 @@ class EC2:
         response = client.describe_iam_instance_profile_associations(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         associations = response.get("IamInstanceProfileAssociations", [])
 
@@ -4515,7 +4518,7 @@ class EC2:
         response = client.get_password_data(InstanceId=instance_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize datetime
         response = serialize_response_with_datetime_encoding(response)
@@ -4575,7 +4578,7 @@ class EC2:
         response = client.describe_reserved_instances(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize datetime objects
         serialized_response = serialize_response_with_datetime_encoding(response)
@@ -4612,7 +4615,7 @@ class EC2:
         )
 
     @staticmethod
-    def describe_volumes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_volumes_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes the specified EBS volumes or all of your EBS volumes.
 
@@ -4642,7 +4645,7 @@ class EC2:
         response = client.describe_volumes(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         volumes = response.get("Volumes", [])
@@ -4669,7 +4672,7 @@ class EC2:
         )
 
     @staticmethod
-    def modify_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def modify_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Modifies several parameters of an existing EBS volume, including volume size, volume type, and IOPS capacity.
 
@@ -4694,7 +4697,7 @@ class EC2:
         response = client.modify_volume(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         volume_modification = response.get("VolumeModification", {})
@@ -4732,7 +4735,7 @@ class EC2:
         )
 
     @staticmethod
-    def create_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates an EBS volume that can be attached to an instance in the same Availability Zone.
 
@@ -4765,7 +4768,7 @@ class EC2:
         response = client.create_volume(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
 
@@ -4786,7 +4789,7 @@ class EC2:
         )
 
     @staticmethod
-    def attach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def attach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Attaches an EBS volume to a running or stopped instance and exposes it to the instance with the specified device name.
 
@@ -4807,7 +4810,7 @@ class EC2:
         response = client.attach_volume(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
@@ -4828,7 +4831,7 @@ class EC2:
         )
 
     @staticmethod
-    def detach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def detach_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Detaches an EBS volume from an instance.
 
@@ -4851,7 +4854,7 @@ class EC2:
         response = client.detach_volume(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
 
@@ -4873,7 +4876,7 @@ class EC2:
         )
 
     @staticmethod
-    def delete_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_volume_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified EBS volume. The volume must be in the available state (not attached to an instance).
 
@@ -4889,12 +4892,12 @@ class EC2:
         response = client.delete_volume(VolumeId=volume_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output=f"Successfully deleted volume {volume_id}")
 
     @staticmethod
-    def describe_snapshots_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_snapshots_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes one or more Amazon EBS snapshots available to you.
 
@@ -4932,7 +4935,7 @@ class EC2:
 
         response = client.describe_snapshots(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         snapshots = response.get("Snapshots", [])
@@ -4970,7 +4973,7 @@ class EC2:
         )
 
     @staticmethod
-    def delete_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified Amazon EBS snapshot.
 
@@ -4987,12 +4990,12 @@ class EC2:
         response = client.delete_snapshot(SnapshotId=snapshot_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output=f"Successfully deleted snapshot {snapshot_id}", raw_response=response)
 
     @staticmethod
-    def copy_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def copy_snapshot_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Copies a point-in-time snapshot of an Amazon EBS volume and stores it in Amazon S3.
 
@@ -5029,7 +5032,7 @@ class EC2:
 
         response = client.copy_snapshot(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
         readable_output = tableToMarkdown(
@@ -5098,7 +5101,7 @@ class EC2:
             raise DemistoException(f"Waiter error: {str(e)}")
 
     @staticmethod
-    def describe_launch_templates_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_launch_templates_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes one or more launch templates.
 
@@ -5132,7 +5135,7 @@ class EC2:
         response = client.describe_launch_templates(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
@@ -5165,7 +5168,7 @@ class EC2:
         )
 
     @staticmethod
-    def create_launch_template_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_launch_template_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a launch template. A launch template contains the parameters to launch an instance.
 
@@ -5182,7 +5185,7 @@ class EC2:
         response = client.create_launch_template(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
@@ -5210,7 +5213,7 @@ class EC2:
         )
 
     @staticmethod
-    def delete_launch_template_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_launch_template_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes a launch template. Deleting a launch template deletes all of its versions.
 
@@ -5237,7 +5240,7 @@ class EC2:
         response = client.delete_launch_template(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response to handle datetime objects
         response = serialize_response_with_datetime_encoding(response)
@@ -5265,7 +5268,7 @@ class EC2:
         )
 
     @staticmethod
-    def create_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Launches an EC2 Fleet.
 
@@ -5286,7 +5289,7 @@ class EC2:
         response = client.create_fleet(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         outputs = {k: v for k, v in response.items() if k != "ResponseMetadata"}
@@ -5306,7 +5309,7 @@ class EC2:
         )
 
     @staticmethod
-    def delete_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified EC2 Fleet.
 
@@ -5326,7 +5329,7 @@ class EC2:
         response = client.delete_fleets(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         successful = response.get("SuccessfulFleetDeletions", [])
@@ -5372,7 +5375,7 @@ class EC2:
         )
 
     @staticmethod
-    def describe_fleets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_fleets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes one or more of your EC2 Fleets.
 
@@ -5399,7 +5402,7 @@ class EC2:
         response = client.describe_fleets(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         fleets = response.get("Fleets", [])
@@ -5425,7 +5428,7 @@ class EC2:
         )
 
     @staticmethod
-    def describe_fleet_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_fleet_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes the running instances for the specified EC2 Fleet.
 
@@ -5449,7 +5452,7 @@ class EC2:
         response = client.describe_fleet_instances(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         active_instances = response.get("ActiveInstances", [])
@@ -5461,6 +5464,7 @@ class EC2:
         response_data = {k: v for k, v in response.items() if k != "ResponseMetadata"}
 
         return CommandResults(
+            outputs_prefix="AWS.EC2.Fleets",
             outputs=response_data,
             outputs_key_field="FleetId",
             readable_output=tableToMarkdown(
@@ -5474,7 +5478,7 @@ class EC2:
         )
 
     @staticmethod
-    def modify_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def modify_fleet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Modifies the specified EC2 Fleet.
 
@@ -5509,7 +5513,7 @@ class EC2:
         response = client.modify_fleet(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(
             outputs_prefix="AWS.EC2.Fleets",
@@ -5520,7 +5524,7 @@ class EC2:
         )
 
     @staticmethod
-    def delete_vpc_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_vpc_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified VPC.
 
@@ -5536,12 +5540,12 @@ class EC2:
         response = client.delete_vpc(VpcId=vpc_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output=f"Successfully deleted VPC {vpc_id}")
 
     @staticmethod
-    def create_vpc_endpoint_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_vpc_endpoint_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a VPC endpoint for a specified service. An endpoint enables you to create a private
         connection between your VPC and the service.
@@ -5589,7 +5593,7 @@ class EC2:
         response = client.create_vpc_endpoint(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         vpc_endpoint = response.get("VpcEndpoint", {})
@@ -5609,7 +5613,7 @@ class EC2:
         )
 
     @staticmethod
-    def describe_internet_gateways_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_internet_gateways_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes one or more of your internet gateways.
 
@@ -5633,7 +5637,7 @@ class EC2:
         response = client.describe_internet_gateways(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         internet_gateways = response.get("InternetGateways", [])
@@ -5673,7 +5677,7 @@ class EC2:
         )
 
     @staticmethod
-    def detach_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def detach_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Detaches an internet gateway from a VPC, disabling connectivity between the internet and the VPC.
 
@@ -5691,12 +5695,12 @@ class EC2:
         response = client.detach_internet_gateway(InternetGatewayId=internet_gateway_id, VpcId=vpc_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output=f"Successfully detached internet gateway {internet_gateway_id} from VPC {vpc_id}")
 
     @staticmethod
-    def delete_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_internet_gateway_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified internet gateway.
 
@@ -5712,12 +5716,12 @@ class EC2:
         response = client.delete_internet_gateway(InternetGatewayId=internet_gateway_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output=f"Successfully deleted internet gateway {internet_gateway_id}")
 
     @staticmethod
-    def delete_subnet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def delete_subnet_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes the specified subnet.
 
@@ -5733,12 +5737,12 @@ class EC2:
         response = client.delete_subnet(SubnetId=subnet_id)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output=f"Successfully deleted subnet {subnet_id}")
 
     @staticmethod
-    def create_network_acl_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_network_acl_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates an entry (a rule) in a network ACL with the specified rule number.
 
@@ -5777,12 +5781,12 @@ class EC2:
         response = client.create_network_acl_entry(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         return CommandResults(readable_output=f"Successfully created network ACL entry for {args.get('network_acl_id')}")
 
     @staticmethod
-    def describe_key_pairs_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_key_pairs_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes the specified key pairs or all of your key pairs.
         Args:
@@ -5803,7 +5807,7 @@ class EC2:
         print_debug_logs(client, f"Describing key pairs with parameters: {kwargs}")
         response = client.describe_key_pairs(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         key_pairs = response.get("KeyPairs", [])
@@ -5826,7 +5830,7 @@ class EC2:
         )
 
     @staticmethod
-    def allocate_hosts_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def allocate_hosts_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Allocates a Dedicated Host to your account.
         Args:
@@ -5856,7 +5860,7 @@ class EC2:
         print_debug_logs(client, f"Allocating Dedicated Hosts with parameters: {kwargs}")
         response = client.allocate_hosts(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         host_ids = response.get("HostIds", [])
         return CommandResults(
@@ -5867,7 +5871,7 @@ class EC2:
         )
 
     @staticmethod
-    def release_hosts_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def release_hosts_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Releases the specified Dedicated Hosts.
         Args:
@@ -5881,7 +5885,7 @@ class EC2:
 
         response = client.release_hosts(HostIds=host_ids)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         outputs = remove_empty_elements(
             {
@@ -5904,7 +5908,7 @@ class EC2:
         )
 
     @staticmethod
-    def create_traffic_mirror_session_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_traffic_mirror_session_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a Traffic Mirror session.
         Args:
@@ -5929,7 +5933,7 @@ class EC2:
         print_debug_logs(client, f"Creating Traffic Mirror session with parameters: {kwargs}")
         response = client.create_traffic_mirror_session(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         session = response.get("TrafficMirrorSession", {})
@@ -6114,7 +6118,7 @@ class EKS:
         )
 
     @staticmethod
-    def update_access_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def update_access_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Updates an existing Access Entry for an Amazon EKS cluster.
 
@@ -6146,7 +6150,7 @@ class EKS:
         response = client.update_access_entry(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))
 
@@ -6168,7 +6172,7 @@ class EKS:
         )
 
     @staticmethod
-    def create_access_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def create_access_entry_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a new Access Entry for an Amazon EKS cluster.
 
@@ -6199,7 +6203,7 @@ class EKS:
         response = client.create_access_entry(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))
 
@@ -6221,7 +6225,7 @@ class EKS:
         )
 
     @staticmethod
-    def list_clusters_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def list_clusters_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Returns a list of EKS clusters owned by the authenticated sender of the request.
 
@@ -6241,7 +6245,7 @@ class EKS:
         response = client.list_clusters(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         clusters = response.get("clusters", [])
         next_token = response.get("nextToken")
@@ -6545,7 +6549,7 @@ class RDS:
             raise DemistoException(f"Error: {str(e)}")
 
     @staticmethod
-    def describe_db_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def describe_db_instances_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Describes provisioned RDS instances.
 
@@ -6573,7 +6577,7 @@ class RDS:
         response = serialize_response_with_datetime_encoding(response)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         db_instances = response.get("DBInstances", [])
         if not db_instances:
@@ -6608,7 +6612,7 @@ class Redshift:
     service = AWSServices.Redshift
 
     @staticmethod
-    def modify_cluster_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def modify_cluster_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Modifies the settings of a cluster.
 
@@ -6653,7 +6657,7 @@ class Redshift:
         response = client.modify_cluster(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         response = serialize_response_with_datetime_encoding(response)
         cluster_data = response.get("Cluster", {})
@@ -7356,7 +7360,7 @@ class Lambda:
     service = AWSServices.LAMBDA
 
     @staticmethod
-    def get_function_configuration_command(client: BotoClient, args: Dict[str, Any]):
+    def get_function_configuration_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Retrieves the configuration information for a Lambda function.
 
@@ -7407,7 +7411,7 @@ class Lambda:
         )
 
     @staticmethod
-    def get_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]):
+    def get_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Retrieves the configuration for a Lambda function URL.
 
@@ -7452,7 +7456,7 @@ class Lambda:
         )
 
     @staticmethod
-    def update_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]):
+    def update_function_url_configuration_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Updates the configuration for a Lambda function URL.
 
@@ -7554,7 +7558,7 @@ class Lambda:
             return policy_table, statements_table
 
     @staticmethod
-    def get_policy_command(client: BotoClient, args: Dict[str, Any]):
+    def get_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Retrieves the policy for a Lambda function from AWS and parses it into a dictionary.
 
@@ -7572,7 +7576,7 @@ class Lambda:
 
         response = client.get_policy(**kwargs)
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         fixed_response = {}
         fixed_response["AccountId"] = args.get("account_id", "")
@@ -7652,7 +7656,7 @@ class Lambda:
         )
 
     @staticmethod
-    def get_function_command(client: BotoClient, args: Dict[str, Any]):
+    def get_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Retrieves information about a Lambda function including configuration, code location, and metadata.
 
@@ -7677,7 +7681,7 @@ class Lambda:
         response = client.get_function(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response with datetime encoding
         response = serialize_response_with_datetime_encoding(response)
@@ -7709,7 +7713,7 @@ class Lambda:
         )
 
     @staticmethod
-    def list_functions_command(client: BotoClient, args: Dict[str, Any]):
+    def list_functions_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists Lambda functions in the specified region.
 
@@ -7735,7 +7739,7 @@ class Lambda:
         response = client.list_functions(**pagination_kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response with datetime encoding
         serialized_response = serialize_response_with_datetime_encoding(response)
@@ -7770,7 +7774,7 @@ class Lambda:
         )
 
     @staticmethod
-    def list_aliases_command(client: BotoClient, args: Dict[str, Any]):
+    def list_aliases_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists aliases for a Lambda function.
 
@@ -7802,7 +7806,7 @@ class Lambda:
         response = client.list_aliases(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response with datetime encoding
         serialized_response = serialize_response_with_datetime_encoding(response)
@@ -7834,7 +7838,7 @@ class Lambda:
         )
 
     @staticmethod
-    def get_account_settings_command(client: BotoClient, args: Dict[str, Any]):
+    def get_account_settings_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Retrieves account settings for AWS Lambda.
 
@@ -7852,7 +7856,7 @@ class Lambda:
         response = client.get_account_settings()
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response with datetime encoding
         serialized_response = serialize_response_with_datetime_encoding(response)
@@ -7899,7 +7903,7 @@ class Lambda:
         )
 
     @staticmethod
-    def list_versions_by_function_command(client: BotoClient, args: Dict[str, Any]):
+    def list_versions_by_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists the versions of a Lambda function and returns the results.
 
@@ -7928,7 +7932,7 @@ class Lambda:
         response = client.list_versions_by_function(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response with datetime encoding
         serialized_response = serialize_response_with_datetime_encoding(response)
@@ -7996,7 +8000,7 @@ class Lambda:
         return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def create_function_command(client: BotoClient, args: Dict[str, Any]):
+    def create_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a Lambda function from AWS.
 
@@ -8032,7 +8036,7 @@ class Lambda:
         response = client.create_function(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.CREATED:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response with datetime encoding
         response = serialize_response_with_datetime_encoding(response)
@@ -8062,7 +8066,7 @@ class Lambda:
         )
 
     @staticmethod
-    def list_layer_versions_command(client: BotoClient, args: Dict[str, Any]):
+    def list_layer_versions_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Lists the versions of an Lambda layer.
 
@@ -8099,7 +8103,7 @@ class Lambda:
         response = client.list_layer_versions(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response with datetime encoding
         serialized_response = serialize_response_with_datetime_encoding(response)
@@ -8130,7 +8134,7 @@ class Lambda:
         )
 
     @staticmethod
-    def delete_function_command(client: BotoClient, args: Dict[str, Any]):
+    def delete_function_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes a Lambda function from AWS.
 
@@ -8158,7 +8162,7 @@ class Lambda:
         return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]):
+    def delete_layer_version_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Deletes a version of a Lambda layer.
 
@@ -8185,7 +8189,7 @@ class Lambda:
         return AWSErrorHandler.handle_response_error(response)
 
     @staticmethod
-    def publish_layer_version_command(client: BotoClient, args: Dict[str, Any]):
+    def publish_layer_version_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Creates a Lambda layer from a ZIP archive.
 
@@ -8240,7 +8244,7 @@ class Lambda:
         response = client.publish_layer_version(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") not in [HTTPStatus.OK, HTTPStatus.CREATED]:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         # Serialize response with datetime encoding
         outputs = serialize_response_with_datetime_encoding(response)
@@ -8272,7 +8276,7 @@ class Lambda:
         )
 
     @staticmethod
-    def update_function_configuration_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+    def update_function_configuration_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Updates the configuration of a Lambda function.
 
@@ -8291,7 +8295,7 @@ class Lambda:
         response = client.update_function_configuration(**kwargs)
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-            AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
         outputs = copy.deepcopy(response)
         if outputs.get("ResponseMetadata", {}):
@@ -9258,7 +9262,7 @@ class SSM:
                 response = client.list_commands(**kwargs)
 
                 if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
-                    AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+                    return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
 
                 response = serialize_response_with_datetime_encoding(response)
                 print_debug_logs(client, f"Retry {response=}")
