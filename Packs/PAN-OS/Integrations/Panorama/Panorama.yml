@@ -8768,9 +8768,24 @@ script:
       name: id
     - description: The target number of the firewall. Used only on a Panorama instance.
       name: target
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to poll the job status until it reaches a terminal state (FIN). Only takes effect when a single job "id" is provided.
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '30'
+      description: The interval between poll attempts, in seconds.
+      name: interval_in_seconds
+    - defaultValue: '3600'
+      description: The maximum time to wait for the job to reach a terminal state, in seconds. If the timeout is reached before the job finishes, the command returns the last known result.
+      name: timeout_in_seconds
     description: >-
       Gets all the jobs from the devices in the environment, or a single job when the ID is specified.
+      Supports polling when a single job ID is provided.
     name: pan-os-platform-get-jobs
+    polling: true
     outputs:
     - contextPath: PANOS.JobStatus.hostid
       description: The host ID.

@@ -1210,7 +1210,7 @@ script:
     - contextPath: MsGraphFiles.TeamsMessagePolicyViolation.verdictDetails
       description: The reviewer actions that were made available on the flagged message.
       type: String
-  dockerimage: demisto/crypto:1.0.0.8931184
+  dockerimage: demisto/crypto:1.0.0.10120494
   script: ''
   subtype: python3
   type: python
