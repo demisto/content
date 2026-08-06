@@ -1,10 +1,10 @@
 {
-    "id": "incident_crowdstrikefalconuseragent",
+    "id": "incident_severity",
     "version": -1,
     "modified": "2023-09-03T21:55:51.879501104Z",
-    "name": "CrowdStrike Falcon User Agent",
+    "name": "Severity",
     "ownerOnly": false,
-    "cliName": "crowdstrikefalconuseragent",
+    "cliName": "severityyyy",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
