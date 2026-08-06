@@ -115,6 +115,14 @@ class MsGraphClient:
             json_data={"displayName": display_name, "description": description, "externalId": external_id},
         )
 
+    def invoke_action(self, accountId: str, action: str, identityAccountsId: str, identityProvider: str):
+        url = f"/security/identities/identityAccounts/{identityAccountsId}/invokeAction"
+        return self.ms_client.http_request(
+            method="POST",
+            url_suffix=url,
+            json_data={"accountId": accountId, "action": action, "identityProvider": identityProvider},
+        )
+
     def update_edsicovery_case(self, case_id, display_name, description, external_id):
         url = f"security/cases/ediscoveryCases/{case_id}"
         req = {"displayName": display_name, "description": description, "externalId": external_id}
@@ -1333,6 +1341,23 @@ def create_ediscovery_case_command(client: MsGraphClient, args: dict):
     return ediscovery_cases_command_results([res], res)
 
 
+def invoke_action_command(client: MsGraphClient, args: dict):
+    """
+    Perform actions such as revoking accounts and forcing password reset for identity accounts.
+
+    Args:
+        client (MsGraphClient): MsGraphClient client object.
+        args (dict): The command's arguments dictionary.
+
+    Returns:
+        CommandResults: A CommandResults object indicating the success of the action performed.
+    """
+    client.invoke_action(args["account_id"], args["action"], args["identity_accounts_id"], args["identity_provider"])
+    return CommandResults(
+        readable_output=f'Action: {args.get("action")} was successfully performed for account: {args.get("account_id")}.'
+    )
+
+
 def close_ediscovery_case_command(client: MsGraphClient, args):
     """ """
     client.close_edsicovery_case(args.get("case_id"))
@@ -2464,6 +2489,7 @@ def main():
         "msg-get-users": get_users_command,
         "msg-get-user": get_user_command,
         "msg-create-alert-comment": create_alert_comment_command,
+        "msg-invoke-action": invoke_action_command,
         # eDiscovery commands
         "msg-create-ediscovery-case": create_ediscovery_case_command,
         "msg-list-ediscovery-cases": list_ediscovery_case_command,

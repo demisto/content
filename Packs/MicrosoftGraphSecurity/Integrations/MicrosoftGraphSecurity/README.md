@@ -392,6 +392,36 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### msg-invoke-action
+
+***
+Performs remediation actions for identity accounts.
+
+#### Base Command
+
+`msg-invoke-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity_accounts_id | The identifier of the accounts that are monitored for suspicious or malicious activity by Microsoft Defender for Identity. | Required |
+| account_id | The identifier of the account to perform the action on. | Required |
+| action | The type of action to perform on the account. Possible values are: disable, enable, forcePasswordReset, revokeAllSessions, requireUserToSignInAgain and markUserAsCompromised. | Required |
+| identity_provider | The identity provider associated with the account. Possible values are: entraID, activeDirectory and okta. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!msg-invoke-action identity_accounts_id=`0000` account_id=`0001` action=`disable` identity_provider=`activeDirectory` ```
+
+#### Human Readable Output
+
+>Action: disable was successfully performed for account: 0001.
+
 ### eDiscovery Commands
 
 ### msg-list-ediscovery-cases
