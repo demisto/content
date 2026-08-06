@@ -1807,7 +1807,7 @@ class Client(BaseClient):
 
         timeout = (
             60,  # Connection Timeout: max seconds to wait for a connection to the server to be established
-            150,  # Read Timeout: max seconds to wait between streamed bytes of the response body from the server
+            600,  # Read Timeout: max seconds to wait between streamed bytes of the response body from the server
         )
 
         try:
