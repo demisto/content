@@ -96,39 +96,26 @@ FIELDS_LIST = argToList(PARAMS.get("fetch_fields", ""))
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 """VARIABLES FOR MIRRORING"""
-# Prefix for every mirroring log line, so a full mirror run can be isolated in the logs
-# with a single search (for example: `grep "[ES-MIRROR]"`).
 MIRROR_LOG_PREFIX = "[ES-MIRROR]"
 
 
 def mirror_debug(message: str) -> None:
-    """Writes a debug log line tagged with MIRROR_LOG_PREFIX."""
     demisto.debug(f"{MIRROR_LOG_PREFIX} {message}")
 
 
 def mirror_error(message: str) -> None:
-    """Writes an error log line tagged with MIRROR_LOG_PREFIX."""
     demisto.error(f"{MIRROR_LOG_PREFIX} {message}")
 
 
 def get_incident_type() -> str:
-    """Returns the type of the incident currently being mirrored, if that context is available.
-
-    `demisto.incident()` is not always populated during a mirroring run and may return None, so
-    it cannot be subscripted directly. Callers must treat an empty result as "unknown" and fall
-    back to resolving the type from the remote system - never as an error.
-
-    Returns:
-        The incident type, or an empty string when the context is unavailable.
-    """
+    """Returns the current incident's type, or "" when the incident context is unavailable."""
     try:
         incident = demisto.incident()
     except Exception as e:
-        mirror_debug(f"Incident context unavailable ({e}); will resolve the type from the remote system.")
+        mirror_debug(f"Incident context unavailable ({e}); resolving type from the remote system.")
         return ""
 
     if not isinstance(incident, dict):
-        mirror_debug("Incident context unavailable; will resolve the type from the remote system.")
         return ""
 
     return incident.get("type") or ""
@@ -151,11 +138,9 @@ MIRROR_DIRECTION_MAP = {
 INCIDENT_TYPE_SECURITY_ALERT = "Elasticsearch Security Alert"
 INCIDENT_TYPE_CASE = "Elasticsearch Case"
 
-# The only fields Kibana lets us change on an existing detection alert. There is no API to
-# change an alert's severity, risk score or rule, so those XSOAR edits cannot be mirrored out.
+# The only detection-alert fields Kibana can update; severity/risk/rule cannot be mirrored out.
 MIRRORABLE_ALERT_FIELDS = ("status", "reason", "tags")
 
-# Elasticsearch alert status → XSOAR close reason mapping
 ELASTIC_CLOSE_REASON_TO_XSOAR: Dict[str, str] = {
     "false_positive": "false_positive",
     "duplicate": "duplicate",
@@ -165,9 +150,8 @@ ELASTIC_CLOSE_REASON_TO_XSOAR: Dict[str, str] = {
     "other": "other",
 }
 
-# XSOAR close reason → Elasticsearch workflow reason. Not simply the inverse of the mapping
-# above: several Elasticsearch reasons collapse onto "resolved", and Kibana rejects any value
-# outside its own enum, so unknown reasons must fall back to "other".
+# Not the inverse of the map above: several Elastic reasons collapse onto "resolved", and Kibana
+# rejects values outside its own enum, so unknown reasons fall back to "other".
 XSOAR_CLOSE_REASON_TO_ELASTIC: Dict[str, str] = {
     "False Positive": "false_positive",
     "false_positive": "false_positive",
@@ -179,26 +163,12 @@ XSOAR_CLOSE_REASON_TO_ELASTIC: Dict[str, str] = {
     "other": "other",
 }
 
-# Keys XSOAR adds to the outgoing delta when an incident is closed. The incident status is not
-# reliably IncidentStatus.DONE at that moment, so these are used to detect a closure as well.
+# Keys XSOAR adds to the delta on close; used to detect closures when inc_status is still Active.
 XSOAR_CLOSE_DELTA_KEYS = {"closeReason", "closeNotes", "closingUserId"}
 
 
 def is_incident_closing(inc_status: Optional[int], delta: Optional[Dict[str, Any]]) -> bool:
-    """Returns True when the local incident is being closed.
-
-    `inc_status` alone is not reliable: when an incident is closed, XSOAR can invoke
-    update-remote-system with a delta carrying the close-only fields while the status is still
-    Active. Treating only IncidentStatus.DONE as a closure meant those runs looked like an
-    ordinary (and non-mirrorable) edit, so the remote alert or case was never closed.
-
-    Args:
-        inc_status: The incident status passed to update-remote-system.
-        delta: The outgoing-mapper delta.
-
-    Returns:
-        True when the incident should be treated as closing.
-    """
+    """Returns True when the local incident is being closed (by status or close-only delta keys)."""
     if inc_status == IncidentStatus.DONE:
         return True
     return bool((delta or {}).keys() & XSOAR_CLOSE_DELTA_KEYS)
@@ -233,29 +203,11 @@ def get_value_by_dot_notation(dictionary, key):
 
 
 def get_alert_source_value(source: Any, key: str) -> Any:
-    """Reads a field from a security alert ``_source``, tolerating both key layouts.
+    """Reads a field from an alert ``_source``, supporting both flat-dotted and nested key layouts.
 
-    Kibana's alerts-as-data indices (``.alerts-security.alerts-*``) store ``_source`` with
-    FLAT DOTTED keys::
-
-        {"kibana.alert.uuid": "abc-123", "kibana.alert.workflow_status": "open"}
-
-    while older ``.siem-signals-*`` documents (and most other Elasticsearch indices) use a
-    NESTED layout::
-
-        {"kibana": {"alert": {"uuid": "abc-123"}}}
-
-    ``get_value_by_dot_notation`` only walks the nested layout, so on a real alerts-as-data
-    document it returns None for every ``kibana.alert.*`` lookup. That silently emptied the
-    mirroring commands. This helper checks the flat key first and only then falls back to the
-    nested walk, so both index generations work.
-
-    Args:
-        source: The ``_source`` dict of an Elasticsearch hit.
-        key: The dotted field name, e.g. ``"kibana.alert.uuid"``.
-
-    Returns:
-        The field value, or None when the field is absent under either layout.
+    Alerts-as-data indices store keys flat (``{"kibana.alert.uuid": ...}``) while older
+    ``.siem-signals-*`` documents use a nested layout. The flat key is checked first, then the
+    nested walk via ``get_value_by_dot_notation``.
     """
     if not isinstance(source, dict):
         return None
@@ -3332,35 +3284,13 @@ def es_kibana_value_list_item_import_command(args: Dict[str, Any], proxies) -> C
 
 """MIRRORING FUNCTIONS"""
 
-SECURITY_ALERT_INDEX_PATTERNS = (
-    ".internal.alerts-security.alerts-",
-    ".alerts-security.alerts-",
-    ".siem-signals-",
-)
-
-
-def _is_security_alert_index(index: str) -> bool:
-    """Returns True if the given index matches a known Elasticsearch security alert index pattern."""
-    return any(index.startswith(pat) or pat.rstrip("-") in index for pat in SECURITY_ALERT_INDEX_PATTERNS)
-
-
-# How long an already-fetched remote ID is remembered. The server has no dedup by dbotMirrorId -
-# its only rule is "empty incident ID -> create a new incident" - and fetched incidents always have
-# an empty ID, so preventing duplicates is entirely the integration's responsibility. IDs are
-# pruned after this window so the lastRun object cannot grow without bound.
+# The server does not dedup by dbotMirrorId, so the integration must remember ingested IDs to
+# avoid re-creating incidents. IDs are pruned after this window to bound the lastRun object.
 FETCHED_IDS_RETENTION_DAYS = 30
 
 
 def prune_fetched_ids(fetched_ids: Dict[str, str], now: Optional[datetime] = None) -> Dict[str, str]:
-    """Drops remembered remote IDs that are older than FETCHED_IDS_RETENTION_DAYS.
-
-    Args:
-        fetched_ids: Mapping of remote ID -> ISO timestamp of when it was ingested.
-        now: Reference time, for testing. Defaults to the current UTC time.
-
-    Returns:
-        A new mapping containing only the entries still inside the retention window.
-    """
+    """Returns a copy of the ingested-ID map with entries older than FETCHED_IDS_RETENTION_DAYS removed."""
     reference = now or datetime.now(UTC)
     cutoff = reference - timedelta(days=FETCHED_IDS_RETENTION_DAYS)
     pruned: Dict[str, str] = {}
@@ -3378,14 +3308,7 @@ def prune_fetched_ids(fetched_ids: Dict[str, str], now: Optional[datetime] = Non
 
 
 def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
-    """Fetches Elasticsearch Security Alerts via the Kibana detection alerts search API.
-
-    Uses the existing Elasticsearch search mechanism (RAW_QUERY or index-based query)
-    to retrieve alerts from security alert indices.
-
-    Returns:
-        List of alert hit dicts (each hit contains _id, _index, _source, etc.)
-    """
+    """Fetches Elasticsearch Security Alerts as XSOAR incidents using the standard search mechanism."""
     es = elasticsearch_builder(proxies)
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("alert_time") or FETCH_TIME
@@ -3408,8 +3331,7 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
     incidents = []
     new_last_fetch = last_fetch
 
-    # Remote IDs already ingested. The timestamp cursor alone is not enough: it is a coarse
-    # pre-filter only, and an alert must never be ingested twice.
+    # Authoritative dedup: the timestamp cursor is only a coarse pre-filter.
     fetched_alert_ids: Dict[str, str] = prune_fetched_ids(last_run.get("fetched_alert_ids") or {})
     ingested_at = datetime.now(UTC).isoformat()
 
@@ -3431,21 +3353,15 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
         mirror_direction = MIRROR_DIRECTION_MAP.get(MIRROR_DIRECTION)
         mirror_instance = demisto.integrationInstance()
 
-        # The incoming mapper reads ROOT-level paths ("kibana.alert.workflow_status",
-        # "@timestamp", ...), but in a raw hit those still live under "_source". Dumping the
-        # unflattened hit meant the mapper resolved none of its source fields, so the incident
-        # was created without a dbotMirrorLastSync watermark and the server never scheduled
-        # get-remote-data for it. get_remote_data_command already flattens; fetch must use the
-        # exact same shape or mirroring-in silently never starts.
+        # The incoming mapper reads root-level paths, so the hit is flattened to match the shape
+        # get_remote_data_command returns; otherwise mirroring-in never starts for this incident.
         raw_data = flatten_alert_hit(hit)
         raw_data.update(
             {
                 "mirror_id": alert_uuid,
                 "mirror_instance": mirror_instance,
                 "mirror_direction": mirror_direction,
-                # The mapper maps "severity" straight onto the incident severity, which is
-                # numeric in XSOAR - so expose the converted value, not the Kibana name.
-                "severity": severity,
+                "severity": severity,  # XSOAR severity is numeric, not the Kibana name.
             }
         )
 
@@ -3466,9 +3382,7 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
         if MAP_LABELS:
             inc["labels"] = incident_label_maker(source)
 
-        # The counterpart of the logging in _get_modified_alert_ids: this is the exact value the
-        # incident will carry as dbotMirrorId, and get-modified-remote-data must report the very
-        # same string for the server to dispatch get-remote-data.
+        # dbotMirrorId is logged so it can be matched against get-modified-remote-data output.
         mirror_debug(
             f"Ingesting security alert with dbotMirrorId={str(alert_uuid)!r} "
             f"(document _id={hit_id!r}, direction={mirror_direction!r}, instance={mirror_instance!r})."
@@ -3485,13 +3399,10 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
 
 
 def fetch_cases(proxies) -> List[Dict[str, Any]]:
-    """Fetches Elasticsearch Cases via the Kibana Cases API.
+    """Fetches Elasticsearch Cases as XSOAR incidents via the Kibana Cases API.
 
-    Filters by FETCH_SEVERITY and FETCH_STATUS configuration parameters.
-    Optionally fetches associated alerts per case when FETCH_ALERTS_FOR_CASE is True.
-
-    Returns:
-        List of XSOAR incident dicts.
+    Filters by FETCH_SEVERITY and FETCH_STATUS, and optionally fetches per-case alerts when
+    FETCH_ALERTS_FOR_CASE is enabled.
     """
     last_run = demisto.getLastRun()
     last_fetch_str = last_run.get("case_time") or FETCH_TIME
@@ -3499,22 +3410,13 @@ def fetch_cases(proxies) -> List[Dict[str, Any]]:
     if last_fetch_dt and last_fetch_dt.tzinfo is None:
         last_fetch_dt = last_fetch_dt.replace(tzinfo=UTC)
 
-    # Remote IDs already ingested. The server does not dedup by dbotMirrorId, so a case must be
-    # permanently excluded from fetch once ingested - otherwise any remote edit re-creates it.
+    # Authoritative dedup: once ingested a case is excluded from fetch, so remote edits do not
+    # re-create it. The cursor sorts on createdAt (not updatedAt) so remote changes are delivered
+    # via mirroring-in rather than re-fetched as new incidents.
     fetched_case_ids: Dict[str, str] = prune_fetched_ids(last_run.get("fetched_case_ids") or {})
     ingested_at = datetime.now(UTC).isoformat()
 
-    # The fetch cursor must be the case *creation* time, not "updatedAt". Any remote change bumps
-    # updated_at, which would push the case past the cursor and re-ingest it as a brand new
-    # incident on the next fetch instead of updating the existing one. Post-creation changes are
-    # delivered by get-modified-remote-data / get-remote-data (mirroring-in), not by fetch.
     params: Dict[str, Any] = {"perPage": FETCH_SIZE, "sortField": "createdAt", "sortOrder": "asc"}
-
-    if FETCH_STATUS:
-        # Kibana API accepts a single status value; we iterate per status
-        pass  # handled below via multiple calls
-    if FETCH_SEVERITY:
-        params["severity"] = FETCH_SEVERITY[0] if len(FETCH_SEVERITY) == 1 else FETCH_SEVERITY
 
     all_cases: List[Dict[str, Any]] = []
     statuses_to_fetch = FETCH_STATUS if FETCH_STATUS else ["open", "in-progress"]
@@ -3571,15 +3473,13 @@ def fetch_cases(proxies) -> List[Dict[str, Any]]:
         if alerts_data:
             raw_data["_alerts"] = alerts_data
 
-        # See the comment in fetch_security_alerts - the mirror values must also be inside
-        # rawJSON so the incoming mapper can map them and let the server resolve the instance ID.
+        # Mirror values also go inside rawJSON so the incoming mapper can resolve the instance ID.
         raw_data.update(
             {
                 "mirror_id": case_id,
                 "mirror_instance": mirror_instance,
                 "mirror_direction": mirror_direction,
-                # See fetch_security_alerts - XSOAR severity is numeric.
-                "severity": severity,
+                "severity": severity,  # XSOAR severity is numeric, not the Kibana name.
             }
         )
 
@@ -3616,15 +3516,10 @@ SECURITY_ALERT_DEFAULT_INDEX = ".internal.alerts-security.alerts-*,.alerts-secur
 
 
 def get_configured_fetch_incident_type() -> str:
-    """Returns the mirroring-capable incident type this instance is configured to fetch.
+    """Returns the mirroring incident type this instance is configured to fetch, or "".
 
-    Both `demisto.incident()` and the remote lookup can come back empty during a mirroring run,
-    which left the incident type as "" and made mirror-out a silent no-op. The instance
-    configuration is a reliable, network-free signal: an instance configured to fetch Security
-    Alerts can only own Security Alert incidents.
-
-    Returns:
-        INCIDENT_TYPE_SECURITY_ALERT, INCIDENT_TYPE_CASE, or "" when not configured.
+    A reliable, network-free fallback for when both the incident context and the remote lookup
+    come back empty during a mirroring run.
     """
     configured = PARAMS.get("fetch_incident_type") or PARAMS.get("incidentType", "")
     if configured in (INCIDENT_TYPE_SECURITY_ALERT, INCIDENT_TYPE_CASE):
@@ -3633,25 +3528,10 @@ def get_configured_fetch_incident_type() -> str:
 
 
 def search_security_alerts(body: Dict[str, Any], proxies) -> Dict[str, Any]:
-    """Searches security alert documents, preferring the Elasticsearch client.
+    """Searches security alert documents via the Elasticsearch client, falling back to the Kibana API.
 
-    Mirroring originally went exclusively through the Kibana REST API. That endpoint requires a
-    Kibana base URL derived from the Server URL by swapping ".es." for ".kb.", which does not
-    hold for self-managed or proxied deployments - and it needs Kibana privileges that the
-    Elasticsearch credentials may not carry. When that call fails, the exception is caught by the
-    callers and mirroring silently reports "nothing found", even though fetch-incidents keeps
-    working because it talks to Elasticsearch directly.
-
-    Querying Elasticsearch with the same client fetch uses makes mirroring work wherever fetch
-    works. The Kibana API is kept as a fallback for deployments where the alert indices are not
-    directly readable.
-
-    Args:
-        body: An Elasticsearch search body.
-        proxies: Proxy configuration.
-
-    Returns:
-        The raw search response, or an empty dict when both transports fail.
+    The Elasticsearch client is preferred so mirroring works wherever fetch works; the Kibana API
+    is a fallback for deployments where the alert indices are not directly readable.
     """
     index = FETCH_INDEX or SECURITY_ALERT_DEFAULT_INDEX
     try:
@@ -3681,20 +3561,9 @@ def search_security_alerts(body: Dict[str, Any], proxies) -> Dict[str, Any]:
 
 
 def build_alert_lookup_body(remote_id: str, size: int = 1) -> Dict[str, Any]:
-    """Builds the search body used to locate a single security alert by its remote ID.
+    """Builds a search body matching a security alert by either kibana.alert.uuid or document _id.
 
-    The remote ID stored on the incident is ``kibana.alert.uuid`` when that field is present,
-    but ``fetch_security_alerts`` falls back to the document ``_id`` when it is not. Querying
-    ``kibana.alert.uuid`` alone therefore fails to find exactly those alerts that were ingested
-    via the fallback, which surfaced as mirroring silently doing nothing. Matching on either
-    field makes the lookup work regardless of which ID form was stored.
-
-    Args:
-        remote_id: The alert UUID or Elasticsearch document ID.
-        size: Maximum number of hits to return.
-
-    Returns:
-        An Elasticsearch search body.
+    Both ID forms are matched because fetch_security_alerts stores whichever one is available.
     """
     return {
         "query": {
@@ -3711,17 +3580,10 @@ def build_alert_lookup_body(remote_id: str, size: int = 1) -> Dict[str, Any]:
 
 
 def resolve_remote_incident_type(remote_id: str, proxies) -> str:
-    """Determines whether a remote ID refers to an Elasticsearch Security Alert or a Case.
+    """Resolves a remote ID to a Security Alert or Case by probing the remote system.
 
-    `demisto.incident()` is not reliably populated during a mirroring run, so the type is
-    resolved from the remote system itself - the ID is the only input the server guarantees.
-
-    Args:
-        remote_id: The remote alert UUID or case ID.
-        proxies: Proxy configuration.
-
-    Returns:
-        INCIDENT_TYPE_SECURITY_ALERT, INCIDENT_TYPE_CASE, or "" when the ID matches neither.
+    Used when the incident context is unavailable. Returns the configured fetch type when the
+    probes cannot reach the remote system, and "" only when the ID matches neither.
     """
     if not remote_id:
         return ""
@@ -3744,9 +3606,8 @@ def resolve_remote_incident_type(remote_id: str, proxies) -> str:
     except Exception as e:
         mirror_debug(f"Could not resolve remote id {remote_id} as a security alert: {e}")
 
-    # Neither probe matched. That is usually a connectivity/permission problem rather than proof
-    # the ID is unknown, so fall back to what this instance is configured to fetch instead of
-    # giving up and mirroring nothing.
+    # Neither probe matched - usually a connectivity/permission issue, so fall back to the
+    # configured fetch type rather than giving up and mirroring nothing.
     configured = get_configured_fetch_incident_type()
     if configured:
         mirror_debug(f"Remote id {remote_id} could not be probed; assuming {configured!r} based on the instance configuration.")
@@ -3756,9 +3617,7 @@ def resolve_remote_incident_type(remote_id: str, proxies) -> str:
     return ""
 
 
-# Kibana severity name -> XSOAR numeric severity. XSOAR stores severity as a number, so the
-# Elasticsearch string value must be converted; mapping it straight through leaves the incident
-# severity unchanged.
+# Kibana severity name -> XSOAR numeric severity.
 ELASTIC_SEVERITY_TO_XSOAR = {"critical": 4, "high": 3, "medium": 2, "low": 1}
 
 
@@ -3768,13 +3627,7 @@ def convert_severity(severity: Any) -> int:
 
 
 def convert_severity_to_elastic(severity: Any) -> Optional[str]:
-    """Converts an XSOAR numeric severity back to a Kibana severity name.
-
-    Values already expressed as a Kibana name are passed through unchanged.
-
-    Returns:
-        The Kibana severity name, or None when the value cannot be mapped.
-    """
+    """Converts an XSOAR numeric severity to a Kibana severity name, or None when unmappable."""
     if isinstance(severity, str) and severity.lower() in ELASTIC_SEVERITY_TO_XSOAR:
         return severity.lower()
 
@@ -3790,17 +3643,9 @@ def convert_severity_to_elastic(severity: Any) -> Optional[str]:
 
 
 def flatten_alert_hit(hit: Dict[str, Any]) -> Dict[str, Any]:
-    """Lifts an Elasticsearch hit's ``_source`` fields to the top level.
+    """Merges an Elasticsearch hit's ``_source`` fields into the root, keeping metadata keys.
 
-    The Security Alert incoming mapper reads paths such as ``kibana.alert.uuid`` and ``@timestamp``
-    from the root of the object, but in a raw hit those live under ``_source``. Metadata keys
-    (``_index``, ``_id``, ...) are preserved so the mapper can still read them.
-
-    Args:
-        hit: A raw Elasticsearch search hit.
-
-    Returns:
-        A new dict with the ``_source`` fields merged into the root.
+    The incoming mapper reads fields from the root, so the raw hit must be flattened.
     """
     flattened = {key: value for key, value in hit.items() if key != "_source"}
     source = hit.get("_source") or {}
@@ -3810,29 +3655,11 @@ def flatten_alert_hit(hit: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataResponse:
-    """Implements the get-remote-data command for mirroring-in.
-
-    Fetches the latest state of an Elasticsearch Security Alert or Case from Elasticsearch/Kibana
-    and returns it as a GetRemoteDataResponse so XSOAR can update the local incident.
-
-    Args:
-        args: Command arguments containing 'id' (the mirror ID) and 'lastUpdate'.
-        proxies: Proxy configuration.
-
-    Returns:
-        GetRemoteDataResponse with updated incident fields and any entries.
-    """
+    """Mirroring-in: fetches the latest state of a remote alert/case and returns it for XSOAR."""
     remote_id = args.get("id", "")
     last_update = args.get("lastUpdate", "")
 
-    # Logged unconditionally and first: if this line is absent from the logs after
-    # get-modified-remote-data reported IDs, the server never dispatched the pull - which means
-    # the reported ID matched no incident's dbotMirrorId (rather than the lookup below failing).
-    mirror_debug(f"get-remote-data ENTERED for remote id={remote_id!r} (lastUpdate={last_update!r}).")
-
-    # The incident context is only a hint - `demisto.incident()` is not always populated during a
-    # mirroring run. Like the other mirroring integrations, this command must work from the remote
-    # ID alone, so fall back to probing Elasticsearch for what that ID actually refers to.
+    # The incident context is only a hint, so fall back to probing the remote system by ID.
     incident_type = get_incident_type() or resolve_remote_incident_type(remote_id, proxies)
 
     mirror_debug(f"get-remote-data called for id={remote_id}, type={incident_type}, lastUpdate={last_update}")
@@ -3841,7 +3668,6 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
     entries: List[Dict[str, Any]] = []
 
     if incident_type == INCIDENT_TYPE_SECURITY_ALERT:
-        # Fetch the alert by UUID from the security alert index
         try:
             response = search_security_alerts(build_alert_lookup_body(remote_id), proxies)
             hits = (response or {}).get("hits", {}).get("hits", []) if isinstance(response, dict) else []
@@ -3850,16 +3676,12 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                 source = hit.get("_source", {})
                 workflow_status = get_alert_source_value(source, "kibana.alert.workflow_status") or "open"
 
-                # The mirrored object goes through the INCOMING MAPPER, exactly like a fetched
-                # incident, so it must use the same key space as fetch - the raw Elasticsearch
-                # document. Returning pre-mapped XSOAR cliNames here means the mapper finds none
-                # of its source fields and the incident is never updated.
+                # The mirrored object goes through the incoming mapper, so it must keep the raw
+                # document key space, exactly like a fetched incident.
                 updated_incident = flatten_alert_hit(hit)
-                # XSOAR severity is numeric; the raw Kibana value is a name such as "low".
                 updated_incident["severity"] = convert_severity(get_alert_source_value(source, "kibana.alert.severity") or "low")
                 updated_incident["rawJSON"] = json.dumps(updated_incident)
 
-                # Close XSOAR incident if Elasticsearch alert is closed and close_incident is enabled
                 if CLOSE_INCIDENT and workflow_status == "closed":
                     reason = get_alert_source_value(source, "kibana.alert.workflow_reason") or "other"
                     xsoar_reason = ELASTIC_CLOSE_REASON_TO_XSOAR.get(reason, "other")
@@ -3878,20 +3700,16 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
             demisto.debug(f"Failed to fetch security alert {remote_id}: {e}")
 
     elif incident_type == INCIDENT_TYPE_CASE:
-        # Fetch the case by ID
         try:
             response = kibana_http_request("GET", f"/api/cases/{remote_id}", proxies=proxies, allow_not_found=True)
             if response:
                 case_status = response.get("status", "open")
 
-                # See the comment in the security-alert branch: the mirrored object must be the
-                # raw case document so the incoming mapper can map it.
+                # Keep the raw case document so the incoming mapper can map it.
                 updated_incident = dict(response)
-                # XSOAR severity is numeric; the raw Kibana value is a name such as "low".
                 updated_incident["severity"] = convert_severity(response.get("severity", "low"))
                 updated_incident["rawJSON"] = json.dumps(updated_incident)
 
-                # Fetch alerts for case if enabled
                 if FETCH_ALERTS_FOR_CASE:
                     try:
                         alerts_resp = kibana_http_request(
@@ -3902,7 +3720,6 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                     except Exception as e:
                         demisto.debug(f"Failed to fetch alerts for case {remote_id}: {e}")
 
-                # Close XSOAR incident if Elasticsearch case is closed and close_incident is enabled
                 if CLOSE_INCIDENT and case_status == "closed":
                     close_reason = response.get("closeReason") or "other"
                     xsoar_reason = ELASTIC_CLOSE_REASON_TO_XSOAR.get(close_reason, "other")
@@ -3923,9 +3740,8 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                 return_error(f"API rate limit reached while fetching case {remote_id}. Error: {e}")
             demisto.debug(f"Failed to fetch case {remote_id}: {e}")
 
-    # Self-healing: re-assert the mirror instance on every incoming sync so an incident that was
-    # created with a bad/empty value corrects itself. Only when there is already something to
-    # update - populating an otherwise-empty dict would force spurious incident updates.
+    # Re-assert the mirror instance on every incoming sync (self-healing), but only when there is
+    # already something to update, to avoid forcing spurious incident updates.
     if updated_incident:
         updated_incident["dbotMirrorInstance"] = demisto.integrationInstance()
         mirror_debug(f"get-remote-data returning {len(updated_incident)} field(s) and {len(entries)} entry/entries.")
@@ -3936,28 +3752,15 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
 
 
 def update_remote_system_command(args: Dict[str, Any], proxies) -> str:
-    """Implements the update-remote-system command for mirroring-out.
-
-    Pushes local XSOAR incident changes back to Elasticsearch/Kibana.
-
-    Args:
-        args: Command arguments with delta, incidentChanged, remoteId, status, data, entries.
-        proxies: Proxy configuration.
-
-    Returns:
-        The remote ID (str) of the updated object.
-    """
+    """Mirroring-out: pushes local XSOAR incident changes back to Elasticsearch/Kibana."""
     parsed_args = UpdateRemoteSystemArgs(args)
     remote_id = parsed_args.remote_incident_id
     delta = parsed_args.delta or {}
     inc_status = parsed_args.inc_status
     entries = parsed_args.entries or []
 
-    # `parsed_args.data` is the OUTGOING MAPPER OUTPUT, not the raw incident, so it only contains
-    # the keys the mapper emits - and "type" is not one of them. Reading the type from there
-    # yielded "" and silently skipped both branches below. Read it from the local incident
-    # instead, matching get_remote_data_command, and fall back to the instance configuration so a
-    # transient lookup failure cannot turn mirror-out into a silent no-op.
+    # The type is resolved from the local incident (falling back to the remote lookup and finally
+    # the instance configuration), since the mapper output does not carry "type".
     incident_type = (
         get_incident_type()
         or (parsed_args.data or {}).get("type", "")
@@ -4001,14 +3804,6 @@ def update_remote_system_command(args: Dict[str, Any], proxies) -> str:
 def _mirror_out_case_entries(remote_id: str, entries: List[dict], proxies) -> None:
     """Mirrors tagged War Room entries out to Elasticsearch as Kibana case comments.
 
-    Only entries tagged "comment" are mirrored out (all mirrored entries are
-    pushed to the same Kibana case comments endpoint, so a single tag is used).
-    This prevents every War Room entry from being pushed to the remote system.
-
-    Args:
-        remote_id: The remote Kibana case ID.
-        entries: The list of War Room entries from the local incident.
-        proxies: Proxy configuration.
     """
     for entry in entries:
         tags = entry.get("Tags") or []
@@ -4040,23 +3835,11 @@ def _mirror_out_security_alert(
     inc_status: Optional[int],
     proxies,
 ) -> None:
-    """Pushes changes from a XSOAR Elasticsearch Security Alert incident back to Kibana.
+    """Pushes a Security Alert incident's status/reason/tags changes back to Kibana.
 
-    Handles:
-    - Updating workflow status via the detection signals status API.
-    - Updating tags via the alert tags API.
-    - Closing the Elasticsearch alert when the XSOAR incident is closed and
-      CLOSE_ELASTIC_INCIDENT is enabled.
-
-    WRITES MUST GO THROUGH KIBANA, even though reads prefer the Elasticsearch client (see
-    `search_security_alerts`). The security alert indices are Kibana system indices owned by the
-    detection engine: a direct Elasticsearch update is normally rejected, and where it does
-    succeed it bypasses Kibana's bookkeeping - `kibana.alert.workflow_status_updated_at`,
-    `workflow_user` and the audit trail would not be written. That timestamp is one of the fields
-    `get-modified-remote-data` filters on, so writing the status field directly would silently
-    break mirroring-in for that alert.
+    Writes go through Kibana (not the Elasticsearch client) because the alert indices are Kibana
+    system indices; a direct write would skip Kibana bookkeeping and break mirroring-in.
     """
-    # `delta` is the outgoing-mapper output, so its keys are Kibana field names.
     new_status = delta.get("status")
     new_reason = delta.get("reason")
     new_tags = delta.get("tags")
@@ -4068,11 +3851,8 @@ def _mirror_out_security_alert(
 
     is_closing = is_incident_closing(inc_status, delta)
 
-    # Kibana's detection-alert APIs can only change the workflow status, its reason and the
-    # workflow tags - there is no endpoint to change an alert's severity, risk score or rule.
-    # The outgoing mapper therefore emits only those three keys. Editing any other incident
-    # field (severity, for example) produces a delta the mapper drops, so nothing reaches the
-    # remote system. Say so explicitly instead of returning as if the update had been applied.
+    # Kibana can only change status/reason/tags on a detection alert; any other edited field is
+    # dropped by the mapper and cannot be mirrored out.
     if new_status is None and new_reason is None and new_tags is None and not is_closing:
         mirror_error(
             f"Nothing to mirror out for alert {remote_id}: the change contains none of the fields "
@@ -4088,20 +3868,16 @@ def _mirror_out_security_alert(
             "disabled, so the alert status is left unchanged."
         )
 
-    # If XSOAR incident is being closed and close_elastic_incident is enabled
     if CLOSE_ELASTIC_INCIDENT and is_closing:
         new_status = new_status or "closed"
-        # Translate the XSOAR close reason into the Kibana vocabulary; the two are not identical
-        # and Kibana rejects values outside its own enum.
+        # Translate the XSOAR close reason into Kibana's vocabulary.
         xsoar_close_reason = delta.get("closeReason") or delta.get("closeNotes")
         new_reason = new_reason or XSOAR_CLOSE_REASON_TO_ELASTIC.get(str(xsoar_close_reason), "other")
 
     if new_status:
         try:
-            # `signal_ids` matches on the DOCUMENT _id, not on kibana.alert.uuid. When the
-            # incident stores the uuid, passing it as a signal_id matches nothing and Kibana
-            # happily returns {"updated": 0} - a 200 response, so this used to log success while
-            # the alert was never touched. Update by query instead, matching either identifier.
+            # Update by query (matching either identifier) rather than signal_ids, which only
+            # matches the document _id and would silently update nothing when a UUID is stored.
             body: Dict[str, Any] = {
                 "status": new_status,
                 "query": build_alert_lookup_body(remote_id)["query"],
@@ -4127,7 +3903,6 @@ def _mirror_out_security_alert(
 
     if new_tags is not None:
         try:
-            # Fetch current tags to compute diff
             search_resp = search_security_alerts(build_alert_lookup_body(remote_id), proxies)
             hits = (search_resp or {}).get("hits", {}).get("hits", []) if isinstance(search_resp, dict) else []
             current_tags: List[str] = []
@@ -4144,12 +3919,8 @@ def _mirror_out_security_alert(
             tags_to_remove = [t for t in current_tags if t not in new_tags_list]
 
             if hits and (tags_to_add or tags_to_remove):
-                # The tags API addresses alerts by DOCUMENT _id. Sending kibana.alert.uuid here
-                # matches nothing and Kibana still answers 200, so use the _id from the hit we
-                # just fetched rather than the stored remote ID.
+                # The tags API addresses alerts by document _id, so use the fetched hit's _id.
                 document_id = hits[0].get("_id") or remote_id
-                # The API expects the add/remove lists nested under a "tags" object, and it
-                # rejects the request with a 400 when either list is missing.
                 tags_body: Dict[str, Any] = {
                     "ids": [document_id],
                     "tags": {"tags_to_add": tags_to_add, "tags_to_remove": tags_to_remove},
@@ -4172,15 +3943,8 @@ def _mirror_out_case(
     proxies,
     incident_data: Dict[str, Any],
 ) -> None:
-    """Pushes changes from a XSOAR Elasticsearch Case incident back to Kibana.
-
-    Handles:
-    - Updating case fields (title, description, severity, status, tags) via the Cases PATCH API.
-    - Closing the Elasticsearch case when the XSOAR incident is closed and
-      CLOSE_ELASTIC_INCIDENT is enabled.
-    - Closing related alerts when the case is closed.
-    """
-    # Fetch current case to get version (required for PATCH)
+    """Pushes a Case incident's field changes back to Kibana, optionally closing it and its alerts."""
+    # The current case is needed for the version required by the PATCH API.
     try:
         current_case = kibana_http_request("GET", f"/api/cases/{remote_id}", proxies=proxies, allow_not_found=True)
     except Exception as e:
@@ -4198,14 +3962,13 @@ def _mirror_out_case(
 
     case_fields: Dict[str, Any] = {"id": remote_id, "version": version}
 
-    # `delta` is produced by the outgoing mapper, so its keys are already Kibana Cases API field
-    # names. Only forward fields the API actually accepts.
+    # delta keys are already Kibana Cases API field names; forward only the accepted ones.
     supported_kibana_fields = ("title", "description", "severity", "status", "tags")
     for kibana_field in supported_kibana_fields:
         if kibana_field in delta:
             case_fields[kibana_field] = delta[kibana_field]
 
-    # XSOAR severity is numeric, but the Kibana Cases API expects a name ("low", "high", ...).
+    # The Cases API expects a severity name, not the XSOAR numeric value.
     if "severity" in case_fields:
         elastic_severity = convert_severity_to_elastic(case_fields["severity"])
         if elastic_severity:
@@ -4214,11 +3977,10 @@ def _mirror_out_case(
             mirror_debug(f"Dropping unmappable severity {case_fields['severity']!r} for case {remote_id}.")
             case_fields.pop("severity")
 
-    # Handle close
-    if CLOSE_ELASTIC_INCIDENT and is_incident_closing(inc_status, delta):
+    is_closing = CLOSE_ELASTIC_INCIDENT and is_incident_closing(inc_status, delta)
+    if is_closing:
         case_fields["status"] = "closed"
-        close_reason = delta.get("closeReason") or incident_data.get("closeReason") or "other"
-        case_fields["closeReason"] = close_reason
+        case_fields["closeReason"] = delta.get("closeReason") or incident_data.get("closeReason") or "other"
 
     if len(case_fields) > 2:  # more than just id + version
         try:
@@ -4234,8 +3996,7 @@ def _mirror_out_case(
     else:
         mirror_debug(f"No supported case fields changed for {remote_id}; delta keys were {list(delta.keys())}.")
 
-    # Close related alerts if case is being closed
-    if CLOSE_ELASTIC_INCIDENT and is_incident_closing(inc_status, delta):
+    if is_closing:
         try:
             alerts_resp = kibana_http_request("GET", f"/api/cases/{remote_id}/alerts", proxies=proxies, allow_not_found=True)
             alert_ids = [a.get("id") for a in (alerts_resp or []) if a.get("id")]
@@ -4260,17 +4021,9 @@ def _is_rate_limit_error(error: Exception) -> bool:
 # Maximum number of modified alerts/cases pulled per sync run.
 MODIFIED_PAGE_SIZE = 100
 
-# Timestamp fields that indicate a security alert changed. Each covers a different kind of
-# change, and no single field covers them all:
-#   - `updated_at`                  - written by the alert-mutation routes (tags, assignees,
-#                                     status). This is the ONLY field that moves on a
-#                                     TAG-ONLY edit; without it a tag change is invisible to
-#                                     mirroring-in and nothing is ever pulled back.
-#   - `workflow_status_updated_at`  - only exists once the status has been changed at least
-#                                     once, and is NOT touched when only the tags change.
-#   - `last_detected` / `@timestamp`- creation and re-detection.
-# A range query against a field that does not exist on a document simply does not match, so
-# listing every candidate in a `should` is safe and strictly widens coverage.
+# Timestamp fields that indicate a security alert changed. All are listed because no single field
+# covers every change type (e.g. updated_at is the only one that moves on a tag-only edit). A range
+# query against a missing field simply does not match, so a broad `should` is safe.
 ALERT_MODIFICATION_TIME_FIELDS = (
     "kibana.alert.updated_at",
     "kibana.alert.workflow_status_updated_at",
@@ -4280,18 +4033,7 @@ ALERT_MODIFICATION_TIME_FIELDS = (
 
 
 def parse_to_utc(value: Any) -> Optional[datetime]:
-    """Parses a timestamp into a timezone-AWARE datetime, or None when it cannot be parsed.
-
-    Comparing a naive datetime with an aware one raises TypeError, which previously caused
-    every case to be silently discarded. Forcing every parsed value to be timezone-aware makes
-    the comparisons total.
-
-    Args:
-        value: Any timestamp representation accepted by dateparser.
-
-    Returns:
-        A timezone-aware datetime, or None when the value is empty or unparsable.
-    """
+    """Parses a timestamp into a timezone-aware datetime (for total comparisons), or None."""
     if not value:
         return None
     return dateparser.parse(str(value), settings={"RETURN_AS_TIMEZONE_AWARE": True})
@@ -4300,9 +4042,7 @@ def parse_to_utc(value: Any) -> Optional[datetime]:
 def _get_modified_alert_ids(last_update: str, proxies) -> List[str]:
     """Returns the UUIDs of security alerts modified since ``last_update``."""
     if not last_update:
-        # `{"gte": ""}` is rejected by Elasticsearch as an unparsable date, which previously
-        # surfaced as an exception and an empty result. Without a cursor there is nothing
-        # meaningful to filter on, so skip the alert lookup entirely.
+        # Without a cursor there is nothing meaningful to filter on; {"gte": ""} is also rejected.
         mirror_debug("No lastUpdate provided; skipping the modified-alerts lookup.")
         return []
 
@@ -4314,23 +4054,14 @@ def _get_modified_alert_ids(last_update: str, proxies) -> List[str]:
             }
         },
         "size": MODIFIED_PAGE_SIZE,
-        # Without an explicit sort the result set is ordered arbitrarily, so truncation at
-        # MODIFIED_PAGE_SIZE would drop a random subset. Oldest-first keeps truncation
-        # deterministic: anything dropped is picked up on a later sync.
+        # Oldest-first so truncation at MODIFIED_PAGE_SIZE is deterministic (dropped hits are
+        # picked up on a later sync).
         "sort": [{"@timestamp": {"order": "asc"}}],
-        # The full _source is requested deliberately. Narrowing this to ["kibana.alert.uuid"]
-        # looks like a harmless optimization but silently breaks mirroring-in: on
-        # alerts-as-data indices the key is stored FLAT ("kibana.alert.uuid": "..."), while
-        # Elasticsearch source filtering interprets the dots as a NESTED path. The path does
-        # not resolve, _source comes back empty, and the ID below falls back to the document
-        # `_id` - whereas fetch_security_alerts reads the full _source and stores the UUID as
-        # dbotMirrorId. The two identifiers then never match, so the server finds no incident
-        # for the returned ID and never calls get-remote-data.
+        # Full _source is required: source filtering on flat dotted keys breaks the UUID lookup
+        # below, which must match the dbotMirrorId stored by fetch_security_alerts.
         "_source": True,
     }
-    # Errors are deliberately NOT swallowed here: a failure means a misconfigured Kibana URL,
-    # Space ID or credentials, which must surface rather than be indistinguishable from
-    # "nothing changed".
+    # Errors are not swallowed here - a failure must surface rather than look like "nothing changed".
     response = search_security_alerts(body, proxies)
 
     hits = (response or {}).get("hits", {}).get("hits", []) if isinstance(response, dict) else []
@@ -4340,45 +4071,20 @@ def _get_modified_alert_ids(last_update: str, proxies) -> List[str]:
     fell_back_to_doc_id = 0
     for hit in hits:
         source = hit.get("_source", {})
-        # Fall back to `_id` exactly like fetch_security_alerts, so the IDs returned here match
-        # the dbotMirrorId stored on the incident.
-        document_id = hit.get("_id")
+        # Fall back to _id like fetch_security_alerts, so the IDs match the stored dbotMirrorId.
         alert_uuid = get_alert_source_value(source, "kibana.alert.uuid")
-
-        # Log BOTH candidate identifiers per hit. A returned ID only triggers get-remote-data
-        # when it matches an incident's dbotMirrorId exactly, so when that call does not happen
-        # the first thing to check is which form was emitted here versus what the incident
-        # actually stores.
-        mirror_debug(
-            f"Modified alert candidate: index={hit.get('_index')}, _id={document_id!r}, "
-            f"kibana.alert.uuid={alert_uuid!r}, "
-            f"updated_at={get_alert_source_value(source, 'kibana.alert.updated_at')!r}, "
-            f"workflow_status_updated_at={get_alert_source_value(source, 'kibana.alert.workflow_status_updated_at')!r}, "
-            f"workflow_tags={get_alert_source_value(source, 'kibana.alert.workflow_tags')!r}"
-        )
-
         if not alert_uuid:
-            alert_uuid = document_id
+            alert_uuid = hit.get("_id")
             fell_back_to_doc_id += 1
         if alert_uuid:
             alert_ids.append(str(alert_uuid))
-            mirror_debug(
-                f"Reporting alert {str(alert_uuid)!r} as modified "
-                f"(source: {'document _id' if not get_alert_source_value(source, 'kibana.alert.uuid') else 'kibana.alert.uuid'}). "
-                "get-remote-data runs only if an incident carries this exact value as dbotMirrorId."
-            )
         else:
             mirror_debug(f"Skipping modified alert hit without a resolvable ID: {hit.get('_index')}")
 
-    # A returned ID only triggers get-remote-data when it matches an incident's dbotMirrorId.
-    # Reporting "N modified alerts" while every ID is a document _id that no incident carries
-    # is indistinguishable from a healthy run, so call the fallback out explicitly.
     if fell_back_to_doc_id:
         mirror_debug(
-            f"{fell_back_to_doc_id} of {len(hits)} modified alert(s) had no readable "
-            "'kibana.alert.uuid' and fell back to the document _id. If those alerts were "
-            "ingested with a UUID, the IDs will not match any incident and get-remote-data "
-            "will not run for them."
+            f"{fell_back_to_doc_id} of {len(hits)} modified alert(s) fell back to the document _id; "
+            "these will not match incidents ingested with a UUID."
         )
 
     if hits and not alert_ids:
@@ -4420,18 +4126,7 @@ def _get_modified_case_ids(last_update: str, proxies) -> List[str]:
 
 
 def get_modified_remote_data_command(args: Dict[str, Any], proxies) -> GetModifiedRemoteDataResponse:
-    """Implements the get-modified-remote-data command.
-
-    Returns a list of remote IDs that have been modified since the last check,
-    so XSOAR knows which incidents to pull updates for.
-
-    Args:
-        args: Command arguments containing 'lastUpdate' (ISO timestamp).
-        proxies: Proxy configuration.
-
-    Returns:
-        GetModifiedRemoteDataResponse with a list of modified remote IDs.
-    """
+    """Returns the remote IDs of alerts/cases modified since lastUpdate, for XSOAR to pull."""
     last_update = args.get("lastUpdate", "")
     mirror_debug(f"get-modified-remote-data called with lastUpdate={last_update}")
 
