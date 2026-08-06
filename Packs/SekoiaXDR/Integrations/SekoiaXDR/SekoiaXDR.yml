@@ -1181,8 +1181,8 @@ script:
     - name: url_sufix
       required: false
       description: |
-          The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
-          DEPRECATED: Use 'url_suffix' instead. This parameter is kept for backward compatibility.
+        The URL suffix after https://api.sekoia.io, i.e. /v1/sic/alerts/ or /v1/asset-management/assets/.
+        DEPRECATED: Use 'url_suffix' instead. This parameter is kept for backward compatibility.
       deprecated: true
     - name: url_suffix
       required: true
@@ -1194,6 +1194,128 @@ script:
       description: Body of the request.
       type: string
     description: Command that performs a HTTP request to Sekoia using the integration authentication configured.
+  - name: sekoia-xdr-execute-query
+    description: Command to create a query run on Sekoia XDR, after this execute "sekoia-xdr-get-query-run" to see the status of the query run and "sekoia-xdr-download-query-result" to retrieve the results.
+    arguments:
+    - name: query_definition
+      description: Query definition in JSON.
+      required: true
+      type: string
+    - name: query_parameters
+      description: Query parameters in JSON.
+      type: string
+    - name: query_uuid
+      description: Query UUID.
+      type: string
+    - name: parent_uuid
+      description: Parent UUID.
+      type: string
+    - name: parent_slug
+      description: Parent slug.
+      type: string
+    - name: parent_type
+      description: Parent type.
+      predefined:
+      - notebook
+      - query
+      - task
+      - agent_run
+      - alert
+      - case
+      type: string
+    - name: community_uuid
+      description: Community UUID.
+      type: string
+    outputs:
+    - contextPath: SekoiaXDR.QueryRun.task_id
+      description: Task UUID.
+    - contextPath: SekoiaXDR.QueryRun.uuid
+      description: Query Run UUID.
+  - name: sekoia-xdr-get-query-run
+    description: Command gets query run status.
+    arguments:
+    - name: query_run_uuid
+      description: Query run UUID.
+      required: true
+    outputs:
+    - contextPath: SekoiaXDR.QueryRun.community_id
+      description: Community UUID.
+    - contextPath: SekoiaXDR.QueryRun.created_at
+      description: Created at.
+    - contextPath: SekoiaXDR.QueryRun.created_by
+      description: Created by.
+    - contextPath: SekoiaXDR.QueryRun.duration
+      description: Duration.
+    - contextPath: SekoiaXDR.QueryRun.error
+      description: error.
+    - contextPath: SekoiaXDR.QueryRun.parent_slug
+      description: Parent slug.
+    - contextPath: SekoiaXDR.QueryRun.parent_type
+      description: Parent type.
+    - contextPath: SekoiaXDR.QueryRun.parent_uuid
+      description: Parent UUId.
+    - contextPath: SekoiaXDR.QueryRun.status
+      description: Status.
+    - contextPath: SekoiaXDR.QueryRun.total
+      description: Total.
+  - name: sekoia-xdr-download-query-result
+    arguments:
+    - name: query_run_uuid
+      description: Query run UUID.
+      required: true
+    - auto: PREDEFINED
+      name: result_format
+      description: File format for the result.
+      predefined:
+      - csv
+      - jsonl
+      required: true
+      type: string
+    description: Command downloads query result as file.
+  - name: sekoia-xdr-run-query
+    description: "Command to run a query and get its result. This is a combination of 3 commands: sekoia-xdr-execute-query, sekoia-xdr-get-query-run and sekoia-xdr-download-query-result."
+    polling: true
+    arguments:
+    - name: query_definition
+      description: Query definition in JSON.
+      required: true
+      type: string
+    - auto: PREDEFINED
+      name: result_format
+      description: File format for the result.
+      predefined:
+      - csv
+      - jsonl
+      required: true
+      type: string
+    - name: query_parameters
+      description: Query parameters in JSON.
+      type: string
+    - name: query_uuid
+      description: Query UUID.
+      type: string
+    - name: parent_uuid
+      description: Parent UUID.
+      type: string
+    - name: parent_slug
+      description: Parent slug.
+      type: string
+    - name: parent_type
+      description: Parent type.
+      predefined:
+      - notebook
+      - query
+      - task
+      - agent_run
+      - alert
+      - case
+      type: string
+    - name: community_uuid
+      description: Community UUID.
+      type: string
+    - name: query_run_uuid
+      description: The query run UUID to retrieve query results.
+      hidden: true
   dockerimage: demisto/python3:3.12.13.10404775
   isfetch: true
   runonce: false
