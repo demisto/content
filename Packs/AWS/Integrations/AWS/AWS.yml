@@ -367,6 +367,94 @@ script:
         type: String
 
 
+  - name: aws-s3-bucket-objects-list-v2
+    description: "Returns some or all (up to 1,000) of the objects in a bucket using the ListObjectsV2 API. Unlike aws-s3-bucket-objects-list, this command consistently returns a pagination token for truncated results, even when no delimiter is used. Required IAM Permission: s3:ListBucket."
+    arguments:
+      - name: bucket
+        description: The name of S3 bucket.
+        required: true
+      - name: account_id
+        description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+      - name: region
+        description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+        required: false
+        required:platform: true
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - af-south-1
+          - ap-east-1
+          - ap-south-2
+          - ap-southeast-3
+          - ap-southeast-5
+          - ap-southeast-4
+          - ap-south-1
+          - ap-northeast-3
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-southeast-7
+          - ap-northeast-1
+          - ca-central-1
+          - ca-west-1
+          - eu-central-1
+          - eu-west-1
+          - eu-west-2
+          - eu-south-1
+          - eu-west-3
+          - eu-south-2
+          - eu-north-1
+          - eu-central-2
+          - il-central-1
+          - mx-central-1
+          - me-south-1
+          - me-central-1
+          - sa-east-1
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: delimiter
+        description: The delimiter character (like a slash /) used to bundle keys into folders, turning a long list of file names into an organized hierarchy.
+      - name: prefix
+        description: The string that restricts the response to include only those keys that begin with it. This is commonly used to filter results to a specific folder or category.
+      - name: start_after
+        description: The key to start listing after. Amazon S3 lists objects alphabetically and returns only keys that come after this value. This can be any key in the bucket.
+      - name: next_token
+        description: The continuation token indicating where Amazon S3 should continue listing from. Use the ObjectsNextToken value returned by a previous call to retrieve the next set of results.
+      - name: limit
+        description: The maximum number of keys to return in the response, ranging from 1 to 1,000.
+        defaultValue: '50'
+    outputs:
+      - contextPath: AWS.S3.Buckets.BucketName
+        description: The name of S3 bucket.
+        type: String
+      - contextPath: AWS.S3.Buckets.ObjectsV2.Key
+        description: The name of S3 object.
+        type: String
+      - contextPath: AWS.S3.Buckets.ObjectsV2.Size
+        description: The object size in bytes.
+        type: Number
+      - contextPath: AWS.S3.Buckets.ObjectsV2.LastModified
+        description: 'The date and time the object was last modified, in ISO 8601 format (for example: 2023-01-01T12:00:00+00:00).'
+        type: String
+      - contextPath: AWS.S3.Buckets.ObjectsV2.StorageClass
+        description: The storage class of the object.
+        type: String
+      - contextPath: AWS.S3.Buckets.ObjectsV2.ChecksumType
+        description: The checksum algorithm used to calculate the object checksum.
+        type: String
+      - contextPath: AWS.S3.Buckets.ObjectsV2.ETag
+        description: The entity tag (hash) of the object.
+        type: String
+      - contextPath: AWS.S3.Buckets.ObjectsV2NextToken
+        description: The token to use for pagination in subsequent requests.
+        type: String
+
+
   - name: aws-s3-bucket-acl-put
     description: "Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs. Since 2023, all new S3 buckets block ACLs by default for better security. Required IAM permission: s3:PutBucketAcl."
     arguments:
