@@ -108,6 +108,41 @@ Returns some or all (up to 1,000) of the objects in a bucket. Required IAM Permi
 | AWS.S3.Buckets.Objects.ETag | String | The entity tag \(hash\) of the object. |
 | AWS.S3.Buckets.ObjectsNextToken | String | Token to use for pagination in subsequent requests. |
 
+### aws-s3-bucket-objects-list-v2
+
+***
+Lists objects in an Amazon S3 bucket (up to 1,000 objects) using the ListObjectsV2 API. Unlike aws-s3-bucket-objects-list, this command consistently returns a pagination token for truncated results, even when no delimiter is used. Required IAM Permission: s3:ListBucket.
+
+#### Base Command
+
+`aws-s3-bucket-objects-list-v2`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket | The name of S3 bucket. | Required |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| delimiter | The delimiter character (like a slash /) used to bundle keys into folders, turning a long list of file names into an organized hierarchy. | Optional |
+| prefix | The string that restricts the response to include only those keys that begin with it. This is commonly used to filter results to a specific folder or category. | Optional |
+| start_after | The key to start listing after. Amazon S3 lists objects alphabetically and returns only keys that come after this value. This can be any key in the bucket. | Optional |
+| next_token | The continuation token indicating where Amazon S3 should continue listing from. Use the ObjectsV2NextToken value returned by a previous call to retrieve the next set of results. | Optional |
+| limit | The maximum number of keys to return in the response, ranging from 1 to 1,000. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.S3.Buckets.BucketName | String | The name of S3 bucket. |
+| AWS.S3.Buckets.ObjectsV2.Key | String | The name of S3 object. |
+| AWS.S3.Buckets.ObjectsV2.Size | Number | The object size in bytes. |
+| AWS.S3.Buckets.ObjectsV2.LastModified | String | The date and time the object was last modified, in ISO 8601 format (for example: 2023-01-01T12:00:00+00:00). |
+| AWS.S3.Buckets.ObjectsV2.StorageClass | String | The storage class of the object. |
+| AWS.S3.Buckets.ObjectsV2.ChecksumType | String | The checksum algorithm used to calculate the object checksum. |
+| AWS.S3.Buckets.ObjectsV2.ETag | String | The entity tag \(hash\) of the object. |
+| AWS.S3.Buckets.ObjectsV2NextToken | String | The token to use for pagination in subsequent requests. |
+
 ### aws-s3-bucket-acl-put
 
 ***
@@ -626,28 +661,28 @@ Creates a new Access Entry for an Amazon EKS cluster. Required IAM Permission: e
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional | 
-| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional | 
-| cluster_name | The name of the cluster for which to create an access entry. | Required | 
-| principal_arn | The ARN of the IAM principal to associate with the access entry. | Required | 
-| kubernetes_groups | A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional | 
-| client_request_token | The unique string used to ensure the request is processed only once. | Optional | 
-| type | The type of access entry to create. Possible values are: Standard, FARGATE_LINUX, EC2_LINUX, EC2_WINDOWS, EC2, HYBRID_LINUX, HYPERPOD_LINUX. | Optional | 
-| user_name | The username for Kubernetes authentication. | Optional | 
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| cluster_name | The name of the cluster for which to create an access entry. | Required |
+| principal_arn | The ARN of the IAM principal to associate with the access entry. | Required |
+| kubernetes_groups | A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional |
+| client_request_token | The unique string used to ensure the request is processed only once. | Optional |
+| type | The type of access entry to create. Possible values are: Standard, FARGATE_LINUX, EC2_LINUX, EC2_WINDOWS, EC2, HYBRID_LINUX, HYPERPOD_LINUX. | Optional |
+| user_name | The username for Kubernetes authentication. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EKS.AccessEntry.clusterName | String | The name of the cluster. | 
-| AWS.EKS.AccessEntry.principalArn | String | The ARN of the IAM principal for the access entry. | 
-| AWS.EKS.AccessEntry.username | String | The Kubernetes user name for the access entry. | 
-| AWS.EKS.AccessEntry.type | String | The access entry type. | 
-| AWS.EKS.AccessEntry.createdAt | String | The date and time the access entry was created. | 
-| AWS.EKS.AccessEntry.modifiedAt | String | The date and time the access entry was last modified. | 
-| AWS.EKS.AccessEntry.kubernetesGroups | Array | The Kubernetes groups that the access entry is associated with. | 
-| AWS.EKS.AccessEntry.tags | Object | The metadata tags associated with the access entry. | 
-| AWS.EKS.AccessEntry.accessEntryArn | String | The ARN of the access entry. | 
+| AWS.EKS.AccessEntry.clusterName | String | The name of the cluster. |
+| AWS.EKS.AccessEntry.principalArn | String | The ARN of the IAM principal for the access entry. |
+| AWS.EKS.AccessEntry.username | String | The Kubernetes user name for the access entry. |
+| AWS.EKS.AccessEntry.type | String | The access entry type. |
+| AWS.EKS.AccessEntry.createdAt | String | The date and time the access entry was created. |
+| AWS.EKS.AccessEntry.modifiedAt | String | The date and time the access entry was last modified. |
+| AWS.EKS.AccessEntry.kubernetesGroups | Array | The Kubernetes groups that the access entry is associated with. |
+| AWS.EKS.AccessEntry.tags | Object | The metadata tags associated with the access entry. |
+| AWS.EKS.AccessEntry.accessEntryArn | String | The ARN of the access entry. |
 
 ### aws-eks-clusters-list
 
