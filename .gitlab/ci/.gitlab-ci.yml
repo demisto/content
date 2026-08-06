@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: jmizrahi/CO_validations_e2e
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: jmizrahi/CO_validations_e2e
     project: "${CI_PROJECT_NAMESPACE}/infra"
