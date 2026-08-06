@@ -18,6 +18,8 @@ PAGE_SIZE_LIMIT = 2000
 THREAT_ASSESSMENT_URL_PREFIX = "informationProtection/threatAssessmentRequests"
 MAX_ITEMS_PER_RESPONSE = 50
 FETCH_INCIDENTS_TIMEOUT = 60
+# Maps Microsoft Graph Security severity to Cortex XSOAR severity (used for both fetched alerts and incidents).
+SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0.5}
 
 DataSourceType = {
     "USER": {
@@ -1209,8 +1211,6 @@ def fetch_incidents(
     Returns:
         tuple[list, dict]: the fetched incidents, and the updated incidents last run.
     """
-    severity_map = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0}
-
     timestamp_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     demisto_incidents: list = []
@@ -1241,7 +1241,7 @@ def fetch_incidents(
                     {
                         "name": f'{incident.get("displayName")} - {incident.get("id")}',
                         "occurred": incident.get("createdDateTime"),
-                        "severity": severity_map.get(incident.get("severity", ""), 0),
+                        "severity": SEVERITY_MAP.get(incident.get("severity", ""), 0),
                         "rawJSON": json.dumps(incident),
                     }
                 )
@@ -1269,7 +1269,6 @@ def fetch_alerts(
         tuple[list, dict]: the fetched alerts, and the updated alerts last run.
     """
     filter_query = create_filter_query(filter, service_sources)
-    severity_map = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0}
 
     timestamp_format = "%Y-%m-%dT%H:%M:%S.%fZ"
     new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=timestamp_format)[0]}
@@ -1295,7 +1294,7 @@ def fetch_alerts(
                     {
                         "name": alert.get("title") + " - " + alert.get("id"),
                         "occurred": alert.get("createdDateTime"),
-                        "severity": severity_map.get(alert.get("severity", ""), 0),
+                        "severity": SEVERITY_MAP.get(alert.get("severity", ""), 0),
                         "rawJSON": json.dumps(alert),
                     }
                 )
