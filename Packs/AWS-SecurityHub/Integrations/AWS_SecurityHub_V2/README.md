@@ -148,7 +148,7 @@ Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required I
             "Findings": [
                 {
                     "metadata": {
-                        "uid": "9f1e0c2b6a7d4e3f8b5c1a2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f"
+                        "uid": "uid"
                     },
                     "class_name": "Compliance Finding",
                     "severity": "High",
@@ -170,9 +170,9 @@ Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required I
 
 >### AWS Security Hub V2 Findings
 >
->|uid|severity|status|class_name|resource_uid|
->|---|---|---|---|---|
->| 9f1e0c2b6a7d4e3f8b5c1a2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f | High | New | Compliance Finding | arn:aws:s3:::my-example-bucket |
+>| uid |severity|status|class_name|resource_uid|
+>|-----|---|---|---|---|
+>| uid | High | New | Compliance Finding | arn:aws:s3:::my-example-bucket |
 
 ### aws-securityhub-v2-findings-batch-update
 
