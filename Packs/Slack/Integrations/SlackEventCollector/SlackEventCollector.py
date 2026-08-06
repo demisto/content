@@ -99,6 +99,10 @@ class Client(BaseClient):
 
         user_defined_limit = query_params.pop("limit")
         query_params["limit"] = 200  # recommended limit value by Slack
+        # Capture the first-fetch lower time boundary ('oldest') before it can be popped/overwritten
+        # by handle_pagination_first_batch (e.g. when resuming via cursor). It is used below as a
+        # client-side guard so pagination never walks backward past the configured first-fetch date.
+        oldest_boundary = query_params.get("oldest")
         try:
             events, cursor = self.handle_pagination_first_batch(query_params, last_run)
             last_event_id = last_run.get("last_fetched_event", {}).get("last_event_id")
@@ -106,6 +110,13 @@ class Client(BaseClient):
                 for event in events:
                     if event.get("id") == last_event_id:
                         demisto.debug("Encountered an event that was already fetched - stopping.")
+                        cursor = None
+                        break
+
+                    if oldest_boundary is not None and event.get("date_create", 0) < oldest_boundary:
+                        # Slack returns events newest-first, so once an event is older than the
+                        # first-fetch date, all subsequent events are older too - stop the search.
+                        demisto.debug(f"Reached an event older than the first-fetch date ({oldest_boundary}) - stopping.")
                         cursor = None
                         break
 

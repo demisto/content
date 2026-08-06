@@ -228,3 +228,44 @@ def test_fetch_events_(mocker):
 
     assert len(events) == 1  # 1 event remains
     assert last_run == {"last_fetched_event": {"last_event_id": "11", "last_event_time": 11}}
+
+
+def test_fetch_events_stops_at_oldest_boundary(mocker):
+    """
+    Given:
+        - fetch-events command execution with a first-fetch date ('oldest') of 100.
+        - The API returns events across two cursor-paginated pages:
+            page 1 (in range): id=6/date=106, id=5/date=105, id=4/date=104
+            page 2 (out of range, older than 'oldest'): id=3/date=99, id=2/date=98, id=1/date=97
+    When:
+        - Paginating with a cursor past the first page.
+    Then:
+        - Only the 3 in-range events (dates >= 100) are collected.
+        - Events older than 'oldest' are NOT collected, even though a cursor existed.
+        - No leftover 'cursor' / 'last_search_stop_point_event_id' is stored,
+          so the next run performs a fresh forward query.
+    """
+    from SlackEventCollector import Client, fetch_events_command
+
+    page_in_range = MockResponse(
+        [
+            {"id": "6", "date_create": 106},
+            {"id": "5", "date_create": 105},
+            {"id": "4", "date_create": 104},
+        ]
+    )
+    page_in_range.data["response_metadata"] = {"next_cursor": "older_page"}
+    page_out_of_range = MockResponse(
+        [
+            {"id": "3", "date_create": 99},
+            {"id": "2", "date_create": 98},
+            {"id": "1", "date_create": 97},
+        ]
+    )
+    mocker.patch.object(Client, "_http_request", side_effect=[page_in_range.data, page_out_of_range.data])
+    events, last_run = fetch_events_command(Client(base_url=""), params={"limit": 1000, "oldest": "100"}, last_run={})
+
+    assert [e["id"] for e in events] == ["6", "5", "4"]  # only in-range events
+    assert "cursor" not in last_run
+    assert "last_search_stop_point_event_id" not in last_run
+    assert last_run == {"last_fetched_event": {"last_event_id": "6", "last_event_time": 106}}
