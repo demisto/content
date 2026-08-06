@@ -9,9 +9,47 @@ from typing import Any
 
 import demistomock as demisto
 from CommonServerPython import *
-from demisto_sdk.commands.common.tools import _get_file_id, find_type, get_file, get_file_displayed_name
+from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.tools import _get_file_id, find_type, get_json, get_yaml
 
 from CommonServerUserPython import *
+
+
+def get_file_displayed_name(file_path: str) -> str:
+    """Gets the file name displayed in the UI by the file's path.
+
+    If there is no displayed name, returns the file name.
+    """
+    file_type = find_type(file_path)
+    if file_type == FileType.INTEGRATION:
+        return (get_yaml(file_path) or {}).get("display", "")
+    elif file_type in (FileType.SCRIPT, FileType.TEST_SCRIPT, FileType.PLAYBOOK, FileType.TEST_PLAYBOOK):
+        return (get_yaml(file_path) or {}).get("name", "")
+    elif file_type in (
+        FileType.MAPPER,
+        FileType.CLASSIFIER,
+        FileType.INCIDENT_FIELD,
+        FileType.INCIDENT_TYPE,
+        FileType.INDICATOR_FIELD,
+        FileType.LAYOUTS_CONTAINER,
+        FileType.DASHBOARD,
+        FileType.WIDGET,
+        FileType.REPORT,
+    ):
+        res = get_json(file_path)
+        if isinstance(res, dict):
+            return res.get("name", "")
+        if isinstance(res, list) and res and isinstance(res[0], dict):
+            return res[0].get("name", "")
+        return ""
+    elif file_type == FileType.OLD_CLASSIFIER:
+        return (get_json(file_path) or {}).get("brandName", "")
+    elif file_type == FileType.LAYOUT:
+        return (get_json(file_path) or {}).get("TypeName", "")
+    elif file_type == FileType.REPUTATION:
+        return (get_json(file_path) or {}).get("id", "")
+    else:
+        return Path(file_path).name
 
 
 def update_file_prefix(file_name: str) -> str:
@@ -55,8 +93,17 @@ def get_content_details(tar_file_handler: Any, member_file: Any) -> tuple[str, d
         if file_type_str == "automation":
             file_type_str = "script"
 
-        file_type_str = "list" if not file_type_str and file_name.startswith("list-") else file_type_str
-        file_dict = get_file(file_path, Path(file_name).suffix[1:])
+        # find_type cannot detect some content types (e.g. lists, pre-process rules),
+        # so fall back to deriving the entity from the exported file-name prefix.
+        if not file_type_str:
+            if file_name.startswith("list-"):
+                file_type_str = "list"
+            elif file_name.startswith("preprocessrule-"):
+                file_type_str = "pre-process-rule"
+        # Use the stable get_yaml/get_json wrappers (which take only a file path) instead of calling
+        # get_file directly, since get_file's signature differs between demisto-sdk versions.
+        file_suffix = Path(file_name).suffix.lower()
+        file_dict = get_yaml(file_path) if file_suffix in (".yml", ".yaml") else get_json(file_path)
         file_id = _get_file_id(file_type_str, file_dict)
         file_id = file_id if file_id else file_dict.get("id")
         file_name = get_file_displayed_name(file_path)

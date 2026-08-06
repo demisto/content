@@ -3372,7 +3372,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/xsoar-tools:1.0.0.8457987
+  dockerimage: demisto/xsoar-tools:1.0.0.11131287
   feed: false
   isfetch: false
   runonce: false

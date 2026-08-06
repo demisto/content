@@ -58,3 +58,7 @@ ignore=BA124
 # GR103 is temporary, see CIAC-11705
 [file:layoutscontainer-configuration_setup.json]
 ignore=GR103
+
+# GR107: CommitFiles intentionally uses the deprecated Github-commit-file command; non-blocking warning, force-mergeable.
+[file:CommitFiles.yml]
+ignore=GR107
