@@ -605,6 +605,38 @@ class TestEventRelatedFunctions:
         with pytest.raises(Exception):
             get_events(client=dummy_client, first_fetch_time=first_date_time, max_fetch=5, push_events_on_error=False)
 
+    def test_get_events_reraises_original_oci_error(self, mocker, dummy_client, dummy_datetime=dummy_datetime):
+        """
+        Given:
+            - The first audit_log_api_request call raises an OCI error carrying a status code
+              (404) and error code (NotAuthorizedOrNotFound), and no events were fetched yet.
+        When:
+            - Fetching events from the audit log API with push_events_on_error=True.
+        Then:
+            - The function re-raises the error.
+            - The raised exception contains the original OCI status code and error code.
+        """
+        from OracleCloudInfrastructureEventCollector import get_events
+
+        oci_error_message = (
+            "Error in API call [404] - Not Found\n"
+            "{'code': 'NotAuthorizedOrNotFound', "
+            "'message': 'Authorization failed or requested resource not found'}"
+        )
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.audit_log_api_request",
+            side_effect=DemistoException(oci_error_message),
+        )
+        if not isinstance(dummy_datetime, datetime.datetime):
+            raise ValueError("first_date_time is not a datetime object")
+
+        with pytest.raises(Exception) as exc_info:
+            get_events(client=dummy_client, first_fetch_time=dummy_datetime, max_fetch=5, push_events_on_error=True)
+
+        raised_text = str(exc_info.value)
+        assert "404" in raised_text
+        assert "NotAuthorizedOrNotFound" in raised_text
+
 
 class TestFetchEventsFlows:
     """Test class for the fetch events flows."""
@@ -1402,21 +1434,55 @@ class TestTestModule:
         Given:
             - event_types_to_fetch contains 'Search Logs'.
         When:
-            - test_module is called and the API returns an auth failure containing 'failed'.
+            - test_module is called and the Search Logs API raises an OCI error.
         Then:
-            - An authorization error message is returned.
+            - test_module raises and the original OCI error text is preserved.
         """
         from OracleCloudInfrastructureEventCollector import test_module
 
+        oci_error_message = "Authorization failed or requested resource not found [NotAuthorizedOrNotFound]"
         mocker.patch(
             "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
-            side_effect=Exception("Request failed - authorization error"),
+            side_effect=DemistoException(oci_error_message),
         )
 
-        result = test_module(
-            client=dummy_client,
-            search_log_query="search query",
-            event_types_to_fetch=["Search Logs"],
-        )
+        with pytest.raises(Exception) as exc_info:
+            test_module(
+                client=dummy_client,
+                search_log_query="search query",
+                event_types_to_fetch=["Search Logs"],
+            )
 
-        assert result == "Authorization Error: make sure OCI parameters are correctly set"
+        raised_text = str(exc_info.value)
+        assert "Authorization failed or requested resource not found" in raised_text
+        assert "NotAuthorizedOrNotFound" in raised_text
+
+    def test_test_module_audit_failure_preserves_status_and_error_code(self, dummy_client, mocker):
+        """
+        Given:
+            - event_types_to_fetch contains 'Audit'.
+        When:
+            - test_module is called and the audit API raises an OCI error carrying a status
+              code (404) and error code (NotAuthorizedOrNotFound).
+        Then:
+            - test_module raises and the OCI status code and error code are preserved.
+        """
+        from OracleCloudInfrastructureEventCollector import test_module
+
+        oci_error_message = (
+            "Error in API call [404] - Not Found\n"
+            "{'code': 'NotAuthorizedOrNotFound', "
+            "'message': 'Authorization failed or requested resource not found'}"
+        )
+        mocker.patch.object(dummy_client, "_http_request", side_effect=DemistoException(oci_error_message))
+
+        with pytest.raises(Exception) as exc_info:
+            test_module(
+                client=dummy_client,
+                search_log_query="search query",
+                event_types_to_fetch=["Audit"],
+            )
+
+        raised_text = str(exc_info.value)
+        assert "404" in raised_text
+        assert "NotAuthorizedOrNotFound" in raised_text
