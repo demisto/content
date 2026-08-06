@@ -13,6 +13,7 @@ url = "https://pypi.org/simple/"
 [tool.poetry.dependencies]
 python = ">=3.10,<3.15"
 
+
 [tool.poetry.group.github-actions.dependencies]
 packaging = "^24"
 pytest = "^7.4.4"
