@@ -84,6 +84,20 @@ tasks:
                     right:
                       value:
                         simple: \
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.Username
+                      iscontext: true
+                    right:
+                      value:
+                        simple: N/A
+                    ignorecase: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.Username
+                      iscontext: true
             iscontext: true
           right:
             value: {}
@@ -1553,6 +1567,20 @@ tasks:
                     right:
                       value:
                         simple: \
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.Username
+                      iscontext: true
+                    right:
+                      value:
+                        simple: N/A
+                    ignorecase: true
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: inputs.Username
+                      iscontext: true
             iscontext: true
           right:
             value: {}
