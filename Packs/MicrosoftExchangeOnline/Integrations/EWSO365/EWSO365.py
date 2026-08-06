@@ -26,7 +26,6 @@ from exchangelib.errors import (
     ErrorMailboxMoveInProgress,
     ErrorMailboxStoreUnavailable,
     MalformedResponseError,
-    RateLimitError,
 )
 from exchangelib.items import Contact, Message
 from requests.exceptions import ConnectionError
@@ -78,6 +77,8 @@ LAST_RUN_IDS = "ids"
 LAST_RUN_IDS_DICT_REPRESENTATION = "ids_dict"
 LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
+
+MAX_CONSECUTIVE_TRANSIENT_ERRORS = 2
 
 # Types of filter
 MODIFIED_FILTER = "modified-time"
@@ -1719,14 +1720,19 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
 
         return incidents
 
-    except RateLimitError:
+    except TRANSIENT_SERVER_ERRORS as e:
         if LAST_RUN_TIME in last_run:
             last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
         if ERROR_COUNTER not in last_run:
             last_run[ERROR_COUNTER] = 0
         last_run[ERROR_COUNTER] += 1
         demisto.setLastRun(last_run)
-        if last_run[ERROR_COUNTER] > 2:
+        demisto.debug(
+            f"Transient error on fetch ({type(e).__name__}: {e}). "
+            f"Consecutive failures: {last_run[ERROR_COUNTER]}/{MAX_CONSECUTIVE_TRANSIENT_ERRORS}."
+        )
+        if last_run[ERROR_COUNTER] > MAX_CONSECUTIVE_TRANSIENT_ERRORS:
+            demisto.error(f"Transient error persisted for {last_run[ERROR_COUNTER]} consecutive fetches, failing: {e}")
             raise
         return []
 
