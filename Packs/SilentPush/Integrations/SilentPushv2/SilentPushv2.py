@@ -2937,7 +2937,7 @@ metadata_collector = YMLMetadataCollector(
         ConfKey(
             name="credentials",
             display="API Key",
-            required=True,
+            required=False,
             key_type=ParameterTypes.ENCRYPTED,
         ),
         ConfKey(
