@@ -126,6 +126,31 @@ class AtlassianOAuthClient(ABC):
                 proxies=handle_proxy() if self.proxy else None,
                 timeout=60,
             )
+            # Log the actual request that was already sent, taken from the
+            # PreparedRequest stored on the response object (response.request),
+            # so these are the real values sent over the wire.
+            sent_request = response.request
+            demisto.debug(
+                "OAuth token API request (from response.request):\n"
+                f"method={sent_request.method}\n"
+                f"url={sent_request.url}\n"
+                f"path_url={sent_request.path_url}\n"
+                f"headers={dict(sent_request.headers)}\n"
+                f"body={sent_request.body}"
+            )
+            # Log the actual response object's real values.
+            demisto.debug(
+                "OAuth token API response (from response object):\n"
+                f"status_code={response.status_code}\n"
+                f"reason={response.reason}\n"
+                f"url={response.url}\n"
+                f"elapsed={response.elapsed}\n"
+                f"headers={dict(response.headers)}\n"
+                f"cookies={response.cookies.get_dict()}\n"
+                f"encoding={response.encoding}\n"
+                f"history={response.history}\n"
+                f"body={response.text}"
+            )
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
             demisto.debug(f"OAuth token request failed with status {e.response.status_code}: {e.response.text}")
