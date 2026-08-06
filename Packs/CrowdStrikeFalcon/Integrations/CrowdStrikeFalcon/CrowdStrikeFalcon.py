@@ -2893,7 +2893,17 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     detection_type = ""
     mirroring_fields = ["status"]
     updated_object: dict[str, Any] = {}
-    if "idp" in mirrored_data["product"]:
+    # Check type-based conditions first (more specific) before product-based conditions (more generic).
+    # ODS and OFP detections carry product=epp but must be classified by their type, not their product.
+    if "ofp" in mirrored_data["type"]:
+        updated_object = {"incident_type": OFP_DETECTION}
+        detection_type = "ofp"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "ods" in mirrored_data["type"]:
+        updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
+        detection_type = "ods"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "idp" in mirrored_data["product"]:
         updated_object = {"incident_type": IDP_DETECTION}
         detection_type = "IDP"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS_IDP
@@ -2904,14 +2914,6 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     elif "epp" in mirrored_data["product"]:
         updated_object = {"incident_type": ENDPOINT_DETECTION}
         detection_type = "Detection"
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    elif "ofp" in mirrored_data["type"]:
-        updated_object = {"incident_type": OFP_DETECTION}
-        detection_type = "ofp"
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    elif "ods" in mirrored_data["type"]:
-        updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
-        detection_type = "ods"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     elif "ngsiem" in mirrored_data["product"]:
         updated_object = {"incident_type": NGSIEM_DETECTION}
