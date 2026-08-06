@@ -113,6 +113,9 @@ configuration:
   required: false
   type: 8
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Email address to associate for this integration.
   name: mailbox_to_fetch
   required: false
@@ -142,6 +145,9 @@ configuration:
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: If not active, only a preview of the email will be fetched.
   display: Display full email body
   name: display_full_email_body
@@ -173,6 +179,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
