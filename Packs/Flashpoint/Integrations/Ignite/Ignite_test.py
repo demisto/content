@@ -2834,6 +2834,34 @@ def test_vulnerability_list_command_success(mock_client, requests_mock):
     assert results[0].outputs == expected_outputs
 
 
+@pytest.mark.parametrize(
+    "vulnerability_ids, expected_ids",
+    [
+        ("463513,463512", "463513,463512"),
+        ("FP-VULN-463513,FP-VULN-463512", "463513,463512"),
+        ("FP-VULN-463513,463512", "463513,463512"),
+    ],
+)
+def test_vulnerability_list_command_with_vulnerability_ids(mock_client, requests_mock, vulnerability_ids, expected_ids):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-list command with vulnerability_ids filter.
+
+    Given:
+       - command arguments with comma-separated vulnerability IDs, with and without the FP-VULN- prefix
+    When:
+       - Calling `vulnerability_list_command` function
+    Then:
+       - Sends the IDs as the 'ids' key of the request body with the FP-VULN- prefix stripped.
+    """
+    mock_response = util_load_json("test_data/vulnurability_list_response.json")
+
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIST"]}', json=mock_response, status_code=200)
+
+    vulnerability_list_command(mock_client, args={"vulnerability_ids": vulnerability_ids})
+
+    assert requests_mock.last_request.json()["ids"] == expected_ids
+
+
 def test_vulnerability_list_command_with_pagination(mock_client, requests_mock):
     """
     Test case scenario for execution of flashpoint-ignite-vulnerability-list command with pagination hint.
@@ -2917,6 +2945,14 @@ def test_vulnerability_list_command_when_empty_response(mock_client, requests_mo
         (
             {"cwe_ids": "abc"},
             MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(["abc"], "CWE IDs"),
+        ),
+        (
+            {"vulnerability_ids": "abc"},
+            MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(["abc"], "Vulnerability IDs"),
+        ),
+        (
+            {"vulnerability_ids": "463513,abc,FP-VULN-xyz"},
+            MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(["abc", "xyz"], "Vulnerability IDs"),
         ),
         (
             {"updated_after": "2024-06-01T00:00:00Z", "updated_before": "2024-05-01T00:00:00Z"},

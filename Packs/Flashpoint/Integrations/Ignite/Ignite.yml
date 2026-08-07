@@ -109,6 +109,8 @@ configuration:
   - Communities
   - Images
   - Marketplaces
+  - Reports
+  - Vulnerabilities
   type: 16
   required: false
   section: Collect
@@ -597,6 +599,8 @@ script:
       - Communities
       - Images
       - Marketplaces
+      - Reports
+      - Vulnerabilities
       isArray: true
     - name: tags
       description: A comma-separated list of alerts filtered by tags.
@@ -4205,6 +4209,9 @@ script:
     description: Retrieves detailed information about a specific CVE by its CVE ID.
   - name: flashpoint-ignite-vulnerability-list
     arguments:
+    - description: "Filter by the vulnerability IDs assigned by Flashpoint. Supports comma-separated values.\n\nExample: 463513, FP-VULN-463512."
+      name: vulnerability_ids
+      isArray: true
     - description: "Get vulnerabilities that were updated after the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
       name: updated_after
     - description: "Get vulnerabilities that were updated before the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
