@@ -4566,6 +4566,285 @@ script:
     - contextPath: PrismaAIRs.RedTeamReport.total_threats
       description: The total threats detected (Dynamic scans only).
       type: Number
+  - name: prisma-airs-redteam-report-attacks-list
+    description: List attacks for a Red Team static scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: status
+      required: false
+      description: The attack status to filter results by (e.g., SUCCESS, FAILED).
+    - name: severity
+      required: false
+      description: The severity to filter results by (e.g., high, medium, low).
+    - name: category
+      required: false
+      description: The attack category to filter results by.
+    - name: sub_category
+      required: false
+      description: The attack sub-category to filter results by.
+    - name: attack_type
+      required: false
+      description: The attack type to filter results by.
+    - name: threat
+      required: false
+      description: Whether to return only attacks flagged as a threat.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      required: false
+      description: The maximum number of attacks to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of attacks to skip from the start (for pagination).
+    - name: search
+      required: false
+      description: The free-text search filter to apply.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAttack.uuid
+      description: The attack UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.prompt
+      description: The attack prompt content.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.category
+      description: The attack category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.sub_category
+      description: The attack sub-category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.category_display_name
+      description: The attack category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.sub_category_display_name
+      description: The attack sub-category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.status
+      description: The attack status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.threat
+      description: Whether the attack was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.attack_type
+      description: The attack type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.multi_turn
+      description: Whether the attack is multi-turn.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.severity
+      description: The attack severity.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.asr
+      description: The attack Success Rate (ASR) for this attack.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAttack.marked_safe
+      description: Whether the attack was marked safe.
+      type: Boolean
+  - name: prisma-airs-redteam-report-attack-get
+    description: Get attack details for a Red Team static scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: attack_id
+      required: true
+      description: The attack UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAttack.uuid
+      description: The attack UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.prompt
+      description: The attack prompt content.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.category
+      description: The attack category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.sub_category
+      description: The attack sub-category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.category_display_name
+      description: The attack category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.sub_category_display_name
+      description: The attack sub-category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.status
+      description: The attack status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.threat
+      description: Whether the attack was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.attack_type
+      description: The attack type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.multi_turn
+      description: Whether the attack is multi-turn.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.severity
+      description: The attack severity.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.asr
+      description: The attack Success Rate (ASR) for this attack.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAttack.marked_safe
+      description: Whether the attack was marked safe.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.goal
+      description: The attack goal.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.compliance_frameworks
+      description: The array of associated compliance frameworks.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamAttack.outputs
+      description: The array of model responses to the attack.
+      type: Unknown
+  - name: prisma-airs-redteam-report-attack-multi-turn-get
+    description: Get multi-turn attack details for a Red Team static scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: attack_id
+      required: true
+      description: The attack UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.uuid
+      description: The attack UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.prompt
+      description: The attack prompt content.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.category
+      description: The attack category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.sub_category
+      description: The attack sub-category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.category_display_name
+      description: The attack category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.sub_category_display_name
+      description: The attack sub-category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.status
+      description: The attack status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.threat
+      description: Whether the attack was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.attack_type
+      description: The attack type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.multi_turn
+      description: Whether the attack is multi-turn.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.severity
+      description: The attack severity.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.asr
+      description: The attack Success Rate (ASR) for this attack.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.marked_safe
+      description: Whether the attack was marked safe.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.goal
+      description: The attack goal.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.compliance_frameworks
+      description: The array of associated compliance frameworks.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.outputs
+      description: The array of per-turn model responses to the attack.
+      type: Unknown
+  - name: prisma-airs-redteam-report-remediation-get
+    description: Get remediation recommendations for a Red Team scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: job_type
+      required: false
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      defaultValue: STATIC
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamRemediation.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.job_type
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations
+      description: The array of remediation recommendations.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.remediation
+      description: The remediation title.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.description
+      description: The remediation description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.priority_level
+      description: The remediation priority level.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.effectiveness_level
+      description: The remediation effectiveness level.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.ease_of_implementation_level
+      description: The remediation ease of implementation level.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.resource_links
+      description: The array of reference resource links.
+      type: Unknown
+  - name: prisma-airs-redteam-report-runtime-policy-get
+    description: Get the runtime security profile config derived from a Red Team scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: job_type
+      required: false
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      defaultValue: STATIC
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.job_type
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile
+      description: The array of runtime security policy configurations.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile.policy_id
+      description: The runtime security policy UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile.display_name
+      description: The runtime security policy display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile.config
+      description: The runtime security policy configuration object.
+      type: Unknown
   - name: prisma-airs-redteam-eula-status
     description: Get Red Team EULA acceptance status.
     outputs:

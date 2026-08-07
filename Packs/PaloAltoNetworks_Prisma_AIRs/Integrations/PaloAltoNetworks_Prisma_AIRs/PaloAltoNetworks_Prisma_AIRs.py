@@ -5870,6 +5870,325 @@ def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandR
     )
 
 
+def redteam_report_attacks_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List attacks for a Red Team static scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    skip = arg_to_number(args.get("skip"))
+
+    # Build query parameters (pagination + optional filters)
+    params: dict[str, Any] = {"limit": limit}
+    if skip is not None:
+        params["skip"] = skip
+    for filter_key in ("search", "status", "severity", "category", "sub_category", "attack_type"):
+        value = args.get(filter_key)
+        if value:
+            params[filter_key] = value
+    if args.get("threat") is not None:
+        params["threat"] = str(argToBoolean(args.get("threat"))).lower()
+
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/reports-client.ts (listAttacks)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (AttackListResponseSchema)
+    url_suffix = f"{RED_TEAM_REPORT_STATIC_ENDPOINT}/{job_id}/list-attacks"
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_redteam_data=True)
+
+    attacks = []
+    for attack in response.get("data", []):
+        attacks.append(
+            {
+                "uuid": attack.get("uuid"),
+                "job_id": attack.get("job_id"),
+                "target_id": attack.get("target_id"),
+                "prompt": attack.get("prompt"),
+                "category": attack.get("category"),
+                "sub_category": attack.get("sub_category"),
+                "category_display_name": attack.get("category_display_name"),
+                "sub_category_display_name": attack.get("sub_category_display_name"),
+                "status": attack.get("status"),
+                "threat": attack.get("threat"),
+                "attack_type": attack.get("attack_type"),
+                "multi_turn": attack.get("multi_turn"),
+                "severity": attack.get("severity"),
+                "asr": attack.get("asr"),
+                "marked_safe": attack.get("marked_safe"),
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Red Team Attacks - Job {job_id}",
+        attacks,
+        headers=["uuid", "category_display_name", "sub_category_display_name", "severity", "status", "threat"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamAttack",
+        outputs_key_field="uuid",
+        outputs=attacks,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_report_attack_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get attack details for a Red Team static scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    attack_id = args.get("attack_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+    if not attack_id:
+        raise ValueError("attack_id is required")
+
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/reports-client.ts (getAttackDetail)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (AttackDetailResponseSchema)
+    url_suffix = f"{RED_TEAM_REPORT_STATIC_ENDPOINT}/{job_id}/attack/{attack_id}"
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_data=True)
+
+    attack = {
+        "uuid": response.get("uuid"),
+        "job_id": response.get("job_id"),
+        "target_id": response.get("target_id"),
+        "prompt": response.get("prompt"),
+        "category": response.get("category"),
+        "sub_category": response.get("sub_category"),
+        "category_display_name": response.get("category_display_name"),
+        "sub_category_display_name": response.get("sub_category_display_name"),
+        "status": response.get("status"),
+        "threat": response.get("threat"),
+        "attack_type": response.get("attack_type"),
+        "multi_turn": response.get("multi_turn"),
+        "severity": response.get("severity"),
+        "asr": response.get("asr"),
+        "marked_safe": response.get("marked_safe"),
+        "goal": response.get("goal"),
+        "compliance_frameworks": response.get("compliance_frameworks"),
+        "outputs": response.get("outputs"),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Red Team Attack - {attack_id}",
+        [attack],
+        headers=["uuid", "category_display_name", "sub_category_display_name", "severity", "status", "threat", "goal"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    # Render model outputs (attack responses) as a supplementary table when present.
+    outputs = attack.get("outputs") or []
+    if outputs:
+        readable_output += "\n\n" + tableToMarkdown(
+            "Attack Outputs",
+            outputs,
+            headers=["target_id", "output", "threat", "marked_safe"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True,
+        )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamAttack",
+        outputs_key_field="uuid",
+        outputs=attack,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_report_attack_multi_turn_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get multi-turn attack details for a Red Team static scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    attack_id = args.get("attack_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+    if not attack_id:
+        raise ValueError("attack_id is required")
+
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/reports-client.ts (getMultiTurnAttackDetail)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (AttackMultiTurnDetailResponseSchema)
+    url_suffix = f"{RED_TEAM_REPORT_STATIC_ENDPOINT}/{job_id}/attack-multi-turn/{attack_id}"
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_data=True)
+
+    attack = {
+        "uuid": response.get("uuid"),
+        "job_id": response.get("job_id"),
+        "target_id": response.get("target_id"),
+        "prompt": response.get("prompt"),
+        "category": response.get("category"),
+        "sub_category": response.get("sub_category"),
+        "category_display_name": response.get("category_display_name"),
+        "sub_category_display_name": response.get("sub_category_display_name"),
+        "status": response.get("status"),
+        "threat": response.get("threat"),
+        "attack_type": response.get("attack_type"),
+        "multi_turn": response.get("multi_turn"),
+        "severity": response.get("severity"),
+        "asr": response.get("asr"),
+        "marked_safe": response.get("marked_safe"),
+        "goal": response.get("goal"),
+        "compliance_frameworks": response.get("compliance_frameworks"),
+        "outputs": response.get("outputs"),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Red Team Multi-Turn Attack - {attack_id}",
+        [attack],
+        headers=["uuid", "category_display_name", "sub_category_display_name", "severity", "status", "threat", "goal"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    # Render per-turn model outputs as a supplementary table when present.
+    # Multi-turn outputs are nested (one list of turns per generation); flatten for display.
+    raw_outputs = attack.get("outputs") or []
+    flat_turns: list[dict] = []
+    for entry in raw_outputs:
+        if isinstance(entry, list):
+            flat_turns.extend(entry)
+        else:
+            flat_turns.append(entry)
+    if flat_turns:
+        readable_output += "\n\n" + tableToMarkdown(
+            "Multi-Turn Outputs",
+            flat_turns,
+            headers=["generation", "turn", "prompt", "output", "error", "threat", "marked_safe"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True,
+        )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamAttackMultiTurn",
+        outputs_key_field="uuid",
+        outputs=attack,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_report_remediation_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get remediation recommendations for a Red Team scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    job_type = args.get("job_type", "STATIC")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/reports-client.ts
+    #   (getStaticRemediation / getDynamicRemediation)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (RemediationResponseSchema)
+    if job_type.upper() == "DYNAMIC":
+        base_endpoint = RED_TEAM_REPORT_DYNAMIC_ENDPOINT
+    else:
+        base_endpoint = RED_TEAM_REPORT_STATIC_ENDPOINT
+    url_suffix = f"{base_endpoint}/{job_id}/remediation"
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_data=True)
+
+    remediations = response.get("remediations") or []
+    remediation_info = {
+        "job_id": job_id,
+        "job_type": job_type,
+        "remediations": remediations,
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Red Team Remediations - Job {job_id}",
+        remediations,
+        headers=["remediation", "priority_level", "effectiveness_level", "ease_of_implementation_level"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamRemediation",
+        outputs_key_field="job_id",
+        outputs=remediation_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_report_runtime_policy_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get the runtime security profile config derived from a Red Team scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    job_type = args.get("job_type", "STATIC")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/reports-client.ts
+    #   (getStaticRuntimePolicy / getDynamicRuntimePolicy)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (RuntimeSecurityProfileResponseSchema)
+    if job_type.upper() == "DYNAMIC":
+        base_endpoint = RED_TEAM_REPORT_DYNAMIC_ENDPOINT
+    else:
+        base_endpoint = RED_TEAM_REPORT_STATIC_ENDPOINT
+    url_suffix = f"{base_endpoint}/{job_id}/runtime-policy-config"
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_data=True)
+
+    runtime_security_profile = response.get("runtime_security_profile") or []
+    policy_info = {
+        "job_id": job_id,
+        "job_type": job_type,
+        "runtime_security_profile": runtime_security_profile,
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Red Team Runtime Security Profile - Job {job_id}",
+        runtime_security_profile,
+        headers=["policy_id", "display_name"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamRuntimePolicy",
+        outputs_key_field="job_id",
+        outputs=policy_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def redteam_eula_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get Red Team EULA acceptance status.
 
@@ -10264,6 +10583,21 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-report-get":
             return_results(redteam_report_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-attacks-list":
+            return_results(redteam_report_attacks_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-attack-get":
+            return_results(redteam_report_attack_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-attack-multi-turn-get":
+            return_results(redteam_report_attack_multi_turn_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-remediation-get":
+            return_results(redteam_report_remediation_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-runtime-policy-get":
+            return_results(redteam_report_runtime_policy_get_command(client, args))
 
         elif command == "prisma-airs-redteam-eula-status":
             return_results(redteam_eula_status_command(client, args))
