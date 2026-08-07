@@ -728,6 +728,106 @@ class MsGraphClient:
             resp_type="response",
         )
 
+    def update_message_policy_violation(self, url_suffix: str, body: dict) -> requests.Response:
+        """Apply a data loss prevention policy violation to a Teams message.
+
+        Args:
+            url_suffix: The message resource path (chat, channel, or channel reply).
+            body: The request body containing the policyViolation object.
+
+        Returns:
+            The raw HTTP response object so the caller can inspect the status code and body.
+        """
+        return self.ms_client.http_request(
+            method="PATCH",
+            url_suffix=url_suffix,
+            json_data=body,
+            resp_type="response",
+        )
+
+
+def build_teams_message_url_suffix(
+    chat_id: str,
+    team_id: str,
+    channel_id: str,
+    message_id: str,
+    parent_message_id: str,
+    payment_model: str,
+) -> str:
+    """Build the Microsoft Graph message resource path for a chat, channel, or channel reply.
+
+    Args:
+        chat_id: The chat ID hosting the message.
+        team_id: The team ID hosting the channel message.
+        channel_id: The channel ID hosting the message.
+        message_id: The ID of the message to update.
+        parent_message_id: The parent message ID when targeting a channel reply.
+        payment_model: The billing model appended as the model query parameter when provided.
+
+    Returns:
+        The resource path suffix relative to the Graph v1.0 base URL.
+    """
+    if chat_id:
+        suffix = f"chats/{chat_id}/messages/{message_id}"
+    elif parent_message_id:
+        suffix = f"teams/{team_id}/channels/{channel_id}/messages/{parent_message_id}/replies/{message_id}"
+    else:
+        suffix = f"teams/{team_id}/channels/{channel_id}/messages/{message_id}"
+    if payment_model:
+        suffix = f"{suffix}?model={payment_model}"
+    return suffix
+
+
+def build_policy_violation_body(dlp_action: str, policy_tip_general_text: str, verdict_details: str) -> dict:
+    """Build the request body containing the policyViolation object.
+
+    Args:
+        dlp_action: The action taken on the message. One of NoAction, BlockAccess, BlockAccessExternal.
+        policy_tip_general_text: The general explanatory text shown to the user in the policy tip.
+        verdict_details: The reviewer actions available on the flagged message. Omitted when empty
+            so Microsoft Graph applies its default (permanent) behavior.
+
+    Returns:
+        The request body dictionary for the message update.
+    """
+    policy_violation: dict = {
+        "dlpAction": dlp_action,
+        "policyTip": {"generalText": policy_tip_general_text},
+    }
+    if verdict_details:
+        policy_violation["verdictDetails"] = verdict_details
+    return {"policyViolation": policy_violation}
+
+
+def validate_teams_message_target_args(
+    chat_id: str,
+    team_id: str,
+    channel_id: str,
+    parent_message_id: str,
+) -> None:
+    """Validate the mutually exclusive message-target argument combinations.
+
+    Args:
+        chat_id: The chat ID hosting the message.
+        team_id: The team ID hosting the channel message.
+        channel_id: The channel ID hosting the message.
+        parent_message_id: The parent message ID when targeting a channel reply.
+
+    Raises:
+        DemistoException: When the target argument combination is invalid.
+    """
+    is_channel = bool(team_id or channel_id)
+    if chat_id and parent_message_id:
+        raise DemistoException("'parent_message_id' is only supported for channel messages, not chat messages.")
+    if chat_id and is_channel:
+        raise DemistoException("Provide either 'chat_id' or 'team_id' and 'channel_id', not both.")
+    if parent_message_id and not is_channel:
+        raise DemistoException("A channel reply requires both 'team_id' and 'channel_id'.")
+    if not chat_id and not is_channel:
+        raise DemistoException("A message target is required: either 'chat_id' or 'team_id' and 'channel_id'.")
+    if is_channel and not (team_id and channel_id):
+        raise DemistoException("A channel message requires both 'team_id' and 'channel_id'.")
+
 
 def test_function(client: MsGraphClient) -> str:
     """
@@ -1697,6 +1797,78 @@ def assign_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]
     )
 
 
+def update_teams_message_policy_violation_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Apply a data loss prevention policy violation to a Microsoft Teams message.
+
+    Targets a chat message, a channel message, or a channel reply. HTTP error responses
+    from Microsoft Graph are surfaced verbatim as a command error by the outer main()
+    try/except.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: The command arguments.
+            chat_id (Optional): The chat ID hosting the message.
+            team_id (Optional): The team ID hosting the channel message.
+            channel_id (Optional): The channel ID hosting the message.
+            parent_message_id (Optional): The parent message ID when targeting a channel reply.
+            message_id (Required): The ID of the message to update.
+            dlp_action (Optional): The action taken on the message.
+            policy_tip_general_text (Optional): The explanatory text shown to the user.
+            verdict_details (Optional): The reviewer actions available on the flagged message.
+            payment_model (Optional): The billing model appended as the model query parameter.
+
+    Returns:
+        CommandResults echoing the targeted message with the applied policy violation details.
+    """
+    chat_id = args.get("chat_id", "")
+    team_id = args.get("team_id", "")
+    channel_id = args.get("channel_id", "")
+    parent_message_id = args.get("parent_message_id", "")
+    message_id = args.get("message_id", "")
+    dlp_action = args.get("dlp_action", "")
+    policy_tip_general_text = args.get("policy_tip_general_text", "")
+    verdict_details = args.get("verdict_details", "")
+    payment_model = args.get("payment_model", "")
+
+    validate_teams_message_target_args(chat_id, team_id, channel_id, parent_message_id)
+
+    url_suffix = build_teams_message_url_suffix(
+        chat_id=chat_id,
+        team_id=team_id,
+        channel_id=channel_id,
+        message_id=message_id,
+        parent_message_id=parent_message_id,
+        payment_model=payment_model,
+    )
+    body = build_policy_violation_body(dlp_action, policy_tip_general_text, verdict_details)
+
+    client.update_message_policy_violation(url_suffix=url_suffix, body=body)
+
+    outputs = {
+        "messageId": message_id,
+        "chatId": chat_id,
+        "teamId": team_id,
+        "channelId": channel_id,
+        "parentMessageId": parent_message_id,
+        "dlpAction": dlp_action,
+        "verdictDetails": verdict_details,
+    }
+    outputs = {key: value for key, value in outputs.items() if value}
+
+    readable_output = tableToMarkdown(
+        name="Teams Message Policy Violation",
+        t=outputs,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.TeamsMessagePolicyViolation",
+        outputs_key_field="messageId",
+        outputs=outputs,
+        readable_output=readable_output,
+    )
+
+
 def run_microsoft_graph_files_integration():
     params: dict = demisto.params()
     args = demisto.args()
@@ -1786,6 +1958,8 @@ def run_microsoft_graph_files_integration():
             return_results(get_sensitivity_label_command(client, args))
         elif command == "msgraph-assign-sensitivity-label":
             return_results(assign_sensitivity_label_command(client, args))
+        elif command == "msgraph-teams-message-update-policy-violation":
+            return_results(update_teams_message_policy_violation_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:
