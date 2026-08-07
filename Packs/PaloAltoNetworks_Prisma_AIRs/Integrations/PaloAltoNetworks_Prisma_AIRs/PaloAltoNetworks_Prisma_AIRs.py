@@ -6065,19 +6065,12 @@ def redteam_report_attack_multi_turn_get_command(client: Client, args: dict[str,
     )
 
     # Render per-turn model outputs as a supplementary table when present.
-    # Multi-turn outputs are nested (one list of turns per generation); flatten for display.
-    raw_outputs = attack.get("outputs") or []
-    flat_turns: list[dict] = []
-    for entry in raw_outputs:
-        if isinstance(entry, list):
-            flat_turns.extend(entry)
-        else:
-            flat_turns.append(entry)
-    if flat_turns:
+    outputs = attack.get("outputs") or []
+    if outputs:
         readable_output += "\n\n" + tableToMarkdown(
             "Multi-Turn Outputs",
-            flat_turns,
-            headers=["generation", "turn", "prompt", "output", "error", "threat", "marked_safe"],
+            outputs,
+            headers=["turn", "prompt", "output", "threat", "marked_safe"],
             headerTransform=lambda h: h.replace("_", " ").title(),
             removeNull=True,
         )
