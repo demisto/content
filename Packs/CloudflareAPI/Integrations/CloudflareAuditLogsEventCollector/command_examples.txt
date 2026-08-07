@@ -1,0 +1,2 @@
+!cloudflare-audit-logs-get-events since="3 days" limit="10"
+!cloudflare-audit-logs-get-events account_ids="023e105f4ecef8ad9ca31a8372d0c353" since="12 hours" limit="50" should_push_events="true"
