@@ -2081,7 +2081,7 @@ def test_build_policy_violation_body_includes_verdict_when_set():
     [
         ("chat-1", "", "", "parent-1", "'parent_message_id' is only supported for channel messages"),
         ("chat-1", "team-1", "chan-1", "", "Provide either 'chat_id' or 'team_id' and 'channel_id', not both."),
-        ("", "team-1", "", "parent-1", "A channel reply requires both 'team_id' and 'channel_id'."),
+        ("", "team-1", "", "parent-1", "A channel message requires both 'team_id' and 'channel_id'."),
         ("", "", "", "", "A message target is required"),
         ("", "team-1", "", "", "A channel message requires both 'team_id' and 'channel_id'."),
     ],
