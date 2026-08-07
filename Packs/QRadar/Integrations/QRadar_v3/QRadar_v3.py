@@ -3646,7 +3646,7 @@ def qradar_reference_sets_list_command(client: Client, args: dict) -> CommandRes
 
 def qradar_reference_maps_list_command(client: Client, args: dict) -> CommandResults:
     """
-    Retrieves list of reference sets from QRadar service.
+    Retrieves list of reference maps from QRadar service.
     possible arguments:
     - ref_name: Retrieves details of the specific reference that corresponds to the reference name given.
     - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
@@ -3793,25 +3793,19 @@ def qradar_reference_set_value_upsert_command(args: dict, client: Client, params
 
 def qradar_reference_map_value_upsert_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
-    Update or insert new value to a reference set from QRadar service.
+    Update or insert new value to a reference map from QRadar service.
     possible arguments:
     - ref_name (Required): The reference name to insert/update a value for.
     - value (Required): Comma separated list. All the values to be inserted/updated.
     - key: The key to update.
-    - date_value: Boolean, specifies if values given are dates or not.
-    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
-    - fields: If used, will filter all fields except for the specified ones.
-              Use this parameter to specify which fields you would like to get back in the
-              response. Fields that are not explicitly named are excluded.
     Args:
         client (Client): QRadar client to perform the API call.
         args (Dict): Demisto args.
 
     Returns:
-        PollResult.
+        CommandResults.
     """
 
-    # TODO: Add Comment Option
     ref_name: str = args.get("ref_name", "")
     if not ref_name:
         raise DemistoException("ref_name must not be empty")
@@ -5833,7 +5827,7 @@ def main() -> None:  # pragma: no cover
         elif command == "qradar-reference-maps-list":
             return_results(qradar_reference_maps_list_command(client, args))
 
-        elif command == "qradar-reference-map-value-upsert":  #
+        elif command == "qradar-reference-map-value-upsert":
             return_results(qradar_reference_map_value_upsert_command(client, args))
 
         else:
