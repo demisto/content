@@ -6,11 +6,12 @@ from json import JSONDecodeError
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
+import time
 
 import demistomock as demisto  # noqa: F401
 import uvicorn
 from CommonServerPython import *  # noqa: F401
-from fastapi import Depends, FastAPI, Request, Response, status
+from fastapi import BackgroundTasks, Depends, FastAPI, Request, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
 from uvicorn.logging import AccessFormatter
@@ -53,9 +54,45 @@ class GenericWebhookAccessFormatter(AccessFormatter):
         return super().formatMessage(recordcopy)
 
 
+def process_incidents(incidents: list[dict]):
+    try:
+        demisto.debug("creating incidents")
+        start_time = time.time()
+        demisto.createIncidents(incidents)
+        demisto.debug(f"created incidents in {time.time() - start_time} seconds")
+
+        if demisto.params().get("store_samples"):
+            try:
+                sample_events_to_store.extend(incidents)
+
+                integration_context = get_integration_context()
+
+                sample_events = deque(
+                    json.loads(
+                        integration_context.get(
+                            "sample_events",
+                            "[]",
+                        )
+                    ),
+                    maxlen=20,
+                )
+
+                sample_events += sample_events_to_store
+                integration_context["sample_events"] = list(sample_events)
+                set_to_integration_context_with_retries(integration_context)
+            except Exception as e:
+                demisto.error(f"Failed storing sample events - {e}")
+
+    except Exception as e:
+        demisto.error(f"Failed async incident processing: " f"{e} - {format_exc()}")
+
+
 @app.post("/")
 async def handle_post(
-    request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth), token: APIKey = Depends(token_auth)
+    request: Request,
+    background_tasks: BackgroundTasks,
+    credentials: HTTPBasicCredentials = Depends(basic_auth),
+    token: APIKey = Depends(token_auth),
 ):
     demisto.debug("generic webhook handling request")
     try:
@@ -105,24 +142,8 @@ async def handle_post(
         for incident in incidents
     ]
 
-    demisto.debug("creating incidents")
-    return_incidents = demisto.createIncidents(incidents)
-    demisto.debug("created incidents")
-    if demisto.params().get("store_samples"):
-        try:
-            sample_events_to_store.extend(incidents)
-            demisto.debug(f"old events {len(sample_events_to_store)=}")
-            integration_context = get_integration_context()
-            sample_events = deque(json.loads(integration_context.get("sample_events", "[]")), maxlen=20)
-            sample_events += sample_events_to_store
-            demisto.debug(f"new events {len(sample_events_to_store)=}")
-            integration_context["sample_events"] = list(sample_events)
-            set_to_integration_context_with_retries(integration_context)
-            demisto.debug("finished setting sample events")
-        except Exception as e:
-            demisto.error(f"Failed storing sample events - {e}")
-
-    return return_incidents
+    background_tasks.add_task(process_incidents, incidents)
+    return Response(status_code=status.HTTP_200_OK, content="OK")
 
 
 def setup_credentials():
