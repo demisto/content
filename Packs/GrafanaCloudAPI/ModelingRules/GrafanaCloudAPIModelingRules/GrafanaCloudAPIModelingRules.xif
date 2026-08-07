@@ -1,0 +1,311 @@
+[MODEL: dataset=grafana_service_accounts_raw]
+filter
+    uid != null
+| alter
+    tmp_uid = uid,
+    tmp_name = name,
+    tmp_login = login,
+    tmp_id = to_string(id),
+    tmp_role = coalesce(role, ""),
+    tmp_role_lc = lowercase(coalesce(role, "")),
+    tmp_org = to_string(orgId),
+    tmp_source_type = source_log_type,
+    tmp_disabled = isDisabled,
+    tmp_external = isExternal,
+    tmp_token_count = to_integer(token_count),
+    tmp_no_expiry = to_integer(tokens_without_expiry),
+    tmp_never_used = to_integer(tokens_never_used),
+    tmp_instance = grafana_instance,
+    tmp_expired = to_integer(tokens_expired),
+    tmp_revoked = to_integer(tokens_revoked),
+    tmp_token_names = coalesce(token_names, ""),
+    tmp_oldest = oldest_token_created
+| alter
+    tmp_m_disabled = if(tmp_disabled = true, "disabled|", ""),
+    tmp_m_external = if(tmp_external = true, "external|", ""),
+    tmp_m_admin = if(tmp_role_lc = "admin", "admin_role|", ""),
+    tmp_m_norole = if(tmp_role_lc = "none", "no_role|", ""),
+    tmp_m_has_token = if(tmp_token_count > 0, "has_token|", ""),
+    tmp_m_no_expiry = if(tmp_no_expiry > 0, "token_without_expiry|", ""),
+    tmp_m_never_used = if(tmp_never_used > 0, "token_never_used|", ""),
+    tmp_m_editor = if(tmp_role_lc = "editor", "editor_role|", ""),
+    tmp_m_expired = if(tmp_expired > 0, "token_expired|", ""),
+    tmp_m_revoked = if(tmp_revoked > 0, "token_revoked|", "")
+| alter
+    xdm.observer.vendor = "grafana",
+    xdm.observer.product = "service_accounts",
+    xdm.observer.name = tmp_instance,
+    xdm.event.id = tmp_uid,
+    xdm.event.type = coalesce(tmp_source_type, "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = if(
+        tmp_source_type = "service_account", "service_account_snapshot",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(
+        tmp_source_type = "service_account", arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+        null),
+    xdm.event.operation = if(
+        tmp_source_type = "service_account", XDM_CONST.OPERATION_TYPE_AUDIT,
+        null),
+    xdm.source.cloud.project = tmp_org,
+    xdm.source.user.username = tmp_login,
+    xdm.source.user.upn = if(
+        tmp_login contains "@", tmp_login,
+        tmp_login != null, concat(tmp_login, "@localhost"),
+        null),
+    xdm.source.user.identifier = tmp_id,
+    xdm.source.user.is_disabled = tmp_disabled,
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_MACHINE,
+    xdm.source.user.user_type = XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+    xdm.target.resource.type = "service_account",
+    xdm.target.resource.id = tmp_uid,
+    xdm.target.resource.name = tmp_name,
+    xdm.target.resource.sub_type = if(tmp_role = "", null, tmp_role),
+    xdm.target.resource.value = concat(
+        tmp_m_disabled, tmp_m_external, tmp_m_admin, tmp_m_norole,
+        tmp_m_has_token, tmp_m_no_expiry, tmp_m_never_used,
+        tmp_m_editor, tmp_m_expired, tmp_m_revoked),
+    xdm.event.description = concat(
+        "Grafana service account ", coalesce(tmp_name, "unknown"),
+        " at role ", coalesce(tmp_role, "none"),
+        " holds ", coalesce(to_string(tmp_token_count), "0"), " token(s) [",
+        tmp_token_names, "], oldest created ", coalesce(to_string(tmp_oldest), "n/a"))
+;
+
+// SPDX-FileCopyrightText: GoCortexIO
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
+// Vendor:  Grafana
+// Product: datasources
+// Dataset: grafana_datasources_raw
+//
+// Description: A snapshot of the Grafana data source inventory, one record per source per
+// collection. A data source is a configured connection to a backend system, holding its URL,
+// its access mode and, where basic authentication is used, a stored credential. It is both a
+// credential store and a path out of the estate. This is an inventory, not a change feed, so
+// a correlation over it must dedup on xdm.target.resource.id.
+//
+// Tenant-adjustable: xdm.observer.vendor, xdm.observer.product, and the [MODEL: dataset=]
+// header.
+//
+// EVENT FIELD MAPPING
+//   uid                    -> xdm.target.resource.id, xdm.event.id
+//   name                   -> xdm.target.resource.name
+//   type                   -> xdm.target.resource.sub_type
+//   url                    -> xdm.target.url (the backend this source reaches)
+//   user                   -> xdm.source.user.username (the basic auth account, never a secret)
+//   orgId                  -> xdm.source.cloud.project
+//   grafana_instance       -> xdm.observer.name
+//   source_log_type        -> xdm.event.type
+//   basicAuth, access,
+//   readOnly, isDefault,
+//   has_url                -> xdm.target.resource.value (pipe-joined marker set)
+//   typeName, database     -> xdm.event.description
+//
+// NOTE: no credential value is present in this dataset and none can be. Grafana holds data
+// source secrets in secureJsonData, which the list endpoint omits entirely. The basic
+// authentication USERNAME is mapped because it identifies the account in use without
+// exposing its secret.
+//
+// NOT MAPPED
+//   typeLogoUrl            a CDN image link for the plugin, no security value
+//   json_data              free-form per plugin with no fixed shape, so forcing it into a
+//                          typed field would invent structure; retained as a raw column for
+//                          investigation
+//   id                     the instance-local integer; uid is the stable identifier
+//   snapshot_at            the collection time, already carried by _time
+//
+// REVIEW UNMODELLED -- records that matched no classification branch:
+//   datamodel dataset = grafana_datasources_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | fields xdm.target.resource.id, xdm.event.type
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset=grafana_datasources_raw]
+filter
+    uid != null
+| alter
+    tmp_uid = uid,
+    tmp_name = name,
+    tmp_type = coalesce(type, ""),
+    tmp_type_name = coalesce(typeName, ""),
+    tmp_url = coalesce(url, ""),
+    tmp_user = user,
+    tmp_database = coalesce(database, ""),
+    tmp_org = to_string(orgId),
+    tmp_instance = grafana_instance,
+    tmp_source_type = source_log_type,
+    tmp_access = coalesce(access, ""),
+    tmp_basic_auth = basicAuth,
+    tmp_read_only = readOnly,
+    tmp_is_default = isDefault,
+    tmp_has_url = has_url
+| alter
+    tmp_m_basic = if(tmp_basic_auth = true, "basic_auth|", ""),
+    tmp_m_nocred = if(tmp_basic_auth = true, "", "no_stored_credential|"),
+    tmp_m_url = if(tmp_has_url = true, "has_backend_url|", ""),
+    tmp_m_readonly = if(tmp_read_only = true, "read_only|", ""),
+    tmp_m_editable = if(tmp_read_only = true, "", "editable|"),
+    tmp_m_default = if(tmp_is_default = true, "default_source|", ""),
+    tmp_m_direct = if(tmp_access = "direct", "browser_access|", ""),
+    tmp_m_proxy = if(tmp_access = "proxy", "proxy_access|", "")
+| alter
+    xdm.observer.vendor = "grafana",
+    xdm.observer.product = "datasources",
+    xdm.observer.name = tmp_instance,
+    xdm.event.id = tmp_uid,
+    xdm.event.type = coalesce(tmp_source_type, "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = if(
+        tmp_source_type = "datasource", "datasource_snapshot",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(
+        tmp_source_type = "datasource", arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+        null),
+    xdm.event.operation = if(
+        tmp_source_type = "datasource", XDM_CONST.OPERATION_TYPE_AUDIT,
+        null),
+    xdm.source.cloud.project = tmp_org,
+    xdm.source.user.username = tmp_user,
+    xdm.target.resource.type = "datasource",
+    xdm.target.resource.id = tmp_uid,
+    xdm.target.resource.name = tmp_name,
+    xdm.target.resource.sub_type = if(tmp_type = "", null, tmp_type),
+    xdm.target.resource.value = concat(
+        tmp_m_basic, tmp_m_nocred, tmp_m_url, tmp_m_readonly, tmp_m_editable,
+        tmp_m_default, tmp_m_direct, tmp_m_proxy),
+    xdm.target.url = if(tmp_url = "", null, tmp_url),
+    xdm.event.description = concat(
+        "Grafana data source ", coalesce(tmp_name, "unknown"),
+        " of type ", coalesce(tmp_type_name, tmp_type),
+        " via ", coalesce(tmp_access, "unknown"), " access to ",
+        coalesce(tmp_url, "no url"),
+        " database=", tmp_database)
+;
+
+// SPDX-FileCopyrightText: GoCortexIO
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
+// Vendor:  Grafana
+// Product: org_users
+// Dataset: grafana_org_users_raw
+//
+// Description: A snapshot of the Grafana organisation membership, one record per member per
+// collection. This is the human identity half of the picture the service account dataset
+// covers for machines: who can sign in to this Grafana, at what role, from which identity
+// provider, and when they were last seen. This is an inventory, not a change feed, so a
+// correlation over it must dedup on xdm.target.resource.id.
+//
+// Tenant-adjustable: xdm.observer.vendor, xdm.observer.product, and the [MODEL: dataset=]
+// header.
+//
+// EVENT FIELD MAPPING
+//   uid                    -> xdm.target.resource.id, xdm.event.id
+//   login                  -> xdm.source.user.username, xdm.target.resource.name
+//   email                  -> xdm.source.user.upn
+//   userId                 -> xdm.source.user.identifier
+//   role                   -> xdm.source.user.roles, xdm.target.resource.sub_type
+//   isDisabled             -> xdm.source.user.is_disabled
+//   auth_labels            -> xdm.source.user.scope (the identity provider or providers)
+//   orgId                  -> xdm.source.cloud.project
+//   grafana_instance       -> xdm.observer.name
+//   source_log_type        -> xdm.event.type
+//   role, isDisabled,
+//   sync and provider flags-> xdm.target.resource.value (pipe-joined marker set)
+//   created, lastSeenAt    -> xdm.event.description
+//
+// NOTE: this dataset is NOT authentication, despite describing people who sign in. It is the
+// membership list, not a record of sign-ins: the Grafana instance API exposes no logon events
+// at all. lastSeenAt is the only trace of activity and it is a single mutable timestamp on the
+// user object, not an event. The authentication story is deliberately not mapped, because
+// there is no logon, no session and no source address to map.
+//
+// NOT MAPPED
+//   avatarUrl              a generated gravatar link, no security value
+//   name                   the display name, frequently empty; login and email identify the
+//                          account
+//   lastSeenAt,            no XDM timestamp field exists for an identity's own lifecycle
+//   created, lastSeenAtAge dates; carried in the description so an analyst still sees them,
+//                          and a dormancy marker is derived instead
+//   auth_label_count       the count is implied by the mapped scope string
+//   snapshot_at            the collection time, already carried by _time
+//
+// REVIEW UNMODELLED -- records that matched no classification branch:
+//   datamodel dataset = grafana_org_users_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | fields xdm.target.resource.id, xdm.event.type
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset=grafana_org_users_raw]
+filter
+    uid != null
+| alter
+    tmp_uid = uid,
+    tmp_login = login,
+    tmp_email = email,
+    tmp_user_id = to_string(userId),
+    tmp_role = coalesce(role, ""),
+    tmp_role_lc = lowercase(coalesce(role, "")),
+    tmp_org = to_string(orgId),
+    tmp_instance = grafana_instance,
+    tmp_source_type = source_log_type,
+    tmp_disabled = isDisabled,
+    tmp_synced = isExternallySynced,
+    tmp_provisioned = isProvisioned,
+    tmp_labels = coalesce(auth_labels, ""),
+    tmp_created = created,
+    tmp_last_seen = lastSeenAt
+| alter
+    tmp_m_admin = if(tmp_role_lc = "admin", "admin_role|", ""),
+    tmp_m_editor = if(tmp_role_lc = "editor", "editor_role|", ""),
+    tmp_m_viewer = if(tmp_role_lc = "viewer", "viewer_role|", ""),
+    tmp_m_disabled = if(tmp_disabled = true, "disabled|", ""),
+    tmp_m_synced = if(tmp_synced = true, "externally_synced|", ""),
+    tmp_m_provisioned = if(tmp_provisioned = true, "provisioned|", ""),
+    tmp_m_external_idp = if(tmp_labels = "", "local_account|", "external_identity|"),
+    tmp_m_never_seen = if(tmp_last_seen != null, "", "never_seen|")
+| alter
+    xdm.observer.vendor = "grafana",
+    xdm.observer.product = "org_users",
+    xdm.observer.name = tmp_instance,
+    xdm.event.id = tmp_uid,
+    xdm.event.type = coalesce(tmp_source_type, "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = if(
+        tmp_source_type = "org_user", "org_user_snapshot",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(
+        tmp_source_type = "org_user", arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+        null),
+    xdm.event.operation = if(
+        tmp_source_type = "org_user", XDM_CONST.OPERATION_TYPE_AUDIT,
+        null),
+    xdm.source.cloud.project = tmp_org,
+    xdm.source.user.username = tmp_login,
+    xdm.source.user.upn = if(
+        tmp_email contains "@", tmp_email,
+        tmp_email != null, concat(tmp_email, "@localhost"),
+        null),
+    xdm.source.user.identifier = tmp_user_id,
+    xdm.source.user.is_disabled = tmp_disabled,
+    xdm.source.user.identity_type = XDM_CONST.IDENTITY_TYPE_USER,
+    xdm.source.user.user_type = XDM_CONST.USER_TYPE_REGULAR,
+    xdm.source.user.roles = if(tmp_role = "", null, arraycreate(tmp_role)),
+    xdm.source.user.scope = if(tmp_labels = "", null, tmp_labels),
+    xdm.target.resource.type = "org_user",
+    xdm.target.resource.id = tmp_uid,
+    xdm.target.resource.name = tmp_login,
+    xdm.target.resource.sub_type = if(tmp_role = "", null, tmp_role),
+    xdm.target.resource.value = concat(
+        tmp_m_admin, tmp_m_editor, tmp_m_viewer, tmp_m_disabled,
+        tmp_m_synced, tmp_m_provisioned, tmp_m_external_idp, tmp_m_never_seen),
+    xdm.event.description = concat(
+        "Grafana organisation member ", coalesce(tmp_login, "unknown"),
+        " at role ", coalesce(tmp_role, "none"),
+        " from ", coalesce(tmp_labels, "local"),
+        ", created ", coalesce(to_string(tmp_created), "n/a"),
+        ", last seen ", coalesce(to_string(tmp_last_seen), "never"))
+;
