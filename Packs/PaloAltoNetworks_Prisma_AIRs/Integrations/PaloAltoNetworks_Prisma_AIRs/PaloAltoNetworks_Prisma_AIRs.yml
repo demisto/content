@@ -4845,6 +4845,174 @@ script:
     - contextPath: PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile.config
       description: The runtime security policy configuration object.
       type: Unknown
+  - name: prisma-airs-redteam-report-goals-list
+    description: List goals for a Red Team dynamic scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: goal_type
+      required: false
+      description: The goal type to filter results by.
+    - name: status
+      required: false
+      description: The goal status to filter results by.
+    - name: count
+      required: false
+      description: Whether to request goal count metadata from the API.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      required: false
+      description: The maximum number of goals to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of goals to skip from the start (for pagination).
+    - name: search
+      required: false
+      description: The free-text search filter to apply.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamGoal.uuid
+      description: The goal UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.tsg_id
+      description: The tenant service group UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.goal
+      description: The goal description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.goal_to_show
+      description: The display version of the goal description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.goal_type
+      description: The goal type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.custom_goal
+      description: Whether the goal is a custom goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamGoal.threat
+      description: Whether the goal was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamGoal.version
+      description: The goal version number.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamGoal.safe_response
+      description: The expected safe model response for the goal.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.jailbroken_response
+      description: The jailbroken model response for the goal.
+      type: String
+  - name: prisma-airs-redteam-report-goal-streams-list
+    description: List streams for a goal in a Red Team dynamic scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: goal_id
+      required: true
+      description: The goal UUID.
+    - name: limit
+      required: false
+      description: The maximum number of streams to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of streams to skip from the start (for pagination).
+    - name: search
+      required: false
+      description: The free-text search filter to apply.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamStream.uuid
+      description: The stream UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.tsg_id
+      description: The tenant service group UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.goal_id
+      description: The goal UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.stream_idx
+      description: The stream index within the goal.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamStream.iteration
+      description: The iteration count for the stream.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamStream.stream_type
+      description: The stream type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.marked_safe
+      description: Whether the stream was marked safe.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamStream.threat
+      description: Whether the stream was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamStream.created_at
+      description: The stream creation timestamp in ISO 8601 format (e.g., 2024-01-15T10:30:00Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamStream.updated_at
+      description: The stream last-update timestamp in ISO 8601 format (e.g., 2024-01-15T10:30:00Z).
+      type: Date
+  - name: prisma-airs-redteam-report-stream-get
+    description: Get stream details for a Red Team dynamic scan report.
+    arguments:
+    - name: stream_id
+      required: true
+      description: The stream UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamStream.uuid
+      description: The stream UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.tsg_id
+      description: The tenant service group UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.goal_id
+      description: The goal UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.stream_idx
+      description: The stream index within the goal.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamStream.iteration
+      description: The iteration count for the stream.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamStream.stream_type
+      description: The stream type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.marked_safe
+      description: Whether the stream was marked safe.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamStream.threat
+      description: Whether the stream was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamStream.created_at
+      description: The stream creation timestamp in ISO 8601 format (e.g., 2024-01-15T10:30:00Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamStream.updated_at
+      description: The stream last-update timestamp in ISO 8601 format (e.g., 2024-01-15T10:30:00Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamStream.first_threat_iteration
+      description: The first iteration flagged as a threat.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamStream.iterations
+      description: The array of per-iteration attack progression records.
+      type: Unknown
   - name: prisma-airs-redteam-eula-status
     description: Get Red Team EULA acceptance status.
     outputs:

@@ -6189,6 +6189,206 @@ def redteam_report_runtime_policy_get_command(client: Client, args: dict[str, An
     )
 
 
+def redteam_report_goals_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List goals for a Red Team dynamic scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    skip = arg_to_number(args.get("skip"))
+
+    # Build query parameters (pagination + optional filters)
+    params: dict[str, Any] = {"limit": limit}
+    if skip is not None:
+        params["skip"] = skip
+    for filter_key in ("search", "goal_type", "status"):
+        value = args.get(filter_key)
+        if value:
+            params[filter_key] = value
+    if args.get("count") is not None:
+        params["count"] = str(argToBoolean(args.get("count"))).lower()
+
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/reports-client.ts (listGoals)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (GoalListResponseSchema)
+    url_suffix = f"{RED_TEAM_REPORT_DYNAMIC_ENDPOINT}/{job_id}/list-goals"
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_redteam_data=True)
+
+    goals = []
+    for goal in response.get("data", []):
+        goals.append(
+            {
+                "uuid": goal.get("uuid"),
+                "tsg_id": goal.get("tsg_id"),
+                "job_id": goal.get("job_id"),
+                "goal": goal.get("goal"),
+                "goal_to_show": goal.get("goal_to_show"),
+                "goal_type": goal.get("goal_type"),
+                "custom_goal": goal.get("custom_goal"),
+                "threat": goal.get("threat"),
+                "version": goal.get("version"),
+                "safe_response": goal.get("safe_response"),
+                "jailbroken_response": goal.get("jailbroken_response"),
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Red Team Goals - Job {job_id}",
+        goals,
+        headers=["uuid", "goal", "goal_type", "custom_goal", "threat"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamGoal",
+        outputs_key_field="uuid",
+        outputs=goals,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_report_goal_streams_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List streams for a goal in a Red Team dynamic scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    goal_id = args.get("goal_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+    if not goal_id:
+        raise ValueError("goal_id is required")
+
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    skip = arg_to_number(args.get("skip"))
+
+    # Build query parameters (pagination + optional search)
+    params: dict[str, Any] = {"limit": limit}
+    if skip is not None:
+        params["skip"] = skip
+    if args.get("search"):
+        params["search"] = args.get("search")
+
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/reports-client.ts (listGoalStreams)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (StreamListResponseSchema)
+    url_suffix = f"{RED_TEAM_REPORT_DYNAMIC_ENDPOINT}/{job_id}/goal/{goal_id}/list-streams"
+    response = client.http_request(method="GET", url_suffix=url_suffix, params=params, use_redteam_data=True)
+
+    streams = []
+    for stream in response.get("data", []):
+        streams.append(
+            {
+                "uuid": stream.get("uuid"),
+                "tsg_id": stream.get("tsg_id"),
+                "job_id": stream.get("job_id"),
+                "target_id": stream.get("target_id"),
+                "goal_id": stream.get("goal_id"),
+                "stream_idx": stream.get("stream_idx"),
+                "iteration": stream.get("iteration"),
+                "stream_type": stream.get("stream_type"),
+                "marked_safe": stream.get("marked_safe"),
+                "threat": stream.get("threat"),
+                "created_at": stream.get("created_at"),
+                "updated_at": stream.get("updated_at"),
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Red Team Goal Streams - Goal {goal_id}",
+        streams,
+        headers=["uuid", "goal_id", "target_id", "stream_type", "threat", "marked_safe"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamStream",
+        outputs_key_field="uuid",
+        outputs=streams,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_report_stream_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get stream details for a Red Team dynamic scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    stream_id = args.get("stream_id")
+    if not stream_id:
+        raise ValueError("stream_id is required")
+
+    # Reference: ./knowledge/prisma-airs-sdk-main/src/red-team/reports-client.ts (getStreamDetail)
+    # Schema: ./knowledge/prisma-airs-sdk-main/src/models/red-team.ts (StreamDetailResponseSchema)
+    url_suffix = f"{RED_TEAM_REPORT_DYNAMIC_ENDPOINT}/stream/{stream_id}"
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_data=True)
+
+    stream = {
+        "uuid": response.get("uuid"),
+        "tsg_id": response.get("tsg_id"),
+        "job_id": response.get("job_id"),
+        "target_id": response.get("target_id"),
+        "goal_id": response.get("goal_id"),
+        "stream_idx": response.get("stream_idx"),
+        "iteration": response.get("iteration"),
+        "stream_type": response.get("stream_type"),
+        "marked_safe": response.get("marked_safe"),
+        "threat": response.get("threat"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+        "first_threat_iteration": response.get("first_threat_iteration"),
+        "iterations": response.get("iterations"),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Red Team Stream - {stream_id}",
+        [stream],
+        headers=["uuid", "job_id", "goal_id", "target_id", "stream_type", "threat", "marked_safe"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    # Render per-iteration attack progression as a supplementary table when present.
+    iterations = stream.get("iterations") or []
+    if iterations:
+        readable_output += "\n\n" + tableToMarkdown(
+            "Stream Iterations",
+            iterations,
+            headers=["iteration", "prompt", "techniques", "score", "threat", "output"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True,
+        )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamStream",
+        outputs_key_field="uuid",
+        outputs=stream,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def redteam_eula_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get Red Team EULA acceptance status.
 
@@ -10598,6 +10798,15 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-report-runtime-policy-get":
             return_results(redteam_report_runtime_policy_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-goals-list":
+            return_results(redteam_report_goals_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-goal-streams-list":
+            return_results(redteam_report_goal_streams_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-stream-get":
+            return_results(redteam_report_stream_get_command(client, args))
 
         elif command == "prisma-airs-redteam-eula-status":
             return_results(redteam_eula_status_command(client, args))

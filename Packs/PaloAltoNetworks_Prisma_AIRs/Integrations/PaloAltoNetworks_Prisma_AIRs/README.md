@@ -5204,6 +5204,113 @@ Get the runtime security profile config derived from a Red Team scan report.
 | PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile.display_name | String | The runtime security policy display name. |
 | PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile.config | Unknown | The runtime security policy configuration object. |
 
+### prisma-airs-redteam-report-goals-list
+
+***
+List goals for a Red Team dynamic scan report.
+
+#### Base Command
+
+`prisma-airs-redteam-report-goals-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The scan job UUID. | Required |
+| goal_type | The goal type to filter results by. | Optional |
+| status | The goal status to filter results by. | Optional |
+| count | Whether to request goal count metadata from the API. Possible values are: true, false. | Optional |
+| limit | The maximum number of goals to return. Default is 50. | Optional |
+| skip | The number of goals to skip from the start \(for pagination\). | Optional |
+| search | The free-text search filter to apply. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamGoal.uuid | String | The goal UUID. |
+| PrismaAIRs.RedTeamGoal.tsg_id | String | The tenant service group UUID. |
+| PrismaAIRs.RedTeamGoal.job_id | String | The scan job UUID. |
+| PrismaAIRs.RedTeamGoal.goal | String | The goal description. |
+| PrismaAIRs.RedTeamGoal.goal_to_show | String | The display version of the goal description. |
+| PrismaAIRs.RedTeamGoal.goal_type | String | The goal type. |
+| PrismaAIRs.RedTeamGoal.custom_goal | Boolean | Whether the goal is a custom goal. |
+| PrismaAIRs.RedTeamGoal.threat | Boolean | Whether the goal was flagged as a threat. |
+| PrismaAIRs.RedTeamGoal.version | Number | The goal version number. |
+| PrismaAIRs.RedTeamGoal.safe_response | String | The expected safe model response for the goal. |
+| PrismaAIRs.RedTeamGoal.jailbroken_response | String | The jailbroken model response for the goal. |
+
+### prisma-airs-redteam-report-goal-streams-list
+
+***
+List streams for a goal in a Red Team dynamic scan report.
+
+#### Base Command
+
+`prisma-airs-redteam-report-goal-streams-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The scan job UUID. | Required |
+| goal_id | The goal UUID. | Required |
+| limit | The maximum number of streams to return. Default is 50. | Optional |
+| skip | The number of streams to skip from the start \(for pagination\). | Optional |
+| search | The free-text search filter to apply. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamStream.uuid | String | The stream UUID. |
+| PrismaAIRs.RedTeamStream.tsg_id | String | The tenant service group UUID. |
+| PrismaAIRs.RedTeamStream.job_id | String | The scan job UUID. |
+| PrismaAIRs.RedTeamStream.target_id | String | The target UUID. |
+| PrismaAIRs.RedTeamStream.goal_id | String | The goal UUID. |
+| PrismaAIRs.RedTeamStream.stream_idx | Number | The stream index within the goal. |
+| PrismaAIRs.RedTeamStream.iteration | Number | The iteration count for the stream. |
+| PrismaAIRs.RedTeamStream.stream_type | String | The stream type. |
+| PrismaAIRs.RedTeamStream.marked_safe | Boolean | Whether the stream was marked safe. |
+| PrismaAIRs.RedTeamStream.threat | Boolean | Whether the stream was flagged as a threat. |
+| PrismaAIRs.RedTeamStream.created_at | Date | The stream creation timestamp in ISO 8601 format \(e.g., 2024-01-15T10:30:00Z\). |
+| PrismaAIRs.RedTeamStream.updated_at | Date | The stream last-update timestamp in ISO 8601 format \(e.g., 2024-01-15T10:30:00Z\). |
+
+### prisma-airs-redteam-report-stream-get
+
+***
+Get stream details for a Red Team dynamic scan report.
+
+#### Base Command
+
+`prisma-airs-redteam-report-stream-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_id | The stream UUID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamStream.uuid | String | The stream UUID. |
+| PrismaAIRs.RedTeamStream.tsg_id | String | The tenant service group UUID. |
+| PrismaAIRs.RedTeamStream.job_id | String | The scan job UUID. |
+| PrismaAIRs.RedTeamStream.target_id | String | The target UUID. |
+| PrismaAIRs.RedTeamStream.goal_id | String | The goal UUID. |
+| PrismaAIRs.RedTeamStream.stream_idx | Number | The stream index within the goal. |
+| PrismaAIRs.RedTeamStream.iteration | Number | The iteration count for the stream. |
+| PrismaAIRs.RedTeamStream.stream_type | String | The stream type. |
+| PrismaAIRs.RedTeamStream.marked_safe | Boolean | Whether the stream was marked safe. |
+| PrismaAIRs.RedTeamStream.threat | Boolean | Whether the stream was flagged as a threat. |
+| PrismaAIRs.RedTeamStream.created_at | Date | The stream creation timestamp in ISO 8601 format \(e.g., 2024-01-15T10:30:00Z\). |
+| PrismaAIRs.RedTeamStream.updated_at | Date | The stream last-update timestamp in ISO 8601 format \(e.g., 2024-01-15T10:30:00Z\). |
+| PrismaAIRs.RedTeamStream.first_threat_iteration | Unknown | The first iteration flagged as a threat. |
+| PrismaAIRs.RedTeamStream.iterations | Unknown | The array of per-iteration attack progression records. |
+
 ### prisma-airs-redteam-eula-status
 
 ***
