@@ -67,6 +67,12 @@ configuration:
   type: 8
   section: Collect
   required: false
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
 - display: Verify SSL Certificate
   name: verify
   type: 8
@@ -98,7 +104,7 @@ script:
     name: microsoft-defender-cloud-apps-get-events
     arguments:
     - description: The maximum number of events to return per event type. Events are retrieved in pages of up to 100 (the API page-size limit). The maximum is 1000.
-      defaultvalue: '1000'
+      defaultValue: '1000'
       name: limit
     - description: The first fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months).
       defaultValue: 3 days
@@ -119,7 +125,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.11671917
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
