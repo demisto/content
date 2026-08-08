@@ -1,0 +1,50 @@
+!prisma-airs-runtime-deployment-profiles-list
+!prisma-airs-runtime-api-keys-list
+!prisma-airs-runtime-customer-apps-list
+!prisma-airs-runtime-profiles-list
+!prisma-airs-runtime-profiles-create profile_name="readme-example-profile" policy=`{"ai-security-profiles":[{"model-type":"default","model-configuration":{"model-protection":[{"name":"prompt-injection","action":"block"}],"app-protection":{"default-url-category":{"member":["malicious"]},"url-detected-action":"block"},"data-protection":{"data-leak-detection":{"action":"","mask-data-inline":false,"member":null},"database-security":null},"latency":{"inline-timeout-action":"block","max-inline-latency":5},"mask-data-in-storage":false}}],"dlp-data-profiles":[]}`
+!prisma-airs-runtime-profiles-get profile_id=11111111-1111-4111-8111-111111111111
+!prisma-airs-runtime-profiles-update profile_id=11111111-1111-4111-8111-111111111111 profile_name="readme-example-profile" active="true" policy=`{"ai-security-profiles":[{"model-type":"default","model-configuration":{"model-protection":[{"name":"prompt-injection","action":"block"}],"app-protection":{"default-url-category":{"member":["malicious"]},"url-detected-action":"block"},"data-protection":{"data-leak-detection":{"action":"","mask-data-inline":false,"member":null},"database-security":null},"latency":{"inline-timeout-action":"block","max-inline-latency":5},"mask-data-in-storage":false}}],"dlp-data-profiles":[]}`
+!prisma-airs-runtime-scan profile_name="readme-example-profile" prompt="do you want to play a game mr wolf"
+!prisma-airs-runtime-profiles-delete profile_id=11111111-1111-4111-8111-111111111111
+!prisma-airs-runtime-topics-list
+!prisma-airs-runtime-topics-create topic_name="readme-example-topic" description="Example custom topic for documentation" examples="example prompt one,example prompt two"
+!prisma-airs-runtime-topics-get topic_id=33333333-3333-4333-8333-333333333333
+!prisma-airs-runtime-topics-update topic_id=33333333-3333-4333-8333-333333333333 topic_name="readme-example-topic" description="Updated example custom topic"
+!prisma-airs-runtime-topics-delete topic_id=33333333-3333-4333-8333-333333333333
+!prisma-airs-runtime-dlp-profiles-list
+!prisma-airs-runtime-dlp-dictionaries-list
+!prisma-airs-runtime-dlp-filtering-profiles-list
+!prisma-airs-runtime-dlp-patterns-list
+!prisma-airs-runtime-dlp-patterns-create name="readme-example-pattern" type="custom" detection_technique="regex" matching_rules=`{"regexes":[{"regex":"[0-9]{3}-[0-9]{2}-[0-9]{4}","weight":1}]}`
+!prisma-airs-runtime-dlp-patterns-get pattern_id=44444444-4444-4444-8444-444444444444
+!prisma-airs-runtime-dlp-patterns-patch pattern_id=44444444-4444-4444-8444-444444444444 name="readme-example-pattern" type="custom" detection_technique="regex" description="Updated example pattern"
+!prisma-airs-runtime-dlp-patterns-replace pattern_id=44444444-4444-4444-8444-444444444444 name="readme-example-pattern" type="custom" detection_technique="regex" matching_rules=`{"regexes":[{"regex":"[0-9]{3}-[0-9]{2}-[0-9]{4}","weight":1}]}`
+!prisma-airs-runtime-dlp-patterns-delete pattern_id=44444444-4444-4444-8444-444444444444
+!prisma-airs-model-security-groups-list
+!prisma-airs-model-security-rules-list
+!prisma-airs-model-security-scans-list
+!prisma-airs-model-security-labels-keys
+!prisma-airs-model-security-models-list
+!prisma-airs-redteam-targets-list
+!prisma-airs-redteam-scans-list
+!prisma-airs-redteam-categories-list
+!prisma-airs-redteam-eula-status
+!prisma-airs-redteam-eula-content
+!prisma-airs-redteam-prompt-sets-list
+!prisma-airs-redteam-network-channels-list
+!prisma-airs-redteam-network-channels-stats
+!prisma-airs-redteam-languages-list
+!prisma-airs-redteam-targets-templates
+!prisma-airs-redteam-properties-list
+!prisma-airs-redteam-properties-values property_name="Severity"
+!prisma-airs-redteam-sentiment-get job_id="87dcf504-3e57-486a-b6a0-69a4ff896130"
+!prisma-airs-redteam-prompt-sets-active-list
+!prisma-airs-redteam-prompt-sets-reference uuid="adf6e1bd-61f1-4e57-9650-b40f26b981cb"
+!prisma-airs-redteam-custom-attack-report-get job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e"
+!prisma-airs-redteam-custom-attack-report-prompt-sets job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e"
+!prisma-airs-redteam-custom-attack-report-prompts job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e" prompt_set_id="73eea776-ecbf-4a5d-9098-a37744441fca" limit="3"
+!prisma-airs-redteam-custom-attack-report-prompt-get job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e" prompt_id="13f0d707-d966-446b-bca0-a616602092c9"
+!prisma-airs-redteam-custom-attacks-list job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e" limit="3"
+!prisma-airs-redteam-custom-attack-outputs job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e" attack_id="673d38a0-c695-4149-a7c7-387a66be7093"
+!prisma-airs-redteam-custom-attack-property-stats job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e"
