@@ -1,0 +1,13 @@
+{
+  "ip": "1.0.0.0",
+  "abuse": {
+    "route": "1.0.0.0/24",
+    "country": "AU",
+    "name": "IRT-APNICRANDNET-AU",
+    "organization": "",
+    "kind": "group",
+    "address": "PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia",
+    "emails": ["helpdesk@apnic.net"],
+    "phone_numbers": ["+61 7 3858 3100"]
+  }
+}

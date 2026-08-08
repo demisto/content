@@ -1,0 +1,278 @@
+id: IPGeolocation.io - IP Enrichment
+version: -1
+name: IPGeolocation.io - IP Enrichment
+description: |-
+  Enriches one or more IP addresses with IPGeolocation.io data.
+
+  The playbook scores the address with the generic ip command, which writes a DBotScore derived from the
+  IPGeolocation.io IP Security threat score and detection flags. It then adds Autonomous System context to support
+  infrastructure pivoting. When the resulting verdict is Suspicious or Malicious, it resolves the abuse contact of
+  the owning network so a notification or takedown task can use it.
+
+  All tasks tolerate errors, so a private, bogon or unresolvable address does not stop the playbook.
+
+  This playbook requires a paid IPGeolocation.io subscription, because IP Security, ASN and Abuse Contact data are
+  not available on the Free plan.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c50
+    type: start
+    task:
+      id: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c50
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerror: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c51
+    type: regular
+    task:
+      id: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c51
+      version: -1
+      name: Get IP reputation
+      description: Scores the IP address with IPGeolocation.io IP Security data and writes a DBotScore.
+      script: IPGeolocation.io|||ip
+      type: regular
+      iscommand: true
+      brand: IPGeolocation.io
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c52
+    type: regular
+    task:
+      id: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c52
+      version: -1
+      name: Get Autonomous System details
+      description: Adds the Autonomous System, its category, its registry and its allocation data for the IP address.
+      script: IPGeolocation.io|||ipgeolocation-asn
+      type: regular
+      iscommand: true
+      brand: IPGeolocation.io
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c53
+    type: condition
+    task:
+      id: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c53
+      version: -1
+      name: Is the IP address suspicious or malicious?
+      description: Branches on the DBotScore written by IPGeolocation.io, where 2 is Suspicious and 3 is Bad.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IPGeolocation.io
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    separatecontext: false
+    continueonerror: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c54
+    type: regular
+    task:
+      id: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c54
+      version: -1
+      name: Resolve abuse contact
+      description: Resolves the abuse contact of the network that owns the IP address, for abuse reporting or takedown.
+      script: IPGeolocation.io|||ipgeolocation-abuse-contact
+      type: regular
+      iscommand: true
+      brand: IPGeolocation.io
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    continueonerror: true
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c55
+    type: title
+    task:
+      id: 6d2f0c11-0a71-4f5b-9c8a-1f0f2a3b4c55
+      version: -1
+      name: Done
+      description: Enrichment complete.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerror: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+inputs:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+  required: false
+  description: The IP address or addresses to enrich. Defaults to the IP indicators already in the incident context.
+  playbookInputQuery: null
+outputs:
+- contextPath: DBotScore
+  description: The IPGeolocation.io reputation of the IP address.
+  type: unknown
+- contextPath: IP
+  description: The standard IP indicator context, including geolocation, Autonomous System and abuse contact fields.
+  type: unknown
+- contextPath: IPGeolocation.IP
+  description: The IPGeolocation.io geolocation, security and abuse contact data for the IP address.
+  type: unknown
+- contextPath: IPGeolocation.ASN
+  description: The IPGeolocation.io Autonomous System data for the IP address.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_yes": 0.4,
+      "3_5_#default#": 0.29
+    },
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 600,
+        "x": 230,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,106 @@
+{
+  "ip": "2.56.188.34",
+  "hostname": "2.56.188.34",
+  "location": {
+    "continent_code": "NA",
+    "continent_name": "North America",
+    "country_code2": "US",
+    "country_code3": "USA",
+    "country_name": "United States",
+    "country_name_official": "United States of America",
+    "country_capital": "Washington, D.C.",
+    "state_prov": "Texas",
+    "state_code": "US-TX",
+    "district": "Dallas",
+    "city": "Dallas",
+    "zipcode": "75201",
+    "latitude": "32.77822",
+    "longitude": "-96.79512",
+    "is_eu": false,
+    "country_flag": "https://ipgeolocation.io/static/flags/us_64.png",
+    "geoname_id": "4684902",
+    "country_emoji": "\ud83c\uddfa\ud83c\uddf8"
+  },
+  "country_metadata": {
+    "calling_code": "+1",
+    "tld": ".us",
+    "languages": ["en-US", "es-US", "haw", "fr"]
+  },
+  "network": {
+    "connection_type": "",
+    "route": "2.56.188.0/22",
+    "is_anycast": false
+  },
+  "currency": {
+    "code": "USD",
+    "name": "US Dollar",
+    "symbol": "$"
+  },
+  "asn": {
+    "as_number": "AS62240",
+    "organization": "Clouvider Limited",
+    "country": "GB",
+    "type": "HOSTING",
+    "domain": "clouvider.net",
+    "date_allocated": "2013-12-12",
+    "rir": "RIPE"
+  },
+  "company": {
+    "name": "Packethub S.A.",
+    "type": "BUSINESS",
+    "domain": "packethub.com"
+  },
+  "security": {
+    "threat_score": 80,
+    "is_tor": false,
+    "is_proxy": true,
+    "proxy_provider_names": ["Zyte Proxy"],
+    "proxy_confidence_score": 80,
+    "proxy_last_seen": "2025-12-12",
+    "is_residential_proxy": true,
+    "is_vpn": true,
+    "vpn_provider_names": ["Nord VPN"],
+    "vpn_confidence_score": 80,
+    "vpn_last_seen": "2026-01-19",
+    "is_relay": false,
+    "relay_provider_name": "",
+    "is_anonymous": true,
+    "is_known_attacker": true,
+    "is_bot": false,
+    "is_spam": false,
+    "is_cloud_provider": true,
+    "cloud_provider_name": "Packethub S.A."
+  },
+  "time_zone": {
+    "name": "America/Chicago",
+    "offset": -6,
+    "offset_with_dst": -6,
+    "current_time": "2026-03-07 03:37:38.996-0600",
+    "current_time_unix": 1772876258.996,
+    "current_tz_abbreviation": "CST",
+    "current_tz_full_name": "Central Standard Time",
+    "standard_tz_abbreviation": "CST",
+    "standard_tz_full_name": "Central Standard Time",
+    "is_dst": false,
+    "dst_savings": 0,
+    "dst_exists": true,
+    "dst_tz_abbreviation": "CDT",
+    "dst_tz_full_name": "Central Daylight Time",
+    "dst_start": {
+      "utc_time": "2026-03-08 TIME 08:00",
+      "duration": "+1.00H",
+      "gap": true,
+      "date_time_after": "2026-03-08 TIME 03:00",
+      "date_time_before": "2026-03-08 TIME 02:00",
+      "overlap": false
+    },
+    "dst_end": {
+      "utc_time": "2026-11-01 TIME 07:00",
+      "duration": "-1.00H",
+      "gap": false,
+      "date_time_after": "2026-11-01 TIME 01:00",
+      "date_time_before": "2026-11-01 TIME 02:00",
+      "overlap": true
+    }
+  }
+}

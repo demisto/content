@@ -1,0 +1,28 @@
+{
+  "ip": "49.12.0.0",
+  "asn": {
+    "as_number": "AS12",
+    "organization": "New York University",
+    "country": "US",
+    "type": "EDUCATION",
+    "domain": "nyu.edu",
+    "date_allocated": "1984-07-05",
+    "asn_name": "NYU-DOMAIN",
+    "allocation_status": "",
+    "num_of_ipv4_routes": "11",
+    "num_of_ipv6_routes": "1",
+    "rir": "ARIN",
+    "routes": ["192.76.177.0/24", "216.165.96.0/20", "2607:f600::/32"],
+    "downstreams": [
+      {"as_number": "AS394666", "description": "NYU Langone Health", "country": "US"},
+      {"as_number": "AS54965", "description": "Polytechnic Institute of NYU", "country": "US"}
+    ],
+    "upstreams": [
+      {"as_number": "AS3269", "description": "Telecom Italia S.p.A.", "country": "IT"}
+    ],
+    "peers": [
+      {"as_number": "AS3356", "description": "Level 3 Parent, LLC", "country": "US"}
+    ],
+    "whois_response": "ASNumber:       12\nASName:         NYU-DOMAIN\nOrgAbuseEmail:  abuse@nyu.edu\n"
+  }
+}
