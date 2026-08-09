@@ -3,7 +3,9 @@ from datetime import UTC, datetime, timedelta
 
 import dateutil.parser
 import dateutil.parser._parser
+import httpx
 import pytest
+from ContentClientApiModule import ContentClientRateLimitError
 from OktaEventCollector import (
     Client,
     CommandResults,
@@ -24,6 +26,7 @@ from OktaEventCollector import test_module as run_test_module
 BASE_URL = "https://okta.example.com"
 NEXT_URL = "https://okta.example.com/api/v1/logs?after=cursor2"
 SELF_URL = "https://okta.example.com/api/v1/logs?after=cursor1"
+LOGS_URL = f"{BASE_URL}/api/v1/logs"
 
 
 class MockResponse:
@@ -73,6 +76,80 @@ id3 = {"uuid": "a12f3c5d77f3"}
 def dummy_client():
     """A dummy client fixture for testing."""
     return Client(BASE_URL, "api_key")
+
+
+class ScriptedTransport:
+    """Stand-in for the httpx.AsyncClient the ContentClient builds internally.
+
+    The retry loop in ContentClient._request calls two methods on the client:
+    build_request to assemble the request, and send to dispatch it. build_request is
+    delegated to a real httpx.AsyncClient so URL joining, headers and query encoding
+    behave exactly as in production, while send replays a scripted sequence of
+    outcomes. Each entry is either an httpx.Response to return or an exception to
+    raise, so a test can describe a precise sequence of server behaviours (for example
+    429, 429, 200) and assert what the retry policy did with it.
+
+    respx would normally cover this, but it is not a declared dependency of the content
+    repository, so the transport is stubbed using only httpx primitives that the module
+    under test already depends on.
+    """
+
+    def __init__(self, script):
+        self.script = list(script)
+        self.requests: list[httpx.Request] = []
+        self._builder = httpx.AsyncClient(base_url=BASE_URL)
+
+    def build_request(self, *args, **kwargs):
+        return self._builder.build_request(*args, **kwargs)
+
+    async def send(self, request, **kwargs):
+        self.requests.append(request)
+        if not self.script:
+            raise AssertionError(f"Unexpected extra request to {request.url}: the script was exhausted.")
+        outcome = self.script.pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        # httpx binds the response to its request so raise_for_status can build the
+        # HTTPStatusError that the retry loop inspects.
+        outcome.request = request
+        return outcome
+
+    @property
+    def call_count(self) -> int:
+        return len(self.requests)
+
+
+def okta_response(status_code=200, events=None, headers=None):
+    """Build an httpx.Response shaped like an Okta System Log API reply."""
+    return httpx.Response(
+        status_code,
+        json=events if events is not None else [],
+        headers=headers or {},
+    )
+
+
+@pytest.fixture
+def scripted_client(mocker):
+    """Return a factory that binds a Client to a scripted sequence of HTTP outcomes.
+
+    Retry backoff is neutralised by patching anyio.sleep, so a test asserting a retry
+    happened does not pay the real delay. The recorded sleep durations are exposed so
+    tests can assert on the backoff itself rather than only on the retry count.
+    """
+    sleeps: list[float] = []
+
+    async def fake_sleep(delay):
+        sleeps.append(delay)
+
+    mocker.patch("ContentClientApiModule.anyio.sleep", side_effect=fake_sleep)
+
+    def _build(script):
+        client = Client(BASE_URL, "api_key")
+        transport = ScriptedTransport(script)
+        mocker.patch.object(client, "_get_async_client", return_value=transport)
+        return client, transport, sleeps
+
+    return _build
 
 
 # region parse_link_header
@@ -1082,3 +1159,196 @@ def test_page_size_never_exceeds_okta_maximum():
     """
     assert Config.PAGE_SIZE <= 1000
     assert Config.DEFAULT_LIMIT > Config.PAGE_SIZE
+
+
+# region rate limiting (XSUP-73675)
+#
+# These tests drive real HTTP status codes through the ContentClient retry loop rather
+# than asserting that 429 is present in a configuration tuple. The reported defect was
+# that the collector stopped collecting on the first 429, so the behaviour under test is
+# that the request is retried and the cycle still yields its events.
+
+
+def test_rate_limited_request_is_retried_and_succeeds(scripted_client, capfd):
+    """
+    Given: The Okta API answers 429 twice before returning the page.
+    When: Requesting events through the client.
+    Then: The request is retried transparently and the events are returned.
+
+    This is the regression guard for XSUP-73675. Before the fix a single 429 ended
+    collection for the whole cycle.
+
+    capfd is disabled because ContentClient legitimately logs the rate limit to stdout,
+    which the repository-wide conftest guard would otherwise treat as a failure.
+    """
+    client, transport, _ = scripted_client(
+        [
+            okta_response(429, headers={"Retry-After": "1"}),
+            okta_response(429, headers={"Retry-After": "1"}),
+            okta_response(200, events=id1_pub),
+        ]
+    )
+
+    with capfd.disabled():
+        events, next_link = get_events_command(client, 10, "since")
+
+    assert transport.call_count == 3
+    assert events == id1_pub
+    assert next_link == ""
+
+
+def test_rate_limit_honours_retry_after_header(scripted_client, capfd):
+    """
+    Given: A 429 carrying an explicit Retry-After value.
+    When: The retry policy schedules the next attempt.
+    Then: The server supplied delay is used rather than the computed backoff.
+    """
+    client, _, sleeps = scripted_client(
+        [
+            okta_response(429, headers={"Retry-After": "7"}),
+            okta_response(200, events=id1_pub),
+        ]
+    )
+
+    with capfd.disabled():
+        get_events_command(client, 10, "since")
+
+    assert sleeps == [7.0]
+
+
+def test_rate_limit_without_retry_after_uses_exponential_backoff(scripted_client, capfd):
+    """
+    Given: A 429 with no Retry-After header.
+    When: The retry policy schedules the next attempt.
+    Then: The computed backoff is used and stays within the configured ceiling.
+    """
+    client, _, sleeps = scripted_client(
+        [
+            okta_response(429),
+            okta_response(200, events=id1_pub),
+        ]
+    )
+
+    with capfd.disabled():
+        get_events_command(client, 10, "since")
+
+    assert len(sleeps) == 1
+    assert 0 < sleeps[0] <= Config.MAX_RETRY_DELAY
+
+
+def test_rate_limit_exhausted_raises_when_nothing_collected(scripted_client, capfd):
+    """
+    Given: Every attempt is rate limited and no events were collected beforehand.
+    When: The retries are exhausted.
+    Then: ContentClientRateLimitError surfaces so the failure is visible.
+    """
+    client, transport, _ = scripted_client([okta_response(429)] * Config.RETRY_MAX_ATTEMPTS)
+
+    with capfd.disabled(), pytest.raises(ContentClientRateLimitError):
+        get_events_command(client, 10, "since")
+
+    assert transport.call_count == Config.RETRY_MAX_ATTEMPTS
+
+
+def test_rate_limit_exhausted_preserves_events_already_collected(scripted_client, mocker, capfd):
+    """
+    Given: A first page succeeds, then every retry of the second page is rate limited.
+    When: The retries are exhausted mid-cycle.
+    Then: The events already collected are returned rather than discarded, so a rate
+          limit costs the remainder of the cycle but never the events already in hand.
+    """
+    mocker.patch.object(Config, "PAGE_SIZE", 1)
+    client, _, _ = scripted_client(
+        [okta_response(200, events=id1_pub, headers=link_headers())] + [okta_response(429)] * Config.RETRY_MAX_ATTEMPTS
+    )
+
+    with capfd.disabled():
+        events, _ = get_events_command(client, 2, "since")
+
+    assert events == id1_pub
+
+
+@pytest.mark.parametrize("status_code", [500, 502, 503, 504], ids=["500", "502", "503", "504"])
+def test_transient_server_error_is_retried(scripted_client, status_code, capfd):
+    """
+    Given: A transient server-side failure followed by a successful response.
+    When: Requesting events through the client.
+    Then: The request is retried and the events are returned.
+    """
+    client, transport, _ = scripted_client(
+        [
+            okta_response(status_code),
+            okta_response(200, events=id1_pub),
+        ]
+    )
+
+    with capfd.disabled():
+        events, _ = get_events_command(client, 10, "since")
+
+    assert transport.call_count == 2
+    assert events == id1_pub
+
+
+def test_authentication_error_is_not_retried(scripted_client, capfd):
+    """
+    Given: The API rejects the token with 401.
+    When: Requesting events.
+    Then: The attempts stop short of the full retry budget, because a rejected token
+          will not fix itself and retrying only burns the fetch window.
+    """
+    client, transport, _ = scripted_client([okta_response(401)] * (Config.RETRY_MAX_ATTEMPTS + 1))
+
+    with capfd.disabled(), pytest.raises(Exception):
+        get_events_command(client, 10, "since")
+
+    assert transport.call_count < Config.RETRY_MAX_ATTEMPTS
+
+
+def test_rate_limited_page_still_carries_time_field(scripted_client, capfd):
+    """
+    Given: A page that is served only after a 429 retry.
+    When: The events are collected.
+    Then: _time is present on every event, so a retried page is ingested onto the
+          correct point of the XSIAM timeline rather than at ingestion time.
+    """
+    client, _, _ = scripted_client(
+        [
+            okta_response(429, headers={"Retry-After": "1"}),
+            okta_response(200, events=[dict(event) for event in id1_pub]),
+        ]
+    )
+
+    with capfd.disabled():
+        events, _ = get_events_command(client, 10, "since")
+
+    assert events
+    assert all(event["_time"] == event["published"] for event in events)
+
+
+# endregion
+
+# region cursor persistence
+
+
+@pytest.mark.parametrize(
+    "published",
+    [
+        pytest.param("2022-04-17T12:32:36.667Z", id="zulu_designator"),
+        pytest.param("2022-04-17T12:32:36.667", id="naive"),
+    ],
+)
+def test_get_last_run_cursor_round_trips(published):
+    """
+    Given: A published timestamp with and without an explicit UTC designator.
+    When: Building the last run object.
+    Then: The stored cursor parses back to the same instant, so the next cycle queries
+          the window it was told to and does not skip or replay events.
+    """
+    stored = get_last_run([{"published": published, "uuid": "aaa"}], "2022-04-17T11:30:00.000", next_link="")
+
+    parsed = dateutil.parser.parse(stored["after"])
+    assert (parsed.year, parsed.month, parsed.day) == (2022, 4, 17)
+    assert (parsed.hour, parsed.minute, parsed.second) == (12, 32, 36)
+
+
+# endregion
