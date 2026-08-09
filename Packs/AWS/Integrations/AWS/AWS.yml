@@ -20536,6 +20536,7 @@ script:
       type: String
 
   - name: aws-network-firewall-resource-policy-delete
+    execution: true
     description: "Deletes a resource policy that you created in an aws-network-firewall-resource-policy-put request. Required permissions: network-firewall:DeleteResourcePolicy."
     arguments:
     - name: account_id
@@ -20817,6 +20818,7 @@ script:
       required: true
 
   - name: aws-network-firewall-resource-untag
+    execution: true
     description: "Removes the tags with the specified keys from the specified resource. Required permissions: network-firewall:UntagResource."
     arguments:
     - name: account_id
