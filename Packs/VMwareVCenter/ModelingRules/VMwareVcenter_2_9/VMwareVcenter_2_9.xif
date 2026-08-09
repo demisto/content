@@ -160,11 +160,11 @@ alter
                  description ~= "^Renamed ", coalesce(arrayindex(regextract(description, "^Renamed\s(.+?)\s+from\s"), 0), arrayindex(regextract(description, "^Renamed\s([^\s]+)"), 0)), // Extract vm name from raw start with Renamed (space-aware extraction added, original kept as fallback)
                  description ~= "^Reconfigured ", coalesce(arrayindex(regextract(description, "Reconfigured (.+?) on\s"), 0), arrayindex(regextract(description, "Reconfigured ([^\s]+)"), 0)), // Extract vm name from raw start with Reconfigured (space-aware extraction added, original kept as fallback)
                  description ~= "^\S+\s+\-", arrayindex(regextract(description, "^([^\s]+) - "), 0), //Extract vm name from the start of the string (before " - ")
-                 description ~= "^\S+\s+on", coalesce(arrayindex(regextract(description, "^(.+?)\s+on\s+\S+\s+in\s"), 0), arrayindex(regextract(description, "^([^\s]+)\s+on\s+\S+\s+in\s"), 0), arrayindex(regextract(description, "^(.+?) on \S+\s+in "), 0), arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0))), //Extract vm name from the start of the string (before " on ") - tolerates multiple spaces between tokens (XSUP-74527), original patterns kept as fallback
+                 description ~= "^\S+\s+on", coalesce(arrayindex(regextract(description, "^(.+?)\s+on\s+\S+\s+in\s"), 0), arrayindex(regextract(description, "^([^\s]+)\s+on\s+\S+\s+in\s"), 0), arrayindex(regextract(description, "^(.+?) on \S+\s+in "), 0), arrayindex(regextract(description, "^([^\s]+) on \S+\s+in "), 0))), //Extract vm name from the start of the string (before " on ") (space-aware extraction added, original kept as fallback)
     target_vm_name = coalesce(arrayindex(regextract(description, "cloned to (.+?) on"), 0), arrayindex(regextract(description, "cloned to ([^\s]+) on"), 0)),
     target_hostname = if(description ~= "^Removed", arrayindex(regextract(description, "Removed\s+\S+\s+on\s+([^\s]+)"), 0), // Extract target host from raw start with Removed
                          description ~= "^Guest OS", arrayindex(regextract(description, "on\s+([^\s]+)\s+in"), 0), // Extract target host from raw start with Guest OS                     
-                         coalesce(arrayindex(regextract(description, " to ([^\s]+),"), 0), arrayindex(regextract(description, "\s+on\s+(\S+)\s+in\s"), 0))), // Fallback extracts the ESXi host from "<vm> on <host> in <datacenter>" descriptions, e.g. vim.event.VmPoweredOffEvent (XSUP-74527)
+                         coalesce(arrayindex(regextract(description, " to ([^\s]+),"), 0), arrayindex(regextract(description, "\s+on\s+(\S+)\s+in\s"), 0))),
     target_datacenter = coalesce(arrayindex(regextract(description, ",\s+\S+\s+in ([^\s]+)$"), 0), arrayindex(regextract(description, "\sin\s+(.+?)\.?$"), 0)),
     original_esxi_name = if(description ~= "relocated from\s+\S+", arrayindex(regextract(description, "relocated from\s+([^\,]+)"), 0),
                             description ~= "Creating ([^\s]+) on", arrayindex(regextract(description, "Creating ([^\s]+) on"), 0)),
@@ -665,9 +665,6 @@ call vmware_vcenter_virtualization_classification
 // envoy-access events 
 call vmware_vcenter_virtualization_classification
 | alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\s+(\S+)"), 0)
-// This block parses the classic quoted envoy access log format ("<METHOD> <PATH> HTTP/<ver>") by token position.
-// Newer vCenter builds also emit an extended, unquoted envoy access log with a different field layout; those
-// records are excluded here so their tokens are not mapped into the wrong XDM fields (XSUP-74527).
 | filter event_type = "envoy-access" and not is_virtualization and _raw_log ~= "\"[A-Z]+\s+\S+\s+HTTP/\d"
 | alter 
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>\S+"), 0)),
