@@ -1201,6 +1201,15 @@ class CoreClient(BaseClient):
 
     @logger
     def get_script_execution_result_files(self, action_id: str, endpoint_id: str) -> Dict[str, Any]:
+        """Retrieves the script execution results file.
+
+        Args:
+            action_id (str): The action ID of the script execution.
+            endpoint_id (str): The endpoint ID the script ran on.
+
+        Returns:
+            Dict[str, Any]: A dictionary with the synthesised ``filename`` and the raw ``content`` bytes.
+        """
         response = self._http_request(
             method="POST",
             url_suffix="/scripts/get_script_execution_results_files",
@@ -1217,11 +1226,12 @@ class CoreClient(BaseClient):
         # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
         if not link:
             raise DemistoException(f"Failed getting response files for {action_id=}, {endpoint_id=}")
-        return self._http_request(
+        file_content = self._http_request(
             method="GET",
             url_suffix=re.findall("download.*", link)[0],
             resp_type="content",
         )
+        return {"filename": f"{action_id}.zip", "content": file_content}
 
     def action_status_get(self, action_id) -> Dict[str, Dict[str, Any]]:
         request_data: Dict[str, Any] = {
@@ -3853,13 +3863,8 @@ def get_script_execution_results_command(client: CoreClient, args: Dict) -> List
 def get_script_execution_result_files_command(client: CoreClient, args: Dict) -> Dict:
     action_id = args.get("action_id", "")
     endpoint_id = args.get("endpoint_id")
-    file_response = client.get_script_execution_result_files(action_id, endpoint_id)
-    try:
-        filename = file_response.headers.get("Content-Disposition").split("attachment; filename=")[1]
-    except Exception as e:
-        demisto.debug(f"Failed extracting filename from response headers - [{e!s}]")
-        filename = action_id + ".zip"
-    return fileResult(filename, file_response.content)
+    file_result = client.get_script_execution_result_files(action_id, endpoint_id)
+    return fileResult(file_result["filename"], file_result["content"])
 
 
 def add_exclusion_command(client: CoreClient, args: Dict) -> CommandResults:

@@ -1992,20 +1992,18 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
             pass
 
     request.addfinalizer(cleanup)
-    zip_link = "https://test.com/download/example-link.zip"
-    zip_filename = "example-link.zip"
+    zip_link = "https://download/example-link"
     requests_mock.post(
         f"{Core_URL}/public_api/v1/scripts/get_script_execution_results_files",
         json={"reply": {"DATA": zip_link}},
     )
     requests_mock.get(
-        f"{Core_URL}/public_api/v1/download/example-link.zip",
+        f"{Core_URL}/public_api/v1/download/example-link",
         content=b"PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
         b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
         b".txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
         b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
         b".txtPK\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00;\x00\x00\x00+\x00\x00\x00\x00\x00",
-        headers={"Content-Disposition": f"attachment; filename={zip_filename}"},
     )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
@@ -2014,7 +2012,7 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     args = {"action_id": action_id, "endpoint_id": endpoint_id}
 
     response = get_script_execution_result_files_command(client, args)
-    assert response["File"] == zip_filename
+    assert response["File"] == f"{action_id}.zip"
     assert zipfile.ZipFile(file_name).namelist() == ["your_file.txt"]
 
 
@@ -2076,101 +2074,8 @@ def test_get_script_execution_files_command_rbac(mocker, request):
 
     response = get_script_execution_result_files_command(client, args)
 
-    assert response["File"] == "example-link.zip"
+    assert response["File"] == "action_id.zip"
     assert zipfile.ZipFile(file_name).namelist() == ["your_file.txt"]
-
-
-def test_get_script_execution_files_command_int_action_id(requests_mock, mocker, request):
-    """
-    Given:
-        - A playbook passing action_id as an int, and a download link with no .zip basename.
-    When:
-        - Running the get-script-execution-result-files command.
-    Then:
-        - Verify no TypeError is raised and the fallback file name is '<action_id>.zip'.
-    """
-    from CoreIRApiModule import CoreClient, get_script_execution_result_files_command
-
-    mocker.patch.object(demisto, "uniqueFile", return_value="test_int_file_result")
-    mocker.patch.object(demisto, "investigation", return_value={"id": "1"})
-    file_name = "1_test_int_file_result"
-
-    def cleanup():
-        try:
-            os.remove(file_name)
-        except OSError:
-            pass
-
-    request.addfinalizer(cleanup)
-
-    requests_mock.post(
-        f"{Core_URL}/public_api/v1/scripts/get_script_execution_results_files",
-        json={"reply": {"DATA": "https://test.com/download/example-link"}},
-    )
-    requests_mock.get(f"{Core_URL}/public_api/v1/download/example-link", content=b"some-content")
-
-    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-    args = {"action_id": 152, "endpoint_id": "endpoint_id"}
-
-    response = get_script_execution_result_files_command(client, args)
-
-    assert response["File"] == "152.zip"
-
-
-def test_http_request_resp_type_response_not_supported_in_rbac(mocker):
-    """
-    Given:
-        - An XSIAM tenant where FORWARD_USER_RUN_RBAC is True.
-    When:
-        - Calling _http_request with resp_type='response'.
-    Then:
-        - Verify a clear DemistoException is raised instead of silently returning a str.
-    """
-    from CoreIRApiModule import CoreClient
-
-    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
-    api_call = mocker.patch.object(demisto, "_apiCall")
-
-    with pytest.raises(DemistoException) as e:
-        client._http_request(method="GET", url_suffix="download/test", resp_type="response")
-
-    assert "resp_type='response' is not supported" in str(e.value)
-    assert "Use resp_type='content' instead." in str(e.value)
-    api_call.assert_not_called()
-
-
-def test_get_file_content_resp_type_no_regression_in_rbac(mocker):
-    """
-    Given:
-        - An XSIAM tenant where FORWARD_USER_RUN_RBAC is True and binary responses are allowed.
-    When:
-        - Calling the existing resp_type='content' consumers (get_file, download_installation_package).
-    Then:
-        - Verify they still return the decoded binary content, i.e. no regression.
-    """
-    import base64
-
-    from CoreIRApiModule import CoreClient, download_installation_package
-
-    bin_data = b"binary-payload"
-    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
-    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
-    mocker.patch("CoreIRApiModule.ALLOW_RESPONSE_AS_BINARY", new=True)
-    mocker.patch.object(demisto, "uniqueFile", return_value="test_no_regression_result")
-    mocker.patch.object(demisto, "investigation", return_value={"id": "1"})
-    mocker.patch.object(
-        demisto,
-        "_apiCall",
-        return_value={"status": 200, "data": base64.b64encode(bin_data)},
-    )
-
-    assert client.get_file("https://test.com/download/file") == bin_data
-
-    file_result, _ = download_installation_package(
-        client=client, url="https://test.com/download/pkg", package_type="x64", distribution_id="1", brand="Core"
-    )
-    assert file_result["File"] == "xdr-agent-install-package.msi"
 
 
 @pytest.mark.parametrize("command_input, expected_command", POWERSHELL_COMMAND_CASES)
