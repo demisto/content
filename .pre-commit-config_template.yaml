@@ -2,7 +2,7 @@ exclude: .devcontainer/|.vscode|Pipfile.lock|.gitlab/ci/|docs
 files: ''
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.4.0
+  rev: v6.0.0
   hooks:
   - id: check-json
   - id: check-yaml
@@ -21,14 +21,14 @@ repos:
     exclude: Integrations/.*/README.md|Scripts/.*/README.md
   - id: check-case-conflict
 - repo: https://github.com/python-poetry/poetry
-  rev: 1.8.2
+  rev: 1.8.5
   hooks:
   - id: poetry-check
     args:
     - --lock
     files: ^pyproject.toml$
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.5.0
+  rev: v2.6.0
   hooks:
   - id: pycln
     min_py_version: '3.7'
@@ -73,10 +73,10 @@ repos:
 - repo: local
   hooks:
   - id: check-invisible-chars
-    name: Check AGENTS.md for invisible characters
+    name: Check AGENTS.md and .ai files for invisible characters
     entry: python3 .github/scripts/check_invisible_chars.py
     language: system
-    files: "(^|/)AGENTS\\.md$"
+    files: "(^|/)AGENTS\\.md$|^\\.ai/"
 
   - id: mdx-validation
     name: Validate README.md files with MDX

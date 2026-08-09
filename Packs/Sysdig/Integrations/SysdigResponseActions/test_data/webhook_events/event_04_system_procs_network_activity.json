@@ -1,0 +1,128 @@
+{
+    "alert": {
+        "name": "Policy V2 7770001: Sysdig Runtime Activity Logs",
+        "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+        "severity": 7,
+        "severityLabel": "Info",
+        "subject": "Sysdig Runtime Activity Logs triggered at 04/28/2026 10:45 AM UTC",
+        "body": "Policy event triggered at 04/28/2026 10:45 AM UTC\n\nPolicy:             Sysdig Runtime Activity Logs\nPolicy URL:         https://app.example.sysdig.com/secure//#/policies/7770001\nDescription:        This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.\n\nTimestamp:          04/28/2026 10:45 AM UTC\nURL:                https://app.example.sysdig.com/secure//#/events/00000000000000000000000000000004\nRule:               System procs network activity\nRule URL:           https://app.example.sysdig.com/secure//#/policies/rules/falco/System%20procs%20network%20activity\nSeverity:           Info\nScope:\n    container.image.digest:      sha256:2222333344445555666677778888999900001111aaaabbbbccccddddeeeeffff\n    kubernetes.namespace.name:      traffic-test\n    kubernetes.deployment.name:      client\n    container.label.io.kubernetes.pod.name:      client-74bbfb4f9f-nzmdd\n    container.label.io.kubernetes.container.name:      client\n    host.mac:      aa:bb:cc:dd:ee:02\n    cloudProvider.region:      us-east-1\n    process.name:      sh -c while true; do.  curl -s http://echo:8080/hostname;.  sleep 0.2;.done.\n    kubernetes.workload.name:      client\n    cloudProvider.account.id:      111122223333\n    aws.accountId:      111122223333\n    cloudProvider.name:      aws\n    agent.version:      14.3.1\n    kubernetes.cluster.name:      demo-eks-cluster\n    container.image.tag:      8.8.0\n    kubernetes.pod.name:      client-74bbfb4f9f-nzmdd\n    aws.instanceId:      i-0aaa1111bbbb22222\n    aws.region:      us-east-1\n    kubernetes.node.name:      ip-10-0-0-1.ec2.internal\n    container.image.id:      bbb000000003\n    host.hostName:      ip-10-0-0-1.ec2.internal\n    orchestrator.type:      k8s\n    agent.variant:      traditional\n    kubernetes.replicaSet.name:      client-74bbfb4f9f\n    host.id:      bbbb000011112222333344445555666677778888999900001111222233334444\n    container.image.repo:      docker.io/curlimages/curl\n    kubernetes.workload.type:      deployment\n    container.name:      client\n    container.label.io.kubernetes.pod.namespace:      traffic-test\nActions:            No actions performed\nDetails:            Detected network traffic by binary sh on client under user curl_user (proc.exepath=/bin/busybox proc.name=sh proc.pexepath=/bin/busybox proc.pname=sh gparent=containerd-shim gexepath=/usr/bin/containerd-shim-runc-v2 ggparent=systemd gggparent=<NA> proc.cmdline=sh -c while true; do.  curl -s http://echo:8080/hostname;.  sleep 0.2;.done. connection=10.0.0.100:35190->10.0.0.200:8080 proc.pcmdline=sh -c while true; do.  curl -s http://echo:8080/hostname;.  sleep 0.2;.done. gcmdline=containerd-shim -namespace k8s.io -id fff00000000000000000000000000000000000000000000000000000000000ff -address /run/containerd/containerd.sock image=docker.io/curlimages/curl container.id=aaa000000004 evt.type=connect evt.res=EINPROGRESS proc.pid=1350648 proc.cwd=/home/curl_user/ proc.ppid=1183741 proc.sid=1183741 user.uid=100 user.loginname=<NA> group.gid=101 group.name=curl_group container.name=client user.name=curl_user user.loginuid=-1 proc.pid.ts=1777373155920868014 proc.ppid.ts=1777331632761921994 proc.hash.sha256=<NA>)"
+    },
+    "event": {
+        "url": "https://app.example.sysdig.com/secure//#/events/?from=1777373095&to=1777373156"
+    },
+    "condition": "count(policyEvent) > 0",
+    "source": "Sysdig Secure",
+    "state": "ACTIVE",
+    "timestamp": 1777373155943752,
+    "timespan": 60000000,
+    "entities": [
+        {
+            "metricValues": [
+                {
+                    "metric": "policyEvent",
+                    "aggregation": "count",
+                    "groupAggregation": "none",
+                    "value": 1
+                }
+            ],
+            "policyEvents": [
+                {
+                    "id": "00000000000000000000000000000004",
+                    "containerId": "aaa000000004",
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "severity": 7,
+                    "policyId": 7770001,
+                    "output": "Detected network traffic by binary sh on client under user curl_user (proc.exepath=/bin/busybox proc.name=sh proc.pexepath=/bin/busybox proc.pname=sh gparent=containerd-shim gexepath=/usr/bin/containerd-shim-runc-v2 ggparent=systemd gggparent=<NA> proc.cmdline=sh -c while true; do.  curl -s http://echo:8080/hostname;.  sleep 0.2;.done. connection=10.0.0.100:35190->10.0.0.200:8080 proc.pcmdline=sh -c while true; do.  curl -s http://echo:8080/hostname;.  sleep 0.2;.done. gcmdline=containerd-shim -namespace k8s.io -id fff00000000000000000000000000000000000000000000000000000000000ff -address /run/containerd/containerd.sock image=docker.io/curlimages/curl container.id=aaa000000004 evt.type=connect evt.res=EINPROGRESS proc.pid=1350648 proc.cwd=/home/curl_user/ proc.ppid=1183741 proc.sid=1183741 user.uid=100 user.loginname=<NA> group.gid=101 group.name=curl_group container.name=client user.name=curl_user user.loginuid=-1 proc.pid.ts=1777373155920868014 proc.ppid.ts=1777331632761921994 proc.hash.sha256=<NA>)",
+                    "ruleName": "System procs network activity",
+                    "ruleType": "RULE_TYPE_FALCO",
+                    "matchedOnDefault": false,
+                    "fields": {
+                        "proc.pname": "sh",
+                        "fd.l4proto": "tcp",
+                        "evt.type": "connect",
+                        "proc.cmdline": "sh -c while true; do.  curl -s http://echo:8080/hostname;.  sleep 0.2;.done.",
+                        "proc.ppid": "1183741",
+                        "user.name": "curl_user",
+                        "proc.sid": "1183741",
+                        "proc.aname[2]": "containerd-shim",
+                        "container.id": "aaa000000004",
+                        "proc.pid": "1350648",
+                        "proc.aname[4]": "<NA>",
+                        "proc.hash.sha256": "<NA>",
+                        "container.name": "client",
+                        "proc.name": "sh",
+                        "group.gid": "101",
+                        "proc.acmdline[2]": "containerd-shim -namespace k8s.io -id fff00000000000000000000000000000000000000000000000000000000000ff -address /run/containerd/containerd.sock",
+                        "proc.aname": "<NA>",
+                        "proc.acmdline": "<NA>",
+                        "proc.pcmdline": "sh -c while true; do.  curl -s http://echo:8080/hostname;.  sleep 0.2;.done.",
+                        "proc.aexepath[2]": "/usr/bin/containerd-shim-runc-v2",
+                        "fd.name": "10.0.0.100:35190->10.0.0.200:8080",
+                        "user.uid": "100",
+                        "group.name": "curl_group",
+                        "proc.cwd": "/home/curl_user/",
+                        "fd.sport": "8080",
+                        "proc.pid.ts": "1777373155920868014",
+                        "proc.exepath": "/bin/busybox",
+                        "proc.aname[3]": "systemd",
+                        "user.loginuid": "-1",
+                        "proc.pexepath": "/bin/busybox",
+                        "container.image.repository": "docker.io/curlimages/curl",
+                        "proc.ppid.ts": "1777331632761921994",
+                        "user.loginname": "<NA>",
+                        "evt.res": "EINPROGRESS"
+                    },
+                    "eventLabels": {
+                        "kubernetes.node.name": "ip-10-0-0-1.ec2.internal",
+                        "kubernetes.workload.name": "client",
+                        "container.image.tag": "8.8.0",
+                        "kubernetes.deployment.name": "client",
+                        "host.mac": "aa:bb:cc:dd:ee:02",
+                        "kubernetes.workload.type": "deployment",
+                        "container.image.repo": "docker.io/curlimages/curl",
+                        "container.name": "client",
+                        "kubernetes.pod.name": "client-74bbfb4f9f-nzmdd",
+                        "cloudProvider.region": "us-east-1",
+                        "container.label.io.kubernetes.container.name": "client",
+                        "cloudProvider.name": "aws",
+                        "kubernetes.replicaSet.name": "client-74bbfb4f9f",
+                        "container.label.io.kubernetes.pod.namespace": "traffic-test",
+                        "host.id": "bbbb000011112222333344445555666677778888999900001111222233334444",
+                        "container.image.id": "bbb000000003",
+                        "kubernetes.namespace.name": "traffic-test",
+                        "agent.variant": "traditional",
+                        "orchestrator.type": "k8s",
+                        "kubernetes.cluster.name": "demo-eks-cluster",
+                        "process.name": "sh -c while true; do.  curl -s http://echo:8080/hostname;.  sleep 0.2;.done.",
+                        "aws.region": "us-east-1",
+                        "container.label.io.kubernetes.pod.name": "client-74bbfb4f9f-nzmdd",
+                        "aws.accountId": "111122223333",
+                        "container.image.digest": "sha256:2222333344445555666677778888999900001111aaaabbbbccccddddeeeeffff",
+                        "agent.version": "14.3.1",
+                        "host.hostName": "ip-10-0-0-1.ec2.internal",
+                        "cloudProvider.account.id": "111122223333",
+                        "aws.instanceId": "i-0aaa1111bbbb22222"
+                    },
+                    "falsePositive": false,
+                    "policyVersion": 65,
+                    "origin": "Sysdig",
+                    "timestamp": 1777373155943752,
+                    "hostMac": "aa:bb:cc:dd:ee:02",
+                    "isAggregated": false
+                }
+            ],
+            "policies": [
+                {
+                    "name": "Sysdig Runtime Activity Logs",
+                    "description": "This policy contains rules which provide a greater insight into general activities occuring on the system. They are very noisy, but useful in threat hunting situations if you are looking for specific actions being taken during runtime. It is not recommended to use this policy for detection purposes unless tuning is enabled.  Additional manual tuning will likely be required.",
+                    "origin": "Secure UI",
+                    "versionId": "0.0.0",
+                    "severity": 7,
+                    "enabled": false,
+                    "id": 7770001
+                }
+            ]
+        }
+    ]
+}

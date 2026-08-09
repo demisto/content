@@ -4,3 +4,5 @@ name: Juniper SRX
 rules: ''
 schema: ''
 tags: JuniperSRX
+supportedModules:
+- xsiam

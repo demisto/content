@@ -1,8 +1,8 @@
-Trend Micro Apex One central automation to manage agents and User-Defined Suspicious Objects
+TrendAI™ Apex One central automation to manage agents and User-Defined Suspicious Objects
 
-This integration was integrated and tested with version 2019 hotfix 5449 of Trend Micro Apex One Central
+This integration was integrated and tested with version 2019 hotfix 5449 of TrendAI™ Apex One Central
 
-## Configure Trend Micro Apex One in Cortex
+## Configure TrendAI™ Apex One in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

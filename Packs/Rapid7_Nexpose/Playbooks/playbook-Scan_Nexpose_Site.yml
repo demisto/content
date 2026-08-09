@@ -293,3 +293,9 @@ outputs:
 fromversion: 5.0.0
 tests:
 - No test
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security

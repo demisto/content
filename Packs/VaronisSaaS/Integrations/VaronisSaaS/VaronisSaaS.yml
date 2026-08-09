@@ -87,7 +87,7 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: 'Choose the direction to mirror the incident: Outgoing (from Cortex XSOAR to Varonis SaaS).'
+- additionalinfo: 'Choose the direction to mirror the incident: Outgoing (from Cortex XSOAR to Varonis SaaS). Cortex XSOAR only parameter.'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -97,6 +97,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 description: Streamline alerts and related forensic information from Varonis SaaS.
 display: Varonis SaaS
 name: VaronisSaaS

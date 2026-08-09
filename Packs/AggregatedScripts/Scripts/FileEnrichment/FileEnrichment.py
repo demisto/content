@@ -86,17 +86,33 @@ def file_enrichment_script(
             args={"indicatorsValues": valid_inputs},
             command_type=CommandType.EXTERNAL,
         ),
-    ] + [
-        Command(
-            name="core-get-hash-analytics-prevalence",
-            args={"sha256": file},
-            brand="Cortex Core - IR",
-            command_type=CommandType.INTERNAL,
-            context_output_mapping={},
-        )
-        for file in valid_inputs
-        if get_hash_type(file) == "sha256"
     ]
+
+    # Add the prevalence command only when at least one SHA256 hash is present.
+    sha256_inputs = [file for file in valid_inputs if get_hash_type(file) == "sha256"]
+    if sha256_inputs:
+        # On platform, we use the built-in commands and brand Builtin
+        if is_platform():
+            command_batch2.append(
+                Command(
+                    name="getHashAnalyticsPrevalence",
+                    args={"sha256": sha256_inputs},
+                    brand="Builtin",
+                    command_type=CommandType.BUILTIN,
+                    context_output_mapping={},
+                    ignore_using_brand=True,
+                )
+            )
+        else:
+            command_batch2.append(
+                Command(
+                    name="core-get-hash-analytics-prevalence",
+                    args={"sha256": sha256_inputs},
+                    brand="Cortex Core - IR",
+                    command_type=CommandType.INTERNAL,
+                    context_output_mapping={},
+                )
+            )
 
     commands = [command_batch1, command_batch2]
     demisto.debug("Commands Batches")

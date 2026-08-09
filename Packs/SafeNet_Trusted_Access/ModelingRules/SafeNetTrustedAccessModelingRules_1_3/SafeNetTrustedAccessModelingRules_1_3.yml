@@ -4,3 +4,5 @@ name: SafeNetTrustedAccess Modeling Rule
 rules: ''
 schema: ''
 tags: safenet
+supportedModules:
+- xsiam

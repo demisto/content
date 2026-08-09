@@ -4,3 +4,5 @@ name: Delinea Secret Server
 rules: ''
 schema: ''
 tags: Delinea Secret Server
+supportedModules:
+- xsiam

@@ -40,6 +40,8 @@ configuration:
   defaultvalue: 'false'
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: Event Types To Fetch
   name: event_types_to_fetch
   section: Collect
@@ -53,6 +55,8 @@ configuration:
   - Domain watchlist
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: The maximum number of reports per fetch
   name: max_fetch
   defaultvalue: "5000"
@@ -62,6 +66,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: The maximum number of Credential watchlist events per fetch
   name: max_fetch_creds
   defaultvalue: "50"
@@ -71,6 +77,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: The maximum number of Domain watchlist events  per fetch
   name: max_fetch_domain
   defaultvalue: "500"
@@ -80,6 +88,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 description: 'CybelAngel collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
 display: CybelAngel
 name: CybelAngel Event Collector
@@ -255,5 +265,3 @@ marketplaces:
 tests:
 - CybelAngel Test Playbook
 supportlevelheader: xsoar
-supportedModules:
-- xsiam

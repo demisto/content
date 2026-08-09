@@ -11,6 +11,7 @@
         "GIB Data Breach",
         "GIB Compromised Account Group",
         "GIB Compromised Card Group",
+        "GIB Compromised Masked Card",
         "GIB Compromised Mule",
         "GIB OSI Vulnerability",
         "GIB Attacks DDOS",
@@ -23,7 +24,8 @@
         "GIB Suspicious IP Scanner",
         "GIB Cybercriminal Threat",
         "GIB Suspicious IP Socks Proxy",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB SPD"
     ],
     "caseInsensitive": true,
     "cliName": "gibseverity",
@@ -61,6 +63,7 @@
         "GIB Data Breach",
         "GIB Compromised Account Group",
         "GIB Compromised Card Group",
+        "GIB Compromised Masked Card",
         "GIB Compromised Mule",
         "GIB OSI Vulnerability",
         "GIB Attacks DDOS",
@@ -73,6 +76,7 @@
         "GIB Suspicious IP Scanner",
         "GIB Cybercriminal Threat",
         "GIB Suspicious IP Socks Proxy",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB SPD"
     ]
 }

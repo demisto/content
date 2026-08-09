@@ -4,3 +4,5 @@ name: CheckPoint Firewall Collection
 rules: ''
 schema: ''
 tags: CheckPoint Firewall Event Collection
+supportedModules:
+- xsiam

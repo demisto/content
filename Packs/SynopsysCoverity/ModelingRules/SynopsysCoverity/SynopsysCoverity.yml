@@ -4,3 +4,5 @@ name: Synopsys Coverity Modeling Rule
 rules: ''
 schema: ''
 tags: synopsys
+supportedModules:
+- xsiam

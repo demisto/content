@@ -2,7 +2,7 @@
     "name": "Wiz",
     "description": "Integrate with Wiz for bidirectional Issue management, Detections investigation, and fetching of resource information. \n",
     "support": "partner",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.7",
     "author": "Wiz Inc.",
     "url": "https://wiz.io/",
     "email": "support@wiz.io",
@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Wiz"
+    ],
     "dependencies": {
         "Base": {
             "mandatory": true,
@@ -23,7 +25,9 @@
             "name": "Generic Webhook"
         }
     },
-    "githubUser": "ariel-wiz",
+    "githubUser": [
+        "ariel-wiz"
+    ],
     "defaultDataSource": "Wiz",
     "marketplaces": [
         "xsoar",

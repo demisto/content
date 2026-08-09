@@ -96,8 +96,14 @@
         {
             "id": "CoreAlertFields",
             "supportedModules": [
+                "exposure_management",
+                "cloud",
+                "cloud_runtime_security",
                 "agentix",
-                "xsiam"
+                "cloud_posture",
+                "xsiam",
+                "edr",
+                "agentix_xsiam"
             ]
         },
         {
@@ -293,37 +299,6 @@
                 "cloud_posture",
                 "xsiam",
                 "edr"
-            ]
-        },
-        {
-            "id": "AWS",
-            "supportedModules": [
-                "agentix",
-                "cloud_posture",
-                "cloud",
-                "cloud_runtime_security",
-                "xsiam",
-                "edr"
-            ]
-        },
-        {
-            "id": "GCP",
-            "supportedModules": [
-                "cloud_posture",
-                "cloud",
-                "cloud_runtime_security",
-                "agentix",
-                "xsiam"
-            ]
-        },
-        {
-            "id": "Azure",
-            "supportedModules": [
-                "cloud_posture",
-                "cloud",
-                "cloud_runtime_security",
-                "agentix",
-                "xsiam"
             ]
         },
         {

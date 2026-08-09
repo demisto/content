@@ -677,9 +677,9 @@ def update_findings_feedback(client: "GuardDutyClient", args: dict):
     if args.get("findingIds") is not None:
         kwargs.update({"FindingIds": argToList(args.get("findingIds"))})
     if args.get("comments") is not None:
-        kwargs.update({"Comments": argToList(args.get("comments"))})
+        kwargs.update({"Comments": args.get("comments")})
     if args.get("feedback") is not None:
-        kwargs.update({"Feedback": argToList(args.get("feedback"))})
+        kwargs.update({"Feedback": args.get("feedback")})
 
     response = client.update_findings_feedback(**kwargs)
     if response == {} or response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:

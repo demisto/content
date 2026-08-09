@@ -1,6 +1,9 @@
 [file:Wiz_image.png]
 ignore=IM111
 
+[file:classifier-mapper-outgoing-Wiz.json]
+ignore=GR103
+
 [known_words]
 Cognito
 Mappers

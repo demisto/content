@@ -38,7 +38,14 @@ class Client(BaseClient):
         self._conn_client_secret = conn_client_secret
         self._conn_username = conn_username
         self._conn_password = conn_password
-        self.token = self.get_access_token_()
+        self.token = None
+        use_ucp_auth = False
+        try:
+            use_ucp_auth = should_use_ucp_auth()
+        except NameError:
+            use_ucp_auth = False
+        if not use_ucp_auth:
+            self.token = self.get_access_token_()
         self.demisto_params = demisto_params
 
     def get_access_token_(self):
@@ -345,12 +352,26 @@ def main():
     if base_url[-1] != "/":
         base_url += "/"
 
-    username = params.get("credentials").get("identifier")
-    password = params.get("credentials").get("password")
-    client_id = params.get("credentials_consumer", {}).get("identifier") or params.get("consumer_key")
-    client_secret = params.get("credentials_consumer", {}).get("password") or params.get("consumer_secret")
-    if not (client_id and client_secret):
-        return_error("Consumer Key and Consumer Secret must be provided.")
+    username = ""
+    password = ""
+    client_id = ""
+    client_secret = ""
+    use_ucp_auth = False
+    try:
+        use_ucp_auth = should_use_ucp_auth()
+    except NameError:
+        use_ucp_auth = False
+    if not use_ucp_auth:
+        demisto.debug("Using basic auth")
+        username = params.get("credentials").get("identifier")
+        password = params.get("credentials").get("password")
+        client_id = params.get("credentials_consumer", {}).get("identifier") or params.get("consumer_key")
+        client_secret = params.get("credentials_consumer", {}).get("password") or params.get("consumer_secret")
+        if not (client_id and client_secret):
+            return_error("Consumer Key and Consumer Secret must be provided.")
+    else:
+        demisto.debug("[UCP][Salesforce_IAM.py] Using UCP auth")
+
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

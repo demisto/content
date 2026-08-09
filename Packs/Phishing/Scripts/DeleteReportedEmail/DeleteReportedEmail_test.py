@@ -22,6 +22,13 @@ EXPECTED_DELETION_ARGS_RESULTS = {
 
 ARGS_FUNC = {"EWS365": DeletionArgs.ews, "EWSv2": DeletionArgs.ews, "gmail": DeletionArgs.gmail, "MSGraph": DeletionArgs.msgraph}
 
+SEARCH_FUNC = {
+    "gmail": "gmail-search",
+    "EWSv2": "ews-search-mailbox",
+    "EWS365": "ews-search-mailbox",
+    "MSGraph": "msgraph-mail-list-emails",
+}
+
 SEARCH_ARGS = {
     "delete-type": "soft",
     "using-brand": "brand",
@@ -71,7 +78,10 @@ def test_delete_email(mocker, integration_name):
     with open(os.path.join(TEST_DATA, f"{integration_name}{SEARCH_RESPONSE_SUFFIX}")) as file:
         search_results = json.load(file)
     mocker.patch.object(DeleteReportedEmail, "execute_command", return_value=search_results)
-    assert delete_email(SEARCH_ARGS, "func", ARGS_FUNC[integration_name], "func", lambda x: False) == "Success"
+    assert (
+        delete_email(SEARCH_ARGS, SEARCH_FUNC[integration_name], ARGS_FUNC[integration_name], "func", lambda x: False)
+        == "Success"
+    )
 
 
 @pytest.mark.parametrize("delete_email_context, result", WAS_EMAIL_DELETED_EXPECTED_RESULTS)
@@ -209,15 +219,18 @@ class TestSecurityAndCompliance:
 GENERAL_SEARCH_ARGS = {
     "delete-type": "emaildeletetype",
     "email_subject": "reportedemailsubject",
-    "message-id": "reportedemailmessageid",
+    "message-id": "<reportedemail@messageid>",
 }
 
 
 ADDED_SEARCH_ARGS = {
-    "Gmail": {"query": "Rfc822msgid:reportedemailmessageid", "user-id": "reportedemailto"},
+    "Gmail": {"query": 'rfc822msgid:"<reportedemail@messageid>"', "user-id": "reportedemailto"},
     "EWSO365": {"target-mailbox": "reportedemailto"},
     "EWS v2": {"target-mailbox": "reportedemailto"},
-    "MicrosoftGraphMail": {"user_id": "reportedemailto", "odata": "\"$filter=internetMessageId eq 'reportedemailmessageid'\""},
+    "MicrosoftGraphMail": {
+        "user_id": "reportedemailto",
+        "odata": "$filter=internetMessageId eq '%3Creportedemail%40messageid%3E'",
+    },
     "SecurityAndCompliance": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
     "SecurityAndComplianceV2": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
 }
@@ -249,7 +262,7 @@ def test_search_args(mocker, brand):
     INCIDENT_INFO = {
         "CustomFields": {
             "reportedemailorigin": "Attached",
-            "reportedemailmessageid": "reportedemailmessageid",
+            "reportedemailmessageid": "<reportedemail@messageid>",
             "reportedemailto": "reportedemailto",
             "emaildeletetype": "emaildeletetype",
             "reportedemailfrom": "reportedemailfrom",
@@ -310,3 +323,263 @@ def test_schedule_next_command(mocker):
     mocker.patch.object(CommonServerPython, "is_demisto_version_ge", return_value=True)
     args = {"arg": "arg"}
     assert isinstance(schedule_next_command(args), ScheduledCommand)
+
+
+class TestMessageIdValidation:
+    """Tests for Message-ID format validation in get_search_args."""
+
+    BASE_INCIDENT = {
+        "CustomFields": {
+            "reportedemailorigin": "Attached",
+            "reportedemailmessageid": "",
+            "reportedemailto": "user@example.com",
+            "emaildeletetype": "soft",
+            "reportedemailfrom": "sender@example.com",
+            "reportedemailsubject": "Test Subject",
+        },
+        "sourceBrand": "Gmail",
+    }
+
+    def _make_incident(self, message_id: str) -> dict:
+        incident = deepcopy(self.BASE_INCIDENT)
+        incident["CustomFields"]["reportedemailmessageid"] = message_id
+        return incident
+
+    def test_valid_message_id_accepted(self, mocker):
+        """Test that a valid Message-ID passes format validation."""
+        incident = self._make_incident("<abc@example.com>")
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="Gmail")
+        result = get_search_args({})
+        assert result["message-id"] == "<abc@example.com>"
+
+    def test_message_id_with_operator_rejected(self, mocker):
+        """Test that a Message-ID with extra operators is rejected by format validation."""
+        incident = self._make_incident("<x@y> OR subject:Invoice")
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="Gmail")
+        with pytest.raises(DemistoException, match="Refusing suspicious Message-ID"):
+            get_search_args({})
+
+    def test_message_id_without_angle_brackets_rejected(self, mocker):
+        """Test that a Message-ID without angle brackets is rejected by format validation."""
+        incident = self._make_incident("abc@example.com")
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="Gmail")
+        with pytest.raises(DemistoException, match="Refusing suspicious Message-ID"):
+            get_search_args({})
+
+    def test_gmail_query_uses_quoted_format(self, mocker):
+        """Test that the Gmail query string uses the quoted rfc822msgid format."""
+        message_id = "<test123@example.com>"
+        incident = self._make_incident(message_id)
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="Gmail")
+        result = get_search_args({})
+        assert result["query"] == f'rfc822msgid:"{message_id}"'
+
+    def test_odata_filter_escapes_single_quotes(self, mocker):
+        """Test that single quotes in Message-ID are escaped in the OData filter."""
+        message_id = "<it's@example.com>"
+        incident = self._make_incident(message_id)
+        mocker.patch.object(demisto, "incident", return_value=incident)
+        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="MicrosoftGraphMail")
+        result = get_search_args({})
+        odata = result["odata"]
+        escaped_id = "%3Cit%27%27s%40example.com%3E"
+        assert f"'{escaped_id}'" in odata
+
+
+def test_delete_email_refuses_multiple_search_results(mocker):
+    """
+    Given:
+        A search command that returns multiple results (list with >1 element).
+    When:
+        delete_email is called.
+    Then:
+        A DemistoException is raised refusing the delete to avoid ambiguity.
+    """
+    multi_results = [{"id": "1"}, {"id": "2"}]
+    mocker.patch.object(DeleteReportedEmail, "execute_command", return_value=multi_results)
+
+    with pytest.raises(DemistoException, match="expected exactly 1. Refusing delete to avoid ambiguity"):
+        delete_email(
+            search_args={"message-id": "<test@example.com>"},
+            search_function="some-search-command",
+            delete_args_function=lambda sr, sa: {},
+            delete_function="some-delete-command",
+        )
+
+
+class TestExtractMessageId:
+    """Tests for the extract_message_id helper function."""
+
+    def test_gmail_returns_message_id_from_headers(self):
+        """
+        Given:
+            A Gmail search result with the RFC Message-ID in payload.headers.
+        When:
+            extract_message_id is called with search_function="gmail-search".
+        Then:
+            The RFC Message-ID is extracted from the headers and returned.
+        """
+        result = [
+            {
+                "id": "internal_id",
+                "payload": {
+                    "headers": [
+                        {"name": "Subject", "value": "Test"},
+                        {"name": "Message-ID", "value": "<abc@example.com>"},
+                    ],
+                    "body": {"size": 0},
+                },
+            }
+        ]
+        assert extract_message_id(result, "gmail-search") == "<abc@example.com>"
+
+    def test_gmail_missing_payload_headers_returns_none(self):
+        """
+        Given:
+            A Gmail search result without payload.headers.
+        When:
+            extract_message_id is called with search_function="gmail-search".
+        Then:
+            None is returned because the headers are missing.
+        """
+        result = [{"id": "internal_id", "historyId": "123"}]
+        assert extract_message_id(result, "gmail-search") is None
+
+    def test_ews_returns_message_id(self):
+        """
+        Given:
+            An EWS search result with a "messageId" field.
+        When:
+            extract_message_id is called with search_function="ews-search-mailbox".
+        Then:
+            The RFC Message-ID from "messageId" is returned.
+        """
+        result = [{"itemId": "item_1", "messageId": "<abc@example.com>"}]
+        assert extract_message_id(result, "ews-search-mailbox") == "<abc@example.com>"
+
+    def test_ews_missing_message_id_returns_none(self):
+        """
+        Given:
+            An EWS search result without a "messageId" field.
+        When:
+            extract_message_id is called with search_function="ews-search-mailbox".
+        Then:
+            None is returned.
+        """
+        result = [{"itemId": "item_1"}]
+        assert extract_message_id(result, "ews-search-mailbox") is None
+
+    def test_msgraph_returns_internet_message_id(self):
+        """
+        Given:
+            An MSGraph search result with a nested "value" array containing "internetMessageId".
+        When:
+            extract_message_id is called with search_function="msgraph-mail-list-emails".
+        Then:
+            The RFC Message-ID from "internetMessageId" is returned.
+        """
+        result = [{"@odata.context": "", "value": [{"id": "internal", "internetMessageId": "<xyz@example.com>"}]}]
+        assert extract_message_id(result, "msgraph-mail-list-emails") == "<xyz@example.com>"
+
+    def test_msgraph_empty_value_returns_none(self):
+        """
+        Given:
+            An MSGraph search result with an empty "value" array.
+        When:
+            extract_message_id is called with search_function="msgraph-mail-list-emails".
+        Then:
+            None is returned.
+        """
+        result = [{"@odata.context": "", "value": []}]
+        assert extract_message_id(result, "msgraph-mail-list-emails") is None
+
+    def test_msgraph_missing_value_key_returns_none(self):
+        """
+        Given:
+            An MSGraph search result without a "value" key.
+        When:
+            extract_message_id is called with search_function="msgraph-mail-list-emails".
+        Then:
+            None is returned.
+        """
+        result = [{"@odata.context": ""}]
+        assert extract_message_id(result, "msgraph-mail-list-emails") is None
+
+    def test_unknown_search_function_returns_none(self):
+        """
+        Given:
+            A search result and an unrecognized search function name.
+        When:
+            extract_message_id is called.
+        Then:
+            None is returned (default case).
+        """
+        result = [{"id": "some_id"}]
+        assert extract_message_id(result, "unknown-search") is None
+
+    def test_empty_list_returns_none(self):
+        """
+        Given:
+            An empty search result list.
+        When:
+            extract_message_id is called.
+        Then:
+            None is returned.
+        """
+        assert extract_message_id([], "ews-search-mailbox") is None
+
+    def test_non_dict_first_element_returns_none(self):
+        """
+        Given:
+            A search result whose first element is not a dict.
+        When:
+            extract_message_id is called.
+        Then:
+            None is returned.
+        """
+        assert extract_message_id(["not_a_dict"], "ews-search-mailbox") is None
+
+    def test_with_real_test_data(self):
+        """
+        Given:
+            Real test data files for each integration.
+        When:
+            extract_message_id is called with the correct search function.
+        Then:
+            The expected message ID is returned for all integrations.
+        """
+        expected = {
+            "gmail-search": "<message_id>",
+            "ews-search-mailbox": "message_id",
+            "msgraph-mail-list-emails": "message_id",
+        }
+        for integration_name, search_func in SEARCH_FUNC.items():
+            with open(os.path.join(TEST_DATA, f"{integration_name}{SEARCH_RESPONSE_SUFFIX}")) as file:
+                search_results = json.load(file)
+            result = extract_message_id(search_results, search_func)
+            assert result == expected[search_func], f"{integration_name}: expected {expected[search_func]!r}, got {result!r}"
+
+
+def test_delete_email_refuses_mismatched_message_id(mocker):
+    """
+    Given:
+        An EWS search result whose messageId does not match the expected message-id.
+    When:
+        delete_email is called with search_function="ews-search-mailbox".
+    Then:
+        A DemistoException is raised indicating the mismatch.
+    """
+    mismatched_result = [{"itemId": "item_1", "messageId": "<wrong@example.com>"}]
+    mocker.patch.object(DeleteReportedEmail, "execute_command", return_value=mismatched_result)
+
+    with pytest.raises(DemistoException, match="Search returned message .* but expected"):
+        delete_email(
+            search_args={"message-id": "<expected@example.com>"},
+            search_function="ews-search-mailbox",
+            delete_args_function=DeletionArgs.ews,
+            delete_function="ews-delete-items",
+        )

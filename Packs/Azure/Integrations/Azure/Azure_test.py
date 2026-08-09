@@ -106,8 +106,8 @@ def test_update_security_rule_command(mocker, client, mock_params):
     # Prepare mock responses
     rule_response = {
         "name": "test-rule",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/\
-            securityRules/test-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+        "securityRules/test-rule",
         "properties": {
             "protocol": "Tcp",
             "sourcePortRange": "*",
@@ -123,6 +123,7 @@ def test_update_security_rule_command(mocker, client, mock_params):
 
     mocker.patch.object(client, "get_rule", return_value=rule_response)
     mocker.patch.object(client, "create_or_update_rule", return_value=rule_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-vn-security-rule-update")
 
     # Call the function
     args = {
@@ -142,10 +143,64 @@ def test_update_security_rule_command(mocker, client, mock_params):
     result = update_security_rule_command(client, mock_params, args)
 
     # Verify results
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityRules"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "test-rule"
+    assert result.outputs.get("properties", {}).get("access") == "Allow"
+
+
+def test_update_security_rule_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a security rule using the deprecated command.
+    When: The update_security_rule_command function is called with the deprecated command name.
+    Then: The function should return the updated rule information with the deprecated prefix.
+    """
+
+    # Prepare mock responses
+    access = "Allow"
+    rule_response = {
+        "name": "test-rule",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-sg/"
+        "securityRules/test-rule",
+        "properties": {
+            "protocol": "Tcp",
+            "sourcePortRange": "*",
+            "destinationPortRange": "443",
+            "sourceAddressPrefix": "Internet",
+            "destinationAddressPrefix": "10.0.0.0/24",
+            "access": access,
+            "priority": 100,
+            "direction": "Inbound",
+            "description": "Test rule",
+        },
+    }
+
+    mocker.patch.object(client, "get_rule", return_value=rule_response)
+    mocker.patch.object(client, "create_or_update_rule", return_value=rule_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-rule-update")
+
+    # Call the function
+    args = {
+        "security_group_name": "test-sg",
+        "security_rule_name": "test-rule",
+        "action": "Allow",
+        "direction": "Inbound",
+        "protocol": "Tcp",
+        "source": "Internet",
+        "destination": "10.0.0.0/24",
+        "destination_ports": "443",
+        "priority": "100",
+        "description": "Test rule",
+        "access": access,
+    }
+
+    result = update_security_rule_command(client, mock_params, args)
+
+    # Verify results
     assert result.outputs_prefix == "Azure.NSGRule"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-rule"
-    assert result.outputs["access"] == "Allow"
+    assert result.outputs.get("access") == access
 
 
 def test_storage_account_update_command(mocker, client, mock_params):
@@ -193,7 +248,7 @@ def test_storage_account_update_command(mocker, client, mock_params):
     result = storage_account_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.StorageAccount"
+    assert result.outputs_prefix == "Azure.Storage.StorageAccounts"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "teststorage"
     assert result.outputs["properties"]["supportsHttpsTrafficOnly"] is True
@@ -215,6 +270,7 @@ def test_storage_blob_service_properties_set_command(mocker, client, mock_params
     }
 
     mocker.patch.object(client, "storage_blob_service_properties_set_request", return_value=properties_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-properties-set")
 
     # Call the function
     args = {"account_name": "teststorage", "delete_rentention_policy_enabled": "true", "delete_rentention_policy_days": "7"}
@@ -263,7 +319,7 @@ def test_create_policy_assignment_command(mocker, client, mock_params):
     result = create_policy_assignment_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.PolicyAssignment"
+    assert result.outputs_prefix == "Azure.Policy.PolicyAssignments"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-policy"
     assert result.outputs["properties"]["displayName"] == "Test Policy"
@@ -288,7 +344,22 @@ def test_set_postgres_config_command(mocker, client, mock_params):
     assert "Updated the configuration log_checkpoints of the server test-postgres" in result.readable_output
 
 
-def test_set_webapp_config_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-webapp-config-set", "Azure.WebAppConfig"),
+        ("azure-webapp-set-http2-quick-action", "Azure.WebAppConfig"),
+        ("azure-set-function-app-http-version2-0-quick-action", "Azure.WebAppConfig"),
+        ("azure-webapp-disable-remote-debugging-quick-action", "Azure.WebAppConfig"),
+        ("azure-webapp-set-min-tls-version-quick-action", "Azure.WebAppConfig"),
+        ("azure-function-app-set-min-tls-version-quick-action", "Azure.WebAppConfig"),
+        ("azure-appservice-webapp-config-update", "Azure.AppService.WebAppConfiguration"),
+        ("azure-appservice-webapp-config-update-http2-quick-action", "Azure.AppService.WebAppConfiguration"),
+        ("azure-appservice-webapp-config-disable-remote-debugging-quick-action", "Azure.AppService.WebAppConfiguration"),
+        ("azure-appservice-webapp-config-update-min-tls-version-quick-action", "Azure.AppService.WebAppConfiguration"),
+    ],
+)
+def test_set_webapp_config_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to set WebApp configurations.
     When: The set_webapp_config_command function is called with valid parameters.
@@ -303,6 +374,7 @@ def test_set_webapp_config_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "set_webapp_config", return_value=webapp_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {"name": "test-webapp", "http20_enabled": "true", "remote_debugging_enabled": "false", "min_tls_version": "1.2"}
@@ -310,13 +382,22 @@ def test_set_webapp_config_command(mocker, client, mock_params):
     result = set_webapp_config_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebAppConfig"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-webapp"
     assert result.outputs["properties"]["http20Enabled"] is True
 
 
-def test_update_webapp_auth_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-webapp-auth-update", "Azure.WebAppAuth"),
+        ("azure-webapp-auth-update-quick-action", "Azure.WebAppAuth"),
+        ("azure-appservice-webapp-auth-settings-update", "Azure.AppService.WebAppAuthSettings"),
+        ("azure-appservice-webapp-auth-settings-update-quick-action", "Azure.AppService.WebAppAuthSettings"),
+    ],
+)
+def test_update_webapp_auth_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update WebApp authentication settings.
     When: The update_webapp_auth_command function is called with valid parameters.
@@ -338,6 +419,7 @@ def test_update_webapp_auth_command(mocker, client, mock_params):
 
     mocker.patch.object(client, "get_webapp_auth", return_value=current_auth)
     mocker.patch.object(client, "update_webapp_auth", return_value=updated_auth)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {"name": "test-webapp", "enabled": "true"}
@@ -345,7 +427,7 @@ def test_update_webapp_auth_command(mocker, client, mock_params):
     result = update_webapp_auth_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebAppAuth"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "authsettings"
     assert result.outputs["properties"]["enabled"] is True
@@ -411,7 +493,7 @@ def test_monitor_log_profile_update_command(mocker, client, mock_params):
     result = monitor_log_profile_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.LogProfile"
+    assert result.outputs_prefix == "Azure.Monitor.LogProfiles"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-profile"
     assert result.outputs["location"] == "westus"
@@ -419,7 +501,18 @@ def test_monitor_log_profile_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["retentionPolicy"]["days"] == 30
 
 
-def test_disk_update_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-disk-update", "Azure.Disk"),
+        ("azure-disk-set-data-access-ad-quick-action", "Azure.Disk"),
+        ("azure-disable-public-private-access-vm-disk-quick-action", "Azure.Disk"),
+        ("azure-compute-disk-update", "Azure.Compute.Disks"),
+        ("azure-disable-public-n-private-access-vm-disk-quick-action", "Azure.Compute.Disks"),
+        ("azure-compute-disk-update-data-access-ad-quick-action", "Azure.Compute.Disks"),
+    ],
+)
+def test_disk_update_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update disk properties.
     When: The disk_update_command function is called with valid parameters.
@@ -438,6 +531,7 @@ def test_disk_update_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "disk_update", return_value=disk_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {
@@ -450,7 +544,7 @@ def test_disk_update_command(mocker, client, mock_params):
     result = disk_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.Disk"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-disk"
     assert result.outputs["properties"]["publicNetworkAccess"] == "Disabled"
@@ -458,7 +552,17 @@ def test_disk_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["dataAccessAuthMode"] == "AzureActiveDirectory"
 
 
-def test_webapp_update_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-webapp-update", "Azure.WebApp"),
+        ("azure-webapp-assign-managed-identity-quick-action", "Azure.WebApp"),
+        ("azure-webapp-update-assign-managed-identity-quick-action", "Azure.WebApp"),
+        ("azure-appservice-webapp-update", "Azure.AppService.WebApp"),
+        ("azure-appservice-webapp-update-quick-action", "Azure.AppService.WebApp"),
+    ],
+)
+def test_webapp_update_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update webapp properties.
     When: The webapp_update_command function is called with valid parameters.
@@ -474,6 +578,7 @@ def test_webapp_update_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "webapp_update", return_value=webapp_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {"name": "test-webapp", "identity_type": "SystemAssigned", "https_only": "true", "client_cert_enabled": "true"}
@@ -481,7 +586,7 @@ def test_webapp_update_command(mocker, client, mock_params):
     result = webapp_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.WebApp"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-webapp"
     assert result.outputs["identity"]["type"] == "SystemAssigned"
@@ -489,7 +594,20 @@ def test_webapp_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["clientCertEnabled"] is True
 
 
-def test_acr_update_command(mocker, client, mock_params):
+@pytest.mark.parametrize(
+    "command, expected_prefix",
+    [
+        ("azure-acr-update", "Azure.ACR"),
+        ("azure-acr-disable-public-private-access-quick-action", "Azure.ACR"),
+        ("azure-acr-disable-authentication-as-arm-quick-action", "Azure.ACR"),
+        ("azure-acr-disable-anonymous-pull-quick-action", "Azure.ACR"),
+        ("azure-cr-registry-update", "Azure.ContainerRegistry.Registries"),
+        ("azure-cr-disable-public-private-access-quick-action", "Azure.ContainerRegistry.Registries"),
+        ("azure-cr-disable-anonymous-pull-quick-action", "Azure.ContainerRegistry.Registries"),
+        ("azure-cr-disable-authentication-as-arm-quick-action", "Azure.ContainerRegistry.Registries"),
+    ],
+)
+def test_acr_update_command(mocker, client, mock_params, command, expected_prefix):
     """
     Given: An Azure client and a request to update Azure Container Registry properties.
     When: The acr_update_command function is called with valid parameters.
@@ -508,6 +626,7 @@ def test_acr_update_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "acr_update", return_value=acr_response)
+    mocker.patch.object(demisto, "command", return_value=command)
 
     # Call the function
     args = {
@@ -521,7 +640,7 @@ def test_acr_update_command(mocker, client, mock_params):
     result = acr_update_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.ACR"
+    assert result.outputs_prefix == expected_prefix
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "testregistry"
     assert result.outputs["properties"]["publicNetworkAccess"] == "Disabled"
@@ -580,6 +699,36 @@ def test_update_key_vault_command(mocker, client, mock_params):
     result = update_key_vault_command(client, mock_params, args)
 
     # Verify results
+    assert result.outputs_prefix == "Azure.KeyVault.Vault"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "test-keyvault"
+    assert result.outputs["properties"]["enableSoftDelete"] is True
+    assert result.outputs["properties"]["enablePurgeProtection"] is True
+
+
+def test_update_key_vault_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update Key Vault properties using the deprecated command.
+    When: The update_key_vault_command function is called with the deprecated command name.
+    Then: The function should return the updated Key Vault properties with the deprecated prefix.
+    """
+
+    # Prepare mock response
+    keyvault_response = {
+        "name": "test-keyvault",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.KeyVault/vaults/test-keyvault",
+        "properties": {"enableSoftDelete": True, "enablePurgeProtection": True},
+    }
+
+    mocker.patch.object(client, "update_key_vault_request", return_value=keyvault_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-key-vault-update")
+
+    # Call the function
+    args = {"vault_name": "test-keyvault", "enable_soft_delete": "true", "enable_purge_protection": "true"}
+
+    result = update_key_vault_command(client, mock_params, args)
+
+    # Verify results
     assert result.outputs_prefix == "Azure.KeyVault"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-keyvault"
@@ -597,20 +746,58 @@ def test_sql_db_threat_policy_update_command(mocker, client, mock_params):
     # Prepare mock responses
     current_policy = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
-            securityAlertPolicies/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
+        "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": False},
     }
 
     updated_policy = {
         "name": "default",
-        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/\
-            securityAlertPolicies/default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
+        "securityAlertPolicies/default",
         "properties": {"emailAccountAdmins": True},
     }
 
     mocker.patch.object(client, "sql_db_threat_policy_get", return_value=current_policy)
     mocker.patch.object(client, "sql_db_threat_policy_update", return_value=updated_policy)
+
+    # Call the function
+    args = {"server_name": "test-server", "db_name": "test-db", "email_account_admins_enabled": "true"}
+
+    result = sql_db_threat_policy_update_command(client, mock_params, args)
+
+    # Verify results
+    assert result.outputs_prefix == "Azure.SqlDB.SecurityAlertPolicies"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "default"
+    assert result.outputs["properties"]["emailAccountAdmins"] is True
+
+
+def test_sql_db_threat_policy_update_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update SQL database threat policy using the deprecated command.
+    When: The sql_db_threat_policy_update_command function is called with the deprecated command name.
+    Then: The function should return the updated threat policy with the deprecated prefix.
+    """
+
+    # Prepare mock responses
+    current_policy = {
+        "name": "default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
+        "securityAlertPolicies/default",
+        "properties": {"emailAccountAdmins": False},
+    }
+
+    updated_policy = {
+        "name": "default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Sql/servers/test-server/databases/test-db/"
+        "securityAlertPolicies/default",
+        "properties": {"emailAccountAdmins": True},
+    }
+
+    mocker.patch.object(client, "sql_db_threat_policy_get", return_value=current_policy)
+    mocker.patch.object(client, "sql_db_threat_policy_update", return_value=updated_policy)
+    mocker.patch("Azure.demisto.command", return_value="azure-sql-db-threat-policy-update")
 
     # Call the function
     args = {"server_name": "test-server", "db_name": "test-db", "email_account_admins_enabled": "true"}
@@ -684,6 +871,35 @@ def test_cosmosdb_update_command(mocker, client, mock_params):
     }
 
     mocker.patch.object(client, "cosmos_db_update", return_value=cosmos_response)
+
+    # Call the function
+    args = {"account_name": "test-cosmos", "disable_key_based_metadata_write_access": "true"}
+
+    result = cosmosdb_update_command(client, mock_params, args)
+
+    # Verify results
+    assert result.outputs_prefix == "Azure.CosmosDB.DBAccounts"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "test-cosmos"
+    assert result.outputs["properties"]["disableKeyBasedMetadataWriteAccess"] is True
+
+
+def test_cosmosdb_update_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update Cosmos DB settings using the deprecated command.
+    When: The cosmosdb_update_command function is called with the deprecated command name.
+    Then: The function should return the updated Cosmos DB settings with the deprecated prefix.
+    """
+
+    # Prepare mock response
+    cosmos_response = {
+        "name": "test-cosmos",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.DocumentDB/databaseAccounts/test-cosmos",
+        "properties": {"disableKeyBasedMetadataWriteAccess": True},
+    }
+
+    mocker.patch.object(client, "cosmos_db_update", return_value=cosmos_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-cosmos-db-update")
 
     # Call the function
     args = {"account_name": "test-cosmos", "disable_key_based_metadata_write_access": "true"}
@@ -811,6 +1027,7 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     }
 
     mocker.patch.object(client, "storage_blob_service_properties_set_request", return_value=properties_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-property-set")
 
     # Call the function with minimal args
     args = {"account_name": "teststorage"}
@@ -818,7 +1035,7 @@ def test_storage_blob_service_properties_set_command_empty_values(mocker, client
     result = storage_blob_service_properties_set_command(client, mock_params, args)
 
     # Verify results
-    assert result.outputs_prefix == "Azure.StorageAccountBlobServiceProperties"
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "default"
 
@@ -872,14 +1089,15 @@ def test_remove_member_from_group_command(mocker, client):
 
 def test_get_azure_client_no_token(mocker, mock_params):
     """
-    Given: Parameters without credentials and no token from cloud credentials.
+    Given: Platform (connector) path where cloud credentials return no token.
     When: The get_azure_client function is called.
-    Then: The function should raise an exception.
+    Then: The function should raise an exception about the missing token.
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
 
+    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
     mocker.patch("Azure.get_from_args_or_params", return_value="mocked_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No token
 
@@ -894,17 +1112,40 @@ def test_get_azure_client_no_token(mocker, mock_params):
     assert "Failed to retrieve AZURE access token" in str(excinfo.value)
 
 
+def test_get_azure_client_marketplace_missing_secret(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector) with the Client Credentials flow and no Client Secret.
+    When: The get_azure_client function is called.
+    Then: The function should raise a clear DemistoException about the missing Client Secret.
+    """
+    args = {"subscription_id": "arg_subscription_id"}
+    command = "command"
+
+    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
+
+    params = mock_params.copy()
+    params["credentials"] = {}
+    params["auth_type"] = "Client Credentials"
+
+    with pytest.raises(DemistoException) as excinfo:
+        get_azure_client(params, args, command)
+
+    assert "Client Secret" in str(excinfo.value)
+
+
 def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     """
-    Given: Parameters with stored credentials, arguments, and an Azure command.
+    Given: Marketplace path with a Client Secret configured (Client Credentials flow).
     When: The get_azure_client function is called.
-    Then: The function should return an initialized Azure client using stored credentials without cloud authentication.
+    Then: The function should return an initialized Azure client using the secret without cloud (CTS) authentication.
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
     mock_client = mocker.Mock()
 
+    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
+    mock_get_managed = mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test with credentials (stored credentials path)
@@ -929,12 +1170,17 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
         resource=Resources.management_azure,
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
         headers={},
+        connection_type="Client Credentials",
+        azure_ad_endpoint="https://login.microsoftonline.com",
+        auth_code=None,
+        redirect_uri=None,
+        managed_identities_client_id=mock_get_managed.return_value,
     )
 
 
 def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_params):
     """
-    Given: Parameters without stored credentials, arguments, and an Azure command.
+    Given: Platform (connector) path without stored credentials.
     When: The get_azure_client function is called.
     Then: The function should retrieve cloud credentials and return a client with proper headers and scope.
     """
@@ -944,6 +1190,8 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     mock_client = mocker.Mock()
     mock_token = "mock_access_token"
 
+    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
+    mock_get_managed = mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={"access_token": mock_token})
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -974,18 +1222,24 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
         resource=Resources.management_azure,
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
         headers=expected_headers,
+        connection_type="Client Credentials",
+        azure_ad_endpoint="https://login.microsoftonline.com",
+        auth_code=None,
+        redirect_uri=None,
+        managed_identities_client_id=mock_get_managed.return_value,
     )
 
 
 def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
     """
-    Given: Parameters without stored credentials and cloud credentials that return no token.
+    Given: Platform (connector) path with cloud credentials that return no token.
     When: The get_azure_client function is called.
     Then: The function should raise a DemistoException about missing token.
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
+    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
     mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No access_token
 
@@ -1033,19 +1287,26 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
 
 def test_get_azure_client_missing_optional_params(mocker):
     """
-    Given: Parameters with missing optional fields.
+    Given: The mandatory Client Credentials params are provided, but the truly optional fields
+           (resource_group_name, insecure, proxy) are omitted.
     When: The get_azure_client function is called.
-    Then: The function should handle missing parameters gracefully with default values.
+    Then: The function builds the client using default values for the omitted optional fields.
     """
     # Setup mocks
     args = {}
     mock_client = mocker.Mock()
     command = "command"
 
+    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
-    # Test with minimal parameters
-    params = {"credentials": {"password": "test_password"}}
+    # Mandatory params for Client Credentials present; optional fields omitted.
+    params = {
+        "app_id": "test_app_id",
+        "subscription_id": "test_subscription_id",
+        "tenant_id": "test_tenant_id",
+        "credentials": {"password": "test_password"},
+    }
 
     # Call the function
     result = get_azure_client(params, args, command)
@@ -1053,14 +1314,11 @@ def test_get_azure_client_missing_optional_params(mocker):
     # Verify results
     assert result == mock_client
 
-    # Verify default values were used
+    # Verify default values were used for the optional fields
     call_args = mock_azure_client_constructor.call_args
-    assert call_args[1]["app_id"] == ""
-    assert call_args[1]["subscription_id"] == ""
     assert call_args[1]["resource_group_name"] == ""
     assert call_args[1]["verify"] is True  # Default for insecure=False
     assert call_args[1]["proxy"] is False  # Default
-    assert call_args[1]["tenant_id"] is None
 
 
 def test_format_rule_dict_input(mocker):
@@ -2155,7 +2413,7 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     result: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGPublicIPAddress"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.PublicIPAddresses"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 2
     assert "name" in result.outputs[0]
@@ -2187,6 +2445,34 @@ def test_nsg_public_ip_addresses_list_command(mocker):
     assert "Public IP Addresses List" in result_all.readable_output
 
 
+def test_nsg_public_ip_addresses_list_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the list_public_ip_addresses_response.json file using the deprecated command.
+    When: nsg_public_ip_addresses_list_command is called with the deprecated command name.
+    Then: It should return the public IP addresses data with the deprecated prefix.
+    """
+    from Azure import nsg_public_ip_addresses_list_command
+
+    mock_response = util_load_json("test_data/list_public_ip_addresses_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_public_ip_addresses_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"limit": "2", "all_results": "false"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-public-ip-addresses-list")
+
+    result: CommandResults = nsg_public_ip_addresses_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGPublicIPAddress"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 2
+    assert "name" in result.outputs[0]
+    assert "id" in result.outputs[0]
+
+
 def test_nsg_network_interfaces_list_command(mocker):
     """
     Given: An Azure client mock and the list_networks_interfaces_response.json file.
@@ -2212,7 +2498,7 @@ def test_nsg_network_interfaces_list_command(mocker):
     args = {"limit": "1", "all_results": "false"}
     result: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
 
-    assert result.outputs_prefix == "Azure.NSGNetworkInterfaces"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 1
     first = result.outputs[0]
@@ -2238,6 +2524,31 @@ def test_nsg_network_interfaces_list_command(mocker):
 
     assert result_all.readable_output
     assert "Network Interfaces List" in result_all.readable_output
+
+
+def test_nsg_network_interfaces_list_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the list_networks_interfaces_response.json file using the deprecated command.
+    When: nsg_network_interfaces_list_command is called with the deprecated command name.
+    Then: It should return the network interfaces data with the deprecated prefix.
+    """
+    from Azure import nsg_network_interfaces_list_command
+
+    mock_response = util_load_json("test_data/list_networks_interfaces_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_networks_interfaces_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"limit": "1", "all_results": "false"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-network-interfaces-list")
+
+    result: CommandResults = nsg_network_interfaces_list_command(mock_client, params, args)
+
+    assert result.outputs_prefix == "Azure.NSGNetworkInterfaces"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
 
 
 def test_nsg_resource_group_list_command(mocker):
@@ -2268,7 +2579,7 @@ def test_nsg_resource_group_list_command(mocker):
     mock_client.list_resource_groups_request.assert_called_with(subscription_id="subscription1", filter_by_tag="", limit="1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGResourceGroup"
+    assert result.outputs_prefix == "Azure.ResourceManagement.ResourceGroups"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == 1
 
@@ -2290,6 +2601,36 @@ def test_nsg_resource_group_list_command(mocker):
     assert isinstance(result_default, CommandResults)
     assert len(result_default.outputs) == 1
     assert result_default.outputs[0]["id"] == "/subscriptions/subscription1/resourceGroups/resourceGroup1"
+
+
+def test_nsg_resource_group_list_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the list_resource_groups_response.json file using the deprecated command.
+    When: nsg_resource_group_list_command is called with the deprecated command name.
+    Then: It should return the resource group data with the deprecated prefix.
+    """
+    from Azure import nsg_resource_group_list_command
+
+    mock_response = util_load_json("test_data/list_resource_groups_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_resource_groups_request.return_value = mock_response
+
+    params = {"subscription_id": "subscription1"}
+    args = {"limit": "1"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-resource-group-list")
+
+    result: CommandResults = nsg_resource_group_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGResourceGroup"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 1
+
+    first = result.outputs[0]
+    assert first["name"] == "resourceGroup1"
+    assert first["location"] == "centralus"
 
 
 def test_nsg_security_rule_create_command(mocker):
@@ -2346,7 +2687,7 @@ def test_nsg_security_rule_create_command(mocker):
 
     # --- Check the returned CommandResults ---
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityRules"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "rule1"
 
@@ -2357,6 +2698,42 @@ def test_nsg_security_rule_create_command(mocker):
     # Check readable_output is generated
     assert result.readable_output
     assert f"The security rule {args['security_rule_name']} was created successfully" in result.readable_output
+
+
+def test_nsg_security_rule_create_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and arguments for creating a security rule using the deprecated command.
+    When: nsg_security_rule_create_command is called with the deprecated command name.
+    Then: It should return the created rule data with the deprecated prefix.
+    """
+    from Azure import nsg_security_rule_create_command
+
+    mock_response = util_load_json("test_data/create_or_update_rule_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.create_or_update_rule.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {
+        "security_group_name": "testnsg",
+        "security_rule_name": "rule1",
+        "action": "Deny",
+        "direction": "Outbound",
+        "priority": 100,
+        "protocol": "Any",
+        "source": "10.0.0.0/8",
+        "destination": "11.0.0.0/8",
+        "destination_ports": "8080",
+    }
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-rule-create")
+
+    result: CommandResults = nsg_security_rule_create_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "rule1"
 
 
 def test_nsg_security_rule_get_command(mocker):
@@ -2391,7 +2768,7 @@ def test_nsg_security_rule_get_command(mocker):
 
     # Check the returned CommandResults
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityRules"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_rule
 
@@ -2402,6 +2779,32 @@ def test_nsg_security_rule_get_command(mocker):
     # Check readable_output is generated
     assert result.readable_output
     assert f"Rule {args['security_rule_name']}" in result.readable_output
+
+
+def test_nsg_security_rule_get_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and a security rule JSON using the deprecated command.
+    When: nsg_security_rule_get_command is called with the deprecated command name.
+    Then: It should return the rule data with the deprecated prefix.
+    """
+    from Azure import nsg_security_rule_get_command
+
+    mock_rule = util_load_json("test_data/get_rule_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.get_rule.return_value = mock_rule
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"security_group_name": "testnsg", "security_rule_name": "wow"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-rule-get")
+
+    result: CommandResults = nsg_security_rule_get_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs["name"] == "wow"
 
 
 def test_nsg_security_groups_list_command(mocker):
@@ -2428,7 +2831,7 @@ def test_nsg_security_groups_list_command(mocker):
     mock_client.list_network_security_groups.assert_called_once_with(subscription_id="subid", resource_group_name="rg1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.NSGSecurityGroup"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityGroups"
     assert result.outputs_key_field == "id"
     assert len(result.outputs) == len(mock_response["value"])
 
@@ -2451,6 +2854,32 @@ def test_nsg_security_groups_list_command(mocker):
     # The readable_output should contain the NSG names
     for group in result.outputs:
         assert group["name"] in result.readable_output
+
+
+def test_nsg_security_groups_list_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the list_network_security_groups_response.json file using the deprecated command.
+    When: nsg_security_groups_list_command is called with the deprecated command name.
+    Then: It should return the security groups data with the deprecated prefix.
+    """
+    from Azure import nsg_security_groups_list_command
+
+    mock_response = util_load_json("test_data/list_network_security_groups_response.json")
+
+    mock_client = mocker.Mock()
+    mock_client.list_network_security_groups.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-groups-list")
+
+    result: CommandResults = nsg_security_groups_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGSecurityGroup"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == len(mock_response["value"])
 
 
 def test_nsg_security_rule_delete_command(mocker):
@@ -2678,6 +3107,7 @@ def test_storage_blob_service_properties_get_command(mocker):
 
     mock_client = mocker.Mock()
     mock_client.storage_blob_service_properties_get_request.return_value = mock_response
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-properties-get")
 
     params = {"subscription_id": "subid", "resource_group_name": "rg1"}
     args = {"account_name": "teststorage"}
@@ -2740,7 +3170,7 @@ def test_storage_blob_containers_update_command(mocker):
     )
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.StorageBlobContainer"
+    assert result.outputs_prefix == "Azure.Storage.BlobContainers"
     assert result.outputs_key_field == "id"
     assert result.outputs == mock_response
     assert result.raw_response == mock_response
@@ -2755,6 +3185,32 @@ def test_storage_blob_containers_update_command(mocker):
     expected_headers = ["Name", "Account Name", "Subscription ID", "Resource Group", "Public Access"]
     for header in expected_headers:
         assert header in result.readable_output
+
+
+def test_storage_blob_containers_update_command_deprecated(mocker):
+    """
+    Given: An Azure client mock and the update_blob_container.json file using the deprecated command.
+    When: storage_blob_containers_update_command is called with the deprecated command name.
+    Then: It should return the updated container data with the deprecated prefix.
+    """
+    from Azure import storage_blob_containers_update_command
+
+    mock_response = util_load_json("test_data/update_blob_container.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_containers_create_update_request.return_value = mock_response
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage", "container_name": "testcontainer"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-containers-update")
+
+    result: CommandResults = storage_blob_containers_update_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.StorageBlobContainer"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
 
 
 def test_extract_azure_resource_info():
@@ -2873,11 +3329,11 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
         "Etag": "0x8DB7F5589F2DC4A",
         "Last-Modified": "Wed, 14 Aug 2024 10:00:00 GMT",
         "Date": "Wed, 14 Aug 2024 10:05:00 GMT",
-        "x-ms-request-id": "req-id-12345",
-        "x-ms-lease-status": "unlocked",
-        "x-ms-lease-state": "available",
-        "x-ms-has-immutability-policy": "false",
-        "x-ms-has-legal-hold": "false",
+        "X-Ms-Request-Id": "req-id-12345",
+        "X-Ms-Lease-Status": "unlocked",
+        "X-Ms-Lease-State": "available",
+        "X-Ms-Has-Immutability-Policy": "false",
+        "X-Ms-Has-Legal-Hold": "false",
     }
     mock_response.headers = CaseInsensitiveDict(raw_response_data)
 
@@ -2890,8 +3346,8 @@ def test_storage_container_property_get_command(mocker, client, mock_params):
     # Verify client.get_storage_container_properties_request was called with correct parameters
     client.get_storage_container_properties_request.assert_called_once_with("testaccount", "testcontainer")
 
-    assert result.outputs_prefix == "Azure.StorageContainer"
-    assert result.outputs_key_field == "name"
+    assert result.outputs_prefix == "Azure.Storage.Container"
+    assert result.outputs_key_field == "ContainerName"
 
 
 def test_storage_container_create_command(mocker, client, mock_params):
@@ -3066,10 +3522,76 @@ def test_storage_container_blob_tag_get_command(mocker, client, mock_params):
     # Verify result
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Mocked Table"
+    assert result.outputs_prefix == "Azure.Storage.Blob"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["ContainerName"] == "testcontainer"
+    assert result.outputs["name"] == "testblob.txt"
+    assert "Tag" in result.outputs
+
+
+def test_storage_container_blob_tag_get_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to get tags for a blob using the deprecated command.
+    When: The storage_container_blob_tag_get_command function is called with valid parameters and the deprecated command name.
+    Then: The function should call the client's storage_container_blob_tag_get_request method and return the tags with the
+    deprecated prefix.
+    """
+    # Mock arguments
+    args = {"container_name": "testcontainer", "blob_name": "testblob.txt", "account_name": "testaccount"}
+
+    # Mock XML response
+    xml_response = """<?xml version="1.0" encoding="utf-8"?>
+    <Tags>
+        <TagSet>
+            <Tag>
+                <Key>tag1</Key>
+                <Value>value1</Value>
+            </Tag>
+            <Tag>
+                <Key>tag2</Key>
+                <Value>value2</Value>
+            </Tag>
+        </TagSet>
+    </Tags>"""
+
+    # Mock the client's storage_container_blob_tag_get_request method
+    mocker.patch.object(client, "storage_container_blob_tag_get_request", return_value=xml_response)
+
+    # Mock ElementTree parsing
+    mock_tree = mocker.Mock()
+    mock_root = mocker.Mock()
+    mock_tree.getroot.return_value = mock_root
+
+    # Create mock Tag elements
+    tag1 = mocker.Mock()
+    tag1.findtext.side_effect = lambda x: "tag1" if x == "Key" else "value1"
+    tag2 = mocker.Mock()
+    tag2.findtext.side_effect = lambda x: "tag2" if x == "Key" else "value2"
+
+    # Set up the iteration over Tag elements
+    mock_root.iter.return_value = [tag1, tag2]
+
+    mocker.patch("Azure.ET.ElementTree", return_value=mock_tree)
+    mocker.patch("Azure.defused_ET.fromstring", return_value=mock_root)
+
+    # Mock tableToMarkdown
+    mocker.patch("Azure.tableToMarkdown", return_value="Mocked Table")
+
+    # Mock demisto.command
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-container-blob-tag-get")
+
+    # Call the function
+    result = storage_container_blob_tag_get_command(client, mock_params, args)
+
+    # Verify client.storage_container_blob_tag_get_request was called with correct parameters
+    client.storage_container_blob_tag_get_request.assert_called_once_with("testcontainer", "testblob.txt", "testaccount")
+
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Mocked Table"
     assert result.outputs_prefix == "Azure.StorageContainer"
     assert result.outputs_key_field == "name"
     assert result.outputs["name"] == "testcontainer"
-    assert "Blob" in result.outputs
     assert result.outputs["Blob"]["name"] == "testblob.txt"
     assert "Tag" in result.outputs["Blob"]
 
@@ -3100,6 +3622,48 @@ def test_storage_container_blob_tag_set_command(mocker, client, mock_params):
 
     # Verify create_set_tags_request_body was called with correct parameters
     Azure.create_set_tags_request_body.assert_called_once_with({"tag1": "value1", "tag2": "value2"})
+
+    # Verify client.storage_container_blob_tags_set_request was called with correct parameters
+    client.storage_container_blob_tags_set_request.assert_called_once_with(
+        "testcontainer", "testblob.txt", mock_xml_data, "testaccount"
+    )
+
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "testblob.txt Tags successfully updated."
+
+
+def test_storage_container_blob_tag_set_command_append(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to append tags for a blob.
+    When: The storage_container_blob_tag_set_command function is called with valid parameters and append=True.
+    Then: The function should call the client's storage_container_blob_tags_set_request method with the appended tags.
+    """
+    # Mock arguments
+    args = {
+        "container_name": "testcontainer",
+        "blob_name": "testblob.txt",
+        "account_name": "testaccount",
+        "tags": '{"tag3": "value3"}',
+        "append": "true",
+    }
+
+    # Mock the client's storage_container_blob_tags_set_request method
+    mocker.patch.object(client, "storage_container_blob_tags_set_request")
+
+    # Mock storage_container_blob_tag_get_command to return existing tags
+    mock_get_results = CommandResults(outputs={"Tag": [{"Key": "tag1", "Value": "value1"}, {"Key": "tag2", "Value": "value2"}]})
+    mocker.patch("Azure.storage_container_blob_tag_get_command", return_value=mock_get_results)
+
+    # Mock create_set_tags_request_body
+    mock_xml_data = b'<?xml version="1.0" encoding="utf-8"?><Tags><TagSet><Tag><Key>tag3</Key><Value>value3</Value></Tag><Tag><Key>tag1</Key><Value>value1</Value></Tag><Tag><Key>tag2</Key><Value>value2</Value></Tag></TagSet></Tags>'  # noqa: E501
+    mocker.patch("Azure.create_set_tags_request_body", return_value=mock_xml_data)
+
+    # Call the function
+    result = storage_container_blob_tag_set_command(client, mock_params, args)
+
+    # Verify create_set_tags_request_body was called with correct parameters (appended tags)
+    Azure.create_set_tags_request_body.assert_called_once_with({"tag3": "value3", "tag1": "value1", "tag2": "value2"})
 
     # Verify client.storage_container_blob_tags_set_request was called with correct parameters
     client.storage_container_blob_tags_set_request.assert_called_once_with(
@@ -3148,10 +3712,58 @@ def test_storage_container_blob_property_get_command(mocker, client, mock_params
     # Verify result
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Mocked Table"
+    assert result.outputs_prefix == "Azure.Storage.Blob"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["ContainerName"] == "testcontainer"
+    assert result.outputs["name"] == "testblob.txt"
+    assert "Property" in result.outputs
+
+
+def test_storage_container_blob_property_get_command_deprecated(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to get properties for a blob using the deprecated command.
+    When: The storage_container_blob_property_get_command function is called with valid parameters and the
+        deprecated command name.
+    Then: The function should call the client's storage_container_blob_property_get_request method and return the properties
+        with the deprecated prefix.
+    """
+    # Mock arguments
+    args = {"container_name": "testcontainer", "blob_name": "testblob.txt", "account_name": "testaccount"}
+
+    # Mock response headers
+    mock_headers = CaseInsensitiveDict(
+        {
+            "Content-Length": "1024",
+            "Content-Type": "text/plain",
+            "Etag": "0x8D8B92EFCFD9B41",
+            "Last-Modified": "Wed, 14 Aug 2024 10:00:00 GMT",
+            "x-ms-creation-time": "Wed, 14 Aug 2024 09:00:00 GMT",
+        }
+    )
+
+    # Mock the client's storage_container_blob_property_get_request method
+    mock_response = mocker.Mock()
+    mock_response.headers = mock_headers
+    mocker.patch.object(client, "storage_container_blob_property_get_request", return_value=mock_response)
+
+    # Mock tableToMarkdown
+    mocker.patch("Azure.tableToMarkdown", return_value="Mocked Table")
+
+    # Mock demisto.command
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-container-blob-property-get")
+
+    # Call the function
+    result = storage_container_blob_property_get_command(client, mock_params, args)
+
+    # Verify client.storage_container_blob_property_get_request was called with correct parameters
+    client.storage_container_blob_property_get_request.assert_called_once_with("testcontainer", "testblob.txt", "testaccount")
+
+    # Verify result
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "Mocked Table"
     assert result.outputs_prefix == "Azure.StorageContainer"
     assert result.outputs_key_field == "name"
     assert result.outputs["name"] == "testcontainer"
-    assert "Blob" in result.outputs
     assert result.outputs["Blob"]["name"] == "testblob.txt"
     assert "Property" in result.outputs["Blob"]
 
@@ -3277,14 +3889,81 @@ class TestGetCommandResource:
         assert resource == STORAGE_RESOURCE
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        "azure-storage-container-list",
+        "azure-storage-blob-property-get",
+        "azure-storage-blob-property-set",
+        "azure-storage-blob-tag-get",
+        "azure-storage-blob-create",
+        "azure-storage-blob-get",
+        "azure-storage-blob-tag-set",
+    ],
+)
+def test_get_command_and_token_scopes_storage(command):
+    """
+    Given:
+        A storage-related Azure command name (e.g. 'azure-storage-container-list',
+        'azure-storage-blob-get', etc.).
+
+    When:
+        Calling get_command_and_token_scopes with that command.
+
+    Then:
+        The returned scope equals STORAGE_SCOPE and the token scopes list
+        contains only TokenScope.STORAGE.
+    """
+    scope, token_scopes = get_command_and_token_scopes(command)
+    assert scope == STORAGE_SCOPE
+    assert token_scopes == [TokenScope.STORAGE]
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "azure-storage-container-list",
+        "azure-storage-blob-property-get",
+        "azure-storage-blob-property-set",
+        "azure-storage-blob-tag-get",
+        "azure-storage-blob-create",
+        "azure-storage-blob-get",
+        "azure-storage-blob-tag-set",
+    ],
+)
+def test_get_command_resource_storage(command):
+    """
+    Given:
+        A storage-related Azure command name (e.g. 'azure-storage-container-list',
+        'azure-storage-blob-get', etc.).
+
+    When:
+        Calling get_command_resource with that command.
+
+    Then:
+        The returned resource equals STORAGE_RESOURCE.
+    """
+    resource = get_command_resource(command)
+    assert resource == STORAGE_RESOURCE
+
+
 class TestGetAzureClient:
     """Tests for the get_azure_client function."""
 
+    @patch("Azure.get_connector_id", return_value="connector-123")
+    @patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     @patch("Azure.get_from_args_or_params")
     @patch("Azure.get_cloud_credentials")
     @patch("Azure.AzureClient")
-    def test_with_cloud_credentials(self, mock_azure_client, mock_get_cloud_credentials, mock_get_from_args_or_params):
-        """Test get_azure_client with cloud credentials."""
+    def test_with_cloud_credentials(
+        self,
+        mock_azure_client,
+        mock_get_cloud_credentials,
+        mock_get_from_args_or_params,
+        mock_get_managed,
+        mock_get_connector_id,
+    ):
+        """Test get_azure_client with cloud credentials (Platform path)."""
         # Setup mocks
         mock_get_from_args_or_params.return_value = "test-subscription-id"
         mock_get_cloud_credentials.return_value = {"access_token": "test-token"}
@@ -3323,13 +4002,27 @@ class TestGetAzureClient:
             resource=DEFAULT_RESOURCE,
             scope=DEFAULT_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
+            connection_type="Client Credentials",
+            azure_ad_endpoint="https://login.microsoftonline.com",
+            auth_code=None,
+            redirect_uri=None,
+            managed_identities_client_id=None,
         )
 
+    @patch("Azure.get_connector_id", return_value="connector-123")
+    @patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     @patch("Azure.get_from_args_or_params")
     @patch("Azure.get_cloud_credentials")
     @patch("Azure.AzureClient")
-    def test_with_storage_command(self, mock_azure_client, mock_get_cloud_credentials, mock_get_from_args_or_params):
-        """Test get_azure_client with a storage command."""
+    def test_with_storage_command(
+        self,
+        mock_azure_client,
+        mock_get_cloud_credentials,
+        mock_get_from_args_or_params,
+        mock_get_managed,
+        mock_get_connector_id,
+    ):
+        """Test get_azure_client with a storage command (Platform path)."""
         # Setup mocks
         mock_get_from_args_or_params.return_value = "test-subscription-id"
         mock_get_cloud_credentials.return_value = {"access_token": "test-token"}
@@ -3368,6 +4061,11 @@ class TestGetAzureClient:
             resource=STORAGE_RESOURCE,
             scope=STORAGE_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
+            connection_type="Client Credentials",
+            azure_ad_endpoint="https://login.microsoftonline.com",
+            auth_code=None,
+            redirect_uri=None,
+            managed_identities_client_id=None,
         )
 
 
@@ -3383,6 +4081,35 @@ def test_start_vm_command(mocker):
     mock_client = mocker.Mock()
     params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
     args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1"}
+
+    result = start_vm_command(mock_client, params, args)
+
+    mock_client.validate_provisioning_state.assert_called_once_with("sub-id", "rg1", "vm1")
+    mock_client.start_vm_request.assert_called_once_with("sub-id", "rg1", "vm1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute.VirtualMachines"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "vm1"
+    assert result.outputs["resourceGroup"] == "rg1"
+    assert result.outputs["powerState"] == "VM starting"
+    assert "vm1" in result.readable_output
+
+
+def test_start_vm_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, and VM name using the deprecated command.
+    When: start_vm_command is called with the deprecated command name.
+    Then: It should call validate_provisioning_state and start_vm_request,
+          and return correct CommandResults with the deprecated prefix.
+    """
+    from Azure import start_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-instance-start")
 
     result = start_vm_command(mock_client, params, args)
 
@@ -3410,6 +4137,35 @@ def test_poweroff_vm_command(mocker):
     mock_client = mocker.Mock()
     params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
     args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "skip_shutdown": True}
+
+    result = poweroff_vm_command(mock_client, params, args)
+
+    mock_client.validate_provisioning_state.assert_called_once_with("sub-id", "rg1", "vm1")
+    mock_client.poweroff_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", True)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute.VirtualMachines"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "vm1"
+    assert result.outputs["resourceGroup"] == "rg1"
+    assert result.outputs["powerState"] == "VM stopping"
+    assert "vm1" in result.readable_output
+
+
+def test_poweroff_vm_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, VM name, and optional skip_shutdown using the deprecated command.
+    When: poweroff_vm_command is called with the deprecated command name.
+    Then: It should call validate_provisioning_state and poweroff_vm_request,
+          and return correct CommandResults with the deprecated prefix.
+    """
+    from Azure import poweroff_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "skip_shutdown": True}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-instance-power-off")
 
     result = poweroff_vm_command(mock_client, params, args)
 
@@ -3452,6 +4208,49 @@ def test_get_vm_command(mocker):
     }
 
     mocker.patch.object(mock_client, "get_vm_request", return_value=mock_response)
+
+    result = get_vm_command(mock_client, params, args)
+
+    mock_client.get_vm_request.assert_called_once_with("sub-id", "rg1", "vm1", expand="")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Compute.VirtualMachines"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["properties"]["vmId"] == "vm123"
+    assert result.outputs["properties"]["provisioningState"] == "Succeeded"
+    assert result.outputs["properties"]["storageProfile"]["osDisk"]["osType"] == "Linux"
+    assert result.outputs["properties"]["instanceView"]["statuses"][0]["displayStatus"] == "VM running"
+    assert "vm1" in result.readable_output
+
+
+def test_get_vm_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, and VM name using the deprecated command.
+    When: get_vm_command is called with the deprecated command name.
+    Then: It should call get_vm_request and return correct CommandResults
+          with the deprecated prefix.
+    """
+    from Azure import get_vm_command
+
+    mock_client = mocker.Mock()
+    params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "virtual_machine_name": "vm1", "expand": ""}
+
+    mock_response = {
+        "location": "eastus",
+        "tags": {"env": "prod"},
+        "properties": {
+            "vmId": "vm123",
+            "provisioningState": "Succeeded",
+            "storageProfile": {"osDisk": {"diskSizeGB": 128, "osType": "Linux"}},
+            "instanceView": {"statuses": [{"code": "PowerState/running", "displayStatus": "VM running"}]},
+            "networkProfile": {"networkInterfaces": [{"id": "nic1"}]},
+            "userData": "userdata",
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_vm_request", return_value=mock_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-instance-details-get")
 
     result = get_vm_command(mock_client, params, args)
 
@@ -3509,7 +4308,7 @@ def test_get_network_interface_command(mocker):
     mock_client.get_network_interface_request.assert_called_once_with("sub-id", "rg1", "nic1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Network.Interfaces"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
     assert result.outputs_key_field == "name"
     assert result.outputs["name"] == "nic1"
     assert result.outputs["properties"]["macAddress"] == "00:11:22:33:44:55"
@@ -3517,6 +4316,54 @@ def test_get_network_interface_command(mocker):
     assert result.outputs["properties"]["ipConfigurations"][0]["properties"]["publicIPAddress"]["id"] == "public-ip-id"
     assert result.outputs["properties"]["ipConfigurations"][0]["etag"] == "12345"  # etag cleaned
     assert "nic1" in result.readable_output
+
+
+def test_get_network_interface_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, and network interface name using the deprecated command.
+    When: get_network_interface_command is called with the deprecated command name.
+    Then: It should call get_network_interface_request and return correct CommandResults
+          with the deprecated prefix.
+    """
+    from Azure import get_network_interface_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "network_interface_name": "nic1"}
+
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/networkInterfaces/nic1",
+        "name": "nic1",
+        "location": "eastus",
+        "properties": {
+            "macAddress": "00:11:22:33:44:55",
+            "primary": True,
+            "networkSecurityGroup": {"id": "nsg-id"},
+            "nicType": "Standard",
+            "virtualMachine": {"id": "vm-id"},
+            "dnsSettings": {"internalDomainNameSuffix": "internal.local"},
+            "ipConfigurations": [
+                {
+                    "name": "ipconfig1",
+                    "id": "ipconfig-id",
+                    "properties": {"privateIPAddress": "10.0.0.4", "publicIPAddress": {"id": "public-ip-id"}},
+                    "etag": 'W/"12345"',
+                }
+            ],
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_network_interface_request", return_value=mock_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-network-interface-details-get")
+
+    result = get_network_interface_command(mock_client, mock_params, args)
+
+    mock_client.get_network_interface_request.assert_called_once_with("sub-id", "rg1", "nic1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.Interfaces"
+    assert result.outputs_key_field == "name"
+    assert result.outputs["name"] == "nic1"
 
 
 def test_get_single_ip_details_from_list_of_ip_details():
@@ -3575,12 +4422,52 @@ def test_get_public_ip_details_command_with_resource_group(mocker):
     mock_client.get_public_ip_details_request.assert_called_once_with("sub-id", "rg1", "ip1")
 
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "Azure.Network.IPConfigurations"
+    assert result.outputs_prefix == "Azure.VirtualNetworks.PublicIPAddresses"
     assert result.outputs_key_field == "id"
     assert result.outputs["properties"]["ipAddress"] == "1.2.3.4"
     assert result.outputs["properties"]["publicIPAddressVersion"] == "IPv4"
     assert result.outputs["properties"]["publicIPAllocationMethod"] == "Static"
     assert result.outputs["etag"] == "12345"
+    assert "ip1" in result.readable_output
+
+
+def test_get_public_ip_details_command_deprecated(mocker):
+    """
+    Given: A subscription, resource group, and public IP name using the deprecated command.
+    When: get_public_ip_details_command is called with the deprecated command name.
+    Then: It should call get_public_ip_details_request and return correct CommandResults
+          with the deprecated prefix.
+    """
+    from Azure import get_public_ip_details_command
+
+    mock_client = mocker.Mock()
+    mock_params = {"subscription_id": "sub-id", "resource_group_name": "rg1"}
+    args = {"subscription_id": "sub-id", "resource_group_name": "rg1", "address_name": "ip1"}
+
+    mock_response = {
+        "id": "/subscriptions/sub-id/resourceGroups/rg1/providers/Microsoft.Network/publicIPAddresses/ip1",
+        "name": "ip1",
+        "location": "eastus",
+        "etag": 'W/"12345"',
+        "properties": {
+            "ipAddress": "1.2.3.4",
+            "publicIPAddressVersion": "IPv4",
+            "publicIPAllocationMethod": "Static",
+            "ipConfiguration": {"id": "config-id"},
+            "dnsSettings": {"domainNameLabel": "label1", "fqdn": "ip1.eastus.cloudapp.azure.com"},
+        },
+    }
+
+    mocker.patch.object(mock_client, "get_public_ip_details_request", return_value=mock_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-vm-public-ip-details-get")
+
+    result = get_public_ip_details_command(mock_client, mock_params, args)
+
+    mock_client.get_public_ip_details_request.assert_called_once_with("sub-id", "rg1", "ip1")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.Network.IPConfigurations"
+    assert result.outputs_key_field == "id"
     assert "ip1" in result.readable_output
 
 
@@ -4118,6 +5005,44 @@ def test_nsg_security_rules_list_command_success(mocker):
     mock_client.list_security_rules.assert_called_once_with("test-sub-id", "test-rg", "test-nsg")
 
 
+def test_nsg_security_rules_list_command_deprecated(mocker):
+    """
+    Given: The command arguments using the deprecated command.
+    When: Calling azure-nsg-security-rules-list command with the deprecated command name.
+    Then: The command should successfully process and return network security rules with the deprecated prefix.
+    """
+    mock_client = mocker.Mock()
+    mock_response = {
+        "value": [
+            {
+                "name": "rule1",
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+                "/securityRules/rule1",
+                "properties": {"direction": "Inbound", "priority": 100, "access": "Allow"},
+            },
+            {
+                "name": "rule2",
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+                "/securityRules/rule2",
+                "properties": {"direction": "Outbound", "priority": 200, "access": "Deny"},
+            },
+        ]
+    }
+    mock_client.list_security_rules.return_value = mock_response
+
+    params = {}
+    args = {"subscription_id": "test-sub-id", "resource_group_name": "test-rg", "network_security_group_name": "test-nsg"}
+
+    mocker.patch("Azure.demisto.command", return_value="azure-nsg-security-rules-list")
+
+    result = nsg_security_rules_list_command(mock_client, params, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "Azure.NSGRule"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response["value"]
+
+
 def test_nsg_security_rules_list_command_empty_response(mocker):
     """
     Given: The command arguments.
@@ -4187,3 +5112,1114 @@ def test_nsg_security_rules_list_command_missing_properties(mocker):
 
     assert isinstance(result, CommandResults)
     assert len(result.outputs) == 2
+
+
+def test_storage_blob_service_properties_set_command_new(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to set blob service properties.
+    When: The storage_blob_service_properties_set_command function is called with valid parameters with
+        azure-storage-blob-service-property-set.
+    Then: The function should return the updated blob service properties in the expected format,
+        including backward compatibility outputs.
+    """
+    from Azure import storage_blob_service_properties_set_command
+
+    # Prepare mock response
+    properties_response = {
+        "name": "default",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Storage/storageAccounts/teststorage/blobServices"
+        "/default",
+        "properties": {"deleteRetentionPolicy": {"enabled": True, "days": 7}},
+    }
+
+    mocker.patch.object(client, "storage_blob_service_properties_set_request", return_value=properties_response)
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-property-set")
+
+    # Call the function
+    args = {"account_name": "teststorage", "delete_rentention_policy_enabled": "true", "delete_rentention_policy_days": "7"}
+
+    result = storage_blob_service_properties_set_command(client, mock_params, args)
+
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == properties_response
+    assert result.raw_response == properties_response
+
+
+def test_storage_blob_service_properties_get_command_new(mocker):
+    """
+    Given: An Azure client mock and the get_blob_service_properties.json file.
+    When: storage_blob_service_properties_get_command is called with azure-storage-blob-service-property-get.
+    Then: The CommandResults should have correct outputs, readable_output, and metadata, including backward compatibility outputs.
+    """
+    from Azure import storage_blob_service_properties_get_command
+
+    mock_response = util_load_json("test_data/get_blob_service_properties.json")
+
+    mock_client = mocker.Mock()
+    mock_client.storage_blob_service_properties_get_request.return_value = mock_response
+    mocker.patch("Azure.demisto.command", return_value="azure-storage-blob-service-property-get")
+
+    params = {"subscription_id": "subid", "resource_group_name": "rg1"}
+    args = {"account_name": "teststorage"}
+
+    result = storage_blob_service_properties_get_command(mock_client, params, args)
+
+    assert result.outputs_prefix == "Azure.Storage.BlobServices"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert result.raw_response == mock_response
+
+
+def test_create_network_security_group(mocker, client):
+    """
+    Given: An Azure client and a request to create a network security group.
+    When: The create_network_security_group function is called with valid parameters.
+    Then: The function should return the created network security group information in the expected format.
+    """
+    # Prepare mock response
+    nsg_response = {
+        "name": "test-nsg",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
+        "location": "eastus",
+        "properties": {},
+    }
+
+    mocker.patch.object(client, "http_request", return_value=nsg_response)
+
+    result = client.create_network_security_group(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        security_group_name="test-nsg",
+        location="eastus",
+    )
+
+    assert result == nsg_response
+    client.http_request.assert_called_once_with(
+        method="PUT",
+        full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
+        params={"api-version": "2025-05-01"},
+        json_data={"location": "eastus"},
+    )
+
+
+def test_create_network_security_group_error(mocker, client):
+    """
+    Given: An Azure client and a request to create a network security group.
+    When: The create_network_security_group function is called and an exception is raised.
+    Then: The function should call handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("test error"))
+    mocker.patch.object(client, "handle_azure_error")
+
+    client.create_network_security_group(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        security_group_name="test-nsg",
+        location="eastus",
+    )
+
+    client.handle_azure_error.assert_called_once()
+
+
+def test_list_vm_request(mocker, client):
+    """
+    Given: An Azure client and a request to list virtual machines.
+    When: The list_vm_request function is called with valid parameters.
+    Then: The function should return the list of virtual machines in the expected format.
+    """
+    # Prepare mock response
+    vm_response = {
+        "value": [
+            {
+                "name": "test-vm",
+                "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines/test-vm",
+                "location": "eastus",
+                "properties": {},
+            }
+        ]
+    }
+
+    mocker.patch.object(client, "http_request", return_value=vm_response)
+
+    result = client.list_vm_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        next_token="",
+    )
+
+    assert result == vm_response
+    client.http_request.assert_called_once_with(
+        method="GET",
+        full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines",
+        params={"api-version": "2025-04-01"},
+    )
+
+
+def test_list_vm_request_with_next_token(mocker, client):
+    """
+    Given: An Azure client and a request to list virtual machines with a next token.
+    When: The list_vm_request function is called with a next token.
+    Then: The function should return the list of virtual machines using the next token.
+    """
+    # Prepare mock response
+    vm_response = {
+        "value": [
+            {
+                "name": "test-vm2",
+                "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Compute/virtualMachines/test-vm2",
+                "location": "eastus",
+                "properties": {},
+            }
+        ]
+    }
+
+    mocker.patch.object(client, "http_request", return_value=vm_response)
+
+    result = client.list_vm_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        next_token="https://management.azure.com/next-page-url",
+    )
+
+    assert result == vm_response
+    client.http_request.assert_called_once_with(
+        method="GET",
+        full_url="https://management.azure.com/next-page-url",
+        params={},
+    )
+
+
+def test_list_vm_request_error(mocker, client):
+    """
+    Given: An Azure client and a request to list virtual machines.
+    When: The list_vm_request function is called and an exception is raised.
+    Then: The function should call handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("test error"))
+    mocker.patch.object(client, "handle_azure_error")
+
+    client.list_vm_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        next_token="",
+    )
+
+    client.handle_azure_error.assert_called_once()
+
+
+def test_update_network_interface_request(mocker, client):
+    """
+    Given: An Azure client and a request to update a network interface.
+    When: The update_network_interface_request function is called with valid parameters.
+    Then: The function should return the updated network interface information in the expected format.
+    """
+    # Prepare mock response
+    network_interface_response = {
+        "name": "test-nic",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkInterfaces/test-nic",
+        "properties": {"ipConfigurations": []},
+    }
+
+    mocker.patch.object(client, "http_request", return_value=network_interface_response)
+
+    result = client.update_network_interface_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        interface_name="test-nic",
+        network_interface_data={"properties": {"ipConfigurations": []}},
+    )
+
+    assert result == network_interface_response
+    client.http_request.assert_called_once_with(
+        method="PUT",
+        full_url="https://management.azure.com/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkInterfaces/test-nic",
+        params={"api-version": "2023-05-01"},
+        json_data={"properties": {"ipConfigurations": []}},
+    )
+
+
+def test_update_network_interface_request_error(mocker, client):
+    """
+    Given: An Azure client and a request to update a network interface.
+    When: The update_network_interface_request function is called and an exception is raised.
+    Then: The function should call handle_azure_error.
+    """
+    mocker.patch.object(client, "http_request", side_effect=Exception("test error"))
+    mocker.patch.object(client, "handle_azure_error")
+
+    client.update_network_interface_request(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        interface_name="test-nic",
+        network_interface_data={"properties": {"ipConfigurations": []}},
+    )
+
+    client.handle_azure_error.assert_called_once()
+
+
+def test_nsg_security_group_create_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to create a network security group.
+    When: The nsg_security_group_create_command function is called with valid parameters.
+    Then: The function should return the created network security group information in the expected format.
+    """
+    from Azure import nsg_security_group_create_command
+
+    # Prepare mock response
+    nsg_response = {
+        "name": "test-nsg",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
+        "location": "eastus",
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "etag": 'W/"test-etag"',
+        "properties": {},
+    }
+
+    mocker.patch.object(client, "create_network_security_group", return_value=nsg_response)
+
+    args = {
+        "subscription_id": "sub-id",
+        "resource_group_name": "test-rg",
+        "security_group_name": "test-nsg",
+        "location": "eastus",
+    }
+
+    result = nsg_security_group_create_command(client=client, params=mock_params, args=args)
+
+    assert result.outputs_prefix == "Azure.VirtualNetworks.SecurityGroups"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == {
+        "name": "test-nsg",
+        "id": "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.Network/networkSecurityGroups/test-nsg",
+        "location": "eastus",
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "etag": "test-etag",
+        "properties": {},
+    }
+    assert "The network security group test-nsg was created successfully" in result.readable_output
+    client.create_network_security_group.assert_called_once_with(
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        security_group_name="test-nsg",
+        location="eastus",
+    )
+
+
+def test_list_vm_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for listing virtual machines.
+    When:
+        - Calling list_vm_command.
+    Then:
+        - Ensure the command returns the expected CommandResults object with the correct outputs.
+    """
+    from Azure import list_vm_command
+
+    client = mocker.MagicMock()
+    client.list_vm_request.return_value = {"value": [{"id": "vm1", "name": "test-vm"}], "nextLink": "next_token_value"}
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+    }
+    params = {}
+
+    result = list_vm_command(client, params, args)
+
+    assert result.outputs == {
+        "Azure.Compute.VirtualMachines(val.id && val.id == obj.id)": [{"id": "vm1", "name": "test-vm"}],
+        "Azure.Compute(true)": {"VirtualMachinesNextToken": "next_token_value"},
+    }
+    client.list_vm_request.assert_called_once_with("sub1", "rg1", "")
+
+
+def test_list_vm_command_no_vms(mocker):
+    """
+    Given:
+        - Valid arguments but no virtual machines are returned.
+    When:
+        - Calling list_vm_command.
+    Then:
+        - Ensure the command returns a CommandResults object with a "No Virtual Machines found." message.
+    """
+    from Azure import list_vm_command
+
+    client = mocker.MagicMock()
+    client.list_vm_request.return_value = {"value": []}
+
+    args = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+    params = {}
+
+    result = list_vm_command(client, params, args)
+
+    assert result.readable_output == "No Virtual Machines found."
+    client.list_vm_request.assert_called_once_with("sub1", "rg1", "")
+
+
+def test_network_interface_update_command_success(mocker):
+    """
+    Given:
+        - Valid arguments for updating a network interface.
+    When:
+        - Calling network_interface_update_command.
+    Then:
+        - Ensure the command returns the expected CommandResults object with the correct outputs.
+    """
+    from Azure import network_interface_update_command
+
+    client = mocker.MagicMock()
+    client.get_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "properties": {"enableIPForwarding": False, "enableAcceleratedNetworking": False},
+    }
+    client.update_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "etag": 'W/"etag-value"',
+        "properties": {
+            "enableIPForwarding": True,
+            "enableAcceleratedNetworking": True,
+            "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
+        },
+    }
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "network_interface_name": "test-nic",
+        "enable_ip_forwarding": "true",
+        "enable_accelerate_networking": "true",
+        "internal_dns_name_label": "test-label",
+        "dns_servers": "1.1.1.1",
+    }
+    params = {}
+
+    result = network_interface_update_command(client, params, args)
+
+    assert result.outputs == {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "etag": "etag-value",
+        "properties": {
+            "enableIPForwarding": True,
+            "enableAcceleratedNetworking": True,
+            "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
+        },
+    }
+    assert result.outputs_prefix == "Azure.VirtualNetworks.NetworkInterfaces"
+    assert result.outputs_key_field == "id"
+    client.get_network_interface_request.assert_called_once_with("sub1", "rg1", "test-nic")
+    client.update_network_interface_request.assert_called_once_with(
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        interface_name="test-nic",
+        network_interface_data={
+            "id": "nic1",
+            "name": "test-nic",
+            "location": "eastus",
+            "properties": {
+                "enableIPForwarding": True,
+                "enableAcceleratedNetworking": True,
+                "dnsSettings": {"internalDnsNameLabel": "test-label", "dnsServers": ["1.1.1.1"]},
+            },
+        },
+    )
+
+
+def test_network_interface_update_command_add_nsg(mocker):
+    """
+    Given:
+        - Valid arguments for updating a network interface, including adding a new NSG.
+    When:
+        - Calling network_interface_update_command.
+    Then:
+        - Ensure the command adds the NSG to the properties.
+    """
+    from Azure import network_interface_update_command
+
+    client = mocker.MagicMock()
+    client.get_network_interface_request.return_value = {"id": "nic1", "name": "test-nic", "location": "eastus", "properties": {}}
+    client.update_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "etag": 'W/"etag-value"',
+        "properties": {
+            "networkSecurityGroup": {
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+            }
+        },
+    }
+
+    expected_updated_nic = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "properties": {
+            "networkSecurityGroup": {
+                "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+            }
+        },
+    }
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "network_interface_name": "test-nic",
+        "network_security_group_name": "nsg1",
+    }
+    params = {}
+
+    result = network_interface_update_command(client, params, args)
+
+    assert (
+        result.outputs.get("properties", {}).get("networkSecurityGroup", {}).get("id")
+        == "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1"
+    )
+    client.get_network_interface_request.assert_called_once_with("sub1", "rg1", "test-nic")
+    client.update_network_interface_request.assert_called_once_with(
+        subscription_id="sub1", resource_group_name="rg1", interface_name="test-nic", network_interface_data=expected_updated_nic
+    )
+
+
+def test_network_interface_update_command_remove_nsg(mocker):
+    """
+    Given:
+        - Valid arguments for updating a network interface, including removing the NSG.
+    When:
+        - Calling network_interface_update_command.
+    Then:
+        - Ensure the command removes the NSG from the properties.
+    """
+    from Azure import network_interface_update_command
+
+    client = mocker.MagicMock()
+    client.get_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "properties": {"networkSecurityGroup": {"id": "nsg1"}},
+    }
+    client.update_network_interface_request.return_value = {
+        "id": "nic1",
+        "name": "test-nic",
+        "location": "eastus",
+        "etag": 'W/"etag-value"',
+        "properties": {},
+    }
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "network_interface_name": "test-nic",
+        "remove_network_security_group": "yes",
+    }
+    params = {}
+
+    result = network_interface_update_command(client, params, args)
+
+    assert "networkSecurityGroup" not in result.outputs.get("properties", {})
+    client.get_network_interface_request.assert_called_once_with("sub1", "rg1", "test-nic")
+    client.update_network_interface_request.assert_called_once_with(
+        subscription_id="sub1",
+        resource_group_name="rg1",
+        interface_name="test-nic",
+        network_interface_data={
+            "id": "nic1",
+            "name": "test-nic",
+            "location": "eastus",
+            "properties": {},
+        },
+    )
+
+
+def test_network_interface_update_command_conflict_nsg(mocker):
+    """
+    Given:
+        - Conflicting arguments for updating a network interface (both setting and removing NSG).
+    When:
+        - Calling network_interface_update_command.
+    Then:
+        - Ensure the command raises a DemistoException.
+    """
+    from Azure import network_interface_update_command
+    from CommonServerPython import DemistoException
+    import pytest
+
+    client = mocker.MagicMock()
+
+    args = {
+        "subscription_id": "sub1",
+        "resource_group_name": "rg1",
+        "network_interface_name": "test-nic",
+        "network_security_group_name": "nsg1",
+        "remove_network_security_group": "yes",
+    }
+    params = {}
+
+    with pytest.raises(
+        DemistoException, match="The remove_network_security_group option cannot be used with network_security_group_name."
+    ):
+        network_interface_update_command(client, params, args)
+
+
+def test_test_module_device_code_flow(mocker):
+    """
+    Given: A client configured with the Device Code authentication type.
+    When: test_module is called (Test button).
+    Then: A DemistoException is raised, because the Device Code token lives in the saved instance
+          context and the Test button cannot validate it. The user is directed to `!azure-auth-test`.
+          No API call is made.
+    """
+    client = AzureClient(app_id="test_app_id", connection_type="Device Code")
+    mock_http = mocker.patch.object(client, "http_request", return_value={})
+
+    with pytest.raises(DemistoException) as excinfo:
+        Azure.test_module(client)
+
+    assert "azure-auth-test" in str(excinfo.value)
+    mock_http.assert_not_called()
+
+
+def test_test_module_authorization_code_flow(mocker):
+    """
+    Given: A client configured with the Authorization Code authentication type.
+    When: test_module is called (Test button).
+    Then: It validates directly via the roleAssignments call (the authorization code is in the
+          instance parameters, so a token can be obtained on demand) and returns "ok".
+    """
+    client = AzureClient(app_id="test_app_id", connection_type="Authorization Code")
+    mock_http = mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+    mock_http.assert_called_once()
+
+
+def test_test_module_client_credentials_ok(mocker, client):
+    """
+    Given: A client configured with the Client Credentials flow (default) and a successful API call.
+    When: test_module is called.
+    Then: It returns "ok".
+    """
+    mocker.patch.object(client, "connection_type", "Client Credentials")
+    mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+
+
+def test_test_module_managed_identities_uses_resource_groups(mocker):
+    """
+    Given: A client configured with the Azure Managed Identities authentication type.
+    When: test_module is called (Test button).
+    Then: It validates via the lightweight resource-groups list call (not the roleAssignments call),
+          because a Managed Identity often lacks the roleAssignments/read permission while still being
+          able to run other commands. It returns "ok".
+    """
+    client = AzureClient(app_id="test_app_id", connection_type="Azure Managed Identities")
+    client.subscription_id = "sub-123"
+    mock_http = mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+
+    mock_http.assert_called_once()
+    _, kwargs = mock_http.call_args
+    assert kwargs["full_url"].endswith("/subscriptions/sub-123/resourcegroups")
+    assert "roleAssignments" not in kwargs["full_url"]
+
+
+def test_test_connection_success(mocker, client):
+    """
+    Given: A client whose MicrosoftClient can fetch an access token.
+    When: test_connection is called.
+    Then: A success message is returned.
+    """
+    mocker.patch.object(client.ms_client, "get_access_token")
+
+    assert "Success" in Azure.test_connection(client)
+
+
+def test_start_auth(mocker, client):
+    """
+    Given: A client.
+    When: start_auth is called.
+    Then: It returns CommandResults wrapping the MicrosoftClient start_auth output.
+    """
+    mocker.patch.object(client.ms_client, "start_auth", return_value="follow these steps")
+
+    result = Azure.start_auth(client)
+
+    assert result.readable_output == "follow these steps"
+
+
+def test_complete_auth(mocker, client):
+    """
+    Given: A client.
+    When: complete_auth is called.
+    Then: It fetches the access token and returns a success message.
+    """
+    mock_get_token = mocker.patch.object(client.ms_client, "get_access_token")
+
+    result = Azure.complete_auth(client)
+
+    mock_get_token.assert_called_once()
+    assert "completed successfully" in result
+
+
+def test_get_azure_client_device_code_no_secret(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector) with the Device Code flow and no Client Secret.
+    When: get_azure_client is called.
+    Then: It does NOT raise the missing-secret error and builds a client with the Device Code connection type.
+    """
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {}
+    params["auth_type"] = "Device Code"
+
+    get_azure_client(params, {}, "command")
+
+    # The connection_type must be propagated to the client (no missing-secret exception raised).
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["connection_type"] == "Device Code"
+
+
+def test_get_azure_client_marketplace_storage_scope(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector), Client Credentials, and a storage-container command.
+    When: get_azure_client is called.
+    Then: The AzureClient is built with the STORAGE scope and STORAGE resource (not the management
+          scope), so the storage-scoped token is requested. Regression test for the scope-override bug.
+    """
+    from Azure import STORAGE_SCOPE, STORAGE_RESOURCE
+
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {"password": "secret"}
+    params["auth_type"] = "Client Credentials"
+
+    get_azure_client(params, {}, "azure-storage-container-create")
+
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["scope"] == STORAGE_SCOPE
+    assert kwargs["resource"] == STORAGE_RESOURCE
+    assert kwargs["connection_type"] == "Client Credentials"
+
+
+def test_azure_client_client_credentials_does_not_send_resource_to_v2_endpoint(mocker):
+    """
+    Given: A Client Credentials client (uses the v2.0 token endpoint with a `.default` scope).
+    When: AzureClient builds the MicrosoftClient.
+    Then: No `resource` is forwarded to MicrosoftClient, so the token request sends only `scope`.
+          Sending both `scope` and `resource` to the v2.0 endpoint causes Microsoft to return
+          "invalid_target: The resource parameter provided in the request doesn't match with the
+          requested scopes". Only Device Code (v1.0-style) uses `resource`.
+    """
+    from Azure import DEFAULT_SCOPE, DEFAULT_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id="my-tenant",
+        scope=DEFAULT_SCOPE,
+        resource=DEFAULT_RESOURCE,
+    )
+
+    assert captured["scope"] == DEFAULT_SCOPE
+    # resource must not be forwarded for the v2.0 client-credentials flow.
+    assert captured.get("resource") is None
+
+
+def test_azure_client_device_code_default_resource_derives_management_scope(mocker):
+    """
+    Given: A Device Code client for a management (default) command, i.e. resource=DEFAULT_RESOURCE.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The MicrosoftClient receives the management resource (no trailing slash) and a Device Code
+          delegated scope derived from it. Regression test: the branch derives scope/resource from
+          the per-command resource instead of hardcoding management-only values.
+    """
+    from Azure import DEFAULT_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(app_id="app", connection_type="Device Code", resource=DEFAULT_RESOURCE)
+
+    expected_resource = DEFAULT_RESOURCE.rstrip("/")
+    assert captured["resource"] == expected_resource
+    assert captured["scope"] == f"{expected_resource}/user_impersonation offline_access user.read"
+    assert captured["token_retrieval_url"] is not None
+
+
+def test_azure_client_device_code_storage_resource_derives_storage_scope(mocker):
+    """
+    Given: A Device Code client for a storage-container command, i.e. resource=STORAGE_RESOURCE.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The MicrosoftClient receives the storage resource (no trailing slash) and a Device Code
+          delegated scope derived from it, so storage commands are storage-scoped under Device Code
+          auth instead of always management-scoped.
+    """
+    from Azure import STORAGE_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(app_id="app", connection_type="Device Code", resource=STORAGE_RESOURCE)
+
+    expected_resource = STORAGE_RESOURCE.rstrip("/")
+    assert captured["resource"] == expected_resource
+    assert captured["scope"] == f"{expected_resource}/user_impersonation offline_access user.read"
+    assert captured["token_retrieval_url"] is not None
+
+
+def test_azure_client_client_credentials_gov_endpoint_builds_gov_token_url(mocker):
+    """
+    Given: A Client Credentials client configured with a US Gov Azure AD endpoint
+           (https://login.microsoftonline.us).
+    When: AzureClient builds the MicrosoftClient.
+    Then: The token_retrieval_url points to the same (gov) authority so the confidential-client token
+          request is not sent cross-cloud. Regression test for the Microsoft error
+          "Confidential Client is not supported in Cross Cloud request".
+    """
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id="my-tenant",
+        azure_ad_endpoint="https://login.microsoftonline.us",
+    )
+
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.us/my-tenant/oauth2/v2.0/token"
+
+
+def test_azure_client_client_credentials_default_endpoint_builds_commercial_token_url(mocker):
+    """
+    Given: A Client Credentials client using the default (commercial) Azure AD endpoint.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The token_retrieval_url points to the commercial login.microsoftonline.com authority.
+    """
+    from Azure import DEFAULT_AZURE_AD_ENDPOINT
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id="my-tenant",
+        azure_ad_endpoint=DEFAULT_AZURE_AD_ENDPOINT,
+    )
+
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.com/my-tenant/oauth2/v2.0/token"
+
+
+def test_azure_client_managed_identities_passes_mi_args_to_ms_client(mocker):
+    """
+    Given: A client constructed with the Azure Managed Identities flow and a user-assigned client ID.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The MicrosoftClient receives the managed_identities_client_id and the management Azure
+          resource URI, matching the reference Azure packs (e.g. AzureNetworkSecurityGroups). The
+          grant_type is None (the managed-identities path is selected by managed_identities_client_id,
+          not by grant_type). No device-code token URL is set.
+    """
+    from Azure import DEFAULT_RESOURCE, DEFAULT_SCOPE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Azure Managed Identities",
+        managed_identities_client_id="my-mi-client-id",
+        scope=DEFAULT_SCOPE,
+        resource=DEFAULT_RESOURCE,
+    )
+
+    assert captured["managed_identities_client_id"] == "my-mi-client-id"
+    # The MI resource URI is the management Azure resource with the trailing slash stripped
+    # (the MI branch derives it from `(resource or DEFAULT_RESOURCE).rstrip("/")`).
+    assert captured["managed_identities_resource_uri"] == DEFAULT_RESOURCE.rstrip("/")
+    assert captured["managed_identities_resource_uri"] == "https://management.azure.com"
+    # Managed Identities is not a grant_type flow; the path is chosen by managed_identities_client_id.
+    assert captured.get("grant_type") is None
+    # Device-code-only token retrieval URL must not be set for the MI flow.
+    assert captured.get("token_retrieval_url") is None
+
+
+def test_azure_client_client_credentials_empty_tenant_builds_token_url_without_none(mocker):
+    """
+    Given: A non-device-code client (Client Credentials) with no tenant_id configured.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The token_retrieval_url is built with an empty tenant segment (no literal "None" in the URL).
+          Regression test for None stringification in the token URL.
+    """
+    from Azure import DEFAULT_AZURE_AD_ENDPOINT
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id=None,
+        azure_ad_endpoint=DEFAULT_AZURE_AD_ENDPOINT,
+    )
+
+    assert "None" not in captured["token_retrieval_url"]
+    # urljoin collapses the empty tenant segment, so the authority host is followed by a single slash.
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.com/oauth2/v2.0/token"
+
+
+def test_azure_client_managed_identities_storage_resource_derives_storage_uri(mocker):
+    """
+    Given: A Managed Identities client for a storage-container command (per-command resource is the
+           storage resource).
+    When: AzureClient builds the MicrosoftClient.
+    Then: managed_identities_resource_uri is the storage resource (not the management default), so the
+          MI token is storage-scoped. Regression test for storage commands failing with 401/403 under
+          MI auth because the token was always management-scoped.
+    """
+    from Azure import STORAGE_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Azure Managed Identities",
+        managed_identities_client_id="my-mi-client-id",
+        resource=STORAGE_RESOURCE,
+    )
+
+    assert captured["managed_identities_resource_uri"] == STORAGE_RESOURCE.rstrip("/")
+    assert captured["managed_identities_resource_uri"] == "https://storage.azure.com"
+
+
+def test_get_azure_client_managed_identities_resolves_client_id(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector) with auth_type "Azure Managed Identities" and a configured
+           managed_identities_client_id credential.
+    When: get_azure_client is called.
+    Then: get_azure_managed_identities_client_id resolves the client ID from params and it is passed to
+          AzureClient. The Client Credentials missing-secret guard is NOT triggered (no Client Secret
+          required for the MI flow).
+    """
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {}  # no client secret configured
+    params["auth_type"] = "Azure Managed Identities"
+    params["managed_identities_client_id"] = {"password": "resolved-mi-id"}
+
+    get_azure_client(params, {}, "command")
+
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["connection_type"] == "Azure Managed Identities"
+    assert kwargs["managed_identities_client_id"] == "resolved-mi-id"
+
+
+def test_get_azure_client_managed_identities_system_assigned(mocker, mock_params):
+    """
+    Given: Marketplace path with auth_type "Azure Managed Identities" and no client ID configured.
+    When: get_azure_client is called.
+    Then: The system-assigned managed identity sentinel is resolved and passed to AzureClient.
+    """
+    from MicrosoftApiModule import MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {}
+    params["auth_type"] = "Azure Managed Identities"
+    params["managed_identities_client_id"] = {}  # no client id -> system assigned
+
+    get_azure_client(params, {}, "command")
+
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["managed_identities_client_id"] == MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+
+
+def test_get_azure_client_credentials_none(mocker, mock_params):
+    """
+    Given: Marketplace path, Client Credentials flow, and credentials explicitly set to None.
+    When: get_azure_client is called.
+    Then: It raises a missing-parameter DemistoException (listing the Client Secret) without an
+          AttributeError.
+    """
+    mocker.patch("Azure.get_connector_id", return_value=None)
+
+    params = mock_params.copy()
+    params["credentials"] = None
+    params["auth_type"] = "Client Credentials"
+
+    with pytest.raises(DemistoException) as excinfo:
+        get_azure_client(params, {}, "command")
+
+    assert "Client Secret" in str(excinfo.value)
+    assert "Client Credentials" in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    "auth_type, missing_key, expected_in_message",
+    [
+        ("Client Credentials", "app_id", "Application ID"),
+        ("Client Credentials", "tenant_id", "Tenant ID"),
+        ("Client Credentials", "credentials", "Client Secret"),
+        ("Client Credentials", "subscription_id", "Default Subscription ID"),
+        ("Device Code", "app_id", "Application ID"),
+        ("Device Code", "subscription_id", "Default Subscription ID"),
+        ("Authorization Code", "app_id", "Application ID"),
+        ("Authorization Code", "redirect_uri", "Application redirect URI"),
+        ("Authorization Code", "auth_code", "Authorization code"),
+        ("Authorization Code", "subscription_id", "Default Subscription ID"),
+        ("Azure Managed Identities", "subscription_id", "Default Subscription ID"),
+    ],
+)
+def test_validate_auth_params_missing(auth_type, missing_key, expected_in_message):
+    """
+    Given: A full set of params for an auth type, with exactly one mandatory param removed.
+    When: validate_auth_params is called.
+    Then: It raises a DemistoException naming the missing parameter and the auth type.
+    """
+    from Azure import validate_auth_params
+
+    full_params = {
+        "app_id": "app",
+        "subscription_id": "sub",
+        "tenant_id": "tenant",
+        "credentials": {"password": "secret"},
+        "auth_code": {"password": "code"},
+        "redirect_uri": "redirect-uri",
+        "managed_identities_client_id": {"password": "mi-id"},
+        "auth_type": auth_type,
+    }
+    full_params.pop(missing_key)
+
+    with pytest.raises(DemistoException) as excinfo:
+        validate_auth_params(full_params, auth_type)
+
+    assert expected_in_message in str(excinfo.value)
+    assert auth_type in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    "auth_type, params",
+    [
+        (
+            "Client Credentials",
+            {"app_id": "app", "subscription_id": "sub", "tenant_id": "t", "credentials": {"password": "s"}},
+        ),
+        ("Device Code", {"app_id": "app", "subscription_id": "sub"}),
+        (
+            "Authorization Code",
+            {
+                "app_id": "app",
+                "subscription_id": "sub",
+                "redirect_uri": "redirect-uri",
+                "auth_code": {"password": "c"},
+            },
+        ),
+        (
+            "Azure Managed Identities",
+            {"subscription_id": "sub", "managed_identities_client_id": {"password": "mi-id"}},
+        ),
+    ],
+)
+def test_validate_auth_params_valid(auth_type, params):
+    """
+    Given: A complete set of mandatory params for an auth type.
+    When: validate_auth_params is called.
+    Then: It does not raise.
+    """
+    from Azure import validate_auth_params
+
+    params = {**params, "auth_type": auth_type}
+    validate_auth_params(params, auth_type)  # Should not raise
+
+
+def test_validate_auth_params_managed_identities_system_assigned():
+    """
+    Given: Azure Managed Identities with no explicit client ID (system-assigned) and a subscription.
+    When: validate_auth_params is called.
+    Then: It does not raise, because the system-assigned identity resolves to a sentinel client ID.
+    """
+    from Azure import validate_auth_params
+
+    params = {
+        "auth_type": "Azure Managed Identities",
+        "subscription_id": "sub",
+        "managed_identities_client_id": {},  # no password -> system assigned
+    }
+    validate_auth_params(params, "Azure Managed Identities")  # Should not raise
+
+
+def test_main_auth_reset(mocker):
+    """
+    Given: The azure-auth-reset command on the marketplace path.
+    When: main is called.
+    Then: reset_auth is invoked and the client is not built.
+    """
+    from Azure import main
+
+    mocker.patch.object(demisto, "command", return_value="azure-auth-reset")
+    mocker.patch.object(demisto, "params", return_value={})
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mock_reset = mocker.patch("Azure.reset_auth", return_value="reset done")
+    mock_get_client = mocker.patch("Azure.get_azure_client")
+    mocker.patch("Azure.return_results")
+
+    main()
+
+    mock_reset.assert_called_once()
+    mock_get_client.assert_not_called()

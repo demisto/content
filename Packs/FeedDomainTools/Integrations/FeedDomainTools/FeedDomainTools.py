@@ -161,17 +161,36 @@ class DomainToolsClient(BaseClient):
                 # for `domainrdap` feed, we have more data to display including the parsed data.
                 parsed_record = json_feed.get("parsed_record", {})
                 overall_risk_score = json_feed.get("overall_risk", None)
+                risk_score_details = None
+
+                dt_feed_data = {
+                    "value": indicator,
+                    "type": indicator_type,
+                    "timestamp": timestamp,
+                    "tags": ["DomainToolsFeeds", self.feed_type] + ud_tags,
+                    "tlp_color": self.tlp_color,
+                    "parsed_record": parsed_record,
+                    "overall_risk_score": overall_risk_score,
+                }
+
+                # for domaihotlist & domainriks feed, we will be returning the risk scores
+                if self.feed_type in (self.DOMAINRISK, self.DOMAINHOTLIST):
+                    risk_score_details = {
+                        "phishing_risk": json_feed.get("phishing_risk"),
+                        "malware_risk": json_feed.get("malware_risk"),
+                        "spam_risk": json_feed.get("spam_risk"),
+                        "proximity_risk": json_feed.get("proximity_risk"),
+                        "overall_risk": json_feed.get("overall_risk"),
+                    }
+
+                    if self.feed_type == self.DOMAINHOTLIST:
+                        risk_score_details["expires"] = json_feed.get("expires")
+
+                    # update the parsed dt feed data
+                    dt_feed_data["risk_score_details"] = risk_score_details
 
                 if indicator and indicator_type:
-                    yield {
-                        "value": indicator,
-                        "type": indicator_type,
-                        "timestamp": timestamp,
-                        "tags": ["DomainToolsFeeds", self.feed_type] + ud_tags,
-                        "tlp_color": self.tlp_color,
-                        "parsed_record": parsed_record,
-                        "overall_risk_score": overall_risk_score,
-                    }
+                    yield dt_feed_data
 
                     limit_counter += 1
                     processed_feeds += 1
@@ -244,6 +263,7 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
             tlp_color_ = item.get("tlp_color")
             parsed_record_ = item.get("parsed_record")
             overall_risk_score_ = item.get("overall_risk_score")
+            risk_score_details_ = item.get("risk_score_details")
 
             indicator_tags = ",".join(tags_).rstrip(",")
 
@@ -255,6 +275,9 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
 
             if parsed_record_:
                 raw_data["parsed_record"] = parsed_record_
+
+            if risk_score_details_:
+                raw_data["risk_score_details"] = risk_score_details_
 
             # Create indicator object for each value.
             indicator_obj = {
@@ -374,7 +397,8 @@ def test_module(client: DomainToolsClient, args: dict[str, str], params: dict[st
     """
     dt_feed_kwargs = {"top": 1, "after": None}
 
-    feed_type_ = params.get("feed_type", "NOD")
+    feed_type_ = params.get("feed_type", "nod")
+    feed_type_ = "nod" if feed_type_ == "ALL" else feed_type_
     try:
         next(client.build_iterator(feed_type=feed_type_, dt_feed_kwargs=dt_feed_kwargs))
     except Exception as e:

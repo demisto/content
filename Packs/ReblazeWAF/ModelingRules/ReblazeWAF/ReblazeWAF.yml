@@ -4,3 +4,5 @@ name: Reblaze WAF Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

@@ -4,3 +4,5 @@ name: Silverfort Admin Console Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

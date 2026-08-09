@@ -1,0 +1,313 @@
+{
+	"description": "Map incoming RS alert JSON data to XSOAR fields.",
+	"feed": false,
+	"id": "Google Threat Intelligence RS Alerts - Incoming Mapper",
+	"mapping": {
+		"Google Threat Intelligence RS Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"dbotMirrorDirection": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_direction",
+						"transformers": []
+					}
+				},
+				"dbotMirrorId": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_id",
+						"transformers": []
+					}
+				},
+				"dbotMirrorInstance": {
+					"complex": {
+						"filters": [],
+						"root": "mirror_instance",
+						"transformers": []
+					}
+				},
+				"Incident Link": {
+					"complex": {
+						"filters": [],
+						"root": "incident_link",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Name": {
+					"complex": {
+						"filters": [],
+						"root": "name",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Display Name": {
+					"complex": {
+						"filters": [],
+						"root": "displayName",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert State": {
+					"complex": {
+						"filters": [],
+						"root": "state",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Findings": {
+					"complex": {
+						"filters": [],
+						"root": "findings",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Finding Count": {
+					"complex": {
+						"filters": [],
+						"root": "findingCount",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Configurations": {
+					"complex": {
+						"filters": [],
+						"root": "configurations",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Audit Update Time": {
+					"complex": {
+						"accessor": "updateTime",
+						"filters": [],
+						"root": "audit",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Audit Create Time": {
+					"complex": {
+						"accessor": "createTime",
+						"filters": [],
+						"root": "audit",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Audit Creator": {
+					"complex": {
+						"accessor": "creator",
+						"filters": [],
+						"root": "audit",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Audit Updater": {
+					"complex": {
+						"accessor": "updater",
+						"filters": [],
+						"root": "audit",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Detail Type": {
+					"complex": {
+						"accessor": "detailType",
+						"filters": [],
+						"root": "detail",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Initial Access Broker Severity": {
+					"complex": {
+						"accessor": "severity",
+						"filters": [],
+						"root": "detail.initialAccessBroker",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Initial Access Broker Discovery Document IDs": {
+					"complex": {
+						"accessor": "discoveryDocumentIds",
+						"filters": [],
+						"root": "detail.initialAccessBroker",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Data Leak Severity": {
+					"complex": {
+						"accessor": "severity",
+						"filters": [],
+						"root": "detail.dataLeak",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Data Leak Discovery Document IDs": {
+					"complex": {
+						"accessor": "discoveryDocumentIds",
+						"filters": [],
+						"root": "detail.dataLeak",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Insider Threat Severity": {
+					"complex": {
+						"accessor": "severity",
+						"filters": [],
+						"root": "detail.insiderThreat",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Insider Threat Discovery Document IDs": {
+					"complex": {
+						"accessor": "discoveryDocumentIds",
+						"filters": [],
+						"root": "detail.insiderThreat",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Duplicate Of": {
+					"complex": {
+						"filters": [],
+						"root": "duplicateOf",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Duplicated By": {
+					"complex": {
+						"filters": [],
+						"root": "duplicatedBy",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert ETag": {
+					"complex": {
+						"filters": [],
+						"root": "etag",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert External ID": {
+					"complex": {
+						"filters": [],
+						"root": "externalId",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert AI Summary": {
+					"complex": {
+						"filters": [],
+						"root": "aiSummary",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Relevance Relevant": {
+					"complex": {
+						"accessor": "relevant",
+						"filters": [],
+						"root": "relevanceAnalysis",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Relevance Confidence": {
+					"complex": {
+						"accessor": "confidence",
+						"filters": [],
+						"root": "relevanceAnalysis",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Relevance Reasoning": {
+					"complex": {
+						"accessor": "reasoning",
+						"filters": [],
+						"root": "relevanceAnalysis",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Relevance Common Themes": {
+					"complex": {
+						"accessor": "commonThemes",
+						"filters": [],
+						"root": "relevanceAnalysis.evidence",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Relevance Distinct Themes": {
+					"complex": {
+						"accessor": "distinctThemes",
+						"filters": [],
+						"root": "relevanceAnalysis.evidence",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Relevance Level": {
+					"complex": {
+						"accessor": "relevanceLevel",
+						"filters": [],
+						"root": "relevanceAnalysis",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Severity Analysis Level": {
+					"complex": {
+						"accessor": "severityLevel",
+						"filters": [],
+						"root": "severityAnalysis",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Severity Analysis Confidence": {
+					"complex": {
+						"accessor": "confidence",
+						"filters": [],
+						"root": "severityAnalysis",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Severity Analysis Reasoning": {
+					"complex": {
+						"accessor": "reasoning",
+						"filters": [],
+						"root": "severityAnalysis",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Priority Analysis Level": {
+					"complex": {
+						"accessor": "priorityLevel",
+						"filters": [],
+						"root": "priorityAnalysis",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Priority Analysis Confidence": {
+					"complex": {
+						"accessor": "confidence",
+						"filters": [],
+						"root": "priorityAnalysis",
+						"transformers": []
+					}
+				},
+				"GTI RS Alert Priority Analysis Reasoning": {
+					"complex": {
+						"accessor": "reasoning",
+						"filters": [],
+						"root": "priorityAnalysis",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"accessor": "createTime",
+						"filters": [],
+						"root": "audit",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "Google Threat Intelligence RS Alerts - Incoming Mapper",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.10.0"
+}
