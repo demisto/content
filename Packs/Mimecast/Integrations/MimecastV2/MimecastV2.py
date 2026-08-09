@@ -1439,8 +1439,8 @@ def update_policy_command():
     return results
 
 
-def build_policy_v2_patch_body(args: dict) -> dict:
-    """Build a partial-update body for v2 blocked-senders PATCH endpoint."""
+def build_blocked_senders_policy_v2_body(args: dict) -> dict:
+    """Build body for v2 blocked-senders create/update requests."""
     from_date_str = arg_to_datetime(args["from_date"]).strftime(DATE_FORMAT) if args.get("from_date") else None  # type: ignore
     to_date_str = arg_to_datetime(args["to_date"]).strftime(DATE_FORMAT) if args.get("to_date") else None  # type: ignore
 
@@ -1490,7 +1490,7 @@ def update_block_sender_policy_command(policy_args: dict) -> CommandResults:
     if from_type == "everyone" and not (confirm_block_all and argToBoolean(confirm_block_all)):
         raise DemistoException("Blocking all senders requires confirm_block_all=true")
 
-    body = build_policy_v2_patch_body(policy_args)
+    body = build_blocked_senders_policy_v2_body(policy_args)
 
     api_endpoint = f"/policy-management/cloud-gateway/v1/blocked-senders/policies/{policy_id}"
     # is_file=True returns the raw response without parsing JSON, as the endpoint returns 204 No Content
