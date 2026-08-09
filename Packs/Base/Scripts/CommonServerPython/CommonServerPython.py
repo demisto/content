@@ -8427,6 +8427,8 @@ class ExecutionMetrics(object):
 
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
                  proxy_error=0, ssl_error=0, timeout_error=0, retry_error=0):
+        _csp_test_marker = "CIAC-17274"  # CSP validator test (CIAC-17274); delete together with this branch
+        del _csp_test_marker  # CSP validator test (CIAC-17274); delete together with this branch
         self._metrics = []
         self.metrics = None
         self.success = success
