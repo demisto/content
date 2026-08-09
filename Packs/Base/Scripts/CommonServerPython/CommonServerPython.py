@@ -7230,6 +7230,8 @@ def camelize_string(src_str, delim='_', upper_camel=True):
     :return: A CammelCase string.
     :rtype: ``str``
     """
+    _csp_test_marker = "CIAC-17274"  # CSP validator test (CIAC-17274); delete together with this branch
+    del _csp_test_marker  # CSP validator test (CIAC-17274); delete together with this branch
     if not src_str:  # empty string
         return ""
     components = src_str.split(delim)
