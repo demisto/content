@@ -1,7 +1,9 @@
 import base64
 import copy
 import json
+import os
 import re
+import urllib.parse
 from collections.abc import Callable
 from operator import itemgetter
 from enum import Enum
@@ -267,6 +269,12 @@ class CoreClient(BaseClient):
                 error_handler=error_handler,
                 with_metrics=with_metrics,
                 resp_type=resp_type,
+            )
+        if resp_type == "response":
+            raise DemistoException(
+                "resp_type='response' is not supported when requests are forwarded through "
+                "demisto._apiCall (RBAC mode); the raw HTTP response object is unavailable. "
+                "Use resp_type='content' instead."
             )
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
@@ -1201,6 +1209,18 @@ class CoreClient(BaseClient):
 
     @logger
     def get_script_execution_result_files(self, action_id: str, endpoint_id: str) -> Dict[str, Any]:
+        """Retrieve the script execution results file.
+
+        :type action_id: ``str``
+        :param action_id: The action ID of the script execution.
+
+        :type endpoint_id: ``str``
+        :param endpoint_id: The endpoint ID the script was executed on.
+
+        :return: A dictionary holding the resolved file name under ``filename``
+            and the raw file bytes under ``content``.
+        :rtype: ``Dict[str, Any]``
+        """
         response = self._http_request(
             method="POST",
             url_suffix="/scripts/get_script_execution_results_files",
@@ -1217,11 +1237,17 @@ class CoreClient(BaseClient):
         # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
         if not link:
             raise DemistoException(f"Failed getting response files for {action_id=}, {endpoint_id=}")
-        return self._http_request(
-            method="GET",
-            url_suffix=re.findall("download.*", link)[0],
-            resp_type="response",
-        )
+
+        matches = re.findall("download.*", link)
+        if not matches:
+            raise DemistoException(f"Unexpected download link format: {link}")
+
+        file_content = self._http_request(method="GET", url_suffix=matches[0], resp_type="content")
+
+        basename = os.path.basename(urllib.parse.urlparse(link).path)
+        filename = basename if basename.lower().endswith(".zip") else f"{action_id}.zip"
+
+        return {"filename": filename, "content": file_content}
 
     def action_status_get(self, action_id) -> Dict[str, Dict[str, Any]]:
         request_data: Dict[str, Any] = {
@@ -3651,7 +3677,7 @@ def get_scripts_command(client: CoreClient, args: Dict[str, str]) -> tuple[str, 
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk],
     )
-    scripts = copy.deepcopy(result.get("scripts")[offset : (offset + limit)])  # type: ignore
+    scripts = copy.deepcopy(result.get("scripts")[offset: (offset + limit)])  # type: ignore
     for script in scripts:
         timestamp = script.get("modification_date")
         script["modification_date_timestamp"] = timestamp
@@ -3851,15 +3877,10 @@ def get_script_execution_results_command(client: CoreClient, args: Dict) -> List
 
 
 def get_script_execution_result_files_command(client: CoreClient, args: Dict) -> Dict:
-    action_id = args.get("action_id", "")
+    action_id = str(args.get("action_id", ""))  # playbooks may pass an int
     endpoint_id = args.get("endpoint_id")
-    file_response = client.get_script_execution_result_files(action_id, endpoint_id)
-    try:
-        filename = file_response.headers.get("Content-Disposition").split("attachment; filename=")[1]
-    except Exception as e:
-        demisto.debug(f"Failed extracting filename from response headers - [{e!s}]")
-        filename = action_id + ".zip"
-    return fileResult(filename, file_response.content)
+    file_result = client.get_script_execution_result_files(action_id, endpoint_id)
+    return fileResult(file_result["filename"], file_result["content"])
 
 
 def add_exclusion_command(client: CoreClient, args: Dict) -> CommandResults:
