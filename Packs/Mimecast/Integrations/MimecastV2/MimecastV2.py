@@ -1050,12 +1050,32 @@ def build_blocked_senders_v2_hr_row(policy: dict) -> dict:
     }
 
 
+def get_blocked_senders_policy_command(policy_id: str) -> CommandResults:
+    """Get a single Blocked Senders policy by ID using the v2 GET API. The flat response is emitted verbatim."""
+    if not policy_id:
+        raise DemistoException("You need to enter policy ID")
+
+    policy = http_request("GET", f"{BLOCKED_SENDERS_V2_ENDPOINT}/{policy_id}")
+
+    return CommandResults(
+        outputs_prefix="Mimecast.BlockedSendersPolicy",
+        outputs=policy,
+        readable_output=tableToMarkdown(
+            "Mimecast Get blockedsenders Policy", build_blocked_senders_v2_hr_row(policy), BLOCKED_SENDERS_HR_HEADERS
+        ),
+        outputs_key_field="id",
+    )
+
+
 def get_policy_command(args):
     headers = ["Policy ID", "Sender", "Reciever", "Bidirectional", "Start", "End"]
     contents = []
     policy_id = args.get("policyID")
     policy_type = args.get("policyType", "blockedsenders")
     title = f"Mimecast Get {policy_type} Policy"
+
+    if policy_type == DEFAULT_POLICY_TYPE:
+        return get_blocked_senders_policy_command(policy_id)
 
     policies_list = get_policy_request(policy_type, policy_id)
     policies_context = []
