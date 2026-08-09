@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The *Akamai Page size* (`page_size`) parameter was removed. The page size is now managed internally by the integration and is no longer configurable."
+}

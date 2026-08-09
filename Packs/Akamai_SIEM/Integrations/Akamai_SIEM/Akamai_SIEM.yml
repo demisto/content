@@ -68,20 +68,23 @@ configuration:
   defaultvalue: 1 hours
   required: false
   section: Collect
-- display: Fetch limit (minimum is 20)
+- display: Incident fetch limit
   name: fetchLimit
   type: 0
   defaultvalue: '20'
   required: false
-  additionalinfo: The maximum total number of items to retrieve per fetch. For incident fetching (Cortex XSOAR) the maximum is 2000. For event collection (Cortex XSIAM) you can use a larger value, up to 80k.
+  additionalinfo: The maximum total number of incidents to retrieve per fetch. The maximum is 2000.
   section: Collect
-- display: Akamai Page size
-  name: page_size
+  hidden:
+  - marketplacev2
+  - platform
+- display: Events fetch limit
+  name: eventsFetchLimit
   type: 0
+  defaultvalue: '60000'
   required: false
+  additionalinfo: The maximum total number of events to retrieve per fetch. The maximum is 80k.
   section: Collect
-  defaultvalue: '20000'
-  additionalinfo: The number of events to fetch per single request to Akamai (multiple requests may be made in each fetch, up to the total Fetch limit). If you're getting aggregated delays, increase this value. The maximum per request is 20k. Note that if your API has a higher ingestion rate, the integration will detect it and immediately start the next run in order to fetch events quicker.
   hidden:
   - xsoar
   supportedModules:

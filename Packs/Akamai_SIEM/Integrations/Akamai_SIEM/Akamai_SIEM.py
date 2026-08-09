@@ -40,13 +40,13 @@ INTEGRATION_CONTEXT_NAME = "Akamai"
 
 VENDOR = "Akamai"
 PRODUCT = "WAF"
-FETCH_EVENTS_MAX_PAGE_SIZE = 20000  # Allowed events limit per request.
 DEFAULT_PAGE_SIZE = 20000  # Default events per request
 TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a safe zone delta.
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 MAX_ALLOWED_FETCH_LIMIT = 80000
-DEFAULT_FETCH_LIMIT = 20  # Default total items per fetch
+DEFAULT_INCIDENTS_FETCH_LIMIT = 20  # Default total incidents per fetch
+DEFAULT_EVENTS_FETCH_LIMIT = 60000  # Default total events per fetch
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10**6)  # 9 MB
 AKAMAI_MAX_LOOKBACK_MINUTES = 715  # 11h55m: max recovery window (12h) minus a 5-minute safety buffer.
 
@@ -276,63 +276,67 @@ def events_to_ec(raw_response: list) -> tuple[list, list, list]:
     events_human_readable: list[dict] = []
 
     for event in raw_response:
+        # Hoist the three nested sections once per event to avoid re-evaluating ``event.get(...)``
+        # dozens of times below. Behavior is unchanged: missing sections still default to {}.
+        attack_data = event.get("attackData", {})
+        http_message = event.get("httpMessage", {})
+        geo = event.get("geo", {})
+
         events_ec.append(
             {
                 "AttackData": assign_params(
-                    ConfigID=event.get("attackData", {}).get("configId"),
-                    PolicyID=event.get("attackData", {}).get("policyId"),
-                    ClientIP=event.get("attackData", {}).get("clientIP"),
-                    Rules=decode_message(event.get("attackData", {}).get("rules")),
-                    RuleMessages=decode_message(event.get("attackData", {}).get("ruleMessages")),
-                    RuleTags=decode_message(event.get("attackData", {}).get("ruleTags")),
-                    RuleData=decode_message(event.get("attackData", {}).get("ruleData")),
-                    RuleSelectors=decode_message(event.get("attackData", {}).get("ruleSelectors")),
-                    RuleActions=decode_message(event.get("attackData", {}).get("ruleActions")),
+                    ConfigID=attack_data.get("configId"),
+                    PolicyID=attack_data.get("policyId"),
+                    ClientIP=attack_data.get("clientIP"),
+                    Rules=decode_message(attack_data.get("rules")),
+                    RuleMessages=decode_message(attack_data.get("ruleMessages")),
+                    RuleTags=decode_message(attack_data.get("ruleTags")),
+                    RuleData=decode_message(attack_data.get("ruleData")),
+                    RuleSelectors=decode_message(attack_data.get("ruleSelectors")),
+                    RuleActions=decode_message(attack_data.get("ruleActions")),
                 ),
                 "HttpMessage": assign_params(
-                    RequestId=event.get("httpMessage", {}).get("requestId"),
-                    Start=event.get("httpMessage", {}).get("start"),
-                    Protocol=event.get("httpMessage", {}).get("protocol"),
-                    Method=event.get("httpMessage", {}).get("method"),
-                    Host=event.get("httpMessage", {}).get("host"),
-                    Port=event.get("httpMessage", {}).get("port"),
-                    Path=event.get("httpMessage", {}).get("path"),
-                    RequestHeaders=event.get("httpMessage", {}).get("requestHeaders"),
-                    Status=event.get("httpMessage", {}).get("status"),
-                    Bytes=event.get("httpMessage", {}).get("bytes"),
-                    ResponseHeaders=event.get("httpMessage", {}).get("responseHeaders"),
+                    RequestId=http_message.get("requestId"),
+                    Start=http_message.get("start"),
+                    Protocol=http_message.get("protocol"),
+                    Method=http_message.get("method"),
+                    Host=http_message.get("host"),
+                    Port=http_message.get("port"),
+                    Path=http_message.get("path"),
+                    RequestHeaders=http_message.get("requestHeaders"),
+                    Status=http_message.get("status"),
+                    Bytes=http_message.get("bytes"),
+                    ResponseHeaders=http_message.get("responseHeaders"),
                 ),
                 "Geo": assign_params(
-                    Continent=event.get("geo", {}).get("continent"),
-                    Country=event.get("geo", {}).get("country"),
-                    City=event.get("geo", {}).get("city"),
-                    RegionCode=event.get("geo", {}).get("regionCode"),
-                    Asn=event.get("geo", {}).get("asn"),
+                    Continent=geo.get("continent"),
+                    Country=geo.get("country"),
+                    City=geo.get("city"),
+                    RegionCode=geo.get("regionCode"),
+                    Asn=geo.get("asn"),
                 ),
             }
         )
 
         ip_ec.append(
             assign_params(
-                Address=event.get("attackData", {}).get("clientIP"),
-                ASN=event.get("geo", {}).get("asn"),
-                Geo={"Country": event.get("geo", {}).get("country")},
+                Address=attack_data.get("clientIP"),
+                ASN=geo.get("asn"),
+                Geo={"Country": geo.get("country")},
             )
         )
 
         events_human_readable.append(
             assign_params(
                 **{
-                    "Attacking IP": event.get("attackData", {}).get("clientIP"),
-                    "Config ID": event.get("attackData", {}).get("configId"),
-                    "Policy ID": event.get("attackData", {}).get("policyId"),
-                    "Rules": decode_message(event.get("attackData", {}).get("rules")),
-                    "Rule messages": decode_message(event.get("attackData", {}).get("ruleMessages")),
-                    "Rule actions": decode_message(event.get("attackData", {}).get("ruleActions")),
-                    "Date occured": date_format_converter(
-                        from_format="epoch", date_before=event.get("httpMessage", {}).get("start")
-                    ),
-                    "Location": {"Country": event.get("geo", {}).get("country"), "City": event.get("geo", {}).get("city")},
+                    "Attacking IP": attack_data.get("clientIP"),
+                    "Config ID": attack_data.get("configId"),
+                    "Policy ID": attack_data.get("policyId"),
+                    "Rules": decode_message(attack_data.get("rules")),
+                    "Rule messages": decode_message(attack_data.get("ruleMessages")),
+                    "Rule actions": decode_message(attack_data.get("ruleActions")),
+                    "Date occured": date_format_converter(from_format="epoch", date_before=http_message.get("start")),
+                    "Location": {"Country": geo.get("country"), "City": geo.get("city")},
                 }
             )
         )
@@ -636,35 +640,7 @@ def fetch_events_command(
         else:
             demisto.debug(f"{log_prefix} Loading and decoding {last_page_size} events.")
             for index, event in enumerate(events):
-                try:
-                    event = json.loads(event)
-                    if "attackData" in event:
-                        for attack_data_key in [
-                            "rules",
-                            "ruleMessages",
-                            "ruleTags",
-                            "ruleData",
-                            "ruleSelectors",
-                            "ruleActions",
-                            "ruleVersions",
-                        ]:
-                            event["attackData"][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
-                                event.get(  # type: ignore[attr-defined]
-                                    "attackData",
-                                    {},
-                                ).get(attack_data_key, "")
-                            )
-                    if "httpMessage" in event:
-                        event["httpMessage"]["requestHeaders"] = decode_url(  # type: ignore[index]
-                            event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
-                        )
-                        event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
-                            event.get("httpMessage", {}).get("responseHeaders", "")  # type: ignore[attr-defined]
-                        )
-                except Exception as e:
-                    demisto.debug(f"{log_prefix} Couldn't decode {event=}, reason: {e}")
-                finally:
-                    events[index] = event
+                events[index] = decode_event(event)
         total_events_count += last_page_size
         execution_counter += 1
         demisto.debug(f"{log_prefix} Processed page of {last_page_size} events ({total_events_count=}).")
@@ -691,6 +667,55 @@ def decode_url(headers: str) -> dict:
             key, value = parts
             decoded_dict[key.replace("-", "_")] = value.replace('"', "")
     return decoded_dict
+
+
+# Keys inside an event's attackData section whose values are base64/URL-encoded and must be decoded.
+ATTACK_DATA_KEYS_TO_DECODE = [
+    "rules",
+    "ruleMessages",
+    "ruleTags",
+    "ruleData",
+    "ruleSelectors",
+    "ruleActions",
+    "ruleVersions",
+]
+
+
+def decode_event(event: str):
+    """Deserialize a single raw JSON event string and decode its encoded fields in place.
+
+    The event's ``attackData`` rule fields are base64/URL decoded (via ``decode_message``) and the
+    ``httpMessage`` request/response headers are decoded (via ``decode_url``). This is the single
+    source of truth for the per-event decoding previously duplicated in ``fetch_events_command`` and
+    ``process_and_send_events_to_xsiam``.
+
+    Args:
+        event (str): A single event as a raw JSON string.
+
+    Returns:
+        dict | str: The decoded event as a dict. If the input can't be decoded (e.g. malformed JSON),
+        the original raw string is returned unchanged, so a bad event never breaks a whole page.
+    """
+    try:
+        event = json.loads(event)
+        if "attackData" in event:
+            for attack_data_key in ATTACK_DATA_KEYS_TO_DECODE:
+                event["attackData"][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
+                    event.get(  # type: ignore[attr-defined]
+                        "attackData",
+                        {},
+                    ).get(attack_data_key, "")
+                )
+        if "httpMessage" in event:
+            event["httpMessage"]["requestHeaders"] = decode_url(  # type: ignore[index]
+                event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
+            )
+            event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
+                event.get("httpMessage", {}).get("responseHeaders", "")  # type: ignore[attr-defined]
+            )
+    except Exception as e:
+        demisto.debug(f"Couldn't decode {event=}, reason: {e}")
+    return event
 
 
 def post_latest_event_time(latest_event, base_msg):
@@ -784,37 +809,7 @@ async def process_and_send_events_to_xsiam(events: list[str], should_skip_decode
         processed_events = events
     else:
         demisto.debug(f"Running in interval = {counter}. decoding events.")
-        processed_events = []
-        for event in events:
-            try:
-                event = json.loads(event)
-                if "attackData" in event:
-                    for attack_data_key in [
-                        "rules",
-                        "ruleMessages",
-                        "ruleTags",
-                        "ruleData",
-                        "ruleSelectors",
-                        "ruleActions",
-                        "ruleVersions",
-                    ]:
-                        event["attackData"][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
-                            event.get(  # type: ignore[attr-defined]
-                                "attackData",  # type: ignore[attr-defined]
-                                {},
-                            ).get(attack_data_key, "")
-                        )
-                if "httpMessage" in event:
-                    event["httpMessage"]["requestHeaders"] = decode_url(  # type: ignore[index]
-                        event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
-                    )  # type: ignore[attr-defined]
-                    event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
-                        event.get("httpMessage", {}).get("responseHeaders", "")  # type: ignore[attr-defined]
-                    )
-            except Exception as e:
-                demisto.debug(f"Couldn't decode {event=}, reason: {e}")
-            finally:
-                processed_events.append(event)
+        processed_events = [decode_event(event) for event in events]
     post_latest_event_time(
         latest_event=processed_events[-1],
         base_msg=f"Running in interval = {counter}. Sending {len(processed_events)} events to xsiam.",
@@ -1320,14 +1315,16 @@ def main():
     demisto.debug(f"Command being called is {command}")
 
     try:
-        if params.get("isFetch") and not (0 < (arg_to_number(params.get("fetchLimit", 20)) or 20) <= 2000):
+        if params.get("isFetch") and not (
+            0 < (arg_to_number(params.get("fetchLimit", DEFAULT_INCIDENTS_FETCH_LIMIT)) or DEFAULT_INCIDENTS_FETCH_LIMIT) <= 2000
+        ):
             raise DemistoException("Fetch limit must be an integer between 1 and 2000")
 
         if command == "fetch-incidents":
             incidents, new_last_run = fetch_incidents_command(
                 client,
                 fetch_time=params.get("fetchTime", "1 hours"),
-                fetch_limit=params.get("fetchLimit", 20),
+                fetch_limit=params.get("fetchLimit", DEFAULT_INCIDENTS_FETCH_LIMIT),
                 config_ids=config_ids,
                 last_run=demisto.getLastRun().get("lastRun"),
             )
@@ -1340,14 +1337,11 @@ def main():
                     "Please make sure to set either isFetchEvents or longRunning to false in"
                     " the integration configuration."
                 )
-            page_size = int(params.get("page_size", DEFAULT_PAGE_SIZE))
-            if page_size > FETCH_EVENTS_MAX_PAGE_SIZE:
-                demisto.debug(
-                    f"Got {page_size=} larger than max {FETCH_EVENTS_MAX_PAGE_SIZE}, "
-                    f"lowering page_size to {FETCH_EVENTS_MAX_PAGE_SIZE}."
-                )
-                page_size = FETCH_EVENTS_MAX_PAGE_SIZE
-            limit = int(params.get("fetchLimit", DEFAULT_FETCH_LIMIT))
+            page_size = DEFAULT_PAGE_SIZE
+            # Event collection uses its own dedicated "eventsFetchLimit" param (defaulting to
+            # DEFAULT_EVENTS_FETCH_LIMIT). The "fetchLimit" param controls incident fetching only.
+            events_fetch_limit = params.get("eventsFetchLimit") or DEFAULT_EVENTS_FETCH_LIMIT
+            limit = int(events_fetch_limit)
             if limit > MAX_ALLOWED_FETCH_LIMIT:
                 demisto.debug(
                     f"[Fetch Events] Got {limit=} larger than {MAX_ALLOWED_FETCH_LIMIT=}, "
