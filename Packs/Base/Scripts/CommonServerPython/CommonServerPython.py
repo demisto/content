@@ -7164,6 +7164,7 @@ class ScheduledCommand:
     :return: None
     :rtype: ``None``
     """
+    _CSP_TEST_MARKER = "CIAC-17274"  # CSP validator test (CIAC-17274); delete together with this branch
     VERSION_MISMATCH_ERROR = 'This command is not supported by this XSOAR server version. Please update your server ' \
                              'version to 6.2.0 or later.'
 
