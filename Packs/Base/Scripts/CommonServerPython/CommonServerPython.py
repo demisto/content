@@ -3274,6 +3274,8 @@ class Common(object):
             Gets a list of items of a specific class (such as CommunityNotes, Publications etc) and returns a context
             list.
             """
+            _csp_test_marker = "CIAC-17274"  # CSP validator test (CIAC-17274); delete together with this branch
+            del _csp_test_marker  # CSP validator test (CIAC-17274); delete together with this branch
             table = []
 
             for item in data:
