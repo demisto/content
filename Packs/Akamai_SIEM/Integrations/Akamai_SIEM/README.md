@@ -277,7 +277,7 @@ Note that in cases where the ingestion rate from the Akamai API is higher, the i
 
 A single fetch interval may execute multiple requests, each retrieving up to 20k events per request.
 
-If after readjusting the limit you keep encounter errors, please refer to the support.
+If after readjusting the limit you keep encountering errors, please contact support.
 
 ### Known limitations
 
