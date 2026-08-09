@@ -1,5 +1,7 @@
 import pytest
 from AzureKeyVault import (
+    ON_DEMAND_MODE,
+    STORE_IN_XSOAR_MODE,
     KeyVaultClient,
     convert_attributes_to_readable,
     convert_key_info_to_readable,
@@ -678,3 +680,87 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     main()
 
     assert "ok" in AzureKeyVault.return_results.call_args_list[0][0]
+
+
+def test_fetch_credentials_store_in_xsoar_mode(mocker):
+    """
+    Scenario: Fetch credentials in the default "Store in XSOAR" mode.
+    Given:
+     - Configured key vaults and secrets, no specific identifier.
+     - Credentials Fetch Mode is "Store in XSOAR".
+    When:
+     - fetch_credentials is called.
+    Then:
+     - Ensure the secret values are fetched from Azure Key Vault and returned with passwords.
+    """
+    from AzureKeyVault import fetch_credentials
+
+    client = mock_client()
+    get_secret_mock = mocker.patch.object(
+        client,
+        "get_secret_credentials",
+        side_effect=lambda vault, secret: {"user": secret, "password": "value", "name": f"{vault}/{secret}"},
+    )
+    credentials_mock = mocker.patch.object(demisto, "credentials")
+
+    fetch_credentials(client, [VAULT_NAME], [SECRET_NAME], "", STORE_IN_XSOAR_MODE)
+
+    get_secret_mock.assert_called_once_with(VAULT_NAME, SECRET_NAME)
+    credentials = credentials_mock.call_args[0][0]
+    assert credentials == [{"user": SECRET_NAME, "password": "value", "name": f"{VAULT_NAME}/{SECRET_NAME}"}]
+
+
+def test_fetch_credentials_on_demand_mode_returns_names_only(mocker):
+    """
+    Scenario: Fetch credentials in the "External Credentials Vault (on-demand)" mode.
+    Given:
+     - Configured key vaults and secrets, no specific identifier.
+     - Credentials Fetch Mode is "External Credentials Vault (on-demand)".
+    When:
+     - fetch_credentials is called.
+    Then:
+     - Ensure only the credential names are returned with empty passwords and no secret values
+       are fetched from Azure Key Vault.
+    """
+    from AzureKeyVault import fetch_credentials
+
+    client = mock_client()
+    get_secret_mock = mocker.patch.object(client, "get_secret_credentials")
+    credentials_mock = mocker.patch.object(demisto, "credentials")
+
+    fetch_credentials(client, [VAULT_NAME], [SECRET_NAME, SECRET_NAME_2], "", ON_DEMAND_MODE)
+
+    get_secret_mock.assert_not_called()
+    credentials = credentials_mock.call_args[0][0]
+    assert credentials == [
+        {"user": SECRET_NAME, "password": "", "name": f"{VAULT_NAME}/{SECRET_NAME}"},
+        {"user": SECRET_NAME_2, "password": "", "name": f"{VAULT_NAME}/{SECRET_NAME_2}"},
+    ]
+
+
+def test_fetch_credentials_on_demand_mode_with_identifier_fetches_value(mocker):
+    """
+    Scenario: A specific credential is requested at runtime while in on-demand mode.
+    Given:
+     - A specific credential identifier in the format KEY_VAULT_NAME/SECRET_NAME.
+     - Credentials Fetch Mode is "External Credentials Vault (on-demand)".
+    When:
+     - fetch_credentials is called with the identifier.
+    Then:
+     - Ensure the secret value is fetched live from Azure Key Vault and returned.
+    """
+    from AzureKeyVault import fetch_credentials
+
+    client = mock_client()
+    get_secret_mock = mocker.patch.object(
+        client,
+        "get_secret_credentials",
+        return_value={"user": SECRET_NAME, "password": "value", "name": f"{VAULT_NAME}/{SECRET_NAME}"},
+    )
+    credentials_mock = mocker.patch.object(demisto, "credentials")
+
+    fetch_credentials(client, [], [], f"{VAULT_NAME}/{SECRET_NAME}", ON_DEMAND_MODE)
+
+    get_secret_mock.assert_called_once_with(VAULT_NAME, SECRET_NAME)
+    credentials = credentials_mock.call_args[0][0]
+    assert credentials == [{"user": SECRET_NAME, "password": "value", "name": f"{VAULT_NAME}/{SECRET_NAME}"}]

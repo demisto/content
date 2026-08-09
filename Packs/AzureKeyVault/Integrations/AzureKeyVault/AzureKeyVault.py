@@ -14,6 +14,9 @@ VAULT_NAME_CONTEXT_FIELD = "key_vault_name"
 DEFAULT_LIMIT = 50
 DEFAULT_OFFSET = 0
 
+STORE_IN_XSOAR_MODE = "Store in XSOAR"
+ON_DEMAND_MODE = "External Credentials Vault (on-demand)"
+
 
 class KeyVaultClient:
     """
@@ -1384,19 +1387,32 @@ def test_module(client: KeyVaultClient, params: dict[str, Any]) -> None:
 
 
 def fetch_credentials(
-    client: KeyVaultClient, key_vaults_to_fetch_from: list[str], secrets_to_fetch: list[str], credentials_name: str
+    client: KeyVaultClient,
+    key_vaults_to_fetch_from: list[str],
+    secrets_to_fetch: list[str],
+    credentials_name: str,
+    fetch_mode: str = STORE_IN_XSOAR_MODE,
 ) -> None:
     """
     Fetch credentials from secrets which reside in the specified Key Vaults list.
     This command supports two scenarios:
     1. Fetch a specific set of credentials: assuming that the credentials name is written
-       in the format of: KEY_VAULT_NAME/SECRET_NAME
+       in the format of: KEY_VAULT_NAME/SECRET_NAME. In this case the secret value is always
+       fetched live from Azure Key Vault (this is the runtime lookup used by both modes).
     2. Fetch credentials based on instance parameters: key_vaults list and secret list.
+       The behavior of this scenario depends on ``fetch_mode``:
+       - "Store in XSOAR" (default): the actual secret values are fetched and returned so
+         Cortex XSOAR stores them in the credentials store.
+       - "External Credentials Vault (on-demand)": only the credential names
+         (KEY_VAULT_NAME/SECRET_NAME) are returned, with empty passwords. No secret values
+         are fetched from Azure Key Vault and nothing is persisted in Cortex XSOAR. The value
+         is fetched live only when an integration requests a specific credential by identifier.
     Args:
         client (KeyVaultClient):  Azure Key Vault API client.
         key_vaults_to_fetch_from (List[str]): List of Key Vaults to fetch secrets from.
         secrets_to_fetch (List[str]): List of secrets to fetch.
         credentials_name (str): Name of a specific set of credentials to fetch.
+        fetch_mode (str): The credentials fetch mode. One of STORE_IN_XSOAR_MODE or ON_DEMAND_MODE.
 
     Returns:
         None
@@ -1416,8 +1432,12 @@ def fetch_credentials(
             return_results("No secrets were specified.")
         for key_vault in key_vaults_to_fetch_from:
             for secret in secrets_to_fetch:
-                secret_cred = client.get_secret_credentials(key_vault, secret)
-                credentials += [secret_cred] if secret_cred else []
+                if fetch_mode == ON_DEMAND_MODE:
+                    # On-demand mode: return only the credential name, without fetching the secret value.
+                    credentials.append({"user": secret, "password": "", "name": f"{key_vault}/{secret}"})
+                else:
+                    secret_cred = client.get_secret_credentials(key_vault, secret)
+                    credentials += [secret_cred] if secret_cred else []
 
     demisto.credentials(credentials)
 
@@ -1517,6 +1537,7 @@ def main() -> None:  # pragma: no cover
     args: dict[str, Any] = demisto.args() or {}
     key_vaults_to_fetch_from = argToList(params.get("key_vaults", []))
     secrets_to_fetch = argToList(params.get("secrets", []))
+    credentials_fetch_mode = params.get("credentials_fetch_mode", STORE_IN_XSOAR_MODE)
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     identifier = args.get("identifier", "")
@@ -1583,7 +1604,7 @@ def main() -> None:  # pragma: no cover
         elif command in commands_with_args_and_params:
             return_results(commands_with_args_and_params[command](client, args, params))
         elif demisto.command() == "fetch-credentials":
-            fetch_credentials(client, key_vaults_to_fetch_from, secrets_to_fetch, identifier)
+            fetch_credentials(client, key_vaults_to_fetch_from, secrets_to_fetch, identifier, credentials_fetch_mode)
         elif demisto.command() == "azure-key-vault-auth-reset":
             return_results(reset_auth())
         else:
