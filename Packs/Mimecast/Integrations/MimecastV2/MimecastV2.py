@@ -1484,12 +1484,6 @@ def update_block_sender_policy_command(policy_args: dict) -> CommandResults:
     if not policy_id:
         raise DemistoException("You need to enter policy ID")
 
-    from_type = policy_args.get("fromType")
-    confirm_block_all = policy_args.get("confirm_block_all")
-
-    if from_type == "everyone" and not (confirm_block_all and argToBoolean(confirm_block_all)):
-        raise DemistoException("Blocking all senders requires confirm_block_all=true")
-
     body = build_blocked_senders_policy_v2_body(policy_args)
 
     api_endpoint = f"/policy-management/cloud-gateway/v1/blocked-senders/policies/{policy_id}"
