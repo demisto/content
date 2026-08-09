@@ -1036,6 +1036,20 @@ def list_blocked_sender_policies_command(args):
     return results
 
 
+def build_blocked_senders_v2_hr_row(policy: dict) -> dict:
+    """Map one flat v2 blocked-senders policy to a war-room table row."""
+    sender = policy.get("from") or {}
+    receiver = policy.get("to") or {}
+    return {
+        "Policy ID": policy.get("id"),
+        "Sender": sender.get("emailAddress") or sender.get("domain") or sender.get("groupId"),
+        "Receiver": receiver.get("emailAddress") or receiver.get("domain") or receiver.get("groupId"),
+        "Bidirectional": policy.get("bidirectional"),
+        "Start": policy.get("fromDateTime"),
+        "End": policy.get("toDateTime"),
+    }
+
+
 def get_policy_command(args):
     headers = ["Policy ID", "Sender", "Reciever", "Bidirectional", "Start", "End"]
     contents = []
