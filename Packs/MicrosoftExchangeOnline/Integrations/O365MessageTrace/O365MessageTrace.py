@@ -14,6 +14,9 @@ from typing import Any
 class Config:
     """Global static configuration."""
 
+    # Bump on every hotfix so the running build can be confirmed from the `[Version]` debug log.
+    VERSION_TAG = "o365-message-trace/2.0.0-fetch-lookback"
+
     VENDOR = "microsoft"
     PRODUCT = "o365_message_trace"
 
@@ -34,6 +37,13 @@ class Config:
     # integration is far behind, so a large backlog is drained oldest-first
     # across many runs instead of re-downloading days of events on every run.
     FETCH_WINDOW_MINUTES = 5
+
+    # Trailing look-back overlap (minutes): each cycle re-scans from ``last_fetch - LOOKBACK``.
+    # Records are mutable (status evolves) but keep their original ``receivedDateTime``, so late
+    # status updates must be re-scanned to be captured. Status-aware ``_unique_id`` dedup prevents
+    # real duplicates from being re-sent. Observed status-settling lag is ~8 min max; 15 min adds
+    # headroom for the tail. Configurable via the integration parameter if needed.
+    DEFAULT_LOOKBACK_MINUTES = 15
 
     # Fixed backoff schedule (in seconds) applied between retries when the Graph
     # API responds with HTTP 429 (Too Many Requests).
@@ -266,16 +276,19 @@ def add_time_field(events: list[dict]) -> None:
 
 
 def add_unique_id_field(events: list[dict]) -> None:
-    """Add a ``_unique_id`` field to each event in the form ``<id>|<recipientAddress>``.
+    """Add a ``_unique_id`` field of the form ``<id>|<recipientAddress>|<status>``.
 
-    The new ``_unique_id`` field guarantees uniqueness across events that share
-    the same underlying message id but were delivered to different recipients.
+    ``status`` is part of the key because a message trace record is re-emitted as its
+    status evolves (e.g. delivered -> recalled). Keying on status lets every distinct
+    status transition through dedup while still suppressing true duplicates of the same
+    (id, recipient, status) tuple across overlapping fetch windows.
     """
     for event in events:
         event_id = event.get("id")
         recipient = event.get("recipientAddress")
+        status = event.get("status") or ""
         if event_id and recipient:
-            event["_unique_id"] = f"{event_id}|{recipient}"
+            event["_unique_id"] = f"{event_id}|{recipient}|{status}"
 
 
 # ============================================================================
@@ -330,6 +343,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     max_events = arg_to_number(params.get("max_fetch")) or Config.DEFAULT_MAX_EVENTS
+    lookback_minutes = arg_to_number(params.get("lookback_minutes")) or Config.DEFAULT_LOOKBACK_MINUTES
 
     # ----- Validation -----
     if not managed_identities_client_id:
@@ -363,6 +377,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "managed_identities_client_id": managed_identities_client_id,
         "azure_cloud": azure_cloud,
         "max_events": max_events,
+        "lookback_minutes": lookback_minutes,
     }
 
 
@@ -423,8 +438,7 @@ def fetch_events_sequential(
         collected.extend(page_events)
 
         demisto.debug(
-            f"[Fetch] Window {start_str} -> {end_str}: page returned {len(page_events)} events "
-            f"(running total: {len(collected)})"
+            f"[Fetch] Window {start_str} -> {end_str}: page returned {len(page_events)} events (running total: {len(collected)})"
         )
         # Defensive stop #1: empty page means there is nothing more to read.
         if not page_events:
@@ -454,8 +468,18 @@ def fetch_events_sequential(
     )
 
     if len(collected) > max_events:
-        demisto.debug(f"[Fetch] Collected {len(collected)} events, truncating to max_events ({max_events}).")
-        collected = collected[:max_events]
+        # Truncate to max_events, but never cut through a group sharing the same
+        # receivedDateTime second - otherwise the high-water mark would advance past a
+        # second whose events were only partially fetched, permanently skipping the rest.
+        cut = max_events
+        boundary_time = collected[max_events - 1].get("receivedDateTime")
+        while cut < len(collected) and collected[cut].get("receivedDateTime") == boundary_time:
+            cut += 1
+        demisto.debug(
+            f"[Fetch] Collected {len(collected)} events, truncating to {cut} "
+            f"(max_events={max_events}, extended to keep whole boundary second {boundary_time})."
+        )
+        collected = collected[:cut]
 
     return collected
 
@@ -474,8 +498,7 @@ def test_module(client: Client) -> str:
     demisto.debug("[Test] Starting test-module")
     if client.ms_client.grant_type == AUTHORIZATION_CODE:
         raise DemistoException(
-            "Test module is not available for the authorization code flow. "
-            "Use the o365-message-trace-auth-test command instead."
+            "Test module is not available for the authorization code flow. Use the o365-message-trace-auth-test command instead."
         )
 
     try:
@@ -543,17 +566,26 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def fetch_events(client: Client, max_events: int) -> None:
+def fetch_events(client: Client, max_events: int, lookback_minutes: int | None = None) -> None:
     """Scheduled fetch command - reads state, fetches, deduplicates, persists state."""
+    if lookback_minutes is None:
+        lookback_minutes = Config.DEFAULT_LOOKBACK_MINUTES
     last_run = demisto.getLastRun() or {}
-    demisto.debug(f"[Fetch] last_run={last_run}")
+    demisto.debug(f"[Fetch] last_run={last_run} | max_events={max_events} | lookback_minutes={lookback_minutes}")
 
     last_fetch_str: str | None = last_run.get("last_fetch")
     seen_ids: list[str] = last_run.get("seen_ids", []) or []
 
     now = datetime.now(UTC)
     if last_fetch_str:
-        start_dt = parse_datetime(last_fetch_str)
+        # Trailing look-back overlap: re-scan back from last_fetch so late status updates
+        # (which keep their original receivedDateTime) are re-surfaced. Status-aware dedup
+        # below prevents already-sent (id, recipient, status) tuples from being re-sent.
+        start_dt = parse_datetime(last_fetch_str) - timedelta(minutes=lookback_minutes)
+        demisto.debug(
+            f"[Fetch] Resuming from last_fetch={last_fetch_str} with {lookback_minutes}m look-back "
+            f"-> effective start={start_dt.isoformat()}"
+        )
     else:
         start_dt = now - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES)
         demisto.debug(f"[Fetch] First run - looking back {Config.DEFAULT_FIRST_FETCH_MINUTES} minutes from now")
@@ -596,7 +628,7 @@ def fetch_events(client: Client, max_events: int) -> None:
 
     # Deduplicate against previous run's high-water-mark IDs
     new_events = deduplicate_events(events, set(seen_ids))
-    demisto.debug(f"[Fetch] {len(new_events)} new events after dedup")
+    demisto.debug(f"[Fetch] {len(new_events)} new events after dedup (skipped {len(events) - len(new_events)})")
 
     if new_events:
         send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
@@ -606,20 +638,22 @@ def fetch_events(client: Client, max_events: int) -> None:
     new_last_fetch = format_datetime_for_filter(window_end_dt)
     new_seen_ids: list[str] = []
 
-    # Use ALL fetched events (not just published ones): timestamps are second-granular, so
-    # seen_ids must keep every ID at the boundary - including deduped-out ones - or the next
-    # run (re-fetching at ``>= boundary``) would re-send already-sent events as duplicates.
-    timed_events = [event for event in new_events if event.get("_time")]
+    # Build seen_ids from ALL fetched events (pre-dedup), not just the published ones:
+    # receivedDateTime is second-granular and the next run re-queries ``>= boundary``, so
+    # seen_ids must contain every _unique_id at the boundary second - including deduped-out
+    # ones - or those already-sent events would be re-sent (or lost) next run.
+    timed_events = [event for event in events if event.get("_time") and event.get("_unique_id")]
 
     if timed_events:
         latest_time: str = max(event["_time"] for event in timed_events)
         new_last_fetch = latest_time
-        ids_at_latest = [eid for event in timed_events if event.get("_time") == latest_time and (eid := event.get("_unique_id"))]
+        ids_at_latest = [event["_unique_id"] for event in timed_events if event["_time"] == latest_time]
         # If the high-water mark hasn't moved, merge with the existing seen_ids
         if latest_time == last_fetch_str:
             new_seen_ids = list(set(seen_ids) | set(ids_at_latest))
         else:
-            new_seen_ids = ids_at_latest
+            new_seen_ids = list(set(ids_at_latest))
+        demisto.debug(f"[Fetch] boundary second={latest_time} | {len(new_seen_ids)} seen_ids carried forward")
 
     new_last_run = {
         "last_fetch": new_last_fetch,
@@ -636,10 +670,12 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
+    demisto.debug(f"[Version] Running {Config.VERSION_TAG}")
     demisto.debug(f"[Main] Command={command}")
 
     config = parse_integration_params(params)
     max_events = config.pop("max_events")
+    lookback_minutes = config.pop("lookback_minutes")
 
     try:
         client = Client(**config)  # pylint: disable=E1123
@@ -653,7 +689,7 @@ def main() -> None:  # pragma: no cover
         elif command == "o365-message-trace-get-events":
             return_results(get_events_command(client, args))
         elif command == "fetch-events":
-            fetch_events(client, max_events=max_events)
+            fetch_events(client, max_events=max_events, lookback_minutes=lookback_minutes)
         elif command == "o365-message-trace-generate-login-url":
             return_results(generate_login_url(client.ms_client))
 
