@@ -270,12 +270,6 @@ class CoreClient(BaseClient):
                 with_metrics=with_metrics,
                 resp_type=resp_type,
             )
-        if resp_type == "response":
-            raise DemistoException(
-                "resp_type='response' is not supported when requests are forwarded through "
-                "demisto._apiCall (RBAC mode); the raw HTTP response object is unavailable. "
-                "Use resp_type='content' instead."
-            )
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
