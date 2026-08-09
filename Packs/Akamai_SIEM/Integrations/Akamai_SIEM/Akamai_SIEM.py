@@ -1,4 +1,5 @@
 import functools
+import traceback
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -714,7 +715,7 @@ def decode_event(event: str):
                 event.get("httpMessage", {}).get("responseHeaders", "")  # type: ignore[attr-defined]
             )
     except Exception as e:
-        demisto.debug(f"Couldn't decode {event=}, reason: {e}")
+        demisto.debug(f"Couldn't decode {event=}, reason: {e}\n{traceback.format_exc()}")
     return event
 
 
