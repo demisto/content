@@ -1547,9 +1547,14 @@ def create_or_update_policy_request(policy, option, policy_id=None, policy_type=
 
 def delete_policy(args):
     policy_id = args.get("policyID")
-    policy_type = args.get("policyType")
+    policy_type = args.get("policyType") or DEFAULT_POLICY_TYPE
 
-    delete_policy_request(policy_type, policy_id)
+    if policy_type == DEFAULT_POLICY_TYPE:
+        # is_file=True returns the raw response without parsing JSON, as the endpoint returns 204 No Content
+        http_request("DELETE", f"{BLOCKED_SENDERS_V2_ENDPOINT}/{policy_id}", is_file=True)
+        demisto.debug(f"Deleted blocked-senders policy {policy_id}")
+    else:
+        delete_policy_request(policy_type, policy_id)
 
     context = {"ID": policy_id, "Deleted": True}
 
