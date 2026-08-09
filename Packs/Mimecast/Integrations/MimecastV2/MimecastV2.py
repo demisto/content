@@ -3643,11 +3643,31 @@ def list_account_command(args: dict) -> CommandResults:
     return CommandResults(outputs_prefix="Mimecast.Account", outputs=response[0], outputs_key_field="accountCode")
 
 
+def list_blocked_senders_policies_command() -> CommandResults:
+    """List Blocked Senders policies using the v2 GET API. The flat items are emitted verbatim."""
+    response = http_request("GET", BLOCKED_SENDERS_V2_ENDPOINT)
+    policies = response.get("policies", [])
+    demisto.debug(f"Got {len(policies)} blocked-senders policies, nextPage={response.get('meta', {}).get('nextPage')}")
+
+    title = "Mimecast list blockedsenders policies: \n These are the existing blockedsenders Policies:"
+    contents = [build_blocked_senders_v2_hr_row(policy) for policy in policies]
+
+    return CommandResults(
+        outputs_prefix="Mimecast.BlockedSendersPolicy",
+        outputs=policies,
+        readable_output=tableToMarkdown(title, contents, BLOCKED_SENDERS_HR_HEADERS),
+        outputs_key_field="id",
+    )
+
+
 def list_policies_command(args: dict) -> CommandResults:
     policy_type = args.get("policyType", "blockedsenders")
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit"))
+
+    if policy_type == DEFAULT_POLICY_TYPE:
+        return list_blocked_senders_policies_command()
 
     api_endpoints = {
         "blockedsenders": "blockedsenders/get-policy",
