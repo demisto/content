@@ -173,6 +173,7 @@ def is_incident_closing(inc_status: Optional[int], delta: Optional[Dict[str, Any
         return True
     return bool((delta or {}).keys() & XSOAR_CLOSE_DELTA_KEYS)
 
+
 """VARIABLES FOR KIBANA COMMANDS (es-kibana-*)"""
 DEFAULT_SPACE_ID = PARAMS.get("space_id", "")
 KIBANA_XSRF_HEADER = {"kbn-xsrf": "true"}
@@ -3329,7 +3330,7 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
 
     hits = response.get("hits", {}).get("hits", [])
     incidents = []
-    new_last_fetch = last_fetch
+    new_last_fetch_dt = parse_to_utc(last_fetch)
 
     # Authoritative dedup: the timestamp cursor is only a coarse pre-filter.
     fetched_alert_ids: Dict[str, str] = prune_fetched_ids(last_run.get("fetched_alert_ids") or {})
@@ -3341,12 +3342,16 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
         hit_id = hit.get("_id", "")
         alert_uuid = get_alert_source_value(source, "kibana.alert.uuid") or hit_id
 
+        time_val = get_alert_source_value(source, "@timestamp") or get_alert_source_value(source, str(TIME_FIELD))
+        occurred = format_to_iso(parse(str(time_val)).isoformat()) if time_val else None
+        if occurred:
+            occurred_dt = parse_to_utc(occurred)
+            if occurred_dt and (new_last_fetch_dt is None or occurred_dt > new_last_fetch_dt):
+                new_last_fetch_dt = occurred_dt
+
         if alert_uuid and alert_uuid in fetched_alert_ids:
             demisto.debug(f"Skipping already-fetched alert ID: {alert_uuid}")
             continue
-
-        time_val = get_alert_source_value(source, "@timestamp") or get_alert_source_value(source, str(TIME_FIELD))
-        occurred = format_to_iso(parse(str(time_val)).isoformat()) if time_val else None
 
         severity = convert_severity(get_alert_source_value(source, "kibana.alert.severity") or "low")
 
@@ -3376,8 +3381,6 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
         }
         if occurred:
             inc["occurred"] = occurred
-            if occurred > str(new_last_fetch):
-                new_last_fetch = occurred
 
         if MAP_LABELS:
             inc["labels"] = incident_label_maker(source)
@@ -3392,7 +3395,7 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
         if alert_uuid:
             fetched_alert_ids[alert_uuid] = ingested_at
 
-    last_run["alert_time"] = str(new_last_fetch)
+    last_run["alert_time"] = new_last_fetch_dt.isoformat() if new_last_fetch_dt else str(last_fetch)
     last_run["fetched_alert_ids"] = fetched_alert_ids
     demisto.setLastRun(last_run)
     return incidents
@@ -3802,9 +3805,7 @@ def update_remote_system_command(args: Dict[str, Any], proxies) -> str:
 
 
 def _mirror_out_case_entries(remote_id: str, entries: List[dict], proxies) -> None:
-    """Mirrors tagged War Room entries out to Elasticsearch as Kibana case comments.
-
-    """
+    """Mirrors tagged War Room entries out to Elasticsearch as Kibana case comments."""
     for entry in entries:
         tags = entry.get("Tags") or []
         if "comment" not in tags:

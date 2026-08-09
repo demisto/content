@@ -3352,6 +3352,57 @@ class TestMirrorFieldsInRawJson:
         assert incidents[0]["dbotMirrorDirection"] == "Both"
         assert incidents[0]["dbotMirrorId"] == "alert-uuid-1"
 
+    def test_security_alert_cursor_advances_past_already_fetched_hits(self, mocker):
+        """Regression: the alert_time cursor must advance to the newest @timestamp of EVERY hit in
+        the window, including already-fetched ones that are deduped away. Otherwise, when a window is
+        mostly already-fetched alerts, the cursor crawls forward one alert-interval per cycle and the
+        fetch keeps re-scanning the same backlog (only a couple of new alerts slip through)."""
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "MIRROR_DIRECTION", "Incoming")
+        mocker.patch.object(Elasticsearch_v2, "RAW_QUERY", None)
+        mocker.patch.object(Elasticsearch_v2, "MAP_LABELS", False)
+        mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder", return_value=MagicMock())
+        mocker.patch.object(demisto, "integrationInstance", return_value="es_instance_1")
+
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        # The window is dominated by already-fetched alerts (they are skipped by dedup) plus one
+        # newer, previously-unseen alert at the end.
+        already_fetched = {f"old-{i}": "2026-08-09T18:19:25.707775+00:00" for i in range(3)}
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={"alert_time": "2026-08-08T18:43:49+00:00", "fetched_alert_ids": dict(already_fetched)},
+        )
+
+        def make_hit(uuid, ts):
+            return {
+                "_index": ".alerts-security.alerts-default",
+                "_id": uuid,
+                "_source": {"@timestamp": ts, "kibana": {"alert": {"uuid": uuid, "severity": "low"}}},
+            }
+
+        hits = [
+            make_hit("old-0", "2026-08-08T18:44:49.000Z"),
+            make_hit("old-1", "2026-08-08T18:45:49.000Z"),
+            make_hit("old-2", "2026-08-08T18:46:49.000Z"),
+            make_hit("new-1", "2026-08-08T18:47:49.000Z"),
+        ]
+        mocker.patch.object(Elasticsearch_v2.Search, "execute", return_value=MagicMock(to_dict=lambda: {"hits": {"hits": hits}}))
+        mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", Elasticsearch_v2.ELASTICSEARCH_V8)
+
+        incidents = Elasticsearch_v2.fetch_security_alerts({})
+
+        # Only the genuinely-new alert is ingested.
+        assert len(incidents) == 1
+        assert incidents[0]["dbotMirrorId"] == "new-1"
+
+        # The cursor must jump to the newest @timestamp across ALL hits (18:47:49), not merely track
+        # the ingested subset. It must move well past the previous cursor (18:43:49).
+        saved_last_run = set_last_run.call_args[0][0]
+        assert saved_last_run["alert_time"] == "2026-08-08T18:47:49+00:00"
+
     def test_case_rawjson_contains_mirror_fields(self, mocker):
         import Elasticsearch_v2
 
