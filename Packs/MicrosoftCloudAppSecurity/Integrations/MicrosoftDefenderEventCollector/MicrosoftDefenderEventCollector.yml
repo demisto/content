@@ -61,7 +61,7 @@ configuration:
   section: Collect
   required: false
   defaultvalue: '1000'
-  additionalinfo: The maximum number of events to fetch per event type per fetch cycle. Events are retrieved in pages of up to 100 (the API page-size limit) until this number is reached. The maximum is 1000.
+  additionalinfo: Events are retrieved in pages of up to 100 (the API page-size limit) until this number is reached. The maximum is 1000.
 - display: Fetch events
   name: isFetchEvents
   type: 8

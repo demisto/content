@@ -189,9 +189,7 @@ class IntegrationGetEvents(ABC):
                 for logs in self._iter_events(event_type_name, endpoint_details):
                     stored_per_type.extend(logs)
                     if len(stored_per_type) >= self.options.limit:
-                        demisto.debug(
-                            f"[MicrosoftDefender] reached {self.options.limit=} for {event_type_name=}, slicing per type."
-                        )
+                        demisto.debug(f"[Slicing Events] reached {self.options.limit=} for {event_type_name=}, slicing per type.")
                         stored_per_type = stored_per_type[: self.options.limit]
                         break
             except Exception as e:
@@ -199,7 +197,7 @@ class IntegrationGetEvents(ABC):
                 # unfetched events (no data loss); it will be retried on the next cycle.
                 # Other event types continue unaffected.
                 demisto.error(
-                    f"[MicrosoftDefender] failed fetching {event_type_name=}, skipping it this cycle. "
+                    f"[Fetch Events] failed fetching {event_type_name=}, skipping it this cycle. "
                     f"Error: {e!s}\n{traceback.format_exc()}"
                 )
                 continue
