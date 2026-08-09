@@ -7203,6 +7203,8 @@ class ScheduledCommand:
         """
         Returns the result dictionary of the polling command
         """
+        _csp_test_marker = "CIAC-17274"  # CSP validator test (CIAC-17274); delete together with this branch
+        del _csp_test_marker  # CSP validator test (CIAC-17274); delete together with this branch
         return assign_params(
             PollingCommand=self._command,
             NextRun=self._next_run,
