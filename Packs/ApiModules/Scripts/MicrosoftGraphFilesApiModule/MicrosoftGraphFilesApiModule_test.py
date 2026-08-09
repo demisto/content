@@ -1,3 +1,4 @@
+import base64
 import json
 from collections.abc import Callable
 from pathlib import Path
@@ -18,15 +19,21 @@ from MicrosoftGraphFilesApiModule import (
     delete_file_command,
     delete_site_permission_command,
     download_file_command,
+    encode_sharing_url,
+    extract_sensitivity_labels_command,
+    get_driveitem_analytics_command,
+    get_driveitem_command,
     get_sensitivity_label_command,
     get_site_id_from_site_name,
     list_drive_content_command,
     list_drives_in_site_command,
+    list_driveitem_activities_command,
     list_driveitem_permissions_command,
     list_sharepoint_sites_command,
     list_site_permissions_command,
     parse_key_to_context,
     remove_identity_key,
+    resolve_item_addressing,
     update_driveitem_command,
     update_site_permissions_command,
     upload_new_file_command,
@@ -1982,3 +1989,651 @@ def test_assign_sensitivity_label_propagates_http_errors(mocker: MockerFixture, 
     with pytest.raises(DemistoException) as exc_info:
         assign_sensitivity_label_command(CLIENT_MOCKER, args)
     assert error_message in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "share_url, expected",
+    [
+        # The example from the Microsoft "Encoding sharing URLs" documentation.
+        (
+            "https://onedrive.live.com/redir?resid=1231244193912!12&authKey=1201919!12921!1",
+            "u!aHR0cHM6Ly9vbmVkcml2ZS5saXZlLmNvbS9yZWRpcj9yZXNpZD0xMjMxMjQ0MTkzOTEyITEyJmF1dGhLZXk9MTIwMTkxOSExMjkyMSEx",
+        ),
+        # A typical SharePoint sharing URL, whose base64 needs '=' padding stripped.
+        (
+            "https://paanalyticstestlab-my.sharepoint.com/:w:/r/personal/scohenkadosh/Documents/test.docx",
+            "u!aHR0cHM6Ly9wYWFuYWx5dGljc3Rlc3RsYWItbXkuc2hhcmVwb2ludC5jb20vOnc6L3IvcGVyc29uYWwvc2NvaGVua2Fkb3NoL0RvY3VtZW50cy90ZXN0LmRvY3g",
+        ),
+        # Chosen because its raw base64 contains BOTH '+' and '/', which is what actually
+        # exercises the base64url translation. Most sharing URLs never produce those
+        # characters, so a realistic-looking URL would leave the translation untested.
+        ("https://c.sharepoint.com/x/>>>???.docx", "u!aHR0cHM6Ly9jLnNoYXJlcG9pbnQuY29tL3gvPj4-Pz8_LmRvY3g"),
+    ],
+)
+def test_encode_sharing_url(share_url: str, expected: str):
+    """
+    Given: A sharing URL.
+    When: Encoding it for the GET /shares/{token} route.
+    Then: The token is base64url encoded, unpadded, and prefixed with 'u!'.
+    """
+    encoded = encode_sharing_url(share_url)
+
+    assert encoded == expected
+    assert encoded.startswith("u!")
+    # base64url alphabet only - '+', '/' and '=' must not survive the translation.
+    assert "+" not in encoded
+    assert "/" not in encoded
+    assert "=" not in encoded
+
+
+def test_encode_sharing_url_translates_base64url_characters():
+    """
+    Given: A URL whose raw base64 encoding contains both '+' and '/'.
+    When: Encoding it for the GET /shares/{token} route.
+    Then: '+' becomes '-' and '/' becomes '_', per the documented base64url translation.
+    """
+    share_url = "https://c.sharepoint.com/x/>>>???.docx"
+    raw_base64 = base64.b64encode(share_url.encode("utf-8")).decode("utf-8")
+    # Guard the premise of this test: if these are ever absent the assertions below are vacuous.
+    assert "+" in raw_base64
+    assert "/" in raw_base64
+
+    encoded = encode_sharing_url(share_url)
+
+    assert "-" in encoded
+    assert "_" in encoded
+    # The token must decode back to the original URL.
+    body = encoded[2:].replace("_", "/").replace("-", "+")
+    assert base64.b64decode(body + "=" * (-len(body) % 4)).decode("utf-8") == share_url
+
+
+@pytest.mark.parametrize(
+    "object_type, item_id, suffix, expected",
+    [
+        ("drives", "drive-1", "", "drives/drive-1/items/item-1"),
+        ("sites", "site-1", "", "sites/site-1/drive/items/item-1"),
+        ("groups", "group-1", "permissions", "groups/group-1/drive/items/item-1/permissions"),
+        ("users", "user-1", "analytics/allTime", "users/user-1/drive/items/item-1/analytics/allTime"),
+    ],
+)
+def test_driveitem_uri_by_id(object_type: str, item_id: str, suffix: str, expected: str):
+    """
+    Given: An object type, its ID and an optional sub-resource suffix.
+    When: Building a driveItem URI addressed by item ID.
+    Then: 'drives' is addressed directly and every other type goes through '/drive'.
+    """
+    assert MsGraphClient._driveitem_uri(object_type, item_id, "item-1", suffix) == expected
+
+
+@pytest.mark.parametrize(
+    "object_type, object_type_id, item_path, suffix, expected",
+    [
+        ("drives", "drive-1", "Documents/report.docx", "", "drives/drive-1/root:/Documents/report.docx"),
+        ("sites", "site-1", "Documents/report.docx", "", "sites/site-1/drive/root:/Documents/report.docx"),
+        (
+            "sites",
+            "site-1",
+            "Documents/report.docx",
+            "extractSensitivityLabels",
+            "sites/site-1/drive/root:/Documents/report.docx:/extractSensitivityLabels",
+        ),
+        # Leading and trailing slashes are stripped so the URL never doubles up separators.
+        ("sites", "site-1", "/Documents/report.docx/", "", "sites/site-1/drive/root:/Documents/report.docx"),
+        # Spaces and other reserved characters are percent-encoded, separators are preserved.
+        ("sites", "site-1", "My Folder/a b.docx", "", "sites/site-1/drive/root:/My%20Folder/a%20b.docx"),
+    ],
+)
+def test_driveitem_path_uri(object_type: str, object_type_id: str, item_path: str, suffix: str, expected: str):
+    """
+    Given: An item path relative to the drive root.
+    When: Building a path-addressed driveItem URI.
+    Then: The path is percent-encoded and closed with ':' only when a suffix follows.
+    """
+    assert MsGraphClient._driveitem_path_uri(object_type, object_type_id, item_path, suffix) == expected
+
+
+def test_resolve_item_addressing_by_item_id():
+    """
+    Given: Only item_id, alongside the object type arguments.
+    When: Resolving the addressing mode.
+    Then: The item_id mode is returned with its companion arguments.
+    """
+    result = resolve_item_addressing({"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"})
+
+    assert result == {"mode": "item_id", "value": "item-1", "object_type": "sites", "object_type_id": "site-1"}
+
+
+def test_resolve_item_addressing_by_item_path():
+    """
+    Given: Only item_path, on a command that supports path addressing.
+    When: Resolving the addressing mode.
+    Then: The item_path mode is returned.
+    """
+    result = resolve_item_addressing({"object_type": "sites", "object_type_id": "site-1", "item_path": "a/b.docx"})
+
+    assert result["mode"] == "item_path"
+    assert result["value"] == "a/b.docx"
+
+
+def test_resolve_item_addressing_by_share_url():
+    """
+    Given: Only share_url, on a command that supports it.
+    When: Resolving the addressing mode.
+    Then: The share_url mode is returned and the object type arguments are not required.
+    """
+    result = resolve_item_addressing({"share_url": "https://e.sharepoint.com/x"}, allow_share_url=True)
+
+    assert result == {"mode": "share_url", "value": "https://e.sharepoint.com/x"}
+
+
+@pytest.mark.parametrize(
+    "args, kwargs, expected_error",
+    [
+        # Nothing supplied - the message lists what the command accepts.
+        ({}, {}, "Provide one of the following arguments: item_id, item_path."),
+        ({}, {"allow_path": False}, "Provide one of the following arguments: item_id."),
+        ({}, {"allow_share_url": True}, "Provide one of the following arguments: item_id, item_path, share_url."),
+        # More than one supplied - the message names the offending arguments.
+        (
+            {"item_id": "item-1", "item_path": "a/b.docx"},
+            {},
+            "Provide only one of the following arguments, but got item_id, item_path.",
+        ),
+        (
+            {"item_id": "item-1", "share_url": "https://e/x"},
+            {"allow_share_url": True},
+            "Provide only one of the following arguments, but got item_id, share_url.",
+        ),
+        # Supplied but unsupported by this endpoint.
+        ({"item_path": "a/b.docx"}, {"allow_path": False}, "The item_path argument is not supported by this command."),
+        ({"share_url": "https://e/x"}, {}, "The share_url argument is not supported by this command."),
+        # Addressing by id/path requires the parent resource ID.
+        ({"object_type": "sites", "item_id": "item-1"}, {}, "The object_type_id argument is required"),
+    ],
+)
+def test_resolve_item_addressing_invalid(args: dict, kwargs: dict, expected_error: str):
+    """
+    Given: An invalid combination of addressing arguments.
+    When: Resolving the addressing mode.
+    Then: A DemistoException naming the relevant arguments is raised.
+    """
+    with pytest.raises(DemistoException) as exc_info:
+        resolve_item_addressing(args, **kwargs)
+
+    assert expected_error in str(exc_info.value)
+
+
+def test_resolve_item_addressing_ignores_empty_strings():
+    """
+    Given: Arguments where the unused addressing modes are empty strings, as XSOAR supplies them.
+    When: Resolving the addressing mode.
+    Then: The empty values are ignored rather than counted as supplied.
+    """
+    result = resolve_item_addressing(
+        {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1", "item_path": "", "share_url": ""},
+        allow_share_url=True,
+    )
+
+    assert result["mode"] == "item_id"
+
+
+DRIVEITEM_METADATA_RESPONSE = {
+    "id": "a9670e1f-67b8-43e1-85f6-b395c4119acf",
+    "name": "test.docx",
+    "size": 12345,
+    "webUrl": "https://paanalyticstestlab-my.sharepoint.com/personal/scohenkadosh/Documents/test.docx",
+    "createdDateTime": "2025-11-24T14:19:11Z",
+    "lastModifiedDateTime": "2025-11-24T14:19:40Z",
+    "createdBy": {"user": {"email": "s@example.com", "id": "826411a3", "displayName": "Shai Cohen Kadosh"}},
+    "lastModifiedBy": {"user": {"email": "s@example.com", "id": "826411a3", "displayName": "Shai Cohen Kadosh"}},
+    "parentReference": {"id": "0622f447", "siteId": "7878e691-3e74-4a11-899d-c69622de1254"},
+    "sharepointIds": {"listItemUniqueId": "a9670e1f-67b8-43e1-85f6-b395c4119acf", "siteId": "7878e691"},
+}
+
+
+def test_get_driveitem_command_by_item_id(mocker: MockerFixture):
+    """
+    Given: An item_id together with the object type arguments.
+    When: Running msgraph-driveitem-get.
+    Then: The items/{id} route is called and the metadata is returned under MsGraphFiles.Files.
+    """
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_METADATA_RESPONSE)
+
+    result = get_driveitem_command(CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"})
+
+    assert http_request.call_args.kwargs["url_suffix"] == "sites/site-1/drive/items/item-1"
+    assert result.outputs_prefix == "MsGraphFiles.Files"
+    assert result.outputs["ID"] == "a9670e1f-67b8-43e1-85f6-b395c4119acf"
+    assert result.outputs["ItemID"] == "a9670e1f-67b8-43e1-85f6-b395c4119acf"
+    # SiteID is lifted out of parentReference so callers do not have to dig for it.
+    assert result.outputs["SiteID"] == "7878e691-3e74-4a11-899d-c69622de1254"
+    assert "test.docx" in result.readable_output
+
+
+def test_get_driveitem_command_by_item_path(mocker: MockerFixture):
+    """
+    Given: An item_path instead of an item_id.
+    When: Running msgraph-driveitem-get.
+    Then: The path-addressed root:/ route is called.
+    """
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_METADATA_RESPONSE)
+
+    get_driveitem_command(CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_path": "Documents/test.docx"})
+
+    assert http_request.call_args.kwargs["url_suffix"] == "sites/site-1/drive/root:/Documents/test.docx"
+
+
+def test_get_driveitem_command_by_share_url(mocker: MockerFixture):
+    """
+    Given: A share_url and no object type arguments.
+    When: Running msgraph-driveitem-get.
+    Then: The /shares/{token}/driveItem route is called with the encoded token.
+    """
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_METADATA_RESPONSE)
+    share_url = "https://paanalyticstestlab-my.sharepoint.com/:w:/r/personal/scohenkadosh/Documents/test.docx"
+
+    get_driveitem_command(CLIENT_MOCKER, {"share_url": share_url})
+
+    assert http_request.call_args.kwargs["url_suffix"] == f"shares/{encode_sharing_url(share_url)}/driveItem"
+
+
+@pytest.mark.parametrize(
+    "include_sharepoint_ids, should_request",
+    [("true", True), ("false", False)],
+)
+def test_get_driveitem_command_sharepoint_ids_projection(
+    mocker: MockerFixture, include_sharepoint_ids: str, should_request: bool
+):
+    """
+    Given: The include_sharepoint_ids argument.
+    When: Running msgraph-driveitem-get.
+    Then: sharepointIds is added to $select only when requested. Microsoft Graph does not return
+          it by default, so it has to be selected explicitly.
+    """
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_METADATA_RESPONSE)
+
+    get_driveitem_command(
+        CLIENT_MOCKER,
+        {
+            "object_type": "sites",
+            "object_type_id": "site-1",
+            "item_id": "item-1",
+            "include_sharepoint_ids": include_sharepoint_ids,
+        },
+    )
+
+    select = http_request.call_args.kwargs["params"]["$select"]
+    assert ("sharepointIds" in select) is should_request
+    # The rest of the projection must always be present - $select narrows the response.
+    assert "id,name,size,webUrl" in select
+
+
+def test_get_driveitem_command_requires_exactly_one_addressing_argument():
+    """
+    Given: Both item_id and share_url.
+    When: Running msgraph-driveitem-get.
+    Then: A DemistoException naming the conflicting arguments is raised before any HTTP call.
+    """
+    with pytest.raises(DemistoException) as exc_info:
+        get_driveitem_command(CLIENT_MOCKER, {"item_id": "item-1", "share_url": "https://e/x"})
+
+    assert "Provide only one of the following arguments, but got item_id, share_url." in str(exc_info.value)
+
+
+DRIVEITEM_ACTIVITIES_RESPONSE = {
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#activities",
+    "value": [
+        {
+            "id": "wDv99w9U3khuO0MPAAAAAA==",
+            "access": {},
+            "activityDateTime": "2026-01-15T08:27:49Z",
+            "actor": {"user": {"displayName": "Shai Cohen Kadosh", "email": "s@example.com"}},
+        },
+        {
+            "id": "8DvNr6FL3kgZ9D8PAAAAAA==",
+            "access": {},
+            "activityDateTime": "2026-01-04T14:58:14Z",
+            "actor": {"user": {"displayName": "Someone Else"}},
+        },
+    ],
+}
+
+
+def test_list_driveitem_activities_command_with_drives_object_type(mocker: MockerFixture):
+    """
+    Given: object_type=drives, so the drive ID is already known.
+    When: Running msgraph-driveitem-activities-list.
+    Then: The documented /drives/{id}/items/{id}/activities route is called directly, with no
+          extra drive-resolution request.
+    """
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_ACTIVITIES_RESPONSE)
+
+    result = list_driveitem_activities_command(
+        CLIENT_MOCKER, {"object_type": "drives", "object_type_id": "drive-1", "item_id": "item-1"}
+    )
+
+    assert http_request.call_count == 1
+    assert http_request.call_args.kwargs["url_suffix"] == "drives/drive-1/items/item-1/activities"
+    assert result.outputs_prefix == "MsGraphFiles.ItemActivity"
+    assert len(result.outputs["Value"]) == 2
+    assert result.outputs["Value"][0]["ID"] == "wDv99w9U3khuO0MPAAAAAA=="
+    # The v1.0 schema uses activityDateTime, not the times.recordedDateTime of the beta endpoint.
+    assert result.outputs["Value"][0]["ActivityDateTime"] == "2026-01-15T08:27:49Z"
+    assert "Shai Cohen Kadosh" in result.readable_output or "s@example.com" in result.readable_output
+
+
+def test_list_driveitem_activities_command_resolves_drive_for_sites(mocker: MockerFixture):
+    """
+    Given: object_type=sites.
+    When: Running msgraph-driveitem-activities-list.
+    Then: The default drive is resolved first, because Microsoft Graph documents no
+          /sites/{id}/drive/items/{id}/activities route. The activities call then uses /drives.
+    """
+    http_request = mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        side_effect=[{"id": "resolved-drive-1"}, DRIVEITEM_ACTIVITIES_RESPONSE],
+    )
+
+    list_driveitem_activities_command(
+        CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"}
+    )
+
+    assert http_request.call_count == 2
+    assert http_request.call_args_list[0].kwargs["url_suffix"] == "sites/site-1/drive"
+    assert http_request.call_args_list[1].kwargs["url_suffix"] == "drives/resolved-drive-1/items/item-1/activities"
+
+
+def test_list_driveitem_activities_command_limit_is_client_side(mocker: MockerFixture):
+    """
+    Given: A limit argument.
+    When: Running msgraph-driveitem-activities-list.
+    Then: The results are truncated locally and no $top is sent, because the activities
+          endpoint supports no OData query parameters.
+    """
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_ACTIVITIES_RESPONSE)
+
+    result = list_driveitem_activities_command(
+        CLIENT_MOCKER, {"object_type": "drives", "object_type_id": "drive-1", "item_id": "item-1", "limit": "1"}
+    )
+
+    assert len(result.outputs["Value"]) == 1
+    assert "params" not in http_request.call_args.kwargs
+
+
+def test_list_driveitem_activities_command_no_activities(mocker: MockerFixture):
+    """
+    Given: An item with no recorded activity.
+    When: Running msgraph-driveitem-activities-list.
+    Then: A friendly message is returned rather than an empty table. An empty result is also
+          what an unlicensed tenant returns, so this path must stay readable.
+    """
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value={"value": []})
+
+    result = list_driveitem_activities_command(
+        CLIENT_MOCKER, {"object_type": "drives", "object_type_id": "drive-1", "item_id": "item-1"}
+    )
+
+    assert "No activities were found for item item-1." in result.readable_output
+
+
+def test_list_driveitem_activities_command_next_page_url(mocker: MockerFixture):
+    """
+    Given: A next_page_url from a previous response.
+    When: Running msgraph-driveitem-activities-list.
+    Then: The full URL is followed directly and no drive resolution happens.
+    """
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_ACTIVITIES_RESPONSE)
+    next_url = "https://graph.microsoft.com/v1.0/drives/drive-1/items/item-1/activities?$skiptoken=abc"
+
+    list_driveitem_activities_command(
+        CLIENT_MOCKER,
+        {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1", "next_page_url": next_url},
+    )
+
+    assert http_request.call_count == 1
+    assert http_request.call_args.kwargs["full_url"] == next_url
+
+
+""" msgraph-driveitem-sensitivity-labels-extract """
+
+
+def build_response_mock(status_code: int, body: dict | None = None) -> MagicMock:
+    """Build a minimal requests.Response stand-in.
+
+    extract_sensitivity_labels asks the client for resp_type='response' so that the 423 Locked
+    body can be inspected, so the tests must mock the response object rather than a parsed dict.
+    """
+    response = MagicMock()
+    response.status_code = status_code
+    if body is None:
+        response.json.side_effect = ValueError("no body")
+    else:
+        response.json.return_value = body
+    return response
+
+
+EXTRACTED_LABELS_RESPONSE = {
+    "labels": [
+        {
+            "sensitivityLabelId": "d3d09c07-c2b6-4d68-a5f6-cf1c1c11b34d",
+            "displayName": "Confidential",
+            "tooltip": "Confidential data",
+            "isEncrypted": False,
+        }
+    ],
+}
+
+
+def test_extract_sensitivity_labels_command_by_item_id(mocker: MockerFixture):
+    """
+    Given: An item addressed by item_id.
+    When: Running msgraph-driveitem-sensitivity-labels-extract.
+    Then: The documented POST .../items/{id}/extractSensitivityLabels action is invoked and the
+          returned labels are parsed into context.
+    """
+    http_request = mocker.patch.object(
+        CLIENT_MOCKER.ms_client, "http_request", return_value=build_response_mock(200, EXTRACTED_LABELS_RESPONSE)
+    )
+
+    result = extract_sensitivity_labels_command(
+        CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"}
+    )
+
+    assert http_request.call_args.kwargs["method"] == "POST"
+    assert http_request.call_args.kwargs["url_suffix"] == "sites/site-1/drive/items/item-1/extractSensitivityLabels"
+    # 423 is an expected outcome rather than a transport failure, so it must not raise inside the client.
+    assert 423 in http_request.call_args.kwargs["ok_codes"]
+    assert result.outputs_prefix == "MsGraphFiles.ExtractedSensitivityLabels"
+    assert result.outputs["ItemId"] == "item-1"
+    assert len(result.outputs["Labels"]) == 1
+    assert result.outputs["Labels"][0]["DisplayName"] == "Confidential"
+
+
+def test_extract_sensitivity_labels_command_by_item_path(mocker: MockerFixture):
+    """
+    Given: An item addressed by item_path.
+    When: Running msgraph-driveitem-sensitivity-labels-extract.
+    Then: The path-addressed form of the action URL is used.
+    """
+    http_request = mocker.patch.object(
+        CLIENT_MOCKER.ms_client, "http_request", return_value=build_response_mock(200, EXTRACTED_LABELS_RESPONSE)
+    )
+
+    extract_sensitivity_labels_command(
+        CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_path": "Documents/report.docx"}
+    )
+
+    assert (
+        http_request.call_args.kwargs["url_suffix"]
+        == "sites/site-1/drive/root:/Documents/report.docx:/extractSensitivityLabels"
+    )
+
+
+@pytest.mark.parametrize(
+    "code, expected_fragment",
+    [
+        ("fileDoubleKeyEncrypted", "double key encryption"),
+        ("fileDecryptionNotSupported", "prevent SharePoint from opening it"),
+        ("fileDecryptionDeferred", "Retry the command shortly."),
+        # An undocumented code must still produce a usable message rather than a KeyError.
+        ("someFutureCode", "The file is locked"),
+    ],
+)
+def test_extract_sensitivity_labels_command_locked(mocker: MockerFixture, code: str, expected_fragment: str):
+    """
+    Given: Microsoft Graph returns 423 Locked with one of the documented reason codes.
+    When: Running msgraph-driveitem-sensitivity-labels-extract.
+    Then: The error explains why extraction was blocked and echoes the code, so the user can tell
+          the retryable fileDecryptionDeferred case apart from the permanent ones.
+    """
+    mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        return_value=build_response_mock(423, {"error": {"code": code, "message": "Locked"}}),
+    )
+
+    with pytest.raises(DemistoException) as exc:
+        extract_sensitivity_labels_command(
+            CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"}
+        )
+
+    assert expected_fragment in str(exc.value)
+    assert f"(code: {code})" in str(exc.value)
+
+
+def test_extract_sensitivity_labels_command_locked_without_body(mocker: MockerFixture):
+    """
+    Given: A 423 response whose body cannot be parsed as JSON.
+    When: Running msgraph-driveitem-sensitivity-labels-extract.
+    Then: The command still raises a readable error instead of failing on the body parsing.
+    """
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=build_response_mock(423, None))
+
+    with pytest.raises(DemistoException) as exc:
+        extract_sensitivity_labels_command(
+            CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"}
+        )
+
+    assert "(code: unknown)" in str(exc.value)
+
+
+def test_extract_sensitivity_labels_command_no_labels(mocker: MockerFixture):
+    """
+    Given: A file that carries no sensitivity labels.
+    When: Running msgraph-driveitem-sensitivity-labels-extract.
+    Then: A friendly message is returned rather than an empty table.
+    """
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=build_response_mock(200, {"labels": []}))
+
+    result = extract_sensitivity_labels_command(
+        CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"}
+    )
+
+    assert "No sensitivity labels were extracted from 'item-1'." in result.readable_output
+
+
+def test_extract_sensitivity_labels_command_rejects_share_url():
+    """
+    Given: A share_url argument.
+    When: Running msgraph-driveitem-sensitivity-labels-extract.
+    Then: The command rejects it, because Microsoft Graph documents no /shares route for this action.
+    """
+    with pytest.raises(DemistoException) as exc:
+        extract_sensitivity_labels_command(CLIENT_MOCKER, {"share_url": "https://e.sharepoint.com/x"})
+
+    assert "The share_url argument is not supported by this command." in str(exc.value)
+
+
+""" msgraph-driveitem-analytics-get """
+
+
+DRIVEITEM_ANALYTICS_RESPONSE = {
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#itemAnalytics",
+    "allTime": {
+        "startDateTime": "2024-01-01T00:00:00Z",
+        "endDateTime": "2026-01-15T00:00:00Z",
+        "access": {"actionCount": 24, "actorCount": 5},
+        "edit": {"actionCount": 3, "actorCount": 2},
+    },
+}
+
+
+def test_get_driveitem_analytics_command_with_drives_object_type(mocker: MockerFixture):
+    """
+    Given: object_type=drives, so the drive ID is already known.
+    When: Running msgraph-driveitem-analytics-get.
+    Then: The documented per-item analytics route is called directly with no drive resolution.
+    """
+    http_request = mocker.patch.object(
+        CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_ANALYTICS_RESPONSE
+    )
+
+    result = get_driveitem_analytics_command(
+        CLIENT_MOCKER, {"object_type": "drives", "object_type_id": "drive-1", "item_id": "item-1"}
+    )
+
+    assert http_request.call_count == 1
+    assert http_request.call_args.kwargs["url_suffix"] == "drives/drive-1/items/item-1/analytics/allTime"
+    assert result.outputs_prefix == "MsGraphFiles.ItemAnalytics"
+    assert result.outputs["TimeRange"] == "allTime"
+    # The stats are lifted out of the time-range wrapper into a single Stats object.
+    assert result.outputs["Stats"]["Access"]["ActionCount"] == 24
+    assert "24" in result.readable_output
+
+
+def test_get_driveitem_analytics_command_resolves_drive_for_sites(mocker: MockerFixture):
+    """
+    Given: object_type=sites.
+    When: Running msgraph-driveitem-analytics-get.
+    Then: The default drive is resolved first, because per-item analytics is documented only under
+          /drives. /sites/{id}/analytics is site-level analytics and is deliberately not used.
+    """
+    http_request = mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        side_effect=[{"id": "resolved-drive-1"}, DRIVEITEM_ANALYTICS_RESPONSE],
+    )
+
+    get_driveitem_analytics_command(
+        CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"}
+    )
+
+    assert http_request.call_count == 2
+    assert http_request.call_args_list[0].kwargs["url_suffix"] == "sites/site-1/drive"
+    assert http_request.call_args_list[1].kwargs["url_suffix"] == "drives/resolved-drive-1/items/item-1/analytics/allTime"
+
+
+def test_get_driveitem_analytics_command_last_seven_days(mocker: MockerFixture):
+    """
+    Given: time_range=lastSevenDays, whose payload is returned bare rather than nested.
+    When: Running msgraph-driveitem-analytics-get.
+    Then: The time range reaches the URL and the bare stats shape is normalized the same way.
+    """
+    bare_response = {"access": {"actionCount": 4, "actorCount": 1}}
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=bare_response)
+
+    result = get_driveitem_analytics_command(
+        CLIENT_MOCKER,
+        {"object_type": "drives", "object_type_id": "drive-1", "item_id": "item-1", "time_range": "lastSevenDays"},
+    )
+
+    assert http_request.call_args.kwargs["url_suffix"] == "drives/drive-1/items/item-1/analytics/lastSevenDays"
+    assert result.outputs["TimeRange"] == "lastSevenDays"
+    assert result.outputs["Stats"]["Access"]["ActionCount"] == 4
+
+
+def test_get_driveitem_analytics_command_no_data(mocker: MockerFixture):
+    """
+    Given: An empty analytics payload, which is also what a tenant without the required plan returns.
+    When: Running msgraph-driveitem-analytics-get.
+    Then: A message that names the licensing possibility is returned instead of an empty table.
+    """
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value={})
+
+    result = get_driveitem_analytics_command(
+        CLIENT_MOCKER, {"object_type": "drives", "object_type_id": "drive-1", "item_id": "item-1"}
+    )
+
+    assert "No analytics data was returned for item item-1" in result.readable_output
+    assert "tenant plan" in result.readable_output

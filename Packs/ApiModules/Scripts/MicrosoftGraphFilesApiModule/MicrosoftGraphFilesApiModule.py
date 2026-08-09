@@ -2,7 +2,8 @@ from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 
 """ IMPORTS """
-from urllib.parse import parse_qs, urlparse
+import base64
+from urllib.parse import parse_qs, quote, urlparse
 
 from MicrosoftApiModule import *  # noqa: E402
 
@@ -80,6 +81,82 @@ def remove_identity_key(source: Any) -> dict:
     new_source["Type"] = identity_key
 
     return new_source
+
+
+def encode_sharing_url(share_url: str) -> str:
+    """Encode a sharing URL into the token accepted by GET /shares/{token}.
+
+    Implements the encoding documented for the shares API: base64-encode the URL, strip the
+    '=' padding, translate to the base64url alphabet ('/' -> '_', '+' -> '-'), and prefix 'u!'.
+
+    Args:
+        share_url: A sharing URL, for example a SharePoint or OneDrive "copy link" URL.
+
+    Returns:
+        The encoded sharing token, including the leading 'u!'.
+    """
+    encoded = base64.b64encode(share_url.encode("utf-8")).decode("utf-8")
+    return "u!" + encoded.rstrip("=").replace("/", "_").replace("+", "-")
+
+
+def resolve_item_addressing(args: dict[str, str], allow_path: bool = True, allow_share_url: bool = False) -> dict[str, str]:
+    """Validate and normalize the arguments that address a single driveItem.
+
+    Microsoft Graph exposes several ways to address the same driveItem, and which ones are
+    valid differs per endpoint. YAML cannot express "exactly one of these arguments", so the
+    rule is enforced here and the error messages name the arguments explicitly.
+
+    Args:
+        args: The raw command arguments.
+        allow_path: Whether the endpoint supports 'root:/{item-path}:' addressing.
+        allow_share_url: Whether the endpoint supports the /shares/{token} route.
+
+    Returns:
+        A dict with 'mode' (one of 'item_id', 'item_path', 'share_url') and the matching value
+        under 'value'. For the id and path modes, 'object_type' and 'object_type_id' are included.
+
+    Raises:
+        DemistoException: If zero or more than one addressing argument is supplied, if an
+            unsupported one is used, or if a required companion argument is missing.
+    """
+    item_id = args.get("item_id") or ""
+    item_path = args.get("item_path") or ""
+    share_url = args.get("share_url") or ""
+
+    if item_path and not allow_path:
+        raise DemistoException(
+            "The item_path argument is not supported by this command. Microsoft Graph does not "
+            "document path addressing for this endpoint. Use item_id instead."
+        )
+    if share_url and not allow_share_url:
+        raise DemistoException(
+            "The share_url argument is not supported by this command. Use item_id instead."
+        )
+
+    supplied = [name for name, value in (("item_id", item_id), ("item_path", item_path), ("share_url", share_url)) if value]
+    allowed = ["item_id"] + (["item_path"] if allow_path else []) + (["share_url"] if allow_share_url else [])
+    allowed_text = ", ".join(allowed)
+
+    if not supplied:
+        raise DemistoException(f"Provide one of the following arguments: {allowed_text}.")
+    if len(supplied) > 1:
+        raise DemistoException(f"Provide only one of the following arguments, but got {', '.join(supplied)}.")
+
+    mode = supplied[0]
+    if mode == "share_url":
+        return {"mode": "share_url", "value": share_url}
+
+    object_type = args.get("object_type") or ""
+    object_type_id = args.get("object_type_id") or ""
+    if not object_type_id:
+        raise DemistoException(f"The object_type_id argument is required when addressing an item by {mode}.")
+
+    return {
+        "mode": mode,
+        "value": item_id or item_path,
+        "object_type": object_type,
+        "object_type_id": object_type_id,
+    }
 
 
 def url_validation(url: str) -> str:
@@ -341,6 +418,30 @@ class MsGraphClient:
             else f"{object_type}/{object_type_id}/drive/items/{item_id}"
         )
         return f"{base}/{suffix}" if suffix else base
+
+    @staticmethod
+    def _driveitem_path_uri(object_type: str, object_type_id: str, item_path: str, suffix: str = "") -> str:
+        """Build a /v1.0 relative URL addressing a driveItem by its path under the drive root.
+
+        Microsoft Graph addresses items by path as 'root:/{item-path}' and, when a sub-resource
+        follows, closes the path with a colon: 'root:/{item-path}:/{suffix}'. Only some endpoints
+        support path addressing - the caller is responsible for knowing which.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_path: Path relative to the drive root, for example 'Documents/report.docx'.
+            suffix: Optional sub-resource appended after the path (no leading slash).
+
+        Returns:
+            Relative URL suitable for ms_client.http_request(url_suffix=...).
+        """
+        # Percent-encode each path segment while preserving the '/' separators, so that spaces
+        # and other reserved characters in file names do not break the URL.
+        encoded_path = quote(item_path.strip("/"), safe="/")
+        prefix = f"{object_type}/{object_type_id}" if object_type == "drives" else f"{object_type}/{object_type_id}/drive"
+        root = f"{prefix}/root:"
+        return f"{root}/{encoded_path}:/{suffix}" if suffix else f"{root}/{encoded_path}"
 
     def update_driveitem(
         self,
@@ -673,6 +774,179 @@ class MsGraphClient:
         if object_type in {"groups", "sites", "users"}:
             return f"{object_type}/{object_type_id}/drive/items/{item_id}"
         raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: drives, groups, sites, users.")
+
+    def resolve_drive_id(self, object_type: str, object_type_id: str) -> str:
+        """Resolve the ID of the default drive belonging to a site, group or user.
+
+        Some driveItem sub-resources - notably /activities and per-item /analytics - are only
+        addressable under /drives/{drive-id}/..., with no /{object_type}/{id}/drive/... form.
+        For those, the drive ID has to be resolved first.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+
+        Returns:
+            The drive ID. When object_type is already 'drives', object_type_id is returned as is.
+
+        Raises:
+            DemistoException: If the resource has no default drive.
+        """
+        if object_type == "drives":
+            return object_type_id
+
+        response = self.ms_client.http_request(
+            method="GET",
+            url_suffix=f"{object_type}/{object_type_id}/drive",
+            params={"$select": "id"},
+        )
+        drive_id = response.get("id")
+        if not drive_id:
+            raise DemistoException(
+                f"Could not resolve the default drive for {object_type} '{object_type_id}'. "
+                f"Provide object_type=drives with the drive ID instead."
+            )
+        return drive_id
+
+    def list_driveitem_activities(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str,
+        next_page_url: str = "",
+    ) -> dict:
+        """List the activities that took place on a driveItem.
+
+        Maps to GET /drives/{drive-id}/items/{item-id}/activities. Microsoft Graph does not
+        document a /{object_type}/{id}/drive/items/{item-id}/activities form, so for anything
+        other than 'drives' the drive ID is resolved first.
+
+        This endpoint supports no OData query parameters, so there is no $top - result limiting
+        has to happen client-side.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the driveItem.
+            next_page_url: Optional full URL from a previous @odata.nextLink.
+
+        Returns:
+            The raw response from Microsoft Graph, with value[] and an optional @odata.nextLink.
+        """
+        if next_page_url:
+            url = url_validation(next_page_url)
+            return self.ms_client.http_request(method="GET", full_url=url)
+
+        drive_id = self.resolve_drive_id(object_type, object_type_id)
+        url_suffix = f"drives/{drive_id}/items/{item_id}/activities"
+        return self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+
+    def extract_sensitivity_labels(
+        self,
+        object_type: str,
+        object_type_id: str,
+        item_id: str = "",
+        item_path: str = "",
+    ) -> requests.Response:
+        """Extract the sensitivity labels embedded in a file's content.
+
+        Unlike get_sensitivity_label, which reads the single label already stamped on the item's
+        metadata, this reads the full set of labels out of the file itself and refreshes the
+        item's metadata as a side effect.
+
+        Returns the raw response so the caller can distinguish the documented 423 Locked
+        condition, whose body carries a 'code' explaining why extraction was blocked.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the driveItem. Mutually exclusive with item_path.
+            item_path: Path of the driveItem relative to the drive root.
+
+        Returns:
+            The raw requests.Response from Microsoft Graph.
+        """
+        if item_path:
+            url_suffix = self._driveitem_path_uri(object_type, object_type_id, item_path, suffix="extractSensitivityLabels")
+        else:
+            url_suffix = self._driveitem_uri(object_type, object_type_id, item_id, suffix="extractSensitivityLabels")
+
+        return self.ms_client.http_request(
+            method="POST",
+            url_suffix=url_suffix,
+            resp_type="response",
+            ok_codes=(200, 423),
+        )
+
+    def get_driveitem_analytics(self, object_type: str, object_type_id: str, item_id: str, time_range: str) -> dict:
+        """Retrieve activity statistics for a driveItem.
+
+        Maps to GET /drives/{drive-id}/items/{item-id}/analytics/{allTime|lastSevenDays}.
+        Microsoft Graph documents per-item analytics only under /drives, so the drive ID is
+        resolved first for sites, groups and users. Note that /sites/{id}/analytics is the
+        analytics of the site itself, which is a different resource.
+
+        Args:
+            object_type: One of drives, groups, sites, users.
+            object_type_id: ID of the parent resource.
+            item_id: ID of the driveItem.
+            time_range: Either 'allTime' or 'lastSevenDays'.
+
+        Returns:
+            The itemAnalytics object returned by Microsoft Graph.
+        """
+        drive_id = self.resolve_drive_id(object_type, object_type_id)
+        url_suffix = f"drives/{drive_id}/items/{item_id}/analytics/{time_range}"
+        return self.ms_client.http_request(method="GET", url_suffix=url_suffix)
+
+    # Fields requested when reading driveItem metadata. Listed explicitly because using $select
+    # narrows the projection - anything omitted here will be absent from the response.
+    DRIVEITEM_SELECT_FIELDS = (
+        "id,name,size,webUrl,createdDateTime,lastModifiedDateTime,createdBy,lastModifiedBy,parentReference,file,folder"
+    )
+
+    def get_driveitem(
+        self,
+        object_type: str = "",
+        object_type_id: str = "",
+        item_id: str = "",
+        item_path: str = "",
+        share_url: str = "",
+        include_sharepoint_ids: bool = True,
+    ) -> dict:
+        """Retrieve the metadata of a single driveItem.
+
+        Supports the three addressing modes Microsoft Graph documents for this resource: by item
+        ID, by path relative to the drive root, and by sharing URL via the /shares route. Exactly
+        one of item_id, item_path or share_url is expected - the caller validates that.
+
+        Args:
+            object_type: One of drives, groups, sites, users. Unused for the share_url mode.
+            object_type_id: ID of the parent resource. Unused for the share_url mode.
+            item_id: ID of the driveItem.
+            item_path: Path of the driveItem relative to the drive root.
+            share_url: A sharing URL pointing at the driveItem.
+            include_sharepoint_ids: Whether to request the sharepointIds projection, which
+                carries listItemUniqueId - the join key to the SharePoint list world.
+
+        Returns:
+            The driveItem object returned by Microsoft Graph.
+        """
+        select_fields = self.DRIVEITEM_SELECT_FIELDS
+        if include_sharepoint_ids:
+            select_fields = f"{select_fields},sharepointIds"
+        params = {"$select": select_fields}
+
+        if share_url:
+            # The /shares route needs Files.ReadWrite.All (application), a higher permission
+            # than the other two modes, even though this is a read.
+            url_suffix = f"shares/{encode_sharing_url(share_url)}/driveItem"
+        elif item_path:
+            url_suffix = self._driveitem_path_uri(object_type, object_type_id, item_path)
+        else:
+            url_suffix = self._driveitem_uri(object_type, object_type_id, item_id)
+
+        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def get_sensitivity_label(self, object_type: str, object_type_id: str, item_id: str) -> dict:
         """Retrieve the sensitivity label currently assigned to a drive item.
@@ -1452,6 +1726,48 @@ def _identity_label(identity: dict) -> str:
     return identity_id or ""
 
 
+def _summarize_identity_set(identity_set: dict) -> str:
+    """Return a human-readable label for an identitySet (a wrapper around one or more identities).
+
+    An identitySet nests the actual identity under a role key such as 'user', 'application' or
+    'device'. This unwraps the first populated one and labels it. Note this differs from
+    _identity_label, which expects an already-unwrapped identity.
+
+    Args:
+        identity_set: An identitySet object, for example the 'actor' of an itemActivity.
+
+    Returns:
+        The label of the first identity present, or an empty string.
+    """
+    if not isinstance(identity_set, dict):
+        return ""
+    for role in ("User", "user", "Application", "application", "Device", "device", "Group", "group"):
+        identity = identity_set.get(role)
+        if isinstance(identity, dict):
+            label = _identity_label(identity)
+            if label:
+                return label
+    return ""
+
+
+def _summarize_activity_actions(activity: dict) -> str:
+    """Summarize which action types an itemActivity represents.
+
+    The v1.0 itemActivity resource exposes 'access' as the only action facet. Any other facets
+    that appear are surfaced too, so the readable output stays useful if Microsoft Graph adds
+    more without requiring a code change.
+
+    Args:
+        activity: A parsed itemActivity.
+
+    Returns:
+        A comma-separated list of action names, or an empty string.
+    """
+    non_action_keys = {"ID", "Actor", "ActivityDateTime", "DriveItem", "ListItem", "Times"}
+    actions = [key for key, value in activity.items() if key not in non_action_keys and isinstance(value, dict)]
+    return ", ".join(sorted(actions))
+
+
 def _summarize_permission_grantees(perm: dict) -> str:
     """Build a comma-separated label of all grantees on a single permission entry.
 
@@ -1582,6 +1898,314 @@ def delete_driveitem_permission_command(client: MsGraphClient, args: dict[str, s
         outputs_prefix="MsGraphFiles.RemovedItemPermission",
         outputs_key_field="PermissionId",
         outputs=outputs,
+        readable_output=readable_output,
+    )
+
+
+def get_driveitem_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Retrieve the metadata of a single driveItem (file or folder).
+
+    Maps to Microsoft Graph:
+        GET /v1.0/{drive-prefix}/items/{item-id}
+        GET /v1.0/{drive-prefix}/root:/{item-path}
+        GET /v1.0/shares/{encoded-sharing-url}/driveItem
+
+    Exactly one of item_id, item_path or share_url must be supplied. YAML cannot express that
+    rule, so it is enforced here.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with the driveItem under MsGraphFiles.Files.
+    """
+    addressing = resolve_item_addressing(args, allow_path=True, allow_share_url=True)
+    include_sharepoint_ids = argToBoolean(args.get("include_sharepoint_ids", "true"))
+
+    raw_response = client.get_driveitem(
+        object_type=addressing.get("object_type", ""),
+        object_type_id=addressing.get("object_type_id", ""),
+        item_id=addressing["value"] if addressing["mode"] == "item_id" else "",
+        item_path=addressing["value"] if addressing["mode"] == "item_path" else "",
+        share_url=addressing["value"] if addressing["mode"] == "share_url" else "",
+        include_sharepoint_ids=include_sharepoint_ids,
+    )
+
+    context_entry = parse_key_to_context(raw_response)
+    # SiteID is surfaced at the top level because it is the value callers need for follow-up
+    # commands, and it is otherwise buried inside parentReference.
+    parent_reference = context_entry.get("ParentReference") or {}
+    context_entry["SiteID"] = parent_reference.get("SiteId")
+    context_entry["ItemID"] = context_entry.get("ID")
+    remove_nulls_from_dictionary(context_entry)
+
+    sharepoint_ids = context_entry.get("SharepointIds") or {}
+    human_readable_content = {
+        "ID": context_entry.get("ID"),
+        "Name": context_entry.get("Name"),
+        "Size": context_entry.get("Size"),
+        "CreatedDateTime": context_entry.get("CreatedDateTime"),
+        "LastModifiedDateTime": context_entry.get("LastModifiedDateTime"),
+        "CreatedBy": (context_entry.get("CreatedBy") or {}).get("User", {}).get("DisplayName"),
+        "LastModifiedBy": (context_entry.get("LastModifiedBy") or {}).get("User", {}).get("DisplayName"),
+        "ListItemUniqueId": sharepoint_ids.get("ListItemUniqueId"),
+        "WebUrl": context_entry.get("WebUrl"),
+    }
+    remove_nulls_from_dictionary(human_readable_content)
+    readable_output = tableToMarkdown(
+        "DriveItem metadata",
+        human_readable_content,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.Files",
+        outputs_key_field="ID",
+        outputs=context_entry,
+        raw_response=raw_response,
+        readable_output=readable_output,
+    )
+
+
+def list_driveitem_activities_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """List the activities that took place on a driveItem.
+
+    Maps to Microsoft Graph: GET /v1.0/drives/{drive-id}/items/{item-id}/activities.
+
+    Note that the /{object_type}/{id}/drive/items/{item-id}/activities form used by most other
+    commands in this integration is not documented for this endpoint, so the drive ID is
+    resolved first for sites, groups and users.
+
+    The endpoint accepts no OData query parameters, so 'limit' is applied client-side after
+    the response is received rather than sent as $top.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with MsGraphFiles.ItemActivity context.
+    """
+    object_type = args.get("object_type") or "drives"
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+    next_page_url = args.get("next_page_url") or ""
+    limit = arg_to_number(args.get("limit"))
+
+    raw_response = client.list_driveitem_activities(
+        object_type=object_type,
+        object_type_id=object_type_id,
+        item_id=item_id,
+        next_page_url=next_page_url,
+    )
+
+    activities = raw_response.get("value", [])
+    if limit:
+        activities = activities[:limit]
+    parsed_activities = [parse_key_to_context(activity) for activity in activities]
+
+    outputs = {
+        "Value": parsed_activities,
+        "ItemId": item_id,
+        "ObjectType": object_type,
+        "ObjectTypeId": object_type_id,
+        "OdataContext": raw_response.get("@odata.context"),
+        "NextToken": raw_response.get("@odata.nextLink"),
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    if not parsed_activities:
+        readable_output = f"No activities were found for item {item_id}."
+    else:
+        readable_rows = [
+            {
+                "ID": activity.get("ID"),
+                "ActivityDateTime": activity.get("ActivityDateTime"),
+                "Actor": _summarize_identity_set(activity.get("Actor") or {}),
+                "Action": _summarize_activity_actions(activity),
+            }
+            for activity in parsed_activities
+        ]
+        readable_output = tableToMarkdown(
+            f"Activities for item {item_id}",
+            readable_rows,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.ItemActivity",
+        outputs_key_field="ItemId",
+        outputs=outputs,
+        raw_response=raw_response,
+        readable_output=readable_output,
+    )
+
+
+# Documented reasons Microsoft Graph refuses to extract sensitivity labels, returned as the
+# 'code' of a 423 Locked response. Only the deferred case is worth retrying.
+EXTRACT_LABELS_LOCKED_REASONS = {
+    "fileDoubleKeyEncrypted": "The file is protected with double key encryption and cannot be opened to extract its labels.",
+    "fileDecryptionNotSupported": (
+        "The encrypted file has properties that prevent SharePoint from opening it to extract its labels."
+    ),
+    "fileDecryptionDeferred": "The file is currently being processed for decryption. Retry the command shortly.",
+}
+
+
+def extract_sensitivity_labels_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Extract the sensitivity labels embedded in a file's content.
+
+    Maps to Microsoft Graph:
+        POST /v1.0/{drive-prefix}/items/{item-id}/extractSensitivityLabels
+        POST /v1.0/{drive-prefix}/root:/{item-path}:/extractSensitivityLabels
+
+    Differs from msgraph-get-sensitivity-label, which returns only the single label already
+    stamped on the item's metadata. This reads the full set out of the file content and
+    refreshes that metadata as a side effect.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with MsGraphFiles.ExtractedSensitivityLabels context.
+
+    Raises:
+        DemistoException: If Microsoft Graph reports the file is locked (423).
+    """
+    addressing = resolve_item_addressing(args, allow_path=True, allow_share_url=False)
+    object_type = addressing["object_type"] or "sites"
+    object_type_id = addressing["object_type_id"]
+    item_id = addressing["value"] if addressing["mode"] == "item_id" else ""
+    item_path = addressing["value"] if addressing["mode"] == "item_path" else ""
+
+    response = client.extract_sensitivity_labels(
+        object_type=object_type,
+        object_type_id=object_type_id,
+        item_id=item_id,
+        item_path=item_path,
+    )
+
+    try:
+        raw_response = response.json()
+    except ValueError:
+        raw_response = {}
+
+    identifier = item_id or item_path
+
+    if response.status_code == 423:
+        # The body carries a 'code' explaining why extraction was blocked. Surface it, because
+        # fileDecryptionDeferred is retryable while the other reasons are permanent.
+        code = (raw_response.get("error") or {}).get("code") or raw_response.get("code") or ""
+        explanation = EXTRACT_LABELS_LOCKED_REASONS.get(
+            code, "The file is locked and its sensitivity labels cannot be extracted."
+        )
+        raise DemistoException(
+            f"Could not extract sensitivity labels from '{identifier}'. {explanation} (code: {code or 'unknown'})"
+        )
+
+    parsed_labels = [parse_key_to_context(label) for label in raw_response.get("labels", [])]
+
+    outputs = {
+        "ItemId": item_id,
+        "ItemPath": item_path,
+        "ObjectType": object_type,
+        "ObjectTypeId": object_type_id,
+        "Labels": parsed_labels,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    if not parsed_labels:
+        readable_output = f"No sensitivity labels were extracted from '{identifier}'."
+    else:
+        readable_output = tableToMarkdown(
+            f"Sensitivity labels extracted from '{identifier}'",
+            parsed_labels,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.ExtractedSensitivityLabels",
+        outputs_key_field="ItemId",
+        outputs=outputs,
+        raw_response=raw_response,
+        readable_output=readable_output,
+    )
+
+
+def get_driveitem_analytics_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """Retrieve activity statistics (views, edits) for a driveItem.
+
+    Maps to Microsoft Graph: GET /v1.0/drives/{drive-id}/items/{item-id}/analytics/{time_range}.
+
+    Per-item analytics is documented only under /drives, so the drive ID is resolved first for
+    sites, groups and users. /sites/{id}/analytics is site-level analytics - a different
+    resource - and is deliberately not used here.
+
+    Args:
+        client: The Microsoft Graph client.
+        args: Command arguments. See the YAML for the full list.
+
+    Returns:
+        CommandResults with MsGraphFiles.ItemAnalytics context.
+    """
+    object_type = args.get("object_type") or "drives"
+    object_type_id = args["object_type_id"]
+    item_id = args["item_id"]
+    time_range = args.get("time_range") or "allTime"
+
+    raw_response = client.get_driveitem_analytics(
+        object_type=object_type,
+        object_type_id=object_type_id,
+        item_id=item_id,
+        time_range=time_range,
+    )
+
+    # For allTime the stats are nested under the time-range key; other shapes are returned bare.
+    # Normalize both into a single stats object.
+    stats = raw_response.get(time_range) or raw_response
+    parsed_stats = parse_key_to_context(stats)
+
+    outputs = {
+        "ItemId": item_id,
+        "ObjectType": object_type,
+        "ObjectTypeId": object_type_id,
+        "TimeRange": time_range,
+        "Stats": parsed_stats,
+    }
+    remove_nulls_from_dictionary(outputs)
+
+    readable_rows = [
+        {
+            "Action": action,
+            "ActionCount": (parsed_stats.get(action) or {}).get("ActionCount"),
+            "ActorCount": (parsed_stats.get(action) or {}).get("ActorCount"),
+        }
+        for action in ("Access", "Create", "Edit", "Delete")
+        if isinstance(parsed_stats.get(action), dict)
+    ]
+    if not readable_rows:
+        readable_output = (
+            f"No analytics data was returned for item {item_id} over '{time_range}'. "
+            f"This can also mean the tenant plan does not surface analytics data."
+        )
+    else:
+        readable_output = tableToMarkdown(
+            f"Analytics for item {item_id} ({time_range})",
+            readable_rows,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        )
+
+    return CommandResults(
+        outputs_prefix="MsGraphFiles.ItemAnalytics",
+        outputs_key_field="ItemId",
+        outputs=outputs,
+        raw_response=raw_response,
         readable_output=readable_output,
     )
 
@@ -1782,6 +2406,14 @@ def run_microsoft_graph_files_integration():
             return_results(list_driveitem_permissions_command(client, args))
         elif command == "msgraph-driveitem-permission-delete":
             return_results(delete_driveitem_permission_command(client, args))
+        elif command == "msgraph-driveitem-get":
+            return_results(get_driveitem_command(client, args))
+        elif command == "msgraph-driveitem-activities-list":
+            return_results(list_driveitem_activities_command(client, args))
+        elif command == "msgraph-driveitem-sensitivity-labels-extract":
+            return_results(extract_sensitivity_labels_command(client, args))
+        elif command == "msgraph-driveitem-analytics-get":
+            return_results(get_driveitem_analytics_command(client, args))
         elif command == "msgraph-get-sensitivity-label":
             return_results(get_sensitivity_label_command(client, args))
         elif command == "msgraph-assign-sensitivity-label":
