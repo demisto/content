@@ -634,26 +634,30 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
         send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Fetch] Sent {len(new_events)} events to XSIAM")
 
-    # New high-water mark. With no events, advance to the window end and reset seen_ids.
+    # New high-water mark. With no events, advance to the window end.
     new_last_fetch = format_datetime_for_filter(window_end_dt)
-    new_seen_ids: list[str] = []
 
-    # Build seen_ids from ALL fetched events (pre-dedup), not just the published ones:
-    # receivedDateTime is second-granular and the next run re-queries ``>= boundary``, so
-    # seen_ids must contain every _unique_id at the boundary second - including deduped-out
-    # ones - or those already-sent events would be re-sent (or lost) next run.
     timed_events = [event for event in events if event.get("_time") and event.get("_unique_id")]
-
     if timed_events:
-        latest_time: str = max(event["_time"] for event in timed_events)
-        new_last_fetch = latest_time
-        ids_at_latest = [event["_unique_id"] for event in timed_events if event["_time"] == latest_time]
-        # If the high-water mark hasn't moved, merge with the existing seen_ids
-        if latest_time == last_fetch_str:
-            new_seen_ids = list(set(seen_ids) | set(ids_at_latest))
-        else:
-            new_seen_ids = list(set(ids_at_latest))
-        demisto.debug(f"[Fetch] boundary second={latest_time} | {len(new_seen_ids)} seen_ids carried forward")
+        new_last_fetch = max(event["_time"] for event in timed_events)
+
+    # Persist EVERY _unique_id whose _time falls inside the trailing look-back window that the
+    # NEXT run will re-scan (``[new_last_fetch - lookback, new_last_fetch]``). The next run
+    # re-queries that entire overlap, so every id in it - not just the boundary second - must be
+    # in seen_ids, otherwise every event in the overlap would be re-sent as a duplicate on each
+    # run. Ids older than the overlap are dropped, keeping the state bounded to the window.
+    overlap_cutoff = format_datetime_for_filter(parse_datetime(new_last_fetch) - timedelta(minutes=lookback_minutes))
+    seen_set = {event["_unique_id"] for event in timed_events if event["_time"] >= overlap_cutoff}
+
+    # If the high-water mark did NOT advance, this run did not re-fetch anything newer than the
+    # previous boundary, so previously-seen ids must be retained (they would otherwise be re-sent
+    # next run). When it DID advance, this run already re-fetched the whole overlap, so its own
+    # set is a superset and no merge is needed.
+    if new_last_fetch == last_fetch_str:
+        seen_set |= set(seen_ids)
+
+    new_seen_ids = sorted(seen_set)
+    demisto.debug(f"[Fetch] overlap_cutoff={overlap_cutoff} | {len(new_seen_ids)} seen_ids carried forward for next run")
 
     new_last_run = {
         "last_fetch": new_last_fetch,

@@ -1124,6 +1124,63 @@ class TestLateStatusAndLookback:
         assert len(sent) == 1
         assert sent[0]["status"] == "Recalled"
 
+    def test_seen_ids_cover_whole_lookback_window_no_duplicates_next_run(self, mock_client, mocker):
+        """seen_ids must contain every id across the whole look-back window (not just the boundary
+        second), so a following run that re-scans the overlap does not re-send them as duplicates."""
+        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": []}
+        # Events span several seconds within the 10-minute look-back overlap (not just 10:05).
+        events = [
+            {"id": "e1", "recipientAddress": "a@x.com", "receivedDateTime": "2025-01-01T09:57:00Z", "status": "delivered"},
+            {"id": "e2", "recipientAddress": "b@x.com", "receivedDateTime": "2025-01-01T09:59:30Z", "status": "delivered"},
+            {"id": "e3", "recipientAddress": "c@x.com", "receivedDateTime": "2025-01-01T10:00:00Z", "status": "delivered"},
+        ]
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": events}
+
+        # 10-minute look-back so the overlap covers all three events.
+        fetch_events(mock_client, max_events=100, lookback_minutes=10)
+
+        new_state = set_last_run.call_args.args[0]
+        # last_fetch advances to the latest event; ALL three ids (across the overlap) are retained.
+        assert new_state["last_fetch"] == "2025-01-01T10:00:00Z"
+        assert set(new_state["seen_ids"]) == {
+            "e1|a@x.com|delivered",
+            "e2|b@x.com|delivered",
+            "e3|c@x.com|delivered",
+        }
+
+    def test_no_duplicates_when_next_run_rescans_overlap(self, mock_client, mocker):
+        """End-to-end: after run 1 stores overlap ids, run 2 re-scanning the same overlap must
+        publish nothing (all deduped)."""
+        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
+        events = [
+            {"id": "e1", "recipientAddress": "a@x.com", "receivedDateTime": "2025-01-01T10:00:00Z", "status": "delivered"},
+            {"id": "e2", "recipientAddress": "b@x.com", "receivedDateTime": "2025-01-01T10:02:00Z", "status": "delivered"},
+        ]
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        # Run 1: fresh state.
+        run1_state = {}
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=run1_state)
+        captured = {}
+        mocker.patch.object(O365MessageTrace.demisto, "setLastRun", side_effect=lambda s: captured.update(s))
+        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": events}
+
+        fetch_events(mock_client, max_events=100, lookback_minutes=10)
+        assert len(send_mock.call_args.kwargs["events"]) == 2  # both sent on first run
+
+        # Run 2: same events re-returned (overlap re-scan). Must send nothing.
+        send_mock.reset_mock()
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=dict(captured))
+        mock_client.ms_client.http_request.return_value = {"value": events}
+
+        fetch_events(mock_client, max_events=100, lookback_minutes=10)
+        send_mock.assert_not_called()
+
 
 # ============================================================================
 # fetch_events in-run window loop tests
