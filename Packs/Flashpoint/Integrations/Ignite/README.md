@@ -15,31 +15,33 @@ If you are upgrading from a Flashpoint integration, please refer to the [Migrati
 4. To fetch Ignite alerts, refer to the section ["Configuration for fetching Ignite Alerts as a Cortex XSOAR Incident"](#configuration-for-fetching-ignite-alerts-as-a-cortex-xsoar-incident).
 5. To fetch Ignite compromised credentials, refer to the section ["Configuration for fetching Ignite Compromised Credentials as a Cortex XSOAR Incident"](#configuration-for-fetching-ignite-compromised-credentials-as-a-cortex-xsoar-incident).
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Server URL | Server URL to connect to Ignite. | True |
-    | API Key | API key used for secure communication with the Ignite platform. | True |
-    | Maximum number of incidents per fetch | The maximum limit is 200 for alerts and compromised credentials. | False |
-    | First fetch time | Date or relative timestamp to start fetching the incidents from. \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\). | False |
-    | Fetch Type | Whether to fetch the Ignite alerts or the compromised credentials. Defaults to "Compromised Credentials" if nothing selected. | False |
-    | Severity for Incidents | Set the default severity for the incidents using this instance. | False |
-    | Alert Status | Filters the incoming alerts with the provided alert status. | False |
-    | Alert Origin | Filters the incoming alerts with the origin of the alert. | False |
-    | Alert Sources | Filters the incoming alerts with the source of the alert. | False |
-    | Fetch fresh compromised credentials alerts | Adds the 'is_fresh' flag to compromised credential queries so it only ingests username/password combinations if they haven't been seen before. | False |
-    | Fetch compromised credentials alerts having lowercase in password | Filters the incoming compromised credentials alerts with passwords having lowercase letters. | False |
-    | Fetch compromised credentials alerts having uppercase in password | Filters the incoming compromised credentials alerts with passwords having uppercase letters. | False |
-    | Fetch compromised credentials alerts having numbers in password | Filters the incoming compromised credentials alerts with passwords having numbers. | False |
-    | Fetch compromised credentials alerts having symbol in password | Filters the incoming compromised credentials alerts with passwords having symbols. | False |
-    | Fetch compromised credentials alerts having minimum length of password | Filters the incoming compromised credentials alerts with passwords has minimum length. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Enable Exact Match for IOC Enrichment | Whether to use exact matching for indicator values by default in enrichment commands \(ip, domain, file, and url\). This behavior can be overridden for individual commands using the exact_match argument. | False |
-    | Reputation commands context limit | Maximum number of entries stored per reputation command result for both relationships \(e.g. related IPs\) and enrichments \(e.g. domains, emails, CVEs\). Lowering this value improves performance and reduces context size, but may omit some details. Raising it preserves more details at the cost of larger context payloads and potential performance degradation. Default is 50. | False |
-    | Create relationships | Create relationships between indicators as part of enrichment. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+| Incident type |  | False |
+| Server URL | Server URL to connect to Ignite. | True |
+| API Key | API key used for secure communication with the Ignite platform. | True |
+| Maximum number of incidents per fetch | The maximum limit is 200 for alerts and compromised credentials. | False |
+| First fetch time | Date or relative timestamp to start fetching the incidents from. \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\). | False |
+| Fetch Type | Whether to fetch the Ignite alerts or the compromised credentials. Defaults to "Compromised Credentials" if nothing selected. | False |
+| Severity for Incidents | Set the default severity for the incidents using this instance. | False |
+| Alert Status | Filters the incoming alerts with the provided alert status. | False |
+| Alert Origin | Filters the incoming alerts with the origin of the alert. | False |
+| Alert Sources | Filters the incoming alerts with the source of the alert. | False |
+| Fetch fresh compromised credentials alerts | Adds the 'is_fresh' flag to compromised credential queries so it only ingests username/password combinations if they haven't been seen before. | False |
+| Fetch compromised credentials alerts having lowercase in password | Filters the incoming compromised credentials alerts with passwords having lowercase letters. | False |
+| Fetch compromised credentials alerts having uppercase in password | Filters the incoming compromised credentials alerts with passwords having uppercase letters. | False |
+| Fetch compromised credentials alerts having numbers in password | Filters the incoming compromised credentials alerts with passwords having numbers. | False |
+| Fetch compromised credentials alerts having symbol in password | Filters the incoming compromised credentials alerts with passwords having symbols. | False |
+| Fetch compromised credentials alerts having minimum length of password | Filters the incoming compromised credentials alerts with passwords has minimum length. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
+| Enable Exact Match for IOC Enrichment | Whether to use exact matching for indicator values by default in enrichment commands \(ip, domain, file, and url\). This behavior can be overridden for individual commands using the exact_match argument. | False |
+| Reputation commands context limit | Maximum number of entries stored per reputation command result for both relationships \(e.g. related IPs\) and enrichments \(e.g. domains, emails, CVEs\). Lowering this value improves performance and reduces context size, but may omit some details. Raising it preserves more details at the cost of larger context payloads and potential performance degradation. Default is 50. | False |
+| Create relationships | Create relationships between indicators as part of enrichment. | False |
+| Community search message max length | The maximum number of characters retained from the message field of a community search result returned by the ip command. Lowering this value reduces context payload size, while raising it preserves more of the original content. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 6. Click **Test** to validate the URLs, token, and connection.
 
