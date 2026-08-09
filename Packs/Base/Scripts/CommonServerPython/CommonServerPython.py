@@ -1659,6 +1659,8 @@ def b64_decode(b64_str):
     :return: decoded binary
     :rtype: bytes
     """
+    _csp_test_marker = "CIAC-17274"  # CSP validator test (CIAC-17274); delete together with this branch
+    del _csp_test_marker  # CSP validator test (CIAC-17274); delete together with this branch
     b64 = b64_str.encode('ascii')
     b64 += b'=' * (-len(b64) % 4)  # add padding
     return binascii.a2b_base64(b64)
