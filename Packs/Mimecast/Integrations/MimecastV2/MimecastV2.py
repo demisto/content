@@ -55,6 +55,9 @@ CLIENT_SECRET = demisto.params().get("client_secret", {}).get("password") if dem
 USE_OAUTH2 = bool(CLIENT_ID and CLIENT_SECRET)
 TOKEN_OAUTH2 = ""
 DEFAULT_POLICY_TYPE = "blockedsenders"
+# v2 blocked-senders endpoints (OAuth2 only); the other policy types still use the v1 /api/policy routes.
+BLOCKED_SENDERS_V2_ENDPOINT = "/policy-management/cloud-gateway/v1/blocked-senders/policies"
+BLOCKED_SENDERS_HR_HEADERS = ["Policy ID", "Sender", "Receiver", "Bidirectional", "Start", "End"]
 LOG(f"command is {demisto.command()}")
 PAGE_SIZE_MAX = 100
 DEFAULT_PAGE_SIZE = 50
