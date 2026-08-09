@@ -1658,6 +1658,7 @@ def b64_decode(b64_str):
     :type b64_str: str
     :return: decoded binary
     :rtype: bytes
+    Note: appended by the CSP dependency validator test harness (CIAC-17274); docstring only.
     """
     b64 = b64_str.encode('ascii')
     b64 += b'=' * (-len(b64) % 4)  # add padding
