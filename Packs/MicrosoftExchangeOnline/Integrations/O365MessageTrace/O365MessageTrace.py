@@ -249,15 +249,15 @@ def format_datetime_for_filter(dt: datetime) -> str:
 
 
 def deduplicate_events(events: list[dict], seen_ids: set[str]) -> list[dict]:
-    """Filter out events whose IDs are already in ``seen_ids``."""
+    """Filter out events whose internal ``_dedup_key`` is already in ``seen_ids``."""
     if not seen_ids:
         return events
 
     new_events: list[dict] = []
     duplicates = 0
     for event in events:
-        event_id = event.get("_unique_id")
-        if event_id and event_id in seen_ids:
+        dedup_key = event.get("_dedup_key")
+        if dedup_key and dedup_key in seen_ids:
             duplicates += 1
             continue
         new_events.append(event)
@@ -276,19 +276,23 @@ def add_time_field(events: list[dict]) -> None:
 
 
 def add_unique_id_field(events: list[dict]) -> None:
-    """Add a ``_unique_id`` field of the form ``<id>|<recipientAddress>|<status>``.
+    """Add the dataset ``_unique_id`` field (``<id>|<recipientAddress>``) and an internal
+    ``_dedup_key`` (``<id>|<recipientAddress>|<status>``).
 
-    ``status`` is part of the key because a message trace record is re-emitted as its
-    status evolves (e.g. delivered -> recalled). Keying on status lets every distinct
-    status transition through dedup while still suppressing true duplicates of the same
-    (id, recipient, status) tuple across overlapping fetch windows.
+    ``_unique_id`` is the documented dataset field and stays 2-part for schema stability.
+    ``_dedup_key`` additionally includes ``status`` and is used ONLY for fetch dedup/seen_ids
+    (never sent to XSIAM): a message-trace record is re-emitted as its status evolves
+    (e.g. delivered -> recalled), so keying dedup on status lets each transition through while
+    still suppressing true duplicates of the same (id, recipient, status) across overlapping
+    fetch windows.
     """
     for event in events:
         event_id = event.get("id")
         recipient = event.get("recipientAddress")
         status = event.get("status") or ""
         if event_id and recipient:
-            event["_unique_id"] = f"{event_id}|{recipient}|{status}"
+            event["_unique_id"] = f"{event_id}|{recipient}"
+            event["_dedup_key"] = f"{event_id}|{recipient}|{status}"
 
 
 # ============================================================================
@@ -547,6 +551,9 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
     events = fetch_events_sequential(client, start_dt, end_dt, max_events=limit)
     add_unique_id_field(events)
     add_time_field(events)
+    # ``_dedup_key`` is an internal fetch-only field; never expose it via this manual command.
+    for event in events:
+        event.pop("_dedup_key", None)
 
     if should_push_events and events:
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
@@ -631,23 +638,26 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
     demisto.debug(f"[Fetch] {len(new_events)} new events after dedup (skipped {len(events) - len(new_events)})")
 
     if new_events:
+        # Strip the internal dedup key so it never lands in the dataset.
+        for event in new_events:
+            event.pop("_dedup_key", None)
         send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Fetch] Sent {len(new_events)} events to XSIAM")
 
     # New high-water mark. With no events, advance to the window end.
     new_last_fetch = format_datetime_for_filter(window_end_dt)
 
-    timed_events = [event for event in events if event.get("_time") and event.get("_unique_id")]
+    timed_events = [event for event in events if event.get("_time") and event.get("_dedup_key")]
     if timed_events:
         new_last_fetch = max(event["_time"] for event in timed_events)
 
-    # Persist EVERY _unique_id whose _time falls inside the trailing look-back window that the
+    # Persist EVERY _dedup_key whose _time falls inside the trailing look-back window that the
     # NEXT run will re-scan (``[new_last_fetch - lookback, new_last_fetch]``). The next run
-    # re-queries that entire overlap, so every id in it - not just the boundary second - must be
+    # re-queries that entire overlap, so every key in it - not just the boundary second - must be
     # in seen_ids, otherwise every event in the overlap would be re-sent as a duplicate on each
-    # run. Ids older than the overlap are dropped, keeping the state bounded to the window.
+    # run. Keys older than the overlap are dropped, keeping the state bounded to the window.
     overlap_cutoff = format_datetime_for_filter(parse_datetime(new_last_fetch) - timedelta(minutes=lookback_minutes))
-    seen_set = {event["_unique_id"] for event in timed_events if event["_time"] >= overlap_cutoff}
+    seen_set = {event["_dedup_key"] for event in timed_events if event["_time"] >= overlap_cutoff}
 
     # If the high-water mark did NOT advance, this run did not re-fetch anything newer than the
     # previous boundary, so previously-seen ids must be retained (they would otherwise be re-sent
