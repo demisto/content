@@ -1,0 +1,364 @@
+category: Utilities
+commonfields:
+  id: Hermes Agent
+  version: -1
+configuration:
+- additionalinfo: "REQUIRED. http://<hermes-host-ip>:8642 — no trailing slash, no /v1 on the end. Confirm the port with \"grep '^API_SERVER_PORT=' ~/.hermes/.env\" on the Hermes host. If API_SERVER_HOST is 127.0.0.1 then XSOAR cannot reach it at all: set it to 0.0.0.0 and restart with \"systemctl --user restart hermes-gateway.service\". This is the API server port, NOT the webhook port. Use https:// only if you have put a TLS reverse proxy in front - Hermes itself serves plain HTTP. Deliberately has no default: a loopback address cannot work from a remote XSOAR, so any value shipped here would be wrong. See the Help tab, Steps 1 and 3."
+  display: Hermes API Server URL
+  name: url
+  required: false
+  type: 0
+- additionalinfo: "REQUIRED. On the Hermes host run: grep '^API_SERVER_KEY=' ~/.hermes/.env | cut -d= -f2. It must be at least 16 characters — below that Hermes silently refuses to start the API server and logs nothing, so you get connection refused with no clue why. Generate one with \"head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \\n'\". See the Help tab, Step 2."
+  display: API Server Key
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: Sent as the OpenAI "model" field. Leave as "hermes-agent" unless "!hermes-models" shows something else you want. Individual commands can override it with their own model argument.
+  defaultvalue: hermes-agent
+  display: Default model
+  name: model
+  required: false
+  type: 0
+- additionalinfo: Only needed for hermes-webhook-send; leave the default otherwise. The webhook adapter runs on its OWN port, separate from the API server above — http://<hermes-host-ip>:8644. Confirm it with "grep '^WEBHOOK_PORT=' ~/.hermes/.env". Reusing the 8642 URL here is the most common mistake. No default on purpose - leaving it blank makes hermes-webhook-send fail with a clear message rather than quietly posting to the API server port and returning a 404 that looks like a missing route.
+  display: Webhook Base URL
+  name: webhook_url
+  required: false
+  type: 0
+- additionalinfo: Name of a route defined under platforms.webhook.extra.routes in ~/.hermes/config.yaml. Produces POST /webhooks/<route>. The route has to exist before you can post to it, otherwise you get a 404 — the Help tab Step 5 has a config example. Individual commands can override this.
+  defaultvalue: xsoar
+  display: Default webhook route
+  name: webhook_route
+  required: false
+  type: 0
+- additionalinfo: Only for hermes-webhook-send. Copy the "secret" value of your route from platforms.webhook.extra.routes in ~/.hermes/config.yaml (or the global webhook secret if the route has none). It signs each request; a mismatch gives 401 "Invalid signature".
+  display: Webhook Secret
+  name: webhook_secret
+  required: false
+  type: 4
+- additionalinfo: Must match what the route expects. Leave on v2 unless you know otherwise — it is the only scheme with replay protection, and it rejects requests whose timestamp is more than 5 minutes off, so the XSOAR and Hermes clocks need to agree. Use "none" only for a route with no secret on a trusted network.
+  defaultvalue: v2
+  display: Webhook signature scheme
+  name: webhook_signature
+  options:
+  - v2
+  - github
+  - gitlab
+  - none
+  required: false
+  type: 15
+- additionalinfo: How long to wait for a synchronous agent turn before giving up. An agent that reads files or browses can easily take minutes. This is only half the setting — the XSOAR playbook task has its own timeout under Task → Advanced, and the shorter of the two wins.
+  defaultvalue: '180'
+  display: Request timeout (seconds)
+  name: timeout
+  required: false
+  type: 0
+- additionalinfo: Only relevant if you put Hermes behind an HTTPS proxy with a self-signed certificate. Leave off for plain http:// URLs — it does nothing there.
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Route requests through the proxy configured on the XSOAR server or engine. Leave off when Hermes is on your own network, which is the usual case.
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Send an instruction plus incident data from an XSOAR playbook to a Hermes Agent, and read the agent's reply and tool-call trace back into the playbook context.
+display: Hermes Agent
+name: Hermes Agent
+script:
+  commands:
+  - arguments:
+    - description: The instruction for the agent. Keep untrusted incident content out of this argument - put it in "data".
+      name: message
+      required: true
+    - description: Incident content for the agent to analyse. Fenced as untrusted input unless wrap_untrusted is false.
+      name: data
+    - description: Optional system message prepended to the turn.
+      name: system
+    - description: Model override for this turn.
+      name: model
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Fence the "data" argument in an untrusted-content block so the agent does not follow instructions embedded in incident content.
+      name: wrap_untrusted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Incident ID recorded in the prompt provenance header. Auto-detected when the command runs inside an incident.
+      name: incident_id
+    - description: Incident name recorded in the prompt provenance header.
+      name: incident_name
+    - description: Severity recorded in the prompt provenance header.
+      name: severity
+    - description: Playbook name recorded in the prompt provenance header.
+      name: playbook
+    - description: Per-command timeout in seconds. Overrides the instance setting.
+      name: timeout
+    description: Runs a synchronous agent turn and returns the reply to the playbook. Uses POST /v1/chat/completions.
+    name: hermes-run
+    outputs:
+    - contextPath: Hermes.Run.Reply
+      description: The agent's reply text.
+      type: String
+    - contextPath: Hermes.Run.Model
+      description: Model reported by Hermes.
+      type: String
+    - contextPath: Hermes.Run.ID
+      description: Chat completion ID.
+      type: String
+    - contextPath: Hermes.Run.FinishReason
+      description: Why the turn ended.
+      type: String
+    - contextPath: Hermes.Run.PromptTokens
+      description: Prompt tokens consumed.
+      type: Number
+    - contextPath: Hermes.Run.CompletionTokens
+      description: Completion tokens produced.
+      type: Number
+    - contextPath: Hermes.Run.TotalTokens
+      description: Total tokens for the turn.
+      type: Number
+  - arguments:
+    - description: The instruction for the agent.
+      name: message
+      required: true
+    - description: Incident content for the agent to analyse. Fenced as untrusted input unless wrap_untrusted is false.
+      name: data
+    - description: System-level instructions for the run.
+      name: instructions
+    - description: Model override for this run.
+      name: model
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Ask Hermes to persist the response so it can be chained with previous_response_id.
+      name: store
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Continue from a stored response, keeping session state across playbook tasks.
+      name: previous_response_id
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Fence the "data" argument in an untrusted-content block.
+      name: wrap_untrusted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Incident ID recorded in the prompt provenance header.
+      name: incident_id
+    - description: Incident name recorded in the prompt provenance header.
+      name: incident_name
+    - description: Severity recorded in the prompt provenance header.
+      name: severity
+    - description: Playbook name recorded in the prompt provenance header.
+      name: playbook
+    - description: Per-command timeout in seconds.
+      name: timeout
+    description: Runs a synchronous agent turn via the Responses API and returns both the reply and the tool-call trace, which is useful as War Room evidence. Uses POST /v1/responses.
+    name: hermes-respond
+    outputs:
+    - contextPath: Hermes.Response.ID
+      description: Response ID, usable as previous_response_id when store is true.
+      type: String
+    - contextPath: Hermes.Response.Status
+      description: Response status, for example completed.
+      type: String
+    - contextPath: Hermes.Response.Model
+      description: Model reported by Hermes.
+      type: String
+    - contextPath: Hermes.Response.Text
+      description: Assistant text output.
+      type: String
+    - contextPath: Hermes.Response.ToolCalls.Name
+      description: Name of the tool the agent called.
+      type: String
+    - contextPath: Hermes.Response.ToolCalls.Arguments
+      description: Arguments the agent passed to the tool.
+      type: String
+    - contextPath: Hermes.Response.ToolCalls.Output
+      description: Output the tool returned.
+      type: String
+    - contextPath: Hermes.Response.ToolCalls.CallID
+      description: Correlation ID for the tool call.
+      type: String
+    - contextPath: Hermes.Response.InputTokens
+      description: Input tokens consumed.
+      type: Number
+    - contextPath: Hermes.Response.OutputTokens
+      description: Output tokens produced.
+      type: Number
+    - contextPath: Hermes.Response.TotalTokens
+      description: Total tokens for the run.
+      type: Number
+  - arguments:
+    - description: The instruction for the agent.
+      name: message
+      required: true
+    - description: Incident content for the agent to analyse.
+      name: data
+    - description: Model override for this run.
+      name: model
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Fence the "data" argument in an untrusted-content block.
+      name: wrap_untrusted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Incident ID recorded in the prompt provenance header.
+      name: incident_id
+    - description: Incident name recorded in the prompt provenance header.
+      name: incident_name
+    - description: Severity recorded in the prompt provenance header.
+      name: severity
+    - description: Playbook name recorded in the prompt provenance header.
+      name: playbook
+    - description: Per-command timeout in seconds.
+      name: timeout
+    description: Starts an agent run and returns immediately with a run ID, so the playbook does not block. Fetch the result later with hermes-run-get. Uses POST /v1/runs.
+    name: hermes-run-create
+    outputs:
+    - contextPath: Hermes.AsyncRun.RunID
+      description: Run ID to pass to hermes-run-get.
+      type: String
+    - contextPath: Hermes.AsyncRun.Status
+      description: Run status at creation time, normally "started".
+      type: String
+    - contextPath: Hermes.AsyncRun.Done
+      description: Always false here - the run has only just been queued.
+      type: Boolean
+    - contextPath: Hermes.AsyncRun.Model
+      description: Model the run is using.
+      type: String
+  - arguments:
+    - description: Run ID returned by hermes-run-create.
+      name: run_id
+      required: true
+    - description: Per-command timeout in seconds.
+      name: timeout
+    description: Fetches the current state and output of a run started by hermes-run-create. A single on-demand read - it does not poll on its own. Drive it from the built-in GenericPolling playbook, keying on Hermes.AsyncRun.Done. Uses GET /v1/runs/{run_id}.
+    name: hermes-run-get
+    outputs:
+    - contextPath: Hermes.AsyncRun.RunID
+      description: Run ID.
+      type: String
+    - contextPath: Hermes.AsyncRun.Status
+      description: 'Current run status: queued, running, waiting_for_approval, stopping, completed, failed or cancelled.'
+      type: String
+    - contextPath: Hermes.AsyncRun.Done
+      description: True once the run reached a terminal state (completed, failed or cancelled). Use this as the GenericPolling stop condition instead of enumerating states.
+      type: Boolean
+    - contextPath: Hermes.AsyncRun.Text
+      description: The agent's final answer, once the run has completed.
+      type: String
+    - contextPath: Hermes.AsyncRun.Error
+      description: Failure detail when the status is failed.
+      type: String
+    - contextPath: Hermes.AsyncRun.Model
+      description: Model the run used.
+      type: String
+    - contextPath: Hermes.AsyncRun.LastEvent
+      description: Most recent lifecycle event, useful for seeing where a slow run is.
+      type: String
+    - contextPath: Hermes.AsyncRun.TotalTokens
+      description: Total tokens consumed by the run.
+      type: Number
+    - contextPath: Hermes.AsyncRun.ToolCalls.Name
+      description: Name of the tool the agent called.
+      type: String
+    - contextPath: Hermes.AsyncRun.ToolCalls.Arguments
+      description: Arguments the agent passed to the tool.
+      type: String
+    - contextPath: Hermes.AsyncRun.ToolCalls.Output
+      description: Output the tool returned.
+      type: String
+  - arguments:
+    - description: Run ID to interrupt.
+      name: run_id
+      required: true
+    - description: Per-command timeout in seconds.
+      name: timeout
+    description: Interrupts a running agent run. Uses POST /v1/runs/{run_id}/stop.
+    name: hermes-run-stop
+    outputs:
+    - contextPath: Hermes.AsyncRun.RunID
+      description: Run ID.
+      type: String
+    - contextPath: Hermes.AsyncRun.Status
+      description: Status after the stop request.
+      type: String
+  - arguments:
+    - description: The instruction for the agent, sent as both "prompt" and "message" in the payload.
+      name: message
+      required: true
+    - description: Incident content for the agent to analyse.
+      name: data
+    - description: Webhook route name. Defaults to the instance's default route.
+      name: route
+    - auto: PREDEFINED
+      description: Ask the route to deliver the reply rather than only ingesting the event.
+      name: deliver
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Delivery channel understood by the route, for example slack or telegram.
+      name: channel
+    - description: Delivery recipient understood by the route.
+      name: to
+    - description: Additional payload fields as a JSON object, for matching route filters. For example {"event":"containment"}.
+      name: extra_fields
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Fence the "data" argument in an untrusted-content block.
+      name: wrap_untrusted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Incident ID included in the payload and the prompt provenance header.
+      name: incident_id
+    - description: Incident name included in the payload.
+      name: incident_name
+    - description: Severity included in the payload.
+      name: severity
+    - description: Playbook name included in the payload.
+      name: playbook
+    - description: Per-command timeout in seconds.
+      name: timeout
+    description: Posts a signed payload to a Hermes webhook route, which runs the agent asynchronously and routes the reply per the route's deliver setting. Fire-and-forget - nothing comes back to the playbook. Uses POST /webhooks/{route}.
+    name: hermes-webhook-send
+    outputs:
+    - contextPath: Hermes.Webhook.Accepted
+      description: True when the webhook adapter accepted the payload.
+      type: Boolean
+    - contextPath: Hermes.Webhook.StatusCode
+      description: HTTP status returned by the webhook adapter.
+      type: Number
+    - contextPath: Hermes.Webhook.Route
+      description: Route the payload was posted to.
+      type: String
+    - contextPath: Hermes.Webhook.Signature
+      description: Signature scheme used.
+      type: String
+  - arguments:
+    - description: Per-command timeout in seconds.
+      name: timeout
+    description: Lists the models the Hermes API server exposes. Uses GET /v1/models.
+    name: hermes-models
+    outputs:
+    - contextPath: Hermes.Model.ID
+      description: Model identifier.
+      type: String
+    - contextPath: Hermes.Model.OwnedBy
+      description: Model owner.
+      type: String
+    - contextPath: Hermes.Model.Object
+      description: Object type.
+      type: String
+  dockerimage: demisto/python3:3.12.13.11753038
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

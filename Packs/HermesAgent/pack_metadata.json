@@ -1,0 +1,21 @@
+{
+    "name": "Hermes Agent",
+    "description": "Connect Cortex XSOAR to Hermes Agent, an open-source self-hosted AI agent from\nNous Research. This pack provides the Hermes Agent integration, which lets a\nplaybook send an instruction together with incident data and read the reply -\nand the record of every tool the agent called to produce it - back into the\nplaybook context, start a background run and collect it later with the built-in\nGenericPolling playbook, or push a signed payload to a Hermes webhook route.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Nicholas Hsiao",
+    "url": "",
+    "email": "",
+    "created": "2026-08-09T08:24:07Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "nicholashsiao"
+    ]
+}
