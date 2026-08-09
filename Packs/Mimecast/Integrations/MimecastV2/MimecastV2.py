@@ -1224,73 +1224,15 @@ def get_arguments_for_policy_command(args):
     return policy_obj, option
 
 
-def create_block_sender_policy_command(policy_args):
-    headers = ["Policy ID", "Description", "Sender", "Receiver", "Bidirectional", "Start", "End"]
-    policy_obj, option = get_arguments_for_policy_command(policy_args)
-    policy_list = create_or_update_policy_request(policy_obj, option)
-    policy = policy_list.get("policy")
-    policy_id = policy_list.get("id")
-    title = "Mimecast Create block sender Policy: \n Policy Was Created Successfully!"
-    sender = policy.get("from")
-    receiver = policy.get("to")
-    description = policy.get("description")
-    content = {
-        "Policy ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Email Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Reciever": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "Start": policy.get("fromDate"),
-        "End": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
-    policies_context = {
-        "ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Reciever": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "FromDate": policy.get("fromDate"),
-        "ToDate": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
+def create_block_sender_policy_command(policy_args: dict) -> CommandResults:
+    """Create a Blocked Senders policy using the v2 POST API. The response holds only the new policy ID."""
+    body = build_blocked_senders_policy_v2_body(policy_args)
 
-    return CommandResults(
-        outputs_prefix="Mimecast.BlockedSendersPolicy",
-        outputs=policies_context,
-        readable_output=tableToMarkdown(title, content, headers),
-        outputs_key_field="id",
-    )
+    response = http_request("POST", BLOCKED_SENDERS_V2_ENDPOINT, payload=body)
+    policy_id = response.get("id")
+    demisto.debug(f"Created blocked-senders policy {policy_id}")
+
+    return CommandResults(readable_output=f"Policy {policy_id} was created successfully!")
 
 
 def create_policy_command():
