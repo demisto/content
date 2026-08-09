@@ -795,7 +795,7 @@ def build_messages_body(args: dict[str, Any]) -> dict[str, Any]:
         "filters": filters,
         "startRow": 0,
         "endRow": limit,
-        "sortParams": [{"sort": "desc", "colId": "received_at"}],
+        "sortParams": [],
     }
 
 

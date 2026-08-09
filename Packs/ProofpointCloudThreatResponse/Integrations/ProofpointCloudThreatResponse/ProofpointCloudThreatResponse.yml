@@ -404,6 +404,46 @@ script:
     - name: quarantine_filters
       description: A comma-separated list of remediation statuses to filter by.
       isArray: true
+      auto: PREDEFINED
+      predefined:
+      - quarantine_mailbox_not_found
+      - quarantine_message_not_found
+      - quarantine_success
+      - dl_resolved
+      - quarantine_not_attempted
+      - quarantine_pending
+      - quarantine_skipped_skip_list
+      - quarantine_skipped_abuse_mailbox
+      - quarantine_skipped_no_server_for_mailbox
+      - quarantine_skipped_cancelled
+      - quarantine_failed_insufficient_permissions
+      - quarantine_failed_invalid_authentication
+      - quarantine_failed_invalid_license_for_mailbox
+      - quarantine_failed_invalid_quarantine_folder
+      - quarantine_failed_invalid_quarantine_mailbox
+      - quarantine_failed_missing_message_id
+      - quarantine_failed_no_connectivity
+      - quarantine_failed_no_server_found_for_mailbox
+      - quarantine_failed_throttled
+      - quarantine_failed_other
+      - restore_not_in_quarantine_mailbox
+      - restore_pending
+      - restore_success
+      - restore_skipped_server_disabled
+      - restore_skipped_server_unavailable
+      - restore_failed_insufficient_permissions
+      - restore_failed_invalid_authentication
+      - restore_failed_invalid_license_for_mailbox
+      - restore_failed_invalid_quarantine_folder
+      - restore_failed_invalid_quarantine_mailbox
+      - restore_failed_no_connectivity
+      - restore_failed_no_server_found_for_mailbox
+      - restore_failed_throttled
+      - restore_failed_other
+      - moved
+      - move_in_progress
+      - move_skipped
+      - move_failed
     - name: disposition_filters
       description: A comma-separated list of dispositions to filter by.
       isArray: true
