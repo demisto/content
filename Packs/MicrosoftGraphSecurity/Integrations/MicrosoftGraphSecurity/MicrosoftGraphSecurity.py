@@ -1175,6 +1175,8 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
     last_run = demisto.getLastRun() or {}
     new_last_run: dict = dict(last_run)
     fetched: list = []
+    if not fetch_incidents_type:
+        raise DemistoException("Please provide at least one incident type to fetch or uncheck the fetch incidents checkbox.")
 
     if "Alerts" in fetch_incidents_type:
         alerts, alerts_last_run = fetch_alerts(
@@ -1198,7 +1200,6 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
         )
         fetched.extend(incidents)
         new_last_run["incidents_last_run"] = incidents_last_run
-
     demisto.setLastRun(new_last_run)
     return fetched
 
