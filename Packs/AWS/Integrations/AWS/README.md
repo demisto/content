@@ -7077,60 +7077,6 @@ Updates the rule settings for the specified rule group. Modifying a rule group u
 | AWS.NetworkFirewall.RuleGroups.EncryptionConfiguration | Unknown | The complex type that contains the Amazon Web Services KMS encryption configuration settings for your rule group. |
 | AWS.NetworkFirewall.RuleGroups.LastModifiedTime | String | The last time that the rule group was changed. |
 
-### aws-network-firewall-logging-configuration-update
-
-***
-Sets the logging configuration for the specified firewall. To set a logging destination, provide the log_type, log_destination_type, log_destination_key, and log_destination_value arguments. To review the current configuration before updating, call aws-network-firewall-logging-configuration-describe. Required permissions: network-firewall:UpdateLoggingConfiguration, s3:PutBucketPolicy, s3:GetBucketPolicy, logs:CreateLogDelivery, logs:GetLogDelivery, logs:UpdateLogDelivery, logs:DeleteLogDelivery, logs:ListLogDeliveries, firehose:TagDeliveryStream, iam:CreateServiceLinkedRole.
-
-#### Base Command
-
-`aws-network-firewall-logging-configuration-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
-| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
-| firewall_name | The descriptive name of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
-| firewall_arn | The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
-| log_type | The type of log to record. FLOW logs capture network traffic that passes through the firewall. ALERT logs report traffic that matches stateful rules with an action setting that sends an alert. TLS logs report on TLS handshake negotiation results. Possible values are: FLOW, ALERT, TLS. | Optional |
-| log_destination_type | The type of storage destination that the logs are sent to. Possible values are: S3, CloudWatchLogs, KinesisDataFirehose. | Optional |
-| log_destination_key | The key for the logging destination, according to the log_destination_type. For example: `bucketName` for S3, `logGroup` for CloudWatchLogs, or `deliveryStream` for KinesisDataFirehose. | Optional |
-| log_destination_value | The value for the logging destination, matching the log_destination_key. For example: the S3 bucket name, the CloudWatch Logs log group name, or the Kinesis Data Firehose delivery stream name. | Optional |
-| enable_monitoring_dashboard | Whether to enable the detailed firewall monitoring dashboard on the firewall. Possible values are: true, false. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.NetworkFirewall.Firewalls.FirewallArn | String | The Amazon Resource Name \(ARN\) of the firewall. |
-| AWS.NetworkFirewall.Firewalls.FirewallName | String | The descriptive name of the firewall. |
-| AWS.NetworkFirewall.Firewalls.LoggingConfiguration.LogDestinationConfigs | Unknown | The firewall log destination, containing LogType, LogDestinationType, and LogDestination fields. |
-| AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard | Boolean | Whether the monitoring dashboard is enabled for the firewall. |
-
-### aws-network-firewall-resource-tag
-
-***
-Adds the specified tags to the specified resource. Tags are key:value pairs that you can use to categorize and manage your resources. Required permissions: network-firewall:TagResource.
-
-#### Base Command
-
-`aws-network-firewall-resource-tag`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
-| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
-| resource_arn | The Amazon Resource Name (ARN) of the resource. | Required |
-| tags | The tags to add to the resource. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Required |
-
-#### Context Output
-
-There is no context output for this command.
-
 ### aws-network-firewall-resource-policy-describe
 
 ***
@@ -7177,14 +7123,14 @@ Creates or updates an AWS Identity and Access Management policy for your rule gr
 
 There is no context output for this command.
 
-### aws-network-firewall-tags-for-resource-list
+### aws-network-firewall-resource-untag
 
 ***
-Retrieves the tags associated with the specified resource. Tags are key:value pairs that you can use to categorize and manage your resources. Required permissions: network-firewall:ListTagsForResource.
+Removes the tags with the specified keys from the specified resource. Required permissions: network-firewall:UntagResource.
 
 #### Base Command
 
-`aws-network-firewall-tags-for-resource-list`
+`aws-network-firewall-resource-untag`
 
 #### Input
 
@@ -7193,17 +7139,11 @@ Retrieves the tags associated with the specified resource. Tags are key:value pa
 | account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
 | resource_arn | The Amazon Resource Name (ARN) of the resource. | Required |
-| limit | The maximum number of Network Firewall objects to return for this request. Default is 50. | Optional |
-| next_token | The pagination token returned in a previous response, used to retrieve the next set of results. | Optional |
+| tag_keys | A comma-separated list of tag keys to remove from the resource. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.NetworkFirewall.Tags.ResourceArn | String | The Amazon Resource Name \(ARN\) of the resource. |
-| AWS.NetworkFirewall.Tags.Tags.Key | String | The part of the key:value pair that defines a tag. |
-| AWS.NetworkFirewall.Tags.Tags.Value | String | The part of the key:value pair that defines a tag. |
-| AWS.NetworkFirewall.Tags.NextToken | String | The token to use when requesting the next set of items. |
+There is no context output for this command.
 
 ### aws-network-firewall-logging-configuration-describe
 
@@ -7231,6 +7171,28 @@ Returns the logging configuration for the specified firewall. Required permissio
 | AWS.NetworkFirewall.Firewalls.LoggingConfiguration.LogDestinationConfigs | Unknown | The firewall log destination, containing LogType, LogDestinationType, and LogDestination fields. |
 | AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard | Boolean | Whether the monitoring dashboard is enabled for the firewall. |
 
+### aws-network-firewall-resource-tag
+
+***
+Adds the specified tags to the specified resource. Tags are key:value pairs that you can use to categorize and manage your resources. Required permissions: network-firewall:TagResource.
+
+#### Base Command
+
+`aws-network-firewall-resource-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| resource_arn | The Amazon Resource Name (ARN) of the resource. | Required |
+| tags | The tags to add to the resource. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### aws-network-firewall-resource-policy-delete
 
 ***
@@ -7252,14 +7214,46 @@ Deletes a resource policy that you created in an aws-network-firewall-resource-p
 
 There is no context output for this command.
 
-### aws-network-firewall-resource-untag
+### aws-network-firewall-logging-configuration-update
 
 ***
-Removes the tags with the specified keys from the specified resource. Required permissions: network-firewall:UntagResource.
+Sets the logging configuration for the specified firewall. To set a logging destination, provide the log_type, log_destination_type, log_destination_key, and log_destination_value arguments. To review the current configuration before updating, call aws-network-firewall-logging-configuration-describe. Required permissions: network-firewall:UpdateLoggingConfiguration, s3:PutBucketPolicy, s3:GetBucketPolicy, logs:CreateLogDelivery, logs:GetLogDelivery, logs:UpdateLogDelivery, logs:DeleteLogDelivery, logs:ListLogDeliveries, firehose:TagDeliveryStream, iam:CreateServiceLinkedRole.
 
 #### Base Command
 
-`aws-network-firewall-resource-untag`
+`aws-network-firewall-logging-configuration-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| firewall_name | The descriptive name of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
+| firewall_arn | The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
+| log_type | The type of log to record. FLOW logs capture network traffic that passes through the firewall. ALERT logs report traffic that matches stateful rules with an action setting that sends an alert. TLS logs report on TLS handshake negotiation results. Possible values are: FLOW, ALERT, TLS. | Optional |
+| log_destination_type | The type of storage destination that the logs are sent to. Possible values are: S3, CloudWatchLogs, KinesisDataFirehose. | Optional |
+| log_destination_key | The key for the logging destination, according to the log_destination_type. For example: `bucketName` for S3, `logGroup` for CloudWatchLogs, or `deliveryStream` for KinesisDataFirehose. | Optional |
+| log_destination_value | The value for the logging destination, matching the log_destination_key. For example: the S3 bucket name, the CloudWatch Logs log group name, or the Kinesis Data Firehose delivery stream name. | Optional |
+| enable_monitoring_dashboard | Whether to enable the detailed firewall monitoring dashboard on the firewall. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.Firewalls.FirewallArn | String | The Amazon Resource Name \(ARN\) of the firewall. |
+| AWS.NetworkFirewall.Firewalls.FirewallName | String | The descriptive name of the firewall. |
+| AWS.NetworkFirewall.Firewalls.LoggingConfiguration.LogDestinationConfigs | Unknown | The firewall log destination, containing LogType, LogDestinationType, and LogDestination fields. |
+| AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard | Boolean | Whether the monitoring dashboard is enabled for the firewall. |
+
+### aws-network-firewall-tags-for-resource-list
+
+***
+Retrieves the tags associated with the specified resource. Tags are key:value pairs that you can use to categorize and manage your resources. Required permissions: network-firewall:ListTagsForResource.
+
+#### Base Command
+
+`aws-network-firewall-tags-for-resource-list`
 
 #### Input
 
@@ -7268,8 +7262,14 @@ Removes the tags with the specified keys from the specified resource. Required p
 | account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
 | region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
 | resource_arn | The Amazon Resource Name (ARN) of the resource. | Required |
-| tag_keys | A comma-separated list of tag keys to remove from the resource. | Required |
+| limit | The maximum number of Network Firewall objects to return for this request. Default is 50. | Optional |
+| next_token | The pagination token returned in a previous response, used to retrieve the next set of results. | Optional |
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.Tags.ResourceArn | String | The Amazon Resource Name \(ARN\) of the resource. |
+| AWS.NetworkFirewall.Tags.Tags.Key | String | The part of the key:value pair that defines a tag. |
+| AWS.NetworkFirewall.Tags.Tags.Value | String | The part of the key:value pair that defines a tag. |
+| AWS.NetworkFirewall.Tags.TagsNextToken | String | The token to use when requesting the next set of items. |

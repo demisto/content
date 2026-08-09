@@ -11018,7 +11018,7 @@ class NetworkFirewall:
             "AWS.NetworkFirewall.Tags(val.ResourceArn == obj.ResourceArn)": {
                 "ResourceArn": args.get("resource_arn"),
                 "Tags": tags,
-                "NextToken": response.get("NextToken"),
+                "TagsNextToken": response.get("NextToken"),
             },
         }
 

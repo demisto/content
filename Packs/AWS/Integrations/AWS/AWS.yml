@@ -20760,7 +20760,7 @@ script:
     - contextPath: AWS.NetworkFirewall.Tags.Tags.Value
       description: The part of the key:value pair that defines a tag.
       type: String
-    - contextPath: AWS.NetworkFirewall.Tags.NextToken
+    - contextPath: AWS.NetworkFirewall.Tags.TagsNextToken
       description: The token to use when requesting the next set of items.
       type: String
 

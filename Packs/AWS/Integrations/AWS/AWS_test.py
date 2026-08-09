@@ -21763,7 +21763,7 @@ def test_network_firewall_list_tags_for_resource_command_success(mocker):
     assert isinstance(result, CommandResults)
     tags_output = result.outputs["AWS.NetworkFirewall.Tags(val.ResourceArn == obj.ResourceArn)"]
     assert tags_output["Tags"] == [{"Key": "customer", "Value": "acme"}]
-    assert tags_output["NextToken"] == "token123"
+    assert tags_output["TagsNextToken"] == "token123"
     call_kwargs = mock_client.list_tags_for_resource.call_args[1]
     assert call_kwargs["MaxResults"] == 10
     assert call_kwargs["NextToken"] == "prev-token"
