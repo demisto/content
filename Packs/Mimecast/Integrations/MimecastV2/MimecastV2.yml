@@ -2569,6 +2569,7 @@ script:
       - external_addresses
       - email_domain
       - profile_group
+      - address_attribute_value
       - individual_email_address
     - auto: PREDEFINED
       description: The block action.
@@ -2587,12 +2588,6 @@ script:
       - envelope_from
       - header_from
       - both
-    - auto: PREDEFINED
-      description: Whether to confirm blocking all senders. Must be 'true' when fromType is 'everyone' to prevent accidental blocking of all senders.
-      name: confirm_block_all
-      predefined:
-      - 'true'
-      - 'false'
     - description: The policy start date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       name: from_date
     - description: The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).

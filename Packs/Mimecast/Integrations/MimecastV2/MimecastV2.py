@@ -1501,7 +1501,7 @@ def delete_policy(args):
     context = {"ID": policy_id, "Deleted": True}
 
     output_type = {
-        "blockedsenders": "Blockedsenders",
+        "blockedsenders": "BlockedSendersPolicy",
         "antispoofing-bypass": "AntispoofingBypassPolicy",
         "address-alteration": "AddressAlterationPolicy",
     }
@@ -1527,7 +1527,6 @@ def delete_policy_request(policy_type, policy_id=None):
     api_endpoints = {
         "antispoofing-bypass": "antispoofing-bypass/delete-policy",
         "address-alteration": "address-alteration/delete-policy",
-        "blockedsenders": "blockedsenders/delete-policy",
     }
     api_endpoint = f"/api/policy/{api_endpoints[policy_type]}"
     id = "id"
@@ -3617,7 +3616,6 @@ def list_policies_command(args: dict) -> CommandResults:
         return list_blocked_senders_policies_command()
 
     api_endpoints = {
-        "blockedsenders": "blockedsenders/get-policy",
         "antispoofing-bypass": "antispoofing-bypass/get-policy",
         "address-alteration": "address-alteration/get-policy",
     }
@@ -3661,7 +3659,6 @@ def list_policies_command(args: dict) -> CommandResults:
     title = f"Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:"
 
     output_type = {
-        "blockedsenders": "BlockedSendersPolicy",
         "antispoofing-bypass": "AntispoofingBypassPolicy",
         "address-alteration": "AddressAlterationPolicy",
     }
