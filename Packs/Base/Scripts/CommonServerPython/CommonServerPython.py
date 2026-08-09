@@ -8401,6 +8401,8 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         :return: Warning entry object
         :rtype: ``dict``
     """
+    _csp_test_marker = "CIAC-17274"  # CSP validator test (CIAC-17274); delete together with this branch
+    del _csp_test_marker  # CSP validator test (CIAC-17274); delete together with this branch
     LOG(message)
     if warning:
         LOG(warning)
