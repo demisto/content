@@ -2486,7 +2486,7 @@ script:
       description: 'Indicates if the viewed message is a part of an existing discovery case.'
       type: Boolean
   - name: mimecast-create-block-sender-policy
-    description: Create a Blocked Sender Policy.
+    description: 'Create a Blocked Sender Policy. Note: this command does not set context outputs - use mimecast-get-policy to retrieve the full policy.'
     execution: true
     arguments:
     - description: Policy description.
@@ -2500,6 +2500,7 @@ script:
       - envelope_from
       - header_from
       - both
+      required: true
     - auto: PREDEFINED
       description: Blocked sender type.
       name: fromType
@@ -2509,6 +2510,7 @@ script:
       - external_addresses
       - email_domain
       - profile_group
+      - address_attribute_value
       - individual_email_address
       required: true
     - description: 'Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address.'
@@ -2524,10 +2526,8 @@ script:
       - profile_group
       - address_attribute_value
       - individual_email_address
-      - free_mail_domains
-      - header_display_name
       required: true
-    - description: 'Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.'
+    - description: 'Required if toType is one of email_domain, profile_group, individual_email_address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.'
       name: toValue
     - auto: PREDEFINED
       description: The block option.
@@ -2536,43 +2536,10 @@ script:
       - no_action
       - block_sender
       required: true
-    outputs:
-    - contextPath: Mimecast.BlockedSendersPolicy.ID
-      description: Policy ID.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Address
-      description: Block sender by email address.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Domain
-      description: Block sender by domain.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Group
-      description: Block sender by group.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Bidirectional
-      description: Blocked policy is bidirectional or not.
-      type: boolean
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Address
-      description: Block emails to receiver type address.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Domain
-      description: Block emails to receiver type domain.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Group
-      description: Block emails to receiver type group.
-      type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.Fromdate
-      description: Policy validation start date.
-      type: date
-    - contextPath: Mimecast.BlockedSendersPolicy.Todate
-      description: Policy expiration date.
-      type: date
-    - contextPath: Mimecast.BlockedSendersPolicy.Sender.Type
-      description: The sender type.
-      type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.Receiver.Type
-      description: The receiver type.
-      type: String
+    - description: The policy start date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      name: from_date
+    - description: The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      name: to_date
   - name: mimecast-update-block-sender-policy
     description: "Updates an existing Blocked Senders policy. This command performs a full policy replacement at the API level. Arguments that are explicitly provided will overwrite the current policy values. Arguments that are left blank will be automatically preserved from the existing policy. To modify only specific fields, provide the policy_id and the fields to be changed — all other fields will remain unchanged. Note: Each policy supports a single sender value (fromValue). To block additional senders, separate policies should be created using the mimecast-create-block-sender-policy command."
     execution: true
