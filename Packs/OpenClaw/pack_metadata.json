@@ -1,0 +1,21 @@
+{
+    "name": "OpenClaw",
+    "description": "Connect Cortex XSOAR to OpenClaw, an open-source self-hosted AI agent gateway.\nThis pack provides the OpenClaw integration, which lets a playbook send an\ninstruction together with incident data to an agent and read the reply straight\nback into the playbook context, start a fire-and-forget agent run whose answer is\ndelivered to a chat channel, post a system event to the agent's session, or\ninvoke a single OpenClaw tool without a full agent turn.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Nicholas Hsiao",
+    "url": "",
+    "email": "",
+    "created": "2026-08-09T08:08:21Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "nicholashsiao"
+    ]
+}

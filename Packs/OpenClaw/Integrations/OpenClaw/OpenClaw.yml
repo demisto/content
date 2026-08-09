@@ -1,0 +1,277 @@
+category: Utilities
+commonfields:
+  id: OpenClaw
+  version: -1
+configuration:
+- additionalinfo: 'REQUIRED. Run "openclaw gateway status" on the Gateway host and copy the address on the Dashboard line, without the trailing slash — for example http://192.0.2.10:18789. If that line shows 127.0.0.1 or says bind=loopback, XSOAR cannot reach it: run "openclaw config set gateway.bind lan" then "openclaw gateway restart" first. Use https:// only if you have put a TLS reverse proxy in front - the Gateway itself serves plain HTTP. Deliberately has no default: any value shipped here would be wrong for your network, and a loopback default cannot work from XSOAR anyway. See the Help tab, Step 1.'
+  display: OpenClaw Gateway URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: "REQUIRED. On the Gateway host run: jq -r '.gateway.auth.token' ~/.openclaw/openclaw.json — do NOT use \"openclaw config get gateway.auth.token\", which prints __OPENCLAW_REDACTED__ instead of the real value and will fail with a 401. If it prints null, create one with \"openclaw config set gateway.auth.token \\\"$(openssl rand -hex 24)\\\"\" and restart the Gateway. Used by openclaw-run and openclaw-tool-invoke. See the Help tab, Step 2."
+  display: Gateway Auth Token
+  name: gateway_token
+  required: true
+  type: 4
+- additionalinfo: "Only needed for openclaw-hook-agent and openclaw-hook-wake. Leave blank if you only use openclaw-run. Get it with: jq -r '.hooks.token' ~/.openclaw/openclaw.json — null means hooks are switched off, and the Help tab Step 5 has the command that enables them. Keep this DIFFERENT from the Gateway Auth Token; blank falls back to it, which OpenClaw advises against."
+  display: Hooks Token
+  name: hooks_token
+  required: false
+  type: 4
+- additionalinfo: Which agent handles requests that do not name one. Run "openclaw agents list" on the Gateway host and use the entry marked (default). "main" is the standard name.
+  defaultvalue: main
+  display: Default agent ID
+  name: agent_id
+  required: false
+  type: 0
+- additionalinfo: Leave as "openclaw" to let the Gateway pick, which is almost always what you want. Use "openclaw:<agentId>" to pin one agent, or a provider model id to override — that id must appear in agents.defaults.models if the Gateway restricts models, otherwise the request is rejected.
+  defaultvalue: openclaw
+  display: Default model
+  name: model
+  required: false
+  type: 0
+- additionalinfo: "Must match hooks.path on the Gateway. Check with: jq -r '.hooks.path' ~/.openclaw/openclaw.json. Almost always /hooks — change it only if somebody customised it, or the hook commands return 404."
+  defaultvalue: /hooks
+  display: Hooks path
+  name: hooks_path
+  required: false
+  type: 0
+- additionalinfo: How long to wait for a synchronous agent turn before giving up. An agent that reads files or browses can easily take minutes. This is only half the setting — the XSOAR playbook task has its own timeout under Task → Advanced, and the shorter of the two wins.
+  defaultvalue: '180'
+  display: Request timeout (seconds)
+  name: timeout
+  required: false
+  type: 0
+- additionalinfo: Only relevant if you put the Gateway behind an HTTPS proxy with a self-signed certificate. Leave off for plain http:// URLs — it does nothing there.
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Route requests through the proxy configured on the XSOAR server or engine. Leave off when the Gateway is on your own network, which is the usual case.
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Send an instruction plus incident data from an XSOAR playbook to an OpenClaw agent, and read the agent's reply back into the playbook context.
+display: OpenClaw
+name: OpenClaw
+script:
+  commands:
+  - arguments:
+    - description: The instruction for the agent. Keep untrusted incident content out of this argument - put it in "data".
+      name: message
+      required: true
+    - description: Incident content for the agent to analyse (alert JSON, log lines, an email body). Fenced as untrusted input unless wrap_untrusted is false.
+      name: data
+    - description: Optional system message prepended to the turn.
+      name: system
+    - description: Agent to route to. Defaults to the instance's default agent ID.
+      name: agent_id
+    - description: Model override for this turn. Must be permitted by agents.defaults.models if the Gateway restricts models.
+      name: model
+    - description: Explicit session key, sent as the x-openclaw-session-key header. When omitted, calls for the same incident share a session derived from the incident ID.
+      name: session_key
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Fence the "data" argument in an untrusted-content block so the agent does not follow instructions embedded in incident content.
+      name: wrap_untrusted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Incident ID recorded in the prompt provenance header. Auto-detected when the command runs inside an incident.
+      name: incident_id
+    - description: Incident name recorded in the prompt provenance header.
+      name: incident_name
+    - description: Severity recorded in the prompt provenance header.
+      name: severity
+    - description: Playbook name recorded in the prompt provenance header.
+      name: playbook
+    - description: Per-command timeout in seconds. Overrides the instance setting.
+      name: timeout
+    description: Runs a synchronous agent turn on the OpenClaw Gateway and returns the agent's reply to the playbook. Uses POST /v1/chat/completions, which must be enabled on the Gateway.
+    name: openclaw-run
+    outputs:
+    - contextPath: OpenClaw.Run.Reply
+      description: The agent's reply text.
+      type: String
+    - contextPath: OpenClaw.Run.AgentID
+      description: Agent that handled the turn.
+      type: String
+    - contextPath: OpenClaw.Run.Model
+      description: Model reported by the Gateway.
+      type: String
+    - contextPath: OpenClaw.Run.SessionKey
+      description: Session key used for the turn.
+      type: String
+    - contextPath: OpenClaw.Run.ID
+      description: Chat completion ID.
+      type: String
+    - contextPath: OpenClaw.Run.FinishReason
+      description: Why the turn ended, for example stop or length.
+      type: String
+    - contextPath: OpenClaw.Run.PromptTokens
+      description: Prompt tokens consumed.
+      type: Number
+    - contextPath: OpenClaw.Run.CompletionTokens
+      description: Completion tokens produced.
+      type: Number
+    - contextPath: OpenClaw.Run.TotalTokens
+      description: Total tokens for the turn.
+      type: Number
+  - arguments:
+    - description: The instruction for the agent.
+      name: message
+      required: true
+    - description: Incident content for the agent to analyse. Fenced as untrusted input unless wrap_untrusted is false.
+      name: data
+    - defaultValue: XSOAR
+      description: Human-readable hook name, used as a prefix in session summaries.
+      name: name
+    - description: Agent to route to. Must be permitted by hooks.allowedAgentIds when that list is set.
+      name: agent_id
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Send the agent's reply to a messaging channel.
+      name: deliver
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: last
+      description: Messaging channel for delivery.
+      name: channel
+      predefined:
+      - last
+      - whatsapp
+      - telegram
+      - discord
+      - slack
+      - mattermost
+      - signal
+      - imessage
+      - msteams
+    - description: Recipient for the channel - a phone number for WhatsApp/Signal, a chat ID for Telegram, channel:<id> for Slack/Discord, a conversation ID for MS Teams. Defaults to the last recipient in the main session.
+      name: to
+    - auto: PREDEFINED
+      defaultValue: now
+      description: Trigger an immediate heartbeat or wait for the next periodic one.
+      name: wake_mode
+      predefined:
+      - now
+      - next-heartbeat
+    - description: Explicit session key. Rejected by the Gateway unless hooks.allowRequestSessionKey is true.
+      name: session_key
+    - description: Model override for the run.
+      name: model
+    - auto: PREDEFINED
+      description: Thinking level override.
+      name: thinking
+      predefined:
+      - off
+      - low
+      - medium
+      - high
+    - description: Maximum duration of the agent run on the Gateway. Separate from the HTTP request timeout.
+      name: agent_timeout_seconds
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Fence the "data" argument in an untrusted-content block.
+      name: wrap_untrusted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Incident ID recorded in the prompt provenance header.
+      name: incident_id
+    - description: Incident name recorded in the prompt provenance header.
+      name: incident_name
+    - description: Severity recorded in the prompt provenance header.
+      name: severity
+    - description: Playbook name recorded in the prompt provenance header.
+      name: playbook
+    - description: Per-command HTTP timeout in seconds.
+      name: timeout
+    description: Starts an isolated agent run and returns immediately (HTTP 202). The reply is not returned to the playbook - set deliver=true with a channel to push it to a chat surface. Uses POST /hooks/agent.
+    name: openclaw-hook-agent
+    outputs:
+    - contextPath: OpenClaw.Hook.Accepted
+      description: True when the Gateway returned HTTP 202.
+      type: Boolean
+    - contextPath: OpenClaw.Hook.StatusCode
+      description: HTTP status returned by the Gateway.
+      type: Number
+    - contextPath: OpenClaw.Hook.AgentID
+      description: Agent the hook was routed to.
+      type: String
+    - contextPath: OpenClaw.Hook.Name
+      description: Hook name sent to the Gateway.
+      type: String
+    - contextPath: OpenClaw.Hook.Delivered
+      description: Whether the reply was requested to be delivered to a channel.
+      type: Boolean
+    - contextPath: OpenClaw.Hook.Channel
+      description: Delivery channel.
+      type: String
+    - contextPath: OpenClaw.Hook.To
+      description: Delivery recipient.
+      type: String
+  - arguments:
+    - description: Description of the event, for example "XSOAR incident 4821 escalated to critical".
+      name: text
+      required: true
+    - auto: PREDEFINED
+      defaultValue: now
+      description: Trigger an immediate heartbeat or wait for the next periodic one.
+      name: mode
+      predefined:
+      - now
+      - next-heartbeat
+    - description: Per-command HTTP timeout in seconds.
+      name: timeout
+    description: Enqueues a system event on the Gateway's main session, optionally triggering an immediate heartbeat. Use it to tell the agent that something happened without asking it to do work. Uses POST /hooks/wake.
+    name: openclaw-hook-wake
+    outputs:
+    - contextPath: OpenClaw.Wake.Accepted
+      description: True when the Gateway accepted the event.
+      type: Boolean
+    - contextPath: OpenClaw.Wake.StatusCode
+      description: HTTP status returned by the Gateway.
+      type: Number
+    - contextPath: OpenClaw.Wake.Mode
+      description: Wake mode requested.
+      type: String
+  - arguments:
+    - description: Tool name, for example sessions_list.
+      name: tool
+      required: true
+    - description: Action mapped into the tool arguments when the tool schema supports it, for example json.
+      name: action
+    - description: 'Tool arguments as a JSON object, for example {"limit": 10}.'
+      name: tool_args
+    - description: Target session key. Omit or use "main" for the configured main session.
+      name: session_key
+    - description: Channel hint for group policy resolution, sent as x-openclaw-message-channel.
+      name: message_channel
+    - description: Account hint sent as x-openclaw-account-id, when several accounts exist.
+      name: account_id
+    - description: Per-command HTTP timeout in seconds.
+      name: timeout
+    description: Invokes a single OpenClaw tool directly, with no agent turn. Subject to the Gateway's tool policy; a tool that policy blocks returns HTTP 404. Uses POST /tools/invoke.
+    name: openclaw-tool-invoke
+    outputs:
+    - contextPath: OpenClaw.Tool.Name
+      description: Tool that was invoked.
+      type: String
+    - contextPath: OpenClaw.Tool.OK
+      description: Whether the Gateway reported success.
+      type: Boolean
+    - contextPath: OpenClaw.Tool.Result
+      description: Tool result payload.
+      type: Unknown
+  dockerimage: demisto/python3:3.12.13.11753038
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
