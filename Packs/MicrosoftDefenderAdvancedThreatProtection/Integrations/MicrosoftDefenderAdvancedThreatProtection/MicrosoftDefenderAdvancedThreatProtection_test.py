@@ -4120,3 +4120,33 @@ def test_file_command(mocker):
             "DeterminationValue": "PUA:Win32/FusionCore",
         },
     }
+
+
+@pytest.mark.parametrize(
+    "endpoint_type, expected_scope",
+    [
+        ("com", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("gcc", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("geo-us", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("geo-eu", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("geo-uk", "https://securitycenter.onmicrosoft.com/windowsatpservice/.default"),
+        ("gcc-high", "https://api-gov.securitycenter.microsoft.us/.default"),
+        ("dod", "https://api-gov.securitycenter.microsoft.us/.default"),
+    ],
+)
+def test_get_defender_scope(endpoint_type, expected_scope):
+    """
+    Given:
+    - An MDE endpoint type
+
+    When:
+    - Calling get_defender_scope to determine the OAuth scope
+
+    Then:
+    - For commercial endpoints (com, gcc, geo-*), the scope should use the APT service endpoint with /windowsatpservice/.default
+    - For government endpoints (gcc-high, dod), the scope should use the API endpoint with /.default
+      because the windowsatpservice resource principal does not exist in government Azure AD tenants
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import get_defender_scope
+
+    assert get_defender_scope(endpoint_type) == expected_scope
