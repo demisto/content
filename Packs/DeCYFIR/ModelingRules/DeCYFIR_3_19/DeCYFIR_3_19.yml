@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: DeCYFIR_ModelingRule
+name: DeCYFIR Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
