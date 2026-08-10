@@ -1175,6 +1175,14 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
         raise DemistoException("Please provide at least one incident type to fetch or uncheck the fetch incidents checkbox.")
 
     last_run = demisto.getLastRun() or {}
+
+    # Migrate the old flat last_run format ({"time": "..."}) to the new nested format,
+    # so upgraded instances don't re-fetch the entire window and create duplicate incidents.
+    if "time" in last_run and "alerts_last_run" not in last_run and "incidents_last_run" not in last_run:
+        demisto.debug("Migrating old last_run format to the new nested format.")
+        old_time = {"time": last_run["time"]}
+        last_run = {"alerts_last_run": old_time, "incidents_last_run": old_time}
+
     new_last_run: dict = dict(last_run)
     fetched: list = []
 
@@ -1217,7 +1225,8 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
     Returns:
         tuple[list, dict]: the fetched incidents, and the updated incidents last run.
     """
-    new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]}
+    # Copy the input last_run so we never mutate the caller's argument.
+    new_last_run = dict(last_run) if last_run else {"time": parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]}
     demisto_incidents: list = []
     time_from = new_last_run.get("time")
     time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
@@ -1274,7 +1283,8 @@ def fetch_alerts(
     """
     filter_query = create_filter_query(filter, service_sources)
 
-    new_last_run = last_run if last_run else {"time": parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]}
+    # Copy the input last_run so we never mutate the caller's argument.
+    new_last_run = dict(last_run) if last_run else {"time": parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]}
     demisto_alerts: list = []
     time_from = new_last_run.get("time")
     time_to = datetime.now().strftime(TIMESTAMP_FORMAT)

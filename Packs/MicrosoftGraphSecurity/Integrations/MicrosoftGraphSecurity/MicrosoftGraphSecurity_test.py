@@ -332,6 +332,89 @@ def test_fetch_incidents_and_alerts_both_types(mocker):
     )
 
 
+def test_fetch_incidents_and_alerts_migrates_old_flat_last_run(mocker):
+    """
+    Given:
+    - An instance that was upgraded from a version storing the old flat last_run format: {"time": "..."}.
+
+    When:
+    - Running fetch_incidents_and_alerts for both types.
+
+    Then:
+    - The old flat cursor is migrated to the new nested format and passed to both fetchers,
+      so the whole fetch window is not re-fetched (preventing duplicate incidents).
+    """
+    old_time = "2020-04-20T10:00:00.0000000Z"
+    mocker.patch.object(demisto, "getLastRun", return_value={"time": old_time})
+    mocker.patch.object(demisto, "setLastRun")
+    fetch_alerts_mock = mocker.patch("MicrosoftGraphSecurity.fetch_alerts", return_value=([], {"time": old_time}))
+    fetch_incidents_mock = mocker.patch("MicrosoftGraphSecurity.fetch_incidents", return_value=([], {"time": old_time}))
+
+    fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": "Alerts,Incidents"})
+
+    assert fetch_alerts_mock.call_args.kwargs["last_run"] == {"time": old_time}
+    assert fetch_incidents_mock.call_args.kwargs["last_run"] == {"time": old_time}
+
+
+def test_fetch_incidents_does_not_mutate_last_run(mocker):
+    """
+    Given:
+    - A last_run dict passed to fetch_incidents.
+
+    When:
+    - Running fetch_incidents and it advances the cursor.
+
+    Then:
+    - The original last_run argument is not mutated (a copy is returned instead).
+    """
+    mock_response = {
+        "value": [
+            {"id": "2", "displayName": "New", "createdDateTime": "2020-04-20T11:00:00.0000000Z", "severity": "high"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
+
+    original_last_run = {"time": "2020-04-20T10:00:00.0000000Z"}
+    _, new_last_run = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", last_run=original_last_run)
+
+    assert original_last_run == {"time": "2020-04-20T10:00:00.0000000Z"}
+    assert new_last_run is not original_last_run
+    assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
+
+
+def test_fetch_alerts_does_not_mutate_last_run(mocker):
+    """
+    Given:
+    - A last_run dict passed to fetch_alerts.
+
+    When:
+    - Running fetch_alerts and it advances the cursor.
+
+    Then:
+    - The original last_run argument is not mutated (a copy is returned instead).
+    """
+    mock_response = {
+        "value": [
+            {"id": "2", "title": "New", "createdDateTime": "2020-04-20T11:00:00.0000000Z", "severity": "high"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "search_alerts", return_value=mock_response)
+
+    original_last_run = {"time": "2020-04-20T10:00:00.0000000Z"}
+    _, new_last_run = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        filter="",
+        service_sources="",
+        last_run=original_last_run,
+    )
+
+    assert original_last_run == {"time": "2020-04-20T10:00:00.0000000Z"}
+    assert new_last_run is not original_last_run
+    assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
+
+
 def test_fetch_incidents_and_alerts_empty_type_raises(mocker):
     """
     Given:
