@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Cisco_Wireless_LAN_Controller_ModelingRule
+name: Cisco_Wireless_LAN_Controller Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
