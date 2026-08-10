@@ -1,7 +1,6 @@
 name: OneLogin Modeling Rule
-id: onelogin_ModelingRule
-fromversion: 6.10.0
-toversion: 8.14.0
+id: OneLogin_ModelingRule
+fromversion: 8.15.0
 tags: onelogin
 rules: ''
 schema: ''

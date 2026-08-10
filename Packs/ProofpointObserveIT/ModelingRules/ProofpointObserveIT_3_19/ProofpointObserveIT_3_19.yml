@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: ProofpointObserveIT_ModelingRule
+name: ProofpointObserveIT Modeling Rule
+rules: ''
+schema: ''
+tags:
+supportedModules:
+- xsiam
