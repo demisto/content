@@ -102,6 +102,8 @@ from QRadar_v3 import (
     qradar_reference_set_value_delete_command,
     qradar_reference_set_value_upsert_command,
     qradar_reference_sets_list_command,
+    qradar_reference_maps_list_command,
+    qradar_reference_map_value_upsert_command,
     qradar_remote_network_cidr_create_command,
     qradar_remote_network_cidr_delete_command,
     qradar_remote_network_cidr_list_command,
@@ -163,7 +165,12 @@ event_columns_default_value = (
 @pytest.mark.parametrize(
     "arg, iso_format, epoch_format, expected",
     [
-        ("2020-11-22T16:31:14-02:00", False, False, datetime(2020, 11, 22, 18, 31, 14, tzinfo=pytz.utc)),
+        (
+            "2020-11-22T16:31:14-02:00",
+            False,
+            False,
+            datetime(2020, 11, 22, 18, 31, 14, tzinfo=pytz.utc),
+        ),
         (None, False, False, None),
         (None, True, False, None),
         ("2020-12-12", True, False, "2020-12-12T00:00:00+00:00"),
@@ -235,11 +242,22 @@ def test_connection_errors_recovers(mocker):
         (
             "registered_country",
             ["iso_code", "name"],
-            {"RegisteredCountryIsoCode": "US", "RegisteredCountryName": "United States"},
+            {
+                "RegisteredCountryIsoCode": "US",
+                "RegisteredCountryName": "United States",
+            },
         ),
         (
             "location",
-            ["accuracy_radius", "timezone", "latitude", "metro_code", "average_income", "population_density", "longitude"],
+            [
+                "accuracy_radius",
+                "timezone",
+                "latitude",
+                "metro_code",
+                "average_income",
+                "population_density",
+                "longitude",
+            ],
             {
                 "LocationAccuracyRadius": 1000,
                 "LocationTimezone": "America/Los_Angeles",
@@ -266,7 +284,11 @@ def test_flatten_nested_geolocation_values(dict_key, inner_keys, expected):
      Ensure values are flattened as expected
     """
     assert (
-        flatten_nested_geolocation_values(command_test_data["geolocations_for_ip"]["response"][0], dict_key, inner_keys)
+        flatten_nested_geolocation_values(
+            command_test_data["geolocations_for_ip"]["response"][0],
+            dict_key,
+            inner_keys,
+        )
         == expected
     )
 
@@ -307,7 +329,12 @@ def test_enrich_asset_properties(properties, properties_to_enrich_dict: dict, ex
 
 
 @pytest.mark.parametrize(
-    "enrichment, expected", [("None", (False, False)), ("IPs", (True, False)), ("IPs And Assets", (True, True))]
+    "enrichment, expected",
+    [
+        ("None", (False, False)),
+        ("IPs", (True, False)),
+        ("IPs And Assets", (True, True)),
+    ],
 )
 def test_get_offense_enrichment(enrichment, expected):
     """
@@ -369,7 +396,11 @@ def test_add_iso_entries_to_asset():
     "output, old_new_dict, expected",
     [
         ([{"a": 2, "c": 3}], {"a": "b"}, [{"b": 2}]),
-        ([OFFENSE_OLD_NEW_NAMES_MAP], OFFENSE_OLD_NEW_NAMES_MAP, [{v: v for v in OFFENSE_OLD_NEW_NAMES_MAP.values()}]),
+        (
+            [OFFENSE_OLD_NEW_NAMES_MAP],
+            OFFENSE_OLD_NEW_NAMES_MAP,
+            [{v: v for v in OFFENSE_OLD_NEW_NAMES_MAP.values()}],
+        ),
         ([{"description": "bla"}], {"name": "Adam"}, [{}]),
         (
             [{"a": 1, "b": 2, "c": 3}, {"a": 4, "d": 5, "e": 6}],
@@ -398,7 +429,11 @@ def test_build_final_outputs(output, old_new_dict, expected):
 
 
 @pytest.mark.parametrize(
-    "first_headers, all_headers", [(["ID", "Description"], {"A", "B", "C", "ID", "Description"}), (["A"], {"A", "B"})]
+    "first_headers, all_headers",
+    [
+        (["ID", "Description"], {"A", "B", "C", "ID", "Description"}),
+        (["A"], {"A", "B"}),
+    ],
 )
 def test_build_headers(first_headers, all_headers):
     """
@@ -460,7 +495,13 @@ def test_get_minimum_id_to_fetch(last_run_offense_id, user_query, expected, mock
         (
             {"a": 2, "number_of_elements": 3, "creation_time": 1600000000000},
             None,
-            [{"a": 2, "number_of_elements": 3, "creation_time": "2020-09-13T12:26:40+00:00"}],
+            [
+                {
+                    "a": 2,
+                    "number_of_elements": 3,
+                    "creation_time": "2020-09-13T12:26:40+00:00",
+                }
+            ],
         ),
     ],
 )
@@ -505,13 +546,28 @@ def test_create_single_asset_for_offense_enrichment():
             command_test_data["search_status_get"]["response"],
             command_test_data["search_results_get"]["response"],
             "19e90792-1a17-403b-ae5b-d0e60740b95e",
-            (sanitize_outputs(command_test_data["search_results_get"]["response"]["events"]), QueryStatus.SUCCESS.value),
+            (
+                sanitize_outputs(command_test_data["search_results_get"]["response"]["events"]),
+                QueryStatus.SUCCESS.value,
+            ),
         ),
-        (DemistoException("error occurred"), None, None, None, ([], QueryStatus.ERROR.value)),
+        (
+            DemistoException("error occurred"),
+            None,
+            None,
+            None,
+            ([], QueryStatus.ERROR.value),
+        ),
     ],
 )
 def test_poll_offense_events_with_retry(
-    mocker, requests_mock, status_exception, status_response, results_response, search_id, expected
+    mocker,
+    requests_mock,
+    status_exception,
+    status_response,
+    results_response,
+    search_id,
+    expected,
 ):
     """
     Given:
@@ -527,7 +583,10 @@ def test_poll_offense_events_with_retry(
      - Case b: Ensure that None is returned.
     """
     mocker.patch.object(demisto, "error")
-    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+    context_data = {
+        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+    }
     set_integration_context(context_data)
     if status_exception:
         requests_mock.get(f"{client.server}/api/ariel/searches/{search_id}", exc=status_exception)
@@ -542,7 +601,11 @@ def test_poll_offense_events_with_retry(
     [
         (None, "Fetch With All Events", command_test_data["search_create"]["response"]),
         (DemistoException("error occurred"), "Fetch With All Events", None),
-        (None, "Fetch Correlation Events Only", command_test_data["search_create"]["response"]),
+        (
+            None,
+            "Fetch Correlation Events Only",
+            command_test_data["search_create"]["response"],
+        ),
         (DemistoException("error occurred"), "Fetch Correlation Events Only", None),
     ],
 )
@@ -563,7 +626,10 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
      - Case c: Ensure that QRadar service response is returned.
      - Case d: Ensure that None is returned.
     """
-    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+    context_data = {
+        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+    }
     set_integration_context(context_data)
     offense = command_test_data["offenses_list"]["response"][0]
     if search_exception:
@@ -592,28 +658,40 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
             command_test_data["offenses_list"]["response"][0],
             FetchMode.correlations_events_only.value,
             command_test_data["search_create"]["response"],
-            (sanitize_outputs(command_test_data["search_results_get"]["response"]["events"]), ""),
+            (
+                sanitize_outputs(command_test_data["search_results_get"]["response"]["events"]),
+                "",
+            ),
             3,
         ),
         (
             command_test_data["offenses_list"]["response"][0],
             FetchMode.correlations_events_only.value,
             command_test_data["search_create"]["response"],
-            (sanitize_outputs(command_test_data["search_results_get"]["response"]["events"][:1]), ""),
+            (
+                sanitize_outputs(command_test_data["search_results_get"]["response"]["events"][:1]),
+                "",
+            ),
             2,
         ),
         (
             command_test_data["offenses_list"]["response"][0],
             FetchMode.all_events.value,
             command_test_data["search_create"]["response"],
-            (sanitize_outputs(command_test_data["search_results_get"]["response"]["events"]), ""),
+            (
+                sanitize_outputs(command_test_data["search_results_get"]["response"]["events"]),
+                "",
+            ),
             3,
         ),
         (
             command_test_data["offenses_list"]["response"][0],
             FetchMode.all_events.value,
             command_test_data["search_create"]["response"],
-            (sanitize_outputs(command_test_data["search_results_get"]["response"]["events"][:1]), ""),
+            (
+                sanitize_outputs(command_test_data["search_results_get"]["response"]["events"][:1]),
+                "",
+            ),
             1,
         ),
         # failure cases
@@ -628,7 +706,10 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
             command_test_data["offenses_list"]["response"][0],
             FetchMode.correlations_events_only.value,
             command_test_data["search_create"]["response"],
-            (sanitize_outputs(command_test_data["search_results_get"]["response"]["events"][:1]), ""),
+            (
+                sanitize_outputs(command_test_data["search_results_get"]["response"]["events"][:1]),
+                "",
+            ),
             3,
         ),
         (
@@ -642,13 +723,21 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
             command_test_data["offenses_list"]["response"][0],
             FetchMode.all_events.value,
             command_test_data["search_create"]["response"],
-            (sanitize_outputs(command_test_data["search_results_get"]["response"]["events"][:1]), ""),
+            (
+                sanitize_outputs(command_test_data["search_results_get"]["response"]["events"][:1]),
+                "",
+            ),
             3,
         ),
     ],
 )
 def test_enrich_offense_with_events(
-    mocker, offense: dict, fetch_mode: FetchMode, mock_search_response: dict, poll_events_response, events_limit
+    mocker,
+    offense: dict,
+    fetch_mode: FetchMode,
+    mock_search_response: dict,
+    poll_events_response,
+    events_limit,
 ):
     """
     Given:
@@ -683,7 +772,10 @@ def test_enrich_offense_with_events(
         - Ensure poll events is queried with the expected search ID, if search ID succeeded.
     """
     offense = offense.copy()
-    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+    context_data = {
+        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+    }
     set_integration_context(context_data)
     poll_events = poll_events_response[0] if poll_events_response else []
     num_events = sum(event.get("eventcount", 1) for event in poll_events)
@@ -710,7 +802,11 @@ def test_enrich_offense_with_events(
     )
     mocker.patch.object(QRadar_v3, "is_all_events_fetched", return_value=is_all_events_fetched)
     enriched_offense, is_success = enrich_offense_with_events(
-        client, offense, fetch_mode, event_columns_default_value, events_limit=events_limit
+        client,
+        offense,
+        fetch_mode,
+        event_columns_default_value,
+        events_limit=events_limit,
     )
     assert "mirroring_events_message" in enriched_offense
     del enriched_offense["mirroring_events_message"]
@@ -739,7 +835,10 @@ def test_enrich_offense_with_events_initial_sleep_after_search_creation(mocker):
     """
 
     offense = {"id": 1, "start_time": 1000, "event_count": 5}
-    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+    context_data = {
+        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+    }
     set_integration_context(context_data)
 
     # Use a shared call tracker to verify ordering across different mocks
@@ -748,7 +847,10 @@ def test_enrich_offense_with_events_initial_sleep_after_search_creation(mocker):
     mock_create_search = mocker.patch.object(
         QRadar_v3,
         "create_search_with_retry",
-        side_effect=lambda *args, **kwargs: (call_order.append("create_search_with_retry"), "some_search_id")[1],
+        side_effect=lambda *args, **kwargs: (
+            call_order.append("create_search_with_retry"),
+            "some_search_id",
+        )[1],
     )
     mock_sleep = mocker.patch(
         "QRadar_v3.time.sleep",
@@ -757,13 +859,22 @@ def test_enrich_offense_with_events_initial_sleep_after_search_creation(mocker):
     mock_poll = mocker.patch.object(
         QRadar_v3,
         "poll_offense_events_with_retry",
-        side_effect=lambda *args, **kwargs: (call_order.append("poll_offense_events_with_retry"), ([], ""))[1],
+        side_effect=lambda *args, **kwargs: (
+            call_order.append("poll_offense_events_with_retry"),
+            ([], ""),
+        )[1],
     )
     mocker.patch.object(QRadar_v3, "is_all_events_fetched", return_value=True)
     mocker.patch.object(QRadar_v3, "update_events_mirror_message", return_value="")
     mocker.patch("QRadar_v3.time.time", return_value=0)
 
-    enrich_offense_with_events(client, offense, FetchMode.all_events.value, event_columns_default_value, events_limit=20)
+    enrich_offense_with_events(
+        client,
+        offense,
+        FetchMode.all_events.value,
+        event_columns_default_value,
+        events_limit=20,
+    )
 
     # Verify create_search was called
     mock_create_search.assert_called_once()
@@ -792,7 +903,7 @@ def test_create_incidents_from_offenses():
     offenses = command_test_data["offenses_list"]["enrich_offenses_result"]
     assert create_incidents_from_offenses(offenses, "QRadar Incident") == [
         {
-            "name": f"""{offense.get('id')} {offense.get('description', '')}""",
+            "name": f"""{offense.get("id")} {offense.get("description", "")}""",
             "rawJSON": json.dumps(offense),
             "occurred": get_time_parameter(offense.get("start_time"), iso_format=True),
             "type": "QRadar Incident",
@@ -810,9 +921,15 @@ def test_create_incidents_from_offenses():
             "offense_types",
             {
                 "client": client,
-                "offenses": [{"offense_type": 1, "offense_name": "offense1"}, {"offense_type": 2, "offense_name": "offense2"}],
+                "offenses": [
+                    {"offense_type": 1, "offense_name": "offense1"},
+                    {"offense_type": 2, "offense_name": "offense2"},
+                ],
             },
-            [{"id": 1, "name": "Scheduled Search"}, {"id": 2, "name": "Destination IP Identity"}],
+            [
+                {"id": 1, "name": "Scheduled Search"},
+                {"id": 2, "name": "Destination IP Identity"},
+            ],
             {1: "Scheduled Search", 2: "Destination IP Identity"},
         ),
         (
@@ -833,7 +950,10 @@ def test_create_incidents_from_offenses():
             "domains_list",
             {
                 "client": client,
-                "outputs": [{"domain_id": 5, "offense_name": "offense1"}, {"domain_id": 6, "offense_name": "offense2"}],
+                "outputs": [
+                    {"domain_id": 5, "offense_name": "offense1"},
+                    {"domain_id": 6, "offense_name": "offense2"},
+                ],
             },
             [{"id": 5, "name": "domain1"}, {"id": 6, "name": "domain2"}],
             {5: "domain1", 6: "domain2"},
@@ -851,7 +971,10 @@ def test_create_incidents_from_offenses():
             [
                 {"id": 7, "name": "Devices with High Event Rates"},
                 {"id": 8, "name": "Excessive Database Connections"},
-                {"id": 9, "name": "Anomaly: Excessive Firewall Accepts Across Multiple Hosts"},
+                {
+                    "id": 9,
+                    "name": "Anomaly: Excessive Firewall Accepts Across Multiple Hosts",
+                },
             ],
             {
                 7: "Devices with High Event Rates",
@@ -884,8 +1007,14 @@ def test_create_incidents_from_offenses():
             {
                 "client": client,
                 "offenses": [
-                    {"local_destination_address_ids": [1, 2], "offense_name": "offense1"},
-                    {"local_destination_address_ids": [3, 4], "offense_name": "offense2"},
+                    {
+                        "local_destination_address_ids": [1, 2],
+                        "offense_name": "offense1",
+                    },
+                    {
+                        "local_destination_address_ids": [3, 4],
+                        "offense_name": "offense2",
+                    },
                 ],
                 "is_destination_addresses": True,
             },
@@ -932,7 +1061,10 @@ def test_create_incidents_from_offenses():
             "offense_types",
             {
                 "client": client,
-                "offenses": [{"offense_name": "offense1"}, {"offense_name": "offense2"}],
+                "offenses": [
+                    {"offense_name": "offense1"},
+                    {"offense_name": "offense2"},
+                ],
             },
             None,
             {},
@@ -942,7 +1074,10 @@ def test_create_incidents_from_offenses():
             "closing_reasons_list",
             {
                 "client": client,
-                "offenses": [{"offense_name": "offense1"}, {"offense_name": "offense2"}],
+                "offenses": [
+                    {"offense_name": "offense1"},
+                    {"offense_name": "offense2"},
+                ],
             },
             None,
             {},
@@ -962,7 +1097,10 @@ def test_create_incidents_from_offenses():
             "rules_list",
             {
                 "client": client,
-                "offenses": [{"offense_name": "offense1"}, {"offense_name": "offense2"}],
+                "offenses": [
+                    {"offense_name": "offense1"},
+                    {"offense_name": "offense2"},
+                ],
             },
             None,
             {},
@@ -998,14 +1136,22 @@ def test_create_incidents_from_offenses():
         (
             enrich_assets_results,
             "domains_list",
-            {"client": client, "assets": asset_enrich_data["empty_case"]["assets"], "full_enrichment": False},
+            {
+                "client": client,
+                "assets": asset_enrich_data["empty_case"]["assets"],
+                "full_enrichment": False,
+            },
             asset_enrich_data["domain_mock_response"],
             asset_enrich_data["empty_case"]["expected_basic_enrichment"],
         ),
         (
             enrich_assets_results,
             "domains_list",
-            {"client": client, "assets": asset_enrich_data["empty_case"]["assets"], "full_enrichment": True},
+            {
+                "client": client,
+                "assets": asset_enrich_data["empty_case"]["assets"],
+                "full_enrichment": True,
+            },
             asset_enrich_data["domain_mock_response"],
             asset_enrich_data["empty_case"]["expected_full_enrichment"],
         ),
@@ -1052,9 +1198,16 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
         (qradar_geolocations_for_ip_command, "geolocations_for_ip"),
         (qradar_get_custom_properties_command, "custom_properties"),
         (qradar_remote_network_cidr_list_command, "get_remote_network_cidr"),
-        (qradar_remote_network_cidr_update_command, "create_and_update_remote_network_cidr"),
-        (qradar_remote_network_deploy_execution_command, "remote_network_deploy_execution"),
+        (
+            qradar_remote_network_cidr_update_command,
+            "create_and_update_remote_network_cidr",
+        ),
+        (
+            qradar_remote_network_deploy_execution_command,
+            "remote_network_deploy_execution",
+        ),
         (qradar_indicators_upload_command, "reference_set_bulk_load"),
+        (qradar_reference_maps_list_command, "reference_maps_list"),
     ],
 )
 def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str):
@@ -1117,7 +1270,10 @@ def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults]
     ],
 )
 def test_commands_with_enrichment(
-    mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str, enrichment_func_name: str
+    mocker,
+    command_func: Callable[[Client, dict], CommandResults],
+    command_name: str,
+    enrichment_func_name: str,
 ):
     """
     Given:
@@ -1155,9 +1311,19 @@ def test_commands_with_enrichment(
 
 def mock_mirroring_response(filter_, **kwargs):
     if "status=closed" in filter_:
-        return list(filter(lambda x: x["status"] == "CLOSED", command_test_data["get_modified_remote_data"]["response"]))
+        return list(
+            filter(
+                lambda x: x["status"] == "CLOSED",
+                command_test_data["get_modified_remote_data"]["response"],
+            )
+        )
     else:
-        return list(filter(lambda x: x["status"] != "CLOSED", command_test_data["get_modified_remote_data"]["response"]))
+        return list(
+            filter(
+                lambda x: x["status"] != "CLOSED",
+                command_test_data["get_modified_remote_data"]["response"],
+            )
+        )
 
 
 def test_get_modified_remote_data_command(mocker):
@@ -1172,7 +1338,13 @@ def test_get_modified_remote_data_command(mocker):
     Then:
      - Ensure that command outputs the IDs of the offenses to update.
     """
-    set_integration_context({MIRRORED_OFFENSES_QUERIED_CTX_KEY: {}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}, "last_update": 1})
+    set_integration_context(
+        {
+            MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+            MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+            "last_update": 1,
+        }
+    )
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data["get_modified_remote_data"]["outputs"])))
     mocker.patch.object(client, "offenses_list", side_effect=mock_mirroring_response)
     result = get_modified_remote_data_command(client, {}, command_test_data["get_modified_remote_data"]["args"])
@@ -1187,14 +1359,20 @@ def test_get_modified_remote_data_command(mocker):
             command_test_data["get_remote_data"]["response"],
             command_test_data["get_remote_data"]["enrich_offenses_result"],
             None,
-            GetRemoteDataResponse(sanitize_outputs(command_test_data["get_remote_data"]["enrich_offenses_result"])[0], []),
+            GetRemoteDataResponse(
+                sanitize_outputs(command_test_data["get_remote_data"]["enrich_offenses_result"])[0],
+                [],
+            ),
         ),
         (
             {},
             command_test_data["get_remote_data"]["closed"],
             command_test_data["get_remote_data"]["enrich_closed_offense"],
             None,
-            GetRemoteDataResponse(sanitize_outputs(command_test_data["get_remote_data"]["enrich_closed_offense"])[0], []),
+            GetRemoteDataResponse(
+                sanitize_outputs(command_test_data["get_remote_data"]["enrich_closed_offense"])[0],
+                [],
+            ),
         ),
         (
             {"close_incident": True},
@@ -1265,7 +1443,14 @@ def test_get_modified_remote_data_command(mocker):
         ),
     ],
 )
-def test_get_remote_data_command(mocker, params, offense: dict, enriched_offense, note_response, expected: GetRemoteDataResponse):
+def test_get_remote_data_command(
+    mocker,
+    params,
+    offense: dict,
+    enriched_offense,
+    note_response,
+    expected: GetRemoteDataResponse,
+):
     """
     Given:
      - QRadar client.
@@ -1286,11 +1471,21 @@ def test_get_remote_data_command(mocker, params, offense: dict, enriched_offense
      - Case d: Ensure that offense is returned, along with expected entries.
      - Case e: Ensure that offense is returned, along with expected entries.
     """
-    set_integration_context({MIRRORED_OFFENSES_QUERIED_CTX_KEY: {}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}, "last_update": 1})
+    set_integration_context(
+        {
+            MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+            MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+            "last_update": 1,
+        }
+    )
     mocker.patch.object(client, "offenses_list", return_value=offense)
     mocker.patch.object(QRadar_v3, "enrich_offenses_result", return_value=enriched_offense)
     if "close_incident" in params:
-        mocker.patch.object(client, "closing_reasons_list", return_value=command_test_data["closing_reasons_list"]["response"][0])
+        mocker.patch.object(
+            client,
+            "closing_reasons_list",
+            return_value=command_test_data["closing_reasons_list"]["response"][0],
+        )
     if note_response is not None:
         mocker.patch.object(client, "offense_notes_list", return_value=note_response)
     result = get_remote_data_command(client, params, {"id": offense.get("id"), "lastUpdate": 1})
@@ -1347,7 +1542,10 @@ def test_validate_long_running_params():
 
 @pytest.mark.parametrize(
     "command_func, command_name",
-    [(qradar_ips_source_get_command, "source_ip"), (qradar_ips_local_destination_get_command, "local_destination")],
+    [
+        (qradar_ips_source_get_command, "source_ip"),
+        (qradar_ips_local_destination_get_command, "local_destination"),
+    ],
 )
 def test_ip_commands(mocker, command_func: Callable[[Client, dict], CommandResults], command_name: str):
     """
@@ -1401,7 +1599,11 @@ def test_get_modified_with_events(mocker):
         and modified incidents returns the modified offenses and the finished queries.
     """
     context_data = {
-        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"1": "123", "2": "456", "10": QueryStatus.WAIT.value},
+        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {
+            "1": "123",
+            "2": "456",
+            "10": QueryStatus.WAIT.value,
+        },
         MIRRORED_OFFENSES_FINISHED_CTX_KEY: {"3": "789", "4": "012"},
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
     }
@@ -1414,9 +1616,17 @@ def test_get_modified_with_events(mocker):
         SAMPLE_INCIDENTS_KEY: [],
     }
     set_integration_context(context_data)
-    status = {"123": {"status": "COMPLETED"}, "456": {"status": "WAIT"}, "555": {"status": "PENDING"}}
+    status = {
+        "123": {"status": "COMPLETED"},
+        "456": {"status": "WAIT"},
+        "555": {"status": "PENDING"},
+    }
 
-    mocker.patch.object(client, "offenses_list", return_value=[{"id": 6, "last_persisted_time": "3444", "close_time": "3444"}])
+    mocker.patch.object(
+        client,
+        "offenses_list",
+        return_value=[{"id": 6, "last_persisted_time": "3444", "close_time": "3444"}],
+    )
     mocker.patch.object(QRadar_v3, "create_events_search", return_value="555")
     mocker.patch.object(client, "search_status_get", side_effect=lambda offense_id: status[offense_id])
     modified = get_modified_remote_data_command(client, {"mirror_options": MIRROR_OFFENSE_AND_EVENTS}, {"lastUpdate": "0"})
@@ -1437,7 +1647,11 @@ def test_remote_data_with_events(mocker, offense_id):
         - Ensure that the offense data is returned and context_data is updated.
     """
     context_data = {
-        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {"1": "123", "2": "456", "10": QueryStatus.WAIT.value},
+        MIRRORED_OFFENSES_QUERIED_CTX_KEY: {
+            "1": "123",
+            "2": "456",
+            "10": QueryStatus.WAIT.value,
+        },
         MIRRORED_OFFENSES_FINISHED_CTX_KEY: {"3": "789", "4": "012"},
         MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
     }
@@ -1446,20 +1660,32 @@ def test_remote_data_with_events(mocker, offense_id):
     mocker.patch.object(QRadar_v3, "create_events_search", return_value="555")
 
     # we expect the total events fetched to be the sum of `eventcount`, meaning 5 + int(offense_id)
-    events = {"events": [{"eventcount": int(offense_id)}, {"eventcount": 2}, {"eventcount": 3}]}
+    events = {
+        "events": [
+            {"eventcount": int(offense_id)},
+            {"eventcount": 2},
+            {"eventcount": 3},
+        ]
+    }
     mocker.patch.object(client, "search_results_get", return_value=events)
     mocker.patch.object(client, "search_status_get", return_value={"status": "EXECUTE"})
     offense = {"id": offense_id}
     mocker.patch.object(client, "offenses_list", return_value=offense)
     if offense_id in context_data[MIRRORED_OFFENSES_FINISHED_CTX_KEY]:
         offense_data = get_remote_data_command(
-            client, {"mirror_options": MIRROR_OFFENSE_AND_EVENTS}, {"id": offense_id, "lastUpdate": "0"}
+            client,
+            {"mirror_options": MIRROR_OFFENSE_AND_EVENTS},
+            {"id": offense_id, "lastUpdate": "0"},
         ).mirrored_object
 
     else:
         # if not finished we expect to get an exception
         with pytest.raises(DemistoException):
-            get_remote_data_command(client, {"mirror_options": MIRROR_OFFENSE_AND_EVENTS}, {"id": offense_id, "lastUpdate": "0"})
+            get_remote_data_command(
+                client,
+                {"mirror_options": MIRROR_OFFENSE_AND_EVENTS},
+                {"id": offense_id, "lastUpdate": "0"},
+            )
 
     updated_context = get_integration_context()
     if offense_id in context_data[MIRRORED_OFFENSES_FINISHED_CTX_KEY]:
@@ -1500,10 +1726,20 @@ def test_qradar_remote_network_cidr_create_command(mocker):
         "group": "test_group",
     }
 
-    mocker.patch.object(client, "create_and_update_remote_network_cidr", return_value=expected_response_from_api)
+    mocker.patch.object(
+        client,
+        "create_and_update_remote_network_cidr",
+        return_value=expected_response_from_api,
+    )
 
     res = qradar_remote_network_cidr_create_command(
-        client, {"name": "test_name", "description": "description", "cidrs": "1.2.3.4/32,8.8.8.8/24", "group": "test_group"}
+        client,
+        {
+            "name": "test_name",
+            "description": "description",
+            "cidrs": "1.2.3.4/32,8.8.8.8/24",
+            "group": "test_group",
+        },
     )
 
     assert expected_response_from_api == res.raw_response
@@ -1768,8 +2004,18 @@ def test_get_cidrs_indicators(query, expected, mocker):
         "searchIndicators",
         return_value={
             "iocs": [
-                {"id": "14", "version": 1, "indicator_type": "CIDR", "value": "1.2.3.4/32"},
-                {"id": "12", "version": 1, "indicator_type": "CIDR", "value": "5.6.7.8/2"},
+                {
+                    "id": "14",
+                    "version": 1,
+                    "indicator_type": "CIDR",
+                    "value": "1.2.3.4/32",
+                },
+                {
+                    "id": "12",
+                    "version": 1,
+                    "indicator_type": "CIDR",
+                    "value": "5.6.7.8/2",
+                },
             ]
         },
     )
@@ -1789,12 +2035,26 @@ VERIFY_MESSAGES_ERRORS = [
 @pytest.mark.parametrize(
     "cidrs_list, cidrs_from_query, name, group, fields, expected",
     [
-        (["1.2.3.4/32", "5.6.7.8/2"], ["8.8.8.8/12"], "test1", "test_group1", "", VERIFY_MESSAGES_ERRORS[0]),
+        (
+            ["1.2.3.4/32", "5.6.7.8/2"],
+            ["8.8.8.8/12"],
+            "test1",
+            "test_group1",
+            "",
+            VERIFY_MESSAGES_ERRORS[0],
+        ),
         ([], [], "test2", "test_group2", "", VERIFY_MESSAGES_ERRORS[1]),
         (["1.2.3.4"], [], "test3", "test_group3", "", VERIFY_MESSAGES_ERRORS[2]),
         (["1.2.3.4/32"], [], "test4!", "test_group4", "", VERIFY_MESSAGES_ERRORS[3]),
         (["1.2.3.4/32"], [], "test5", "test_group5!", "", VERIFY_MESSAGES_ERRORS[3]),
-        (["1.2.3.4/32"], [], "test9", "test_group9", "id,cidr", VERIFY_MESSAGES_ERRORS[4]),
+        (
+            ["1.2.3.4/32"],
+            [],
+            "test9",
+            "test_group9",
+            "id,cidr",
+            VERIFY_MESSAGES_ERRORS[4],
+        ),
     ],
 )
 def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields, expected):
@@ -1811,7 +2071,14 @@ def test_verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name,
 
 
 @pytest.mark.parametrize(
-    "values, expected", [([50, 2, 25], True), ([None, 2, None], True), ([None, None, 0], False), ([4, -5], False), ([None], True)]
+    "values, expected",
+    [
+        ([50, 2, 25], True),
+        ([None, 2, None], True),
+        ([None, None, 0], False),
+        ([4, -5], False),
+        ([None], True),
+    ],
 )
 def test_is_positive(values, expected):
     assert is_positive(*values) == expected
@@ -1833,7 +2100,16 @@ VERIFY_LIST_MESSAGES_ERRORS = [
         (None, None, 25, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[1]),
         (-1, None, None, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[2]),
         (None, -1, -1, None, None, None, None, VERIFY_LIST_MESSAGES_ERRORS[2]),
-        (None, None, None, "test", "test", "test", "test", VERIFY_LIST_MESSAGES_ERRORS[3]),
+        (
+            None,
+            None,
+            None,
+            "test",
+            "test",
+            "test",
+            "test",
+            VERIFY_LIST_MESSAGES_ERRORS[3],
+        ),
     ],
 )
 def test_verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name, expected):
@@ -1851,7 +2127,10 @@ def test_verify_args_for_remote_network_cidr_list(limit, page, page_size, filter
 
 @pytest.mark.parametrize("api_version", ("16.2", "17.0"))
 @pytest.mark.parametrize("status", ("COMPLETED", "IN_PROGRESS"))
-@pytest.mark.parametrize("func", (qradar_reference_set_value_upsert_command, qradar_indicators_upload_command))
+@pytest.mark.parametrize(
+    "func",
+    (qradar_reference_set_value_upsert_command, qradar_indicators_upload_command),
+)
 def test_reference_set_upsert_commands_new_api(mocker, api_version, status, func):
     """
     Given:
@@ -1907,7 +2186,9 @@ def test_reference_set_upsert_commands_new_api(mocker, api_version, status, func
         assert results.scheduled_command._args.get("task_id") == 1234
 
 
-def test_qradar_reference_set_value_upsert_command_continue_polling_with_connection_issues(mocker):
+def test_qradar_reference_set_value_upsert_command_continue_polling_with_connection_issues(
+    mocker,
+):
     """
     Given:
         - get_reference_data_bulk_task_status that returns ReadTimeout exception, IN_PROGRESS and COMPLETED statuses
@@ -1927,7 +2208,11 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
     )
     args = {"ref_name": "test_ref", "value": "value1"}
     api_version = {"api_version": "17.0"}
-    mocker.patch.object(client, "reference_sets_list", return_value=command_test_data["reference_set_bulk_load"]["response"])
+    mocker.patch.object(
+        client,
+        "reference_sets_list",
+        return_value=command_test_data["reference_set_bulk_load"]["response"],
+    )
 
     result = qradar_reference_set_value_upsert_command(args, client=client, params=api_version)
     # make sure in ReadTimeout that no outputs are returned
@@ -1943,17 +2228,54 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
 @pytest.mark.parametrize(
     "command_func, endpoint, resource_id",
     [
-        (qradar_event_collectors_list_command, "/config/event_sources/event_collectors", 0),
-        (qradar_wincollect_destinations_list_command, "/config/event_sources/wincollect/wincollect_destinations", 0),
-        (qradar_disconnected_log_collectors_list_command, "/config/event_sources/disconnected_log_collectors", 0),
-        (qradar_log_source_types_list_command, "/config/event_sources/log_source_management/log_source_types", 0),
-        (qradar_log_source_protocol_types_list_command, "/config/event_sources/log_source_management/protocol_types", 0),
-        (qradar_log_source_extensions_list_command, "/config/event_sources/log_source_management/log_source_extensions", 0),
-        (qradar_log_source_languages_list_command, "/config/event_sources/log_source_management/log_source_languages", 0),
-        (qradar_log_source_groups_list_command, "/config/event_sources/log_source_management/log_source_groups", 0),
+        (
+            qradar_event_collectors_list_command,
+            "/config/event_sources/event_collectors",
+            0,
+        ),
+        (
+            qradar_wincollect_destinations_list_command,
+            "/config/event_sources/wincollect/wincollect_destinations",
+            0,
+        ),
+        (
+            qradar_disconnected_log_collectors_list_command,
+            "/config/event_sources/disconnected_log_collectors",
+            0,
+        ),
+        (
+            qradar_log_source_types_list_command,
+            "/config/event_sources/log_source_management/log_source_types",
+            0,
+        ),
+        (
+            qradar_log_source_protocol_types_list_command,
+            "/config/event_sources/log_source_management/protocol_types",
+            0,
+        ),
+        (
+            qradar_log_source_extensions_list_command,
+            "/config/event_sources/log_source_management/log_source_extensions",
+            0,
+        ),
+        (
+            qradar_log_source_languages_list_command,
+            "/config/event_sources/log_source_management/log_source_languages",
+            0,
+        ),
+        (
+            qradar_log_source_groups_list_command,
+            "/config/event_sources/log_source_management/log_source_groups",
+            0,
+        ),
     ],
 )
-def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint: str, resource_id: int):
+def test_id_commands(
+    mocker,
+    command_func: Callable[[Client, dict], CommandResults],
+    endpoint: str,
+    resource_id: int,
+):
     """
     Given:
         - A command an endpoint and an ID.
@@ -1974,13 +2296,34 @@ def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResul
 @pytest.mark.parametrize(
     "command_func, endpoint",
     [
-        (qradar_event_collectors_list_command, "/config/event_sources/event_collectors"),
-        (qradar_wincollect_destinations_list_command, "/config/event_sources/wincollect/wincollect_destinations"),
-        (qradar_disconnected_log_collectors_list_command, "/config/event_sources/disconnected_log_collectors"),
-        (qradar_log_source_types_list_command, "/config/event_sources/log_source_management/log_source_types"),
-        (qradar_log_source_protocol_types_list_command, "/config/event_sources/log_source_management/protocol_types"),
-        (qradar_log_source_extensions_list_command, "/config/event_sources/log_source_management/log_source_extensions"),
-        (qradar_log_source_languages_list_command, "/config/event_sources/log_source_management/log_source_languages"),
+        (
+            qradar_event_collectors_list_command,
+            "/config/event_sources/event_collectors",
+        ),
+        (
+            qradar_wincollect_destinations_list_command,
+            "/config/event_sources/wincollect/wincollect_destinations",
+        ),
+        (
+            qradar_disconnected_log_collectors_list_command,
+            "/config/event_sources/disconnected_log_collectors",
+        ),
+        (
+            qradar_log_source_types_list_command,
+            "/config/event_sources/log_source_management/log_source_types",
+        ),
+        (
+            qradar_log_source_protocol_types_list_command,
+            "/config/event_sources/log_source_management/protocol_types",
+        ),
+        (
+            qradar_log_source_extensions_list_command,
+            "/config/event_sources/log_source_management/log_source_extensions",
+        ),
+        (
+            qradar_log_source_languages_list_command,
+            "/config/event_sources/log_source_management/log_source_languages",
+        ),
         (
             qradar_log_source_groups_list_command,
             "/config/event_sources/log_source_management/log_source_groups",
@@ -2036,11 +2379,17 @@ def test_get_log_sources_list(mocker):
     Then:
         - Verify that the get_resource_list function is called with the correct parameters.
     """
-    qrd_encryption_details = {"qrd_encryption_algorithm": "algorithm", "qrd_encryption_password": "password"}
+    qrd_encryption_details = {
+        "qrd_encryption_algorithm": "algorithm",
+        "qrd_encryption_password": "password",
+    }
     args = {"range": "0-49", **qrd_encryption_details}
     get_list_mock = mocker.patch.object(client, "get_resource_list", return_value=[{}])
     endpoint = "/config/event_sources/log_source_management/log_sources"
-    expected_additional_headers = {"x-qrd-encryption-algorithm": "algorithm", "x-qrd-encryption-password": "password"}
+    expected_additional_headers = {
+        "x-qrd-encryption-algorithm": "algorithm",
+        "x-qrd-encryption-password": "password",
+    }
     try:
         qradar_log_sources_list_command(client, args)
     except KeyError:
@@ -2058,11 +2407,17 @@ def test_get_log_source_by_id(mocker):
         - Verify that the get_resource_by_id function is called with the correct parameters.
     """
     mock_id = 1880
-    qrd_encryption_details = {"qrd_encryption_algorithm": "algorithm", "qrd_encryption_password": "password"}
+    qrd_encryption_details = {
+        "qrd_encryption_algorithm": "algorithm",
+        "qrd_encryption_password": "password",
+    }
     args = {"id": mock_id, **qrd_encryption_details}
     get_by_id_mock = mocker.patch.object(client, "get_resource_by_id", return_value={})
     endpoint = "/config/event_sources/log_source_management/log_sources"
-    expected_additional_headers = {"x-qrd-encryption-algorithm": "algorithm", "x-qrd-encryption-password": "password"}
+    expected_additional_headers = {
+        "x-qrd-encryption-algorithm": "algorithm",
+        "x-qrd-encryption-password": "password",
+    }
     try:
         qradar_log_sources_list_command(client, args)
     except KeyError:
@@ -2139,12 +2494,32 @@ def test_dict_converter():
     expected_output = {"enabled": True, "year": 2024, "name": "Moshe"}
     assert convert_dict_to_actual_values(input_dict) == expected_output
 
-    input_nested_dict = {"enabled": "true", "year": "2024", "name": "Moshe", "details": {"age": "30", "score": "95.5"}}
-    expected_nested_output = {"enabled": True, "year": 2024, "name": "Moshe", "details": {"age": 30, "score": 95.5}}
+    input_nested_dict = {
+        "enabled": "true",
+        "year": "2024",
+        "name": "Moshe",
+        "details": {"age": "30", "score": "95.5"},
+    }
+    expected_nested_output = {
+        "enabled": True,
+        "year": 2024,
+        "name": "Moshe",
+        "details": {"age": 30, "score": 95.5},
+    }
     assert convert_dict_to_actual_values(input_nested_dict) == expected_nested_output
 
-    input_dict_with_list = {"enabled": "true", "year": "2024", "name": "Moshe", "lst": ["true", "22", "str"]}
-    expected_output_with_list = {"enabled": True, "year": 2024, "name": "Moshe", "lst": [True, 22, "str"]}
+    input_dict_with_list = {
+        "enabled": "true",
+        "year": "2024",
+        "name": "Moshe",
+        "lst": ["true", "22", "str"],
+    }
+    expected_output_with_list = {
+        "enabled": True,
+        "year": 2024,
+        "name": "Moshe",
+        "lst": [True, 22, "str"],
+    }
     assert convert_dict_to_actual_values(input_dict_with_list) == expected_output_with_list
 
     input_nested_with_list_dict = {
@@ -2181,8 +2556,18 @@ def test_list_converter():
     input_nested_list = ["true", "2024", "Moshe", ["30", "95.5", "false", "string"]]
     assert convert_list_to_actual_values(input_nested_list) == expected_nested_output
 
-    input_list_with_dict = ["true", "2024", "Moshe", {"enabled": "true", "year": "2024", "name": "Moshe"}]
-    expected_output_with_dict = [True, 2024, "Moshe", {"enabled": True, "year": 2024, "name": "Moshe"}]
+    input_list_with_dict = [
+        "true",
+        "2024",
+        "Moshe",
+        {"enabled": "true", "year": "2024", "name": "Moshe"},
+    ]
+    expected_output_with_dict = [
+        True,
+        2024,
+        "Moshe",
+        {"enabled": True, "year": 2024, "name": "Moshe"},
+    ]
     assert convert_list_to_actual_values(input_list_with_dict) == expected_output_with_dict
 
 
@@ -2201,7 +2586,11 @@ def test_recovery_lastrun(mocker):
         - If there are not changes, make sure that the context is not updated
     """
     set_integration_context(
-        {LAST_FETCH_KEY: 2, MIRRORED_OFFENSES_QUERIED_CTX_KEY: {0: 0}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0}}
+        {
+            LAST_FETCH_KEY: 2,
+            MIRRORED_OFFENSES_QUERIED_CTX_KEY: {0: 0},
+            MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0},
+        }
     )
     mocker.patch.object(QRadar_v3.demisto, "getLastRun", return_value={LAST_FETCH_KEY: 4})
     QRadar_v3.recover_from_last_run()
@@ -2211,7 +2600,11 @@ def test_recovery_lastrun(mocker):
     # now the last run and the integration context are the same, make sure that update context is not called
     update_context_mock = mocker.patch.object(QRadar_v3, "safely_update_context_data_partial")
     set_integration_context(
-        {LAST_FETCH_KEY: 2, MIRRORED_OFFENSES_QUERIED_CTX_KEY: {0: 0}, MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0}}
+        {
+            LAST_FETCH_KEY: 2,
+            MIRRORED_OFFENSES_QUERIED_CTX_KEY: {0: 0},
+            MIRRORED_OFFENSES_FINISHED_CTX_KEY: {0: 0},
+        }
     )
     mocker.patch.object(QRadar_v3.demisto, "getLastRun", return_value={LAST_FETCH_KEY: 2})
     QRadar_v3.recover_from_last_run()
@@ -2232,10 +2625,19 @@ def test_qradar_reference_set_value_upsert_command_quiet_mode(mocker, quiet_mode
         - Ensure the command does not output the reference set data iff quiet_mode=true
         - Ensure the data is always in the raw response
     """
-    args = {"ref_name": "test_ref", "value": "value1", "task_id": "test", "quiet_mode": quiet_mode}
+    args = {
+        "ref_name": "test_ref",
+        "value": "value1",
+        "task_id": "test",
+        "quiet_mode": quiet_mode,
+    }
 
     mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
-    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
+    mocker.patch.object(
+        client,
+        "get_reference_data_bulk_task_status",
+        return_value={"status": "COMPLETED"},
+    )
     mock_response = command_test_data["reference_set_bulk_load"]["response"] | {"data": ["some_data"]}
     mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
 
@@ -2261,9 +2663,15 @@ def test_qradar_indicators_upload_command_quiet_mode(mocker, quiet_mode):
     args = {"ref_name": "test_ref", "quiet_mode": quiet_mode, "task_id": "test"}
 
     mocker.patch.object(QRadar_v3.ScheduledCommand, "raise_error_if_not_supported")
-    mocker.patch.object(client, "get_reference_data_bulk_task_status", return_value={"status": "COMPLETED"})
     mocker.patch.object(
-        IndicatorsSearcher, "search_indicators_by_version", return_value={"iocs": [{"value": "test", "indicator_type": "ip"}]}
+        client,
+        "get_reference_data_bulk_task_status",
+        return_value={"status": "COMPLETED"},
+    )
+    mocker.patch.object(
+        IndicatorsSearcher,
+        "search_indicators_by_version",
+        return_value={"iocs": [{"value": "test", "indicator_type": "ip"}]},
     )
     mock_response = command_test_data["reference_set_bulk_load"]["response"] | {"data": ["some_data"]}
     mocker.patch.object(client, "reference_sets_list", return_value=mock_response)
@@ -2315,7 +2723,12 @@ def test_add_iso_entries_to_dict_placeholder_edge_case():
     """
     dicts = [{"start_time": 9223372036854775807, "last_persisted_time": 1741790340000}]
     results = add_iso_entries_to_dict(dicts)
-    assert results == [{"start_time": 9223372036854775807, "last_persisted_time": "2025-03-12T14:39:00+00:00"}]
+    assert results == [
+        {
+            "start_time": 9223372036854775807,
+            "last_persisted_time": "2025-03-12T14:39:00+00:00",
+        }
+    ]
 
 
 MAX_SAMPLE_SIZE_MB = 1
@@ -2392,7 +2805,10 @@ def test_calculate_object_size_encoding_fallback(monkeypatch):
                 raise UnicodeEncodeError("utf-8", self, 0, 1, "invalid start byte")
             return super().encode(encoding, errors)
 
-    with patch("QRadar_v3.json.dumps", return_value=MockStr(broken_string)), patch("QRadar_v3.demisto.debug") as mock_debug:
+    with (
+        patch("QRadar_v3.json.dumps", return_value=MockStr(broken_string)),
+        patch("QRadar_v3.demisto.debug") as mock_debug,
+    ):
         size = calculate_object_size(incident)
         assert isinstance(size, int)
 
@@ -2538,7 +2954,10 @@ def test_get_rules_names(mocker):
     mock_client_rules_list = mocker.patch.object(client, "rules_list", side_effect=[Exception("API Timeout"), mock_api_response])
     mock_client_rules_list.__name__ = "mock_rules_list"  # magic mock objects have different attributes from actual functions
 
-    offenses = [{"id": 1, "rules": [{"id": 101}, {"id": 102}]}, {"id": 2, "rules": [{"id": 102}, {"id": 103}]}]
+    offenses = [
+        {"id": 1, "rules": [{"id": 101}, {"id": 102}]},
+        {"id": 2, "rules": [{"id": 102}, {"id": 103}]},
+    ]
     rule_id_rule_name_mapping = get_rules_names(client, offenses)
 
     # Assert `client.rules_list` method was called exactly twice (first time failed due to 'API Timeout' exception)
@@ -2605,3 +3024,40 @@ def test_qradar_set_integration_context_no_last_fetch(mocker):
 
     mock_set.assert_called_with(context_data)
     assert QRadar_v3.LAST_FETCHED_ID is None
+
+
+def test_qradar_reference_map_value_upsert_command(mocker):
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={
+            "collection_id": 136,
+            "creation_time": 1747235527932,
+            "element_type": "NUM",
+            "name": "Monitoring Identifier Gaps",
+            "namespace": "SHARED",
+            "number_of_elements": 3,
+            "timeout_type": "UNKNOWN",
+        },
+    )
+    res = qradar_reference_map_value_upsert_command(
+        client, {"ref_name": "Monitoring Identifier Gaps", "key": "identifier_1", "value": "1"}
+    )
+    assert (
+        res.readable_output
+        == "identifier_1 in reference map Monitoring Identifier Gaps was successfully added or updated to with value 1."
+    )
+
+
+def test_qradar_reference_map_value_upsert_command_exception(mocker):
+    mocker.patch.object(
+        client,
+        "http_request",
+        side_effect=[DemistoException(message="Error in API call [404] - 404\ntest123 does not exist")],
+    )
+    res = qradar_reference_map_value_upsert_command(client, {"ref_name": "test123", "key": "identifier_1", "value": "1"})
+    assert res.entry_type == EntryType.ERROR
+    assert (
+        res.readable_output
+        == "Failed to insert or update identifier_1 in test123: Error in API call [404] - 404\ntest123 does not exist"
+    )

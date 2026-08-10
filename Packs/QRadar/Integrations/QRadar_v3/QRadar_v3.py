@@ -3817,12 +3817,16 @@ def qradar_reference_map_value_upsert_command(client: Client, args: dict[str, An
     if not value or not key:
         raise DemistoException("key and value must not be empty")
 
-    response = client.reference_map_value_upsert(ref_name, key, value, source)
-    return CommandResults(
-        raw_response=response,
-        readable_output=f'Request to update reference {ref_name} was submitted.'
-        f''' Current update status: {response.get('status', 'Unknown')}''',
-    )
+    try:
+        response = client.reference_map_value_upsert(ref_name, key, value, source)
+        return CommandResults(
+            raw_response=response,
+            readable_output=f"{key} in reference map {ref_name} was successfully added or updated to with value {value}.",
+        )
+    except DemistoException as ex:
+        return CommandResults(
+            readable_output=f"Failed to insert or update {key} in {ref_name}: {ex.message}", entry_type=EntryType.ERROR
+        )
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: dict) -> CommandResults:
