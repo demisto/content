@@ -3380,6 +3380,74 @@ class TestElasticEntityKind:
             == Elasticsearch_v2.ENTITY_KIND_SECURITY_ALERT
         )
 
+    def test_get_remote_data_security_alert_exposes_flat_workflow_tags(self, mocker):
+        """Mirroring-in must expose workflow tags under a dot-free key the incoming mapper can read.
+
+        Alerts-as-data documents store the tags under the flat dotted key
+        ``kibana.alert.workflow_tags``; the mapper's ``simple`` selector would otherwise treat that
+        as nested-object traversal and resolve nothing, so tags would never mirror in.
+        """
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-tags",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-tags",
+                                "kibana.alert.severity": "low",
+                                "kibana.alert.workflow_status": "open",
+                                "kibana.alert.workflow_tags": ["new tag", "Duplicate"],
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-tags", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object["kibana_alert_workflow_tags"] == ["new tag", "Duplicate"]
+
+    def test_get_remote_data_security_alert_tags_default_empty(self, mocker):
+        """When an alert has no workflow tags, mirroring-in exposes an empty list, not a missing key."""
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-no-tags",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-no-tags",
+                                "kibana.alert.severity": "low",
+                                "kibana.alert.workflow_status": "open",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-no-tags", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object["kibana_alert_workflow_tags"] == []
+
     def test_get_remote_data_case_uses_owner(self, mocker):
         import Elasticsearch_v2
 

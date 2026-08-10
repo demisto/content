@@ -41,7 +41,7 @@
                     "simple": "@timestamp"
                 },
                 "Tags": {
-                    "simple": "kibana.alert.workflow_tags"
+                    "simple": "kibana_alert_workflow_tags"
                 },
                 "Risk Score": {
                     "simple": "kibana.alert.risk_score"

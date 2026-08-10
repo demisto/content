@@ -3689,6 +3689,9 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                 # document key space, exactly like a fetched incident.
                 updated_incident = flatten_alert_hit(hit)
                 updated_incident["severity"] = convert_severity(get_alert_source_value(source, "kibana.alert.severity") or "low")
+                updated_incident["kibana_alert_workflow_tags"] = (
+                    get_alert_source_value(source, "kibana.alert.workflow_tags") or []
+                )
                 updated_incident[ELASTIC_ENTITY_KIND_FIELD] = (
                     get_alert_source_value(source, "event.kind") or ENTITY_KIND_SECURITY_ALERT
                 )
