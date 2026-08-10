@@ -6254,6 +6254,20 @@ DISPATCH_DICT_NAME = "commands_with_params_and_args"
 #   main() rather than through the dispatch dict, and expose no yml arguments
 #   or context outputs of the kind these tests inspect.
 QUICK_ACTION_SUFFIX = "-quick-action"
+
+# Arguments that are legitimately not read by the command handler.
+#
+# These are consumed earlier in main(), when the AzureClient itself is built by
+# get_azure_client(), and are also resolvable from the integration parameters
+# rather than the command arguments. A handler may therefore never mention them
+# even though the argument is fully wired up and honoured at runtime, so flagging
+# them here would be a false positive rather than a real defect.
+INFRASTRUCTURE_ARGUMENTS = frozenset(
+    {
+        "subscription_id",
+        "resource_group_name",
+    }
+)
 EXCLUDED_COMMANDS = frozenset(
     {
         "test-module",
@@ -6496,9 +6510,12 @@ def extract_fallback_prefix(handler_name: str, symbol_index: dict[str, ast.Funct
 
         # CommandResults(outputs_prefix="Azure.Something", ...)
         for keyword in node.keywords:
-            if keyword.arg == "outputs_prefix" and isinstance(keyword.value, ast.Constant):
-                if isinstance(keyword.value.value, str):
-                    prefixes.add(keyword.value.value)
+            if (
+                keyword.arg == "outputs_prefix"
+                and isinstance(keyword.value, ast.Constant)
+                and isinstance(keyword.value.value, str)
+            ):
+                prefixes.add(keyword.value.value)
 
     return prefixes
 
@@ -6531,10 +6548,12 @@ def symbol_index(py_tree: ast.Module) -> dict[str, ast.FunctionDef]:
 def test_yml_commands_are_wired_in_dispatch(yml_commands, dispatch_map, symbol_index):
     """
     Given:
-        - The in-scope commands declared in Azure.yml.
-        - The command dispatch dict extracted from main() in Azure.py.
+        - yml_commands (dict[str, dict]): The in-scope commands declared in Azure.yml.
+        - dispatch_map (dict[str, str]): The command dispatch dict extracted from main() in Azure.py.
+        - symbol_index (dict[str, ast.FunctionDef]): The index of every function and method defined in Azure.py.
     When:
-        - Each yml command name is looked up in the dispatch dict.
+        - Each yml command name is looked up in the dispatch dict, and the handler
+          it points to is looked up in the symbol index.
     Then:
         - Every command resolves to a handler, so none would raise
           NotImplementedError at runtime.
@@ -6543,7 +6562,8 @@ def test_yml_commands_are_wired_in_dispatch(yml_commands, dispatch_map, symbol_i
     # Given: the yml command names and the dispatch table
     yml_command_names = set(yml_commands)
 
-    # When: resolving each command to its handler
+    # When: resolving each command to its handler, then confirming that handler is
+    # a real function in Azure.py rather than a stale or dangling name
     unrouted = sorted(name for name in yml_command_names if name not in dispatch_map)
     missing_handlers = sorted(
         f"{name} -> {dispatch_map[name]}"
@@ -6579,14 +6599,16 @@ def test_dispatch_commands_exist_in_yml(yml_commands, dispatch_map):
 def test_command_arguments_are_read_by_handler(yml_commands, dispatch_map, symbol_index):
     """
     Given:
-        - The arguments declared for each in-scope command in Azure.yml.
-        - The handler each command is routed to, plus its direct callees.
+        - yml_commands (dict[str, dict]): The arguments declared for each in-scope command in Azure.yml.
+        - dispatch_map (dict[str, str]): The handler each command is routed to.
+        - symbol_index (dict[str, ast.FunctionDef]): Used to resolve the handler and its direct callees.
     When:
         - Each argument name is searched for as a string literal in the handler
           and in any AzureClient method or helper it calls directly.
     Then:
         - Every documented argument is read somewhere on the command's code path,
           proving no advertised argument is silently ignored.
+        - Infrastructure arguments consumed before the handler runs are exempt.
     """
     # Given: a cache so each handler's reachable strings are computed once
     reachable_strings_cache: dict[str, set[str]] = {}
@@ -6604,7 +6626,9 @@ def test_command_arguments_are_read_by_handler(yml_commands, dispatch_map, symbo
         # When: checking each declared argument against the reachable literals
         for argument in command.get("arguments") or []:
             argument_name = argument.get("name")
-            if argument_name and argument_name not in reachable_strings:
+            if not argument_name or argument_name in INFRASTRUCTURE_ARGUMENTS:
+                continue
+            if argument_name not in reachable_strings:
                 unread_arguments.append(f"{command_name}: '{argument_name}' (handler: {handler_name})")
 
     # Then: no documented argument is ignored by the code serving the command
@@ -6648,7 +6672,8 @@ def test_command_output_prefixes_are_wired(yml_commands, dispatch_map, symbol_in
         if not any(path == prefix or path.startswith(f"{prefix}.") for prefix in candidate_prefixes for path in context_paths):
             mismatches.append(
                 f"{command_name}: code writes to {sorted(candidate_prefixes)} "
-                f"but Azure.yml documents {sorted({path.split('.')[0] + '.' + path.split('.')[1] for path in context_paths if '.' in path})}"
+                f"but Azure.yml documents "
+                f"{sorted({path.split('.')[0] + '.' + path.split('.')[1] for path in context_paths if '.' in path})}"
             )
 
     assert not mismatches, "Output prefixes in Azure.py do not match the contextPath declared in Azure.yml:\n" + "\n".join(
