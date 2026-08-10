@@ -1,5 +1,5 @@
 {
-    "description": "Classifies Elasticsearch entities: 'signal' (event.kind) is classified as Elasticsearch Security Alert, 'securitySolution' (owner) is classified as Elasticsearch Case, and any other value falls back to the default Elasticsearch incident type.",
+    "description": "Classifies Elasticsearch entities using the deterministic 'elastic_entity_kind' field set by the integration on every fetched incident: 'signal' is classified as Elasticsearch Security Alert, 'securitySolution' is classified as Elasticsearch Case, and any other value falls back to the default Elasticsearch incident type.",
     "feed": false,
     "id": "Elasticsearch",
     "name": "Elasticsearch",
@@ -13,22 +13,8 @@
         "complex": {
             "accessor": "",
             "filters": [],
-            "root": "event.kind",
-            "transformers": [
-                {
-                    "args": {
-                        "applyIfEmpty": {},
-                        "defaultValue": {
-                            "value": {
-                                "simple": "owner"
-                            },
-                            "isContext": true
-                        },
-                        "value": {}
-                    },
-                    "operator": "SetIfEmpty"
-                }
-            ]
+            "root": "elastic_entity_kind",
+            "transformers": []
         },
         "simple": ""
     },

@@ -138,6 +138,10 @@ MIRROR_DIRECTION_MAP = {
 INCIDENT_TYPE_SECURITY_ALERT = "Elasticsearch Security Alert"
 INCIDENT_TYPE_CASE = "Elasticsearch Case"
 
+ELASTIC_ENTITY_KIND_FIELD = "elastic_entity_kind"
+ENTITY_KIND_SECURITY_ALERT = "signal"
+ENTITY_KIND_CASE = "securitySolution"
+
 # The only detection-alert fields Kibana can update; severity/risk/rule cannot be mirrored out.
 MIRRORABLE_ALERT_FIELDS = ("status", "reason", "tags")
 
@@ -3367,6 +3371,7 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
                 "mirror_instance": mirror_instance,
                 "mirror_direction": mirror_direction,
                 "severity": severity,  # XSOAR severity is numeric, not the Kibana name.
+                ELASTIC_ENTITY_KIND_FIELD: get_alert_source_value(source, "event.kind") or ENTITY_KIND_SECURITY_ALERT,
             }
         )
 
@@ -3483,6 +3488,7 @@ def fetch_cases(proxies) -> List[Dict[str, Any]]:
                 "mirror_instance": mirror_instance,
                 "mirror_direction": mirror_direction,
                 "severity": severity,  # XSOAR severity is numeric, not the Kibana name.
+                ELASTIC_ENTITY_KIND_FIELD: case.get("owner") or ENTITY_KIND_CASE,
             }
         )
 
@@ -3683,6 +3689,9 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                 # document key space, exactly like a fetched incident.
                 updated_incident = flatten_alert_hit(hit)
                 updated_incident["severity"] = convert_severity(get_alert_source_value(source, "kibana.alert.severity") or "low")
+                updated_incident[ELASTIC_ENTITY_KIND_FIELD] = (
+                    get_alert_source_value(source, "event.kind") or ENTITY_KIND_SECURITY_ALERT
+                )
                 updated_incident["rawJSON"] = json.dumps(updated_incident)
 
                 if CLOSE_INCIDENT and workflow_status == "closed":
@@ -3711,6 +3720,7 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                 # Keep the raw case document so the incoming mapper can map it.
                 updated_incident = dict(response)
                 updated_incident["severity"] = convert_severity(response.get("severity", "low"))
+                updated_incident[ELASTIC_ENTITY_KIND_FIELD] = response.get("owner") or ENTITY_KIND_CASE
                 updated_incident["rawJSON"] = json.dumps(updated_incident)
 
                 if FETCH_ALERTS_FOR_CASE:
