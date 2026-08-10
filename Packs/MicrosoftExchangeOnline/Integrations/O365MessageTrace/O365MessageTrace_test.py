@@ -97,10 +97,10 @@ class TestFormatDatetimeForFilter:
 
 
 class TestDeduplicateEvents:
-    """``deduplicate_events`` keys off the derived ``_unique_id`` field that
-    ``add_unique_id_field`` populates from ``<id>|<recipientAddress>``. Events
-    that lack a ``_unique_id`` are always kept (we cannot dedupe what we cannot
-    uniquely identify).
+    """``deduplicate_events`` keys off the internal ``_dedup_key`` field that
+    ``add_unique_id_field`` populates from ``<id>|<recipientAddress>|<status>``.
+    Events that lack a ``_dedup_key`` are always kept (we cannot dedupe what we
+    cannot uniquely identify).
     """
 
     def test_returns_all_events_when_seen_ids_empty(self, sample_events):
@@ -122,12 +122,12 @@ class TestDeduplicateEvents:
         )
         assert result == []
 
-    def test_keeps_events_without_unique_id(self):
+    def test_keeps_events_without_dedup_key(self):
         events = [
-            {"_unique_id": "evt-1|bob@contoso.com"},
+            {"_dedup_key": "evt-1|bob@contoso.com|Delivered"},
             {"receivedDateTime": "2025-01-01T00:00:00Z"},
         ]
-        result = deduplicate_events(events, {"evt-1|bob@contoso.com"})
+        result = deduplicate_events(events, {"evt-1|bob@contoso.com|Delivered"})
         assert len(result) == 1
         assert result[0] == {"receivedDateTime": "2025-01-01T00:00:00Z"}
 
@@ -154,8 +154,11 @@ class TestAddTimeField:
 class TestAddUniqueIdField:
     def test_adds_unique_id_from_id_and_recipient(self, sample_events):
         add_unique_id_field(sample_events)
-        assert sample_events[0]["_unique_id"] == "evt-1|bob@contoso.com|Delivered"
-        assert sample_events[1]["_unique_id"] == "evt-2|dave@contoso.com|Pending"
+        # Dataset ``_unique_id`` stays 2-part; status is captured only in the internal ``_dedup_key``.
+        assert sample_events[0]["_unique_id"] == "evt-1|bob@contoso.com"
+        assert sample_events[1]["_unique_id"] == "evt-2|dave@contoso.com"
+        assert sample_events[0]["_dedup_key"] == "evt-1|bob@contoso.com|Delivered"
+        assert sample_events[1]["_dedup_key"] == "evt-2|dave@contoso.com|Pending"
 
     def test_does_not_mutate_original_id(self, sample_events):
         add_unique_id_field(sample_events)
@@ -205,10 +208,12 @@ class TestAddUniqueIdField:
             {"id": "evt-4", "recipientAddress": "alice@contoso.com"},
         ]
         add_unique_id_field(events)
-        assert events[0]["_unique_id"] == "evt-1|bob@contoso.com|"
+        assert events[0]["_unique_id"] == "evt-1|bob@contoso.com"
+        assert events[0]["_dedup_key"] == "evt-1|bob@contoso.com|"
         assert "_unique_id" not in events[1]
         assert "_unique_id" not in events[2]
-        assert events[3]["_unique_id"] == "evt-4|alice@contoso.com|"
+        assert events[3]["_unique_id"] == "evt-4|alice@contoso.com"
+        assert events[3]["_dedup_key"] == "evt-4|alice@contoso.com|"
 
 
 # ============================================================================
@@ -854,6 +859,15 @@ class TestFetchEvents:
         send_mock.assert_not_called()
 
     def test_updates_high_water_mark_to_latest_event(self, mock_client, sample_events, mocker):
+        # Freeze ``now`` just past the latest event so the single-window branch runs.
+        now = datetime(2025, 1, 1, 10, 1, 0, tzinfo=UTC)
+
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
+        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
@@ -862,13 +876,21 @@ class TestFetchEvents:
         fetch_events(mock_client, max_events=100)
 
         new_state = set_last_run.call_args.args[0]
-        # Latest event is evt-2 at 2025-01-01T10:01:00Z
+        # Latest event is evt-2 at 2025-01-01T10:01:00Z (persisted as the raw event timestamp).
         assert new_state["last_fetch"] == "2025-01-01T10:01:00Z"
-        # ``fetch_events`` stores the derived ``_unique_id`` (``<id>|<recipientAddress>|<status>``) in ``seen_ids``.
+        # ``fetch_events`` stores the internal ``_dedup_key`` (``<id>|<recipientAddress>|<status>``) in ``seen_ids``.
         assert "evt-2|dave@contoso.com|Pending" in new_state["seen_ids"]
 
     def test_merges_seen_ids_when_high_water_mark_unchanged(self, mock_client, mocker):
         """If new events share the same timestamp as the previous high-water mark, seen_ids should be merged."""
+        # Freeze ``now`` within one window of last_fetch so the single-window branch runs.
+        now = datetime(2025, 1, 1, 10, 1, 0, tzinfo=UTC)
+
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
         last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": ["evt-old|bob@contoso.com|delivered"]}
         new_events = [
             {
@@ -878,6 +900,7 @@ class TestFetchEvents:
                 "status": "delivered",
             },
         ]
+        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
@@ -980,6 +1003,15 @@ class TestFetchEvents:
         must contain every id at that second (pre-dedup) or an already-sent event would be
         re-sent (or lost). This guards the boundary-second data-loss bug.
         """
+        # Freeze ``now`` just past the boundary so the single-window branch runs.
+        now = datetime(2025, 1, 1, 10, 1, 0, tzinfo=UTC)
+
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
+        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
         # Previous run already published evt-1 at the boundary timestamp (10:01:00).
         last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": ["evt-1|bob@contoso.com|delivered"]}
         fetched = [
@@ -1027,6 +1059,28 @@ class TestLateStatusAndLookback:
                 return now
 
         return FrozenDatetime
+
+    @staticmethod
+    def _window_api(events: list[dict]):
+        """Build a window-aware http_request side_effect: each event is returned only by the
+        window whose ``receivedDateTime ge <lower>`` bound is <= the event's time and whose
+        ``le <upper>`` bound is >= it. Mirrors the real API, where disjoint windows each return
+        only the records inside their range (so the multi-window walk never double-counts)."""
+
+        def _api(*_args, **kwargs):
+            filter_str = (kwargs.get("params") or {}).get("$filter", "")
+            # $filter looks like: receivedDateTime ge <lower> and receivedDateTime le <upper>
+            try:
+                lower = filter_str.split("ge ", 1)[1].split(" and", 1)[0].strip()
+                upper = filter_str.split("le ", 1)[1].strip()
+            except IndexError:
+                return {"value": []}
+            lower_dt = parse_datetime(lower)
+            upper_dt = parse_datetime(upper)
+            in_window = [e for e in events if lower_dt <= parse_datetime(e["receivedDateTime"]) <= upper_dt]
+            return {"value": in_window}
+
+        return _api
 
     def test_lookback_shifts_filter_start_back(self, mock_client, mocker):
         """The first ``$filter`` lower bound must be ``last_fetch - lookback_minutes``."""
@@ -1131,26 +1185,26 @@ class TestLateStatusAndLookback:
         last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": []}
         # Events span several seconds within the 10-minute look-back overlap (not just 10:05).
         events = [
-            {"id": "e1", "recipientAddress": "a@x.com", "receivedDateTime": "2025-01-01T09:57:00Z", "status": "delivered"},
-            {"id": "e2", "recipientAddress": "b@x.com", "receivedDateTime": "2025-01-01T09:59:30Z", "status": "delivered"},
-            {"id": "e3", "recipientAddress": "c@x.com", "receivedDateTime": "2025-01-01T10:00:00Z", "status": "delivered"},
+            {"id": "e1", "recipientAddress": "rcpt-a", "receivedDateTime": "2025-01-01T09:57:00Z", "status": "delivered"},
+            {"id": "e2", "recipientAddress": "rcpt-b", "receivedDateTime": "2025-01-01T09:59:30Z", "status": "delivered"},
+            {"id": "e3", "recipientAddress": "rcpt-c", "receivedDateTime": "2025-01-01T10:00:00Z", "status": "delivered"},
         ]
         mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
         set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": events}
+        mock_client.ms_client.http_request.side_effect = self._window_api(events)
 
         # 10-minute look-back so the overlap covers all three events.
         fetch_events(mock_client, max_events=100, lookback_minutes=10)
 
         new_state = set_last_run.call_args.args[0]
-        # last_fetch advances to the latest event; ALL three ids (across the overlap) are retained.
+        # last_fetch advances to the latest event (raw event timestamp); ALL three ids retained.
         assert new_state["last_fetch"] == "2025-01-01T10:00:00Z"
         assert set(new_state["seen_ids"]) == {
-            "e1|a@x.com|delivered",
-            "e2|b@x.com|delivered",
-            "e3|c@x.com|delivered",
+            "e1|rcpt-a|delivered",
+            "e2|rcpt-b|delivered",
+            "e3|rcpt-c|delivered",
         }
 
     def test_no_duplicates_when_next_run_rescans_overlap(self, mock_client, mocker):
@@ -1158,8 +1212,8 @@ class TestLateStatusAndLookback:
         publish nothing (all deduped)."""
         now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
         events = [
-            {"id": "e1", "recipientAddress": "a@x.com", "receivedDateTime": "2025-01-01T10:00:00Z", "status": "delivered"},
-            {"id": "e2", "recipientAddress": "b@x.com", "receivedDateTime": "2025-01-01T10:02:00Z", "status": "delivered"},
+            {"id": "e1", "recipientAddress": "rcpt-a", "receivedDateTime": "2025-01-01T10:00:00Z", "status": "delivered"},
+            {"id": "e2", "recipientAddress": "rcpt-b", "receivedDateTime": "2025-01-01T10:02:00Z", "status": "delivered"},
         ]
         mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
         # Run 1: fresh state.
@@ -1168,18 +1222,70 @@ class TestLateStatusAndLookback:
         captured = {}
         mocker.patch.object(O365MessageTrace.demisto, "setLastRun", side_effect=lambda s: captured.update(s))
         send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": events}
+        mock_client.ms_client.http_request.side_effect = self._window_api(events)
 
         fetch_events(mock_client, max_events=100, lookback_minutes=10)
-        assert len(send_mock.call_args.kwargs["events"]) == 2  # both sent on first run
+        sent_ids_run1 = {e["id"] for e in send_mock.call_args.kwargs["events"]}
+        assert sent_ids_run1 == {"e1", "e2"}  # both sent on first run
 
         # Run 2: same events re-returned (overlap re-scan). Must send nothing.
         send_mock.reset_mock()
         mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=dict(captured))
-        mock_client.ms_client.http_request.return_value = {"value": events}
+        mock_client.ms_client.http_request.side_effect = self._window_api(events)
 
         fetch_events(mock_client, max_events=100, lookback_minutes=10)
         send_mock.assert_not_called()
+
+    def test_seen_ids_populated_when_time_and_cutoff_have_different_precision(self, mock_client, mocker):
+        """Regression: ``_time`` (raw API value, second precision) and the internal cutoff
+        (microsecond precision) must be compared as datetimes, not strings.
+
+        A naive string ``>=`` drops every key, leaving seen_ids empty and re-sending the whole
+        overlap each run. Here every event predates the boundary second yet must still be retained.
+        """
+        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": []}
+        # Raw API timestamps: no fractional seconds (as Graph returns them).
+        events = [
+            {"id": "e1", "recipientAddress": "rcpt-a", "receivedDateTime": "2025-01-01T09:58:00Z", "status": "delivered"},
+            {"id": "e2", "recipientAddress": "rcpt-b", "receivedDateTime": "2025-01-01T09:59:00Z", "status": "delivered"},
+        ]
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.side_effect = self._window_api(events)
+
+        fetch_events(mock_client, max_events=100, lookback_minutes=15)
+
+        new_state = set_last_run.call_args.args[0]
+        # Both ids fall within the 15-minute overlap and MUST be retained despite the format gap.
+        assert set(new_state["seen_ids"]) == {"e1|rcpt-a|delivered", "e2|rcpt-b|delivered"}
+
+    def test_seen_ids_merge_when_stored_last_fetch_uses_legacy_format(self, mock_client, mocker):
+        """Upgrade safety: an instance upgraded to this version still holds ``last_fetch`` in the
+        OLD format. When the high-water mark does not advance, the merge must still fire (compared
+        as datetimes, not strings), so previously-seen ids are retained and not re-sent."""
+        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
+        # Legacy-format last_fetch (millisecond precision) left by the previous version.
+        last_run = {"last_fetch": "2025-01-01T10:00:00.704Z", "seen_ids": ["old|rcpt-z|delivered"]}
+        # Only a single event that lands exactly at the stored boundary instant, so the high-water
+        # mark does NOT advance beyond it -> the legacy-format merge branch must run.
+        events = [
+            {"id": "cur", "recipientAddress": "rcpt-a", "receivedDateTime": "2025-01-01T10:00:00.704Z", "status": "delivered"},
+        ]
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.side_effect = self._window_api(events)
+
+        fetch_events(mock_client, max_events=100, lookback_minutes=15)
+
+        new_state = set_last_run.call_args.args[0]
+        # The legacy seen_id is retained (merged) despite the format change on upgrade.
+        assert "old|rcpt-z|delivered" in new_state["seen_ids"]
+        assert "cur|rcpt-a|delivered" in new_state["seen_ids"]
 
 
 # ============================================================================
@@ -1268,7 +1374,8 @@ class TestFetchEventsInRunLoop:
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
         mock_client.ms_client.http_request.return_value = full_window
 
-        fetch_events(mock_client, max_events=2)
+        # lookback_minutes=0 isolates the loop mechanics (this test predates the look-back feature).
+        fetch_events(mock_client, max_events=2, lookback_minutes=0)
 
         # Only the first window should have been requested - the loop broke on max_events.
         assert mock_client.ms_client.http_request.call_count == 1

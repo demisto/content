@@ -15,7 +15,7 @@ class Config:
     """Global static configuration."""
 
     # Bump on every hotfix so the running build can be confirmed from the `[Version]` debug log.
-    VERSION_TAG = "o365-message-trace/2.0.0-fetch-lookback"
+    VERSION_TAG = "o365-message-trace/2.0.1-fetch-lookback"
 
     VENDOR = "microsoft"
     PRODUCT = "o365_message_trace"
@@ -588,6 +588,8 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
         # Trailing look-back overlap: re-scan back from last_fetch so late status updates
         # (which keep their original receivedDateTime) are re-surfaced. Status-aware dedup
         # below prevents already-sent (id, recipient, status) tuples from being re-sent.
+        # When the look-back exceeds one window, the run naturally takes the window-walk branch
+        # below, keeping every API call bounded to FETCH_WINDOW_MINUTES.
         start_dt = parse_datetime(last_fetch_str) - timedelta(minutes=lookback_minutes)
         demisto.debug(
             f"[Fetch] Resuming from last_fetch={last_fetch_str} with {lookback_minutes}m look-back "
@@ -600,7 +602,6 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
     if now < start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES):
         window_end_dt = now
         demisto.debug(f"[Fetch] Window {start_dt.isoformat()} -> {window_end_dt.isoformat()} (now={now.isoformat()})")
-        # Fetch all events in the window sequentially
         events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
 
     else:
@@ -656,18 +657,25 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
     # re-queries that entire overlap, so every key in it - not just the boundary second - must be
     # in seen_ids, otherwise every event in the overlap would be re-sent as a duplicate on each
     # run. Keys older than the overlap are dropped, keeping the state bounded to the window.
-    overlap_cutoff = format_datetime_for_filter(parse_datetime(new_last_fetch) - timedelta(minutes=lookback_minutes))
-    seen_set = {event["_dedup_key"] for event in timed_events if event["_time"] >= overlap_cutoff}
+    # Compare parsed datetimes, not raw strings: ``_time`` (raw API value) and a formatted
+    # cutoff may differ in fractional-second precision, so a string ``>=`` would silently drop
+    # every key and re-send the whole overlap each run.
+    overlap_cutoff_dt = parse_datetime(new_last_fetch) - timedelta(minutes=lookback_minutes)
+    seen_set = {event["_dedup_key"] for event in timed_events if parse_datetime(event["_time"]) >= overlap_cutoff_dt}
 
     # If the high-water mark did NOT advance, this run did not re-fetch anything newer than the
     # previous boundary, so previously-seen ids must be retained (they would otherwise be re-sent
     # next run). When it DID advance, this run already re-fetched the whole overlap, so its own
-    # set is a superset and no merge is needed.
-    if new_last_fetch == last_fetch_str:
+    # set is a superset and no merge is needed. Compare as datetimes, not strings: an upgraded
+    # instance may still hold ``last_fetch`` in an older format, so a string ``==`` could wrongly
+    # skip the merge even when the instant is unchanged.
+    if last_fetch_str and parse_datetime(new_last_fetch) == parse_datetime(last_fetch_str):
         seen_set |= set(seen_ids)
 
     new_seen_ids = sorted(seen_set)
-    demisto.debug(f"[Fetch] overlap_cutoff={overlap_cutoff} | {len(new_seen_ids)} seen_ids carried forward for next run")
+    demisto.debug(
+        f"[Fetch] overlap_cutoff={overlap_cutoff_dt.isoformat()} | " f"{len(new_seen_ids)} seen_ids carried forward for next run"
+    )
 
     new_last_run = {
         "last_fetch": new_last_fetch,
