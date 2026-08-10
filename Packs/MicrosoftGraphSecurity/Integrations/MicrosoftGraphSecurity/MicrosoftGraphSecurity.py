@@ -1236,9 +1236,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
     filter_expression = f"createdDateTime gt {time_from} and createdDateTime le {time_to}"
     if filter:
         filter_expression += f" and {filter}"
-    url_suffix = (
-        f"security/incidents?$expand=alerts&$top={fetch_limit}&$filter={filter_expression}&$orderby=createdDateTime asc"
-    )
+    url_suffix = f"security/incidents?$expand=alerts&$top={fetch_limit}&$filter={filter_expression}&$orderby=createdDateTime asc"
     # This header maps unknownFutureValue enum values to the appropriate real value (e.g. new service sources).
     headers = {"Prefer": "include-unknown-enum-members"}
     demisto.debug(f"Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}.")
