@@ -120,11 +120,11 @@ There is no context output for this command.
 
 #### Command example
 
-```!core-iocs-enable indicator=11.11.11.11```
+```!core-iocs-enable indicator=1.1.1.1```
 
 #### Human Readable Output
 
->indicators 11.11.11.11 enabled.
+>indicators 1.1.1.1 enabled.
 
 ### core-iocs-disable
 
