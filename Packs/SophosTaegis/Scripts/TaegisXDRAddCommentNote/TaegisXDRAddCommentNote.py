@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Add a War Room note with tag 'xdrcomment' so it is mirrored to Taegis XDR as a comment.
 The note is prefixed with the invoking XSOAR user as "User - ts" so the case-comments
@@ -7,9 +6,10 @@ Use as an incident action button on the Taegis XDR Case layout.
 
 Optional: select 'Yes' for 'Assign case back to Sophos MDR team' to also assign the Taegis
 case to @secureworks (AWAITING_ACTION) immediately after submitting the comment.
-
-Uses demisto.results() so no CommonServerPython import is required.
 """
+
+import demistomock as demisto
+from CommonServerPython import *
 
 # Tag must match Taegis XDR integration param comment_tag (default xdrcomment)
 TAEGIS_COMMENT_TAG = "xdrcomment"
@@ -56,15 +56,15 @@ def _format_comment(note, user):
     import datetime
 
     ts = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-    return u"{0} \u2014 {1}\n\n{2}".format(user, ts, note)
+    return "{0} \u2014 {1}\n\n{2}".format(user, ts, note)
 
 
 def main():
     args = demisto.args()
     note = args.get("note") or ""
-    note = note.strip() if isinstance(note, str) else u"{0}".format(note).strip()
+    note = note.strip() if isinstance(note, str) else "{0}".format(note).strip()
     if not note:
-        demisto.results(
+        return_results(
             [
                 {
                     "Type": ENTRY_TYPE_NOTE,
@@ -76,7 +76,7 @@ def main():
         return
 
     # Add the comment note first so it is always mirrored even if the assign step fails.
-    demisto.results(
+    return_results(
         [
             {
                 "Type": ENTRY_TYPE_NOTE,
@@ -111,7 +111,7 @@ def main():
     investigation_id = str(investigation_id).strip() if investigation_id else ""
 
     if not investigation_id:
-        demisto.results(
+        return_results(
             [
                 {
                     "Type": ENTRY_TYPE_NOTE,
@@ -127,7 +127,7 @@ def main():
             "taegis-push-assignee-status",
             {"id": investigation_id, "assignee_id": "@secureworks", "status": "AWAITING_ACTION"},
         )
-        demisto.results(
+        return_results(
             [
                 {
                     "Type": ENTRY_TYPE_NOTE,
@@ -137,7 +137,7 @@ def main():
             ]
         )
     except Exception as e:
-        demisto.results(
+        return_results(
             [
                 {
                     "Type": ENTRY_TYPE_NOTE,
@@ -149,4 +149,7 @@ def main():
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    try:
+        main()
+    except Exception as e:
+        return_error(f"Failed to execute TaegisXDRAddCommentNote. Error: {str(e)}")

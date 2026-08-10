@@ -19,18 +19,18 @@ For integration with the Secureworks Taegis XDR platform.
 | First fetch timestamp |  | False |
 | Fetch Incident Type | The type of incidents to fetch. The default is investigations. | False |
 | Include Assets in Fetch |  | False |
-| Fetch investigations - exclusion list (assignee emails or names) | EXCLUSION LIST: Comma-separated assignee emails, display names, or assignee IDs \(e.g. user@domain.com, Sophos, auth0\|xxx\). Investigations assigned to any matching assignee are EXCLUDED \(no XSOAR incident\). Match is by email, name, or assignee_id. If a team name \(e.g. Sophos\) does not match, check debug logs for assignee_id and add that ID to this list. Leave empty to fetch all. | False |
+| Fetch investigations - exclusion list (assignee emails or names) | EXCLUSION LIST: Comma-separated assignee emails, display names, or assignee IDs \(e.g. user@domain.com, Sophos, auth0\|xxx\). Investigations assigned to any matching assignee are EXCLUDED \(no Cortex XSOAR incident\). Match is by email, name, or assignee_id. If a team name \(e.g. Sophos\) does not match, check debug logs for assignee_id and add that ID to this list. Leave empty to fetch all. | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Taegis XDR to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Taegis XDR\), or Incoming And Outgoing \(bidirectional\). | False |
 | Comment Entry Tag To Taegis | Choose the tag to add to an entry to mirror it as a comment in Taegis XDR. | False |
 | Comment Entry Tag From Taegis | Choose the tag to add to an entry to mirror it as a comment from Taegis XDR. | False |
-| Close XSOAR incident when Taegis investigation is closed | When enabled, closing a Taegis investigation \(status starting with CLOSED_\) will close the mirrored incident in Cortex XSOAR. | False |
-| Use closeInvestigation when Taegis XDR Case Status is set to closed | When enabled, setting Taegis XDR Case Status \(taegisxdrcasestatus\) to a closed value \(e.g. CLOSED_INCONCLUSIVE\) will close the investigation in Taegis via the closeInvestigation mutation \(with reason\). XSOAR incident status is not used to close Taegis. | False |
+| Close Cortex XSOAR incident when Taegis investigation is closed | When enabled, closing a Taegis investigation \(status starting with CLOSED_\) will close the mirrored incident in Cortex XSOAR. | False |
+| Use closeInvestigation when Taegis XDR Case Status is set to closed | When enabled, setting Taegis XDR Case Status \(taegisxdrcasestatus\) to a closed value \(e.g. CLOSED_INCONCLUSIVE\) will close the investigation in Taegis via the closeInvestigation mutation \(with reason\). Cortex XSOAR incident status is not used to close Taegis. | False |
 | How many investigations to mirror incoming each time | If a greater number of investigations than the limit were modified, then they won't all be mirrored in a single run. | False |
 | Timestamp field to query for updates as part of the mirroring flow | Field used to determine when an investigation was last updated for mirroring. Default is updated_at. The investigationsSearch GraphQL API uses the Investigation type with snake_case \(updated_at\). Taegis v2 docs may show updatedAt for investigationV2/investigationsV2; use updated_at for investigationsSearch. | False |
-| XSOAR Taegis XDR Key Findings is master | When enabled, XSOAR "Taegis XDR Key Findings" \(taegisxdrkeyfindings\) is always pushed to Taegis Key Findings on every update \(XSOAR is master\). When disabled \(default\), Key Findings are only pushed when the user explicitly changes that field in XSOAR, so Taegis edits are not overwritten \(bidirectional-friendly\). | False |
+| Cortex XSOAR Taegis XDR Key Findings is master | When enabled, Cortex XSOAR "Taegis XDR Key Findings" \(taegisxdrkeyfindings\) is always pushed to Taegis Key Findings on every update \(Cortex XSOAR is master\). When disabled \(default\), Key Findings are only pushed when the user explicitly changes that field in Cortex XSOAR, so Taegis edits are not overwritten \(bidirectional-friendly\). | False |
 | Assign case to Sophos MDR team after comment | When enabled, the "Assign case to Sophos MDR team" field in the Add Comment form defaults to "Yes". When disabled \(default\), the field defaults to "No". Users can still override per comment to "Yes" or "No". | False |
 | Archive Taegis XDR case on close | When enabled, the "Taegis XDR Archive on Close" checkbox defaults to checked in the Close Incident panel. When disabled \(default\), the checkbox is unchecked. Archiving removes the case from the active Taegis XDR case list. Users can override this per incident at close time. | False |
-| Allow reopen of archived Taegis XDR cases | When enabled, reopening a closed XSOAR incident will automatically unarchive the associated Taegis XDR case before setting it back to ACTIVE. When disabled \(default\), archived cases cannot be reopened via XSOAR; the case must be unarchived manually in Taegis XDR first. | False |
+| Allow reopen of archived Taegis XDR cases | When enabled, reopening a closed Cortex XSOAR incident will automatically unarchive the associated Taegis XDR case before setting it back to ACTIVE. When disabled \(default\), archived cases cannot be reopened via Cortex XSOAR; the case must be unarchived manually in Taegis XDR first. | False |
 | Retry on Taegis API rate limit (429) | When enabled, GraphQL and auth requests that receive HTTP 429 \(rate limit\) are retried with backoff. Helps when closing many mirrored incidents at once. Uses Retry-After when Taegis returns it. | False |
 | Max retries on API rate limit | Retry attempts after a 429 \(in addition to the first request\). Range 0-10. Each wait uses Retry-After or exponential backoff. | False |
 | Base delay (seconds) for rate-limit backoff | When Retry-After is absent, wait base x 2^attempt seconds before each retry \(capped per wait\). | False |
@@ -167,7 +167,7 @@ There is no context output for this command.
 ### get-modified-remote-data
 
 ***
-Get modified remote data for mirroring optimization (automatically called by XSOAR)
+Get modified remote data for mirroring optimization (automatically called by Cortex XSOAR)
 
 #### Base Command
 
@@ -177,7 +177,7 @@ Get modified remote data for mirroring optimization (automatically called by XSO
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | Last update timestamp - automatically provided by XSOAR. | Optional | 
+| lastUpdate | Last update timestamp - automatically provided by Cortex XSOAR. | Optional | 
 
 #### Context Output
 
@@ -185,7 +185,7 @@ There is no context output for this command.
 ### get-remote-data
 
 ***
-Get remote data for mirroring (automatically called by XSOAR)
+Get remote data for mirroring (automatically called by Cortex XSOAR)
 
 #### Base Command
 
@@ -195,8 +195,8 @@ Get remote data for mirroring (automatically called by XSOAR)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID (remoteId) - required for manual calls, automatically provided by XSOAR. | Optional | 
-| lastUpdate | Last update timestamp - automatically provided by XSOAR. | Optional | 
+| id | Investigation ID (remoteId) - required for manual calls, automatically provided by Cortex XSOAR. | Optional | 
+| lastUpdate | Last update timestamp - automatically provided by Cortex XSOAR. | Optional | 
 | tenant_id | Tenant ID. | Optional | 
 
 #### Context Output
@@ -205,7 +205,7 @@ There is no context output for this command.
 ### update-remote-system
 
 ***
-Update remote system for mirroring (automatically called by XSOAR)
+Update remote system for mirroring (automatically called by Cortex XSOAR)
 
 #### Base Command
 
@@ -288,7 +288,7 @@ To set up the mirroring:
     | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Taegis XDR events will be reflected in both directions. |
 
 3. Optional: You can go to the mirroring tags parameter and select the tags used to mark incident entries to be mirrored. Available tags are: Comment Entry Tag To Taegis.
-4. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Taegis XDR.
+4. Optional: Check the *Close Mirrored Cortex XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Taegis XDR.
 5. Optional: Check the *Close Mirrored Taegis XDR event* integration parameter to close them when the corresponding Cortex XSOAR incident is closed.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.

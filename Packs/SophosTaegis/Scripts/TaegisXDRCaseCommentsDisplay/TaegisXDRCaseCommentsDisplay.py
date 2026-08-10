@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Dynamic-section display for Taegis XDR Case comments, sorted newest-first.
 
@@ -17,10 +16,10 @@ block in Contents; outbound (XSOAR) comments have no author, so we label by sour
 
 Reusable: the 'tags' arg defaults to the Taegis comment tags but can be repointed at
 any tag-filtered comment stream, so peers can drop this onto other case layouts.
-
-Uses demisto.results() and demisto.get() (both native to the Demisto object) so no
-CommonServerPython import is required - matches TaegisXDRAddCommentNote conventions.
 """
+
+import demistomock as demisto
+from CommonServerPython import *
 
 # Entry type: 1 = Note (markdown rendered in the layout section)
 ENTRY_TYPE_NOTE = 1
@@ -86,13 +85,12 @@ def _split_author_body(contents):
     stripping any '*'. Returns (author or None, body); falls back to (None, raw text)
     when there is no such header. \\u2014 is the em-dash (escaped to keep this file ASCII).
     """
-    # Coerce safely without bare str() - str() on non-ASCII unicode raises under Python 2.
     if contents is None:
-        text = u""
+        text = ""
     elif isinstance(contents, str):
         text = contents
     else:
-        text = u"{0}".format(contents)
+        text = "{0}".format(contents)
 
     split = text.find("\n\n")
     if split == -1:
@@ -101,7 +99,7 @@ def _split_author_body(contents):
     body = text[split + 2:].strip()
     # Header looks like "<author> \u2014 <ts>"; require the em-dash so a plain
     # multi-paragraph comment is not misread as having an author.
-    sep = head.find(u" \u2014 ")
+    sep = head.find(" \u2014 ")
     if sep == -1:
         return None, text.strip()
     author = head[:sep].strip().strip("*").strip()
@@ -132,10 +130,10 @@ def _render(entries, wanted):
             if meta["direction"]:
                 header += " &middot; _{0}_".format(meta["direction"])
 
-            blocks.append(u"{0}\n\n{1}".format(header, body))
+            blocks.append("{0}\n\n{1}".format(header, body))
         except Exception as exc:
             raw = demisto.get(ent, "Contents")
-            blocks.append(u"_(comment failed to render: {0})_\n\n{1}".format(exc, raw if raw else ""))
+            blocks.append("_(comment failed to render: {0})_\n\n{1}".format(exc, raw if raw else ""))
 
     return "\n\n---\n\n".join(blocks)
 
@@ -153,7 +151,7 @@ def main():
 
         matched = [e for e in entries if set(_entry_tags(e)) & set(wanted)]
         dump = json.dumps(matched, indent=2, default=str)
-        demisto.results(
+        return_results(
             {
                 "Type": ENTRY_TYPE_NOTE,
                 "ContentsFormat": "markdown",
@@ -164,7 +162,7 @@ def main():
         )
         return
 
-    demisto.results(
+    return_results(
         {
             "Type": ENTRY_TYPE_NOTE,
             "ContentsFormat": "markdown",
@@ -174,4 +172,7 @@ def main():
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    try:
+        main()
+    except Exception as e:
+        return_error(f"Failed to execute TaegisXDRCaseCommentsDisplay. Error: {str(e)}")

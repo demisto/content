@@ -15,6 +15,9 @@ Assignment behaviors (Taegis Requested Status):
 - Otherwise (e.g. current = @secureworks, requested = specific user) -> ACTIVE (take from queue).
 """
 
+import demistomock as demisto
+from CommonServerPython import *
+
 STATUS_AWAITING_ACTION = "AWAITING_ACTION"
 STATUS_ACTIVE = "ACTIVE"
 REQUESTED_ASSIGNEE_FIELD = "taegisrequestedassignee"
@@ -170,4 +173,7 @@ def main():
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    try:
+        main()
+    except Exception as e:
+        return_error(f"Failed to execute TaegisXDRSetRequestedStatusFromRequestedAssignee. Error: {str(e)}")

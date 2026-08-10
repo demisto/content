@@ -12,7 +12,7 @@ Integration with the Secureworks Taegis XDR platform for case ingestion, bi-dire
 | **Classifiers** | Ingestion classifier + incoming/outgoing mappers | Routes Taegis cases to the correct incident type and maps fields in both directions. |
 | **Layout** | Taegis XDR Case | Custom layout with tabs, close form (including archive-on-close), and action buttons. |
 | **Playbook** | Taegis XDR Case Playbook | Abbreviated triage playbook - on case pickup, assigns the investigating analyst as owner, prompts review, and optionally closes the case. |
-| **Scripts** | TaegisXDRAddCommentNote | Adds a War Room note that mirrors to Taegis XDR as a comment, attributed to the XSOAR user who added it. |
+| **Scripts** | TaegisXDRAddCommentNote | Adds a War Room note that mirrors to Taegis XDR as a comment, attributed to the Cortex XSOAR user who added it. |
 | | TaegisXDRAssigneeOptions | Populates assignee selection options from Taegis XDR users. |
 | | TaegisXDRCaseCommentsDisplay | Dynamic section that renders case comments newest-first in the layout, with author, timestamp, and direction (to/from Taegis XDR). |
 | | TaegisXDRCaseStatusOpenOptions | Populates available case status options. |
@@ -23,20 +23,20 @@ Integration with the Secureworks Taegis XDR platform for case ingestion, bi-dire
 
 - Cortex XSOAR 6.13.0 or later (8.x supported).
 - A Secureworks Taegis XDR tenant with API access enabled.
-- A Taegis XDR API client ID and client secret. See the [Taegis XDR API documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) for credential generation and region-specific base URLs.
+- A Taegis XDR API client ID and client secret. See the [Taegis XDR API documentation](https://docs.taegis.secureworks.com/apis/api_authenticate/) for credential generation and region-specific base URLs.
 
 ## Key Capabilities
 
-- **Case ingestion** - Fetches Taegis XDR cases as XSOAR incidents with full field mapping.
-- **Bi-directional mirroring** - Status changes, assignee updates, and comments sync between XSOAR and Taegis XDR in both directions.
-- **Assignee management** - Update case assignees directly from the XSOAR incident layout using a dynamic user picker populated from Taegis XDR.
-- **Comment sync** - Add comments from the XSOAR War Room that automatically mirror to Taegis XDR case comments. Comments are attributed to their author and displayed newest-first in the case layout.
+- **Case ingestion** - Fetches Taegis XDR cases as Cortex XSOAR incidents with full field mapping.
+- **Bi-directional mirroring** - Status changes, assignee updates, and comments sync between Cortex XSOAR and Taegis XDR in both directions.
+- **Assignee management** - Update case assignees directly from the Cortex XSOAR incident layout using a dynamic user picker populated from Taegis XDR.
+- **Comment sync** - Add comments from the Cortex XSOAR War Room that automatically mirror to Taegis XDR case comments. Comments are attributed to their author and displayed newest-first in the case layout.
 - **Investigation enrichment** - Retrieve detections, entities, and key findings associated with a case.
-- **Archive on close** - Optionally archive Taegis XDR cases when closing the XSOAR incident.
+- **Archive on close** - Optionally archive Taegis XDR cases when closing the Cortex XSOAR incident.
 
 ## Triage Workflow
 
-By design, ingested Taegis XDR cases are created in **Pending** status as a triage queue - the playbook does not run on ingestion. An analyst **takes** a case by assigning it to themselves (Assign -> self), which sets them as the incident owner and moves it to **Active**. The **Taegis XDR Case Playbook** then runs, prompting manual review and optional case closure. Ownership stays with whoever takes the case - a deliberate, single action that works identically on XSOAR v6 and v8.
+By design, ingested Taegis XDR cases are created in **Pending** status as a triage queue - the playbook does not run on ingestion. An analyst **takes** a case by assigning it to themselves (Assign -> self), which sets them as the incident owner and moves it to **Active**. The **Taegis XDR Case Playbook** then runs, prompting manual review and optional case closure. Ownership stays with whoever takes the case - a deliberate, single action that works identically on Cortex XSOAR v6 and v8.
 
 ## Getting Started
 
@@ -57,6 +57,6 @@ Exclusion lists are not automatically imported with the content pack. To prevent
 - `TaegisXDRv3_urls.json` - Regex pattern matching Secureworks Taegis XDR URLs.
 - `TaegisXDRv3_domains.json` - Regex pattern matching Secureworks Taegis XDR domains.
 
-**XSOAR v6:** Settings -> Advanced -> **Exclusion List** -> Import exclusion list (import icon) -> select each JSON file.
+**Cortex XSOAR v6:** Settings -> Advanced -> **Exclusion List** -> Import exclusion list (import icon) -> select each JSON file.
 
-**XSOAR v8:** Settings & Info -> Settings -> Object Setup -> Indicators -> **Exclusion List** -> vertical ellipsis (...) -> **Upload** -> select each JSON file.
+**Cortex XSOAR v8:** Settings & Info -> Settings -> Object Setup -> Indicators -> **Exclusion List** -> vertical ellipsis (...) -> **Upload** -> select each JSON file.

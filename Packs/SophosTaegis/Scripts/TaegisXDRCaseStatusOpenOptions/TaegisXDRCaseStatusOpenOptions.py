@@ -12,6 +12,9 @@ section), use a second single-select field with full values there, or do not
 attach this script and use layout visibility to show the field in different places.
 """
 
+import demistomock as demisto
+from CommonServerPython import *
+
 # All Taegis XDR investigation statuses (must match incident field selectValues)
 TAEGIS_STATUSES_ALL = [
     "ACTIVE",
@@ -37,8 +40,11 @@ def main():
     # Prepend placeholder for "Update in Taegis" requested field so user can reset after push
     PLACEHOLDER = "Select Status"
     options = [PLACEHOLDER] + OPEN_STATUSES
-    demisto.results({"hidden": False, "options": options})
+    return_results({"hidden": False, "options": options})
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    try:
+        main()
+    except Exception as e:
+        return_error(f"Failed to execute TaegisXDRCaseStatusOpenOptions. Error: {str(e)}")

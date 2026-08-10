@@ -7,6 +7,9 @@ After push we set the requested fields to placeholder values so the user isn't
 confused with the read-only Taegis XDR Assignee / Case Status.
 """
 
+import demistomock as demisto
+from CommonServerPython import *
+
 REQUESTED_ASSIGNEE_KEY = "taegisrequestedassignee"
 REQUESTED_STATUS_KEY = "taegisrequestedstatus"
 PLACEHOLDER_ASSIGNEE = "Select Assignee"
@@ -16,7 +19,7 @@ PLACEHOLDER_STATUS = "Select Status"
 def main():
     incident = demisto.incident()
     if not incident or not isinstance(incident, dict):
-        demisto.results([{"Type": 1, "ContentsFormat": "markdown", "Contents": "No incident context. Run this from an incident."}])
+        return_results([{"Type": 1, "ContentsFormat": "markdown", "Contents": "No incident context. Run this from an incident."}])
         return
 
     inner = incident.get("incident") or incident.get("Incident") or incident
@@ -33,7 +36,7 @@ def main():
     status = status_raw if status_raw and status_raw != PLACEHOLDER_STATUS else ""
 
     if not assignee_id and not status:
-        demisto.results(
+        return_results(
             [
                 {
                     "Type": 1,
@@ -46,7 +49,7 @@ def main():
 
     investigation_id = inner.get("dbotMirrorId") or custom.get("dbotMirrorId")
     if not investigation_id or str(investigation_id).strip() == "":
-        demisto.results(
+        return_results(
             [
                 {
                     "Type": 1,
@@ -65,7 +68,7 @@ def main():
 
     result = demisto.executeCommand("taegis-push-assignee-status", cmd_args)
     if not result or not isinstance(result, list):
-        demisto.results([{"Type": 1, "ContentsFormat": "markdown", "Contents": "Request could not be sent. Check the War Room for errors."}])
+        return_results([{"Type": 1, "ContentsFormat": "markdown", "Contents": "Request could not be sent. Check the War Room for errors."}])
         return
 
     # Set requested fields to placeholders so the user isn't confused with read-only Assignee/Status
@@ -77,8 +80,11 @@ def main():
     except Exception:
         pass
 
-    demisto.results(result)
+    return_results(result)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    try:
+        main()
+    except Exception as e:
+        return_error(f"Failed to execute TaegisXDRPushAssigneeStatusForm. Error: {str(e)}")

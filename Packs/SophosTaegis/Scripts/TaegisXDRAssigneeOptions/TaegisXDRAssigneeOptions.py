@@ -7,12 +7,12 @@ when incidents are fetched. Falls back to @customer and @secureworks when
 the data is not present (e.g. incident created manually or before this feature).
 """
 
+import demistomock as demisto
+from CommonServerPython import *
+
 STATIC_OPTIONS = ["@customer", "@secureworks"]
 FIELD_KEY = "taegisxdrassigneeoptionsdata"
-try:
-    _STRING_TYPES = (str, unicode)  # Python 2
-except NameError:
-    _STRING_TYPES = (str,)  # Python 3
+_STRING_TYPES = (str,)
 
 
 def _get_raw(d):
@@ -96,8 +96,11 @@ def main():
         options = [PLACEHOLDER]
     elif options[0] != PLACEHOLDER:
         options = [PLACEHOLDER] + [o for o in options if o != PLACEHOLDER]
-    demisto.results({"hidden": False, "options": options})
+    return_results({"hidden": False, "options": options})
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    try:
+        main()
+    except Exception as e:
+        return_error(f"Failed to execute TaegisXDRAssigneeOptions. Error: {str(e)}")
