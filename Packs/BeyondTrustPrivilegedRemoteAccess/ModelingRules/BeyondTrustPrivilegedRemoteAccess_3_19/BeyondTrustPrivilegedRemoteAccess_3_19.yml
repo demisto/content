@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: BeyondTrustPrivilegedRemoteAccess_ModelingRule
+name: BeyondTrustPrivilegedRemoteAccess Modeling Rule
+rules: ''
+schema: ''
+tags: BeyondTrust
+supportedModules:
+- xsiam
