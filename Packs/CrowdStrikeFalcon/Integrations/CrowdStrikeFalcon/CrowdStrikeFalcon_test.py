@@ -11059,14 +11059,14 @@ class TestModuleTestConnectionErrors:
             - main()'s generic "Failed to execute ... command." handler is never reached,
               which is the prefix shown in the reported error.
         """
-        import CrowdStrikeFalcon
+        from CrowdStrikeFalcon import main
 
         mocker.patch.object(demisto, "command", return_value="test-module")
         mocker.patch("CrowdStrikeFalcon.get_token", side_effect=DemistoException(self.DNS_FAILURE_MESSAGE))
         return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-        results_mock = mocker.patch.object(CrowdStrikeFalcon, "return_results")
+        results_mock = mocker.patch("CrowdStrikeFalcon.return_results")
 
-        CrowdStrikeFalcon.main()
+        main()
 
         return_error_mock.assert_not_called()
         reported = str(results_mock.call_args)
