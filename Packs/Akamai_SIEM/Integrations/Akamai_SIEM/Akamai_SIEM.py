@@ -701,7 +701,20 @@ def decode_event(event: str):
         event = json.loads(event)
         if "attackData" in event:
             for attack_data_key in ATTACK_DATA_KEYS_TO_DECODE:
-                event["attackData"][attack_data_key] = decode_message(  # type: ignore[index, attr-defined]
+def decode_event(event: str) -> dict | str:
+    try:
+        parsed: dict = json.loads(event)
+    except Exception as e:
+        demisto.debug(f"Couldn't decode event, reason: {e}")
+        return event
+    if attack_data := parsed.get("attackData"):
+        for key in ATTACK_DATA_KEYS_TO_DECODE:
+            attack_data[key] = decode_message(attack_data.get(key, ""))
+    if http_message := parsed.get("httpMessage"):
+        http_message["requestHeaders"] = decode_url(http_message.get("requestHeaders", ""))
+        http_message["responseHeaders"] = decode_url(http_message.get("responseHeaders", ""))
+    return parsed
+
                     event.get(  # type: ignore[attr-defined]
                         "attackData",
                         {},
