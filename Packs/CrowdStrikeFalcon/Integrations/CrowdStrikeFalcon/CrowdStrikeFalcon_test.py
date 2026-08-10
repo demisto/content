@@ -4038,6 +4038,7 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
         ("ngsiem", "ngsiem_detection", {}),
         ("Detection", "detection", {"type": "ldt", "product": "epp"}),
         ("ofp", "OFP detection", {"type": "ofp"}),
+        ("ods", "On-Demand Scans detection", {"type": "ods", "product": "epp"}),
     ],
 )
 def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, incident_type, entity_modifications):
