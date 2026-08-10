@@ -1159,7 +1159,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
         List: list of fetched alerts.
     """
     filter_query = create_filter_query(filter, service_sources)
-    severity_map = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0}
+    severity_map = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0.5}
 
     last_run = demisto.getLastRun()
     timestamp_format = "%Y-%m-%dT%H:%M:%S.%fZ"
