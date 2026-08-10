@@ -6326,7 +6326,7 @@ def _top_level_functions(tree: ast.Module) -> dict:
     return functions
 
 
-def _string_constant(node) -> str | None:
+def _string_constant(node: ast.AST) -> str | None:
     """Return the value of a string-literal AST node, or None if it is not one."""
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
         return node.value
