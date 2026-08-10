@@ -46,6 +46,7 @@ TIME_TO_RUN_BUFFER = 30  # When calculating time left to run, will use this as a
 EXECUTION_START_TIME = datetime.now()
 ALLOWED_PAGE_SIZE_DELTA_RATIO = 0.95  # uses this delta to overcome differences from Akamai When calculating latest request size.
 MAX_ALLOWED_FETCH_LIMIT = 80000
+MAX_INCIDENTS_FETCH_LIMIT = 2000  # Max total incidents per fetch (XSOAR)
 DEFAULT_INCIDENTS_FETCH_LIMIT = 20  # Default total incidents per fetch
 DEFAULT_EVENTS_FETCH_LIMIT = 60000  # Default total events per fetch
 SEND_EVENTS_TO_XSIAM_CHUNK_SIZE = 9 * (10**6)  # 9 MB
@@ -641,7 +642,7 @@ def fetch_events_command(
         else:
             demisto.debug(f"{log_prefix} Loading and decoding {last_page_size} events.")
             for index, event in enumerate(events):
-                events[index] = decode_event(event)
+                events[index] = decode_event(event)  # type: ignore[assignment]
         total_events_count += last_page_size
         execution_counter += 1
         demisto.debug(f"{log_prefix} Processed page of {last_page_size} events ({total_events_count=}).")
@@ -682,7 +683,7 @@ ATTACK_DATA_KEYS_TO_DECODE = [
 ]
 
 
-def decode_event(event: str):
+def decode_event(event: str) -> dict | str:
     """Deserialize a single raw JSON event string and decode its encoded fields in place.
 
     The event's ``attackData`` rule fields are base64/URL decoded (via ``decode_message``) and the
@@ -698,38 +699,17 @@ def decode_event(event: str):
         the original raw string is returned unchanged, so a bad event never breaks a whole page.
     """
     try:
-        event = json.loads(event)
-        if "attackData" in event:
-            for attack_data_key in ATTACK_DATA_KEYS_TO_DECODE:
-def decode_event(event: str) -> dict | str:
-    try:
         parsed: dict = json.loads(event)
     except Exception as e:
-        demisto.debug(f"Couldn't decode event, reason: {e}")
-        return event
-    if attack_data := parsed.get("attackData"):
-        for key in ATTACK_DATA_KEYS_TO_DECODE:
-            attack_data[key] = decode_message(attack_data.get(key, ""))
-    if http_message := parsed.get("httpMessage"):
-        http_message["requestHeaders"] = decode_url(http_message.get("requestHeaders", ""))
-        http_message["responseHeaders"] = decode_url(http_message.get("responseHeaders", ""))
-    return parsed
-
-                    event.get(  # type: ignore[attr-defined]
-                        "attackData",
-                        {},
-                    ).get(attack_data_key, "")
-                )
-        if "httpMessage" in event:
-            event["httpMessage"]["requestHeaders"] = decode_url(  # type: ignore[index]
-                event.get("httpMessage", {}).get("requestHeaders", "")  # type: ignore[attr-defined]
-            )
-            event["httpMessage"]["responseHeaders"] = decode_url(  # type: ignore[index]
-                event.get("httpMessage", {}).get("responseHeaders", "")  # type: ignore[attr-defined]
-            )
-    except Exception as e:
         demisto.debug(f"Couldn't decode {event=}, reason: {e}\n{traceback.format_exc()}")
-    return event
+        return event
+    if "attackData" in parsed:
+        for attack_data_key in ATTACK_DATA_KEYS_TO_DECODE:
+            parsed["attackData"][attack_data_key] = decode_message(parsed["attackData"].get(attack_data_key, ""))
+    if "httpMessage" in parsed:
+        parsed["httpMessage"]["requestHeaders"] = decode_url(parsed["httpMessage"].get("requestHeaders", ""))
+        parsed["httpMessage"]["responseHeaders"] = decode_url(parsed["httpMessage"].get("responseHeaders", ""))
+    return parsed
 
 
 def post_latest_event_time(latest_event, base_msg):
@@ -817,7 +797,7 @@ async def process_and_send_events_to_xsiam(events: list[str], should_skip_decode
         counter (int): The current execution number.
     """
     demisto.debug(f"Running in interval = {counter}. got {len(events)} events, moving to processing events data.")
-    processed_events = []
+    processed_events: list = []
     if should_skip_decode_events:
         demisto.debug(f"Running in interval = {counter}. Skipping decode events.")
         processed_events = events
@@ -1330,9 +1310,11 @@ def main():
 
     try:
         if params.get("isFetch") and not (
-            0 < (arg_to_number(params.get("fetchLimit", DEFAULT_INCIDENTS_FETCH_LIMIT)) or DEFAULT_INCIDENTS_FETCH_LIMIT) <= 2000
+            0
+            < (arg_to_number(params.get("fetchLimit", DEFAULT_INCIDENTS_FETCH_LIMIT)) or DEFAULT_INCIDENTS_FETCH_LIMIT)
+            <= MAX_INCIDENTS_FETCH_LIMIT
         ):
-            raise DemistoException("Fetch limit must be an integer between 1 and 2000")
+            raise DemistoException(f"Fetch limit must be an integer between 1 and {MAX_INCIDENTS_FETCH_LIMIT}")
 
         if command == "fetch-incidents":
             incidents, new_last_run = fetch_incidents_command(
