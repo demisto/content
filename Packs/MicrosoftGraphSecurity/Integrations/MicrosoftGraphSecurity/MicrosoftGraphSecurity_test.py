@@ -332,29 +332,26 @@ def test_fetch_incidents_and_alerts_both_types(mocker):
     )
 
 
-def test_fetch_incidents_and_alerts_defaults_to_alerts(mocker):
+def test_fetch_incidents_and_alerts_empty_type_raises(mocker):
     """
     Given:
-    - No "Fetch incidents type" parameter provided.
+    - No "Fetch incidents type" selected (the user cleared the multi-select).
 
     When:
     - Running fetch_incidents_and_alerts.
 
     Then:
-    - It defaults to fetching Alerts only (backward compatible).
+    - A DemistoException is raised and neither fetcher is called.
     """
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "setLastRun")
-    fetch_alerts_mock = mocker.patch(
-        "MicrosoftGraphSecurity.fetch_alerts", return_value=([{"name": "alert"}], {"time": "alerts_cursor"})
-    )
-    fetch_incidents_mock = mocker.patch("MicrosoftGraphSecurity.fetch_incidents", return_value=([], {}))
+    fetch_alerts_mock = mocker.patch("MicrosoftGraphSecurity.fetch_alerts")
+    fetch_incidents_mock = mocker.patch("MicrosoftGraphSecurity.fetch_incidents")
 
-    result = fetch_incidents_and_alerts(client_mocker, {})
+    with pytest.raises(DemistoException, match="Please provide at least one incident type to fetch"):
+        fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": ""})
 
-    assert fetch_alerts_mock.call_count == 1
+    assert fetch_alerts_mock.call_count == 0
     assert fetch_incidents_mock.call_count == 0
-    assert result == [{"name": "alert"}]
 
 
 @pytest.mark.parametrize(
