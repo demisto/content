@@ -112,7 +112,7 @@ Enables IOCs in the Cortex server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator | The indicator to enable. Only TIM-managed indicators (synced/pushed by this integration) can be enabled; indicators from other sources are not affected. | Required |
+| indicator | The indicator to enable. Only TIM-managed indicators can be enabled; indicators from other sources are not affected. | Required |
 
 #### Context Output
 
@@ -141,7 +141,7 @@ Disables IOCs in the Cortex server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator | The indicator to disable. Only TIM-managed indicators (synced/pushed by this integration) can be disabled; indicators from other sources are not affected. | Required |
+| indicator | The indicator to disable. Only TIM-managed indicators can be disabled; indicators from other sources are not affected. | Required |
 
 #### Context Output
 
