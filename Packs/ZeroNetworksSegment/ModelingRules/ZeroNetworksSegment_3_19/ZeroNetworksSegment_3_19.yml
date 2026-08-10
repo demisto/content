@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: ZeroNetworksSegment_ModelingRule
+name: ZeroNetworksSegment Modeling Rule
+rules: ''
+schema: ''
+tags: Zero Networks Segment
+supportedModules:
+- xsiam
