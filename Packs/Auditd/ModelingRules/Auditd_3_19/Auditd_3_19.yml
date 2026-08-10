@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Auditd_ModelingRule
+name: Auditd Modeling Rule
+rules: ''
+schema: ''
+tags: Unix Auditd
+supportedModules:
+- xsiam

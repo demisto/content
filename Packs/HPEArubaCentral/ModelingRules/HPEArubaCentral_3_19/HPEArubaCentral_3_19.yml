@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: HPEArubaCentral_ModelingRule
+name: HPEArubaCentral Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

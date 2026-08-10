@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Zscaler_ModelingRule
+name: Zscaler Modeling Rule
+rules: ''
+schema: ''
+tags: Zscaler Internet Access
+supportedModules:
+- xsiam
