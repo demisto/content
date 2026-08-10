@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: HPESwitch_ModelingRule
+name: HPESwitch Modeling Rule
+rules: ''
+schema: ''
+tags:
+supportedModules:
+- xsiam
