@@ -1993,6 +1993,7 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
 
     request.addfinalizer(cleanup)
     zip_link = "https://download/example-link"
+    zip_filename = "file.zip"
     requests_mock.post(
         f"{Core_URL}/public_api/v1/scripts/get_script_execution_results_files",
         json={"reply": {"DATA": zip_link}},
@@ -2004,6 +2005,7 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
         b".txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
         b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
         b".txtPK\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00;\x00\x00\x00+\x00\x00\x00\x00\x00",
+        headers={"Content-Disposition": f"attachment; filename={zip_filename}"},
     )
 
     client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
@@ -2012,7 +2014,7 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     args = {"action_id": action_id, "endpoint_id": endpoint_id}
 
     response = get_script_execution_result_files_command(client, args)
-    assert response["File"] == f"{action_id}.zip"
+    assert response["File"] == zip_filename
     assert zipfile.ZipFile(file_name).namelist() == ["your_file.txt"]
 
 
@@ -4246,7 +4248,7 @@ def test_get_script_execution_result_files(mocker):
         return_value={"reply": {"DATA": "https://test_api/public_api/v1/download/test"}},
     )
     test_client.get_script_execution_result_files(action_id="1", endpoint_id="1")
-    http_request.assert_called_with(method="GET", url_suffix="download/test", resp_type="content")
+    http_request.assert_called_with(method="GET", url_suffix="download/test", resp_type="response")
 
 
 @pytest.mark.parametrize(
