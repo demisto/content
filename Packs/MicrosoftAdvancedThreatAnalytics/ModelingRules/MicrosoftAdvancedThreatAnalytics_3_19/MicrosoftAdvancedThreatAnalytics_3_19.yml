@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: Microsoft_Advanced_Threat_Analytics_ModelingRule
-name: Microsoft Advanced Threat Analytics Modeling Rule
+id: MicrosoftAdvancedThreatAnalytics_ModelingRule
+name: MicrosoftAdvancedThreatAnalytics Modeling Rule
 rules: ''
 schema: ''
 tags: ''

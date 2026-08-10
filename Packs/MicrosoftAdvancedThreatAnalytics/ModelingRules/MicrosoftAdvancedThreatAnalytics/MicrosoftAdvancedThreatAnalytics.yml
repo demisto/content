@@ -1,5 +1,5 @@
 fromversion: 6.10.0
-toversion: 8.14.9
+toversion: 8.14.0
 id: Microsoft_Advanced_Threat_Analytics_ModelingRule
 name: Microsoft Advanced Threat Analytics Modeling Rule
 rules: ''

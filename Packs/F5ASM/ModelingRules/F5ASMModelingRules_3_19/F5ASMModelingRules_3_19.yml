@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: F5_ASM
-name: F5 ASM
+id: F5ASM_ModelingRule
+name: F5ASM Modeling Rule
 rules: ''
 schema: ''
 tags: F5 ASM

@@ -1,6 +1,6 @@
 
 fromversion: 8.4.0  
-toversion: 8.14.9
+toversion: 8.14.0
 id: Symantec_Cloud_Secure_Web_Gateway_ModelingRule
 name: Symantec Cloud Secure Web Gateway Modeling Rule
 rules: ''

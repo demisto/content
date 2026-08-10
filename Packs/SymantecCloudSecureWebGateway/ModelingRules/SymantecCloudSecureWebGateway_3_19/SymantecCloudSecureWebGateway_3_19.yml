@@ -1,7 +1,7 @@
 
 fromversion: 8.15.0
-id: Symantec_Cloud_Secure_Web_Gateway_ModelingRule
-name: Symantec Cloud Secure Web Gateway Modeling Rule
+id: SymantecCloudSecureWebGateway_ModelingRule
+name: SymantecCloudSecureWebGateway Modeling Rule
 rules: ''
 schema: ''
 tags: ''
