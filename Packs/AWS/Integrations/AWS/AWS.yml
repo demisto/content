@@ -18885,7 +18885,7 @@ script:
         - us-gov-west-1
     - name: limit
       defaultValue: '50'
-      description: The maximum number of objects that you want Network Firewall to return for this request.
+      description: The maximum number of Network Firewall objects to return for this request.
     - name: next_token
       description: The NextToken value returned from a previous paginated ListFirewalls request. The next_token will be at AWS.NetworkFirewall.FirewallsNextToken.
     - name: vpc_ids
@@ -19305,7 +19305,7 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: limit
-      description: The maximum number of objects that you want Network Firewall to return for this request. Default value is 50.
+      description: The maximum number of Network Firewall objects to return for this request. Default value is 50.
     - name: next_token
       description: The nextToken value returned from a previous paginated request. You can find it under AWS.NetworkFirewall.FirewallPoliciesNextToken.
     outputs:
@@ -20444,7 +20444,7 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: limit
-        description: The maximum number of objects that you want Network Firewall to return for this request.
+        description: The maximum number of Network Firewall objects to return for this request.
         defaultValue: "50"
       - name: next_token
         description: The nextToken value returned from a previous paginated request. You can find it under AWS.NetworkFirewall.RuleGroupsNextToken.
@@ -20622,6 +20622,492 @@ script:
     - contextPath: AWS.NetworkFirewall.RuleGroups.LastModifiedTime
       description: The last time that the rule group was changed.
       type: String
+
+  - name: aws-network-firewall-resource-policy-delete
+    execution: true
+    description: "Deletes a resource policy that you created in an aws-network-firewall-resource-policy-put request. Required permissions: network-firewall:DeleteResourcePolicy."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: resource_arn
+      description: The Amazon Resource Name (ARN) of the rule group or firewall policy whose resource policy you want to delete.
+      required: true
+
+  - name: aws-network-firewall-resource-policy-put
+    description: "Creates or updates an AWS Identity and Access Management policy for your rule group or firewall policy. Use this to share rule groups and firewall policies between accounts. Required permissions: network-firewall:PutResourcePolicy."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: resource_arn
+      description: The Amazon Resource Name (ARN) of the account that you want to share your rule group or firewall policy with.
+      required: true  
+    - name: policy
+      description: The AWS Identity and Access Management policy statement that lists the accounts that you want to share your rule group or firewall policy with and the operations that you want the accounts to be able to perform.
+      required: true
+
+  - name: aws-network-firewall-resource-policy-describe
+    description: "Retrieves a resource policy that you created in an aws-network-firewall-resource-policy-put request. Required permissions: network-firewall:DescribeResourcePolicy."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: resource_arn
+      description: The Amazon Resource Name (ARN) of the rule group or firewall policy whose resource policy you want to retrieve.
+      required: true
+    outputs:
+    - contextPath: AWS.NetworkFirewall.ResourcePolicies.ResourceArn
+      description: The Amazon Resource Name (ARN) of the rule group or firewall policy.
+      type: String
+    - contextPath: AWS.NetworkFirewall.ResourcePolicies.Policy
+      description: The AWS Identity and Access Management policy for the resource.
+      type: String
+
+  - name: aws-network-firewall-tags-for-resource-list
+    description: "Retrieves the tags associated with the specified resource. Tags are key:value pairs that you can use to categorize and manage your resources. Required permissions: network-firewall:ListTagsForResource."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: resource_arn
+      description: The Amazon Resource Name (ARN) of the resource.
+      required: true
+    - name: limit
+      description: The maximum number of Network Firewall objects to return for this request.
+      defaultValue: 50
+    - name: next_token
+      description: The pagination token returned in a previous response, used to retrieve the next set of results.
+    outputs:
+    - contextPath: AWS.NetworkFirewall.Tags.ResourceArn
+      description: The Amazon Resource Name (ARN) of the resource.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Tags.Tags.Key
+      description: The part of the key:value pair that defines a tag.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Tags.Tags.Value
+      description: The part of the key:value pair that defines a tag.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Tags.TagsNextToken
+      description: The token to use when requesting the next set of items.
+      type: String
+
+  - name: aws-network-firewall-resource-tag
+    description: "Adds the specified tags to the specified resource. Tags are key:value pairs that you can use to categorize and manage your resources. Required permissions: network-firewall:TagResource."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: resource_arn
+      description: The Amazon Resource Name (ARN) of the resource.
+      required: true
+    - name: tags
+      description: The tags to add to the resource. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456".
+      required: true
+
+  - name: aws-network-firewall-resource-untag
+    execution: true
+    description: "Removes the tags with the specified keys from the specified resource. Required permissions: network-firewall:UntagResource."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: resource_arn
+      description: The Amazon Resource Name (ARN) of the resource.
+      required: true
+    - name: tag_keys
+      description: A comma-separated list of tag keys to remove from the resource.
+      required: true
+      isArray: true
+
+  - name: aws-network-firewall-logging-configuration-describe
+    description: "Returns the logging configuration for the specified firewall. Required permissions: network-firewall:DescribeLoggingConfiguration."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: firewall_name
+      description: The descriptive name of the firewall. You must specify the ARN or the name, and you can specify both.
+    - name: firewall_arn
+      description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
+    outputs:
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
+      description: The Amazon Resource Name (ARN) of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.LoggingConfiguration.LogDestinationConfigs
+      description: The firewall log destination, containing LogType, LogDestinationType, and LogDestination fields.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard
+      description: Whether the monitoring dashboard is enabled for the firewall.
+      type: Boolean
+
+  - name: aws-network-firewall-logging-configuration-update
+    description: "Sets the logging configuration for the specified firewall. To set a logging destination, provide the log_type, log_destination_type, log_destination_key, and log_destination_value arguments. To review the current configuration before updating, call aws-network-firewall-logging-configuration-describe. Required permissions: network-firewall:UpdateLoggingConfiguration, s3:PutBucketPolicy, s3:GetBucketPolicy, logs:CreateLogDelivery, logs:GetLogDelivery, logs:UpdateLogDelivery, logs:DeleteLogDelivery, logs:ListLogDeliveries, firehose:TagDeliveryStream, iam:CreateServiceLinkedRole."
+    arguments:
+    - name: account_id
+      description: The AWS account ID. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The AWS region. Required for Cortex XSIAM (version >= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version < 3.0), where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+      auto: PREDEFINED
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - af-south-1
+        - ap-east-1
+        - ap-south-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-southeast-4
+        - ap-south-1
+        - ap-northeast-3
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-northeast-1
+        - ca-central-1
+        - ca-west-1
+        - eu-central-1
+        - eu-west-1
+        - eu-west-2
+        - eu-south-1
+        - eu-south-2
+        - eu-west-3
+        - eu-north-1
+        - eu-central-2
+        - il-central-1
+        - mx-central-1
+        - me-south-1
+        - me-central-1
+        - sa-east-1
+        - us-gov-east-1
+        - us-gov-west-1
+    - name: firewall_name
+      description: The descriptive name of the firewall. You must specify the ARN or the name, and you can specify both.
+    - name: firewall_arn
+      description: The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both.
+    - name: log_type
+      description: The type of log to record. FLOW logs capture network traffic that passes through the firewall. ALERT logs report traffic that matches stateful rules with an action setting that sends an alert. TLS logs report on TLS handshake negotiation results.
+      auto: PREDEFINED
+      predefined:
+        - FLOW
+        - ALERT
+        - TLS
+    - name: log_destination_type
+      description: The type of storage destination that the logs are sent to.
+      auto: PREDEFINED
+      predefined:
+        - S3
+        - CloudWatchLogs
+        - KinesisDataFirehose
+    - name: log_destination_key
+      description: 'The key for the logging destination, according to the log_destination_type. For example: `bucketName` for S3, `logGroup` for CloudWatchLogs, or `deliveryStream` for KinesisDataFirehose.'
+    - name: log_destination_value
+      description: 'The value for the logging destination, matching the log_destination_key. For example: the S3 bucket name, the CloudWatch Logs log group name, or the Kinesis Data Firehose delivery stream name.'
+    - name: enable_monitoring_dashboard
+      description: Whether to enable the detailed firewall monitoring dashboard on the firewall.
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    outputs:
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallArn
+      description: The Amazon Resource Name (ARN) of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.FirewallName
+      description: The descriptive name of the firewall.
+      type: String
+    - contextPath: AWS.NetworkFirewall.Firewalls.LoggingConfiguration.LogDestinationConfigs
+      description: The firewall log destination, containing LogType, LogDestinationType, and LogDestination fields.
+      type: Unknown
+    - contextPath: AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard
+      description: Whether the monitoring dashboard is enabled for the firewall.
+      type: Boolean
 
   isfetch: false
   runonce: false
