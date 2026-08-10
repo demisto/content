@@ -1415,6 +1415,23 @@ def update_policy_command():
     return results
 
 
+def build_policy_target(target_type: str, value: str | None, attribute_id: str | None, attribute_value: str | None) -> dict:
+    """
+    Build a v2 policy target object (the 'from' or 'to' member of a blocked-senders policy).
+
+    The key carrying the value depends on the target type: email_domain uses 'domain',
+    individual_email_address uses 'emailAddress', profile_group uses 'groupId'.
+    The remaining types (everyone, internal_addresses, external_addresses) carry no value at all.
+    """
+
+    return assign_params(
+        type=target_type,
+        domain=value if target_type == "email_domain" else None,
+        emailAddress=value if target_type == "individual_email_address" else None,
+        groupId=value if target_type == "profile_group" else None,
+    )
+
+
 def build_blocked_senders_policy_v2_body(args: dict) -> dict:
     """Build body for v2 blocked-senders create/update requests."""
     from_date_str = arg_to_datetime(args["from_date"]).strftime(DATE_FORMAT) if args.get("from_date") else None  # type: ignore
@@ -1430,22 +1447,20 @@ def build_blocked_senders_policy_v2_body(args: dict) -> dict:
 
     from_type = args.get("fromType")
     if from_type is not None:
-        from_value = args.get("fromValue")
-        body["from"] = assign_params(
-            type=from_type,
-            domain=from_value if from_type == "email_domain" else None,
-            emailAddress=from_value if from_type == "individual_email_address" else None,
-            groupId=from_value if from_type == "profile_group" else None,
+        body["from"] = build_policy_target(
+            from_type,
+            args.get("fromValue"),
+            args.get("from_attribute_id"),
+            args.get("from_attribute_value"),
         )
 
     to_type = args.get("toType")
     if to_type is not None:
-        to_value = args.get("toValue")
-        body["to"] = assign_params(
-            type=to_type,
-            domain=to_value if to_type == "email_domain" else None,
-            emailAddress=to_value if to_type == "individual_email_address" else None,
-            groupId=to_value if to_type == "profile_group" else None,
+        body["to"] = build_policy_target(
+            to_type,
+            args.get("toValue"),
+            args.get("to_attribute_id"),
+            args.get("to_attribute_value"),
         )
 
     return body
