@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: DellEMCUnity_ModelingRule
+name: DellEMCUnity Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
