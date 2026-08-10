@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: MicrosoftWindowsAMSI_ModelingRule
+name: MicrosoftWindowsAMSI Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

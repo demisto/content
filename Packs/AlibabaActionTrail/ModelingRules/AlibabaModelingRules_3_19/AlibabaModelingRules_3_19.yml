@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: AlibabaActionTrail_ModelingRule
+name: AlibabaActionTrail Modeling Rule
+rules: ''
+schema: ''
+tags: alibaba
+supportedModules:
+- xsiam
