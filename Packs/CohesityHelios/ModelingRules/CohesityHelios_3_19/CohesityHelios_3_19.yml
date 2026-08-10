@@ -1,0 +1,9 @@
+
+fromversion: 8.15.0
+id: CohesityHelios_ModelingRule
+name: CohesityHelios Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
