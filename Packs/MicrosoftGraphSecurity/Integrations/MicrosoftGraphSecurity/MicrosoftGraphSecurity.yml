@@ -185,7 +185,7 @@ configuration:
   required: false
   defaultvalue: '10'
 - display: Alerts Service Sources
-  additionalinfo: Relevant only when fetching Alerts. Multiple service sources can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, alerts of all service sources will be fetched.
+  additionalinfo: Relevant only when fetching alerts. A comma-separated list of service sources, for example, "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, alerts from all service sources will be fetched.
   name: fetch_service_sources
   type: 0
   section: Collect
@@ -195,7 +195,7 @@ configuration:
   - agentix
   - xsiam
 - display: Alerts Filter
-  additionalinfo: Use this field to filter fetched alerts according to their properties. Applies only when fetching Alerts. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
+  additionalinfo: Filters fetched alerts according to their properties. Relevant only when fetching alerts. Overrides the service sources list, if provided. The filter format must be {property} eq '{property-value}'. Multiple filters can be separated by " and ", for example, "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   name: fetch_filter
   type: 0
   section: Collect
@@ -205,7 +205,7 @@ configuration:
   - agentix
   - xsiam
 - display: Incidents Filter
-  additionalinfo: Use this field to filter fetched incidents according to their properties. Applies only when fetching Incidents. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "severity eq 'high' and status eq 'active'".
+  additionalinfo: Filters fetched incidents according to their properties. Relevant only when fetching incidents. The filter format must be {property} eq '{property-value}'. Multiple filters can be separated by " and ", for example, "severity eq 'high' and status eq 'active'".
   name: fetch_incidents_filter
   type: 0
   section: Collect

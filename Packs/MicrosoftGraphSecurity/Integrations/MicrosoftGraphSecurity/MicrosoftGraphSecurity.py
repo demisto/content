@@ -1232,11 +1232,13 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
     time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
 
     # Fetch incidents within the time window (plus the optional user filter), and include their alerts.
-    top = min(fetch_limit, MAX_ITEMS_PER_RESPONSE)
+    # $top is set to fetch_limit so we request up to fetch_limit incidents in a single request.
     filter_expression = f"createdDateTime gt {time_from} and createdDateTime le {time_to}"
     if filter:
         filter_expression += f" and {filter}"
-    url_suffix = f"security/incidents?$expand=alerts&$top={top}" f"&$filter={filter_expression}&$orderby=createdDateTime asc"
+    url_suffix = (
+        f"security/incidents?$expand=alerts&$top={fetch_limit}&$filter={filter_expression}&$orderby=createdDateTime asc"
+    )
     # This header maps unknownFutureValue enum values to the appropriate real value (e.g. new service sources).
     headers = {"Prefer": "include-unknown-enum-members"}
     demisto.debug(f"Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}.")
@@ -1289,9 +1291,9 @@ def fetch_alerts(
     time_from = new_last_run.get("time")
     time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
 
-    # Get alerts from MS Graph Security
+    # Get alerts from MS Graph Security. Pass fetch_limit as the page size so we request up to fetch_limit alerts.
     demisto.debug(f"Fetching MS Graph Security alerts. From: {time_from}. To: {time_to}. Filter: {filter_query}")
-    args = {"time_to": time_to, "time_from": time_from, "filter": filter_query}
+    args = {"time_to": time_to, "time_from": time_from, "filter": filter_query, "page_size": fetch_limit}
     params = create_search_alerts_filters(args, is_fetch=True)
     alerts = client.search_alerts(params)["value"]
 
