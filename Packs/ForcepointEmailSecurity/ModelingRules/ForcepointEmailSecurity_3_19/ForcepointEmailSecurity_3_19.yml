@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: ForcepointEmailSecurity_ModelingRule
+name: ForcepointEmailSecurity Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
