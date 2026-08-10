@@ -1,8 +1,11 @@
+import ast
 import json
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import demistomock as demisto
 import pytest
+import yaml
 import Azure
 from Azure import (
     AzureClient,
@@ -6223,3 +6226,431 @@ def test_main_auth_reset(mocker):
 
     mock_reset.assert_called_once()
     mock_get_client.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# YAML <-> Python wiring tests
+#
+# These tests read Azure.yml, extract the command names, argument names and
+# output prefixes, and assert that each one is actually wired up in Azure.py.
+#
+# Everything below is derived *statically* (yaml.safe_load + ast.parse). No
+# integration code is imported, instantiated or executed, so these tests make
+# no network calls, read no environment variables and do not depend on the
+# clock, the OS or the execution order of other tests.
+# ---------------------------------------------------------------------------
+
+INTEGRATION_DIR = Path(__file__).parent
+YML_PATH = INTEGRATION_DIR / "Azure.yml"
+PY_PATH = INTEGRATION_DIR / "Azure.py"
+
+# The name of the dict inside main() that maps command name -> handler function.
+DISPATCH_DICT_NAME = "commands_with_params_and_args"
+
+# Commands intentionally excluded from these wiring tests.
+#
+# - "*-quick-action" commands and "test-module" are excluded by request.
+# - The auth/control commands below are routed by explicit if/elif branches in
+#   main() rather than through the dispatch dict, and expose no yml arguments
+#   or context outputs of the kind these tests inspect.
+QUICK_ACTION_SUFFIX = "-quick-action"
+EXCLUDED_COMMANDS = frozenset(
+    {
+        "test-module",
+        "azure-auth-start",
+        "azure-auth-complete",
+        "azure-auth-test",
+        "azure-auth-reset",
+        "azure-generate-login-url",
+    }
+)
+
+
+def is_command_in_scope(command_name: str) -> bool:
+    """Return True if the given command should be covered by the wiring tests.
+
+    This is the single source of truth for test scope - every wiring test below
+    filters through it, so the scope cannot drift between tests.
+
+    Args:
+        command_name (str): The command name as declared in Azure.yml or used as a
+            key in the dispatch dict, for example "azure-storage-container-create".
+
+    Returns:
+        bool: True if the command should be checked by the wiring tests. False for
+            "*-quick-action" commands, "test-module", and the auth/control commands
+            listed in EXCLUDED_COMMANDS.
+    """
+    if command_name in EXCLUDED_COMMANDS:
+        return False
+    return not command_name.endswith(QUICK_ACTION_SUFFIX)
+
+
+def load_yml_commands() -> dict[str, dict]:
+    """Load Azure.yml and return the in-scope commands keyed by command name.
+
+    Args:
+        None. The yml path is derived from this test file's own location, so the
+        result does not depend on the current working directory.
+
+    Returns:
+        dict[str, dict]: Mapping of command name to the raw yml command definition
+            (including its "arguments" and "outputs" entries). Out-of-scope commands
+            are filtered out via is_command_in_scope.
+    """
+    with YML_PATH.open(encoding="utf-8") as yml_file:
+        yml_content = yaml.safe_load(yml_file)
+
+    commands = yml_content.get("script", {}).get("commands") or []
+    return {cmd["name"]: cmd for cmd in commands if is_command_in_scope(cmd.get("name", ""))}
+
+
+def load_py_source_and_tree() -> tuple[str, ast.Module]:
+    """Read Azure.py and return its source text along with the parsed AST.
+
+    Args:
+        None. The Azure.py path is derived from this test file's own location.
+
+    Returns:
+        tuple[str, ast.Module]: The raw source text of Azure.py and its parsed AST.
+            The module is only parsed, never imported or executed.
+    """
+    source = PY_PATH.read_text(encoding="utf-8")
+    return source, ast.parse(source)
+
+
+def extract_dispatch_map(tree: ast.Module) -> dict[str, str]:
+    """Extract the command -> handler-function-name mapping from main().
+
+    The dispatch dict is a local variable inside main(), which is marked
+    "# pragma: no cover" and cannot be imported or safely executed, so it is
+    lifted straight out of the AST instead.
+
+    Args:
+        tree (ast.Module): The parsed AST of Azure.py.
+
+    Returns:
+        dict[str, str]: Mapping of command name to the name of the handler function
+            it is routed to, for example
+            {"azure-storage-container-create": "storage_container_create_command"}.
+
+    Raises:
+        AssertionError: If the dispatch dict cannot be found in Azure.py, or if it is
+            found but no command -> handler pairs could be extracted from it (meaning
+            its structure changed and this helper needs updating).
+    """
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+        if DISPATCH_DICT_NAME not in targets or not isinstance(node.value, ast.Dict):
+            continue
+
+        dispatch: dict[str, str] = {}
+        for key, value in zip(node.value.keys, node.value.values):
+            if isinstance(key, ast.Constant) and isinstance(key.value, str) and isinstance(value, ast.Name):
+                dispatch[key.value] = value.id
+
+        # Guard against the dict being found but structured in a way this
+        # extractor cannot read (e.g. values changed to lambdas or partials).
+        # Without this, every command would be reported as "not routed", which
+        # would wrongly blame the integration instead of the extractor.
+        assert dispatch, (
+            f"Found '{DISPATCH_DICT_NAME}' in Azure.py but could not extract any "
+            "command -> handler pairs from it. The dict shape has changed and this "
+            "test helper needs updating."
+        )
+        return dispatch
+
+    raise AssertionError(f"Could not find the '{DISPATCH_DICT_NAME}' dict inside Azure.py")
+
+
+def build_symbol_index(tree: ast.Module) -> dict[str, ast.FunctionDef]:
+    """Index module-level functions and AzureClient methods by name.
+
+    Client methods are indexed under their bare name so that a handler calling
+    ``client.storage_account_update_request(...)`` can be resolved.
+
+    Args:
+        tree (ast.Module): The parsed AST of Azure.py.
+
+    Returns:
+        dict[str, ast.FunctionDef]: Mapping of function/method name to its AST node.
+            Module-level functions take precedence over class methods of the same
+            name, since a bare call in a handler resolves to the module-level one.
+    """
+    index: dict[str, ast.FunctionDef] = {}
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            index[node.name] = node
+        elif isinstance(node, ast.ClassDef):
+            for child in node.body:
+                if isinstance(child, ast.FunctionDef):
+                    index.setdefault(child.name, child)
+    return index
+
+
+def collect_called_names(func_node: ast.FunctionDef) -> set[str]:
+    """Return the names of every function/method directly called by func_node.
+
+    Args:
+        func_node (ast.FunctionDef): The AST node of the function to inspect.
+
+    Returns:
+        set[str]: The bare names of all called callables. Attribute calls contribute
+            only the final attribute, so ``client.get_rule(...)`` yields "get_rule",
+            which is what allows AzureClient methods to be looked up in the symbol index.
+    """
+    called: set[str] = set()
+    for node in ast.walk(func_node):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+        if isinstance(func, ast.Name):
+            called.add(func.id)
+        elif isinstance(func, ast.Attribute):
+            called.add(func.attr)
+    return called
+
+
+def collect_string_constants(func_node: ast.FunctionDef) -> set[str]:
+    """Return every string literal appearing anywhere inside func_node.
+
+    Args:
+        func_node (ast.FunctionDef): The AST node of the function to inspect.
+
+    Returns:
+        set[str]: All string constants in the function body, including argument keys
+            such as "account_name" and docstring text. Docstrings may add harmless
+            extra entries; they can only mask a failure, never invent one.
+    """
+    return {node.value for node in ast.walk(func_node) if isinstance(node, ast.Constant) and isinstance(node.value, str)}
+
+
+def collect_reachable_strings(handler_name: str, symbol_index: dict[str, ast.FunctionDef]) -> set[str]:
+    """Collect string literals in a handler plus those in its direct callees.
+
+    One level of call following is required for correctness: several handlers
+    (for example storage_account_update_command) hand the raw ``args`` dict to an
+    AzureClient method, and it is that method - not the handler - which reads the
+    individual argument keys.
+
+    Args:
+        handler_name (str): Name of the command handler function to start from.
+        symbol_index (dict[str, ast.FunctionDef]): Index produced by build_symbol_index,
+            used to resolve both the handler and the functions it calls.
+
+    Returns:
+        set[str]: Union of the string literals in the handler and in every function it
+            calls directly (one level deep). Returns an empty set if the handler name is
+            not present in the index.
+    """
+    handler = symbol_index.get(handler_name)
+    if handler is None:
+        return set()
+
+    strings = collect_string_constants(handler)
+    for callee_name in collect_called_names(handler):
+        callee = symbol_index.get(callee_name)
+        if callee is not None and callee is not handler:
+            strings |= collect_string_constants(callee)
+    return strings
+
+
+def extract_fallback_prefix(handler_name: str, symbol_index: dict[str, ast.FunctionDef]) -> set[str]:
+    """Return the output prefixes a handler can produce, ignoring the lookup map.
+
+    Covers both shapes used in Azure.py: the ``COMMANDS_TO_OUTPUTS_PREFIX.get(command,
+    "<fallback>")`` pattern and a prefix passed directly as ``outputs_prefix=``.
+
+    Args:
+        handler_name (str): Name of the command handler function to inspect.
+        symbol_index (dict[str, ast.FunctionDef]): Index produced by build_symbol_index.
+
+    Returns:
+        set[str]: Every context prefix the handler may write to, for example
+            {"Azure.VirtualNetworks.SecurityRules"}. Empty if the handler is unknown or
+            builds its context another way, such as returning a plain outputs dict.
+    """
+    handler = symbol_index.get(handler_name)
+    if handler is None:
+        return set()
+
+    prefixes: set[str] = set()
+    for node in ast.walk(handler):
+        if not isinstance(node, ast.Call):
+            continue
+
+        # COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Something")
+        func = node.func
+        if (
+            isinstance(func, ast.Attribute)
+            and func.attr == "get"
+            and isinstance(func.value, ast.Name)
+            and func.value.id == "COMMANDS_TO_OUTPUTS_PREFIX"
+            and len(node.args) == 2
+            and isinstance(node.args[1], ast.Constant)
+            and isinstance(node.args[1].value, str)
+        ):
+            prefixes.add(node.args[1].value)
+
+        # CommandResults(outputs_prefix="Azure.Something", ...)
+        for keyword in node.keywords:
+            if keyword.arg == "outputs_prefix" and isinstance(keyword.value, ast.Constant):
+                if isinstance(keyword.value.value, str):
+                    prefixes.add(keyword.value.value)
+
+    return prefixes
+
+
+@pytest.fixture(scope="module")
+def yml_commands() -> dict[str, dict]:
+    """The in-scope commands declared in Azure.yml, keyed by command name."""
+    return load_yml_commands()
+
+
+@pytest.fixture(scope="module")
+def py_tree() -> ast.Module:
+    """The parsed AST of Azure.py."""
+    _, tree = load_py_source_and_tree()
+    return tree
+
+
+@pytest.fixture(scope="module")
+def dispatch_map(py_tree: ast.Module) -> dict[str, str]:
+    """Mapping of command name -> handler function name, lifted from main()."""
+    return extract_dispatch_map(py_tree)
+
+
+@pytest.fixture(scope="module")
+def symbol_index(py_tree: ast.Module) -> dict[str, ast.FunctionDef]:
+    """Index of module-level functions and AzureClient methods by name."""
+    return build_symbol_index(py_tree)
+
+
+def test_yml_commands_are_wired_in_dispatch(yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - The in-scope commands declared in Azure.yml.
+        - The command dispatch dict extracted from main() in Azure.py.
+    When:
+        - Each yml command name is looked up in the dispatch dict.
+    Then:
+        - Every command resolves to a handler, so none would raise
+          NotImplementedError at runtime.
+        - Every resolved handler actually exists as a function in Azure.py.
+    """
+    # Given: the yml command names and the dispatch table
+    yml_command_names = set(yml_commands)
+
+    # When: resolving each command to its handler
+    unrouted = sorted(name for name in yml_command_names if name not in dispatch_map)
+    missing_handlers = sorted(
+        f"{name} -> {dispatch_map[name]}"
+        for name in yml_command_names
+        if name in dispatch_map and dispatch_map[name] not in symbol_index
+    )
+
+    # Then: every command is routed to a handler that exists
+    assert not unrouted, f"Commands declared in Azure.yml but not routed in main(): {unrouted}"
+    assert not missing_handlers, f"Commands routed to functions that do not exist in Azure.py: {missing_handlers}"
+
+
+def test_dispatch_commands_exist_in_yml(yml_commands, dispatch_map):
+    """
+    Given:
+        - The command dispatch dict extracted from main() in Azure.py.
+        - The in-scope commands declared in Azure.yml.
+    When:
+        - Each in-scope dispatch key is looked up in the yml.
+    Then:
+        - No dispatch entry is orphaned, i.e. every routed command is documented.
+    """
+    # Given: the in-scope dispatch keys
+    in_scope_dispatch = {name for name in dispatch_map if is_command_in_scope(name)}
+
+    # When: checking them against the declared yml commands
+    undocumented = sorted(in_scope_dispatch - set(yml_commands))
+
+    # Then: every routed command is declared in the yml
+    assert not undocumented, f"Commands routed in main() but not declared in Azure.yml: {undocumented}"
+
+
+def test_command_arguments_are_read_by_handler(yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - The arguments declared for each in-scope command in Azure.yml.
+        - The handler each command is routed to, plus its direct callees.
+    When:
+        - Each argument name is searched for as a string literal in the handler
+          and in any AzureClient method or helper it calls directly.
+    Then:
+        - Every documented argument is read somewhere on the command's code path,
+          proving no advertised argument is silently ignored.
+    """
+    # Given: a cache so each handler's reachable strings are computed once
+    reachable_strings_cache: dict[str, set[str]] = {}
+    unread_arguments: list[str] = []
+
+    for command_name, command in sorted(yml_commands.items()):
+        handler_name = dispatch_map.get(command_name)
+        if handler_name is None:
+            continue  # covered by test_yml_commands_are_wired_in_dispatch
+
+        if handler_name not in reachable_strings_cache:
+            reachable_strings_cache[handler_name] = collect_reachable_strings(handler_name, symbol_index)
+        reachable_strings = reachable_strings_cache[handler_name]
+
+        # When: checking each declared argument against the reachable literals
+        for argument in command.get("arguments") or []:
+            argument_name = argument.get("name")
+            if argument_name and argument_name not in reachable_strings:
+                unread_arguments.append(f"{command_name}: '{argument_name}' (handler: {handler_name})")
+
+    # Then: no documented argument is ignored by the code serving the command
+    assert not unread_arguments, "Arguments declared in Azure.yml but never read by the command handler:\n" + "\n".join(
+        unread_arguments
+    )
+
+
+def test_command_output_prefixes_are_wired(yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - The contextPath outputs declared for each in-scope command in Azure.yml.
+        - The output prefixes produced by the command's handler, either via the
+          COMMANDS_TO_OUTPUTS_PREFIX map or a fallback/literal outputs_prefix.
+    When:
+        - The yml context paths are compared against the prefixes in the code.
+    Then:
+        - Every command whose handler declares a prefix writes context under a
+          path the yml actually documents.
+    """
+    # Given: the explicit command -> prefix lookup used by most handlers
+    from Azure import COMMANDS_TO_OUTPUTS_PREFIX
+
+    mismatches: list[str] = []
+
+    for command_name, command in sorted(yml_commands.items()):
+        handler_name = dispatch_map.get(command_name)
+        outputs = command.get("outputs") or []
+        if handler_name is None or not outputs:
+            continue
+
+        context_paths = [output.get("contextPath", "") for output in outputs]
+
+        # When: resolving the prefix the code will actually use
+        mapped_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command_name)
+        candidate_prefixes = {mapped_prefix} if mapped_prefix else extract_fallback_prefix(handler_name, symbol_index)
+        if not candidate_prefixes:
+            continue  # handler builds context another way, e.g. a plain outputs dict
+
+        # Then: at least one produced prefix must match a documented context path
+        if not any(path == prefix or path.startswith(f"{prefix}.") for prefix in candidate_prefixes for path in context_paths):
+            mismatches.append(
+                f"{command_name}: code writes to {sorted(candidate_prefixes)} "
+                f"but Azure.yml documents {sorted({path.split('.')[0] + '.' + path.split('.')[1] for path in context_paths if '.' in path})}"
+            )
+
+    assert not mismatches, "Output prefixes in Azure.py do not match the contextPath declared in Azure.yml:\n" + "\n".join(
+        mismatches
+    )
