@@ -1200,7 +1200,7 @@ class CoreClient(BaseClient):
         )
 
     @logger
-    def get_script_execution_result_files(self, action_id: str, endpoint_id: str) -> Union[requests.Response, bytes]:
+    def get_script_execution_result_files(self, action_id: str, endpoint_id: str) -> Dict[str, Any]:
         """Returns a ``requests.Response`` on XDR/XSOAR/engine, or raw ``bytes`` on XSIAM RBAC path."""
         response = self._http_request(
             method="POST",
