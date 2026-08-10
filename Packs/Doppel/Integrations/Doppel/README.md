@@ -527,6 +527,8 @@ There is no context output for this command.
 
 ### Incident Mirroring
 
+**Note:** Incident fetch creates Cortex XSOAR incidents only for newly detected Doppel alerts. Changes to alerts that were already fetched (such as queue state or entity state updates) are not pulled in by fetch. To keep existing incidents up to date with Doppel, enable mirroring and set **Mirror Direction** to Incoming or Incoming And Outgoing.
+
 #### Mirroring In (Doppel → XSOAR)
 
 When incidents are mirrored into Cortex XSOAR from Doppel:

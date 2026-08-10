@@ -140,9 +140,9 @@ class Client(BaseClient):
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
         params = {}
-        if alert_id is not None:
+        if alert_id:
             params["id"] = alert_id
-        elif entity is not None:
+        elif entity:
             params["entity"] = entity
         payload = {"queue_state": queue_state, "entity_state": entity_state, "comment": comment}
 
@@ -211,6 +211,33 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def _normalize_entity_content_for_grid(entity_content: Any) -> list[dict[str, Any]]:
+    """
+    Convert Doppel entity_content into a list of row dicts for the grid incident field.
+
+    Domains alerts nest fields under ``root_domain``; the XSOAR grid field expects a list of
+    flat objects whose keys match the grid columns (domain, registrar, ip_address, ...).
+    """
+    if not entity_content:
+        return []
+    if isinstance(entity_content, list):
+        return [row for row in entity_content if isinstance(row, dict)]
+    if not isinstance(entity_content, dict):
+        return []
+
+    root_domain = entity_content.get("root_domain")
+    if isinstance(root_domain, dict):
+        return [root_domain]
+    # Already a flat row matching grid columns
+    if "domain" in entity_content:
+        return [entity_content]
+    # Other product shapes: unwrap a single nested dict when present
+    nested_dicts = [value for value in entity_content.values() if isinstance(value, dict)]
+    if len(nested_dicts) == 1:
+        return [nested_dicts[0]]
+    return []
+
+
 def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id: str, last_update_str: str):
     """
     Retrieves updated incident data from the remote system based on the given alert ID and last update timestamp.
@@ -243,6 +270,10 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
         demisto.debug(f"Doppel - No alert data returned for {doppel_alert_id}.")
         return None, []
     updated_doppel_alert["id"] = doppel_alert_id
+
+    # Shape entity_content for the grid incident field (mapper expects a list of row dicts).
+    if "entity_content" in updated_doppel_alert:
+        updated_doppel_alert["entity_content"] = _normalize_entity_content_for_grid(updated_doppel_alert.get("entity_content"))
 
     # Attach the most recent audit-log event as a War Room note when available, but never
     # let a missing/empty audit trail discard the field updates themselves.
@@ -380,6 +411,7 @@ def doppel_update_alert_command(client: Client, args: dict[str, Any]) -> Command
     :param args: Command arguments.
     :return: CommandResults object.
     """
+    demisto.debug(f"Update Alert cmd params: {args}")
     alert_id = args.get("alert_id", "")
     entity = args.get("entity", "")
     queue_state = args.get("queue_state", "")
@@ -592,6 +624,11 @@ def _alert_to_incident(alert, mirroring_object):
     if created_at_datetime is None:
         created_at_datetime = datetime.now(UTC)
     severity = _xsoar_severity(alert)
+
+    # Shape entity_content for the grid incident field before it is mapped from rawJSON.
+    if "entity_content" in alert:
+        alert["entity_content"] = _normalize_entity_content_for_grid(alert.get("entity_content"))
+
     alert.update(mirroring_object)
     # Use the external Doppel alert id (e.g. TET-1953421) as the incident name so it
     # is human-meaningful and duplicates are visually obvious.
@@ -767,6 +804,10 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
 def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
+    Outgoing mirroring only archives the Doppel alert when the XSOAR incident is closed.
+    ``entity_state`` is always read from the live Doppel alert so it is preserved even when
+    the outgoing mapper does not include it. Close notes from XSOAR are sent as the comment.
+
     :type client: ``Client``
     :param client: XSOAR client to use
 
@@ -783,41 +824,47 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
 
     :rtype: ``str``
     """
-    demisto.debug(f"Arguments for the update-remote-system is: {args}")
     parsed_args = UpdateRemoteSystemArgs(args)
-    new_incident_id = parsed_args.remote_incident_id
+    remote_incident_id = parsed_args.remote_incident_id
 
-    demisto.debug(f"parsed_args data :- {parsed_args}")
-    demisto.debug(f"parsed_args data :- {parsed_args.data}")
+    # Only update Doppel when the XSOAR incident is closed (status DONE).
+    # This command is event-driven on local incident changes; it is not polled every minute.
+    if parsed_args.inc_status != IncidentStatus.DONE:
+        demisto.debug(f"Incident not closed. Skipping update for remote ID [{remote_incident_id}].")
+        return remote_incident_id
+
+    if not remote_incident_id:
+        demisto.debug("Doppel - No remote incident id; skipping outgoing update.")
+        return remote_incident_id
+
+    demisto.debug(f"Closing remote Doppel alert [{remote_incident_id}] (XSOAR incident closed).")
     try:
-        # Only update Doppel Alert if the XSOAR Incident is closed
-        if parsed_args.inc_status != IncidentStatus.DONE:
-            demisto.debug(f"Incident not closed. Skipping update for remote ID [{new_incident_id}].")
-            return new_incident_id
+        # Always fetch the live alert so entity_state comes from Doppel, not from the
+        # outgoing mapper (which currently only maps queue_state).
+        current_alert = client.get_alert(id=remote_incident_id, entity="") or {}
+        entity_state = current_alert.get("entity_state") or ""
+        delta = parsed_args.delta or {}
+        data = parsed_args.data or {}
+        comment = delta.get("closeNotes") or data.get("closeNotes") or ""
 
-        demisto.debug(f"Sending incident with remote ID [{new_incident_id}] to remote system")
+        already_archived = current_alert.get("queue_state") == "archived"
+        if already_archived and not comment:
+            demisto.debug(f"Doppel alert [{remote_incident_id}] already archived with no close notes; skipping.")
+            return remote_incident_id
 
-        if parsed_args.remote_incident_id and parsed_args.incident_changed:
-            # Fetch existing incident details to preserve versioning
-            old_incident = client.get_alert(id=new_incident_id, entity="")
-
-            # Apply changes from XSOAR to the existing incident
-            old_incident.update(parsed_args.delta)  # Simplifies key-value assignment
-
-            parsed_args.data = old_incident
-
-        # Ensure queue_state is updated to 'archived' if necessary
-        if parsed_args.data.get("queue_state") != "archived":
-            client.update_alert(
-                queue_state="archived",
-                entity_state=parsed_args.data.get("entity_state", ""),  # Preserve old entity_state
-                comment=parsed_args.data.get("notes", ""),
-                alert_id=new_incident_id,
-            )
+        client.update_alert(
+            queue_state="archived",
+            entity_state=entity_state,
+            comment=comment,
+            alert_id=remote_incident_id,
+        )
+        demisto.debug(
+            f"Doppel - Archived remote alert [{remote_incident_id}] " f"with entity_state={entity_state!r} comment={comment!r}."
+        )
     except Exception as e:
-        demisto.error(f"Doppel - Error in outgoing mirror for incident {new_incident_id} \nError message: {str(e)}")
+        demisto.error(f"Doppel - Error in outgoing mirror for incident {remote_incident_id} \nError message: {str(e)}")
 
-    return new_incident_id
+    return remote_incident_id
 
 
 def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappingFieldsResponse:
@@ -834,17 +881,40 @@ def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappi
     Returns:
         GetMappingFieldsResponse: The mapping response containing field definitions.
     """
-    demisto.debug("Executing get_mapping_fields_command")  # Debug statement
 
-    # Define the incident mapping scheme
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=DOPPEL_ALERT)
-    xdr_incident_type_scheme.add_field(name="queue_state", description="Queue State of the Doppel Alert")
+    doppel_fields = {
+        "id": "Unique identifier of the alert",
+        "entity": "URL or profile link related to the alert",
+        "brand": "Brand associated with the alert",
+        "queue_state": "Queue State of the Doppel Alert",
+        "entity_state": "Current state of the alert entity",
+        "severity": "Severity level of the alert",
+        "product": "Product category associated with the alert",
+        "platform": "Platform on which the alert was generated",
+        "source": "Source from which the alert was generated",
+        "notes": "Additional notes related to the alert",
+        "created_at": "Timestamp when the alert was created",
+        "screenshot_url": "URL of the alert screenshot when available",
+        "last_activity": "Timestamp of the last activity on the alert",
+        "score": "Score assigned to the alert",
+        "message": "Message associated with the alert",
+        "assignee": "User assigned to the alert",
+        "doppel_link": "Link to the alert in the Doppel platform",
+        "uploaded_by": "User who uploaded the alert",
+        "entity_content": "Additional content related to the alert entity",
+        "audit_logs": "Audit log entries for the alert",
+        "tags": "Tags associated with the alert",
+        "alert_summary": "Summary of the alert",
+    }
 
-    # Create the response object
+    for field_name, description in doppel_fields.items():
+        xdr_incident_type_scheme.add_field(name=field_name, description=description)
+
     mapping_response = GetMappingFieldsResponse()
     mapping_response.add_scheme_type(xdr_incident_type_scheme)
 
-    demisto.debug(f"Mapping fields response created: {mapping_response}")  # Debug statement
+    demisto.debug(f"Mapping fields response created: {mapping_response}")
     return mapping_response
 
 
