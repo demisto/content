@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: KeeperSecurity_ModelingRule
+name: KeeperSecurity Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

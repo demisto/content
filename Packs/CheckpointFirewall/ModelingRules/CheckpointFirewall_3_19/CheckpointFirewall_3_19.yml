@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: CheckpointFirewall_ModelingRule
+name: CheckpointFirewall Modeling Rule
+rules: ''
+schema: ''
+tags: CheckPoint Firewall Event Collection
+supportedModules:
+- xsiam
