@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: CyberArk_Privileged_Threat_Analytics_ModelingRule
+name: CyberArk_Privileged_Threat_Analytics Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
