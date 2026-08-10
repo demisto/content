@@ -80,7 +80,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                        simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                       iscontext: true
                     right:
                       value:
@@ -102,7 +102,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                        simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                       iscontext: true
                     right:
                       value:
@@ -125,7 +125,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                        simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                       iscontext: true
                     right:
                       value:
@@ -169,7 +169,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                        simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                       iscontext: true
                     right:
                       value:
@@ -191,7 +191,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                        simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                       iscontext: true
                     right:
                       value:
@@ -212,7 +212,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                        simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                       iscontext: true
                     right:
                       value:
@@ -235,7 +235,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                        simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                       iscontext: true
                     right:
                       value:
@@ -258,7 +258,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                        simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                       iscontext: true
                     right:
                       value:
@@ -498,7 +498,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -522,7 +522,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -536,7 +536,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -560,7 +560,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -574,7 +574,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1162,7 +1162,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1176,7 +1176,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1192,7 +1192,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1205,7 +1205,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1219,7 +1219,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1235,7 +1235,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1251,7 +1251,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1317,7 +1317,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1338,7 +1338,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1356,7 +1356,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1370,7 +1370,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1387,7 +1387,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1748,7 +1748,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1769,7 +1769,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:
@@ -1788,7 +1788,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Case.Issues.alert_id
+                  simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                 iscontext: true
               right:
                 value:

@@ -2857,6 +2857,8 @@ def normalize_case_data_record(incident_record: Dict[str, Any]) -> Dict[str, Any
         records = dict_safe_get(incident_record, [source_key, "data"], default_return_value=[], return_type=list)
         if records:
             for record in records:
+                if case_key == "Issues" and "alert_id" in record:
+                    record["issue_id"] = record.pop("alert_id")
                 record.setdefault("case_id", case_id)
             case[case_key] = records
 
