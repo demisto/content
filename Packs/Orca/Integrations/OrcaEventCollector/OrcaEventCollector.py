@@ -305,7 +305,10 @@ def add_one_second(cursor: str) -> str:
     Steps the cursor past a drained boundary second so the inclusive lower bound does not
     re-read it. Safe because every event at that second was already fetched via the offset walk.
     """
-    parsed = arg_to_datetime(arg=cursor)
+    try:
+        parsed = arg_to_datetime(arg=cursor)
+    except ValueError:
+        return cursor
     if not parsed:
         return cursor
     return (parsed + timedelta(seconds=1)).strftime(DATE_FORMAT)
