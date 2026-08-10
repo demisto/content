@@ -1,4 +1,5 @@
 fromversion: 8.4.0
+toversion: 8.14.0
 id: Google_Chrome_ModelingRule
 name: Google Chrome Modeling Rule
 rules: ''
