@@ -1,0 +1,24 @@
+{
+    "name": "ETD XSOAR Connector",
+    "description": "Cisco Email Threat Defense (ETD) Connector fetches message events and creates incidents, allowing analysts to reclassify email verdicts and perform remediation actions.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Nusummit",
+    "url": "https://www.nusummit.com",
+    "email": "qradar.support@nusummit.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Cisco"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "created": "2026-05-20T17:50:49Z",
+    "githubUser": [
+        "ashwinidoddamani"
+    ]
+}

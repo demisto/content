@@ -6175,7 +6175,7 @@ class EKS:
         Args:
             client (BotoClient): The boto3 client for EKS service
             args (Dict[str, Any]): Command arguments including cluster_name, principal_arn,
-                kubernetes_groups, client_request_token, and type
+                kubernetes_groups, client_request_token, type, and tags
 
         Returns:
             CommandResults: Results containing the created access entry details
@@ -6190,6 +6190,7 @@ class EKS:
             "clientRequestToken": args.get("client_request_token"),
             "username": args.get("user_name"),
             "type": args.get("type"),
+            "tags": {tag["Key"]: tag["Value"] for tag in parse_tag_field(args.get("tags"))} if args.get("tags") else None,
         }
 
         remove_nulls_from_dictionary(kwargs)
@@ -6202,7 +6203,7 @@ class EKS:
 
         access_entry = serialize_response_with_datetime_encoding(response.get("accessEntry", {}))
 
-        headers = ["clusterName", "principalArn", "username", "type", "createdAt"]
+        headers = ["clusterName", "principalArn", "username", "type", "tags", "createdAt"]
         readable_output = tableToMarkdown(
             name="The AWS EKS Access Entry was created successfully",
             t=access_entry,
@@ -10901,6 +10902,304 @@ class NetworkFirewall:
             raw_response=response,
         )
 
+    @staticmethod
+    def delete_resource_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Deletes a resource policy that you created in a put_resource_policy request.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing resource_arn
+
+        Returns:
+            CommandResults: Formatted results with the operation status
+        """
+        print_debug_logs(client, f"Deleting resource policy for resource: {args.get('resource_arn')}")
+        response = client.delete_resource_policy(ResourceArn=args.get("resource_arn"))
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"The resource policy for {args.get('resource_arn')} was deleted successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def put_resource_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Creates or updates an AWS Identity and Access Management policy for your rule group or firewall policy.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing resource_arn and policy
+
+        Returns:
+            CommandResults: Formatted results with the operation status
+        """
+        kwargs = {
+            "ResourceArn": args.get("resource_arn"),
+            "Policy": args.get("policy"),
+        }
+        print_debug_logs(client, f"Putting resource policy with parameters: {kwargs.keys()}")
+        response = client.put_resource_policy(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"The resource policy for {args.get('resource_arn')} was created/updated successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_resource_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Retrieves a resource policy that you created in a put_resource_policy request.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing resource_arn
+
+        Returns:
+            CommandResults: Formatted results with the resource policy
+        """
+        print_debug_logs(client, f"Describing resource policy for resource: {args.get('resource_arn')}")
+        response = client.describe_resource_policy(ResourceArn=args.get("resource_arn"))
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = {"ResourceArn": args.get("resource_arn"), "Policy": response.get("Policy")}
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.ResourcePolicies",
+            outputs_key_field="ResourceArn",
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Resource Policy",
+                outputs,
+                headers=["ResourceArn", "Policy"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def list_tags_for_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Retrieves the tags associated with the specified resource.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing:
+                - resource_arn: The Amazon Resource Name (ARN) of the resource.
+                - limit: The maximum number of objects that you want Network Firewall to return for this request.
+                - next_token: The pagination token from a previous request.
+
+        Returns:
+            CommandResults: Formatted results with the resource tags
+        """
+        kwargs = {"ResourceArn": args.get("resource_arn")}
+        kwargs.update(build_pagination_kwargs(args, next_token_name="NextToken", limit_name="MaxResults", max_limit=100))
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Listing tags for resource with parameters: {kwargs.keys()}")
+        response = client.list_tags_for_resource(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        tags = response.get("Tags", [])
+        if not tags:
+            return CommandResults(readable_output="No tags were found.")
+
+        outputs = {
+            "AWS.NetworkFirewall.Tags(val.ResourceArn == obj.ResourceArn)": {
+                "ResourceArn": args.get("resource_arn"),
+                "Tags": tags,
+                "TagsNextToken": response.get("NextToken"),
+            },
+        }
+
+        return CommandResults(
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Tags",
+                tags,
+                headers=["Key", "Value"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def tag_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Adds the specified tags to the specified resource.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing resource_arn and tags
+
+        Returns:
+            CommandResults: Formatted results with the operation status
+        """
+        kwargs = {
+            "ResourceArn": args.get("resource_arn"),
+            "Tags": parse_tag_field(args.get("tags")),
+        }
+        print_debug_logs(client, f"Tagging resource with parameters: {kwargs.keys()}")
+        response = client.tag_resource(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"The resource {args.get('resource_arn')} was tagged successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def untag_resource_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Removes the tags with the specified keys from the specified resource.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing resource_arn and tag_keys
+
+        Returns:
+            CommandResults: Formatted results with the operation status
+        """
+        kwargs = {
+            "ResourceArn": args.get("resource_arn"),
+            "TagKeys": argToList(args.get("tag_keys")),
+        }
+        print_debug_logs(client, f"Untagging resource with parameters: {kwargs.keys()}")
+        response = client.untag_resource(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output=f"The tags were removed from the resource {args.get('resource_arn')} successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
+    def describe_logging_configuration_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Returns the logging configuration for the specified firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn
+
+        Returns:
+            CommandResults: Formatted results with the logging configuration
+        """
+        validate_network_firewall_identifier(args, "firewall")
+        kwargs = {
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Describing logging configuration with parameters: {kwargs.keys()}")
+        response = client.describe_logging_configuration(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = {
+            "FirewallArn": response.get("FirewallArn"),
+            "LoggingConfiguration": response.get("LoggingConfiguration", {}),
+            "EnableMonitoringDashboard": response.get("EnableMonitoringDashboard"),
+        }
+        remove_nulls_from_dictionary(outputs)
+        log_destination_configs = outputs.get("LoggingConfiguration", {}).get("LogDestinationConfigs", [])
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=outputs,
+            readable_output=tableToMarkdown(
+                f"AWS Network Firewall Logging Configuration for the Firewall {outputs.get('FirewallArn')}",
+                log_destination_configs,
+                headers=["LogType", "LogDestinationType", "LogDestination"],
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def update_logging_configuration_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Sets the logging configuration for the specified firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn,
+                log_type, log_destination_type, log_destination_key, log_destination_value,
+                and enable_monitoring_dashboard
+
+        Returns:
+            CommandResults: Formatted results with the logging configuration
+        """
+        validate_network_firewall_identifier(args, "firewall")
+        log_type = args.get("log_type")
+        log_destination_type = args.get("log_destination_type")
+        log_destination_key = args.get("log_destination_key")
+        log_destination_value = args.get("log_destination_value")
+
+        logging_configuration = None
+        if any((log_type, log_destination_type, log_destination_key, log_destination_value)):
+            if not all((log_type, log_destination_type, log_destination_key, log_destination_value)):
+                raise ValueError(
+                    "To set a logging destination you must provide all of the following arguments: "
+                    "log_type, log_destination_type, log_destination_key, log_destination_value."
+                )
+            logging_configuration = {
+                "LogDestinationConfigs": [
+                    {
+                        "LogType": log_type,
+                        "LogDestinationType": log_destination_type,
+                        "LogDestination": {log_destination_key: log_destination_value},
+                    }
+                ]
+            }
+
+        kwargs = {
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "LoggingConfiguration": logging_configuration,
+            "EnableMonitoringDashboard": arg_to_bool_or_none(args.get("enable_monitoring_dashboard")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        print_debug_logs(client, f"Updating logging configuration with parameters: {kwargs.keys()}")
+        response = client.update_logging_configuration(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        outputs = {
+            "FirewallArn": response.get("FirewallArn"),
+            "FirewallName": response.get("FirewallName"),
+            "LoggingConfiguration": response.get("LoggingConfiguration", {}),
+            "EnableMonitoringDashboard": response.get("EnableMonitoringDashboard"),
+        }
+        remove_nulls_from_dictionary(outputs)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=outputs,
+            readable_output="The logging configuration was updated successfully.",
+            raw_response=response,
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -11130,6 +11429,14 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-rule-group-describe": NetworkFirewall.describe_rule_group_command,
     "aws-network-firewall-rule-groups-list": NetworkFirewall.list_rule_groups_command,
     "aws-network-firewall-rule-group-update": NetworkFirewall.update_rule_group_command,
+    "aws-network-firewall-resource-policy-delete": NetworkFirewall.delete_resource_policy_command,
+    "aws-network-firewall-resource-policy-put": NetworkFirewall.put_resource_policy_command,
+    "aws-network-firewall-resource-policy-describe": NetworkFirewall.describe_resource_policy_command,
+    "aws-network-firewall-tags-for-resource-list": NetworkFirewall.list_tags_for_resource_command,
+    "aws-network-firewall-resource-tag": NetworkFirewall.tag_resource_command,
+    "aws-network-firewall-resource-untag": NetworkFirewall.untag_resource_command,
+    "aws-network-firewall-logging-configuration-describe": NetworkFirewall.describe_logging_configuration_command,
+    "aws-network-firewall-logging-configuration-update": NetworkFirewall.update_logging_configuration_command,
 }
 
 REQUIRED_ACTIONS: list[str] = [
@@ -11195,6 +11502,7 @@ REQUIRED_ACTIONS: list[str] = [
     "eks:DescribeCluster",
     "eks:AssociateAccessPolicy",
     "eks:CreateAccessEntry",
+    "eks:TagResource",
     "eks:UpdateAccessEntry",
     "ec2:CreateSecurityGroup",
     "ec2:CreateNetworkAcl",
@@ -11329,6 +11637,14 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:DescribeRuleGroup",
     "network-firewall:ListRuleGroups",
     "network-firewall:UpdateRuleGroup",
+    "network-firewall:DeleteResourcePolicy",
+    "network-firewall:PutResourcePolicy",
+    "network-firewall:DescribeResourcePolicy",
+    "network-firewall:ListTagsForResource",
+    "network-firewall:TagResource",
+    "network-firewall:UntagResource",
+    "network-firewall:DescribeLoggingConfiguration",
+    "network-firewall:UpdateLoggingConfiguration",
 ]
 
 COMMAND_SERVICE_MAP = {
