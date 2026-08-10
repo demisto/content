@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: TrendMicroInterScanWebSecurity_ModelingRule
+name: TrendMicroInterScanWebSecurity Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
