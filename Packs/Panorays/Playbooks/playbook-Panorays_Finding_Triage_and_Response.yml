@@ -5,18 +5,23 @@ description: |-
   Triages a Panorays "Self Company" finding incident end-to-end without depending on any specific external ITSM tool.
 
   Flow:
-  1. Checks for an existing open incident on the same Panorays Finding ID and closes duplicates.
+  1. Checks for an existing open (or pending) incident on the same Panorays Finding ID. If found, only the newer
+     of the two incidents (by incident ID) closes itself as a duplicate, so two near-simultaneous incidents for
+     the same finding can't both close in favor of the other.
   2. Branches on finding severity.
      - Low / Informational: auto-closed, no action required (closeReason/closeNotes configurable via inputs).
-     - Medium: a Cortex XSOAR task is created for an analyst to review.
+     - Medium: a Cortex XSOAR task is created for an analyst to review, after a summary is printed to the War Room.
      - Critical / High: a notification is sent (via whatever mail/chat integration implementing the generic
-       send-notification command is enabled) and a remediation task with an SLA is created natively in Cortex XSOAR.
-     - Any other/unexpected value (including empty): routed to a manual review task instead of being auto-closed,
-       since this field is free-form text from the API with no normalization.
+       send-notification command is enabled) and a remediation task with an SLA is created natively in Cortex
+       XSOAR, after a summary is printed to the War Room.
+     - Any other/unexpected value (including empty): a summary is printed to the War Room and the incident is
+       routed to a manual review task instead of being auto-closed, since this field is free-form text from the
+       API with no normalization.
   3. Remediation is tracked entirely with native Cortex XSOAR tasks - this pack does not assume a specific
      external ticketing product. See the README for how to extend this playbook with your own ITSM hand-off.
   4. Reminds the analyst to update the finding status back in Panorays once resolved (a future
      panorays-finding-update command can automate this step).
+  5. All paths converge on a final "Done" task.
 starttaskid: "0"
 tasks:
   "0":
@@ -49,17 +54,19 @@ tasks:
     task:
       id: b9d1f172-1cce-4d1e-841f-b1ca35a0eb28
       version: -1
-      name: Search for existing open incidents on this Finding ID
-      description: Looks for another open "Panorays Finding" incident already tracking this same finding.
-      script: Builtin|||getIncidents
+      name: Check for an older open/pending duplicate incident
+      description: >-
+        Calls PanoraysCheckOlderDuplicate, which looks up other open/pending "Panorays Finding" incidents with
+        the same Finding ID and a lower incident ID than this one, and returns a single explicit boolean output.
+      script: '|||PanoraysCheckOlderDuplicate'
       type: regular
       iscommand: true
-      brand: Builtin
+      brand: ""
     scriptarguments:
-      query:
-        simple: type:"Panorays Finding" and status:1 and panoraysfindingid:"${incident.panoraysfindingid}" and -id:${incident.id}
-      size:
-        simple: "1"
+      finding_id:
+        simple: ${incident.panoraysfindingid}
+      incident_id:
+        simple: ${incident.id}
     continueonerror: true
     nexttasks:
       '#none#':
@@ -80,19 +87,27 @@ tasks:
     task:
       id: 82c18da9-78e5-4d8b-9106-ced25bf4ee49
       version: -1
-      name: Is this a duplicate finding?
-      description: Checks whether another open incident is already tracking this same Panorays Finding ID.
+      name: Is this a duplicate finding, and is this incident the newer one?
+      description: >-
+        PanoraysCheckOlderDuplicate only reports true if another open/pending incident exists for the same
+        Finding ID with a lower incident ID. If true, this incident is the newer of the two and closes itself
+        as a duplicate; the older incident is never touched, so two incidents created at nearly the same time
+        can't both close in favor of the other.
       type: condition
       iscommand: false
       brand: ""
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
-              simple: foundIncidents
+              simple: PanoraysDuplicateCheck.OlderDuplicateExists
             iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     nexttasks:
       "yes":
       - "3"
@@ -122,11 +137,12 @@ tasks:
       brand: Builtin
     scriptarguments:
       closeReason:
-        simple: Duplicate
+        simple: ${inputs.DuplicateCloseReason}
       closeNotes:
-        simple: Auto-closed by playbook - duplicate of an already-open incident for Panorays Finding ID ${incident.panoraysfindingid}.
+        simple: ${inputs.DuplicateCloseNotes}
     nexttasks:
-      '#none#': []
+      '#none#':
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -210,13 +226,13 @@ tasks:
       "High":
       - "12"
       "Medium":
-      - "8"
+      - "16"
       "Low":
       - "7"
       "Informational":
       - "7"
       '#default#':
-      - "13"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -253,13 +269,13 @@ tasks:
       "yes":
       - "5"
       '#default#':
-      - "6"
+      - "15"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 100,
-          "y": 630
+          "y": 730
         }
       }
 
@@ -289,13 +305,45 @@ tasks:
     continueonerror: true
     nexttasks:
       '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 900
+        }
+      }
+
+  "15":
+    id: "15"
+    taskid: 8a2c4e6f-1b3d-4c5e-9f7a-2b4d6e8f0a1c
+    type: regular
+    task:
+      id: 8a2c4e6f-1b3d-4c5e-9f7a-2b4d6e8f0a1c
+      version: -1
+      name: Print finding summary to War Room (Critical/High)
+      description: Writes a summary of the finding to the War Room before handing off to the manual remediation task.
+      script: '|||Print'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      value:
+        simple: >-
+          Critical/High Panorays finding requires remediation. Asset: ${incident.panoraysfindingassetname},
+          Category: ${incident.panoraysfindingcategory}, Finding ID: ${incident.panoraysfindingid}.
+          Details: ${incident.panoraysfindingfindingtext}
+    continueonerror: true
+    nexttasks:
+      '#none#':
       - "6"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 100,
-          "y": 740
+          "y": 1070
         }
       }
 
@@ -317,13 +365,13 @@ tasks:
       minutes: 240
     nexttasks:
       '#none#':
-      - "11"
+      - "17"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 100,
-          "y": 910
+          "y": 1240
         }
       }
 
@@ -346,13 +394,45 @@ tasks:
       closeNotes:
         simple: ${inputs.AutoCloseNotes}
     nexttasks:
-      '#none#': []
+      '#none#':
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 740
+          "x": 1050,
+          "y": 730
+        }
+      }
+
+  "16":
+    id: "16"
+    taskid: 3d5f7a9b-2c4e-4f6a-8b0d-3c5e7f9a1b2d
+    type: regular
+    task:
+      id: 3d5f7a9b-2c4e-4f6a-8b0d-3c5e7f9a1b2d
+      version: -1
+      name: Print finding summary to War Room (Medium)
+      description: Writes a summary of the finding to the War Room before handing off to the manual review task.
+      script: '|||Print'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      value:
+        simple: >-
+          Medium-severity Panorays finding needs review. Asset: ${incident.panoraysfindingassetname},
+          Category: ${incident.panoraysfindingcategory}, Finding ID: ${incident.panoraysfindingid}.
+    continueonerror: true
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
         }
       }
 
@@ -374,13 +454,44 @@ tasks:
       minutes: 4320
     nexttasks:
       '#none#':
-      - "11"
+      - "17"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 910
+          "y": 900
+        }
+      }
+
+  "17":
+    id: "17"
+    taskid: 5c7e9f1a-3b5d-4e7f-9a1c-4b6d8f0a2b3e
+    type: regular
+    task:
+      id: 5c7e9f1a-3b5d-4e7f-9a1c-4b6d8f0a2b3e
+      version: -1
+      name: Print Panorays sync reminder to War Room
+      description: Writes a reminder to the War Room before the manual reminder task.
+      script: '|||Print'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      value:
+        simple: >-
+          Once this finding is resolved, remember to update its status back in Panorays
+          (Finding ID: ${incident.panoraysfindingid}).
+    continueonerror: true
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1410
         }
       }
 
@@ -399,13 +510,45 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#': []
+      '#none#':
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1250
+          "x": 275,
+          "y": 1580
+        }
+      }
+
+  "18":
+    id: "18"
+    taskid: 7e9f1c3a-5b7d-4e9f-8a1c-6b8d0f2a4b5c
+    type: regular
+    task:
+      id: 7e9f1c3a-5b7d-4e9f-8a1c-6b8d0f2a4b5c
+      version: -1
+      name: Print unrecognized severity summary to War Room
+      description: Writes a summary of the finding to the War Room before handing off to the manual review task.
+      script: '|||Print'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      value:
+        simple: >-
+          Panorays Finding Severity value "${incident.panoraysfindingseverity}" was not recognized. Manual
+          disposition required. Finding ID: ${incident.panoraysfindingid}, Asset: ${incident.panoraysfindingassetname}.
+    continueonerror: true
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 730
         }
       }
 
@@ -427,13 +570,35 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#': []
+      '#none#':
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 750,
-          "y": 560
+          "y": 900
+        }
+      }
+
+  "14":
+    id: "14"
+    taskid: 9b1d3f5a-7c9e-4b1d-8f3a-5c7e9f1b3d4a
+    type: title
+    task:
+      id: 9b1d3f5a-7c9e-4b1d-8f3a-5c7e9f1b3d4a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1750
         }
       }
 
@@ -442,8 +607,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1350,
-        "width": 1150,
+        "height": 1850,
+        "width": 1300,
         "x": -150,
         "y": 50
       }
@@ -472,6 +637,18 @@ inputs:
     simple: Auto-closed by playbook - low/informational severity, no remediation required.
   required: false
   description: closeNotes used when auto-closing Low/Informational severity findings.
+  playbookInputQuery:
+- key: DuplicateCloseReason
+  value:
+    simple: Duplicate
+  required: false
+  description: closeReason used when auto-closing this incident as a duplicate of an already-open incident.
+  playbookInputQuery:
+- key: DuplicateCloseNotes
+  value:
+    simple: Auto-closed by playbook - duplicate of an already-open incident for Panorays Finding ID ${incident.panoraysfindingid}.
+  required: false
+  description: closeNotes used when auto-closing this incident as a duplicate of an already-open incident.
   playbookInputQuery:
 outputs: []
 fromversion: 6.10.0
