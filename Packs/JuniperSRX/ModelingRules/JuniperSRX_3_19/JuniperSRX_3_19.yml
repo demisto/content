@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: JuniperSRX_ModelingRule
+name: JuniperSRX Modeling Rule
+rules: ''
+schema: ''
+tags: JuniperSRX
+supportedModules:
+- xsiam
