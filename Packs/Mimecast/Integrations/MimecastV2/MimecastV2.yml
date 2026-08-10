@@ -2513,8 +2513,12 @@ script:
       - address_attribute_value
       - individual_email_address
       required: true
-    - description: 'Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address.'
+    - description: 'Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. For address_attribute_value, use the from_attribute_id and from_attribute_value arguments instead.'
       name: fromValue
+    - description: The secure ID of the address attribute. Required if fromType is address_attribute_value.
+      name: from_attribute_id
+    - description: The value to which the address attribute is equal. Required if fromType is address_attribute_value.
+      name: from_attribute_value
     - auto: PREDEFINED
       description: Receiver type.
       name: toType
@@ -2527,8 +2531,12 @@ script:
       - address_attribute_value
       - individual_email_address
       required: true
-    - description: 'Required if toType is one of email_domain, profile_group, individual_email_address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.'
+    - description: 'Required if toType is one of email_domain, profile_group, individual_email_address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. For address_attribute_value, use the to_attribute_id and to_attribute_value arguments instead.'
       name: toValue
+    - description: The secure ID of the address attribute. Required if toType is address_attribute_value.
+      name: to_attribute_id
+    - description: The value to which the address attribute is equal. Required if toType is address_attribute_value.
+      name: to_attribute_value
     - auto: PREDEFINED
       description: The block option.
       name: option
@@ -2577,10 +2585,18 @@ script:
       predefined:
       - no_action
       - block_sender
-    - description: The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email_domain.
+    - description: The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email_domain. For address_attribute_value, use the from_attribute_id and from_attribute_value arguments instead.
       name: fromValue
-    - description: The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email_domain.
+    - description: The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email_domain. For address_attribute_value, use the to_attribute_id and to_attribute_value arguments instead.
       name: toValue
+    - description: The secure ID of the address attribute. Required if fromType is address_attribute_value.
+      name: from_attribute_id
+    - description: The value to which the address attribute is equal. Required if fromType is address_attribute_value.
+      name: from_attribute_value
+    - description: The secure ID of the address attribute. Required if toType is address_attribute_value.
+      name: to_attribute_id
+    - description: The value to which the address attribute is equal. Required if toType is address_attribute_value.
+      name: to_attribute_value
     - auto: PREDEFINED
       description: The part from where addresses are pulled.
       name: fromPart

@@ -1420,15 +1420,20 @@ def build_policy_target(target_type: str, value: str | None, attribute_id: str |
     Build a v2 policy target object (the 'from' or 'to' member of a blocked-senders policy).
 
     The key carrying the value depends on the target type: email_domain uses 'domain',
-    individual_email_address uses 'emailAddress', profile_group uses 'groupId'.
-    The remaining types (everyone, internal_addresses, external_addresses) carry no value at all.
+    individual_email_address uses 'emailAddress', profile_group uses 'groupId', and
+    address_attribute_value uses a nested 'attribute' object. The remaining types
+    (everyone, internal_addresses, external_addresses) carry no value at all.
     """
+    attribute = (
+        assign_params(id=attribute_id, value=attribute_value) if target_type == "address_attribute_value" else None
+    )
 
     return assign_params(
         type=target_type,
         domain=value if target_type == "email_domain" else None,
         emailAddress=value if target_type == "individual_email_address" else None,
         groupId=value if target_type == "profile_group" else None,
+        attribute=attribute,
     )
 
 
