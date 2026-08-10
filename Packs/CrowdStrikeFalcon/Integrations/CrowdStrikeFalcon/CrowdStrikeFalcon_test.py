@@ -11047,6 +11047,27 @@ class TestModuleTestConnectionErrors:
 
         assert "filters" in result
 
+    def test_full_traceback_is_written_to_the_debug_log(self, mocker):
+        """
+        Given:
+            - A connection failure during the test-module command.
+        When:
+            - The error is handled and a friendly message is returned to the user.
+        Then:
+            - The full traceback is written to the debug log for troubleshooting,
+              per the exception logging guideline.
+        """
+        from CrowdStrikeFalcon import module_test
+
+        debug_mock = mocker.patch.object(demisto, "debug")
+        mocker.patch("CrowdStrikeFalcon.get_token", side_effect=DemistoException(self.DNS_FAILURE_MESSAGE))
+
+        module_test()
+
+        logged = "".join(str(call) for call in debug_mock.call_args_list)
+        assert "Traceback" in logged
+        assert "DemistoException" in logged
+
     def test_csp_connection_error_is_handled_before_the_generic_main_handler(self, mocker):
         """
         Given:

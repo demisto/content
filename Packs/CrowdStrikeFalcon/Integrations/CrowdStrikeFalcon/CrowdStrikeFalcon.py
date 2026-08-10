@@ -7983,7 +7983,7 @@ def module_test():
     try:
         get_token(new_token=True)
     except (ValueError, DemistoException, requests.exceptions.RequestException) as e:
-        demisto.debug(f"test-module failed to obtain a token: {e}")
+        demisto.debug(f"test-module failed to obtain a token: {e}\n{traceback.format_exc()}")
         return (
             "Connection Error: Failed to reach the CrowdStrike Falcon server. Verify that the Server URL parameter is"
             " correct, that the API credentials are valid, and that the server is reachable from your host"
