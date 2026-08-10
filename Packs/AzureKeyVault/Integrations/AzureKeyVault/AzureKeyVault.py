@@ -1437,7 +1437,8 @@ def fetch_credentials(
                     credentials.append({"user": secret, "password": "", "name": f"{key_vault}/{secret}"})
                 else:
                     secret_cred = client.get_secret_credentials(key_vault, secret)
-                    credentials += [secret_cred] if secret_cred else []
+                    if secret_cred:
+                        credentials.append(secret_cred)
 
     demisto.credentials(credentials)
 
