@@ -6230,8 +6230,6 @@ def test_get_credentials_marketplace_no_project_id_anywhere_raises(mocker):
 # ---------------------------------------------------------------------------
 
 
-
-
 def _is_included_command(command_name: str) -> bool:
     """Return True if the command should be checked (not test-module / quick-action)."""
     return command_name != "test-module" and not command_name.endswith(QUICK_ACTION_SUFFIX)
