@@ -2,7 +2,6 @@ display: SOC Framework Pack Manager
 name: SOCFWPackManager
 description: Downloads a SOC Framework content pack from a ZIP URL and installs it on the tenant as system content. Used internally by the SOCFWPackManager script — end users invoke the script, not this integration directly.
 category: Utilities
-supportlevelheader: community
 fromversion: 8.0.0
 system: true
 sectionorder:
