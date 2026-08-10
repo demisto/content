@@ -1204,9 +1204,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
     return fetched
 
 
-def fetch_incidents(
-    client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, last_run: dict
-) -> tuple[list, dict]:
+def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, last_run: dict) -> tuple[list, dict]:
     """
     Fetches up to `fetch_limit` incidents created within the fetch time window.
     Each fetched incident includes its related alerts as raw data.
@@ -1229,10 +1227,7 @@ def fetch_incidents(
     filter_expression = f"createdDateTime gt {time_from} and createdDateTime le {time_to}"
     if filter:
         filter_expression += f" and {filter}"
-    url_suffix = (
-        f"security/incidents?$expand=alerts&$top={top}"
-        f"&$filter={filter_expression}&$orderby=createdDateTime asc"
-    )
+    url_suffix = f"security/incidents?$expand=alerts&$top={top}" f"&$filter={filter_expression}&$orderby=createdDateTime asc"
     # This header maps unknownFutureValue enum values to the appropriate real value (e.g. new service sources).
     headers = {"Prefer": "include-unknown-enum-members"}
     demisto.debug(f"Fetching MS Graph Security incidents. From: {time_from}. To: {time_to}.")

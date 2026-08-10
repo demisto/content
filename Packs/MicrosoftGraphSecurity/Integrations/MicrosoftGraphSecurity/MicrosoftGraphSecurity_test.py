@@ -26,6 +26,8 @@ from MicrosoftGraphSecurity import (
     create_url_assessment_request_command,
     created_by_fields_to_hr,
     fetch_alerts,
+    fetch_incidents,
+    fetch_incidents_and_alerts,
     get_alert_details_command,
     get_list_security_incident_command,
     get_message_user,
@@ -187,17 +189,172 @@ def test_fetch_alerts_command(mocker, test_case):
     mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19 08:14:21", "never mind"))
     test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
     mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
-    alerts = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", service_sources="")
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", service_sources="", last_run={})
     assert len(alerts) == 3
     assert alerts[0].get("severity") == 2
     assert alerts[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
 
-    alerts = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=1, filter="", service_sources="")
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=1, filter="", service_sources="", last_run={})
     assert len(alerts) == 1
     assert alerts[0].get("name") == "test alert - da637218501473413212_-1554891308"
 
-    alerts = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=0, filter="", service_sources="")
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=0, filter="", service_sources="", last_run={})
     assert len(alerts) == 0
+
+
+def test_fetch_incidents_command(mocker):
+    """
+    Given:
+    - A mocked /security/incidents response with two incidents, each embedding its alerts.
+
+    When:
+    - Running fetch_incidents with an empty last_run.
+
+    Then:
+    - Both incidents are mapped to XSOAR incidents (name/occurred/severity/rawJSON).
+    - The severity is mapped via SEVERITY_MAP and the embedded alerts are kept in rawJSON.
+    - The returned last_run advances to the newest incident's createdDateTime.
+    """
+    mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19T08:14:21.000000Z", "never mind"))
+    mock_response = {
+        "value": [
+            {
+                "id": "1",
+                "displayName": "Incident One",
+                "createdDateTime": "2020-04-20T10:00:00.0000000Z",
+                "severity": "medium",
+                "alerts": [{"id": "a1", "title": "alert one"}],
+            },
+            {
+                "id": "2",
+                "displayName": "Incident Two",
+                "createdDateTime": "2020-04-20T11:00:00.0000000Z",
+                "severity": "informational",
+                "alerts": [{"id": "a2", "title": "alert two"}],
+            },
+        ]
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
+
+    incidents, new_last_run = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", last_run={})
+
+    assert len(incidents) == 2
+    assert incidents[0].get("name") == "Incident One - 1"
+    assert incidents[0].get("severity") == 2
+    assert incidents[1].get("severity") == 0.5
+    assert '"alerts"' in incidents[0].get("rawJSON")
+    assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
+
+
+def test_fetch_incidents_command_dedup_by_last_run(mocker):
+    """
+    Given:
+    - A last_run cursor set to the first incident's createdDateTime.
+
+    When:
+    - Running fetch_incidents.
+
+    Then:
+    - Only the newer incident (created after the cursor) is returned.
+    """
+    mock_response = {
+        "value": [
+            {"id": "1", "displayName": "Old", "createdDateTime": "2020-04-20T10:00:00.0000000Z", "severity": "low"},
+            {"id": "2", "displayName": "New", "createdDateTime": "2020-04-20T11:00:00.0000000Z", "severity": "high"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
+
+    incidents, _ = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        filter="",
+        last_run={"time": "2020-04-20T10:00:00.0000000Z"},
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0].get("name") == "New - 2"
+
+
+def test_fetch_incidents_and_alerts_selection_gating(mocker):
+    """
+    Given:
+    - The "Fetch incidents type" parameter set to "Incidents" only.
+
+    When:
+    - Running fetch_incidents_and_alerts.
+
+    Then:
+    - Only fetch_incidents is called (alerts are not fetched).
+    - The combined last run is persisted under the per-type "incidents_last_run" key.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    fetch_alerts_mock = mocker.patch(
+        "MicrosoftGraphSecurity.fetch_alerts", return_value=([{"name": "alert"}], {"time": "alerts_cursor"})
+    )
+    fetch_incidents_mock = mocker.patch(
+        "MicrosoftGraphSecurity.fetch_incidents", return_value=([{"name": "incident"}], {"time": "incidents_cursor"})
+    )
+
+    result = fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": "Incidents"})
+
+    assert fetch_alerts_mock.call_count == 0
+    assert fetch_incidents_mock.call_count == 1
+    assert result == [{"name": "incident"}]
+    set_last_run.assert_called_once_with({"incidents_last_run": {"time": "incidents_cursor"}})
+
+
+def test_fetch_incidents_and_alerts_both_types(mocker):
+    """
+    Given:
+    - The "Fetch incidents type" parameter set to both "Alerts,Incidents".
+
+    When:
+    - Running fetch_incidents_and_alerts.
+
+    Then:
+    - Both fetchers are called and their results combined.
+    - Each type's cursor is stored under its own last-run key.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch("MicrosoftGraphSecurity.fetch_alerts", return_value=([{"name": "alert"}], {"time": "alerts_cursor"}))
+    mocker.patch("MicrosoftGraphSecurity.fetch_incidents", return_value=([{"name": "incident"}], {"time": "incidents_cursor"}))
+
+    result = fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": "Alerts,Incidents"})
+
+    assert {"name": "alert"} in result
+    assert {"name": "incident"} in result
+    set_last_run.assert_called_once_with(
+        {"alerts_last_run": {"time": "alerts_cursor"}, "incidents_last_run": {"time": "incidents_cursor"}}
+    )
+
+
+def test_fetch_incidents_and_alerts_defaults_to_alerts(mocker):
+    """
+    Given:
+    - No "Fetch incidents type" parameter provided.
+
+    When:
+    - Running fetch_incidents_and_alerts.
+
+    Then:
+    - It defaults to fetching Alerts only (backward compatible).
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(demisto, "setLastRun")
+    fetch_alerts_mock = mocker.patch(
+        "MicrosoftGraphSecurity.fetch_alerts", return_value=([{"name": "alert"}], {"time": "alerts_cursor"})
+    )
+    fetch_incidents_mock = mocker.patch("MicrosoftGraphSecurity.fetch_incidents", return_value=([], {}))
+
+    result = fetch_incidents_and_alerts(client_mocker, {})
+
+    assert fetch_alerts_mock.call_count == 1
+    assert fetch_incidents_mock.call_count == 0
+    assert result == [{"name": "alert"}]
 
 
 @pytest.mark.parametrize(

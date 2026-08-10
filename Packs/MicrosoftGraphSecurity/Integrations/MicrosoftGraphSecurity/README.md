@@ -38,7 +38,7 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 
 1. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
 2. SecurityIncident.Read.All - Delegated or Application (required for the command `msg-list-security-incident` and Fetch Incidents)
-3. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident`)
+3. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident` and Fetch Incidents)
 4. ThreatHunting.Read.All - Delegated or Application (required for the command `msg-advanced-hunting`)
 
 **Alerts**:
