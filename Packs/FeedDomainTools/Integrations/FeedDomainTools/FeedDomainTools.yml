@@ -51,7 +51,7 @@ configuration:
   - domainhotlist
   - iphotlist
   - iprisk
-  additionalinfo: The DomainTools feed type fo fetch. Defaults to 'ALL'.
+  additionalinfo: The DomainTools feed type to fetch. Defaults to 'ALL'.
   section: Collect
 - display: Fetch indicators
   name: feed
@@ -142,7 +142,7 @@ configuration:
   required: false
   section: Collect
 display: FeedDomainTools
-description: "Real-Time Threat Intelligence Feeds provide data on the different stages of the domain lifecycle: from first-observed in the wild, to newly re-activated after a period of quiet. Newly Active Domains surfaces apex-level domains seen for the first time or after ten or more days of inactivity. Newly Observed Domains surfaces domains that we observe for the first time."
+description: "Real-Time Threat Intelligence Feeds provide data on the different stages of the domain lifecycle: from first-observed in the wild, to newly re-activated after a period of quiet. Newly Active Domains surfaces apex-level domains seen for the first time or after ten or more days of inactivity. Newly Observed Domains surfaces domains that we observe for the first time. Also includes IP Hotlist and IP Risk feeds for identifying malicious IP addresses based on passive DNS resolutions, threat percentages, and geographic filters."
 name: FeedDomainTools
 provider: DomainTools
 script:
@@ -172,7 +172,7 @@ script:
       required: false
       secret: false
     - name: session_id
-      description: The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days.
+      description: The session id to serve as unique identifier. On it's initial use, it will retrieve data from the past 5 days.
       defaultValue: dt-cortex-feeds
       isArray: false
       default: false
@@ -200,6 +200,96 @@ script:
     - name: top
       description: Limits the number of results in the response payload.
       defaultValue: 50
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: pdns_resolutions_min
+      description: "IP Hotlist/IP Risk filter: minimum number of domains seen on this IP in the last 24 hours."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: bad_pdns_resolutions_min
+      description: "IP Hotlist/IP Risk filter: minimum number of confirmed bad domains seen on this IP in the last 24 hours."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: total_domains_max
+      description: "IP Hotlist/IP Risk filter: exclude IPs hosting more than this many total domains (removes superhosters)."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: third_party_threats_min
+      description: "IP Hotlist/IP Risk filter: minimum number of domains confirmed with threats on external feeds."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: all_threats_combined_percent_min
+      description: "IP Hotlist/IP Risk filter: minimum percentage of confirmed or predicted malicious domains (0-100)."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: combined_phishing_percent_min
+      description: "IP Hotlist/IP Risk filter: minimum combined phishing threat percentage (0-100)."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: combined_malware_percent_min
+      description: "IP Hotlist/IP Risk filter: minimum combined malware threat percentage (0-100)."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: combined_spam_percent_min
+      description: "IP Hotlist/IP Risk filter: minimum combined spam threat percentage (0-100)."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: asn
+      description: "IP Hotlist/IP Risk filter: filter by autonomous system number (digits only)."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: organization
+      description: "IP Hotlist/IP Risk filter: exact match organization name filter."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: country_code
+      description: "IP Hotlist/IP Risk filter: two-letter country code to filter by geographic location."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: percent_phishing_min
+      description: "IP Hotlist/IP Risk filter: minimum confirmed phishing percentage (0-100)."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: percent_malware_min
+      description: "IP Hotlist/IP Risk filter: minimum confirmed malware percentage (0-100)."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: percent_spam_min
+      description: "IP Hotlist/IP Risk filter: minimum confirmed spam percentage (0-100)."
+      isArray: false
+      default: false
+      required: false
+      secret: false
+    - name: all_threats_percent_min
+      description: "IP Risk filter: minimum percentage threshold for all threat classifications combined (0-100)."
       isArray: false
       default: false
       required: false

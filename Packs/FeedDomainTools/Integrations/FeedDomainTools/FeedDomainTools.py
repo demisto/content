@@ -82,6 +82,21 @@ class DomainToolsClient:
         after: str | None = None,
         before: str | None = None,
         top: int | None = None,
+        pdns_resolutions_min: int | None = None,
+        bad_pdns_resolutions_min: int | None = None,
+        total_domains_max: int | None = None,
+        third_party_threats_min: int | None = None,
+        all_threats_combined_percent_min: int | None = None,
+        combined_phishing_percent_min: int | None = None,
+        combined_malware_percent_min: int | None = None,
+        combined_spam_percent_min: int | None = None,
+        asn: int | None = None,
+        organization: str | None = None,
+        country_code: str | None = None,
+        percent_phishing_min: int | None = None,
+        percent_malware_min: int | None = None,
+        percent_spam_min: int | None = None,
+        all_threats_percent_min: int | None = None,
     ) -> list[str]:
         feed_type = feed_type.lower()
         method_name = self.FEED_METHOD_MAP.get(feed_type)
@@ -89,17 +104,36 @@ class DomainToolsClient:
             raise DemistoException(f"Unsupported feed type: '{feed_type}'. Valid types: {list(self.FEED_METHOD_MAP)}")
         api_method = getattr(self._api, method_name)
 
-        kwargs: dict[str, Any] = {
-            k: v
-            for k, v in {
-                "sessionID": session_id,
-                "domain": domain,
-                "after": after,
-                "before": before,
-                "top": top,
-            }.items()
-            if v is not None
+        base_params: dict[str, Any] = {
+            "sessionID": session_id,
+            "domain": domain,
+            "after": after,
+            "before": before,
+            "top": top,
         }
+
+        ip_feed_params: dict[str, Any] = {}
+        if feed_type in (self.IPHOTLIST, self.IPRISK):
+            ip_feed_params = {
+                "pdns_resolutions_min": pdns_resolutions_min,
+                "bad_pdns_resolutions_min": bad_pdns_resolutions_min,
+                "total_domains_max": total_domains_max,
+                "third_party_threats_min": third_party_threats_min,
+                "all_threats_combined_percent_min": all_threats_combined_percent_min,
+                "combined_phishing_percent_min": combined_phishing_percent_min,
+                "combined_malware_percent_min": combined_malware_percent_min,
+                "combined_spam_percent_min": combined_spam_percent_min,
+                "asn": asn,
+                "organization": organization,
+                "country_code": country_code,
+                "percent_phishing_min": percent_phishing_min,
+                "percent_malware_min": percent_malware_min,
+                "percent_spam_min": percent_spam_min,
+            }
+            if feed_type == self.IPRISK:
+                ip_feed_params["all_threats_percent_min"] = all_threats_percent_min
+
+        kwargs: dict[str, Any] = {k: v for k, v in {**base_params, **ip_feed_params}.items() if v is not None}
 
         demisto.info(f"Fetching DomainTools {feed_type.upper()} feed type with params: {kwargs}")
 
@@ -138,6 +172,21 @@ class DomainToolsClient:
         domain = dt_feed_kwargs.get("domain")
         after = dt_feed_kwargs.get("after")
         before = dt_feed_kwargs.get("before")
+        pdns_resolutions_min = dt_feed_kwargs.get("pdns_resolutions_min")
+        bad_pdns_resolutions_min = dt_feed_kwargs.get("bad_pdns_resolutions_min")
+        total_domains_max = dt_feed_kwargs.get("total_domains_max")
+        third_party_threats_min = dt_feed_kwargs.get("third_party_threats_min")
+        all_threats_combined_percent_min = dt_feed_kwargs.get("all_threats_combined_percent_min")
+        combined_phishing_percent_min = dt_feed_kwargs.get("combined_phishing_percent_min")
+        combined_malware_percent_min = dt_feed_kwargs.get("combined_malware_percent_min")
+        combined_spam_percent_min = dt_feed_kwargs.get("combined_spam_percent_min")
+        asn = dt_feed_kwargs.get("asn")
+        organization = dt_feed_kwargs.get("organization")
+        country_code = dt_feed_kwargs.get("country_code")
+        percent_phishing_min = dt_feed_kwargs.get("percent_phishing_min")
+        percent_malware_min = dt_feed_kwargs.get("percent_malware_min")
+        percent_spam_min = dt_feed_kwargs.get("percent_spam_min")
+        all_threats_percent_min = dt_feed_kwargs.get("all_threats_percent_min")
 
         demisto.info(f"Start building list of indicators for {feed_type} feed.")
 
@@ -159,6 +208,21 @@ class DomainToolsClient:
                 after=after,
                 before=before,
                 top=top,
+                pdns_resolutions_min=pdns_resolutions_min,
+                bad_pdns_resolutions_min=bad_pdns_resolutions_min,
+                total_domains_max=total_domains_max,
+                third_party_threats_min=third_party_threats_min,
+                all_threats_combined_percent_min=all_threats_combined_percent_min,
+                combined_phishing_percent_min=combined_phishing_percent_min,
+                combined_malware_percent_min=combined_malware_percent_min,
+                combined_spam_percent_min=combined_spam_percent_min,
+                asn=asn,
+                organization=organization,
+                country_code=country_code,
+                percent_phishing_min=percent_phishing_min,
+                percent_malware_min=percent_malware_min,
+                percent_spam_min=percent_spam_min,
+                all_threats_percent_min=all_threats_percent_min,
             )
 
             total_dt_feeds = len(dt_feeds)
@@ -372,6 +436,21 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
         "before": before,
         "domain": domain,
         "top": top,
+        "pdns_resolutions_min": arg_to_number(args.get("pdns_resolutions_min")),
+        "bad_pdns_resolutions_min": arg_to_number(args.get("bad_pdns_resolutions_min")),
+        "total_domains_max": arg_to_number(args.get("total_domains_max")),
+        "third_party_threats_min": arg_to_number(args.get("third_party_threats_min")),
+        "all_threats_combined_percent_min": arg_to_number(args.get("all_threats_combined_percent_min")),
+        "combined_phishing_percent_min": arg_to_number(args.get("combined_phishing_percent_min")),
+        "combined_malware_percent_min": arg_to_number(args.get("combined_malware_percent_min")),
+        "combined_spam_percent_min": arg_to_number(args.get("combined_spam_percent_min")),
+        "asn": arg_to_number(args.get("asn")),
+        "organization": args.get("organization"),
+        "country_code": args.get("country_code"),
+        "percent_phishing_min": arg_to_number(args.get("percent_phishing_min")),
+        "percent_malware_min": arg_to_number(args.get("percent_malware_min")),
+        "percent_spam_min": arg_to_number(args.get("percent_spam_min")),
+        "all_threats_percent_min": arg_to_number(args.get("all_threats_percent_min")),
     }
 
     demisto.debug(f"Fetching feed indicators by feed_type: {feed_type}")

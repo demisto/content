@@ -338,6 +338,95 @@ class TestGetDtFeeds:
 
         mock_method.assert_called_once()
 
+    def test_ip_filter_params_passed_for_iphotlist(self, mocker, dt_feeds_client):
+        """IP filter params are forwarded to the API for iphotlist feed type."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "iphotlist", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(
+            feed_type="iphotlist",
+            top=10,
+            pdns_resolutions_min=50,
+            country_code="RU",
+            combined_malware_percent_min=80,
+        )
+
+        call_kwargs = mock_method.call_args.kwargs
+        assert call_kwargs["pdns_resolutions_min"] == 50
+        assert call_kwargs["country_code"] == "RU"
+        assert call_kwargs["combined_malware_percent_min"] == 80
+        assert call_kwargs["top"] == 10
+
+    def test_all_threats_percent_min_passed_for_iprisk_only(self, mocker, dt_feeds_client):
+        """all_threats_percent_min is forwarded for iprisk but not for iphotlist."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+
+        mock_iprisk = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "iprisk", mock_iprisk, create=True)
+        dt_feeds_client._get_dt_feeds(feed_type="iprisk", all_threats_percent_min=60)
+        assert mock_iprisk.call_args.kwargs.get("all_threats_percent_min") == 60
+
+        mock_response2 = mocker.MagicMock()
+        mock_response2.response.return_value = iter([])
+        mock_iphotlist = mocker.MagicMock(return_value=mock_response2)
+        mocker.patch.object(dt_feeds_client._api, "iphotlist", mock_iphotlist, create=True)
+        dt_feeds_client._get_dt_feeds(feed_type="iphotlist", all_threats_percent_min=60)
+        assert "all_threats_percent_min" not in mock_iphotlist.call_args.kwargs
+
+    def test_ip_filter_params_not_passed_for_non_ip_feed(self, mocker, dt_feeds_client):
+        """IP filter params are not forwarded to the API for non-IP feed types."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "nod", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(
+            feed_type="nod",
+            top=10,
+            pdns_resolutions_min=50,
+            country_code="RU",
+        )
+
+        call_kwargs = mock_method.call_args.kwargs
+        assert "pdns_resolutions_min" not in call_kwargs
+        assert "country_code" not in call_kwargs
+        assert call_kwargs == {"top": 10}
+
+
+def test_get_indicators_command_passes_ip_filters(mocker, dt_feeds_client):
+    """
+    Given:
+        - iphotlist feed type with IP filter arguments
+    When:
+        - get_indicators_command is called
+    Then:
+        - IP filter kwargs are forwarded to _get_dt_feeds
+    """
+    mock_response = mocker.MagicMock()
+    mock_response.response.return_value = iter(feed_mock_response.IPHOTLIST_RESPONSE)
+    mock_method = mocker.MagicMock(return_value=mock_response)
+    mocker.patch.object(dt_feeds_client._api, "iphotlist", mock_method, create=True)
+
+    get_indicators_command(
+        dt_feeds_client,
+        args={
+            "feed_type": "iphotlist",
+            "top": "5",
+            "pdns_resolutions_min": "50",
+            "country_code": "RU",
+            "combined_malware_percent_min": "80",
+        },
+        params={},
+    )
+
+    call_kwargs = mock_method.call_args.kwargs
+    assert call_kwargs.get("pdns_resolutions_min") == 50
+    assert call_kwargs.get("country_code") == "RU"
+    assert call_kwargs.get("combined_malware_percent_min") == 80
+
 
 def test_missing_credentials():
     """DomainToolsClient raises DemistoException when credentials are empty."""
