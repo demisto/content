@@ -12,5 +12,9 @@
 	"keyTypeMap": {
 		"mail-listener": "Phishing"
 	},
-	"fromVersion": "6.0.0"
+	"fromVersion": "6.0.0",
+	"supportedModules": [
+		"agentix",
+		"xsiam"
+	]
 }
