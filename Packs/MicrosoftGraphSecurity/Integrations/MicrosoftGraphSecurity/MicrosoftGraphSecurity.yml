@@ -169,6 +169,9 @@ configuration:
   options:
   - Alerts
   - Incidents
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   name: fetch_time
@@ -188,6 +191,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Alerts Filter
   additionalinfo: Use this field to filter fetched alerts according to their properties. Applies only when fetching Alerts. Overrides the service sources list, if given. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   name: fetch_filter
@@ -195,6 +201,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Filter
   additionalinfo: Use this field to filter fetched incidents according to their properties. Applies only when fetching Incidents. Filter should be in the format "{property} eq '{property-value}'". Multiple filters can be applied separated with " and ", for example "severity eq 'high' and status eq 'active'".
   name: fetch_incidents_filter
@@ -202,6 +211,9 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Microsoft 365 Defender context
   name: microsoft_365_defender_context
   defaultvalue: "false"
