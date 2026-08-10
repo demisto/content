@@ -1751,11 +1751,12 @@ def _summarize_identity_set(identity_set: dict) -> str:
 
 
 def _summarize_activity_actions(activity: dict) -> str:
-    """Summarize which action types an itemActivity represents.
+    """Summarize which action facets an itemActivity represents.
 
-    The v1.0 itemActivity resource exposes 'access' as the only action facet. Any other facets
-    that appear are surfaced too, so the readable output stays useful if Microsoft Graph adds
-    more without requiring a code change.
+    The v1.0 itemActivity nests its facets under 'action', for example
+    {"edit": {}, "version": {"newVersion": "2.0"}} or {"share": {}}. The facet *names* carry the
+    information - most of them have an empty object as their value. Any facet Microsoft Graph
+    adds later is surfaced automatically, so this needs no change to keep working.
 
     Args:
         activity: A parsed itemActivity.
@@ -1763,9 +1764,35 @@ def _summarize_activity_actions(activity: dict) -> str:
     Returns:
         A comma-separated list of action names, or an empty string.
     """
-    non_action_keys = {"ID", "Actor", "ActivityDateTime", "DriveItem", "ListItem", "Times"}
-    actions = [key for key, value in activity.items() if key not in non_action_keys and isinstance(value, dict)]
-    return ", ".join(sorted(actions))
+    action = activity.get("Action")
+    if not isinstance(action, dict):
+        return ""
+    labels = []
+    for name in sorted(action):
+        details = action[name]
+        # 'version' is the one facet with a useful payload, so include the resulting version.
+        new_version = details.get("NewVersion") if isinstance(details, dict) else None
+        labels.append(f"{name} ({new_version})" if new_version else name)
+    return ", ".join(labels)
+
+
+def _activity_recorded_time(activity: dict) -> str:
+    """Return the timestamp of an itemActivity.
+
+    The v1.0 payload carries the timestamp as 'times.recordedDateTime'. 'activityDateTime' is
+    accepted as a fallback because it appears on the beta endpoint and in parts of the
+    documentation, so both shapes render correctly.
+
+    Args:
+        activity: A parsed itemActivity.
+
+    Returns:
+        An ISO timestamp, or an empty string.
+    """
+    times = activity.get("Times")
+    if isinstance(times, dict) and times.get("RecordedDateTime"):
+        return times["RecordedDateTime"]
+    return activity.get("ActivityDateTime") or ""
 
 
 def _summarize_permission_grantees(perm: dict) -> str:
@@ -2022,7 +2049,7 @@ def list_driveitem_activities_command(client: MsGraphClient, args: dict[str, str
         readable_rows = [
             {
                 "ID": activity.get("ID"),
-                "ActivityDateTime": activity.get("ActivityDateTime"),
+                "RecordedDateTime": _activity_recorded_time(activity),
                 "Actor": _summarize_identity_set(activity.get("Actor") or {}),
                 "Action": _summarize_activity_actions(activity),
             }

@@ -2280,19 +2280,23 @@ def test_get_driveitem_command_requires_exactly_one_addressing_argument():
     assert "Provide only one of the following arguments, but got item_id, share_url." in str(exc_info.value)
 
 
+# Shaped from a real v1.0 response captured against a live tenant. The action facets are nested
+# under 'action' and the timestamp lives at 'times.recordedDateTime' - NOT at a top-level
+# 'activityDateTime', which is what the beta endpoint and parts of the documentation describe.
 DRIVEITEM_ACTIVITIES_RESPONSE = {
     "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#activities",
     "value": [
         {
             "id": "wDv99w9U3khuO0MPAAAAAA==",
-            "access": {},
-            "activityDateTime": "2026-01-15T08:27:49Z",
+            "action": {"share": {}},
+            "times": {"recordedDateTime": "2026-01-15T08:27:49Z"},
             "actor": {"user": {"displayName": "Shai Cohen Kadosh", "email": "s@example.com"}},
         },
         {
             "id": "8DvNr6FL3kgZ9D8PAAAAAA==",
-            "access": {},
-            "activityDateTime": "2026-01-04T14:58:14Z",
+            # Multiple facets at once, one of which carries a payload worth surfacing.
+            "action": {"edit": {}, "version": {"newVersion": "2.0"}},
+            "times": {"recordedDateTime": "2026-01-04T14:58:14Z"},
             "actor": {"user": {"displayName": "Someone Else"}},
         },
     ],
@@ -2317,9 +2321,17 @@ def test_list_driveitem_activities_command_with_drives_object_type(mocker: Mocke
     assert result.outputs_prefix == "MsGraphFiles.ItemActivity"
     assert len(result.outputs["Value"]) == 2
     assert result.outputs["Value"][0]["ID"] == "wDv99w9U3khuO0MPAAAAAA=="
-    # The v1.0 schema uses activityDateTime, not the times.recordedDateTime of the beta endpoint.
-    assert result.outputs["Value"][0]["ActivityDateTime"] == "2026-01-15T08:27:49Z"
+    # The v1.0 schema carries the timestamp at times.recordedDateTime.
+    assert result.outputs["Value"][0]["Times"]["RecordedDateTime"] == "2026-01-15T08:27:49Z"
     assert "Shai Cohen Kadosh" in result.readable_output or "s@example.com" in result.readable_output
+    # The table must show the real facet name and the timestamp - a regression here previously
+    # rendered the literal word "Action" and dropped the date column entirely.
+    # Facet names arrive title-cased because parse_key_to_context normalizes every key.
+    assert "Share" in result.readable_output
+    assert "2026-01-15T08:27:49Z" in result.readable_output
+    assert "Recorded Date Time" in result.readable_output
+    # The version facet carries a payload worth surfacing alongside the facet name.
+    assert "Edit, Version (2.0)" in result.readable_output
 
 
 def test_list_driveitem_activities_command_resolves_drive_for_sites(mocker: MockerFixture):

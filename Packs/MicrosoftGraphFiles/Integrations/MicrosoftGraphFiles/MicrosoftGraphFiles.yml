@@ -1196,12 +1196,15 @@ script:
     - contextPath: MsGraphFiles.ItemActivity.Value.ID
       description: The unique identifier of the activity.
       type: String
-    - contextPath: MsGraphFiles.ItemActivity.Value.ActivityDateTime
-      description: The date and time the activity took place.
+    - contextPath: MsGraphFiles.ItemActivity.Value.Times.RecordedDateTime
+      description: The date and time the activity was recorded.
       type: Date
-    - contextPath: MsGraphFiles.ItemActivity.Value.Access
-      description: Details of the access action, when the activity was an access event.
+    - contextPath: MsGraphFiles.ItemActivity.Value.Action
+      description: The action facets of the activity, for example Access, Edit, Share, Rename, Move, Delete, Restore, Comment or Version. Each facet is present only when the activity included that action.
       type: Unknown
+    - contextPath: MsGraphFiles.ItemActivity.Value.Action.Version.NewVersion
+      description: The resulting version number, when the activity created a new version.
+      type: String
     - contextPath: MsGraphFiles.ItemActivity.Value.Actor.User.DisplayName
       description: The display name of the user who performed the activity.
       type: String

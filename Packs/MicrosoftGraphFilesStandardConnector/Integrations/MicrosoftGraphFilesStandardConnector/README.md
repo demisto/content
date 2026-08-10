@@ -1236,6 +1236,78 @@ Deletes (revokes) a single sharing permission from a driveItem. Returns success 
 | MsGraphFiles.RemovedItemPermission.ObjectType | String | Echo of the object_type argument supplied to the command. |
 | MsGraphFiles.RemovedItemPermission.ObjectTypeId | String | Echo of the object_type_id argument supplied to the command. |
 
+### msgraph-driveitem-analytics-get
+
+***
+Retrieves activity statistics for a file or folder (driveItem), such as how many times it was viewed and by how many people.
+Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error.
+
+#### Base Command
+
+`msgraph-driveitem-analytics-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource that holds the file. For 'sites', 'groups' and 'users' the command first resolves the default drive, because Microsoft Graph only documents per-item analytics under /drives. Possible values are: drives, groups, sites, users. Default is drives. | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.<br/>For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required | 
+| item_id | The ID of the driveItem whose analytics to retrieve.<br/>To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-get command.<br/>Note: this endpoint does not support addressing the item by path. | Required | 
+| time_range | The time range the statistics cover. Possible values are: allTime, lastSevenDays. Default is allTime. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraphFiles.ItemAnalytics.ItemId | String | Echo of the item_id argument supplied to the command \(for context joining\). | 
+| MsGraphFiles.ItemAnalytics.ObjectType | String | Echo of the object_type argument supplied to the command. | 
+| MsGraphFiles.ItemAnalytics.ObjectTypeId | String | Echo of the object_type_id argument supplied to the command. | 
+| MsGraphFiles.ItemAnalytics.TimeRange | String | The time range the returned statistics cover. | 
+| MsGraphFiles.ItemAnalytics.Stats.StartDateTime | Date | The start of the time range the statistics cover. | 
+| MsGraphFiles.ItemAnalytics.Stats.EndDateTime | Date | The end of the time range the statistics cover. | 
+| MsGraphFiles.ItemAnalytics.Stats.Access.ActionCount | Number | The number of times the item was accessed. | 
+| MsGraphFiles.ItemAnalytics.Stats.Access.ActorCount | Number | The number of distinct users who accessed the item. | 
+| MsGraphFiles.ItemAnalytics.Stats.Edit.ActionCount | Number | The number of times the item was edited. | 
+| MsGraphFiles.ItemAnalytics.Stats.Edit.ActorCount | Number | The number of distinct users who edited the item. | 
+
+### msgraph-driveitem-activities-list
+
+***
+Retrieves the recent activities that took place on a file or folder (driveItem), such as who accessed it and when.
+Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error. Activities are not available for personal Microsoft accounts.
+
+#### Base Command
+
+`msgraph-driveitem-activities-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The MS Graph resource. For 'sites', 'groups' and 'users' the command first resolves the default drive, because Microsoft Graph only documents this endpoint under /drives. Possible values are: drives, groups, sites, users. Default is drives. | Required | 
+| object_type_id | MS Graph resource ID.<br/>For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.<br/>For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required | 
+| item_id | The ID of the driveItem whose activities to retrieve.<br/>To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-get command.<br/>Note: this endpoint does not support addressing the item by path. | Required | 
+| limit | The maximum number of activities to return. This endpoint does not support server-side paging parameters, so the limit is applied after the results are retrieved. | Optional | 
+| next_page_url | The URL for the next results page (the @odata.nextLink value from a previous response, surfaced under MsGraphFiles.ItemActivity.NextToken). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraphFiles.ItemActivity.Value.ID | String | The unique identifier of the activity. | 
+| MsGraphFiles.ItemActivity.Value.Times.RecordedDateTime | Date | The date and time the activity was recorded. | 
+| MsGraphFiles.ItemActivity.Value.Action | Unknown | The action facets of the activity, for example Access, Edit, Share, Rename, Move, Delete, Restore, Comment or Version. Each facet is present only when the activity included that action. | 
+| MsGraphFiles.ItemActivity.Value.Action.Version.NewVersion | String | The resulting version number, when the activity created a new version. | 
+| MsGraphFiles.ItemActivity.Value.Actor.User.DisplayName | String | The display name of the user who performed the activity. | 
+| MsGraphFiles.ItemActivity.Value.Actor.User.Email | String | The email of the user who performed the activity. | 
+| MsGraphFiles.ItemActivity.Value.Actor.User.ID | String | The ID of the user who performed the activity. | 
+| MsGraphFiles.ItemActivity.Value.DriveItem.ID | String | The ID of the driveItem the activity relates to. | 
+| MsGraphFiles.ItemActivity.ItemId | String | Echo of the item_id argument supplied to the command \(for context joining\). | 
+| MsGraphFiles.ItemActivity.ObjectType | String | Echo of the object_type argument supplied to the command. | 
+| MsGraphFiles.ItemActivity.ObjectTypeId | String | Echo of the object_type_id argument supplied to the command. | 
+| MsGraphFiles.ItemActivity.OdataContext | String | The OData context. | 
+| MsGraphFiles.ItemActivity.NextToken | String | The @odata.nextLink value. Pass this to next_page_url to fetch the next page. | 
+
 ### msgraph-driveitem-sensitivity-labels-extract
 
 ***
@@ -1269,43 +1341,6 @@ Note: if the file is locked (for example because it uses double key encryption),
 | MsGraphFiles.ExtractedSensitivityLabels.Labels.Tooltip | String | The tooltip describing the sensitivity label. | 
 | MsGraphFiles.ExtractedSensitivityLabels.Labels.IsEncrypted | Boolean | Whether the label applies encryption to the file. | 
 | MsGraphFiles.ExtractedSensitivityLabels.Labels.AssignmentMethod | String | How the label was applied, for example standard, privileged or auto. | 
-
-### msgraph-driveitem-activities-list
-
-***
-Retrieves the recent activities that took place on a file or folder (driveItem), such as who accessed it and when.
-Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error. Activities are not available for personal Microsoft accounts.
-
-#### Base Command
-
-`msgraph-driveitem-activities-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_type | The MS Graph resource. For 'sites', 'groups' and 'users' the command first resolves the default drive, because Microsoft Graph only documents this endpoint under /drives. Possible values are: drives, groups, sites, users. Default is drives. | Required | 
-| object_type_id | MS Graph resource ID.<br/>For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.<br/>For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required | 
-| item_id | The ID of the driveItem whose activities to retrieve.<br/>To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-get command.<br/>Note: this endpoint does not support addressing the item by path. | Required | 
-| limit | The maximum number of activities to return. This endpoint does not support server-side paging parameters, so the limit is applied after the results are retrieved. | Optional | 
-| next_page_url | The URL for the next results page (the @odata.nextLink value from a previous response, surfaced under MsGraphFiles.ItemActivity.NextToken). | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MsGraphFiles.ItemActivity.Value.ID | String | The unique identifier of the activity. | 
-| MsGraphFiles.ItemActivity.Value.ActivityDateTime | Date | The date and time the activity took place. | 
-| MsGraphFiles.ItemActivity.Value.Access | Unknown | Details of the access action, when the activity was an access event. | 
-| MsGraphFiles.ItemActivity.Value.Actor.User.DisplayName | String | The display name of the user who performed the activity. | 
-| MsGraphFiles.ItemActivity.Value.Actor.User.Email | String | The email of the user who performed the activity. | 
-| MsGraphFiles.ItemActivity.Value.Actor.User.ID | String | The ID of the user who performed the activity. | 
-| MsGraphFiles.ItemActivity.Value.DriveItem.ID | String | The ID of the driveItem the activity relates to. | 
-| MsGraphFiles.ItemActivity.ItemId | String | Echo of the item_id argument supplied to the command \(for context joining\). | 
-| MsGraphFiles.ItemActivity.ObjectType | String | Echo of the object_type argument supplied to the command. | 
-| MsGraphFiles.ItemActivity.ObjectTypeId | String | Echo of the object_type_id argument supplied to the command. | 
-| MsGraphFiles.ItemActivity.OdataContext | String | The OData context. | 
-| MsGraphFiles.ItemActivity.NextToken | String | The @odata.nextLink value. Pass this to next_page_url to fetch the next page. | 
 
 ### msgraph-driveitem-get
 
@@ -1349,38 +1384,4 @@ Retrieves the metadata of a file or folder (driveItem). The item can be addresse
 | MsGraphFiles.Files.ParentReference.SiteId | String | The ID of the site containing the parent folder. | 
 | MsGraphFiles.Files.SharepointIds.ListItemUniqueId | String | The unique identifier of the item within the SharePoint list. Used to correlate the driveItem with SharePoint list items. | 
 | MsGraphFiles.Files.SharepointIds.SiteId | String | The SharePoint site identifier. | 
-
-### msgraph-driveitem-analytics-get
-
-***
-Retrieves activity statistics for a file or folder (driveItem), such as how many times it was viewed and by how many people.
-Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error.
-
-#### Base Command
-
-`msgraph-driveitem-analytics-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| object_type | The MS Graph resource that holds the file. For 'sites', 'groups' and 'users' the command first resolves the default drive, because Microsoft Graph only documents per-item analytics under /drives. Possible values are: drives, groups, sites, users. Default is drives. | Required | 
-| object_type_id | MS Graph resource ID.<br/>For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.<br/>For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.<br/>For resource type 'sites': use the msgraph-list-sharepoint-sites command.<br/>For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command. | Required | 
-| item_id | The ID of the driveItem whose analytics to retrieve.<br/>To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-get command.<br/>Note: this endpoint does not support addressing the item by path. | Required | 
-| time_range | The time range the statistics cover. Possible values are: allTime, lastSevenDays. Default is allTime. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MsGraphFiles.ItemAnalytics.ItemId | String | Echo of the item_id argument supplied to the command \(for context joining\). | 
-| MsGraphFiles.ItemAnalytics.ObjectType | String | Echo of the object_type argument supplied to the command. | 
-| MsGraphFiles.ItemAnalytics.ObjectTypeId | String | Echo of the object_type_id argument supplied to the command. | 
-| MsGraphFiles.ItemAnalytics.TimeRange | String | The time range the returned statistics cover. | 
-| MsGraphFiles.ItemAnalytics.Stats.StartDateTime | Date | The start of the time range the statistics cover. | 
-| MsGraphFiles.ItemAnalytics.Stats.EndDateTime | Date | The end of the time range the statistics cover. | 
-| MsGraphFiles.ItemAnalytics.Stats.Access.ActionCount | Number | The number of times the item was accessed. | 
-| MsGraphFiles.ItemAnalytics.Stats.Access.ActorCount | Number | The number of distinct users who accessed the item. | 
-| MsGraphFiles.ItemAnalytics.Stats.Edit.ActionCount | Number | The number of times the item was edited. | 
-| MsGraphFiles.ItemAnalytics.Stats.Edit.ActorCount | Number | The number of distinct users who edited the item. | 
 
