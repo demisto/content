@@ -22,12 +22,12 @@ configuration:
   type: 9
   required: true
   section: Connect
-- display: Number of incidents to fetch per fetch
+- display: Number of events to fetch per fetch
   name: limit
   type: 0
   defaultvalue: 10000
   required: true
-  additionalinfo: 'The total number of incidents to retrieve in each fetch cycle. The integration paginates automatically; the Okta API returns at most 1000 records per request.'
+  additionalinfo: 'The total number of events to retrieve in each fetch cycle. The integration paginates automatically; the Okta API returns at most 1000 records per request.'
   section: Collect
 - display: First fetch from API time
   name: after
