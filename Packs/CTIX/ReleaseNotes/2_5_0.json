@@ -1,0 +1,1 @@
+{"breakingChanges": true, "breakingChangesNotes": "The legacy CTIX integration is deprecated. Existing instances, playbooks, and automations depending on it should migrate to Cyware Intel Exchange."}
