@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Incapsula_ModelingRule
+name: Incapsula Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
