@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: BeyondTrustRemoteSupport_ModelingRule
+name: BeyondTrustRemoteSupport Modeling Rule
+rules: ''
+schema: ''
+tags: BeyondTrust
+supportedModules:
+- xsiam
