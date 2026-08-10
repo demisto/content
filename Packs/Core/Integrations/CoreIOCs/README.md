@@ -102,6 +102,8 @@ There is no context output for this command.
 ***
 Enables IOCs in the Cortex server.
 
+> **Note:** This command applies only to TIM-managed indicators (indicators that were synced/pushed to the Cortex server by this integration). Enabling an indicator that is not managed by TIM has no effect.
+
 #### Base Command
 
 `core-iocs-enable`
@@ -110,7 +112,7 @@ Enables IOCs in the Cortex server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator | The indicator to enable. | Required |
+| indicator | The indicator to enable. Only TIM-managed indicators (synced/pushed by this integration) can be enabled; indicators from other sources are not affected. | Required |
 
 #### Context Output
 
@@ -129,6 +131,8 @@ There is no context output for this command.
 ***
 Disables IOCs in the Cortex server.
 
+> **Note:** This command applies only to TIM-managed indicators (indicators that were synced/pushed to the Cortex server by this integration). Disabling an indicator that is not managed by TIM has no effect.
+
 #### Base Command
 
 `core-iocs-disable`
@@ -137,7 +141,7 @@ Disables IOCs in the Cortex server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator | The indicator to disable. | Required |
+| indicator | The indicator to disable. Only TIM-managed indicators (synced/pushed by this integration) can be disabled; indicators from other sources are not affected. | Required |
 
 #### Context Output
 
