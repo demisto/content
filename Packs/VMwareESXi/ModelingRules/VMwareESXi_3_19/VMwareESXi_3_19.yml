@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: VMwareESXi_ModelingRule
+name: VMwareESXi Modeling Rule
+rules: ''
+schema: ''
+tags: VMwareESXi
+supportedModules:
+- xsiam
