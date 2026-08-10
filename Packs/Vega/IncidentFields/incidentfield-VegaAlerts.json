@@ -1,0 +1,72 @@
+{
+    "id": "incident_vegaalerts",
+    "version": -1,
+    "name": "Vega Alerts",
+    "ownerOnly": false,
+    "description": "Alerts associated with this Vega incident.",
+    "cliName": "vegaalerts",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "alertId",
+            "displayName": "Alert ID",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 300,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "name",
+            "displayName": "Name",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 300,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "createdAt",
+            "displayName": "Created At",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 200,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
