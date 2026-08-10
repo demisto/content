@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: SafeNet_Trusted_Access_ModelingRule
+name: SafeNet_Trusted_Access Modeling Rule
+rules: ''
+schema: ''
+tags: safenet
+supportedModules:
+- xsiam

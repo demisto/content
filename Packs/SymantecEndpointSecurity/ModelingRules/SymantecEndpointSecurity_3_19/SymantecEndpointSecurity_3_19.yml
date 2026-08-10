@@ -1,0 +1,9 @@
+
+fromversion: 8.15.0
+id: SymantecEndpointSecurity_ModelingRule
+name: SymantecEndpointSecurity Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
