@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: GenesysCloud_ModelingRule
+name: GenesysCloud Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
