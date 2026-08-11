@@ -14,40 +14,47 @@ configuration:
   defaultvalue:
   type: 0
   additionalinfo:
+  section: Connect
 - name: server_url
   display: Server URL
   required: true
   defaultvalue: https://api.bitbucket.org/2.0
   type: 0
   additionalinfo:
+  section: Connect
 - display: User Name
   name: credentials
   required: false
   type: 9
   displaypassword: API Token
   additionalinfo: Basic authentication. The User Name is your Atlassian account email address, and the API Token is a scoped API token created at https://id.atlassian.com/manage-profile/security/api-tokens.
+  section: Connect
 - display: Client ID
   name: client_credentials
   required: false
   type: 9
   displaypassword: Client Secret
   additionalinfo: OAuth 2.0 client-credentials authentication. The Client ID and Client Secret are the key and secret of an OAuth consumer created in the Bitbucket workspace settings (Apps and features -> OAuth clients).
+  section: Connect
 - name: repository
   display: Repository
   defaultvalue:
   type: 0
   additionalinfo:
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
   required: false
+  section: Connect
 script:
   commands:
   - name: bitbucket-project-list
@@ -2340,3 +2347,5 @@ script:
   dockerimage: demisto/python3:3.12.13.11753038
 tests:
 - Test_Bitbucket
+sectionorder:
+- Connect
