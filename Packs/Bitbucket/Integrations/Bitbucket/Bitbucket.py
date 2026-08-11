@@ -57,8 +57,9 @@ class Client(BaseClient):
         integration_context = get_integration_context()
         access_token = integration_context.get("access_token")
         valid_until = integration_context.get("valid_until")
+        cached_client_id = integration_context.get("client_id")
         now = int(time.time())
-        if access_token and valid_until and now < valid_until:
+        if access_token and valid_until and now < valid_until and cached_client_id == self.client_id:
             demisto.debug("Using cached OAuth access token.")
             return access_token
 
@@ -72,7 +73,7 @@ class Client(BaseClient):
         access_token = response.get("access_token", "")
         expires_in = arg_to_number(response.get("expires_in")) or 0
         valid_until = now + expires_in - TOKEN_SAFETY_MARGIN
-        set_integration_context({"access_token": access_token, "valid_until": valid_until})
+        set_integration_context({"access_token": access_token, "valid_until": valid_until, "client_id": self.client_id})
         demisto.debug(f"Generated a new OAuth access token, expires at {valid_until}.")
         return access_token
 

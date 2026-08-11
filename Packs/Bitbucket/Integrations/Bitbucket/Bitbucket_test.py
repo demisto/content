@@ -729,7 +729,7 @@ class TestOAuthAccessToken:
 
         assert access_token == "tok123"
         Bitbucket.set_integration_context.assert_called_once()
-        assert integration_context == {"access_token": "tok123", "valid_until": frozen_time + 7200 - 60}
+        assert integration_context == {"access_token": "tok123", "valid_until": frozen_time + 7200 - 60, "client_id": "client_id"}
 
     def test_reuses_the_cached_token_while_it_is_still_valid(
         self, mocker, bitbucket_oauth_client, integration_context, frozen_time
@@ -744,14 +744,14 @@ class TestOAuthAccessToken:
         """
         from CommonServerPython import BaseClient
 
-        integration_context.update({"access_token": "cached_token", "valid_until": frozen_time + 100})
+        integration_context.update({"access_token": "cached_token", "valid_until": frozen_time + 100, "client_id": "client_id"})
         base_http_request = mocker.patch.object(BaseClient, "_http_request")
 
         access_token = bitbucket_oauth_client.get_access_token()
 
         assert access_token == "cached_token"
         base_http_request.assert_not_called()
-        assert integration_context == {"access_token": "cached_token", "valid_until": frozen_time + 100}
+        assert integration_context == {"access_token": "cached_token", "valid_until": frozen_time + 100, "client_id": "client_id"}
 
     @pytest.mark.parametrize("valid_until_offset", [-3600, 0], ids=["already_expired", "expiring_exactly_now"])
     def test_replaces_a_token_that_is_no_longer_valid(
@@ -767,14 +767,16 @@ class TestOAuthAccessToken:
         """
         from CommonServerPython import BaseClient
 
-        integration_context.update({"access_token": "old_token", "valid_until": frozen_time + valid_until_offset})
+        integration_context.update(
+            {"access_token": "old_token", "valid_until": frozen_time + valid_until_offset, "client_id": "client_id"}
+        )
         base_http_request = mocker.patch.object(BaseClient, "_http_request", return_value=OAUTH_TOKEN_RESPONSE)
 
         access_token = bitbucket_oauth_client.get_access_token()
 
         assert access_token == "tok123"
         assert base_http_request.call_count == 1
-        assert integration_context == {"access_token": "tok123", "valid_until": frozen_time + 7200 - 60}
+        assert integration_context == {"access_token": "tok123", "valid_until": frozen_time + 7200 - 60, "client_id": "client_id"}
 
     def test_requests_a_client_credentials_grant(self, mocker, bitbucket_oauth_client, integration_context, frozen_time):
         """
@@ -799,6 +801,33 @@ class TestOAuthAccessToken:
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             data={"grant_type": "client_credentials"},
         )
+
+    def test_ignores_cached_token_when_client_id_changes(self, mocker, bitbucket_oauth_client, integration_context, frozen_time):
+        """
+        Given:
+            - An OAuth client whose client_id is "client_id".
+            - An integration context holding a still-valid token that was minted for a different client_id.
+        When:
+            - An access token is requested.
+        Then:
+            - The cached token is NOT reused; a new token is minted for the current client_id.
+        """
+        from CommonServerPython import BaseClient
+
+        integration_context.update(
+            {
+                "access_token": "old_token",
+                "valid_until": frozen_time + 3600,
+                "client_id": "different_client_id",
+            }
+        )
+        base_http_request = mocker.patch.object(BaseClient, "_http_request", return_value=OAUTH_TOKEN_RESPONSE)
+
+        access_token = bitbucket_oauth_client.get_access_token()
+
+        assert access_token == "tok123"
+        base_http_request.assert_called_once()
+        assert integration_context.get("client_id") == "client_id"
 
 
 class TestClientAuthenticationHeaders:
