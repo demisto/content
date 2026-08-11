@@ -42,6 +42,18 @@ class Client(BaseClient):
             resp_type="response",
         )
 
+    def request_data_removal(self, finding_id: int, finding: str):
+        """Submits a Black Market Monitoring data removal request for a specific finding (alarm row)."""
+
+        payload = {"findingId": finding_id, "finding": finding}
+        return self._http_request(
+            method="POST",
+            url_suffix="/blackMarket/dataRemoval",
+            json_data=payload,
+            ok_codes=(200, 400, 403, 404, 409),
+            resp_type="response",
+        )
+
     def get_cve_list(self, page: int = 0, cvss: str | None = None):
         """Fetches a paginated list of all CVEs monitored by ThreatMon."""
 
@@ -232,6 +244,37 @@ def request_takedown_command(client: Client, args: dict[str, Any]) -> CommandRes
         raise DemistoException(f"API Error: {status_code} - {response.text}")
 
 
+def request_data_removal_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    finding_id_raw = args.get("findingId")
+    finding = args.get("finding")
+
+    if not finding_id_raw:
+        raise ValueError("findingId argument is required.")
+    if not finding:
+        raise ValueError("finding argument is required.")
+
+    try:
+        finding_id = int(finding_id_raw)
+    except (ValueError, TypeError):
+        raise ValueError(f"findingId must be a valid integer, got: {finding_id_raw}")
+
+    response = client.request_data_removal(finding_id=finding_id, finding=finding)
+
+    status_code = response.status_code
+    if status_code == 200:
+        return CommandResults(readable_output="Data removal request submitted successfully.")
+    elif status_code == 404:
+        raise DemistoException(f"Finding not found: findingId={finding_id}")
+    elif status_code == 409:
+        raise DemistoException(f"A data removal request already exists for findingId={finding_id}")
+    elif status_code == 403:
+        raise DemistoException("Data removal quota exceeded or insufficient rights. Please contact ThreatMon.")
+    elif status_code == 400:
+        raise DemistoException("This finding is not eligible for a data removal request.")
+    else:
+        raise DemistoException(f"API Error: {status_code} - {response.text}")
+
+
 def format_cve_vendors(vendors: dict[str, list[str]]) -> str:
     """Formats a vendor-to-products map into a human-readable string for the markdown table."""
 
@@ -324,6 +367,8 @@ def main():
             return_results(change_incident_status(client, demisto.args()))
         elif command == "threatmon_request_takedown":
             return_results(request_takedown_command(client, demisto.args()))
+        elif command == "threatmon_request_data_removal":
+            return_results(request_data_removal_command(client, demisto.args()))
         elif command == "threatmon_list_cves":
             return_results(list_cves_command(client, demisto.args()))
         elif command == "threatmon_list_subscribed_cves":
