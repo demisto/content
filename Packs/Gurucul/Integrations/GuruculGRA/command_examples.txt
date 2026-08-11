@@ -21,3 +21,13 @@
 !gra-investigate-anomaly-summary modelName=ModelName
 !gra-analytical-features-entity-value modelName=ModelName entityValue=EntityValue
 !gra-validate-api
+!gra-incidents status="OPEN" page=1 max=25
+!gra-incident-action action=closeIncident incidentId=5 subOption="True Incident" incidentComment="Closed from XSOAR"
+!gra-incidents-anomaly incidentId=10
+!gra-alerts status="OPEN" startDate="2026-01-01 00:00:00" endDate="2026-12-31 23:59:59" page=1 max=25
+!gra-alert-get id=101
+!gra-alert-action action=closeAlert alertId=101 alertComment="Closed" incidentType="Incident" subStatus="True Positive"
+!gra-alert-comment alertId=101 alertComment="Investigating"
+!gra-alert-assign alertId=101 assigneeType=GRA_USER assigneeName="Yuki.Jacob" alertComment="Assigning via XSOAR"
+!gra-alert-in-progress alertId=101 alertComment="Working this alert"
+!gra-alert-update-history alertId=101

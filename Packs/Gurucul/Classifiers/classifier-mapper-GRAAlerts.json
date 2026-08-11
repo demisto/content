@@ -1,0 +1,196 @@
+{
+    "defaultIncidentType": "GRAAlert",
+    "description": "Maps Gurucul GRA Alert fields.",
+    "feed": false,
+    "id": "GRAAlert-Mapper",
+    "mapping": {
+        "GRAAlert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "GRA Alert": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "alertId",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "AL-"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Anomaly Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalyName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Entity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Entity Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entityId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Entity Type Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "entityTypeId",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Detection Timestamp": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "detectionTimestamp",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "statusName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Risk Score": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "riskScore",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Assignee": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assignee",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Assignee Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assigneeType",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Incident Type": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "incidentType",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Sub Status": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "subStatusName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Weblink": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "graweblink",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Resource": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "resourceName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Classifier List": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "classifierList",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "anomalyName",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GRA Alert Assignee Ids": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "assigneeIds",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "GRAAlert-Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
