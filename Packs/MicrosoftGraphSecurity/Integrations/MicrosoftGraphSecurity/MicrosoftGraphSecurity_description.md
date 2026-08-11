@@ -6,10 +6,8 @@ The legacy content search solution has been deprecated. You can now search by [c
 # Fetch
 Use the **Fetch incidents type** parameter to control what this integration ingests. You can select **Alerts**, **Incidents**, or both:
 
-* **Alerts** - Each Microsoft Graph Security alert is fetched individually. The alert data is mapped into the incident/case.
+* **Alerts** - Each Microsoft Graph Security alert is fetched individually.
 * **Incidents** - Each Microsoft Graph Security incident is fetched individually, with all associated alerts embedded within it and stored as raw JSON. This provides a single grouped incident containing its underlying alerts, rather than multiple separate alerts.
-
-Alerts and incidents are fetched independently, each with its own timeframe tracking, so enabling both will not cause conflict.
 
 You can narrow what is fetched using the **Fetched Alerts filter** and **Fetched Incidents filter** parameters. These accept an OData `$filter` expression, for example `severity eq 'medium' and status eq 'active'`. For the supported syntax and operators, see [Microsoft query parameters](https://learn.microsoft.com/en-us/graph/query-parameters?tabs=http).
 

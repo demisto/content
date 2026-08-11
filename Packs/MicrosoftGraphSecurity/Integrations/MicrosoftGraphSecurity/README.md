@@ -12,7 +12,7 @@ When using the `Authorization Code flow` for this integration, you should log in
 
 Use the **Fetch incidents type** parameter to control what this integration ingests. You can select **Alerts**, **Incidents**, or both:
 
-* **Alerts** - Each Microsoft Graph Security alert is fetched on its own. The alert data is mapped into the fetched incident/issue.
+* **Alerts** - Each Microsoft Graph Security alert is fetched on its own.
 * **Incidents** - Each Microsoft Graph Security incident is fetched on its own, with all of its associated alerts embedded within it (retrieved via `$expand=alerts`) and stored as raw JSON. This gives you one grouped incident that already contains its underlying alerts, instead of many separate alert incidents.
 
 Alerts and Incidents are fetched independently, each with its own time window cursor, so selecting both will not cause one to interfere with the other.
@@ -84,7 +84,7 @@ More information about defining this permission can be found [here](https://lear
     | Fetch incidents | Whether to fetch incidents. | False |
     | Incident type | The incident type to apply. | False |
     | First fetch timestamp (`<number> <time unit>`, e.g., 12 hours, 7 days) | `<number> <time unit>`, for example 1 hour, 30 minutes. | False |
-    | Max incidents per fetch | The maximum number of incidents to fetch per iteration. | False |
+    | Fetch limit per type | The maximum number of items to fetch per type. Applies to both alerts and incidents. Note that when fetching incidents, no more than 50 can be fetched per cycle, due to a Microsoft limitation. | False |
     | Fetch incidents type | Select which record types to fetch. You can select Alerts, Incidents, or both. | False |
     | Alerts Service Sources | Relevant only when fetching Alerts (incidents have no service source). Multiple `serviceSource` values can be provided, separated by commas, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity". If empty, alerts of all service sources will be fetched. | False |
     | Fetched Alerts filter | Use this field to filter fetched alerts according to their properties. Applies only when fetching Alerts. Overrides the service sources list, if given. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'". | False |
