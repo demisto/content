@@ -3744,36 +3744,91 @@ class TestUniversalCommand:
 
     @patch("Panorama.get_topology")
     @patch("Panorama.get_jobs")
-    def test_get_jobs_command_polling_no_id(self, patched_get_jobs, patched_get_topology, mock_topology):
+    def test_get_jobs_command_polling_no_id_raises(self, patched_get_jobs, patched_get_topology, mock_topology):
         """
-        Given: polling=true but no id argument (list mode).
+        Given: polling=true but no id argument.
         When: get_jobs_command is invoked.
-        Then: Polling is skipped because there is no deterministic terminal condition.
+        Then: A DemistoException is raised, since polling requires a single job id.
+        """
+        from Panorama import get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+
+        with pytest.raises(DemistoException, match="The 'id' argument is required when 'polling' is set to true."):
+            get_jobs_command({"polling": "true"})
+
+        # get_jobs must not be called when the validation fails.
+        patched_get_jobs.assert_not_called()
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_ignores_status_and_job_type(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true, a single job id, and status/job_type filters provided.
+        When: get_jobs_command is invoked.
+        Then: get_jobs is called with status=None and job_type=None (filters ignored),
+              so a still-running job is not filtered out and polling can continue.
         """
         from Panorama import ShowJobsAllResultData, get_jobs_command
 
         patched_get_topology.return_value = mock_topology
-        patched_get_jobs.return_value = [
-            ShowJobsAllResultData(
-                hostid="fw1",
-                id=1,
-                type="Commit",
-                tfin="",
-                status="ACT",
-                result="PEND",
-                user="admin",
-                tenq="2024/08/25 22:07:53",
-                stoppable="no",
-                positionInQ=0,
-                progress=50,
-                warnings=None,
-                description="",
-            )
-        ]
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Downloadxxx",
+            tfin="",
+            status="ACT",
+            result="PEND",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=50,
+            warnings=None,
+            description="",
+        )
 
-        result = get_jobs_command({"polling": "true"})
+        result = get_jobs_command({"polling": "true", "id": "7", "status": "FIN", "job_type": "Commit"})
 
-        assert result.scheduled_command is None
+        # Filters must be dropped while polling by id.
+        assert patched_get_jobs.call_args.kwargs["status"] is None
+        assert patched_get_jobs.call_args.kwargs["job_type"] is None
+        assert patched_get_jobs.call_args.kwargs["id"] == "7"
+        # Job is still running, so polling should continue.
+        assert result.scheduled_command is not None
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_no_polling_keeps_status_and_job_type(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: no polling (defaults to false), a job id, and status/job_type filters.
+        When: get_jobs_command is invoked.
+        Then: get_jobs is called with the provided status/job_type (non-polling flow unchanged).
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="2024/08/25 22:09:00",
+            status="FIN",
+            result="OK",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=100,
+            warnings=None,
+            description="",
+        )
+
+        get_jobs_command({"id": "7", "status": "FIN", "job_type": "Commit"})
+
+        # Non-polling flow must keep applying the filters.
+        assert patched_get_jobs.call_args.kwargs["status"] == "FIN"
+        assert patched_get_jobs.call_args.kwargs["job_type"] == "Commit"
 
     def test_download_software(self, mock_topology):
         """
