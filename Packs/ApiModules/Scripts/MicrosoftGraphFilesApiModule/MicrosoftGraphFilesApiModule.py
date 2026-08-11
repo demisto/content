@@ -129,9 +129,7 @@ def resolve_item_addressing(args: dict[str, str], allow_path: bool = True, allow
             "document path addressing for this endpoint. Use item_id instead."
         )
     if share_url and not allow_share_url:
-        raise DemistoException(
-            "The share_url argument is not supported by this command. Use item_id instead."
-        )
+        raise DemistoException("The share_url argument is not supported by this command. Use item_id instead.")
 
     supplied = [name for name, value in (("item_id", item_id), ("item_path", item_path), ("share_url", share_url)) if value]
     allowed = ["item_id"] + (["item_path"] if allow_path else []) + (["share_url"] if allow_share_url else [])
@@ -2047,7 +2045,6 @@ def list_driveitem_activities_command(client: MsGraphClient, args: dict[str, str
         raw_response=raw_response,
         readable_output=readable_output,
     )
-
 
 
 def get_driveitem_analytics_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:

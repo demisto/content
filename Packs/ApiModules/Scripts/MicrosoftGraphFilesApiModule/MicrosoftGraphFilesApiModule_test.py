@@ -2139,13 +2139,13 @@ def test_resolve_item_addressing_by_share_url():
             "Provide only one of the following arguments, but got item_id, item_path.",
         ),
         (
-            {"item_id": "item-1", "share_url": "https://e/x"},
+            {"item_id": "item-1", "share_url": "https://e.sharepoint.com/x"},
             {"allow_share_url": True},
             "Provide only one of the following arguments, but got item_id, share_url.",
         ),
         # Supplied but unsupported by this endpoint.
         ({"item_path": "a/b.docx"}, {"allow_path": False}, "The item_path argument is not supported by this command."),
-        ({"share_url": "https://e/x"}, {}, "The share_url argument is not supported by this command."),
+        ({"share_url": "https://e.sharepoint.com/x"}, {}, "The share_url argument is not supported by this command."),
         # Addressing by id/path requires the parent resource ID.
         ({"object_type": "sites", "item_id": "item-1"}, {}, "The object_type_id argument is required"),
     ],
@@ -2278,8 +2278,7 @@ def test_get_driveitem_metadata_command_merges_sharepoint_ids(mocker: MockerFixt
     # works for the path and share_url modes where the caller never supplied a site ID.
     second_call = http_request.call_args_list[1].kwargs
     assert (
-        second_call["url_suffix"]
-        == "sites/7878e691-3e74-4a11-899d-c69622de1254/drive/items/a9670e1f-67b8-43e1-85f6-b395c4119acf"
+        second_call["url_suffix"] == "sites/7878e691-3e74-4a11-899d-c69622de1254/drive/items/a9670e1f-67b8-43e1-85f6-b395c4119acf"
     )
     assert second_call["params"] == {"$select": "sharepointIds"}
     assert result.outputs["SharepointIds"]["ListId"] == "b1f2c3d4-1111-2222-3333-444455556666"
@@ -2313,7 +2312,7 @@ def test_get_driveitem_metadata_command_requires_exactly_one_addressing_argument
     Then: A DemistoException naming the conflicting arguments is raised before any HTTP call.
     """
     with pytest.raises(DemistoException) as exc_info:
-        get_driveitem_metadata_command(CLIENT_MOCKER, {"item_id": "item-1", "share_url": "https://e/x"})
+        get_driveitem_metadata_command(CLIENT_MOCKER, {"item_id": "item-1", "share_url": "https://e.sharepoint.com/x"})
 
     assert "Provide only one of the following arguments, but got item_id, share_url." in str(exc_info.value)
 
@@ -2433,9 +2432,7 @@ def test_list_driveitem_activities_command_no_activities(mocker: MockerFixture):
     Then: A friendly message is returned rather than an empty table. An empty result is also
           what an unlicensed tenant returns, so this path must stay readable.
     """
-    mocker.patch.object(
-        CLIENT_MOCKER.ms_client, "http_request", side_effect=[SHAREPOINT_IDS_RESPONSE, {"value": []}]
-    )
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", side_effect=[SHAREPOINT_IDS_RESPONSE, {"value": []}])
 
     result = list_driveitem_activities_command(CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1"})
 
@@ -2452,9 +2449,7 @@ def test_list_driveitem_activities_command_next_page_url(mocker: MockerFixture):
     http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_ACTIVITIES_RESPONSE)
     next_url = "https://graph.microsoft.com/v1.0/sites/site-1/lists/list-1/items/list-item-1/activities?$skiptoken=abc"
 
-    list_driveitem_activities_command(
-        CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1", "next_page_url": next_url}
-    )
+    list_driveitem_activities_command(CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1", "next_page_url": next_url})
 
     assert http_request.call_count == 1
     assert http_request.call_args.kwargs["full_url"] == next_url
@@ -2491,10 +2486,7 @@ def test_get_driveitem_analytics_command_uses_list_item_route(mocker: MockerFixt
 
     assert http_request.call_count == 2
     assert http_request.call_args_list[0].kwargs["url_suffix"] == "sites/site-1/drive/items/item-1"
-    assert (
-        http_request.call_args_list[1].kwargs["url_suffix"]
-        == "sites/site-1/lists/list-1/items/list-item-1/analytics/allTime"
-    )
+    assert http_request.call_args_list[1].kwargs["url_suffix"] == "sites/site-1/lists/list-1/items/list-item-1/analytics/allTime"
     assert result.outputs_prefix == "MsGraphFiles.ItemAnalytics"
     assert result.outputs["TimeRange"] == "allTime"
     assert result.outputs["SiteID"] == "site-1"
