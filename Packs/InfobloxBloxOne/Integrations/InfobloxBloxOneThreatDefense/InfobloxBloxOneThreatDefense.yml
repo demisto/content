@@ -52,13 +52,47 @@ configuration:
   options:
   - SOC Insight
   - DNS Security Event
+  - IQ for TD Insight
   type: 15
   required: false
-  defaultvalue: SOC Insight
-  additionalinfo: Select the ingestion type to fetch as XSOAR incident. Default is SOC Insight.
+  defaultvalue: IQ for TD Insight
+  additionalinfo: Select the ingestion type to fetch as XSOAR incident. Default is IQ for TD Insight. 'SOC Insight' is deprecated.
 - section: Collect
   advanced: true
-  display: SOC Insight Status
+  display: IQ for TD Insight Status
+  name: iq_for_td_insight_status
+  type: 15
+  required: false
+  options:
+  - Needs Review
+  - In Progress
+  - Resolved
+  - Reopened
+  - Accepted Risk
+  - False Positive
+  additionalinfo: Retrieve the IQ for TD Insights matching the specified workflow status.
+- section: Collect
+  advanced: true
+  display: IQ for TD Insight Severity
+  name: iq_for_td_insight_severity
+  type: 15
+  required: false
+  options:
+  - Critical
+  - High
+  - Medium
+  - Low
+  additionalinfo: Retrieve the IQ for TD Insights matching the specified severity.
+- section: Collect
+  advanced: true
+  display: IQ for TD Insight Threat Properties
+  name: iq_for_td_insight_threat_properties
+  type: 16
+  required: false
+  additionalinfo: Retrieve the IQ for TD Insights matching the specified threat properties (free text), e.g. malware, phishing, ransomware.
+- section: Collect
+  advanced: true
+  display: Deprecated - SOC Insight Status
   name: soc_insight_status
   defaultvalue: Active
   type: 15
@@ -69,7 +103,7 @@ configuration:
   additionalinfo: Retrieve the SOC Insights as specified status.
 - section: Collect
   advanced: true
-  display: SOC Insight Threat Type
+  display: Deprecated - SOC Insight Threat Type
   name: soc_insight_threat_type
   type: 15
   required: false
@@ -96,7 +130,7 @@ configuration:
   additionalinfo: Retrieve the SOC Insights as specified threat type.
 - section: Collect
   advanced: true
-  display: SOC Insight Priority Level
+  display: Deprecated - SOC Insight Priority Level
   name: soc_insight_priority_level
   type: 15
   required: false
@@ -329,9 +363,9 @@ configuration:
   defaultvalue: "50"
   type: 0
   required: false
-  additionalinfo: The maximum number of SOC Insights or DNS Security Events to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
+  additionalinfo: The maximum number of SOC Insights, DNS Security Events, or IQ for TD Insights to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
 - section: Collect
-  additionalinfo: "The date or relative timestamp from which to begin fetching incidents. Note: This parameter is only applicable for DNS Security Events.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z."
+  additionalinfo: "The date or relative timestamp from which to begin fetching incidents.\n\nNote: This parameter is only applicable for DNS Security Events and IQ for TD Insights. Default is '24 hours'.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z."
   defaultvalue: 24 hours
   display: First fetch timestamp
   name: first_fetch
@@ -451,13 +485,13 @@ script:
       description: Specify the type of the custom list to add the given IP addresses to.
       name: custom_list_type
       predefined:
-        - default_block
-        - custom_list
-        - threat_insight
-        - dga
-        - dnsm
-        - zero_day_dns
-        - threat_insight_nde
+      - default_block
+      - custom_list
+      - threat_insight
+      - dga
+      - dnsm
+      - zero_day_dns
+      - threat_insight_nde
       defaultValue: default_block
       required: false
     description: The given IP addresses will be added to the provided block list.
@@ -520,10 +554,10 @@ script:
       description: Specify the type of the custom list to add the given IP addresses to.
       name: custom_list_type
       predefined:
-        - default_allow
-        - custom_list
-        - threat_insight
-        - threat_insight_nde
+      - default_allow
+      - custom_list
+      - threat_insight
+      - threat_insight_nde
       defaultValue: default_allow
       required: false
     description: The given IP addresses will be added to the provided allow list.
@@ -586,13 +620,13 @@ script:
       description: Specify the type of the custom list to add the given domains to.
       name: custom_list_type
       predefined:
-        - default_block
-        - custom_list
-        - threat_insight
-        - dga
-        - dnsm
-        - zero_day_dns
-        - threat_insight_nde
+      - default_block
+      - custom_list
+      - threat_insight
+      - dga
+      - dnsm
+      - zero_day_dns
+      - threat_insight_nde
       defaultValue: default_block
       required: false
     description: The given domains will be added to the provided block list.
@@ -655,10 +689,10 @@ script:
       description: Specify the type of the custom list to add the given domains to.
       name: custom_list_type
       predefined:
-        - default_allow
-        - custom_list
-        - threat_insight
-        - threat_insight_nde
+      - default_allow
+      - custom_list
+      - threat_insight
+      - threat_insight_nde
       defaultValue: default_allow
       required: false
     description: The given domains will be added to the provided allow list.
@@ -720,14 +754,14 @@ script:
       description: Specify the type of the custom list to remove the given indicators from.
       name: custom_list_type
       predefined:
-        - default_allow
-        - default_block
-        - custom_list
-        - threat_insight
-        - dga
-        - dnsm
-        - zero_day_dns
-        - threat_insight_nde
+      - default_allow
+      - default_block
+      - custom_list
+      - threat_insight
+      - dga
+      - dnsm
+      - zero_day_dns
+      - threat_insight_nde
       required: true
     description: The given indicators will be removed from the provided custom list.
     name: infobloxcloud-customlist-indicator-remove
@@ -1167,7 +1201,7 @@ script:
       description: The status of the domain.
       type: Datte
     - contextPath: Domain.NameServers
-      description: (List<String>) Name servers of the domain.  
+      description: (List<String>) Name servers of the domain.
       type: Unknown
     - contextPath: Domain.Organization
       description: The organization of the domain.
@@ -1747,108 +1781,109 @@ script:
     description: Gets the comprehensive URL reputation and threat intelligence from Infoblox Threat Defense, including threat indicators, and standard URL reputation data.
   - name: infobloxcloud-mac-enrich
     arguments:
-      - name: mac
-        required: true
-        description: Specify the MAC Address to enrich.
+    - name: mac
+      required: true
+      description: Specify the MAC Address to enrich.
     outputs:
-      - contextPath: InfobloxCloud.DHCPLease.address
-        description: The IP address assigned in the DHCP lease.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.client_id
-        description: The identifier of the DHCP client.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.ends
-        description: The timestamp indicating when the DHCP lease ends.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.fingerprint
-        description: The DHCP client fingerprint, indicating device type or OS.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.fingerprint_processed
-        description: The processed fingerprint result, if available.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.ha_group
-        description: The high-availability group associated with the lease, if any.
-        type: Unknown
-      - contextPath: InfobloxCloud.DHCPLease.hardware
-        description: The hardware (MAC) address of the DHCP client.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.host
-        description: The reference or identifier for the host associated with this lease.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.hostname
-        description: The hostname provided by the DHCP client.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.iaid
-        description: The Identity Association Identifier (IAID) for the DHCP lease.
-        type: Number
-      - contextPath: InfobloxCloud.DHCPLease.last_updated
-        description: The timestamp when the lease was last updated.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.options
-        description: The encoded DHCP options provided with the lease.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.preferred_lifetime
-        description: The preferred lifetime of the lease.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.protocol
-        description: The protocol used for the lease.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.space
-        description: The identifier for the IP space to which this lease belongs.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.starts
-        description: The timestamp indicating when the DHCP lease started.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.state
-        description: The current state of the lease.
-        type: String
-      - contextPath: InfobloxCloud.DHCPLease.type
-        description: The type of DHCP lease.
-        type: String
+    - contextPath: InfobloxCloud.DHCPLease.address
+      description: The IP address assigned in the DHCP lease.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.client_id
+      description: The identifier of the DHCP client.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.ends
+      description: The timestamp indicating when the DHCP lease ends.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.fingerprint
+      description: The DHCP client fingerprint, indicating device type or OS.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.fingerprint_processed
+      description: The processed fingerprint result, if available.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.ha_group
+      description: The high-availability group associated with the lease, if any.
+      type: Unknown
+    - contextPath: InfobloxCloud.DHCPLease.hardware
+      description: The hardware (MAC) address of the DHCP client.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.host
+      description: The reference or identifier for the host associated with this lease.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.hostname
+      description: The hostname provided by the DHCP client.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.iaid
+      description: The Identity Association Identifier (IAID) for the DHCP lease.
+      type: Number
+    - contextPath: InfobloxCloud.DHCPLease.last_updated
+      description: The timestamp when the lease was last updated.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.options
+      description: The encoded DHCP options provided with the lease.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.preferred_lifetime
+      description: The preferred lifetime of the lease.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.protocol
+      description: The protocol used for the lease.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.space
+      description: The identifier for the IP space to which this lease belongs.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.starts
+      description: The timestamp indicating when the DHCP lease started.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.state
+      description: The current state of the lease.
+      type: String
+    - contextPath: InfobloxCloud.DHCPLease.type
+      description: The type of DHCP lease.
+      type: String
     description: Enrich a MAC address with DHCP lease information.
   - arguments:
     - auto: PREDEFINED
       description: Specify the status of SOC Insights to fetch.
       name: status
       predefined:
-        - Active
-        - Closed
+      - Active
+      - Closed
       required: false
     - auto: PREDEFINED
       description: Specify the threat type of SOC Insights to fetch.
       name: threat_type
       predefined:
-        - DGA
-        - Undefined
-        - Malicious
-        - Open Resolver
-        - Phishing
-        - DNS Tunneling
-        - MalwareDownload
-        - Sinkhole
-        - Zero Day DNS
-        - Notional Data Exfiltration
-        - MalwareC2DGA
-        - MalwareC2
-        - Restricted Country Communications
-        - Suspicious
-        - CompromisedHost
-        - CompromisedDomain
-        - Lookalike Threat
-        - Sanctioned Feed Disabled
-        - DNSTunnel
+      - DGA
+      - Undefined
+      - Malicious
+      - Open Resolver
+      - Phishing
+      - DNS Tunneling
+      - MalwareDownload
+      - Sinkhole
+      - Zero Day DNS
+      - Notional Data Exfiltration
+      - MalwareC2DGA
+      - MalwareC2
+      - Restricted Country Communications
+      - Suspicious
+      - CompromisedHost
+      - CompromisedDomain
+      - Lookalike Threat
+      - Sanctioned Feed Disabled
+      - DNSTunnel
       required: false
     - auto: PREDEFINED
       description: Specify the priority level of SOC Insights to fetch.
       name: priority
       predefined:
-        - INFO
-        - MEDIUM
-        - HIGH
-        - CRITICAL
+      - INFO
+      - MEDIUM
+      - HIGH
+      - CRITICAL
       required: false
-    description: List SOC Insights from Infoblox Cloud.
+    description: "Deprecated. Use 'infobloxcloud-iq-for-td-insight-list' instead. List SOC Insights from Infoblox Cloud."
     name: infobloxcloud-soc-insight-list
+    deprecated: true
     outputs:
     - contextPath: InfobloxCloud.SOCInsight.insightId
       description: The ID of the SOC Insight.
@@ -1913,19 +1948,19 @@ script:
       name: threat_level
       required: false
       predefined:
-        - High
-        - Medium
-        - Low
-        - Info
+      - High
+      - Medium
+      - Low
+      - Info
       description: Specify the threat level of the events.
     - auto: PREDEFINED
       name: confidence_level
       required: false
       predefined:
-        - High
-        - Medium
-        - Low
-        - Info
+      - High
+      - Medium
+      - Low
+      - Info
       description: Specify the confidence level of the events.
     - name: query
       required: false
@@ -1934,17 +1969,17 @@ script:
       name: query_type
       required: false
       predefined:
-        - A
-        - AAAA
-        - ANY
-        - TXT
-        - RRSIG
-        - CNAME
-        - MX
-        - NS
-        - PTR
-        - SOA
-        - SRV
+      - A
+      - AAAA
+      - ANY
+      - TXT
+      - RRSIG
+      - CNAME
+      - MX
+      - NS
+      - PTR
+      - SOA
+      - SRV
       description: Specify the query type to search for events.
     - name: source
       required: false
@@ -1955,8 +1990,9 @@ script:
     - name: indicator
       required: false
       description: Specify the indicator of the events.
-    description: List events for a specific SOC Insight.
+    description: "Deprecated. Use 'infobloxcloud-iq-for-td-insight-event-list' instead. List events for a specific SOC Insight."
     name: infobloxcloud-soc-insight-event-list
+    deprecated: true
     outputs:
     - contextPath: InfobloxCloud.Event.confidenceLevel
       description: The confidence level of the threat detection.
@@ -2037,9 +2073,9 @@ script:
       name: confidence
       required: false
       predefined:
-        - '1'
-        - '2'
-        - '3'
+      - '1'
+      - '2'
+      - '3'
       description: Specify the confidence of the indicators.
     - name: indicator
       required: false
@@ -2048,14 +2084,15 @@ script:
       name: action
       required: false
       predefined:
-        - Blocked
-        - Not Blocked
+      - Blocked
+      - Not Blocked
       description: Specify the action of the indicators.
     - name: actor
       required: false
       description: Specify the actor of the indicators.
-    description: List indicators for a specific SOC Insight.
+    description: "Deprecated. Use 'infobloxcloud-iq-for-td-insight-indicator-list' instead. List indicators for a specific SOC Insight."
     name: infobloxcloud-soc-insight-indicator-list
+    deprecated: true
     outputs:
     - contextPath: InfobloxCloud.Indicator.action
       description: The action taken for the indicator.
@@ -2108,8 +2145,9 @@ script:
     - name: user
       required: false
       description: Specify the user of the assets.
-    description: List assets for a specific SOC Insight.
+    description: "Deprecated. Use 'infobloxcloud-iq-for-td-insight-asset-list' instead. List assets for a specific SOC Insight."
     name: infobloxcloud-soc-insight-asset-list
+    deprecated: true
     outputs:
     - contextPath: InfobloxCloud.Asset.count
       description: The number of occurrences associated with the asset.
@@ -2150,8 +2188,9 @@ script:
       required: false
       description: Specify the maximum number of comments to fetch.
       defaultValue: 50
-    description: List comments for a specific SOC Insight.
+    description: "Deprecated. No available replacement. List comments for a specific SOC Insight."
     name: infobloxcloud-soc-insight-comment-list
+    deprecated: true
     outputs:
     - contextPath: InfobloxCloud.Comment.commentsChanger
       description: The user who created or changed the comment.
@@ -2165,11 +2204,624 @@ script:
     - contextPath: InfobloxCloud.Comment.newComment
       description: The comment text.
       type: String
+  - arguments:
+    - auto: PREDEFINED
+      name: status
+      required: false
+      predefined:
+      - Needs Review
+      - In Progress
+      - Resolved
+      - Reopened
+      - Accepted Risk
+      - False Positive
+      description: Filter by the insight's current workflow status.
+    - name: name
+      required: false
+      description: Filter by the user-facing insight name (case-insensitive partial match).
+    - auto: PREDEFINED
+      name: severity
+      required: false
+      predefined:
+      - Critical
+      - High
+      - Medium
+      - Low
+      description: Filter by severity level (case-insensitive match).
+    - name: threat_properties
+      required: false
+      description: "Threat Property(ies) to search for. Multiple properties queried by specifying comma-separated values.\n\nExample: malware,phishing,ransomware."
+      isArray: true
+    - name: date_created
+      required: false
+      description: "Filter by the insight creation timestamp. Provide an RFC 3339 date-time value.\n\nExample: 2025-12-19T07:01:56Z. Only insights created on or after this date are returned."
+    - name: indicators
+      required: false
+      description: "Threat indicator(s) to filter by. Multiple indicators queried by specifying comma-separated values."
+      isArray: true
+    - name: assets
+      required: false
+      description: "Asset(s) to filter by. Multiple assets queried by specifying comma-separated values."
+      isArray: true
+    - name: user
+      required: false
+      description: "User(s) to filter by. Multiple users queried by specifying comma-separated values."
+      isArray: true
+    description: List IQ for TD Insights from Infoblox Cloud.
+    name: infobloxcloud-iq-for-td-insight-list
+    outputs:
+    - contextPath: InfobloxCloud.IQForTDInsight.insight_id
+      description: Unique display identifier for the insight.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.name
+      description: Human-readable name summarizing the threat or attack pattern.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.description
+      description: Detailed description of what the insight represents.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.severity
+      description: 'Severity level: Critical, High, Medium, or Low.'
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.status
+      description: 'Current workflow status of the insight.'
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.date_created
+      description: Timestamp when the insight was first created.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsight.evaluation_start_date
+      description: Start of the time window evaluated to generate this insight.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsight.evaluation_end_date
+      description: End of the time window evaluated to generate this insight.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsight.total_events
+      description: Total number of DNS security events correlated into this insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.total_indicators
+      description: Total number of distinct threat indicators associated with this insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.total_assets
+      description: Total number of affected assets linked to this insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.total_users
+      description: Total number of unique users whose queries triggered events in this insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.expiring_in_days
+      description: Number of days until this insight expires and is automatically archived.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.threat_properties
+      description: List of threat property labels associated with this insight.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.time_saved_seconds
+      description: Total time saved in seconds by automated analysis for this insight.
+      type: Number
+  - arguments:
+    - name: insight_id
+      required: true
+      description: "The unique display identifier of the insight to retrieve. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'."
+    description: Get the full detail view for a single IQ for TD Insight from Infoblox Cloud.
+    name: infobloxcloud-iq-for-td-insight-get
+    outputs:
+    - contextPath: InfobloxCloud.IQForTDInsight.insight_id
+      description: Unique display identifier for the insight.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.name
+      description: Human-readable name summarizing the threat or attack pattern.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.description
+      description: Detailed description of what the insight represents.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.severity
+      description: 'Severity level: Critical, High, Medium, or Low.'
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.status
+      description: 'Current workflow status of the insight.'
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.date_created
+      description: Timestamp when the insight was first created.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsight.evaluation_start_date
+      description: Start of the time window evaluated to generate this insight.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsight.evaluation_end_date
+      description: End of the time window evaluated to generate this insight.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsight.total_events
+      description: Total number of DNS security events correlated into this insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.total_indicators
+      description: Total number of distinct threat indicators associated with this insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.total_assets
+      description: Total number of affected assets linked to this insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.total_verified_assets
+      description: Number of assets that have been verified by an analyst.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.total_unverified_assets
+      description: Number of assets that have not yet been verified.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.total_users
+      description: Total number of unique users whose queries triggered events in this insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.expiring_in_days
+      description: Number of days until this insight expires and is automatically archived.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsight.threat_properties
+      description: List of threat property labels associated with this insight.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.top_indicators.indicator
+      description: The threat indicator value (e.g., domain, IP, URL).
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.top_indicators.description
+      description: Human-readable explanation of why this indicator is significant.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.top_indicators.threat_actors.id
+      description: Unique identifier for the threat actor.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.top_indicators.threat_actors.name
+      description: Name of the threat actor or group.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.top_assets.asset
+      description: Device name or identifier of the affected asset.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.top_assets.description
+      description: Summary of the asset's involvement in the insight.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.threat_actors.actor_name
+      description: Name of the threat actor or group.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.threat_actors.actor_description
+      description: Description of the threat actor's known tactics, techniques, and objectives.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.overview
+      description: AI-generated overview summarizing notable patterns in the insight data.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.key_recommendations.id
+      description: Identifier of the underlying recommendation action row that this displayed recommendation corresponds to.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.key_recommendations.recommendation
+      description: Human-readable recommendation text.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.key_recommendations.type
+      description: 'Recommendation category: indicator, asset, policy, or empty.'
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.key_recommendations.action_taken
+      description: Whether the recommended action has already been taken.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.time_saved_seconds
+      description: Total time saved in seconds by automated analysis for this insight.
+      type: Number
+  - arguments:
+    - name: insight_id
+      required: true
+      description: "The unique display identifier of the insight whose status should be updated. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'."
+    - auto: PREDEFINED
+      name: status
+      required: true
+      predefined:
+      - Needs Review
+      - In Progress
+      - Resolved
+      - Reopened
+      - Accepted Risk
+      - False Positive
+      description: New workflow status to assign to the insight.
+    - name: comment
+      required: false
+      description: Optional analyst comment explaining the status change. Persisted in the insight's audit trail.
+    description: Update the workflow status of an IQ for TD Insight from Infoblox Cloud, with an optional analyst comment.
+    name: infobloxcloud-iq-for-td-insight-status-update
+    outputs:
+    - contextPath: InfobloxCloud.IQForTDInsight.insight_id
+      description: Unique display identifier for the insight.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.status
+      description: The workflow status that was assigned to the insight.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsight.comment
+      description: The analyst comment recorded with the status change, if provided.
+      type: String
+  - arguments:
+    - name: insight_id
+      required: true
+      description: "The unique display identifier of the insight whose assets to list. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'."
+    - name: device_name
+      required: false
+      description: Filter assets by device or host name (case-insensitive partial match).
+    - name: indicators
+      required: false
+      description: "Indicator(s) to filter by. Multiple indicators queried by specifying comma-separated values.\n\nExample: dummy-indicator-1.com,dummy-indicator-2.com."
+      isArray: true
+    - name: users
+      required: false
+      description: "User(s) to filter by. Multiple users queried by specifying comma-separated values.\n\nExample: dummy-user-1,dummy-user-2."
+      isArray: true
+    - name: ip_address
+      required: false
+      description: "IP address(es) to filter by. Multiple IP addresses queried by specifying comma-separated values.\n\nExample: 0.0.0.0,0.0.0.1."
+      isArray: true
+    - auto: PREDEFINED
+      name: is_verified
+      required: false
+      predefined:
+      - 'True'
+      - 'False'
+      description: Filter by asset verification state. Set to True to return only verified assets, or False for unverified assets only. Omit to return both.
+    - name: limit
+      required: false
+      defaultValue: "50"
+      description: Maximum number of asset records to return per request. Must be a positive integer.
+    description: List assets associated with a specific IQ for TD Insight from Infoblox Cloud.
+    name: infobloxcloud-iq-for-td-insight-asset-list
+    outputs:
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.device_name
+      description: Hostname or device name of the asset, when known.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.ip_address
+      description: IP addresses observed for this asset during the insight evaluation window.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.mac_address
+      description: MAC addresses observed for this asset, when available from DHCP or device telemetry.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.is_verified
+      description: True when the asset has been matched to an inventory record; false when only an unverified IP/MAC observation is available.
+      type: Boolean
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.is_risky
+      description: True when an analyst has flagged this asset as risky for the insight; false otherwise.
+      type: Boolean
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.total_events
+      description: Number of DNS security events from this asset that contributed to the insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.indicators
+      description: Threat indicators (e.g., malicious domains, IPs, URLs) this asset interacted with.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.users
+      description: Users whose activity on this asset triggered events in the insight.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.locations
+      description: Geographic locations (city, region, or country) associated with the asset.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.first_detected
+      description: Timestamp of the earliest event involving this asset within the insight.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.last_detected
+      description: Timestamp of the most recent event involving this asset within the insight.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.description
+      description: Human-readable summary describing the asset's role or involvement in the insight.
+      type: String
+  - arguments:
+    - name: insight_id
+      required: true
+      description: "Specify the IQ for TD Insight ID to fetch events for. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'."
+    - auto: PREDEFINED
+      name: threat_level
+      required: false
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      description: |-
+        Filter events by numeric threat level.
+
+        Possible values are: "1" (Low), "2" (Medium), "3" (High).
+    - auto: PREDEFINED
+      name: threat_confidence
+      required: false
+      predefined:
+      - Low
+      - Medium
+      - High
+      description: Filter events by detection confidence level.
+    - name: indicators
+      required: false
+      description: "Indicator(s) to filter by. Multiple indicators queried by specifying comma-separated values.\n\nExample: dummy-indicator-1.com,dummy-indicator-2.com."
+      isArray: true
+    - name: detected_from
+      required: false
+      description: "Start of the detection time range (inclusive).\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - name: detected_to
+      required: false
+      description: "End of the detection time range (inclusive).\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - name: tclass
+      required: false
+      description: Filter by threat class category (e.g. Malware, Phishing, C2, Data Exfiltration).
+    - name: query
+      required: false
+      description: Filter by the DNS query name.
+    - auto: PREDEFINED
+      name: query_type
+      required: false
+      predefined:
+      - A
+      - AAAA
+      - CNAME
+      - TXT
+      - MX
+      description: Filter by DNS query type.
+    - name: users
+      required: false
+      description: "User(s) to filter by. Multiple users queried by specifying comma-separated values.\n\nExample: dummy-user-1,dummy-user-2."
+      isArray: true
+    - name: device_ips
+      required: false
+      description: "Device IP address(es) to filter by. Multiple IP addresses queried by specifying comma-separated values.\n\nExample: 0.0.0.0,0.0.0.1."
+      isArray: true
+    - name: device_name
+      required: false
+      description: Filter by the name of the device that generated the event.
+    - name: policy
+      required: false
+      description: Filter by the security policy name applied to the event.
+    - name: source
+      required: false
+      description: Filter by the network source identifier where the DNS query originated.
+    - name: response
+      required: false
+      description: Filter by the DNS response returned (e.g. NXDOMAIN, a resolved IP).
+    - name: dns_view
+      required: false
+      description: Filter by the DNS view configuration under which the query was resolved.
+    - name: feed
+      required: false
+      description: Filter by the threat intelligence feed name that flagged the indicator.
+    - name: mac_addresses
+      required: false
+      description: "MAC address(es) to filter by. Multiple MAC addresses queried by specifying comma-separated values.\n\nExample: 00:11:22:33:44:55,AA:BB:CC:DD:EE:FF."
+      isArray: true
+    - name: os_version
+      required: false
+      description: Filter by the operating system version of the device.
+    - name: dhcp_fingerprint
+      required: false
+      description: Filter by the DHCP fingerprint of the device.
+    - name: response_region
+      required: false
+      description: Filter by the geographic region of the DNS response destination.
+    - name: response_country
+      required: false
+      description: Filter by the country of the DNS response destination.
+    - name: device_region
+      required: false
+      description: Filter by the geographic region where the source device is located.
+    - name: device_country
+      required: false
+      description: Filter by the country where the source device is located.
+    - name: limit
+      required: false
+      defaultValue: "50"
+      description: Maximum number of event records to return per request.
+    description: List events for a specific IQ for TD Insight from Infoblox Cloud.
+    name: infobloxcloud-iq-for-td-insight-event-list
+    outputs:
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.threat_level
+      description: Numeric threat severity assigned to the event.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.threat_confidence
+      description: Detection confidence score for the event.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.detected_at
+      description: Timestamp when the event was detected.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.query
+      description: DNS query name that was looked up.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.tclass
+      description: Threat class category for the event.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.actor_name
+      description: Threat actor or group attributed to the activity.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.query_type
+      description: DNS record type queried.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.user
+      description: User identity associated with the DNS query.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.device_name
+      description: Hostname of the source device.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.device_ip
+      description: IP address of the source device.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.tfamily
+      description: Threat family classification.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.tproperty
+      description: Threat property label associated with the event.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.policy
+      description: Security policy that matched the event.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.action
+      description: Enforcement action taken by the policy.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.source
+      description: Network source identifier where the query originated.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.indicator
+      description: Threat indicator that flagged the event.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.response
+      description: DNS response returned to the client.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.dns_view
+      description: DNS view configuration under which the query resolved.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.feed
+      description: Threat intelligence feed that contributed the indicator match.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.mac_address
+      description: MAC address of the source device, when available.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.os_version
+      description: Operating system and version reported for the source device.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.dhcp_fingerprint
+      description: DHCP fingerprint used to identify the source device type.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.response_region
+      description: Geographic region of the DNS response destination.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.response_country
+      description: Country of the DNS response destination.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.device_region
+      description: Geographic region where the source device is located.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.device_country
+      description: Country where the source device is located.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.event_count
+      description: Number of duplicate events collapsed into this entry.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsightEvent.event_key
+      description: Internal composite key used to merge duplicate events in context across command runs.
+      type: String
+  - arguments:
+    - name: insight_id
+      required: true
+      description: "The unique display identifier of the insight whose indicators to list. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'."
+    - name: indicators
+      required: false
+      description: "Indicator(s) to filter by. Multiple indicators queried by specifying comma-separated values.\n\nExample: dummy-indicator-1.com,dummy-indicator-2.com."
+      isArray: true
+    - auto: PREDEFINED
+      name: threat_level
+      required: false
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      description: |-
+        Filter indicators by numeric threat level.
+
+        Possible values are: "1" (Low), "2" (Medium), "3" (High).
+    - auto: PREDEFINED
+      name: statuses
+      required: false
+      predefined:
+      - Blocked
+      - Not Blocked
+      isArray: true
+      description: Blocking/enforcement status value(s) to filter by. Multiple statuses specified as comma-separated values.
+    - name: users
+      required: false
+      description: "User(s) to filter by. Multiple users queried by specifying comma-separated values.\n\nExample: dummy-user-1,dummy-user-2."
+      isArray: true
+    - name: detected_at
+      required: false
+      description: "Filter indicators by detection timestamp. Returns only indicators detected on this specified date.\n\nFormat: YYYY-MM-DDTHH:MM:SSZ, YYYY-MM-DD, N days, N hours.\n\nExample: 2025-04-25T00:00:00Z, 2025-04-25, 2 days, 5 hours, 01 Mar 2025, 01 Feb 2025 04:45:33, 15 Jun."
+    - name: limit
+      required: false
+      defaultValue: "50"
+      description: Maximum number of indicator records to return per request.
+    description: List threat indicators associated with a specific IQ for TD Insight from Infoblox Cloud.
+    name: infobloxcloud-iq-for-td-insight-indicator-list
+    outputs:
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.threat_indicator
+      description: The indicator value (e.g., malicious domain, IP, or URL).
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.threat_level
+      description: Numeric threat severity assigned to the indicator.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.confidence_level
+      description: Numeric confidence rating for the detection.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.status
+      description: Blocking/enforcement status values for the indicator (e.g., "Blocked", "Not Blocked").
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.total_events
+      description: Number of DNS security events involving this indicator within the insight.
+      type: Number
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.verified_assets
+      description: Verified assets (matched to inventory) that interacted with this indicator.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.unverified_assets
+      description: Unverified assets (observed only by IP/MAC, not matched to inventory) that interacted with this indicator.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.users
+      description: Users whose queries involved this indicator.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.threat_actors
+      description: Threat actors or groups attributed to this indicator.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.first_detected
+      description: Timestamp of the first detection of this indicator within the insight.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.last_detected
+      description: Timestamp of the most recent detection of this indicator within the insight.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.detected_at
+      description: Timestamp of the most recent detection of this indicator within the insight.
+      type: Date
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.description
+      description: Human-readable description of why the indicator is significant.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.indicator_key
+      description: Internal composite key (insight_id and threat_indicator) used to merge context across command runs.
+      type: String
+  - arguments:
+    - name: insight_id
+      required: true
+      description: "The unique display identifier of the insight whose recommendations are being actioned. The insight_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.insight_id) of the 'infobloxcloud-iq-for-td-insight-list command'."
+    - name: recommendation_id
+      required: true
+      description: "UUID of the recommendation to action. The recommendation_id can be fetched from the output context path (InfobloxCloud.IQForTDInsight.key_recommendations.id) of the 'infobloxcloud-iq-for-td-insight-get command'.\n\nExample: dummy-recommendation-id-1."
+    - auto: PREDEFINED
+      name: action
+      required: false
+      predefined:
+      - block
+      - mark_risky
+      - update_policy
+      description: "Action verb to execute, overriding the server's default. If not specified, the server selects the canonical verb for the recommendation type: 'block' for indicator, 'mark_risky' for asset, or 'update_policy' for policy."
+    description: Execute a recommendation action on a specific IQ for TD Insight from Infoblox Cloud.
+    name: infobloxcloud-iq-for-td-insight-action-execute
+    outputs:
+    - contextPath: InfobloxCloud.IQForTDInsightAction.insight_id
+      description: The unique display identifier of the insight whose recommendations were actioned.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAction.recommendation_id
+      description: UUID of the recommendation that was actioned.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAction.action
+      description: The action verb that was executed (e.g., block, mark_risky, update_policy).
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAction.status
+      description: Outcome status of the action (succeeded or failed).
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAction.audit_entry_id
+      description: ID of the audit log entry; can be used to reverse this action. Empty on failure.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAction.reason
+      description: Classification of the outcome (e.g., applied, already_applied, action_failed, resource_not_found, invalid_request, not_eligible).
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAction.message
+      description: Human-readable detail for failed items. Empty on success.
+      type: String
+  - arguments:
+    - name: audit_entry_id
+      required: true
+      description: "ID of the audit log entry to undo. The audit_entry_id can be fetched from the output context path (InfobloxCloud.IQForTDInsightAction.audit_entry_id) of the 'infobloxcloud-iq-for-td-insight-action-execute command'.\n\nExample: dummy-audit-entry-1."
+    description: Undo a previously executed recommendation action on a specific IQ for TD Insight from Infoblox Cloud.
+    name: infobloxcloud-iq-for-td-insight-action-undo
+    outputs:
+    - contextPath: InfobloxCloud.IQForTDInsightAction.audit_entry_id
+      description: ID of the audit log entry that was undone.
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAction.action
+      description: The undo action that was performed (e.g., allow, undo_risky, revert_policy).
+      type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAction.status
+      description: Outcome status of the undo operation (succeeded or failed).
+      type: String
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.11.4819260
+  dockerimage: demisto/python3:3.12.13.11753038
   isfetch: true
 fromversion: 6.5.0
 defaultmapperin: "Infoblox Cloud - Incoming Mapper"

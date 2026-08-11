@@ -79,6 +79,7 @@ class TestE2E:
         assert mock_results.call_args[0][0]["EntryContext"]["BloxOneTD.LookalikeDomain"] == raw
 
     def test_lookalike_domain_list_command_with_invalid_args(self, mocker, mock_results):
+        mocker.patch.object(BloxOneTDClient, "attach_customer_tracking_header")
         patch_command_args_and_params(
             mocker,
             "bloxone-td-lookalike-domain-list",
@@ -219,9 +220,49 @@ class TestE2E:
             command_test_module(blox_client)
 
     def test_not_implemented_command(self, mocker):
+        mocker.patch.object(BloxOneTDClient, "attach_customer_tracking_header")
         patch_command_args_and_params(mocker, "not-implemented-command", {})
         with pytest.raises(SystemExit):
             main()
+
+    def test_main_dispatches_new_commands_with_args(self, blox_client, requests_mock, mocker, mock_results):
+        """Test main() routes a new_commands_with_args command through trim_args/remove_nulls_from_dictionary."""
+        ip_address = "0.0.0.1"
+        address_response = util_load_json("enrichment_ip_address_response.json")
+        threat_response = util_load_json("enrichment_ip_threat_response.json")
+        requests_mock.get(f"{BASE_URL}/tide/api/data/threats?ip={ip_address}&rlimit=1", json=threat_response, status_code=200)
+        requests_mock.get(
+            f"{BASE_URL}/api/ddi/v1/ipam/address?_filter=address=='{ip_address}'&_limit=1",
+            json=address_response,
+            status_code=200,
+        )
+
+        # Leading/trailing whitespace and a null value confirm main() actually runs trim_args and
+        # remove_nulls_from_dictionary on the args before dispatching, rather than passing them through as-is.
+        mocker.patch.object(demisto, "args", return_value={"ip": f"  {ip_address}  ", "unused": None})
+        mocker.patch.object(demisto, "command", return_value="ip")
+        mocker.patch.object(demisto, "params", return_value={"credentials": {"password": ""}})
+
+        main()
+
+        mock_results.assert_called_once()
+
+    def test_main_reports_401_as_authentication_error(self, mocker):
+        """A DemistoException whose response carries a 401 status is surfaced as a generic authentication error."""
+        mocker.patch.object(BloxOneTDClient, "attach_customer_tracking_header")
+        mocker.patch.object(demisto, "args", return_value={})
+        mocker.patch.object(demisto, "command", return_value="ip")
+        mocker.patch.object(demisto, "params", return_value={"credentials": {"password": ""}})
+        mocker.patch(
+            "InfobloxBloxOneThreatDefense.ip_command",
+            side_effect=DemistoException("unauthorized", res=mocker.Mock(status_code=401)),
+        )
+        mock_return_error = mocker.patch("InfobloxBloxOneThreatDefense.return_error")
+
+        main()
+
+        mock_return_error.assert_called_once()
+        assert mock_return_error.call_args.args[0] == "authentication error"
 
 
 class TestBloxOneTDClient:
@@ -275,6 +316,29 @@ class TestBloxOneTDClient:
         # Assert the error message contains the expected text
         assert expected_error_msg in str(excinfo.value)
         assert str(status_code) in str(excinfo.value)
+
+    def test_http_request_no_content_response(self, blox_client, requests_mock):
+        """Test that a 204 No Content response returns None without attempting to parse a body."""
+        requests_mock.get(f"{BASE_URL}/test/endpoint", status_code=204)
+
+        response = blox_client.http_request("GET", "/test/endpoint")
+
+        assert response is None
+
+    def test_http_request_fallback_error_handler_for_unmapped_status_code(self, blox_client, mocker):
+        """Test the client_error_handler fallback for a status code with no dedicated branch.
+
+        BaseClient's own ok_codes check intercepts every status code outside {200-299, 400, 401,
+        403, 404, 521} before this method's own status handling would run, so in a real HTTP
+        response this fallback line is unreachable. Stubbing _http_request to return a raw
+        response object bypasses that gate to directly cover the defensive fallback itself.
+        """
+        fake_response = mocker.Mock(status_code=418)
+        fake_response.json.return_value = {"error": "teapot"}
+        mocker.patch.object(blox_client, "_http_request", return_value=fake_response)
+
+        with pytest.raises(DemistoException, match=r"Error in API call \[418\]"):
+            blox_client.http_request("GET", "/test/endpoint")
 
     def test_http_request_with_json_data(self, blox_client, requests_mock):
         """Test HTTP request with JSON data in the body."""
@@ -481,6 +545,32 @@ class TestUnitTests:
         assert command_results.scheduled_command._command == "bloxone-td-dossier-lookup-get"
 
 
+class TestUtilityFunctions:
+    def test_trim_args_strips_string_values_only(self):
+        args = {"name": "  value  ", "count": 5, "flag": True}
+        assert trim_args(args) == {"name": "value", "count": 5, "flag": True}
+
+    def test_validate_key_raises_when_key_missing(self):
+        with pytest.raises(ValueError, match="Key id not found in response."):
+            validate_key({"other": "value"}, "id")
+
+    def test_validate_key_raises_when_response_empty(self):
+        with pytest.raises(ValueError, match="Key id not found in response."):
+            validate_key({}, "id")
+
+    @pytest.mark.parametrize(
+        "threat_level, expected_score",
+        [
+            (None, Common.DBotScore.NONE),
+            (90, Common.DBotScore.BAD),
+            (50, Common.DBotScore.SUSPICIOUS),
+            (10, Common.DBotScore.GOOD),
+        ],
+    )
+    def test_get_dbot_score_from_threat_level(self, threat_level, expected_score):
+        assert get_dbot_score_from_threat_level(threat_level) == expected_score
+
+
 class TestIpCommand:
     @patch("InfobloxBloxOneThreatDefense.return_warning")
     def test_ip_command_success(self, mock_return_warning, blox_client, requests_mock, capfd):
@@ -655,6 +745,7 @@ class TestFetchIncidents:
         mock_demisto_methods["getLastRun"].return_value = None
 
         params = {
+            "ingestion_type": "SOC Insight",
             "max_fetch": "10",
             "soc_insight_status": "Active",
             "soc_insight_priority_level": "HIGH",
@@ -697,7 +788,7 @@ class TestFetchIncidents:
         existing_last_run = {"soc_insight_ids": ["insight-001"]}
         mock_demisto_methods["getLastRun"].return_value = existing_last_run
 
-        params = {"max_fetch": "10"}
+        params = {"ingestion_type": "SOC Insight", "max_fetch": "10"}
 
         fetch_incidents(blox_client, params)
 
@@ -720,7 +811,7 @@ class TestFetchIncidents:
 
         mock_demisto_methods["getLastRun"].return_value = None
 
-        params = {"max_fetch": "2"}  # Limit to 2 incidents
+        params = {"ingestion_type": "SOC Insight", "max_fetch": "2"}  # Limit to 2 incidents
 
         fetch_incidents(blox_client, params)
 
@@ -746,7 +837,7 @@ class TestFetchIncidents:
 
         mock_demisto_methods["getLastRun"].return_value = None
 
-        params = {"max_fetch": "10"}
+        params = {"ingestion_type": "SOC Insight", "max_fetch": "10"}
 
         fetch_incidents(blox_client, params)
 
@@ -766,7 +857,7 @@ class TestFetchIncidents:
 
         mock_demisto_methods["getLastRun"].return_value = {"soc_insight_ids": ["insight-001"]}
 
-        params = {"max_fetch": "10"}
+        params = {"ingestion_type": "SOC Insight", "max_fetch": "10"}
 
         fetch_incidents(blox_client, params)
 
@@ -786,7 +877,7 @@ class TestFetchIncidents:
 
         mock_demisto_methods["getLastRun"].return_value = None
 
-        params = {"max_fetch": "10"}
+        params = {"ingestion_type": "SOC Insight", "max_fetch": "10"}
 
         fetch_incidents(blox_client, params)
 
@@ -831,7 +922,7 @@ class TestFetchIncidents:
 
         mock_demisto_methods["getLastRun"].return_value = None
 
-        params = {"max_fetch": "10"}
+        params = {"ingestion_type": "SOC Insight", "max_fetch": "10"}
 
         fetch_incidents(blox_client, params)
 
@@ -848,7 +939,7 @@ class TestFetchIncidents:
         mock_demisto_methods["getLastRun"].return_value = None
 
         # Don't specify max_fetch parameter
-        params = {}
+        params = {"ingestion_type": "SOC Insight"}
 
         fetch_incidents(blox_client, params)
 
@@ -856,6 +947,23 @@ class TestFetchIncidents:
         mock_demisto_methods["incidents"].assert_called_once()
         incidents = mock_demisto_methods["incidents"].call_args[0][0]
         assert len(incidents) == 3  # All 3 test insights should be processed
+
+    def test_fetch_incidents_empty_string_ingestion_type_uses_default(self, blox_client, requests_mock, mock_demisto_methods):
+        """Test fetch_incidents falls back to the default ingestion type when ingestion_type is an empty string"""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", text=load_json_file("iq-for-td-insight-list"))
+        mock_demisto_methods["getLastRun"].return_value = None
+
+        # An empty string is what the UI sends for an unset select field; it must not be
+        # treated as an explicit selection and must fall back to "IQ for TD Insight".
+        params = {"ingestion_type": "", "max_fetch": "10"}
+
+        fetch_incidents(blox_client, params)
+
+        mock_demisto_methods["incidents"].assert_called_once()
+        incidents = mock_demisto_methods["incidents"].call_args[0][0]
+        assert len(incidents) == 3
+        incident_data = json.loads(incidents[0]["rawJSON"])
+        assert "insight_id" in incident_data
 
     def test_fetch_incidents_through_main_function(self, requests_mock, mocker):
         """Test of fetch_incidents through main() function"""
@@ -870,7 +978,12 @@ class TestFetchIncidents:
         mocker.patch.object(
             demisto,
             "params",
-            return_value={"credentials": {"password": "test-api-key"}, "max_fetch": "201", "soc_insight_status": "open"},
+            return_value={
+                "credentials": {"password": "test-api-key"},
+                "ingestion_type": "SOC Insight",
+                "max_fetch": "201",
+                "soc_insight_status": "open",
+            },
         )
 
         # Run main function
@@ -896,6 +1009,7 @@ class TestFetchIncidents:
             return_value={
                 "credentials": {"password": "test-api-key"},
                 "isFetch": True,
+                "ingestion_type": "SOC Insight",
                 "max_fetch": "10",
                 "soc_insight_status": "open",
             },
@@ -1234,6 +1348,269 @@ class TestFetchDnsSecurityEvents:
             )
 
 
+class TestFetchIQForTDInsights:
+    """Test cases for the fetch_iq_for_td_insights function"""
+
+    @freeze_time("2026-12-02T00:00:00Z")
+    def test_fetch_iq_for_td_insights_first_run_no_last_run(self, blox_client, requests_mock):
+        """Test fetch_iq_for_td_insights when no previous last_run exists (first run)"""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", text=load_json_file("iq-for-td-insight-list"))
+
+        params = {
+            "first_fetch": "24 hours",
+            "iq_for_td_insight_status": "In Progress",
+            "iq_for_td_insight_severity": "High",
+            "iq_for_td_insight_threat_properties": "malware,phishing",
+        }
+        last_run = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_iq_for_td_insights(blox_client, params, last_run, max_fetch)
+
+        # Verify API was called with correct parameters. date_created is deliberately not sent to the
+        # API since it matches exactly rather than "on or after"; filtering is done client-side instead.
+        assert requests_mock.call_count == 1
+        request = requests_mock.request_history[0]
+        assert "date_created" not in request.qs
+        assert request.qs["status"] == ["in progress"]
+        assert request.qs["severity"] == ["high"]
+        assert request.qs["threat_properties"] == ["malware,phishing"]
+
+        # Verify incidents were created
+        assert len(incidents) == 3
+        incident = incidents[0]
+        assert "insight_id" in incident["rawJSON"]
+        assert incident["name"].startswith("Infoblox IQ for TD Insight - ")
+
+        # Verify incident_link uses V2 URL format
+        incident_data = json.loads(incident["rawJSON"])
+        assert incident_data["incident_link"] == "https://csp.infoblox.com/#/ai/threat-defense/insight-v2-001"
+
+        # Verify last run was seeded once from first_fetch, converted to an absolute timestamp
+        assert updated_last_run["iq_for_td_insight_last_fetch"] == "2026-12-01T00:00:00Z"
+        assert "insight-v2-001" in updated_last_run["iq_for_td_insight_ids"]
+        assert "insight-v2-002" in updated_last_run["iq_for_td_insight_ids"]
+        assert "insight-v2-003" in updated_last_run["iq_for_td_insight_ids"]
+
+    @freeze_time("2026-12-02T00:00:00Z")
+    def test_fetch_iq_for_td_insights_with_naive_date_created_treated_as_utc(self, blox_client, requests_mock):
+        """Naive (no timezone) date_created values must be treated as UTC when compared to the floor timestamp."""
+        requests_mock.get(
+            f"{BASE_URL}/api/v2/insights",
+            json={"insight_list": [{"insight_id": "insight-naive-001", "date_created": "2026-12-01T12:00:00", "name": "n"}]},
+        )
+        params = {"first_fetch": "24 hours"}
+        last_run = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_iq_for_td_insights(blox_client, params, last_run, max_fetch)
+
+        assert len(incidents) == 1
+        assert "insight-naive-001" in updated_last_run["iq_for_td_insight_ids"]
+
+    @freeze_time("2026-12-02T00:00:00Z")
+    def test_fetch_iq_for_td_insights_empty_string_first_fetch_uses_default(self, blox_client, requests_mock):
+        """Test fetch_iq_for_td_insights falls back to DEFAULT_FIRST_FETCH when first_fetch is an empty string"""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", text=load_json_file("iq-for-td-insight-list"))
+
+        params = {"first_fetch": ""}
+        last_run = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_iq_for_td_insights(blox_client, params, last_run, max_fetch)
+
+        # An empty string is what the UI sends for an unset field; it must not be passed to
+        # arg_to_datetime as-is and must fall back to DEFAULT_FIRST_FETCH instead.
+        assert len(incidents) == 3
+        assert updated_last_run["iq_for_td_insight_last_fetch"] == "2026-12-01T00:00:00Z"
+
+    def test_fetch_iq_for_td_insights_with_existing_last_run(self, blox_client, requests_mock):
+        """Test fetch_iq_for_td_insights with existing last_run data skips already-seen insights"""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", text=load_json_file("iq-for-td-insight-list"))
+
+        existing_last_run = {
+            "iq_for_td_insight_last_fetch": "2026-12-01T09:00:00Z",
+            "iq_for_td_insight_ids": ["insight-v2-001"],
+        }
+        params = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_iq_for_td_insights(blox_client, params, existing_last_run, max_fetch)
+
+        assert len(incidents) == 2
+        incident_data = [json.loads(inc["rawJSON"]) for inc in incidents]
+        insight_ids = [data["insight_id"] for data in incident_data]
+        assert "insight-v2-001" not in insight_ids
+        assert "insight-v2-002" in insight_ids
+        assert "insight-v2-003" in insight_ids
+        assert "insight-v2-001" in updated_last_run["iq_for_td_insight_ids"]
+
+        # The floor timestamp must stay intact across cycles, never advanced to the latest insight
+        assert updated_last_run["iq_for_td_insight_last_fetch"] == "2026-12-01T09:00:00Z"
+
+    def test_fetch_iq_for_td_insights_client_side_floor_filtering(self, blox_client, requests_mock):
+        """Test fetch_iq_for_td_insights drops insights older than the floor even if the API returns them"""
+        insight_data = {
+            "insight_list": [
+                {
+                    "insight_id": "insight-v2-before-floor",
+                    "name": "Insight before the floor",
+                    "severity": "High",
+                    "date_created": "2026-12-01T08:00:00Z",
+                },
+                {
+                    "insight_id": "insight-v2-after-floor",
+                    "name": "Insight after the floor",
+                    "severity": "High",
+                    "date_created": "2026-12-01T10:00:00Z",
+                },
+            ]
+        }
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", json=insight_data)
+
+        existing_last_run = {"iq_for_td_insight_last_fetch": "2026-12-01T09:00:00Z"}
+        params = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_iq_for_td_insights(blox_client, params, existing_last_run, max_fetch)
+
+        assert len(incidents) == 1
+        incident_data = json.loads(incidents[0]["rawJSON"])
+        assert incident_data["insight_id"] == "insight-v2-after-floor"
+        assert "insight-v2-before-floor" not in updated_last_run["iq_for_td_insight_ids"]
+
+    def test_fetch_iq_for_td_insights_max_fetch_limit(self, blox_client, requests_mock):
+        """Test fetch_iq_for_td_insights respects max_fetch limit"""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", text=load_json_file("iq-for-td-insight-list"))
+
+        params = {}
+        last_run = {}
+        max_fetch = 2
+
+        incidents, updated_last_run = fetch_iq_for_td_insights(blox_client, params, last_run, max_fetch)
+
+        assert len(incidents) == 2
+        assert len(updated_last_run["iq_for_td_insight_ids"]) == 2
+
+    def test_fetch_iq_for_td_insights_empty_response(self, blox_client, requests_mock):
+        """Test fetch_iq_for_td_insights when API returns empty insight list"""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", json={"insight_list": []})
+
+        params = {}
+        last_run = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_iq_for_td_insights(blox_client, params, last_run, max_fetch)
+
+        assert len(incidents) == 0
+        # The floor timestamp is still seeded on an empty first cycle so future cycles reuse it
+        assert "iq_for_td_insight_last_fetch" in updated_last_run
+
+    def test_fetch_iq_for_td_insights_empty_response_with_existing_last_run(self, blox_client, requests_mock):
+        """Test fetch_iq_for_td_insights keeps the floor timestamp intact when API returns no insights"""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", json={"insight_list": []})
+
+        existing_last_run = {"iq_for_td_insight_last_fetch": "2026-12-01T09:00:00Z", "iq_for_td_insight_ids": ["insight-v2-001"]}
+        params = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_iq_for_td_insights(blox_client, params, existing_last_run, max_fetch)
+
+        assert len(incidents) == 0
+        assert updated_last_run["iq_for_td_insight_last_fetch"] == "2026-12-01T09:00:00Z"
+        assert updated_last_run["iq_for_td_insight_ids"] == ["insight-v2-001"]
+
+    def test_fetch_iq_for_td_insights_test_mode(self, blox_client, requests_mock):
+        """Test fetch_iq_for_td_insights in test mode"""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", text=load_json_file("iq-for-td-insight-list"))
+
+        params = {}
+        last_run = {}
+        max_fetch = 50
+
+        incidents, updated_last_run = fetch_iq_for_td_insights(blox_client, params, last_run, max_fetch, is_test=True)
+
+        assert incidents == []
+        assert updated_last_run == {}
+
+    @pytest.mark.parametrize(
+        "severity,expected_severity_level",
+        [
+            ("Low", 1),
+            ("Medium", 2),
+            ("High", 3),
+            ("Critical", 4),
+            ("Unknown", 1),  # Default severity for unmapped severity
+            (None, 1),  # Default severity for missing severity
+        ],
+    )
+    def test_fetch_iq_for_td_insights_severity_mapping(self, blox_client, requests_mock, severity, expected_severity_level):
+        """Test fetch_iq_for_td_insights correctly maps severity to incident severity"""
+        insight_data = {
+            "insight_list": [
+                {
+                    "insight_id": "insight-v2-test",
+                    "name": "Test Insight",
+                    "description": "Test description",
+                    "date_created": "2026-12-01T10:00:00Z",
+                    "severity": severity,
+                }
+            ]
+        }
+
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", json=insight_data)
+
+        params = {}
+        last_run = {}
+        max_fetch = 50
+
+        incidents, _ = fetch_iq_for_td_insights(blox_client, params, last_run, max_fetch)
+
+        assert len(incidents) == 1
+        assert incidents[0]["severity"] == expected_severity_level
+
+    def test_fetch_iq_for_td_insights_integration_with_fetch_incidents(self, blox_client, requests_mock, mocker):
+        """Test fetch_iq_for_td_insights integration with main fetch_incidents function"""
+        mock_get_last_run = mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mock_incidents = mocker.patch.object(demisto, "incidents")
+
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", text=load_json_file("iq-for-td-insight-list"))
+
+        params = {"max_fetch": "50", "ingestion_type": "IQ for TD Insight", "first_fetch": "24 hours"}
+
+        fetch_incidents(blox_client, params)
+
+        mock_get_last_run.assert_called_once()
+        mock_set_last_run.assert_called_once()
+        mock_incidents.assert_called_once()
+
+        incidents_call = mock_incidents.call_args[0][0]
+        assert len(incidents_call) == 3
+        assert incidents_call[0]["name"].startswith("Infoblox IQ for TD Insight")
+
+    @patch("InfobloxBloxOneThreatDefense.return_results")
+    def test_test_module_through_main_function_for_iq_for_td_insight_fetch(self, mock_return, requests_mock, mocker):
+        """Test of test_module through main() function for IQ for TD Insight fetch"""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", text=load_json_file("iq-for-td-insight-list"))
+
+        patch_command_args_and_params(mocker, "test-module", {})
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={
+                "credentials": {"password": "test-api-key"},
+                "isFetch": True,
+                "max_fetch": "10",
+                "ingestion_type": "IQ for TD Insight",
+            },
+        )
+
+        main()
+
+        assert mock_return.call_args.args[0] == "ok"
+
+
 class TestMacEnrichCommand:
     def test_mac_enrich_command_success(self, blox_client, requests_mock):
         """Test successful MAC address enrichment with valid data"""
@@ -1394,6 +1771,63 @@ class TestBlockUnblock:
         )
 
         assert result.readable_output == readable_output
+
+    def test_block_ip_command_get_named_list_error_with_response_text(self, blox_client, requests_mock):
+        """Test generic_named_list_method wraps a get_named_list failure that has a response body."""
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json={"detail": "boom"}, status_code=400)
+
+        with pytest.raises(ValueError, match="boom"):
+            block_ip_command(blox_client, {"ip": "0.0.0.1", "custom_list_name": "Test Name", "custom_list_type": "test_type"})
+
+    def test_block_ip_command_get_named_list_error_without_response_text(self, blox_client, requests_mock):
+        """Test generic_named_list_method falls back to a generic message when the failed response has no body."""
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", status_code=401, text="")
+
+        with pytest.raises(ValueError, match="Failed to get named list"):
+            block_ip_command(blox_client, {"ip": "0.0.0.1", "custom_list_name": "Test Name", "custom_list_type": "test_type"})
+
+    def test_infobloxcloud_customlist_indicator_remove_items_not_present_in_list(self, blox_client, requests_mock):
+        """Test that a remove failure reporting missing items is translated to a dedicated error message.
+
+        infobloxcloud_customlist_indicator_remove is the only command that calls generic_named_list_method
+        with is_remove=True, i.e. the only one that exercises the remove_named_list_items (DELETE) branch.
+        """
+        get_response = util_load_json("block-unblock-ip-command-response.json")
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
+        requests_mock.delete(
+            f"{BASE_URL}/api/atcfw/v1/named_lists/123456/items",
+            json={"detail": "2 Items not found in the list"},
+            status_code=400,
+        )
+
+        with pytest.raises(ValueError, match="2 indicators were not present in the list."):
+            infobloxcloud_customlist_indicator_remove(
+                blox_client, {"indicators": "0.0.0.0, 0.0.0.1", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
+            )
+
+    def test_infobloxcloud_customlist_indicator_remove_generic_error(self, blox_client, requests_mock):
+        """Test that a remove failure with no item-count pattern is wrapped in a generic error message."""
+        get_response = util_load_json("block-unblock-ip-command-response.json")
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
+        requests_mock.delete(
+            f"{BASE_URL}/api/atcfw/v1/named_lists/123456/items", json={"detail": "list not found"}, status_code=404
+        )
+
+        with pytest.raises(ValueError, match="Failed to remove indicators from named list"):
+            infobloxcloud_customlist_indicator_remove(
+                blox_client, {"indicators": "0.0.0.0, 0.0.0.1", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
+            )
+
+    def test_block_ip_command_update_named_list_generic_error(self, blox_client, requests_mock):
+        """Test that an update_named_list failure with no item-count pattern is wrapped in a generic error message."""
+        get_response = util_load_json("block-unblock-ip-command-response.json")
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/named_lists/0", json=get_response, status_code=200)
+        requests_mock.post(f"{BASE_URL}/api/atcfw/v1/named_lists/123456/items", status_code=404)
+
+        with pytest.raises(ValueError, match="Failed to add indicators to named list"):
+            block_ip_command(
+                blox_client, {"ip": "0.0.0.0, 0.0.0.1", "custom_list_name": "Test Name", "custom_list_type": "test_type"}
+            )
 
     def test_unblock_ip_command_success(self, blox_client, requests_mock):
         """Test successful IP unblocking"""
@@ -1611,6 +2045,23 @@ class TestDomainCommand:
         # Verify indicator score
         assert domain_indicator == command_output[0].indicator.to_context()
 
+    def test_domain_command_maps_string_address_tags(self, blox_client, requests_mock, mocker):
+        """Test that domain_command maps address_data tags of string value only onto the indicator."""
+        domain = "test.com"
+        params = {"integrationReliability": DBotScoreReliability.B}
+        mocker.patch.object(demisto, "params", return_value=params)
+        requests_mock.get(f"{BASE_URL}/tide/api/data/threats?host={domain}&type=host&rlimit=1", json={}, status_code=200)
+        requests_mock.get(
+            f"{BASE_URL}/api/ddi/v1/ipam/host?_filter=name=='{domain}'&_limit=1",
+            json={"results": [{"tags": {"env": "prod", "empty": "", "num": 5}}]},
+            status_code=200,
+        )
+
+        command_output = domain_command(blox_client, args={"domain": domain})
+
+        tags = command_output[0].indicator.tags
+        assert tags == ["env: prod"]
+
     def test_domain_command_invalid_args(self, blox_client, capfd):
         capfd.disabled()
         with pytest.raises(ValueError) as error_msg:
@@ -1817,6 +2268,21 @@ class TestListSOCInsightEvents:
         with pytest.raises(ValueError) as e:
             list_soc_insight_events_command(blox_client, args)
         assert str(e.value) == 'Invalid date: "start_time"="invalid-time"'
+
+    def test_list_soc_insight_events_command_empty_response(self, blox_client, requests_mock):
+        """Test handling of an empty events response."""
+
+        requests_mock.get(
+            f"{BASE_URL}/api/v1/insights/insight-123/events",
+            json={"events": []},
+            status_code=200,
+        )
+
+        args = {"soc_insight_id": "insight-123"}
+        result = list_soc_insight_events_command(blox_client, args)
+
+        assert result.readable_output == "No events found."
+        assert result.raw_response == []
 
 
 class TestListSOCInsightAssets:
@@ -2032,3 +2498,811 @@ class TestListSOCInsightComments:
         with pytest.raises(ValueError) as e:
             list_soc_insight_comments_command(blox_client, args)
         assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("soc_insight_id")
+
+
+class TestListIQForTDInsight:
+    """Tests for list_iq_for_td_insight_command command."""
+
+    @pytest.fixture
+    def return_data(self):
+        """Returns test data for IQ for TD Insights V2."""
+        return util_load_json("iq-for-td-insight-list.json")
+
+    def test_list_iq_for_td_insight_with_no_filters(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight command with no filters applied."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", json=return_data, status_code=200)
+
+        result = list_iq_for_td_insight_command(blox_client, {})
+
+        assert result.outputs_prefix == "InfobloxCloud.IQForTDInsight"
+        assert result.outputs_key_field == "insight_id"
+        assert len(result.outputs) == 3
+        assert result.readable_output == util_load_text_data("iq-for-td-insight-list-readable.md")
+        assert result.outputs == return_data.get("insight_list")
+
+    def test_list_iq_for_td_insight_with_filters(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight command with filters applied, including comma-separated list cleaning."""
+        args = {
+            "status": "Needs Review",
+            "name": "Beacon",
+            "severity": "high",
+            "threat_properties": " malware, phishing ,,ransomware ",
+            "indicators": " 1.2.3.4 , 5.6.7.8,,",
+            "assets": " asset-1 , asset-2",
+            "user": "user1, ,user2",
+        }
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", json=return_data, status_code=200)
+
+        list_iq_for_td_insight_command(blox_client, args)
+
+        request = requests_mock.request_history[0]
+        assert request.qs["status"] == ["needs review"]
+        assert request.qs["name"] == ["beacon"]
+        assert request.qs["severity"] == ["high"]
+        assert request.qs["threat_properties"] == ["malware,phishing,ransomware"]
+        assert request.qs["indicators"] == ["1.2.3.4,5.6.7.8"]
+        assert request.qs["assets"] == ["asset-1,asset-2"]
+        assert request.qs["user"] == ["user1,user2"]
+
+    def test_list_iq_for_td_insight_with_invalid_date_created(self, blox_client):
+        """Test list_iq_for_td_insight command with an invalid date_created value."""
+        args = {"date_created": "invalid-time"}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_command(blox_client, args)
+        assert str(e.value) == 'Invalid date: "date_created"="invalid-time"'
+
+    def test_list_iq_for_td_insight_with_invalid_status(self, blox_client):
+        """Test list_iq_for_td_insight command with an invalid status."""
+        args = {"status": "Under Review"}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format("Under Review", "status")
+
+    def test_list_iq_for_td_insight_with_invalid_severity(self, blox_client):
+        """Test list_iq_for_td_insight command with an invalid severity."""
+        args = {"severity": "Urgent"}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format("Urgent", "severity")
+
+    def test_list_iq_for_td_insight_with_case_insensitive_severity(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight command matches severity case-insensitively and sends the canonical value."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", json=return_data, status_code=200)
+
+        list_iq_for_td_insight_command(blox_client, {"severity": "CRITICAL"})
+
+        request = requests_mock.request_history[0]
+        assert request.qs["severity"] == ["critical"]
+
+    def test_list_iq_for_td_insight_with_date_created_floor_filtering(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight command filters out insights older than date_created client-side."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", json=return_data, status_code=200)
+
+        args = {"date_created": "2026-12-01T11:00:00Z"}
+        result = list_iq_for_td_insight_command(blox_client, args)
+
+        request = requests_mock.request_history[0]
+        assert "date_created" not in request.qs
+
+        insight_ids = [insight.get("insight_id") for insight in result.outputs]
+        assert "insight-v2-001" not in insight_ids
+        assert "insight-v2-002" in insight_ids
+        assert "insight-v2-003" in insight_ids
+
+    def test_list_iq_for_td_insight_with_empty_response(self, blox_client, requests_mock):
+        """Test list_iq_for_td_insight command with empty response."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights", json={"insight_list": []}, status_code=200)
+
+        result = list_iq_for_td_insight_command(blox_client, {})
+
+        assert result.readable_output == "No IQ for TD Insights found."
+        assert result.raw_response == []
+
+    def test_list_iq_for_td_insight_with_naive_date_created_treated_as_utc(self, blox_client, requests_mock):
+        """Naive (no timezone) date_created values, in both the filter arg and the insight data, are treated as UTC."""
+        requests_mock.get(
+            f"{BASE_URL}/api/v2/insights",
+            json={
+                "insight_list": [
+                    {"insight_id": "insight-naive-001", "date_created": "2026-12-01T12:00:00", "name": "new"},
+                    {"insight_id": "insight-naive-002", "date_created": "2026-12-01T09:00:00", "name": "old"},
+                ]
+            },
+        )
+
+        result = list_iq_for_td_insight_command(blox_client, {"date_created": "2026-12-01T10:00:00"})
+
+        insight_ids = [insight.get("insight_id") for insight in result.outputs]
+        assert "insight-naive-001" in insight_ids
+        assert "insight-naive-002" not in insight_ids
+
+
+class TestGetIQForTDInsight:
+    """Tests for get_iq_for_td_insight_command command."""
+
+    @pytest.fixture
+    def return_data(self):
+        """Returns test data for IQ for TD Insight detail."""
+        return util_load_json("iq-for-td-insight-get.json")
+
+    def test_get_iq_for_td_insight(self, return_data, blox_client, requests_mock):
+        """Test get_iq_for_td_insight command with a valid insight_id."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001", json=return_data, status_code=200)
+
+        result = get_iq_for_td_insight_command(blox_client, {"insight_id": "insight-v2-001"})
+
+        assert result.outputs_prefix == "InfobloxCloud.IQForTDInsight"
+        assert result.outputs_key_field == "insight_id"
+        assert result.outputs == return_data
+        assert result.readable_output == util_load_text_data("iq-for-td-insight-get-readable.md")
+
+    def test_get_iq_for_td_insight_without_insight_id(self, blox_client):
+        """Test get_iq_for_td_insight command with a missing insight_id."""
+        with pytest.raises(ValueError) as e:
+            get_iq_for_td_insight_command(blox_client, {})
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+
+    def test_get_iq_for_td_insight_not_found(self, blox_client, requests_mock):
+        """Test get_iq_for_td_insight command when the insight does not exist."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-999", json={"detail": "insight not found"}, status_code=404)
+
+        with pytest.raises(DemistoException) as e:
+            get_iq_for_td_insight_command(blox_client, {"insight_id": "insight-v2-999"})
+        assert MESSAGES["NO_RECORD_FOUND"] in str(e.value)
+
+    def test_get_iq_for_td_insight_empty_body(self, blox_client, requests_mock):
+        """Test get_iq_for_td_insight command when the API returns 200 with an empty body."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-000", json={}, status_code=200)
+
+        result = get_iq_for_td_insight_command(blox_client, {"insight_id": "insight-v2-000"})
+
+        assert result.readable_output == "No IQ for TD Insight found."
+        assert result.raw_response == {}
+
+
+class TestTrackingHeaders:
+    """Tests for the x-Infoblox-client and x-Infoblox-customer tracking headers."""
+
+    def test_client_sets_client_header_without_network_call(self, blox_client, requests_mock):
+        """Constructing the client attaches x-Infoblox-client and never makes an API call."""
+        assert blox_client._headers["x-Infoblox-client"] == "xsoar-ThreatDefense"
+        assert "x-Infoblox-customer" not in blox_client._headers
+        assert requests_mock.call_count == 0
+
+    @pytest.mark.parametrize(
+        "platform, expected",
+        [
+            ("x2", "cortex"),
+            ("unified_platform", "cortex"),
+            ("xsoar", "xsoar"),
+            ("xsoar_hosted", "xsoar"),
+            (None, "xsoar"),
+        ],
+    )
+    def test_get_platform_name(self, mocker, platform, expected):
+        """Test the platform segment of the x-Infoblox-client header for each server platform."""
+        mocker.patch.object(demisto, "demistoVersion", return_value={"platform": platform})
+        assert get_platform_name() == expected
+
+    def test_attach_customer_tracking_header_success(self, blox_client, requests_mock, mocker):
+        """Test the header is fetched, set, and cached when there is no prior cached value."""
+        mocker.patch("InfobloxBloxOneThreatDefense.get_integration_context", return_value={})
+        mock_set_context = mocker.patch("InfobloxBloxOneThreatDefense.set_integration_context")
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/account", json={"results": {"customer_id": "1234"}}, status_code=200)
+
+        blox_client.attach_customer_tracking_header()
+
+        assert blox_client._headers["x-Infoblox-customer"] == "1234"
+        mock_set_context.assert_called_once_with({"api_key_hash": blox_client._api_key_hash, "customer_id": "1234"})
+
+    def test_attach_customer_tracking_header_uses_cache(self, blox_client, requests_mock, mocker):
+        """Test a cached customer_id for the same Service API Key is reused without an API call."""
+        mocker.patch(
+            "InfobloxBloxOneThreatDefense.get_integration_context",
+            return_value={"api_key_hash": blox_client._api_key_hash, "customer_id": "cached-1234"},
+        )
+        mock_set_context = mocker.patch("InfobloxBloxOneThreatDefense.set_integration_context")
+
+        blox_client.attach_customer_tracking_header()
+
+        assert blox_client._headers["x-Infoblox-customer"] == "cached-1234"
+        assert requests_mock.call_count == 0
+        mock_set_context.assert_not_called()
+
+    def test_attach_customer_tracking_header_refetches_on_api_key_change(self, blox_client, requests_mock, mocker):
+        """Test a cached customer_id for a different Service API Key triggers a fresh fetch."""
+        mocker.patch(
+            "InfobloxBloxOneThreatDefense.get_integration_context",
+            return_value={"api_key_hash": "some-other-hash", "customer_id": "stale-1234"},
+        )
+        mock_set_context = mocker.patch("InfobloxBloxOneThreatDefense.set_integration_context")
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/account", json={"results": {"customer_id": "new-5678"}}, status_code=200)
+
+        blox_client.attach_customer_tracking_header()
+
+        assert blox_client._headers["x-Infoblox-customer"] == "new-5678"
+        mock_set_context.assert_called_once_with({"api_key_hash": blox_client._api_key_hash, "customer_id": "new-5678"})
+
+    def test_attach_customer_tracking_header_swallows_errors(self, blox_client, requests_mock, mocker):
+        """Test a failure to retrieve customer_id is logged and never raised or blocks the header from being set."""
+        mocker.patch("InfobloxBloxOneThreatDefense.get_integration_context", return_value={})
+        mock_set_context = mocker.patch("InfobloxBloxOneThreatDefense.set_integration_context")
+        requests_mock.get(f"{BASE_URL}/api/atcfw/v1/account", json={"error": "forbidden"}, status_code=403)
+
+        blox_client.attach_customer_tracking_header()
+
+        assert "x-Infoblox-customer" not in blox_client._headers
+        mock_set_context.assert_not_called()
+
+
+class TestUpdateIQForTDInsightStatus:
+    """Tests for update_iq_for_td_insight_status_command command."""
+
+    def test_update_iq_for_td_insight_status_with_comment(self, blox_client, requests_mock):
+        """Test update_iq_for_td_insight_status command with a valid insight_id, status, and comment."""
+        requests_mock.put(f"{BASE_URL}/api/v2/insights/status", json={}, status_code=201)
+        args = {"insight_id": "insight-v2-001", "status": "Resolved", "comment": "Remediated the affected asset."}
+
+        result = update_iq_for_td_insight_status_command(blox_client, args)
+
+        request = requests_mock.request_history[0]
+        assert request.json() == {
+            "insight_id": "insight-v2-001",
+            "status": "Resolved",
+            "comment": "Remediated the affected asset.",
+        }
+        assert result.outputs_prefix == "InfobloxCloud.IQForTDInsight"
+        assert result.outputs_key_field == "insight_id"
+        assert result.outputs == {
+            "insight_id": "insight-v2-001",
+            "status": "Resolved",
+            "comment": "Remediated the affected asset.",
+        }
+        assert result.readable_output == "Successfully updated the status of IQ for TD Insight 'insight-v2-001' to 'Resolved'."
+
+    def test_update_iq_for_td_insight_status_without_comment(self, blox_client, requests_mock):
+        """Test update_iq_for_td_insight_status command without an optional comment."""
+        requests_mock.put(f"{BASE_URL}/api/v2/insights/status", json={}, status_code=201)
+        args = {"insight_id": "insight-v2-001", "status": "In Progress"}
+
+        result = update_iq_for_td_insight_status_command(blox_client, args)
+
+        request = requests_mock.request_history[0]
+        assert request.json() == {"insight_id": "insight-v2-001", "status": "In Progress"}
+        assert result.outputs == {"insight_id": "insight-v2-001", "status": "In Progress"}
+
+    def test_update_iq_for_td_insight_status_without_insight_id(self, blox_client):
+        """Test update_iq_for_td_insight_status command with a missing insight_id."""
+        with pytest.raises(ValueError) as e:
+            update_iq_for_td_insight_status_command(blox_client, {"status": "Resolved"})
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+
+    def test_update_iq_for_td_insight_status_without_status(self, blox_client):
+        """Test update_iq_for_td_insight_status command with a missing status."""
+        with pytest.raises(ValueError) as e:
+            update_iq_for_td_insight_status_command(blox_client, {"insight_id": "insight-v2-001"})
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("status")
+
+    def test_update_iq_for_td_insight_status_with_invalid_status(self, blox_client):
+        """Test update_iq_for_td_insight_status command with an invalid status value."""
+        args = {"insight_id": "insight-v2-001", "status": "Closed"}
+        with pytest.raises(ValueError) as e:
+            update_iq_for_td_insight_status_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format("Closed", "status")
+
+    def test_update_iq_for_td_insight_status_not_found(self, blox_client, requests_mock):
+        """Test update_iq_for_td_insight_status command when the insight does not exist."""
+        requests_mock.put(f"{BASE_URL}/api/v2/insights/status", json={"detail": "insight not found"}, status_code=404)
+        args = {"insight_id": "insight-v2-999", "status": "Resolved"}
+
+        with pytest.raises(DemistoException) as e:
+            update_iq_for_td_insight_status_command(blox_client, args)
+        assert MESSAGES["NO_RECORD_FOUND"] in str(e.value)
+
+
+class TestListIQForTDInsightAssets:
+    """Tests for list_iq_for_td_insight_assets_command command."""
+
+    @pytest.fixture
+    def return_data(self):
+        """Returns test data for IQ for TD Insight assets."""
+        return util_load_json("iq-for-td-insight-asset-list.json")
+
+    def test_list_iq_for_td_insight_assets_with_no_filters(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_assets_command with no filters applied."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/assets", json=return_data, status_code=200)
+
+        result = list_iq_for_td_insight_assets_command(blox_client, {"insight_id": "insight-v2-001"})
+
+        assert result.outputs_prefix == "InfobloxCloud.IQForTDInsightAsset"
+        assert result.outputs_key_field == "device_name"
+        assert len(result.outputs) == 2
+        assert result.readable_output == util_load_text_data("iq-for-td-insight-asset-list-readable.md")
+        assert result.outputs == return_data.get("assets")
+
+    def test_list_iq_for_td_insight_assets_with_filters(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_assets_command with filters applied, including comma-separated list cleaning."""
+        args = {
+            "insight_id": "insight-v2-001",
+            "device_name": "dummy-host-01",
+            "indicators": " dummy-indicator-1.com , dummy-indicator-2.com,,",
+            "users": " dummy-user-1 , ,dummy-user-2",
+            "ip_address": "0.0.0.0, 0.0.0.1",
+            "is_verified": "true",
+            "limit": "50",
+        }
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/assets", json=return_data, status_code=200)
+
+        list_iq_for_td_insight_assets_command(blox_client, args)
+
+        request = requests_mock.request_history[0]
+        assert request.qs["device_name"] == ["dummy-host-01"]
+        assert request.qs["indicators"] == ["dummy-indicator-1.com,dummy-indicator-2.com"]
+        assert request.qs["users"] == ["dummy-user-1,dummy-user-2"]
+        assert request.qs["ip_address"] == ["0.0.0.0,0.0.0.1"]
+        assert request.qs["is_verified"] == ["true"]
+        assert request.qs["limit"] == ["50"]
+
+    def test_list_iq_for_td_insight_assets_with_is_verified_false(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_assets_command with is_verified=false, verifying False is preserved."""
+        args = {
+            "insight_id": "insight-v2-001",
+            "is_verified": "false",
+        }
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/assets", json=return_data, status_code=200)
+
+        list_iq_for_td_insight_assets_command(blox_client, args)
+
+        request = requests_mock.request_history[0]
+        assert request.qs["is_verified"] == ["false"]
+
+    def test_list_iq_for_td_insight_assets_without_insight_id(self, blox_client):
+        """Test list_iq_for_td_insight_assets_command with a missing insight_id."""
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_assets_command(blox_client, {})
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+
+    @pytest.mark.parametrize("limit", ["0", "-5"])
+    def test_list_iq_for_td_insight_assets_with_non_positive_limit(self, blox_client, limit):
+        """Test list_iq_for_td_insight_assets_command with a zero or negative limit."""
+        args = {"insight_id": "insight-v2-001", "limit": limit}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_assets_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format(limit, "limit")
+
+    def test_list_iq_for_td_insight_assets_with_empty_response(self, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_assets_command with empty response."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/assets", json={"assets": []}, status_code=200)
+
+        result = list_iq_for_td_insight_assets_command(blox_client, {"insight_id": "insight-v2-001"})
+
+        assert result.readable_output == "No assets found for the given IQ for TD Insight."
+        assert result.raw_response == []
+
+    def test_list_iq_for_td_insight_assets_not_found(self, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_assets_command when the insight does not exist."""
+        requests_mock.get(
+            f"{BASE_URL}/api/v2/insights/insight-v2-999/assets", json={"detail": "insight not found"}, status_code=404
+        )
+
+        with pytest.raises(DemistoException) as e:
+            list_iq_for_td_insight_assets_command(blox_client, {"insight_id": "insight-v2-999"})
+        assert MESSAGES["NO_RECORD_FOUND"] in str(e.value)
+
+
+class TestListIQForTDInsightEvents:
+    """Tests for list_iq_for_td_insight_events_command command."""
+
+    @pytest.fixture
+    def return_data(self):
+        """Returns test data for IQ for TD Insight events."""
+        return util_load_json("iq-for-td-insight-event-list.json")
+
+    def test_list_iq_for_td_insight_events_with_no_filters(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_events_command with no filters applied."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/events", json=return_data, status_code=200)
+
+        result = list_iq_for_td_insight_events_command(blox_client, {"insight_id": "insight-v2-001"})
+
+        assert result.outputs_prefix == "InfobloxCloud.IQForTDInsightEvent"
+        assert result.outputs_key_field == ["event_key"]
+        assert len(result.outputs) == 2
+        assert result.readable_output == util_load_text_data("iq-for-td-insight-event-list-readable.md")
+        expected_events = add_event_count_to_events(return_data.get("events"), "insight-v2-001")
+        assert result.outputs == [dict(event, insight_id="insight-v2-001") for event in expected_events]
+
+    def test_list_iq_for_td_insight_events_with_duplicate_events(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_events_command deduplicates events and reports event_count in context and HR."""
+        events = return_data.get("events")
+        duplicated_events = events + [events[0]]
+        requests_mock.get(
+            f"{BASE_URL}/api/v2/insights/insight-v2-001/events", json={"events": duplicated_events}, status_code=200
+        )
+
+        result = list_iq_for_td_insight_events_command(blox_client, {"insight_id": "insight-v2-001"})
+
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["event_count"] == 2
+        assert result.outputs[1]["event_count"] == 1
+        assert len({event["event_key"] for event in result.outputs}) == 2
+        assert "Event Count" in result.readable_output
+        assert result.raw_response == duplicated_events
+
+    def test_list_iq_for_td_insight_events_key_field_stable_when_optional_field_missing(self, blox_client, requests_mock):
+        """Test event_key stays truthy even when an optional field is empty, so context merges instead of duplicating."""
+        base_event = {
+            "threat_level": "3",
+            "threat_confidence": "90",
+            "detected_at": "2026-12-01T02:55:00Z",
+            "query": "dummy-indicator-1.com",
+            "device_ip": "0.0.0.0",
+            "mac_address": "",
+        }
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/events", json={"events": [base_event]}, status_code=200)
+
+        result = list_iq_for_td_insight_events_command(blox_client, {"insight_id": "insight-v2-001"})
+
+        assert result.outputs[0]["event_key"]
+        assert add_event_count_to_events([base_event], "insight-v2-001")[0]["event_key"] == result.outputs[0]["event_key"]
+
+    def test_list_iq_for_td_insight_events_with_filters(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_events_command with filters applied, including comma-separated list cleaning."""
+        args = util_load_json("iq-for-td-insight-event-list-filters-args.json")
+        expected_qs = util_load_json("iq-for-td-insight-event-list-filters-expected-qs.json")
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/events", json=return_data, status_code=200)
+
+        list_iq_for_td_insight_events_command(blox_client, args)
+
+        request = requests_mock.request_history[0]
+        assert {key: request.qs[key] for key in expected_qs} == expected_qs
+
+    def test_list_iq_for_td_insight_events_without_insight_id(self, blox_client):
+        """Test list_iq_for_td_insight_events_command with a missing insight_id."""
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_events_command(blox_client, {})
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+
+    @pytest.mark.parametrize("limit", ["0", "-5"])
+    def test_list_iq_for_td_insight_events_with_non_positive_limit(self, blox_client, limit):
+        """Test list_iq_for_td_insight_events_command with a zero or negative limit."""
+        args = {"insight_id": "insight-v2-001", "limit": limit}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_events_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format(limit, "limit")
+
+    def test_list_iq_for_td_insight_events_with_invalid_threat_level(self, blox_client):
+        """Test list_iq_for_td_insight_events_command with an invalid threat_level."""
+        args = {"insight_id": "insight-v2-001", "threat_level": "90"}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_events_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format("90", "threat_level")
+
+    def test_list_iq_for_td_insight_events_with_invalid_threat_confidence(self, blox_client):
+        """Test list_iq_for_td_insight_events_command with an invalid threat_confidence."""
+        args = {"insight_id": "insight-v2-001", "threat_confidence": "90"}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_events_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format("90", "threat_confidence")
+
+    def test_list_iq_for_td_insight_events_with_case_insensitive_threat_confidence(self, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_events_command matches threat_confidence case-insensitively and sends canonical value."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/events", json={"events": []}, status_code=200)
+
+        list_iq_for_td_insight_events_command(blox_client, {"insight_id": "insight-v2-001", "threat_confidence": "high"})
+
+        request = requests_mock.request_history[0]
+        assert request.qs["threat_confidence"] == ["high"]
+
+    def test_list_iq_for_td_insight_events_with_empty_response(self, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_events_command with empty response."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/events", json={"events": []}, status_code=200)
+
+        result = list_iq_for_td_insight_events_command(blox_client, {"insight_id": "insight-v2-001"})
+
+        assert result.readable_output == "No events found for the given IQ for TD Insight."
+        assert result.raw_response == []
+
+    def test_list_iq_for_td_insight_events_not_found(self, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_events_command when the insight does not exist."""
+        requests_mock.get(
+            f"{BASE_URL}/api/v2/insights/insight-v2-999/events", json={"detail": "insight not found"}, status_code=404
+        )
+
+        with pytest.raises(DemistoException) as e:
+            list_iq_for_td_insight_events_command(blox_client, {"insight_id": "insight-v2-999"})
+        assert MESSAGES["NO_RECORD_FOUND"] in str(e.value)
+
+
+class TestListIQForTDInsightIndicators:
+    """Tests for list_iq_for_td_insight_indicators_command command."""
+
+    @pytest.fixture
+    def return_data(self):
+        """Returns test data for IQ for TD Insight indicators."""
+        return util_load_json("iq-for-td-insight-indicator-list.json")
+
+    def test_list_iq_for_td_insight_indicators_with_no_filters(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_indicators_command with no filters applied."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/indicators", json=return_data, status_code=200)
+
+        result = list_iq_for_td_insight_indicators_command(blox_client, {"insight_id": "insight-v2-001"})
+
+        assert result.outputs_prefix == "InfobloxCloud.IQForTDInsightIndicator"
+        assert result.outputs_key_field == ["indicator_key"]
+        assert len(result.outputs) == 2
+        assert result.readable_output == util_load_text_data("iq-for-td-insight-indicator-list-readable.md")
+        expected_indicators = remove_empty_elements(return_data.get("indicators"))
+        assert result.outputs == [
+            dict(
+                indicator,
+                insight_id="insight-v2-001",
+                indicator_key=f"insight-v2-001|{indicator.get('threat_indicator')}",
+            )
+            for indicator in expected_indicators
+        ]
+
+    def test_list_iq_for_td_insight_indicators_key_field_scoped_to_insight(self, return_data, blox_client, requests_mock):
+        """Test indicator_key includes insight_id so the same indicator across different insights does not collide."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/indicators", json=return_data, status_code=200)
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-002/indicators", json=return_data, status_code=200)
+
+        result_one = list_iq_for_td_insight_indicators_command(blox_client, {"insight_id": "insight-v2-001"})
+        result_two = list_iq_for_td_insight_indicators_command(blox_client, {"insight_id": "insight-v2-002"})
+
+        keys_one = {output["indicator_key"] for output in result_one.outputs}
+        keys_two = {output["indicator_key"] for output in result_two.outputs}
+        assert keys_one.isdisjoint(keys_two)
+
+    def test_list_iq_for_td_insight_indicators_with_filters(self, return_data, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_indicators_command with filters applied, including comma-separated list cleaning."""
+        args = util_load_json("iq-for-td-insight-indicator-list-filters-args.json")
+        expected_qs = util_load_json("iq-for-td-insight-indicator-list-filters-expected-qs.json")
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/indicators", json=return_data, status_code=200)
+
+        list_iq_for_td_insight_indicators_command(blox_client, args)
+
+        request = requests_mock.request_history[0]
+        assert {key: request.qs[key] for key in expected_qs} == expected_qs
+
+    def test_list_iq_for_td_insight_indicators_without_insight_id(self, blox_client):
+        """Test list_iq_for_td_insight_indicators_command with a missing insight_id."""
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_indicators_command(blox_client, {})
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+
+    @pytest.mark.parametrize("limit", ["0", "-5"])
+    def test_list_iq_for_td_insight_indicators_with_non_positive_limit(self, blox_client, limit):
+        """Test list_iq_for_td_insight_indicators_command with a zero or negative limit."""
+        args = {"insight_id": "insight-v2-001", "limit": limit}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_indicators_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format(limit, "limit")
+
+    def test_list_iq_for_td_insight_indicators_with_invalid_threat_level(self, blox_client):
+        """Test list_iq_for_td_insight_indicators_command with an invalid threat_level."""
+        args = {"insight_id": "insight-v2-001", "threat_level": "90"}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_indicators_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format("90", "threat_level")
+
+    def test_list_iq_for_td_insight_indicators_with_invalid_statuses(self, blox_client):
+        """Test list_iq_for_td_insight_indicators_command with an invalid status in a comma-separated statuses list."""
+        args = {"insight_id": "insight-v2-001", "statuses": "Blocked,Under Review"}
+        with pytest.raises(ValueError) as e:
+            list_iq_for_td_insight_indicators_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format("Under Review", "statuses")
+
+    def test_list_iq_for_td_insight_indicators_with_empty_response(self, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_indicators_command with empty response."""
+        requests_mock.get(f"{BASE_URL}/api/v2/insights/insight-v2-001/indicators", json={"indicators": []}, status_code=200)
+
+        result = list_iq_for_td_insight_indicators_command(blox_client, {"insight_id": "insight-v2-001"})
+
+        assert result.readable_output == "No indicators found for the given IQ for TD Insight."
+        assert result.raw_response == []
+
+    def test_list_iq_for_td_insight_indicators_not_found(self, blox_client, requests_mock):
+        """Test list_iq_for_td_insight_indicators_command when the insight does not exist."""
+        requests_mock.get(
+            f"{BASE_URL}/api/v2/insights/insight-v2-999/indicators", json={"detail": "insight not found"}, status_code=404
+        )
+
+        with pytest.raises(DemistoException) as e:
+            list_iq_for_td_insight_indicators_command(blox_client, {"insight_id": "insight-v2-999"})
+        assert MESSAGES["NO_RECORD_FOUND"] in str(e.value)
+
+
+class TestExecuteIQForTDInsightAction:
+    """Tests for execute_iq_for_td_insight_action_command command."""
+
+    @pytest.fixture
+    def return_data(self):
+        """Returns test data for IQ for TD Insight action execution result."""
+        return util_load_json("iq-for-td-insight-action-execute.json")
+
+    def test_execute_iq_for_td_insight_action_success(self, return_data, blox_client, requests_mock):
+        """Test execute_iq_for_td_insight_action_command with a succeeded result."""
+        requests_mock.post(f"{BASE_URL}/api/v2/insights/insight-v2-001/actions", json=return_data, status_code=200)
+        args = {"insight_id": "insight-v2-001", "recommendation_id": "dummy-recommendation-id-1"}
+
+        result = execute_iq_for_td_insight_action_command(blox_client, args)
+
+        assert result.outputs_prefix == "InfobloxCloud.IQForTDInsightAction"
+        assert result.outputs_key_field == "audit_entry_id"
+        assert result.readable_output == util_load_text_data("iq-for-td-insight-action-execute-readable.md")
+        assert result.outputs == {
+            "action": "block",
+            "status": "succeeded",
+            "audit_entry_id": "dummy-audit-entry-1",
+            "reason": "applied",
+            "message": "",
+            "insight_id": "insight-v2-001",
+            "recommendation_id": "dummy-recommendation-id-1",
+        }
+
+    def test_execute_iq_for_td_insight_action_with_failed_result(self, blox_client, requests_mock):
+        """Test execute_iq_for_td_insight_action_command with a failed result."""
+        return_data = util_load_json("iq-for-td-insight-action-execute-failed.json")
+        requests_mock.post(f"{BASE_URL}/api/v2/insights/insight-v2-001/actions", json=return_data, status_code=200)
+        args = {"insight_id": "insight-v2-001", "recommendation_id": "dummy-recommendation-id-2"}
+
+        result = execute_iq_for_td_insight_action_command(blox_client, args)
+
+        assert result.outputs == {
+            "action": "mark_risky",
+            "status": "failed",
+            "audit_entry_id": "",
+            "reason": "resource_not_found",
+            "message": "Recommendation not found.",
+            "insight_id": "insight-v2-001",
+            "recommendation_id": "dummy-recommendation-id-2",
+        }
+
+    def test_execute_iq_for_td_insight_action_request_body(self, return_data, blox_client, requests_mock):
+        """Test execute_iq_for_td_insight_action_command sends the recommendation id and optional action override."""
+        requests_mock.post(f"{BASE_URL}/api/v2/insights/insight-v2-001/actions", json=return_data, status_code=200)
+        args = {
+            "insight_id": "insight-v2-001",
+            "recommendation_id": "dummy-recommendation-id-1",
+            "action": "block",
+        }
+
+        execute_iq_for_td_insight_action_command(blox_client, args)
+
+        request_body = requests_mock.last_request.json()
+        assert request_body == {"items": [{"recommendation_id": "dummy-recommendation-id-1", "action": "block"}]}
+
+    def test_execute_iq_for_td_insight_action_without_insight_id(self, blox_client):
+        """Test execute_iq_for_td_insight_action_command with a missing insight_id."""
+        with pytest.raises(ValueError) as e:
+            execute_iq_for_td_insight_action_command(blox_client, {"recommendation_id": "dummy-recommendation-id-1"})
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("insight_id")
+
+    def test_execute_iq_for_td_insight_action_without_recommendation_id(self, blox_client):
+        """Test execute_iq_for_td_insight_action_command with a missing recommendation_id."""
+        with pytest.raises(ValueError) as e:
+            execute_iq_for_td_insight_action_command(blox_client, {"insight_id": "insight-v2-001"})
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("recommendation_id")
+
+    def test_execute_iq_for_td_insight_action_with_invalid_action(self, blox_client):
+        """Test execute_iq_for_td_insight_action_command with an invalid action."""
+        args = {
+            "insight_id": "insight-v2-001",
+            "recommendation_id": "dummy-recommendation-id-1",
+            "action": "delete",
+        }
+        with pytest.raises(ValueError) as e:
+            execute_iq_for_td_insight_action_command(blox_client, args)
+        assert str(e.value) == MESSAGES["INVALID_VALUE"].format("delete", "action")
+
+    def test_execute_iq_for_td_insight_action_with_empty_response(self, blox_client, requests_mock):
+        """Test execute_iq_for_td_insight_action_command with empty results in the response."""
+        requests_mock.post(f"{BASE_URL}/api/v2/insights/insight-v2-001/actions", json={"results": []}, status_code=200)
+        args = {"insight_id": "insight-v2-001", "recommendation_id": "dummy-recommendation-id-1"}
+
+        result = execute_iq_for_td_insight_action_command(blox_client, args)
+
+        assert result.readable_output == "No action execution result returned for the given IQ for TD Insight."
+        assert result.raw_response is None
+
+    def test_execute_iq_for_td_insight_action_not_found(self, blox_client, requests_mock):
+        """Test execute_iq_for_td_insight_action_command when the insight does not exist."""
+        requests_mock.post(
+            f"{BASE_URL}/api/v2/insights/insight-v2-999/actions", json={"detail": "insight not found"}, status_code=404
+        )
+        args = {"insight_id": "insight-v2-999", "recommendation_id": "dummy-recommendation-id-1"}
+
+        with pytest.raises(DemistoException) as e:
+            execute_iq_for_td_insight_action_command(blox_client, args)
+        assert MESSAGES["NO_RECORD_FOUND"] in str(e.value)
+
+
+class TestUndoIQForTDInsightAction:
+    """Tests for undo_iq_for_td_insight_action_command command."""
+
+    @pytest.fixture
+    def return_data(self):
+        """Returns test data for IQ for TD Insight action undo result."""
+        return util_load_json("iq-for-td-insight-action-undo.json")
+
+    def test_undo_iq_for_td_insight_action_success(self, return_data, blox_client, requests_mock):
+        """Test undo_iq_for_td_insight_action_command with a succeeded result."""
+        requests_mock.post(
+            f"{BASE_URL}/api/v2/insights/global-activity/dummy-audit-entry-1/undo", json=return_data, status_code=200
+        )
+        args = {"audit_entry_id": "dummy-audit-entry-1"}
+
+        result = undo_iq_for_td_insight_action_command(blox_client, args)
+
+        assert result.outputs_prefix == "InfobloxCloud.IQForTDInsightAction"
+        assert result.outputs_key_field == "audit_entry_id"
+        assert result.readable_output == util_load_text_data("iq-for-td-insight-action-undo-readable.md")
+        assert result.outputs == {
+            "action": "allow",
+            "status": "succeeded",
+            "audit_entry_id": "dummy-audit-entry-1",
+        }
+
+    def test_undo_iq_for_td_insight_action_with_failed_result(self, blox_client, requests_mock):
+        """Test undo_iq_for_td_insight_action_command with a failed result."""
+        return_data = util_load_json("iq-for-td-insight-action-undo-failed.json")
+        requests_mock.post(
+            f"{BASE_URL}/api/v2/insights/global-activity/dummy-audit-entry-2/undo", json=return_data, status_code=200
+        )
+        args = {"audit_entry_id": "dummy-audit-entry-2"}
+
+        result = undo_iq_for_td_insight_action_command(blox_client, args)
+
+        assert result.outputs == {
+            "action": "",
+            "status": "failed",
+            "audit_entry_id": "dummy-audit-entry-2",
+        }
+
+    def test_undo_iq_for_td_insight_action_without_audit_entry_id(self, blox_client):
+        """Test undo_iq_for_td_insight_action_command with a missing audit_entry_id."""
+        with pytest.raises(ValueError) as e:
+            undo_iq_for_td_insight_action_command(blox_client, {})
+        assert str(e.value) == MESSAGES["REQUIRED_ARGUMENT"].format("audit_entry_id")
+
+    def test_undo_iq_for_td_insight_action_with_empty_response(self, blox_client, requests_mock):
+        """Test undo_iq_for_td_insight_action_command with an empty result in the response."""
+        requests_mock.post(f"{BASE_URL}/api/v2/insights/global-activity/dummy-audit-entry-1/undo", json={}, status_code=200)
+        args = {"audit_entry_id": "dummy-audit-entry-1"}
+
+        result = undo_iq_for_td_insight_action_command(blox_client, args)
+
+        assert result.readable_output == "No action undo result returned for the given audit entry."
+        assert result.raw_response is None
+
+    def test_undo_iq_for_td_insight_action_not_found(self, blox_client, requests_mock):
+        """Test undo_iq_for_td_insight_action_command when the audit entry does not exist."""
+        requests_mock.post(
+            f"{BASE_URL}/api/v2/insights/global-activity/dummy-audit-entry-999/undo",
+            json={"detail": "audit entry not found"},
+            status_code=404,
+        )
+        args = {"audit_entry_id": "dummy-audit-entry-999"}
+
+        with pytest.raises(DemistoException) as e:
+            undo_iq_for_td_insight_action_command(blox_client, args)
+        assert MESSAGES["NO_RECORD_FOUND"] in str(e.value)
+
+
+def test_main_entry_point():
+    """
+    Given:
+    - Module is run as __main__.
+
+    When:
+    - The entry point guard executes main().
+
+    Then:
+    - main() is invoked. Client construction reads params["credentials"]["password"] before
+      main()'s own try/except is entered, so with no integration params configured this
+      surfaces as an unhandled KeyError rather than the usual return_error/SystemExit path.
+    """
+    import runpy
+
+    with pytest.raises(KeyError, match="credentials"):
+        runpy.run_module("InfobloxBloxOneThreatDefense", run_name="__main__")

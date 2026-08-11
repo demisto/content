@@ -1,12 +1,12 @@
 {
-    "id": "incident_infobloxcloudeventcount",
+    "id": "incident_infobloxcloudinsightoverview",
     "version": -1,
-    "modified": "2025-07-14T18:42:30.993263985+05:30",
-    "name": "Infoblox Cloud Event Count",
+    "modified": "2026-07-07T00:00:00.000000000+05:30",
+    "name": "Infoblox Cloud Insight Overview",
     "ownerOnly": false,
-    "description": "The event count of the Infoblox Cloud Insight.",
-    "cliName": "infobloxcloudeventcount",
-    "type": "number",
+    "description": "The narrative overview points of the Infoblox Cloud IQ for TD Insight.",
+    "cliName": "infobloxcloudinsightoverview",
+    "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -20,7 +20,6 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Infoblox Cloud SOC Insight",
         "Infoblox Cloud IQ for TD Insight"
     ],
     "associatedToAll": false,

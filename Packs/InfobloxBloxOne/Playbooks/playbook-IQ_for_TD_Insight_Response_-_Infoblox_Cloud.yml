@@ -1,0 +1,1738 @@
+id: IQ for TD Insight Response - Infoblox Cloud
+version: -1
+name: IQ for TD Insight Response - Infoblox Cloud
+description: Collects the insight's full detail (including AI-generated recommendations), indicators, assets, and events. Executes the insight's pending recommendation actions along with undo option. If incident severity is Low, notifies the SOC and assigns an analyst; if severity is Medium, High, or Critical, creates a ServiceNow ticket. Updates the insight's workflow status on Infoblox at the end of the run.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4eeb9709-60a2-49a6-81b3-b24a4cc36e5b
+    type: start
+    task:
+      id: 4eeb9709-60a2-49a6-81b3-b24a4cc36e5b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ce58e8c9-a4bd-49fd-8fd9-d844b407876f
+    type: title
+    task:
+      id: ce58e8c9-a4bd-49fd-8fd9-d844b407876f
+      version: -1
+      name: Collect IQ for TD Insight details
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7fb07631-6836-4ea6-899a-d8940890348f
+    type: regular
+    task:
+      id: 7fb07631-6836-4ea6-899a-d8940890348f
+      version: -1
+      name: Retrieve IQ for TD Insight indicators
+      description: List threat indicators associated with a specific IQ for TD Insight from Infoblox Cloud.
+      script: '|||infobloxcloud-iq-for-td-insight-indicator-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      insight_id:
+        complex:
+          root: inputs.insight_id
+          transformers:
+          - operator: trim
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 717.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3fbf5578-4074-4a94-834e-eef899efcc68
+    type: regular
+    task:
+      id: 3fbf5578-4074-4a94-834e-eef899efcc68
+      version: -1
+      name: Retrieve IQ for TD Insight Events
+      description: List events for a specific IQ for TD Insight from Infoblox Cloud.
+      script: '|||infobloxcloud-iq-for-td-insight-event-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      insight_id:
+        complex:
+          root: inputs.insight_id
+          transformers:
+          - operator: trim
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 72ea2c65-8c71-4c89-835b-82fab3c3cc23
+    type: regular
+    task:
+      id: 72ea2c65-8c71-4c89-835b-82fab3c3cc23
+      version: -1
+      name: Retrieve IQ for TD Insight Assets
+      description: List assets associated with a specific IQ for TD Insight from Infoblox Cloud.
+      script: '|||infobloxcloud-iq-for-td-insight-asset-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      insight_id:
+        complex:
+          root: inputs.insight_id
+          transformers:
+          - operator: trim
+      limit:
+        complex:
+          root: inputs.limit
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f81f6e0f-ccf8-43b4-8484-a83a2a3533f1
+    type: condition
+    task:
+      id: f81f6e0f-ccf8-43b4-8484-a83a2a3533f1
+      version: -1
+      name: Check for incident severity
+      description: Check if the incident severity is equal or higher than 2. If true then create a ServiceNow ticket otherwise assign the incident to an analyst.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: inputs.incident_severity
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    - label: "no"
+      condition:
+      - - operator: lessThanOrEqual
+          left:
+            value:
+              simple: inputs.incident_severity
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2dce930d-255a-4897-8498-d57c4c8859cb
+    type: regular
+    task:
+      id: 2dce930d-255a-4897-8498-d57c4c8859cb
+      version: -1
+      name: Retrieve details for IQ for TD Insight
+      description: Get the full detail view for a single IQ for TD Insight from Infoblox Cloud.
+      script: '|||infobloxcloud-iq-for-td-insight-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      extend-context:
+        simple: recommendation_actions=key_recommendations
+      insight_id:
+        complex:
+          root: inputs.insight_id
+          transformers:
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Infoblox Cloud Insight Overview
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: overview
+    - incidentfield: Infoblox Cloud Top Indicators
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: top_indicators
+    - incidentfield: Infoblox Cloud Top Assets
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: top_assets
+    - incidentfield: Infoblox Cloud Threat Actors
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: threat_actors
+    - incidentfield: Infoblox Cloud Key Recommendations
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: key_recommendations
+    - incidentfield: Infoblox Cloud Insight Status
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: status
+    - incidentfield: Infoblox Cloud Expiring In Days
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: expiring_in_days
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 4099557e-4704-4526-81e0-a1e2097d2e1e
+    type: regular
+    task:
+      id: 4099557e-4704-4526-81e0-a1e2097d2e1e
+      version: -1
+      name: Assign an analyst to the incident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      onCall:
+        complex:
+          root: inputs.onCall
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 4dbdeb85-9b1d-4c72-8b79-df7cb864df88
+    type: title
+    task:
+      id: 4dbdeb85-9b1d-4c72-8b79-df7cb864df88
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a9bc0a21-bf87-419f-8d7f-bcb8ae0b586d
+    type: title
+    task:
+      id: a9bc0a21-bf87-419f-8d7f-bcb8ae0b586d
+      version: -1
+      name: Extract incident severity and trigger corresponding tasks
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 4cb62c0d-95c4-4ca7-8722-1016ac365c86
+    type: regular
+    task:
+      id: 4cb62c0d-95c4-4ca7-8722-1016ac365c86
+      version: -1
+      name: Update description of ServiceNow ticket
+      description: Updates the description of the specified ticket.
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      description:
+        simple: |-
+          Security Incident Alert - Suspicious IQ for TD Insight Detected
+
+          Incident Summary:
+          A suspicious IQ for TD Insight has been identified through automated analysis of network events and requires immediate analyst review.
+
+          Top 5 Critical Indicators:
+          ${insight_indicators}
+
+          Top 5 Impacted Systems:
+          ${insight_assets}
+
+          Top 5 Related Events:
+          ${insight_events}
+
+          XSOAR Incident ID: ${incident.id}
+
+          Infoblox IQ for TD Insight Link: ${incident.incidentlink}
+
+          Next Steps for Analyst:
+          1. Review the indicators and correlate with known threat intelligence
+          2. Analyze affected assets for signs of compromise
+          3. Examine the event timeline for attack progression
+          4. Validate findings and escalate if confirmed malicious
+          5. Update case with investigation findings
+      id:
+        simple: ${ServiceNow.Ticket.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 685de2ed-fe2c-46b1-8c20-ee642ef79f59
+    type: regular
+    task:
+      id: 685de2ed-fe2c-46b1-8c20-ee642ef79f59
+      version: -1
+      name: Extract indicator details for ticket description
+      description: Extract top 5 indicator values from IQ for TD Insight indicators list command context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: insight_indicators
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: InfobloxCloud.IQForTDInsightIndicator
+          accessor: threat_indicator
+          transformers:
+          - operator: uniq
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "5"
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b343835d-aa18-4e75-82a4-06ce3d2d8f2a
+    type: regular
+    task:
+      id: b343835d-aa18-4e75-82a4-06ce3d2d8f2a
+      version: -1
+      name: Extract event details for ticket description
+      description: Extract top 5 event device IP values from IQ for TD Insight events list command context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: insight_events
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: InfobloxCloud.IQForTDInsightEvent
+          accessor: device_ip
+          transformers:
+          - operator: uniq
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "5"
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f8104a95-68b2-48f3-85b8-d363a580906d
+    type: regular
+    task:
+      id: f8104a95-68b2-48f3-85b8-d363a580906d
+      version: -1
+      name: Extract asset details for ticket description
+      description: Extract top 5 asset device name from IQ for TD Insight assets list command context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: insight_assets
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: InfobloxCloud.IQForTDInsightAsset
+          accessor: device_name
+          transformers:
+          - operator: uniq
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "5"
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: a5d95a17-9d71-48d8-8e9c-4ab0e1e19fbe
+    type: condition
+    task:
+      id: a5d95a17-9d71-48d8-8e9c-4ab0e1e19fbe
+      version: -1
+      name: Is Infoblox Threat Defense with DDI integration enabled?
+      description: Checks whether Infoblox Threat Defense with DDI integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: InfobloxBloxOneThreatDefense
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0f04a55a-e4ee-47c8-8bb9-dc9cb06f61d2
+    type: condition
+    task:
+      id: 0f04a55a-e4ee-47c8-8bb9-dc9cb06f61d2
+      version: -1
+      name: Is ServiceNow v2 integration enabled?
+      description: Checks whether ServiceNow v2 integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f6547776-0350-411b-8299-e43a6d1cb7fc
+    type: collection
+    task:
+      id: f6547776-0350-411b-8299-e43a6d1cb7fc
+      version: -1
+      name: Select Recommended Actions
+      description: |-
+        Select the recommended actions to execute for the IQ for TD insight.
+
+        If not selected, then no actions will be executed for the Infoblox IQ for TD insight.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Select Recommended Actions
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select the recommended actions
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: recommendation_actions
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: recommendation_actions.action_taken
+                  iscontext: true
+                right:
+                  value:
+                    simple: "false"
+            transformers:
+            - operator: getField
+              args:
+                field:
+                  value:
+                    simple: recommendation
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the recommended actions to execute for the insight.
+        readonly: false
+      title: Select Recommended Actions
+      description: Select the recommended actions to execute for the insight.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 16c782cd-32d6-47e6-86e0-f3748f405c1c
+    type: regular
+    task:
+      id: 16c782cd-32d6-47e6-86e0-f3748f405c1c
+      version: -1
+      name: Execute selected recommendations
+      description: Execute a recommendation action on a specific IQ for TD Insight from Infoblox Cloud.
+      script: '|||infobloxcloud-iq-for-td-insight-action-execute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "29"
+      '#none#':
+      - "34"
+    scriptarguments:
+      extend-context:
+        simple: executed_actions=.
+      insight_id:
+        complex:
+          root: inputs.insight_id
+          transformers:
+          - operator: trim
+      recommendation_id:
+        complex:
+          root: recommendation_actions
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: recommendation_actions.recommendation
+                iscontext: true
+              right:
+                value:
+                  simple: Select Recommended Actions.Answers.0
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: recommendation_actions.action_taken
+                iscontext: true
+              right:
+                value:
+                  simple: "false"
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 8a6a1a0b-65b7-4ee1-8282-3d85b2a326e2
+    type: title
+    task:
+      id: 8a6a1a0b-65b7-4ee1-8282-3d85b2a326e2
+      version: -1
+      name: Infoblox Threat Defense with DDI integration is not enabled
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7294e9e5-75b6-4844-8a86-129fce08c2ea
+    type: title
+    task:
+      id: 7294e9e5-75b6-4844-8a86-129fce08c2ea
+      version: -1
+      name: ServiceNow v2 integration is not enabled
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 082bcdc0-6b96-4701-8753-4096752483f1
+    type: playbook
+    task:
+      id: 082bcdc0-6b96-4701-8753-4096752483f1
+      version: -1
+      name: Create ServiceNow Ticket
+      description: "Create ServiceNow Ticket allows you to open new tickets as a task from a parent playbook.\nWhen creating the ticket, you can decide to update based on on the ticket's state, which will wait for the ticket to resolve or close with StatePolling. \nAlternatively, you can select to mirror the ServiceNow ticket and incident fields. To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none."
+      playbookName: Create ServiceNow Ticket
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Comment:
+        simple: |-
+          Security Incident Alert - Suspicious IQ for TD Insight Detected
+
+          Incident Summary:
+          A suspicious IQ for TD insight has been identified through automated analysis of network events and requires immediate analyst review.
+      FieldPolling:
+        simple: "false"
+      Impact:
+        complex:
+          root: inputs.incident_severity
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 2,3,4
+              mapped_values:
+                value:
+                  simple: 2,1,1
+      MirrorCommentTags:
+        simple: comments,work_notes,ForServiceNow
+      MirrorDirection:
+        simple: Both
+      'Severity ':
+        complex:
+          root: inputs.incident_severity
+      ShortDescription:
+        complex:
+          root: incident
+          accessor: infobloxcloudthreatproperties
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ', '
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Threat properties: '
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Infoblox - Suspicious IQ for TD Insight Detected - '
+              suffix: {}
+      SyncTicket:
+        simple: Blank
+      TicketType:
+        simple: incident
+      Urgency:
+        complex:
+          root: inputs.incident_severity
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 2,3,4
+              mapped_values:
+                value:
+                  simple: 2,1,1
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 49d1156e-9d54-4784-8a17-816762e92656
+    type: title
+    task:
+      id: 49d1156e-9d54-4784-8a17-816762e92656
+      version: -1
+      name: Gather details for ticket creation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "14"
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: daa79848-8fac-49ae-8e80-27076b658b1d
+    type: condition
+    task:
+      id: daa79848-8fac-49ae-8e80-27076b658b1d
+      version: -1
+      name: Check for availability of recommendations
+      description: Check for availability of recommendations for which actions can be taken.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "20"
+    scriptarguments:
+      value:
+        complex:
+          root: recommendation_actions
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: recommendation_actions.action_taken
+                iscontext: true
+              right:
+                value:
+                  simple: "false"
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 30c457aa-9d0d-4bf1-815d-849931569761
+    type: condition
+    task:
+      id: 30c457aa-9d0d-4bf1-815d-849931569761
+      version: -1
+      name: Check selection of recommendations
+      description: Check selection of recommendations for which actions can be taken.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "21"
+    scriptarguments:
+      value:
+        complex:
+          root: Select Recommended Actions.Answers
+          accessor: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: ac681799-4d6b-4b67-8a5f-11004143534c
+    type: regular
+    task:
+      id: ac681799-4d6b-4b67-8a5f-11004143534c
+      version: -1
+      name: Update status of IQ for TD Insight
+      description: Update the workflow status of an IQ for TD Insight from Infoblox Cloud, with an optional analyst comment.
+      script: '|||infobloxcloud-iq-for-td-insight-status-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      insight_id:
+        complex:
+          root: inputs.insight_id
+          transformers:
+          - operator: trim
+      status:
+        complex:
+          root: inputs.insight_status
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Needs Review
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 7740604d-dc7e-49ed-84ae-c543be10a874
+    type: regular
+    task:
+      id: 7740604d-dc7e-49ed-84ae-c543be10a874
+      version: -1
+      name: Retrieve updated details for IQ for TD Insight
+      description: Get the full detail view for a single IQ for TD Insight from Infoblox Cloud.
+      script: '|||infobloxcloud-iq-for-td-insight-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      insight_id:
+        complex:
+          root: inputs.insight_id
+          transformers:
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1882.5,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Infoblox Cloud Insight Overview
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: overview
+    - incidentfield: Infoblox Cloud Top Indicators
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: top_indicators
+    - incidentfield: Infoblox Cloud Top Assets
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: top_assets
+    - incidentfield: Infoblox Cloud Threat Actors
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: threat_actors
+    - incidentfield: Infoblox Cloud Key Recommendations
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: key_recommendations
+    - incidentfield: Infoblox Cloud Insight Status
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: status
+    - incidentfield: Infoblox Cloud Expiring In Days
+      output:
+        complex:
+          root: InfobloxCloud.IQForTDInsight
+          accessor: expiring_in_days
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 6abf176b-be58-4c4f-8938-090fcba5fdae
+    type: collection
+    task:
+      id: 6abf176b-be58-4c4f-8938-090fcba5fdae
+      version: -1
+      name: Undo Executed Actions
+      description: |-
+        Select the Audit Entry ID to revert executed actions which were executed earlier for the IQ for TD insight.
+
+        If not selected, then no executed actions will be reverted for the Infoblox IQ for TD insight.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Undo Executed Actions
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select the Audit Entry ID to undo executed actions
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: executed_actions
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: executed_actions.status
+                  iscontext: true
+                right:
+                  value:
+                    simple: succeeded
+            - - operator: isNotEmpty
+                left:
+                  value:
+                    simple: executed_actions.audit_entry_id
+                  iscontext: true
+            transformers:
+            - operator: getField
+              args:
+                field:
+                  value:
+                    simple: audit_entry_id
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the Audit Entry ID to undo executed actions.
+        readonly: false
+      title: Undo Executed Actions
+      description: Undo the executed actions for the insight.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 5a6cba7b-685e-4ee0-83e4-6e2db17c273c
+    type: condition
+    task:
+      id: 5a6cba7b-685e-4ee0-83e4-6e2db17c273c
+      version: -1
+      name: Check selection of executed actions to revert
+      description: Check selection of executed actions which can be reverted.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "33"
+    scriptarguments:
+      value:
+        complex:
+          root: Undo Executed Actions.Answers
+          accessor: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 2225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 7366b93d-934e-4516-8e79-f408fecfcde1
+    type: regular
+    task:
+      id: 7366b93d-934e-4516-8e79-f408fecfcde1
+      version: -1
+      name: Undo Selected Actions
+      description: Undo a previously executed action on a specific IQ for TD Insight from Infoblox Cloud.
+      script: '|||infobloxcloud-iq-for-td-insight-action-undo'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      audit_entry_id:
+        complex:
+          root: Undo Executed Actions.Answers
+          accessor: "0"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 29866cd1-50af-46cc-8f7c-3d99c064e3c2
+    type: condition
+    task:
+      id: 29866cd1-50af-46cc-8f7c-3d99c064e3c2
+      version: -1
+      name: Check for execution status of actions
+      description: Check for availability of executed actions for which revert process can be considered.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "35"
+    scriptarguments:
+      value:
+        complex:
+          root: executed_actions
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: executed_actions.status
+                iscontext: true
+              right:
+                value:
+                  simple: succeeded
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: executed_actions.audit_entry_id
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 5d9022cc-2c31-4814-8f2d-de63d55040bc
+    type: condition
+    task:
+      id: 5d9022cc-2c31-4814-8f2d-de63d55040bc
+      version: -1
+      name: Wants to undo executed actions
+      description: Wants to undo executed actions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "29"
+      "Yes":
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2190,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Wants to undo executed actions
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 68c5a458-9e4b-47c4-8fcd-8f17f5fa3978
+    type: regular
+    task:
+      id: 68c5a458-9e4b-47c4-8fcd-8f17f5fa3978
+      version: -1
+      name: Clear previous inputs
+      description: Clear previous inputs for selected recommendations.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: Select Recommended Actions,Undo Executed Actions,recommendation_actions,executed_actions
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1995,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_1_yes": 0.53,
+      "18_22_#default#": 0.46,
+      "21_29_#error#": 0.24,
+      "26_29_#default#": 0.12,
+      "27_21_yes": 0.53,
+      "27_29_#default#": 0.21,
+      "32_29_#default#": 0.64,
+      "32_33_yes": 0.62,
+      "34_29_#default#": 0.27,
+      "34_35_yes": 0.57,
+      "35_29_No": 0.32,
+      "35_31_Yes": 0.51,
+      "5_7_no": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2975,
+        "width": 2860,
+        "x": 50,
+        "y": 30
+      }
+    }
+  }
+inputs:
+- key: insight_id
+  value:
+    complex:
+      root: incident.infobloxcloudinsightid
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.infobloxcloudinsightid
+            iscontext: true
+  required: false
+  description: Collect IQ for TD Insight ID from incident.
+  playbookInputQuery:
+- key: incident_severity
+  value:
+    complex:
+      root: incident.severity
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.severity
+            iscontext: true
+  required: false
+  description: Collect incident severity from incident.
+  playbookInputQuery:
+- key: limit
+  value:
+    simple: "50"
+  required: false
+  description: No of indicators, events or assets to fetch for the provided IQ for TD Insight.
+  playbookInputQuery:
+- key: onCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only the user that is currently on shift. Default is False.
+  playbookInputQuery:
+- key: insight_status
+  value:
+    simple: Needs Review
+  required: false
+  description: Workflow status to set on the insight at the end of the run.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
