@@ -784,6 +784,8 @@ def build_messages_body(args: dict[str, Any]) -> dict[str, Any]:
     filters: dict[str, Any] = {}
     start_dt = parse_ctr_date(args.get("start_time"))
     end_dt = parse_ctr_date(args.get("end_time"))
+    if end_dt and not start_dt:
+        raise DemistoException("Argument 'start_time' is required when 'end_time' is provided.")  # noqa: F405
     if start_dt and not end_dt:
         end_dt = datetime.now(tz=UTC)  # noqa: F405
     if start_dt and end_dt:

@@ -174,7 +174,7 @@ script:
       - desc
       defaultValue: desc
     - name: limit
-      description: The maximum number of incidents to return. Default is 50.
+      description: The maximum number of incidents to return.
       defaultValue: '50'
     outputs:
     - contextPath: ProofPointCloud.Incident.id

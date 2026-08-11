@@ -428,6 +428,13 @@ def test_build_messages_body_validates_filters():
         build_messages_body({"source_filters": "bogus"})
 
 
+def test_build_messages_body_end_time_without_start_time():
+    # Providing end_time without start_time must raise a clear error rather than
+    # silently dropping the time range filter.
+    with pytest.raises(Exception, match="start_time"):
+        build_messages_body({"end_time": "2024-01-01T00:00:00Z"})
+
+
 def test_message_download_returns_file(client: Client, mocker):
     mocker.patch.object(Client, "download_message", return_value=b"raw eml bytes")
 

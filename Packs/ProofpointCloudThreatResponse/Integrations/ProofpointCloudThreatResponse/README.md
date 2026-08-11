@@ -46,7 +46,7 @@ Returns a list of Proofpoint Cloud Threat Response incidents matching the suppli
 | confidence_filters | Filter incidents by confidence level. Possible values are: confidence_high, confidence_medium, confidence_low. | Optional |
 | priority_filters | A comma-separated list of priority levels to filter incidents by. Possible values are: high, medium, low. | Optional |
 | sort | Sort order for results by creation time. Possible values are: asc, desc. Default is desc. | Optional |
-| limit | The maximum number of incidents to return. Default is 50. Default is 50. | Optional |
+| limit | The maximum number of incidents to return. Default is 50. | Optional |
 
 #### Context Output
 
@@ -317,7 +317,7 @@ Retrieves a single Proofpoint Cloud Threat Response message by its UUID, or a fi
 | verdict_filters | A comma-separated list of CLEAR verdicts to filter by. Possible values are: verdict_failed, verdict_low_risk, verdict_manual_review, verdict_threat. | Optional |
 | tap_threat_id | A comma-separated list of TAP Threat IDs to filter by. | Optional |
 | tap_threat_type_filters | A comma-separated list of TAP threat types to filter by. Possible values are: tap_threat_type_delivered_attachment_threat, tap_threat_type_delivered_message_threat, tap_threat_type_delivered_url_threat, tap_threat_type_unprotected_url_threat. | Optional |
-| limit | The maximum number of messages to return. Default is 50. Default is 50. | Optional |
+| limit | The maximum number of messages to return. Default is 50. | Optional |
 
 #### Context Output
 
@@ -495,7 +495,7 @@ Returns a list of Proofpoint Cloud Threat Response manual workflows.
 | --- | --- | --- |
 | enabled | If true, returns only enabled manual workflows. Possible values are: true, false. | Optional |
 | type | Filter workflows by type. Possible values are: incident, message. | Optional |
-| limit | The maximum number of workflows to return. Default is 50. Default is 50. | Optional |
+| limit | The maximum number of workflows to return. Default is 50. | Optional |
 | all_results | If true, ignore the limit and return all workflows. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -579,7 +579,7 @@ Retrieves the organizational Safe List entries.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster_id | The PPS Cluster ID. | Required |
-| limit | The maximum number of entries to return. Default is 50. Default is 50. | Optional |
+| limit | The maximum number of entries to return. Default is 50. | Optional |
 | all_results | If true, ignore the limit and return all Safe List entries. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
@@ -605,7 +605,7 @@ Retrieves the organizational Block List entries.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster_id | The PPS Cluster ID. | Required |
-| limit | The maximum number of entries to return. Default is 50. Default is 50. | Optional |
+| limit | The maximum number of entries to return. Default is 50. | Optional |
 | all_results | If true, ignore the limit and return all Block List entries. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
