@@ -155,12 +155,34 @@ class Command:
             QuarantineException: If the command execution returns an error entry.
         """
         demisto.debug(f"[Command] Executing: '{self.name}' with args: {self.args} for brand: {self.brand}")
+        demisto.info(
+            f"[MIGRATE-QF] execute.before: is_platform={is_platform()}, brand={self.brand!r}, "
+            f"cmd={self.name!r}, args={self.args}"
+        )
         raw_response = demisto.executeCommand(self.name, self.args)
+        # Log a compact summary of the raw response for tenant-side debugging of the PCI migration.
+        try:
+            response_summary = [
+                {
+                    "Type": r.get("Type") if isinstance(r, dict) else None,
+                    "is_error": is_error(r) if isinstance(r, dict) else None,
+                    "Metadata": (r.get("Metadata") if isinstance(r, dict) else None),
+                }
+                for r in (raw_response or [])
+            ]
+        except Exception as _log_exc:  # noqa: BLE001 - logging must not break flow
+            response_summary = f"<failed to summarize: {_log_exc}>"
+        demisto.info(
+            f"[MIGRATE-QF] execute.after: cmd={self.name!r}, brand={self.brand!r}, " f"response_summary={response_summary}"
+        )
 
         verbose_results = []
         for result in raw_response:
             if is_error(result):
                 demisto.error(f"Error executing {self.name}:\n{get_error(result)}")
+                demisto.info(
+                    f"[MIGRATE-QF] execute.error: cmd={self.name!r}, brand={self.brand!r}, " f"error={get_error(result)!r}"
+                )
                 hr = f"Error executing {self.name}:\n{get_error(result)}"
             else:
                 hr = result.get("HumanReadable", f"Successfully executed {self.name}")
@@ -438,6 +460,15 @@ class XDRHandler(BrandHandler):
     XDR_COMMAND_PREFIX = "xdr"
     QUARANTINE_STATUS_COMMAND = "get-quarantine-status"
     QUARANTINE_STATUS_SUCCESS = "COMPLETED_SUCCESSFULLY"
+    # PCI Builtin command names (used on the unified Cortex platform for the Core brand).
+    PCI_QUARANTINE_COMMAND = "quarantineFile"
+    PCI_QUARANTINE_STATUS_COMMAND = "getFileQuarantineStatus"
+    # PCI opt-in arg (CRTX-265660): when set on the polling command's args, PCI dispatches
+    # the underlying `get_action_status` API call via `GenericAPICall` (bypassing RBAC
+    # / caller-identity forwarding) instead of the default `APICall`. This lets our
+    # scheduled poll re-runs succeed under the DBotWeak automation identity. Matches
+    # the constant defined in core-content-module/pkg/corecontent/common/action_status.go.
+    PCI_USE_GENERIC_API_CALL_ON_POLL_ARG = "_use_generic_api_call_on_poll"
 
     def __init__(self, brand: str, orchestrator):
         """
@@ -449,8 +480,19 @@ class XDRHandler(BrandHandler):
         """
         super().__init__(brand, orchestrator)
         self.command_prefix = self.CORE_COMMAND_PREFIX if self.brand == Brands.CORTEX_CORE_IR else self.XDR_COMMAND_PREFIX
-        self.quarantine_command = (
-            "core-quarantine-files" if self.command_prefix == self.CORE_COMMAND_PREFIX else "xdr-file-quarantine"
+        # On the unified Cortex platform, the Core-IR quarantine command is exposed as the PCI
+        # Builtin "quarantineFile" (no integration instance needed). Keep the legacy commands
+        # for non-platform (XSOAR/XSIAM legacy) and for the XDR brand which is not a PCI Builtin.
+        self.use_pci_builtin = self.command_prefix == self.CORE_COMMAND_PREFIX and is_platform()
+        if self.use_pci_builtin:
+            self.quarantine_command = XDRHandler.PCI_QUARANTINE_COMMAND
+        elif self.command_prefix == self.CORE_COMMAND_PREFIX:
+            self.quarantine_command = "core-quarantine-files"
+        else:
+            self.quarantine_command = "xdr-file-quarantine"
+        demisto.info(
+            f"[MIGRATE-QF] XDRHandler.__init__: brand={self.brand!r}, is_platform={is_platform()}, "
+            f"use_pci_builtin={self.use_pci_builtin}, quarantine_command={self.quarantine_command!r}"
         )
 
     def validate_args(self, args: dict) -> None:
@@ -489,8 +531,19 @@ class XDRHandler(BrandHandler):
                       }
         """
         demisto.debug(f"[{self.brand} Handler] Checking quarantine status for endpoint {endpoint_id}.")
+        # On the unified Cortex platform the Core-IR status command is exposed as the PCI Builtin
+        # "getFileQuarantineStatus". Off-platform we keep the legacy integration command
+        # (core-get-quarantine-status / xdr-get-quarantine-status).
+        if self.use_pci_builtin:
+            status_command_name = XDRHandler.PCI_QUARANTINE_STATUS_COMMAND
+        else:
+            status_command_name = f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}"
+        demisto.info(
+            f"[MIGRATE-QF] status: brand={self.brand!r}, use_pci_builtin={self.use_pci_builtin}, "
+            f"status_command={status_command_name!r}, endpoint_id={endpoint_id!r}"
+        )
         status_cmd = Command(
-            name=f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}",
+            name=status_command_name,
             args={"endpoint_id": endpoint_id, "file_hash": file_hash, "file_path": file_path},
             brand=self.brand,
         )
@@ -586,30 +639,55 @@ class XDRHandler(BrandHandler):
         """
         demisto.debug(f"[{self.brand} Handler] Initiating quarantine action.")
 
+        # PCI Builtin `quarantineFile` uses `endpoint_ids` (plural, IsArray); legacy commands
+        # `core-quarantine-files` / `xdr-file-quarantine` use `endpoint_id_list`.
+        endpoint_ids_arg_name = "endpoint_ids" if self.use_pci_builtin else "endpoint_id_list"
         quarantine_args = {
-            "endpoint_id_list": args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG),
+            endpoint_ids_arg_name: args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG),
             "file_hash": args.get(QuarantineOrchestrator.FILE_HASH_ARG),
             "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
             "timeout_in_seconds": args.get("timeout", DEFAULT_TIMEOUT),
         }
+        demisto.info(
+            f"[MIGRATE-QF] initiate: brand={self.brand!r}, use_pci_builtin={self.use_pci_builtin}, "
+            f"cmd={self.quarantine_command!r}, endpoint_ids_arg={endpoint_ids_arg_name!r}, "
+            f"quarantine_args={quarantine_args}"
+        )
 
         cmd = Command(name=self.quarantine_command, args=quarantine_args, brand=self.brand)
         raw_response, verbose_res = cmd.execute()
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
 
-        metadata = raw_response[0].get("Metadata", {})
+        metadata = raw_response[0].get("Metadata", {}) if raw_response else {}
         demisto.debug(f"[{self.brand} Handler] Received metadata for polling: {metadata}")
+        demisto.info(
+            f"[MIGRATE-QF] initiate.metadata: brand={self.brand!r}, cmd={self.quarantine_command!r}, "
+            f"pollingCommand={metadata.get('pollingCommand')!r}, pollingArgs={metadata.get('pollingArgs')}"
+        )
+
+        # CRTX-265660: On the unified Cortex platform, the aggregate script's own
+        # @polling_function schedules its re-runs under the DBotWeak automation identity,
+        # which lacks the RBAC permissions (rbac.actions / rbac.quarantine) that the
+        # PCI Builtin polling path enforces via `APICall`. Setting this arg on the
+        # polling command's args opts PCI into its `GenericAPICall` code path for the
+        # `get_action_status` API hop, bypassing RBAC / caller-identity forwarding and
+        # matching the behavior of the legacy Core-IR integration (which uses a static
+        # integration API key). No effect off-platform or when use_pci_builtin=False.
+        polling_args = metadata.get("pollingArgs", {}) or {}
+        if self.use_pci_builtin:
+            polling_args[XDRHandler.PCI_USE_GENERIC_API_CALL_ON_POLL_ARG] = "true"
 
         job = {
             "brand": self.brand,
             "poll_command": metadata.get("pollingCommand", self.quarantine_command),
-            "poll_args": metadata.get("pollingArgs", {}),
+            "poll_args": polling_args,
             "finalize_args": {
                 "file_hash": args.get(QuarantineOrchestrator.FILE_HASH_ARG),
                 "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
             },
         }
+        demisto.info(f"[MIGRATE-QF] initiate.job: brand={self.brand!r}, job={job}")
         return job
 
     def finalize(self, last_poll_response: list) -> list[QuarantineResult]:
@@ -630,6 +708,14 @@ class XDRHandler(BrandHandler):
 
         quarantine_endpoints_final_results: list = Command.get_entry_context_object_containing_key(
             last_poll_response, "GetActionStatus"
+        )
+        # `get_entry_context_object_containing_key` may return None when the key is absent
+        # (e.g., unexpected PCI polling response shape). Guard against NoneType iteration.
+        quarantine_endpoints_final_results = quarantine_endpoints_final_results or []
+        demisto.info(
+            f"[MIGRATE-QF] finalize: brand={self.brand!r}, use_pci_builtin={self.use_pci_builtin}, "
+            f"GetActionStatus_len={len(quarantine_endpoints_final_results)}, "
+            f"GetActionStatus={quarantine_endpoints_final_results}"
         )
 
         demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
@@ -1168,10 +1254,15 @@ class QuarantineOrchestrator:
         the results are collected.
         """
         demisto.debug(f"[Orchestrator] Checking status of {len(self.pending_jobs)} pending jobs.")
+        demisto.info(f"[MIGRATE-QF] poll.tick: pending_jobs_count={len(self.pending_jobs)}, " f"is_platform={is_platform()}")
         remaining_jobs = []
         for job in self.pending_jobs:
             demisto.debug(f"[Orchestrator] The Job: {job}")
             demisto.debug(f"[Orchestrator] Polling job for brand '{job['brand']}'.")
+            demisto.info(
+                f"[MIGRATE-QF] poll.before: brand={job['brand']!r}, "
+                f"poll_command={job.get('poll_command')!r}, poll_args={job.get('poll_args')}"
+            )
 
             # Get the command for this job to poll for status. i.e.: GetActionStatus
             poll_cmd = Command(name=job["poll_command"], args=job["poll_args"], brand=job["brand"])
@@ -1181,6 +1272,74 @@ class QuarantineOrchestrator:
 
             metadata = raw_response[0].get("Metadata", {}) if raw_response else {}
             demisto.debug(f"The raw response from executing: {raw_response}")
+            demisto.info(
+                f"[MIGRATE-QF] poll.after: brand={job['brand']!r}, "
+                f"poll_command={job.get('poll_command')!r}, "
+                f"metadata_polling={metadata.get('polling')}, "
+                f"next_pollingCommand={metadata.get('pollingCommand')!r}"
+            )
+
+            # ------------------------------------------------------------------------------
+            # PROBE (temporary, ticket CRTX-265660): if we just polled a PCI Builtin command
+            # and it failed (or completed with no `polling` signal), try calling PCI
+            # `getFileQuarantineStatus` for the first endpoint to learn whether that command
+            # also 403s under the scheduled-run identity (DBotWeak). This helps decide the
+            # workaround path without shipping the full Option 2 rework.
+            # This block is READ-ONLY, does not mutate `job` or `remaining_jobs`, and its
+            # results are logged only.
+            # ------------------------------------------------------------------------------
+            try:
+                poll_response_is_error = any(isinstance(r, dict) and is_error(r) for r in (raw_response or []))
+                looks_like_pci_builtin = job.get("poll_command") in (
+                    XDRHandler.PCI_QUARANTINE_COMMAND,
+                    XDRHandler.PCI_QUARANTINE_STATUS_COMMAND,
+                )
+                if is_platform() and looks_like_pci_builtin and poll_response_is_error:
+                    endpoint_ids_from_poll = job.get("poll_args", {}).get("endpoint_ids")
+                    if isinstance(endpoint_ids_from_poll, str):
+                        probe_endpoint = endpoint_ids_from_poll
+                    elif isinstance(endpoint_ids_from_poll, list) and endpoint_ids_from_poll:
+                        probe_endpoint = str(endpoint_ids_from_poll[0])
+                    else:
+                        probe_endpoint = None
+                    finalize_args = job.get("finalize_args", {}) or {}
+                    probe_file_hash = finalize_args.get("file_hash") or job.get("poll_args", {}).get("file_hash")
+                    probe_file_path = finalize_args.get("file_path") or job.get("poll_args", {}).get("file_path")
+                    demisto.info(
+                        f"[MIGRATE-QF] probe.start: brand={job['brand']!r}, "
+                        f"probe_endpoint={probe_endpoint!r}, "
+                        f"has_hash={bool(probe_file_hash)}, has_path={bool(probe_file_path)}"
+                    )
+                    if probe_endpoint and probe_file_hash and probe_file_path:
+                        probe_cmd = Command(
+                            name=XDRHandler.PCI_QUARANTINE_STATUS_COMMAND,
+                            args={
+                                "endpoint_id": probe_endpoint,
+                                "file_hash": probe_file_hash,
+                                "file_path": probe_file_path,
+                            },
+                            brand=job["brand"],
+                        )
+                        probe_raw, _probe_verbose = probe_cmd.execute()
+                        probe_is_error = any(isinstance(r, dict) and is_error(r) for r in (probe_raw or []))
+                        probe_error_code = None
+                        for r in probe_raw or []:
+                            if isinstance(r, dict) and is_error(r):
+                                probe_error_code = (r.get("Metadata", {}) or {}).get("extendedPayload", {}).get("error_code")
+                                break
+                        demisto.info(
+                            f"[MIGRATE-QF] probe.done: brand={job['brand']!r}, "
+                            f"probe_endpoint={probe_endpoint!r}, "
+                            f"probe_is_error={probe_is_error}, "
+                            f"probe_error_code={probe_error_code!r}"
+                        )
+                    else:
+                        demisto.info("[MIGRATE-QF] probe.skipped: missing endpoint/hash/path for probe.")
+            except Exception as _probe_exc:  # noqa: BLE001 - probe must not break flow
+                demisto.info(f"[MIGRATE-QF] probe.exception: {_probe_exc!r}")
+            # ------------------------------------------------------------------------------
+            # END PROBE
+            # ------------------------------------------------------------------------------
 
             if self._job_is_still_polling(metadata):
                 demisto.debug(f"[Orchestrator] Job for brand '{job['brand']}' is still pending. Re-scheduling.")
