@@ -638,6 +638,14 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
     new_events = deduplicate_events(events, set(seen_ids))
     demisto.debug(f"[Fetch] {len(new_events)} new events after dedup (skipped {len(events) - len(new_events)})")
 
+    # Visibility for the look-back: count new events whose receivedDateTime predates the previous
+    # last_fetch - these are exactly the late status updates (e.g. recalls) that only the look-back
+    # overlap could surface. A non-zero count here proves the look-back is doing its job.
+    if last_fetch_str and lookback_minutes:
+        prev_last_fetch_dt = parse_datetime(last_fetch_str)
+        recovered = [event for event in new_events if event.get("_time") and parse_datetime(event["_time"]) < prev_last_fetch_dt]
+        demisto.debug(f"[Fetch] {len(recovered)} new events recovered by the {lookback_minutes}m look-back (older than last_fetch)")
+
     if new_events:
         # Strip the internal dedup key so it never lands in the dataset.
         for event in new_events:
