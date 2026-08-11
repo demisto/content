@@ -85,15 +85,21 @@ class Client(BaseClient):
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
 
-    def _get_access_token(self) -> str:
-        """Get or refresh the OAuth2 access token, with caching in the integration context."""
+    def _get_access_token(self, force_refresh: bool = False) -> str:
+        """Get or refresh the OAuth2 access token, with caching in the integration context.
+
+        Args:
+            force_refresh: When True, ignore any cached token and always request a fresh one.
+                Used to reactively recover from a server-side 401 (e.g. the token was revoked,
+                rotated, or expired earlier than our computed `valid_until` due to clock skew).
+        """
         current_timestamp = int(time.time())
         cached_context = get_integration_context() or {}
         cached_token = cached_context.get(ACCESS_TOKEN)
         cached_valid_until = cached_context.get(VALID_UNTIL)
 
-        # Return the cached token if it is still valid.
-        if cached_token and cached_valid_until:
+        # Return the cached token if it is still valid (unless a forced refresh was requested).
+        if not force_refresh and cached_token and cached_valid_until:
             try:
                 valid_until_timestamp = int(float(cached_valid_until))
                 if current_timestamp < valid_until_timestamp:
@@ -174,12 +180,64 @@ class Client(BaseClient):
 
         return tenant_url
 
-    def oauth_auth_to_cyber_ark(self):  # pragma: no cover
+    def oauth_auth_to_cyber_ark(self, force_refresh: bool = False):  # pragma: no cover
         # Reference: CyberArk Identity (Idira ISPSS) OAuth2 client_credentials flow.
-        access_token = self._get_access_token()
+        access_token = self._get_access_token(force_refresh=force_refresh)
         tenant_url = self._get_tenant_url(access_token)
         self._base_url = urljoin(tenant_url, "/EPM/API/")
         self._headers["Authorization"] = f"Bearer {access_token}"
+
+    def _refresh_oauth_token(self) -> None:
+        """Force a new OAuth token and update the Authorization header.
+
+        Clears the cached token/validity so `_get_access_token(force_refresh=True)` cannot
+        return the stale (now-rejected) token, then re-authenticates. Called reactively when
+        the server returns 401 for a token our cache still considered valid (early revocation,
+        rotation, clock skew, or a shorter-than-reported lifetime).
+        """
+        demisto.debug("[Token Refresh] Server rejected the token (401). Forcing a new token.")
+        cached_context = get_integration_context() or {}
+        cached_context.pop(ACCESS_TOKEN, None)
+        cached_context.pop(VALID_UNTIL, None)
+        set_integration_context(cached_context)
+        # Re-authenticating issues its own HTTP requests (token + tenant URL). Guard against
+        # those requests re-entering the 401 retry logic (which would recurse infinitely if the
+        # token endpoint itself returns 401, e.g. bad credentials).
+        self._is_authenticating = True
+        try:
+            self.oauth_auth_to_cyber_ark(force_refresh=True)
+        finally:
+            self._is_authenticating = False
+
+    def _http_request(self, *args, **kwargs):
+        """Wrap BaseClient._http_request to transparently recover from an expired OAuth token.
+
+        For the OAuth auth method, if a data request fails with 401 Unauthorized, force a token
+        refresh once and retry the request a single time. This complements the proactive
+        time-based refresh (the `CACHE_BUFFER_SECONDS` buffer) by covering cases where the token
+        becomes invalid before its computed expiry. Other auth methods keep the default behavior.
+        """
+        # Only apply the retry logic for OAuth data requests, and never while we are in the
+        # middle of (re)authenticating, to avoid recursive refresh attempts.
+        if self.auth_method != AUTH_METHOD_OAUTH or getattr(self, "_is_authenticating", False):
+            return super()._http_request(*args, **kwargs)
+        try:
+            return super()._http_request(*args, **kwargs)
+        except DemistoException as error:
+            if not self._is_unauthorized_error(error):
+                raise
+            demisto.debug("[Token Refresh] Received 401 on a data request. Refreshing token and retrying once.")
+            self._refresh_oauth_token()
+            return super()._http_request(*args, **kwargs)
+
+    @staticmethod
+    def _is_unauthorized_error(error: DemistoException) -> bool:
+        """Return True if the given DemistoException represents an HTTP 401 Unauthorized."""
+        response = getattr(error, "res", None)
+        if response is not None and getattr(response, "status_code", None) == 401:
+            return True
+        # Fallback for cases where the response object is not attached to the exception.
+        return "401" in str(error)
 
     def epm_auth_to_cyber_ark(self):  # pragma: no cover
         data = {

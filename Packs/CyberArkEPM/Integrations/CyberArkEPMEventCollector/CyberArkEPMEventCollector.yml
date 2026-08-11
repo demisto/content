@@ -42,7 +42,7 @@ configuration:
   type: 9
   section: Connect
 - display: Set name
-  additionalinfo: A comma-separated list of set names.
+  additionalinfo: A comma-separated list of set names to collect events from. Required for all authentication methods (EPM, SAML, and Idira OAuth).
   name: set_name
   required: true
   type: 0
