@@ -640,3 +640,280 @@ def test_pull_request_comment_update_command(mocker, bitbucket_client):
     result = pull_request_comment_update_command(bitbucket_client, args)
     assert result.readable_output == expected_human_readable
     assert result.outputs == response
+
+
+""" AUTHENTICATION TESTS """
+
+FROZEN_NOW = 1700000000
+OAUTH_TOKEN_RESPONSE = {
+    "access_token": "tok123",
+    "scopes": "repository",
+    "token_type": "bearer",
+    "expires_in": 7200,
+    "refresh_token": "r",
+}
+BASE_PARAMS = {"workspace": "workspace", "server_url": "server_url", "repository": "repository"}
+BASIC_AUTH_CREDENTIALS = {"identifier": "user@example.com", "password": "api-token"}
+OAUTH_CLIENT_CREDENTIALS = {"identifier": "client_id", "password": "client_secret"}
+
+
+@pytest.fixture
+def bitbucket_oauth_client():
+    """A client configured with OAuth 2.0 client credentials, so use_oauth is on."""
+    return Client(
+        workspace="workspace",
+        server_url="server_url",
+        proxy=False,
+        verify=False,
+        repository="repository",
+        client_id="client_id",
+        client_secret="client_secret",
+    )
+
+
+@pytest.fixture
+def bitbucket_basic_auth_client():
+    """A client configured with an Atlassian email and a scoped API token, so use_oauth is off."""
+    return Client(
+        workspace="workspace",
+        server_url="server_url",
+        auth=("user@example.com", "api-token"),
+        proxy=False,
+        verify=False,
+        repository="repository",
+    )
+
+
+@pytest.fixture
+def integration_context(mocker):
+    """An in memory fake of the integration context, isolating every test from the real one."""
+    context: dict = {}
+
+    def _get_integration_context(*args, **kwargs):
+        return context
+
+    def _set_integration_context(new_context, *args, **kwargs):
+        context.clear()
+        context.update(new_context)
+
+    mocker.patch("Bitbucket.get_integration_context", side_effect=_get_integration_context)
+    mocker.patch("Bitbucket.set_integration_context", side_effect=_set_integration_context)
+    return context
+
+
+@pytest.fixture
+def frozen_time(mocker):
+    """Freezes time.time, so the token expiration assertions are deterministic."""
+    mocker.patch("Bitbucket.time.time", return_value=FROZEN_NOW)
+    return FROZEN_NOW
+
+
+class TestOAuthAccessToken:
+    """The OAuth 2.0 client credentials token retrieval and its caching in the integration context."""
+
+    def test_mints_a_new_token_when_the_cache_is_empty(self, mocker, bitbucket_oauth_client, integration_context, frozen_time):
+        """
+        Given:
+            - An OAuth client and an empty integration context.
+        When:
+            - An access token is requested.
+        Then:
+            - A token is minted and persisted with an expiration of now + expires_in - the safety margin.
+        """
+        import Bitbucket
+        from CommonServerPython import BaseClient
+
+        mocker.patch.object(BaseClient, "_http_request", return_value=OAUTH_TOKEN_RESPONSE)
+
+        access_token = bitbucket_oauth_client.get_access_token()
+
+        assert access_token == "tok123"
+        Bitbucket.set_integration_context.assert_called_once()
+        assert integration_context == {"access_token": "tok123", "valid_until": frozen_time + 7200 - 60}
+
+    def test_reuses_the_cached_token_while_it_is_still_valid(
+        self, mocker, bitbucket_oauth_client, integration_context, frozen_time
+    ):
+        """
+        Given:
+            - An OAuth client and an integration context holding a token that is still valid.
+        When:
+            - An access token is requested.
+        Then:
+            - The cached token is returned without performing any HTTP call.
+        """
+        from CommonServerPython import BaseClient
+
+        integration_context.update({"access_token": "cached_token", "valid_until": frozen_time + 100})
+        base_http_request = mocker.patch.object(BaseClient, "_http_request")
+
+        access_token = bitbucket_oauth_client.get_access_token()
+
+        assert access_token == "cached_token"
+        base_http_request.assert_not_called()
+        assert integration_context == {"access_token": "cached_token", "valid_until": frozen_time + 100}
+
+    @pytest.mark.parametrize("valid_until_offset", [-3600, 0], ids=["already_expired", "expiring_exactly_now"])
+    def test_replaces_a_token_that_is_no_longer_valid(
+        self, mocker, bitbucket_oauth_client, integration_context, frozen_time, valid_until_offset
+    ):
+        """
+        Given:
+            - An OAuth client and an integration context holding a token that expired, or expires exactly now.
+        When:
+            - An access token is requested.
+        Then:
+            - A new token is minted, returned, and persisted over the stale one.
+        """
+        from CommonServerPython import BaseClient
+
+        integration_context.update({"access_token": "old_token", "valid_until": frozen_time + valid_until_offset})
+        base_http_request = mocker.patch.object(BaseClient, "_http_request", return_value=OAUTH_TOKEN_RESPONSE)
+
+        access_token = bitbucket_oauth_client.get_access_token()
+
+        assert access_token == "tok123"
+        assert base_http_request.call_count == 1
+        assert integration_context == {"access_token": "tok123", "valid_until": frozen_time + 7200 - 60}
+
+    def test_requests_a_client_credentials_grant(self, mocker, bitbucket_oauth_client, integration_context, frozen_time):
+        """
+        Given:
+            - An OAuth client and an empty integration context.
+        When:
+            - A token has to be minted.
+        Then:
+            - A client_credentials grant is posted to the Bitbucket token endpoint, authenticated with the client credentials.
+        """
+        from Bitbucket import TOKEN_URL
+        from CommonServerPython import BaseClient
+
+        base_http_request = mocker.patch.object(BaseClient, "_http_request", return_value=OAUTH_TOKEN_RESPONSE)
+
+        bitbucket_oauth_client.get_access_token()
+
+        base_http_request.assert_called_once_with(
+            method="POST",
+            full_url=TOKEN_URL,
+            auth=("client_id", "client_secret"),
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+            data={"grant_type": "client_credentials"},
+        )
+
+
+class TestClientAuthenticationHeaders:
+    """The credentials each authentication mode puts on an outgoing API request."""
+
+    def test_default_client_fixture_uses_basic_authentication(self, bitbucket_client):
+        """
+        Given:
+            - The pre-existing bitbucket_client fixture, built without OAuth credentials.
+        When:
+            - The client is constructed after the authentication layer was added.
+        Then:
+            - The client is in basic authentication mode and keeps the JSON Accept header.
+        """
+        assert bitbucket_client.use_oauth is False
+        assert bitbucket_client._auth == ()
+        assert bitbucket_client._headers == {"Accept": "application/json"}
+
+    def test_oauth_client_sends_a_bearer_authorization_header(self, mocker, bitbucket_oauth_client):
+        """
+        Given:
+            - An OAuth client with an available access token.
+        When:
+            - A regular API request is performed.
+        Then:
+            - The request carries an Authorization Bearer header, alongside the original Accept header.
+        """
+        from CommonServerPython import BaseClient
+
+        mocker.patch.object(bitbucket_oauth_client, "get_access_token", return_value="tok123")
+        base_http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"values": []})
+
+        bitbucket_oauth_client.get_project_list_request(page=1, page_size=1)
+
+        assert base_http_request.call_count == 1
+        assert base_http_request.call_args.kwargs["headers"] == {
+            "Accept": "application/json",
+            "Authorization": "Bearer tok123",
+        }
+
+    def test_basic_auth_client_does_not_send_a_bearer_authorization_header(self, mocker, bitbucket_basic_auth_client):
+        """
+        Given:
+            - A client configured with a user name and an API token.
+        When:
+            - A regular API request is performed.
+        Then:
+            - No Authorization Bearer header is injected, and the credentials are carried by the auth tuple.
+        """
+        from CommonServerPython import BaseClient
+
+        base_http_request = mocker.patch.object(BaseClient, "_http_request", return_value={"values": []})
+
+        bitbucket_basic_auth_client.get_project_list_request(page=1, page_size=1)
+
+        assert bitbucket_basic_auth_client.use_oauth is False
+        assert bitbucket_basic_auth_client._headers == {"Accept": "application/json"}
+        assert bitbucket_basic_auth_client._auth == ("user@example.com", "api-token")
+        assert base_http_request.call_count == 1
+        assert "Authorization" not in (base_http_request.call_args.kwargs.get("headers") or {})
+
+
+class TestTestModule:
+    """The test-module command, which has to succeed under both authentication methods."""
+
+    def test_returns_ok_with_basic_authentication(self, mocker, bitbucket_basic_auth_client):
+        """
+        Given:
+            - A client configured with a user name and an API token.
+        When:
+            - The test-module command is executed and the API call succeeds.
+        Then:
+            - 'ok' is returned.
+        """
+        from Bitbucket import test_module
+
+        mocker.patch.object(bitbucket_basic_auth_client, "get_project_list_request", return_value={"values": []})
+
+        assert test_module(bitbucket_basic_auth_client) == "ok"
+
+    def test_returns_ok_with_oauth(self, mocker, bitbucket_oauth_client, integration_context, frozen_time):
+        """
+        Given:
+            - A client configured with OAuth client credentials and an empty integration context.
+        When:
+            - The test-module command is executed and the API call succeeds.
+        Then:
+            - 'ok' is returned, a token is minted and cached, and the API call carries the Bearer header.
+        """
+        from Bitbucket import test_module
+        from CommonServerPython import BaseClient
+
+        base_http_request = mocker.patch.object(BaseClient, "_http_request", side_effect=[OAUTH_TOKEN_RESPONSE, {"values": []}])
+
+        assert test_module(bitbucket_oauth_client) == "ok"
+        assert base_http_request.call_args.kwargs["headers"]["Authorization"] == "Bearer tok123"
+        assert integration_context["access_token"] == "tok123"
+
+    def test_surfaces_the_api_error_message(self, mocker, bitbucket_basic_auth_client):
+        """
+        Given:
+            - A client whose API call fails with a DemistoException.
+        When:
+            - The test-module command is executed.
+        Then:
+            - The underlying error message is surfaced to the user.
+        """
+        from Bitbucket import test_module
+        from CommonServerPython import DemistoException
+
+        mocker.patch.object(
+            bitbucket_basic_auth_client,
+            "get_project_list_request",
+            side_effect=DemistoException("Error in API call [401] - Unauthorized"),
+        )
+
+        with pytest.raises(Exception, match=r"Error in API call \[401\] - Unauthorized"):
+            test_module(bitbucket_basic_auth_client)
