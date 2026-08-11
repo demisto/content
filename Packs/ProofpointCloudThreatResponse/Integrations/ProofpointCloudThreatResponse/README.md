@@ -36,42 +36,45 @@ Returns a list of Proofpoint Cloud Threat Response incidents matching the suppli
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | The start of the time range filter. Accepts a free text date (e.g., `3 days`, `2024-11-26T16:18:07Z`). | Optional | 
-| end_time | The end of the time range filter. Accepts a free text date. Defaults to now when omitted. | Optional | 
-| incident_id_filters | A comma-separated list of incident `displayId` values (numeric). For example, `781,782`. | Optional | 
-| source_filters | Filter incidents by source. Possible values are: abuse_mailbox, tap, smart_search, message_csv_upload. | Optional | 
-| other_filters | Filter incidents by state or VAP. Selecting both `open_incidents` and `closed_incidents` returns an empty result from the upstream API. Possible values are: open_incidents, closed_incidents, vap. | Optional | 
-| verdict_filters | Filter incidents by verdict. Possible values are: verdict_failed, verdict_low_risk, verdict_manual_review, verdict_threat. | Optional | 
-| disposition | Filter incidents by disposition. Possible values are: bulk, clean, impostor, in_progress, internal, low_risk, malware, manual_review, not_set, phish, scam, simulated_phish, spam, suspicious, tap_false_positive, toad, vendor. | Optional | 
-| confidence_filters | Filter incidents by confidence level. Possible values are: confidence_high, confidence_medium, confidence_low. | Optional | 
-| priority_filters | A comma-separated list of priority levels to filter incidents by. Possible values are: high, medium, low. | Optional | 
-| sort | Sort order for results by creation time. Possible values are: asc, desc. Default is desc. | Optional | 
-| limit | The maximum number of incidents to return. Default is 50. Default is 50. | Optional | 
+| start_time | The start of the time range filter. Accepts a free text date (e.g., `3 days`, `2024-11-26T16:18:07Z`). | Optional |
+| end_time | The end of the time range filter. Accepts a free text date. Defaults to now when omitted. | Optional |
+| incident_id_filters | A comma-separated list of incident `displayId` values (numeric). For example, `781,782`. | Optional |
+| source_filters | Filter incidents by source. Possible values are: abuse_mailbox, tap, smart_search, message_csv_upload. | Optional |
+| other_filters | Filter incidents by state or VAP. Selecting both `open_incidents` and `closed_incidents` returns an empty result from the upstream API. Possible values are: open_incidents, closed_incidents, vap. | Optional |
+| verdict_filters | Filter incidents by verdict. Possible values are: verdict_failed, verdict_low_risk, verdict_manual_review, verdict_threat. | Optional |
+| disposition | Filter incidents by disposition. Possible values are: bulk, clean, impostor, in_progress, internal, low_risk, malware, manual_review, not_set, phish, scam, simulated_phish, spam, suspicious, tap_false_positive, toad, vendor. | Optional |
+| confidence_filters | Filter incidents by confidence level. Possible values are: confidence_high, confidence_medium, confidence_low. | Optional |
+| priority_filters | A comma-separated list of priority levels to filter incidents by. Possible values are: high, medium, low. | Optional |
+| sort | Sort order for results by creation time. Possible values are: asc, desc. Default is desc. | Optional |
+| limit | The maximum number of incidents to return. Default is 50. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.Incident.id | String | The internal UUID of the incident. | 
-| ProofPointCloud.Incident.displayId | Number | The numeric display ID of the incident. | 
-| ProofPointCloud.Incident.title | String | The incident title. | 
-| ProofPointCloud.Incident.state | String | The state of the incident \(open/closed\). | 
-| ProofPointCloud.Incident.createdAt | Date | The creation timestamp of the incident. | 
-| ProofPointCloud.Incident.updatedAt | Date | The last update timestamp of the incident. | 
-| ProofPointCloud.Incident.messageCount | Number | The number of messages associated with the incident. | 
-| ProofPointCloud.Incident.assignedTeamName | String | The name of the team the incident is assigned to. | 
-| ProofPointCloud.Incident.sourceTypes | Array | The list of source types that produced the incident. | 
-| ProofPointCloud.Incident.dispositions | Array | The list of dispositions assigned to the incident. | 
-| ProofPointCloud.Incident.clearConfidences | Array | The list of confidence values for the incident. | 
-| ProofPointCloud.Incident.priority | String | The priority of the incident. | 
-| ProofPointCloud.Incident.closedAt | Date | The timestamp when the incident was closed, if applicable. | 
-| ProofPointCloud.Incident.assignedUserName | String | The username of the individual the incident is assigned to. | 
-| ProofPointCloud.Incident.clearVerdicts | Array | The list of clear verdicts for the incident. | 
-| ProofPointCloud.Incident.sourcesData | Array | The raw sources data array for the incident. | 
+| ProofPointCloud.Incident.id | String | The internal UUID of the incident. |
+| ProofPointCloud.Incident.displayId | Number | The numeric display ID of the incident. |
+| ProofPointCloud.Incident.title | String | The incident title. |
+| ProofPointCloud.Incident.state | String | The state of the incident \(open/closed\). |
+| ProofPointCloud.Incident.createdAt | Date | The creation timestamp of the incident. |
+| ProofPointCloud.Incident.updatedAt | Date | The last update timestamp of the incident. |
+| ProofPointCloud.Incident.messageCount | Number | The number of messages associated with the incident. |
+| ProofPointCloud.Incident.assignedTeamName | String | The name of the team the incident is assigned to. |
+| ProofPointCloud.Incident.sourceTypes | Array | The list of source types that produced the incident. |
+| ProofPointCloud.Incident.dispositions | Array | The list of dispositions assigned to the incident. |
+| ProofPointCloud.Incident.clearConfidences | Array | The list of confidence values for the incident. |
+| ProofPointCloud.Incident.priority | String | The priority of the incident. |
+| ProofPointCloud.Incident.closedAt | Date | The timestamp when the incident was closed, if applicable. |
+| ProofPointCloud.Incident.assignedUserName | String | The username of the individual the incident is assigned to. |
+| ProofPointCloud.Incident.clearVerdicts | Array | The list of clear verdicts for the incident. |
+| ProofPointCloud.Incident.sourcesData | Array | The raw sources data array for the incident. |
 
 #### Command example
+
 ```!proofpoint-ctr-incidents-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ProofPointCloud": {
@@ -115,10 +118,10 @@ Returns a list of Proofpoint Cloud Threat Response incidents matching the suppli
 #### Human Readable Output
 
 >### Proofpoint Cloud Threat Response Incidents
+>
 >|ID|Created At|Type|State|Message Count|Assigned Team Name|Title|Source Types|
 >|---|---|---|---|---|---|---|---|
->| 7a146a04-e9fd-4983-a5da-bca269a26284 | 2026-08-06T12:15:51.260+00:00 | TapAlert | closed | 1 | SOC_Analyst | Message Delivered to ayeshal[@]esteelauder[.]com with link hxxps://storage[.]googleapis[.]com/mydigitaltraining--members--8--737f9b5ff1644a0ab6ff/index[.]html | tap_alert |
-
+>| 7a146a04-e9fd-4983-a5da-bca269a26284 | 2026-08-06T12:15:51.260+00:00 | TapAlert | closed | 1 | SOC_Analyst | Message Delivered to user[@]example[.]com with link hxxps://storage[.]googleapis[.]com/mydigitaltraining--members--8--737f9b5ff1644a0ab6ff/index[.]html | tap_alert |
 
 ### proofpoint-ctr-incident-get
 
@@ -240,6 +243,7 @@ When enrichment is enabled, the integration makes one additional `GET /api/v1/tr
 1. Keep **"Enrich incidents during fetch"** disabled (default).
 2. Use the `proofpoint-ctr-incident-get` command to enrich individual incidents on demand from a playbook or manually from the War Room.
 3. Because both commands write to the same context key (`ProofPointCloud.Incident.id`), running `proofpoint-ctr-incident-get` after `proofpoint-ctr-incidents-list` will **enrich the existing context entry** rather than creating a duplicate.
+
 ### proofpoint-ctr-safelist-remove-entry
 
 ***
@@ -253,14 +257,15 @@ Removes an entry from the organizational Safe List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster_id | The PPS Cluster ID. | Required | 
-| attribute | The attribute of the entry to remove. Possible values are: from, hfrom, ip, host, helo, rcpt. | Required | 
-| operator | The operator of the entry to remove. Possible values are: equal, contain, is_in_list. | Required | 
-| value | The value for the entry. | Required | 
+| cluster_id | The PPS Cluster ID. | Required |
+| attribute | The attribute of the entry to remove. Possible values are: from, hfrom, ip, host, helo, rcpt. | Required |
+| operator | The operator of the entry to remove. Possible values are: equal, contain, is_in_list. | Required |
+| value | The value for the entry. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### proofpoint-ctr-blocklist-add-entry
 
 ***
@@ -274,15 +279,16 @@ Adds an entry to the organizational Block List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster_id | The PPS Cluster ID. | Required | 
-| attribute | The attribute to filter on. Possible values are: from, hfrom, ip, host, helo, rcpt. | Required | 
-| operator | The operator to use. Possible values are: equal, not_equal, contain, not_contain, is_in_list. | Required | 
-| value | The value for the entry. | Required | 
-| comment | An optional comment for the entry. | Optional | 
+| cluster_id | The PPS Cluster ID. | Required |
+| attribute | The attribute to filter on. Possible values are: from, hfrom, ip, host, helo, rcpt. | Required |
+| operator | The operator to use. Possible values are: equal, not_equal, contain, not_contain, is_in_list. | Required |
+| value | The value for the entry. | Required |
+| comment | An optional comment for the entry. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### proofpoint-ctr-message-list
 
 ***
@@ -296,38 +302,41 @@ Retrieves a single Proofpoint Cloud Threat Response message by its UUID, or a fi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The UUID of a single message to retrieve. | Optional | 
-| rfc_message_id | A comma-separated list of RFC Message IDs to search for. | Optional | 
-| recipient_address | A comma-separated list of recipient email addresses to filter by. | Optional | 
-| sender_address | A comma-separated list of sender email addresses to filter by. | Optional | 
-| subject | A substring to search for in the message subject. | Optional | 
-| start_time | The start of the time range filter. Accepts a free text date (e.g., `2 hours`, `2024-11-26T16:18:07Z`). | Optional | 
-| end_time | The end of the time range filter. Accepts a free text date. Defaults to now when omitted. | Optional | 
-| source_filters | A comma-separated list of sources to filter by. Possible values are: abuse_mailbox, tap, smart_search, message_csv_upload, mail_bomb. | Optional | 
-| status_filters | A comma-separated list of message statuses to filter by. Possible values are: message_delivered, message_unread, message_read, permitted_click. | Optional | 
-| quarantine_filters | A comma-separated list of remediation statuses to filter by. | Optional | 
-| disposition_filters | A comma-separated list of dispositions to filter by. Possible values are: bulk, clean, impostor, in_progress, internal, low_risk, malware, manual_review, not_set, phish, scam, simulated_phish, spam, suspicious, tap_false_positive, toad, vendor. | Optional | 
-| confidence_filters | A comma-separated list of CLEAR confidence levels to filter by. Possible values are: confidence_high, confidence_medium, confidence_low. | Optional | 
-| verdict_filters | A comma-separated list of CLEAR verdicts to filter by. Possible values are: verdict_failed, verdict_low_risk, verdict_manual_review, verdict_threat. | Optional | 
-| tap_threat_id | A comma-separated list of TAP Threat IDs to filter by. | Optional | 
-| tap_threat_type_filters | A comma-separated list of TAP threat types to filter by. Possible values are: tap_threat_type_delivered_attachment_threat, tap_threat_type_delivered_message_threat, tap_threat_type_delivered_url_threat, tap_threat_type_unprotected_url_threat. | Optional | 
-| limit | The maximum number of messages to return. Default is 50. Default is 50. | Optional | 
+| message_id | The UUID of a single message to retrieve. | Optional |
+| rfc_message_id | A comma-separated list of RFC Message IDs to search for. | Optional |
+| recipient_address | A comma-separated list of recipient email addresses to filter by. | Optional |
+| sender_address | A comma-separated list of sender email addresses to filter by. | Optional |
+| subject | A substring to search for in the message subject. | Optional |
+| start_time | The start of the time range filter. Accepts a free text date (e.g., `2 hours`, `2024-11-26T16:18:07Z`). | Optional |
+| end_time | The end of the time range filter. Accepts a free text date. Defaults to now when omitted. | Optional |
+| source_filters | A comma-separated list of sources to filter by. Possible values are: abuse_mailbox, tap, smart_search, message_csv_upload, mail_bomb. | Optional |
+| status_filters | A comma-separated list of message statuses to filter by. Possible values are: message_delivered, message_unread, message_read, permitted_click. | Optional |
+| quarantine_filters | A comma-separated list of remediation statuses to filter by. | Optional |
+| disposition_filters | A comma-separated list of dispositions to filter by. Possible values are: bulk, clean, impostor, in_progress, internal, low_risk, malware, manual_review, not_set, phish, scam, simulated_phish, spam, suspicious, tap_false_positive, toad, vendor. | Optional |
+| confidence_filters | A comma-separated list of CLEAR confidence levels to filter by. Possible values are: confidence_high, confidence_medium, confidence_low. | Optional |
+| verdict_filters | A comma-separated list of CLEAR verdicts to filter by. Possible values are: verdict_failed, verdict_low_risk, verdict_manual_review, verdict_threat. | Optional |
+| tap_threat_id | A comma-separated list of TAP Threat IDs to filter by. | Optional |
+| tap_threat_type_filters | A comma-separated list of TAP threat types to filter by. Possible values are: tap_threat_type_delivered_attachment_threat, tap_threat_type_delivered_message_threat, tap_threat_type_delivered_url_threat, tap_threat_type_unprotected_url_threat. | Optional |
+| limit | The maximum number of messages to return. Default is 50. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.Message.id | String | The message UUID. | 
-| ProofPointCloud.Message.email_subject | String | The message subject. | 
-| ProofPointCloud.Message.sender_address | String | The message sender address. | 
-| ProofPointCloud.Message.recipient_address | String | The message recipient address. | 
-| ProofPointCloud.Message.received_at | Date | The timestamp the message was received. | 
-| ProofPointCloud.Message.disposition | String | The message disposition. | 
-| ProofPointCloud.Message.remediation_status | String | The message remediation status. | 
+| ProofPointCloud.Message.id | String | The message UUID. |
+| ProofPointCloud.Message.email_subject | String | The message subject. |
+| ProofPointCloud.Message.sender_address | String | The message sender address. |
+| ProofPointCloud.Message.recipient_address | String | The message recipient address. |
+| ProofPointCloud.Message.received_at | Date | The timestamp the message was received. |
+| ProofPointCloud.Message.disposition | String | The message disposition. |
+| ProofPointCloud.Message.remediation_status | String | The message remediation status. |
 
 #### Command example
+
 ```!proofpoint-ctr-message-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ProofPointCloud": {
@@ -351,11 +360,11 @@ Retrieves a single Proofpoint Cloud Threat Response message by its UUID, or a fi
                     "display_id": 74747,
                     "id": "7a146a04-e9fd-4983-a5da-bca269a26284",
                     "link_attribute": null,
-                    "title": "Message Delivered to ayeshal[@]esteelauder[.]com with link hxxps://storage[.]googleapis[.]com/mydigitaltraining--members--8--737f9b5ff1644a0ab6ff/index[.]html"
+                    "title": "Message Delivered to user[@]example[.]com with link hxxps://storage[.]googleapis[.]com/mydigitaltraining--members--8--737f9b5ff1644a0ab6ff/index[.]html"
                 }
             ],
             "last_known_type": "unknown",
-            "message_id": "<0100019fd4708760-31ddecff-80b1-4890-a7e4-1b75e02f8868-000000@email.amazonses.com>",
+            "message_id": "<0100019fd4708760-31ddecff-80b1-4890-a7e4-1b75e02f8868-000000@email.example.com>",
             "message_status": {
                 "is_read": null,
                 "message_delivered": true,
@@ -367,10 +376,10 @@ Retrieves a single Proofpoint Cloud Threat Response message by its UUID, or a fi
             "quarantine_strategy": null,
             "received_at": "2026-08-06T00:19:32.745+00:00",
             "received_time": "2026-08-06T12:15:45.853+00:00",
-            "recipient_address": "ayeshal@esteelauder.com",
+            "recipient_address": "user@example.com",
             "remediation_status": "mailbox_not_found",
             "remediation_status_context": null,
-            "sender_address": "0100019fd4708760-31ddecff-80b1-4890-a7e4-1b75e02f8868-000000@amazonses.com",
+            "sender_address": "sender@example.com",
             "sender_id": "a7983082-c41a-46b0-803b-9540b99def70",
             "sources": [
                 {
@@ -415,10 +424,10 @@ Retrieves a single Proofpoint Cloud Threat Response message by its UUID, or a fi
 #### Human Readable Output
 
 >### Proofpoint Cloud Threat Response Messages
+>
 >|ID|Subject|From|To|Received|Disposition|Remediation Status|
 >|---|---|---|---|---|---|---|
->| bbf933e1-7c1b-47f1-b90c-290a6e24bbff | Your employer submitted your details for this program | 0100019fd4708760-31ddecff-80b1-4890-a7e4-1b75e02f8868-000000@amazonses.com | ayeshal@esteelauder.com | 2026-08-06T00:19:32.745+00:00 | phish | mailbox_not_found |
-
+>| bbf933e1-7c1b-47f1-b90c-290a6e24bbff | Your employer submitted your details for this program | sender@example.com | user@example.com | 2026-08-06T00:19:32.745+00:00 | phish | mailbox_not_found |
 
 ### proofpoint-ctr-incident-upload-message
 
@@ -433,21 +442,21 @@ Associates an email message with an existing Proofpoint Cloud Threat Response in
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The ID of the incident to associate the message with. | Required | 
-| rfc_message_id | The RFC822 Message-ID of the email. Must include angle brackets. | Required | 
-| recipient_addresses | A comma-separated list of recipient email addresses. | Required | 
-| sender | The sender email address. | Optional | 
-| subject | The email subject. | Optional | 
-| disposition | The disposition of the message. Possible values are: bulk, clean, impostor, in_progress, internal, low_risk, malware, manual_review, not_set, phish, scam, simulated_phish, spam, suspicious, tap_false_positive, toad, vendor. | Optional | 
+| incident_id | The ID of the incident to associate the message with. | Required |
+| rfc_message_id | The RFC822 Message-ID of the email. Must include angle brackets. | Required |
+| recipient_addresses | A comma-separated list of recipient email addresses. | Required |
+| sender | The sender email address. | Optional |
+| subject | The email subject. | Optional |
+| disposition | The disposition of the message. Possible values are: bulk, clean, impostor, in_progress, internal, low_risk, malware, manual_review, not_set, phish, scam, simulated_phish, spam, suspicious, tap_false_positive, toad, vendor. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.Incident.Message.rfcMessageId | String | The RFC Message ID of the uploaded message. | 
-| ProofPointCloud.Incident.Message.incident_id | String | The incident ID the message was associated with. | 
-| ProofPointCloud.Incident.Message.incidentDisplayId | Number | The incident display ID. | 
-| ProofPointCloud.Incident.Message.uploadedRecipientsCount | Number | The number of recipients uploaded. | 
+| ProofPointCloud.Incident.Message.rfcMessageId | String | The RFC Message ID of the uploaded message. |
+| ProofPointCloud.Incident.Message.incident_id | String | The incident ID the message was associated with. |
+| ProofPointCloud.Incident.Message.incidentDisplayId | Number | The incident display ID. |
+| ProofPointCloud.Incident.Message.uploadedRecipientsCount | Number | The number of recipients uploaded. |
 
 ### proofpoint-ctr-blocklist-remove-entry
 
@@ -462,14 +471,15 @@ Removes an entry from the organizational Block List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster_id | The PPS Cluster ID. | Required | 
-| attribute | The attribute of the entry to remove. Possible values are: from, hfrom, ip, host, helo, rcpt. | Required | 
-| operator | The operator of the entry to remove. Possible values are: equal, not_equal, contain, not_contain, is_in_list. | Required | 
-| value | The value for the entry. | Required | 
+| cluster_id | The PPS Cluster ID. | Required |
+| attribute | The attribute of the entry to remove. Possible values are: from, hfrom, ip, host, helo, rcpt. | Required |
+| operator | The operator of the entry to remove. Possible values are: equal, not_equal, contain, not_contain, is_in_list. | Required |
+| value | The value for the entry. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### proofpoint-ctr-workflows-list
 
 ***
@@ -483,24 +493,27 @@ Returns a list of Proofpoint Cloud Threat Response manual workflows.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| enabled | If true, returns only enabled manual workflows. Possible values are: true, false. | Optional | 
-| type | Filter workflows by type. Possible values are: incident, message. | Optional | 
-| limit | The maximum number of workflows to return. Default is 50. Default is 50. | Optional | 
-| all_results | If true, ignore the limit and return all workflows. Possible values are: true, false. Default is false. | Optional | 
+| enabled | If true, returns only enabled manual workflows. Possible values are: true, false. | Optional |
+| type | Filter workflows by type. Possible values are: incident, message. | Optional |
+| limit | The maximum number of workflows to return. Default is 50. Default is 50. | Optional |
+| all_results | If true, ignore the limit and return all workflows. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.Workflow.id | String | The workflow ID. | 
-| ProofPointCloud.Workflow.name | String | The workflow name. | 
-| ProofPointCloud.Workflow.enabled | Boolean | Whether the workflow is enabled. | 
-| ProofPointCloud.Workflow.type | String | The workflow type. | 
-| ProofPointCloud.Workflow.createdAt | Date | The workflow creation timestamp. | 
+| ProofPointCloud.Workflow.id | String | The workflow ID. |
+| ProofPointCloud.Workflow.name | String | The workflow name. |
+| ProofPointCloud.Workflow.enabled | Boolean | Whether the workflow is enabled. |
+| ProofPointCloud.Workflow.type | String | The workflow type. |
+| ProofPointCloud.Workflow.createdAt | Date | The workflow creation timestamp. |
 
 #### Command example
+
 ```!proofpoint-ctr-workflows-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "ProofPointCloud": {
@@ -524,10 +537,10 @@ Returns a list of Proofpoint Cloud Threat Response manual workflows.
 #### Human Readable Output
 
 >### Proofpoint Cloud Threat Response Workflows
+>
 >|ID|Name|Enabled|Type|Created At|
 >|---|---|---|---|---|
 >| 00000000-0000-0000-0000-000000000020 | Example Manual Workflow | true | MESSAGE | 2024-01-01T10:00:00.000Z |
-
 
 ### proofpoint-ctr-safelist-add-entry
 
@@ -542,15 +555,16 @@ Adds an entry to the organizational Safe List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster_id | The PPS Cluster ID. | Required | 
-| attribute | The attribute to filter on. Possible values are: from, hfrom, ip, host, helo, rcpt. | Required | 
-| operator | The operator to use. Possible values are: equal, contain, is_in_list. | Required | 
-| value | The value for the entry. | Required | 
-| comment | An optional comment for the entry. | Optional | 
+| cluster_id | The PPS Cluster ID. | Required |
+| attribute | The attribute to filter on. Possible values are: from, hfrom, ip, host, helo, rcpt. | Required |
+| operator | The operator to use. Possible values are: equal, contain, is_in_list. | Required |
+| value | The value for the entry. | Required |
+| comment | An optional comment for the entry. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### proofpoint-ctr-safelist-list
 
 ***
@@ -564,18 +578,18 @@ Retrieves the organizational Safe List entries.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster_id | The PPS Cluster ID. | Required | 
-| limit | The maximum number of entries to return. Default is 50. Default is 50. | Optional | 
-| all_results | If true, ignore the limit and return all Safe List entries. Possible values are: true, false. Default is false. | Optional | 
+| cluster_id | The PPS Cluster ID. | Required |
+| limit | The maximum number of entries to return. Default is 50. Default is 50. | Optional |
+| all_results | If true, ignore the limit and return all Safe List entries. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.SafeList.attribute | String | The entry attribute. | 
-| ProofPointCloud.SafeList.operator | String | The entry operator. | 
-| ProofPointCloud.SafeList.value | String | The entry value. | 
-| ProofPointCloud.SafeList.comment | String | The entry comment. | 
+| ProofPointCloud.SafeList.attribute | String | The entry attribute. |
+| ProofPointCloud.SafeList.operator | String | The entry operator. |
+| ProofPointCloud.SafeList.value | String | The entry value. |
+| ProofPointCloud.SafeList.comment | String | The entry comment. |
 
 ### proofpoint-ctr-blocklist-list
 
@@ -590,18 +604,18 @@ Retrieves the organizational Block List entries.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cluster_id | The PPS Cluster ID. | Required | 
-| limit | The maximum number of entries to return. Default is 50. Default is 50. | Optional | 
-| all_results | If true, ignore the limit and return all Block List entries. Possible values are: true, false. Default is false. | Optional | 
+| cluster_id | The PPS Cluster ID. | Required |
+| limit | The maximum number of entries to return. Default is 50. Default is 50. | Optional |
+| all_results | If true, ignore the limit and return all Block List entries. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.BlockList.attribute | String | The entry attribute. | 
-| ProofPointCloud.BlockList.operator | String | The entry operator. | 
-| ProofPointCloud.BlockList.value | String | The entry value. | 
-| ProofPointCloud.BlockList.comment | String | The entry comment. | 
+| ProofPointCloud.BlockList.attribute | String | The entry attribute. |
+| ProofPointCloud.BlockList.operator | String | The entry operator. |
+| ProofPointCloud.BlockList.value | String | The entry value. |
+| ProofPointCloud.BlockList.comment | String | The entry comment. |
 
 ### proofpoint-ctr-run-workflow
 
@@ -616,21 +630,21 @@ Runs a Proofpoint Cloud Threat Response manual workflow on the specified inciden
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| workflow_id | The ID of the workflow to run. | Required | 
-| target_ids | A comma-separated list of incident or message IDs to run the workflow on. | Required | 
-| polling | Use Cortex XSOAR built-in polling to retrieve the result when it is ready. Possible values are: true, false. Default is true. | Optional | 
-| interval_in_seconds | Interval in seconds between each poll. Default is 30. | Optional | 
-| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| workflow_id | The ID of the workflow to run. | Required |
+| target_ids | A comma-separated list of incident or message IDs to run the workflow on. | Required |
+| polling | Use Cortex XSOAR built-in polling to retrieve the result when it is ready. Possible values are: true, false. Default is true. | Optional |
+| interval_in_seconds | Interval in seconds between each poll. Default is 30. | Optional |
+| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofPointCloud.Workflow.id | String | The workflow run ID. | 
-| ProofPointCloud.Workflow.state | String | The state of the workflow run \(IN_PROGRESS, SUCCESS, FAILED, CANCELLED\). | 
-| ProofPointCloud.Workflow.workflowId | String | The workflow definition ID. | 
-| ProofPointCloud.Workflow.createdAt | Date | The run creation timestamp. | 
-| ProofPointCloud.Workflow.updatedAt | Date | The run last-update timestamp. | 
+| ProofPointCloud.Workflow.id | String | The workflow run ID. |
+| ProofPointCloud.Workflow.state | String | The state of the workflow run \(IN_PROGRESS, SUCCESS, FAILED, CANCELLED\). |
+| ProofPointCloud.Workflow.workflowId | String | The workflow definition ID. |
+| ProofPointCloud.Workflow.createdAt | Date | The run creation timestamp. |
+| ProofPointCloud.Workflow.updatedAt | Date | The run last-update timestamp. |
 
 ### proofpoint-ctr-message-download
 
@@ -645,22 +659,25 @@ Downloads a Proofpoint Cloud Threat Response message as an EML file into the War
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The ID of the message to download. | Required | 
+| message_id | The ID of the message to download. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Name | String | The name of the downloaded EML file. | 
-| File.EntryID | String | The War Room entry ID of the downloaded file. | 
-| File.Size | Number | The size of the downloaded file. | 
-| File.SHA256 | String | The SHA256 hash of the downloaded file. | 
-| File.SHA1 | String | The SHA1 hash of the downloaded file. | 
-| File.MD5 | String | The MD5 hash of the downloaded file. | 
+| File.Name | String | The name of the downloaded EML file. |
+| File.EntryID | String | The War Room entry ID of the downloaded file. |
+| File.Size | Number | The size of the downloaded file. |
+| File.SHA256 | String | The SHA256 hash of the downloaded file. |
+| File.SHA1 | String | The SHA1 hash of the downloaded file. |
+| File.MD5 | String | The MD5 hash of the downloaded file. |
 
 #### Command example
+
 ```!proofpoint-ctr-message-download message_id=598ba766-5c38-4ca6-be25-565faae3a3b8```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -675,6 +692,3 @@ Downloads a Proofpoint Cloud Threat Response message as an EML file into the War
 ```
 
 #### Human Readable Output
-
-
-

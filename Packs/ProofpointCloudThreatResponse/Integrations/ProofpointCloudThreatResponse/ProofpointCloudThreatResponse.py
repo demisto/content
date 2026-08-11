@@ -684,9 +684,9 @@ def _workflow_run_readable(run: dict[str, Any]) -> str:
 
 @polling_function(  # noqa: F405
     name="proofpoint-ctr-run-workflow",
-    interval=DEFAULT_POLL_INTERVAL,
-    timeout=DEFAULT_POLL_TIMEOUT,
-    requires_polling_arg=False,
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_POLL_INTERVAL,  # noqa: F405
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds")) or DEFAULT_POLL_TIMEOUT,  # noqa: F405
+    requires_polling_arg=False,  # means it will always default to poll
 )
 def proofpoint_ctr_run_workflow_command(args: dict[str, Any], client: Client) -> "PollResult":  # noqa: F405,F821
     """Run a manual workflow and poll for the terminal state.
@@ -733,6 +733,35 @@ def proofpoint_ctr_run_workflow_command(args: dict[str, Any], client: Client) ->
 # ----------------------------------------------------------------------------- #
 # Messages commands
 # ----------------------------------------------------------------------------- #
+
+
+def _normalize_single_message(response: dict[str, Any]) -> dict[str, Any]:
+    """Normalize the single ``GET /messages/{id}`` response to the flat snake_case
+    shape used by the list endpoint and documented in the YAML outputs.
+
+    The single-message endpoint nests the message fields under a ``details`` object
+    with camelCase keys (e.g. ``emailSubject``), whereas the list endpoint returns
+    flat snake_case items. This maps the former to the latter so the human-readable
+    table and context outputs are consistent across both branches.
+    """
+    if not isinstance(response, dict):
+        return response
+
+    details = response.get("details")
+    if not isinstance(details, dict):
+        # Already flat (e.g. list-style item) - return as-is.
+        return response
+
+    camel_to_snake = {
+        "id": "id",
+        "emailSubject": "email_subject",
+        "senderAddress": "sender_address",
+        "recipientAddress": "recipient_address",
+        "receivedAt": "received_at",
+        "disposition": "disposition",
+        "remediationStatus": "remediation_status",
+    }
+    return {snake: details.get(camel) for camel, snake in camel_to_snake.items()}
 
 
 def _message_hr_rows(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -804,7 +833,7 @@ def proofpoint_ctr_message_list_command(client: Client, args: dict[str, Any]) ->
     message_id = args.get("message_id")
     if message_id:
         response = client.get_message(message_id)
-        messages = [response] if isinstance(response, dict) else (response or [])
+        messages = [_normalize_single_message(response)] if isinstance(response, dict) else (response or [])
     else:
         body = build_messages_body(args)
         response = client.list_messages(body)

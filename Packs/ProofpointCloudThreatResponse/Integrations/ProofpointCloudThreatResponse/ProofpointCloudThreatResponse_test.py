@@ -374,15 +374,43 @@ def test_run_workflow_requires_workflow_id(client: Client, mocker):
 
 
 def test_message_list_single_by_id(client: Client, mocker):
-    msg = {"id": "m1", "email_subject": "Hi", "sender_address": "a@test.com"}
-    getter = mocker.patch.object(Client, "get_message", return_value=msg)
+    # The real single-message GET response nests fields under `details` with camelCase keys.
+    response = {
+        "details": {
+            "id": "m1",
+            "emailSubject": "Hi",
+            "senderAddress": "a@test.com",
+            "recipientAddress": "b@test.com",
+            "receivedAt": 1786117389000,
+            "disposition": "low_risk",
+            "remediationStatus": "not_attempted",
+        },
+        "timeline": [],
+        "comments": [],
+    }
+    getter = mocker.patch.object(Client, "get_message", return_value=response)
     lister = mocker.patch.object(Client, "list_messages")
 
     # Given a message_id, the single GET endpoint is used
     result = proofpoint_ctr_message_list_command(client, {"message_id": "m1"})
     getter.assert_called_once_with("m1")
     lister.assert_not_called()
+
+    # Output is normalized to the flat snake_case shape documented in the YAML.
     assert result.outputs[0]["id"] == "m1"
+    assert result.outputs[0]["email_subject"] == "Hi"
+    assert result.outputs[0]["sender_address"] == "a@test.com"
+    assert result.outputs[0]["recipient_address"] == "b@test.com"
+    assert result.outputs[0]["disposition"] == "low_risk"
+    assert result.outputs[0]["remediation_status"] == "not_attempted"
+
+    # The human-readable table is populated (regression: previously showed "No entries").
+    assert "No entries" not in result.readable_output
+    assert "Hi" in result.readable_output
+    assert "a@test.com" in result.readable_output
+
+    # raw_response preserves the full untouched envelope.
+    assert result.raw_response == response
 
 
 def test_message_list_many_by_filters(client: Client, mocker):
