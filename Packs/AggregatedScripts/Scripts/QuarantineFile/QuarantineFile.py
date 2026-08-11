@@ -463,13 +463,6 @@ class XDRHandler(BrandHandler):
     # PCI Builtin command names (used on the unified Cortex platform for the Core brand).
     PCI_QUARANTINE_COMMAND = "quarantineFile"
     PCI_QUARANTINE_STATUS_COMMAND = "getFileQuarantineStatus"
-    # PCI opt-in arg (CRTX-265660): when set on the polling command's args, PCI dispatches
-    # the underlying `get_action_status` API call via `GenericAPICall` (bypassing RBAC
-    # / caller-identity forwarding) instead of the default `APICall`. This lets our
-    # scheduled poll re-runs succeed under the DBotWeak automation identity. Matches
-    # the constant defined in core-content-module/pkg/corecontent/common/action_status.go.
-    PCI_USE_GENERIC_API_CALL_ON_POLL_ARG = "_use_generic_api_call_on_poll"
-
     def __init__(self, brand: str, orchestrator):
         """
         Initializes the XDRHandler.
@@ -561,38 +554,84 @@ class XDRHandler(BrandHandler):
         """
         Processes the final result for a single endpoint from a completed polling job.
 
-        If the initial quarantine action was successful, this method makes a second,
-        separate call to 'get-quarantine-status' to get the true final result.
+        Behavior depends on the runtime path:
+
+        * Legacy (off-platform, `use_pci_builtin=False`): if the initial quarantine
+          action was reported as successful, make a second call to
+          `<brand>-get-quarantine-status` to confirm the file is actually quarantined
+          on the endpoint. Preserved to keep existing off-platform behavior identical.
+
+        * PCI Builtin (on-platform, `use_pci_builtin=True`, CRTX-265660): trust
+          `Status=COMPLETED_SUCCESSFULLY` returned by `Core.GetActionStatus` and skip
+          the follow-up `getFileQuarantineStatus` call. Two reasons:
+            1. `Core.GetActionStatus` is the platform's authoritative source of truth
+               for whether the action-runner reported success for the endpoint.
+            2. The follow-up `getFileQuarantineStatus` call is issued from the polling
+               re-run (finalize step) under the scheduler's `DBotWeak` identity and
+               currently fails with 403 because that PCI Builtin command does not
+               go through the `HandleActionStatusPoll` / `RebuildPollCmdCtx` path.
+               Skipping it removes the false-negative UI failure without losing signal.
 
         Args:
             endpoint_result (dict): The result object for a single endpoint from the polling command.
-                                    Example: {'action_id': 123, 'endpoint_id': 'EP_ID', 'status': 'COMPLETED_SUCCESSFULLY'}
+                                    Legacy Core/XDR integration shape:
+                                        {'action_id': 123, 'endpoint_id': 'EP_ID', 'status': 'COMPLETED_SUCCESSFULLY'}
+                                    PCI Builtin `Core.GetActionStatus` shape (CRTX-265660 migration):
+                                        {'ActionID': 123, 'EndpointID': 'EP_ID', 'Status': 'COMPLETED_SUCCESSFULLY',
+                                         'ErrorDescription': '', 'ErrorReasons': {}}
 
         Returns:
             QuarantineResult: A structured result object for the endpoint.
         """
-        endpoint_id = str(endpoint_result.get("endpoint_id"))
+        # Accept both legacy snake_case and PCI CamelCase key shapes so this handler
+        # works on-platform (PCI Builtin) and off-platform (legacy integration).
+        endpoint_id = str(endpoint_result.get("endpoint_id") or endpoint_result.get("EndpointID"))
+        action_status = endpoint_result.get("status") or endpoint_result.get("Status")
+        error_description = endpoint_result.get("error_description") or endpoint_result.get("ErrorDescription", "")
+        demisto.info(
+            f"[MIGRATE-QF] finalize.per_endpoint: brand={self.brand!r}, use_pci_builtin={self.use_pci_builtin}, "
+            f"endpoint_id={endpoint_id!r}, action_status={action_status!r}, "
+            f"raw_keys={sorted(endpoint_result.keys()) if isinstance(endpoint_result, dict) else None}"
+        )
         demisto.debug(f"[{self.brand} Handler] Processing final status for endpoint {endpoint_id}.")
 
-        if endpoint_result.get("status") == XDRHandler.QUARANTINE_STATUS_SUCCESS:
-            quarantine_status_data = self._execute_quarantine_status_command(
-                endpoint_id,
-                self.orchestrator.args.get(QuarantineOrchestrator.FILE_HASH_ARG),
-                self.orchestrator.args.get(QuarantineOrchestrator.FILE_PATH_ARG),
-            )
-            quarantine_status = quarantine_status_data.get("status")
-
-            message = (
-                QuarantineResult.Messages.SUCCESS
-                if quarantine_status
-                else QuarantineResult.Messages.FAILED_WITH_REASON.format(
-                    reason=quarantine_status_data.get("error_description", "")
+        if action_status == XDRHandler.QUARANTINE_STATUS_SUCCESS:
+            if self.use_pci_builtin:
+                # PCI path (CRTX-265660): trust `Core.GetActionStatus` and skip the
+                # follow-up `getFileQuarantineStatus` confirmation call. See docstring.
+                demisto.info(
+                    f"[MIGRATE-QF] finalize.per_endpoint: PCI path — trusting "
+                    f"Status=COMPLETED_SUCCESSFULLY for endpoint {endpoint_id!r}, "
+                    f"skipping follow-up getFileQuarantineStatus call."
                 )
-            )
-            status = QuarantineResult.Statuses.SUCCESS if quarantine_status else QuarantineResult.Statuses.FAILED
+                message = QuarantineResult.Messages.SUCCESS
+                status = QuarantineResult.Statuses.SUCCESS
+            else:
+                # Legacy path: confirm with a second call to the brand's get-quarantine-status.
+                quarantine_status_data = self._execute_quarantine_status_command(
+                    endpoint_id,
+                    self.orchestrator.args.get(QuarantineOrchestrator.FILE_HASH_ARG),
+                    self.orchestrator.args.get(QuarantineOrchestrator.FILE_PATH_ARG),
+                )
+                # PCI `getFileQuarantineStatus` returns `status`/`endpointId`/`filePath`/`fileHash`
+                # per QuarantineStatusResponse; legacy `*-get-quarantine-status` returns `status`
+                # (lowercase). Try both shapes.
+                quarantine_status = quarantine_status_data.get("status")
+                if quarantine_status is None:
+                    quarantine_status = quarantine_status_data.get("Status")
+
+                message = (
+                    QuarantineResult.Messages.SUCCESS
+                    if quarantine_status
+                    else QuarantineResult.Messages.FAILED_WITH_REASON.format(
+                        reason=quarantine_status_data.get("error_description")
+                        or quarantine_status_data.get("ErrorDescription", "")
+                    )
+                )
+                status = QuarantineResult.Statuses.SUCCESS if quarantine_status else QuarantineResult.Statuses.FAILED
             demisto.debug(f"[{self.brand} Handler] Final status for {endpoint_id}: {status}")
         else:
-            message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=endpoint_result.get("error_description", ""))
+            message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=error_description)
             status = QuarantineResult.Statuses.FAILED
             demisto.debug(f"[{self.brand} Handler] Quarantine action failed for {endpoint_id}. Reason: {message}")
 
@@ -666,17 +705,17 @@ class XDRHandler(BrandHandler):
             f"pollingCommand={metadata.get('pollingCommand')!r}, pollingArgs={metadata.get('pollingArgs')}"
         )
 
-        # CRTX-265660: On the unified Cortex platform, the aggregate script's own
-        # @polling_function schedules its re-runs under the DBotWeak automation identity,
-        # which lacks the RBAC permissions (rbac.actions / rbac.quarantine) that the
-        # PCI Builtin polling path enforces via `APICall`. Setting this arg on the
-        # polling command's args opts PCI into its `GenericAPICall` code path for the
-        # `get_action_status` API hop, bypassing RBAC / caller-identity forwarding and
-        # matching the behavior of the legacy Core-IR integration (which uses a static
-        # integration API key). No effect off-platform or when use_pci_builtin=False.
+        # CRTX-265660: Identity restoration on scheduled poll re-runs is handled entirely
+        # inside PCI (core-content-module). At initiate time PCI's `buildQuarantineResultEntry`
+        # persists the originating analyst identity (`user_id` / `user_name` /
+        # `is_manual_flow`) into the scheduled command's `pollingArgs`; on each poll re-run
+        # PCI's `HandleActionStatusPoll` calls `RebuildPollCmdCtx(args, cmdCtx)` which
+        # restores that identity so the RBAC-enforcing `/actions/get_action_status/`
+        # platform call is authenticated as the original analyst rather than as the
+        # DBotWeak automation identity the scheduler substitutes on every re-run.
+        # The aggregated script does not need to opt in — just forward the metadata's
+        # pollingArgs unchanged.
         polling_args = metadata.get("pollingArgs", {}) or {}
-        if self.use_pci_builtin:
-            polling_args[XDRHandler.PCI_USE_GENERIC_API_CALL_ON_POLL_ARG] = "true"
 
         job = {
             "brand": self.brand,
