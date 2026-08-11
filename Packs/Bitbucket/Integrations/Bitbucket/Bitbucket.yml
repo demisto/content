@@ -13,14 +13,14 @@ configuration:
   required: true
   defaultvalue:
   type: 0
-  additionalinfo:
+  additionalinfo: The Bitbucket workspace slug or UUID to connect to.
   section: Connect
 - name: server_url
   display: Server URL
   required: true
   defaultvalue: https://api.bitbucket.org/2.0
   type: 0
-  additionalinfo:
+  additionalinfo: The base URL of the Bitbucket API.
   section: Connect
 - display: User Name
   name: credentials
@@ -40,19 +40,19 @@ configuration:
   display: Repository
   defaultvalue:
   type: 0
-  additionalinfo:
+  additionalinfo: The default Bitbucket repository slug to use for commands.
   required: false
   section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
-  additionalinfo:
+  additionalinfo: Whether to trust any TLS certificate when connecting to the server.
   required: false
   section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
-  additionalinfo:
+  additionalinfo: Whether to use the system proxy settings when connecting to the server.
   required: false
   section: Connect
 script:
