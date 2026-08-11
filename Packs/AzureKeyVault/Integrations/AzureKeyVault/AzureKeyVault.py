@@ -1397,7 +1397,7 @@ def fetch_credentials(
     Fetch credentials from secrets which reside in the specified Key Vaults list.
     This command supports two scenarios:
     1. Fetch a specific set of credentials: assuming that the credentials name is written
-       in the format of: KEY_VAULT_NAME/SECRET_NAME. In this case the secret value is always
+       in the format of: KEY_VAULT_NAME/SECRET_NAME. In this case, when credentials_name != None, the secret value is always
        fetched live from Azure Key Vault (this is the runtime lookup used by both modes).
     2. Fetch credentials based on instance parameters: key_vaults list and secret list.
        The behavior of this scenario depends on ``fetch_mode``:

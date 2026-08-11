@@ -1,7 +1,5 @@
 import pytest
 from AzureKeyVault import (
-    ON_DEMAND_MODE,
-    STORE_IN_XSOAR_MODE,
     KeyVaultClient,
     convert_attributes_to_readable,
     convert_key_info_to_readable,
@@ -48,6 +46,11 @@ KEY_VAULT_PREFIX = "AzureKeyVault.KeyVault"
 KEY_PREFIX = "AzureKeyVault.Key"
 SECRET_PREFIX = "AzureKeyVault.Secret"
 CERTIFICATE_PREFIX = "AzureKeyVault.Certificate"
+# The following two values must match the "Credentials Fetch Mode" options in AzureKeyVault.yml.
+# They are intentionally hard-coded (not imported from the integration) so the tests verify that
+# the code recognizes the exact strings the YAML/platform sends, and catch any drift between them.
+STORE_IN_XSOAR_MODE_YML = "Store in XSOAR"
+ON_DEMAND_MODE_YML = "External Credentials Vault (on-demand)"
 OBJECT_ID = "00000000-0000-0000-0000-000000000000"
 
 
@@ -703,7 +706,7 @@ def test_fetch_credentials_store_in_xsoar_mode(mocker):
     )
     credentials_mock = mocker.patch.object(demisto, "credentials")
 
-    fetch_credentials(client, [VAULT_NAME], [SECRET_NAME], "", STORE_IN_XSOAR_MODE)
+    fetch_credentials(client, [VAULT_NAME], [SECRET_NAME], "", STORE_IN_XSOAR_MODE_YML)
 
     get_secret_mock.assert_called_once_with(VAULT_NAME, SECRET_NAME)
     credentials = credentials_mock.call_args[0][0]
@@ -728,7 +731,7 @@ def test_fetch_credentials_on_demand_mode_returns_names_only(mocker):
     get_secret_mock = mocker.patch.object(client, "get_secret_credentials")
     credentials_mock = mocker.patch.object(demisto, "credentials")
 
-    fetch_credentials(client, [VAULT_NAME], [SECRET_NAME, SECRET_NAME_2], "", ON_DEMAND_MODE)
+    fetch_credentials(client, [VAULT_NAME], [SECRET_NAME, SECRET_NAME_2], "", ON_DEMAND_MODE_YML)
 
     get_secret_mock.assert_not_called()
     credentials = credentials_mock.call_args[0][0]
@@ -759,7 +762,36 @@ def test_fetch_credentials_on_demand_mode_with_identifier_fetches_value(mocker):
     )
     credentials_mock = mocker.patch.object(demisto, "credentials")
 
-    fetch_credentials(client, [], [], f"{VAULT_NAME}/{SECRET_NAME}", ON_DEMAND_MODE)
+    fetch_credentials(client, [], [], f"{VAULT_NAME}/{SECRET_NAME}", ON_DEMAND_MODE_YML)
+
+    get_secret_mock.assert_called_once_with(VAULT_NAME, SECRET_NAME)
+    credentials = credentials_mock.call_args[0][0]
+    assert credentials == [{"user": SECRET_NAME, "password": "value", "name": f"{VAULT_NAME}/{SECRET_NAME}"}]
+
+
+def test_fetch_credentials_defaults_to_store_in_xsoar_mode(mocker):
+    """
+    Scenario: Fetch credentials without explicitly passing a fetch mode.
+    Given:
+     - Configured key vaults and secrets, no specific identifier.
+     - No fetch_mode argument is provided (relies on the default).
+    When:
+     - fetch_credentials is called.
+    Then:
+     - Ensure the default behavior is "Store in XSOAR": the secret values are fetched from
+       Azure Key Vault and returned with passwords.
+    """
+    from AzureKeyVault import fetch_credentials
+
+    client = mock_client()
+    get_secret_mock = mocker.patch.object(
+        client,
+        "get_secret_credentials",
+        side_effect=lambda vault, secret: {"user": secret, "password": "value", "name": f"{vault}/{secret}"},
+    )
+    credentials_mock = mocker.patch.object(demisto, "credentials")
+
+    fetch_credentials(client, [VAULT_NAME], [SECRET_NAME], "")
 
     get_secret_mock.assert_called_once_with(VAULT_NAME, SECRET_NAME)
     credentials = credentials_mock.call_args[0][0]
