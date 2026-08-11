@@ -26,7 +26,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-- defaultvalue: 3 days ago
+- defaultvalue: 10 minutes ago
   display: First fetch time interval
   name: oldest
   type: 0
