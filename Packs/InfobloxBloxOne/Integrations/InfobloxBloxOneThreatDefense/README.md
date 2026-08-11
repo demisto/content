@@ -26,7 +26,7 @@ This integration was integrated and tested with version 1.0.0 of Infoblox Threat
 | DNS Security Event Threat Family | Retrieve the DNS Security Events as specified threat family. | False |
 | DNS Security Event Threat Indicator | Retrieve the DNS Security Events as specified threat indicator. | False |
 | DNS Security Event Threat Level | Retrieve the DNS Security Events as specified threat level. | False |
-| Max Fetch | The maximum number of SOC Insights, DNS Security Events, or IQ for TD Insights to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. | False |
+| Max Fetch | The maximum number of SOC Insights, DNS Security Events, or IQ for TD Insights to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. Default is 50. | False |
 | First fetch timestamp | The date or relative timestamp from which to begin fetching incidents.<br/><br/>Note: This parameter is only applicable for DNS Security Events and IQ for TD Insights. Default is '24 hours'.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2025, 01 May 2025 04:45:33, 2025-05-17T14:05:44Z. | False |
 | Incidents Fetch Interval |  | False |
 | Trust any certificate (not secure) |  | False |
