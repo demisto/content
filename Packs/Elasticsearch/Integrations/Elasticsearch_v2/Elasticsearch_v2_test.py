@@ -1,6 +1,6 @@
 import importlib
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from unittest import mock
 from unittest.mock import patch, MagicMock
 
@@ -3375,10 +3375,7 @@ class TestElasticEntityKind:
 
         response = Elasticsearch_v2.get_remote_data_command({"id": "alert-2", "lastUpdate": ""}, {})
 
-        assert (
-            response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD]
-            == Elasticsearch_v2.ENTITY_KIND_SECURITY_ALERT
-        )
+        assert response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD] == Elasticsearch_v2.ENTITY_KIND_SECURITY_ALERT
 
     def test_get_remote_data_security_alert_exposes_flat_workflow_tags(self, mocker):
         """Mirroring-in must expose workflow tags under a dot-free key the incoming mapper can read.
@@ -3663,9 +3660,9 @@ class TestPruneFetchedIds:
 
     def test_keeps_recent_and_drops_expired(self):
         import Elasticsearch_v2
-        from datetime import datetime, timedelta, timezone
+        from datetime import datetime, timedelta
 
-        now = datetime(2020, 1, 30, tzinfo=timezone.utc)
+        now = datetime(2020, 1, 30, tzinfo=UTC)
         fetched = {
             "recent": (now - timedelta(days=1)).isoformat(),
             "expired": (now - timedelta(days=Elasticsearch_v2.FETCHED_IDS_RETENTION_DAYS + 5)).isoformat(),
@@ -3676,9 +3673,9 @@ class TestPruneFetchedIds:
 
     def test_keeps_unparsable(self):
         import Elasticsearch_v2
-        from datetime import datetime, timezone
+        from datetime import datetime
 
-        now = datetime(2020, 1, 30, tzinfo=timezone.utc)
+        now = datetime(2020, 1, 30, tzinfo=UTC)
         pruned = Elasticsearch_v2.prune_fetched_ids({"weird": "not-a-date"}, now=now)
         assert "weird" in pruned
 
@@ -3707,13 +3704,8 @@ class TestResolveRemoteIncidentType:
         import Elasticsearch_v2
 
         mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value=None)
-        mocker.patch.object(
-            Elasticsearch_v2, "search_security_alerts", return_value={"hits": {"hits": [{"_id": "a1"}]}}
-        )
-        assert (
-            Elasticsearch_v2.resolve_remote_incident_type("a1", {})
-            == Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT
-        )
+        mocker.patch.object(Elasticsearch_v2, "search_security_alerts", return_value={"hits": {"hits": [{"_id": "a1"}]}})
+        assert Elasticsearch_v2.resolve_remote_incident_type("a1", {}) == Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT
 
     def test_falls_back_to_configured_type(self, mocker):
         import Elasticsearch_v2
@@ -3741,9 +3733,7 @@ class TestSearchSecurityAlerts:
         import Elasticsearch_v2
 
         mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder", side_effect=Exception("es down"))
-        kibana = mocker.patch.object(
-            Elasticsearch_v2, "kibana_http_request", return_value={"hits": {"hits": [{"_id": "1"}]}}
-        )
+        kibana = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"hits": {"hits": [{"_id": "1"}]}})
         result = Elasticsearch_v2.search_security_alerts({"query": {}}, {})
         assert result == {"hits": {"hits": [{"_id": "1"}]}}
         assert kibana.called
@@ -3764,9 +3754,7 @@ class TestGetRemoteDataClose:
     def test_alert_closed_adds_close_entry(self, mocker):
         import Elasticsearch_v2
 
-        mocker.patch.object(
-            Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT
-        )
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
         mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", True)
         mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="inst")
         mocker.patch.object(
@@ -3833,9 +3821,7 @@ class TestUpdateRemoteSystemCommand:
     def test_routes_to_alert(self, mocker):
         import Elasticsearch_v2
 
-        mocker.patch.object(
-            Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT
-        )
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
         mirror_out = mocker.patch.object(Elasticsearch_v2, "_mirror_out_security_alert")
         args = {
             "remoteId": "a1",
@@ -3921,9 +3907,7 @@ class TestMirrorOutSecurityAlert:
 
         mocker.patch.object(Elasticsearch_v2, "CLOSE_ELASTIC_INCIDENT", True)
         req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"updated": 1})
-        Elasticsearch_v2._mirror_out_security_alert(
-            "a1", {"closeReason": "Resolved"}, Elasticsearch_v2.IncidentStatus.DONE, {}
-        )
+        Elasticsearch_v2._mirror_out_security_alert("a1", {"closeReason": "Resolved"}, Elasticsearch_v2.IncidentStatus.DONE, {})
         _, kwargs = req.call_args
         assert kwargs["json_data"]["status"] == "closed"
         assert kwargs["json_data"]["reason"] == "true_positive"
