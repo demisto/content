@@ -40,7 +40,7 @@
                 "Elasticsearch Timestamp": {
                     "simple": "@timestamp"
                 },
-                "Tags": {
+                "tags": {
                     "simple": "kibana_alert_workflow_tags"
                 },
                 "Risk Score": {
