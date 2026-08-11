@@ -39,15 +39,15 @@ Create an **OAuth consumer** in the Bitbucket workspace and enable the client-cr
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Workspace |  | True |
-| Server URL |  | True |
-| User Name | Basic authentication. The User Name is your Atlassian account email address, and the API Token is a scoped API token created at https://id.atlassian.com/manage-profile/security/api-tokens. | False |
+| Workspace | The Bitbucket workspace slug or UUID to connect to. | True |
+| Server URL | The base URL of the Bitbucket API. | True |
+| User Name | The User Name is your Atlassian account email address, and the API Token is a scoped API token created at https://id.atlassian.com/manage-profile/security/api-tokens. | False |
 | API Token |  | False |
-| Client ID | OAuth 2.0 client-credentials authentication. The Client ID and Client Secret are the key and secret of an OAuth consumer created in the Bitbucket workspace settings (Apps and features -> OAuth clients). | False |
+| Client ID | The Client ID and Client Secret are the key and secret of an OAuth consumer created in the Bitbucket workspace settings \(Apps and features -&amp;gt; OAuth clients\). | False |
 | Client Secret |  | False |
-| Repository |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Repository | The default Bitbucket repository slug to use for commands. | False |
+| Trust any certificate (not secure) | Whether to trust any TLS certificate when connecting to the server. | False |
+| Use system proxy settings | Whether to use the system proxy settings when connecting to the server. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
