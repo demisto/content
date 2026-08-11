@@ -81,11 +81,13 @@ If you use [Kibana Spaces](https://www.elastic.co/docs/deploy-manage/manage-spac
 * Not all fields can be used for sorting in Elasticsearch. Sorting is only supported for fields of the following types: **boolean**, **numeric**, **date**, and **keyword**.
 * The "Test" button does not fully validate the fetch incidents functionality. To ensure the instance is correctly fetching incidents, run the *!es-integration-health-check* command
 
+## Additional Configuration Parameters Details
+
 Use the **Fetch incident types** parameter to select what to fetch from Elasticsearch: the default **Elasticsearch Entity**, **Elasticsearch Security Alert**, or **Elasticsearch Case**.
 
 Mirroring is only available for Elasticsearch Security Alerts and Cases.
 
-Fetch security alerts requires:
+Fetching security alerts requires:
     - Index
     - Index time field
     - Query String or Raw Query
@@ -100,7 +102,7 @@ Allows raw DSL queries. For more information about Query DSL see [here](https://
 
 ### Fetch Security Alerts
 
-To fetch security alerts use the **Raw Query** field (DSL query). The index must follow one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`.
+To fetch security alerts, use the **Raw Query** field (DSL query). The index must follow one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`.
 
 ### Fetch Cases
 

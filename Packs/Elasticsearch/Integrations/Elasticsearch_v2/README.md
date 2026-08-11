@@ -57,7 +57,7 @@ The default fetch behavior. Configure the **Index to fetch incidents from**, **Q
 
 ### Fetch Security Alerts
 
-To fetch security alerts use the **Raw Query** field (DSL query). The index must follow one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`.
+To fetch security alerts, use the **Raw Query** field (DSL query). The index must follow one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`.
 
 ### Fetch Cases
 
@@ -71,18 +71,18 @@ Mirroring is only available for **Elasticsearch Security Alert** and **Elasticse
 
 To set up mirroring:
 
-1. Enable *Fetching incidents* in your instance configuration.
+1. Enable **Fetch incidents** in your instance configuration.
 2. In the **Fetch incident types** parameter, select **Elasticsearch Security Alert** or **Elasticsearch Case**.
 3. In the **Incident Mirroring Direction** parameter, select in which direction the incidents should be mirrored:
     - **Incoming** - Changes in Elasticsearch (status, tags, workflow reason, case fields) are reflected in Cortex XSOAR.
     - **Outgoing** - Changes in Cortex XSOAR are reflected in Elasticsearch.
     - **Incoming And Outgoing** - Changes are mirrored in both directions.
-4. Optionally, select **Close Mirrored XSOAR Incident** to close the XSOAR incident when the Elasticsearch alert/case is closed, and **Close Mirrored Elasticsearch Incident** to close the Elasticsearch alert/case when the XSOAR incident is closed.
+4. Optionally, select **Close Mirrored XSOAR Incident** to close the Cortex XSOAR incident when the Elasticsearch alert/case is closed, and **Close Mirrored Elasticsearch Incident** to close the Elasticsearch alert/case when the Cortex XSOAR incident is closed.
 
 **Notes:**
 
 - The mirroring is affected by the following integration parameters: **Incident Mirroring Direction**, **Close Mirrored XSOAR Incident**, and **Close Mirrored Elasticsearch Incident**.
-- To ensure mirroring works as expected, the mappers are required, so that the fields are properly mapped to and from Elasticsearch. Select the appropriate incoming and outgoing mappers per incident type (**Elasticsearch Security Alert - Incoming/Outgoing Mapper** and **Elasticsearch Case - Incoming/Outgoing Mapper**).
+- To ensure mirroring works as expected, mappers are required so that the fields are properly mapped to and from Elasticsearch. Select the appropriate incoming and outgoing mappers per incident type (**Elasticsearch Security Alert - Incoming/Outgoing Mapper** and **Elasticsearch Case - Incoming/Outgoing Mapper**).
 - Set the **Fetch incident types** parameter even when mirroring only. It is used to resolve the incident type when the remote lookup is unavailable; without it, changes may not be mirrored out.
 - Mirroring **out** always uses the Kibana API, because the security alert indices are Kibana system indices and writing to them directly would skip Kibana's bookkeeping (such as `kibana.alert.workflow_status_updated_at`, which mirroring in relies on). The configured credentials therefore need the **Security → Alerts: All** Kibana privilege, and the **Space ID** must match the space that owns the alerts. If either is wrong, the fetch keeps working while mirroring out reports that 0 alerts were updated.
 
@@ -90,7 +90,7 @@ To set up mirroring:
 
 Elasticsearch only allows a detection alert's **workflow status**, **status reason**, and **workflow tags** to be changed. These are the only fields mirrored out:
 
-| XSOAR incident field | Elasticsearch field |
+| Cortex XSOAR incident field | Elasticsearch field |
 | --- | --- |
 | Elasticsearch Workflow Alert Status | `kibana.alert.workflow_status` |
 | Elasticsearch Workflow Alert Status Reason | `kibana.alert.workflow_reason` |

@@ -8,6 +8,7 @@ from CommonServerUserPython import *
 """IMPORTS"""
 import json
 import mimetypes
+import traceback
 import warnings
 from datetime import datetime, timedelta, UTC
 
@@ -99,12 +100,21 @@ FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 MIRROR_LOG_PREFIX = "[ES-MIRROR]"
 
 
+def _with_active_traceback(message: str) -> str:
+    """Appends the traceback of the exception currently being handled, when there is one."""
+    tb = traceback.format_exc()
+    # format_exc() returns "NoneType: None\n" when no exception is being handled.
+    if tb and not tb.startswith("NoneType: None"):
+        return f"{message}\n{tb}"
+    return message
+
+
 def mirror_debug(message: str) -> None:
     demisto.debug(f"{MIRROR_LOG_PREFIX} {message}")
 
 
 def mirror_error(message: str) -> None:
-    demisto.error(f"{MIRROR_LOG_PREFIX} {message}")
+    demisto.error(f"{MIRROR_LOG_PREFIX} {_with_active_traceback(message)}")
 
 
 def get_incident_type() -> str:
@@ -3301,7 +3311,7 @@ def prune_fetched_ids(fetched_ids: Dict[str, str], now: Optional[datetime] = Non
     pruned: Dict[str, str] = {}
 
     for remote_id, fetched_at in (fetched_ids or {}).items():
-        parsed = dateparser.parse(str(fetched_at), settings={"RETURN_AS_TIMEZONE_AWARE": True})
+        parsed = parse_to_utc(fetched_at)
         # Keep entries we cannot parse - dropping them would risk re-ingesting duplicates.
         if not parsed or parsed >= cutoff:
             pruned[remote_id] = fetched_at
@@ -3312,7 +3322,7 @@ def prune_fetched_ids(fetched_ids: Dict[str, str], now: Optional[datetime] = Non
     return pruned
 
 
-def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
+def fetch_security_alerts(proxies: dict) -> List[Dict[str, Any]]:
     """Fetches Elasticsearch Security Alerts as XSOAR incidents using the standard search mechanism."""
     es = elasticsearch_builder(proxies)
     last_run = demisto.getLastRun()
@@ -3325,7 +3335,9 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
         query = QueryString(query="(" + FETCH_QUERY + ") AND " + TIME_FIELD + ":*") if FETCH_QUERY else QueryString(query="*")
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
-        search = search.extra(fields=FIELDS_LIST, _source=True)
+        # Only include the "fields" key when there are fields to fetch; an empty list
+        # would produce "fields": [] in the body and cause a 400 from Elasticsearch.
+        search = search.extra(**build_fetch_extra_params(FIELDS_LIST))
 
         if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
@@ -3406,7 +3418,7 @@ def fetch_security_alerts(proxies) -> List[Dict[str, Any]]:
     return incidents
 
 
-def fetch_cases(proxies) -> List[Dict[str, Any]]:
+def fetch_cases(proxies: dict) -> List[Dict[str, Any]]:
     """Fetches Elasticsearch Cases as XSOAR incidents via the Kibana Cases API.
 
     Filters by FETCH_SEVERITY and FETCH_STATUS, and optionally fetches per-case alerts when
@@ -3414,9 +3426,7 @@ def fetch_cases(proxies) -> List[Dict[str, Any]]:
     """
     last_run = demisto.getLastRun()
     last_fetch_str = last_run.get("case_time") or FETCH_TIME
-    last_fetch_dt = dateparser.parse(last_fetch_str, settings={"RETURN_AS_TIMEZONE_AWARE": True})
-    if last_fetch_dt and last_fetch_dt.tzinfo is None:
-        last_fetch_dt = last_fetch_dt.replace(tzinfo=UTC)
+    last_fetch_dt = parse_to_utc(last_fetch_str)
 
     # Authoritative dedup: once ingested a case is excluded from fetch, so remote edits do not
     # re-create it. The cursor sorts on createdAt (not updatedAt) so remote changes are delivered
@@ -3536,7 +3546,7 @@ def get_configured_fetch_incident_type() -> str:
     return ""
 
 
-def search_security_alerts(body: Dict[str, Any], proxies) -> Dict[str, Any]:
+def search_security_alerts(body: Dict[str, Any], proxies: dict) -> Dict[str, Any]:
     """Searches security alert documents via the Elasticsearch client, falling back to the Kibana API.
 
     The Elasticsearch client is preferred so mirroring works wherever fetch works; the Kibana API
@@ -3588,7 +3598,7 @@ def build_alert_lookup_body(remote_id: str, size: int = 1) -> Dict[str, Any]:
     }
 
 
-def resolve_remote_incident_type(remote_id: str, proxies) -> str:
+def resolve_remote_incident_type(remote_id: str, proxies: dict) -> str:
     """Resolves a remote ID to a Security Alert or Case by probing the remote system.
 
     Used when the incident context is unavailable. Returns the configured fetch type when the
@@ -3663,7 +3673,7 @@ def flatten_alert_hit(hit: Dict[str, Any]) -> Dict[str, Any]:
     return flattened
 
 
-def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataResponse:
+def get_remote_data_command(args: Dict[str, Any], proxies: dict) -> GetRemoteDataResponse:
     """Mirroring-in: fetches the latest state of a remote alert/case and returns it for XSOAR."""
     remote_id = args.get("id", "")
     last_update = args.get("lastUpdate", "")
@@ -3767,7 +3777,7 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
     return GetRemoteDataResponse(mirrored_object=updated_incident, entries=entries)
 
 
-def update_remote_system_command(args: Dict[str, Any], proxies) -> str:
+def update_remote_system_command(args: Dict[str, Any], proxies: dict) -> str:
     """Mirroring-out: pushes local XSOAR incident changes back to Elasticsearch/Kibana."""
     parsed_args = UpdateRemoteSystemArgs(args)
     remote_id = parsed_args.remote_incident_id
@@ -3817,7 +3827,7 @@ def update_remote_system_command(args: Dict[str, Any], proxies) -> str:
     return remote_id
 
 
-def _mirror_out_case_entries(remote_id: str, entries: List[dict], proxies) -> None:
+def _mirror_out_case_entries(remote_id: str, entries: List[dict], proxies: dict) -> None:
     """Mirrors tagged War Room entries out to Elasticsearch as Kibana case comments."""
     for entry in entries:
         tags = entry.get("Tags") or []
@@ -4050,10 +4060,15 @@ def parse_to_utc(value: Any) -> Optional[datetime]:
     """Parses a timestamp into a timezone-aware datetime (for total comparisons), or None."""
     if not value:
         return None
-    return dateparser.parse(str(value), settings={"RETURN_AS_TIMEZONE_AWARE": True})
+    parsed = dateparser.parse(str(value), settings={"RETURN_AS_TIMEZONE_AWARE": True})
+    # dateparser can still return a naive datetime for some inputs; force UTC so callers can
+    # always perform timezone-aware comparisons without raising a TypeError.
+    if parsed and parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed
 
 
-def _get_modified_alert_ids(last_update: str, proxies) -> List[str]:
+def _get_modified_alert_ids(last_update: str, proxies: dict) -> List[str]:
     """Returns the UUIDs of security alerts modified since ``last_update``."""
     if not last_update:
         # Without a cursor there is nothing meaningful to filter on; {"gte": ""} is also rejected.
@@ -4110,7 +4125,7 @@ def _get_modified_alert_ids(last_update: str, proxies) -> List[str]:
     return alert_ids
 
 
-def _get_modified_case_ids(last_update: str, proxies) -> List[str]:
+def _get_modified_case_ids(last_update: str, proxies: dict) -> List[str]:
     """Returns the IDs of Kibana cases modified since ``last_update``."""
     last_update_dt = parse_to_utc(last_update)
     if not last_update_dt:
@@ -4139,7 +4154,7 @@ def _get_modified_case_ids(last_update: str, proxies) -> List[str]:
     return case_ids
 
 
-def get_modified_remote_data_command(args: Dict[str, Any], proxies) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data_command(args: Dict[str, Any], proxies: dict) -> GetModifiedRemoteDataResponse:
     """Returns the remote IDs of alerts/cases modified since lastUpdate, for XSOAR to pull."""
     last_update = args.get("lastUpdate", "")
     mirror_debug(f"get-modified-remote-data called with lastUpdate={last_update}")
@@ -4151,7 +4166,7 @@ def get_modified_remote_data_command(args: Dict[str, Any], proxies) -> GetModifi
     except Exception as e:
         if _is_rate_limit_error(e):
             # Signal the server to stop the sync loop and skip the get-remote-data run.
-            return_error(f"API rate limit reached while fetching modified alerts, skip update. Error: {e}")
+            return_error(f"API rate limit reached while fetching modified alerts, skip update. Error: {e}", error=e)
         mirror_error(f"Failed to fetch modified security alerts: {e}")
 
     try:
@@ -4159,7 +4174,7 @@ def get_modified_remote_data_command(args: Dict[str, Any], proxies) -> GetModifi
     except Exception as e:
         if _is_rate_limit_error(e):
             # Signal the server to stop the sync loop and skip the get-remote-data run.
-            return_error(f"API rate limit reached while fetching modified cases, skip update. Error: {e}")
+            return_error(f"API rate limit reached while fetching modified cases, skip update. Error: {e}", error=e)
         mirror_error(f"Failed to fetch modified cases: {e}")
 
     # The same ID can legitimately be reported by both lookups; XSOAR would then sync it twice.

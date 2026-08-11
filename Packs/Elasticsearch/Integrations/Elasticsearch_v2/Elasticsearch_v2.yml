@@ -199,7 +199,7 @@ configuration:
   - Incoming And Outgoing
   section: Collect
   required: false
-  additionalinfo: Mirroring works only for incident types Elasticsearch Security Alert and Elasticsearch Case.
+  additionalinfo: The mirroring direction. Mirroring works only for incident types Elasticsearch Security Alert and Elasticsearch Case.
 - display: Fetch cases by Severity
   name: fetch_severity
   type: 16
@@ -211,7 +211,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Case severities to fetch. If none is chosen, all severity levels will be returned. Relevant only for incident type Elasticsearch Case.
+  additionalinfo: The case severities to fetch. If none is chosen, all severity levels will be returned. Relevant only for incident type Elasticsearch Case.
 - display: Fetch cases by Status
   name: fetch_status
   defaultvalue: open,in-progress
@@ -224,7 +224,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Case statuses to fetch. If none is chosen, in-progress and open will be returned. Relevant only for incident type Elasticsearch Case.
+  additionalinfo: The case statuses to fetch. If none is chosen, in-progress and open will be returned. Relevant only for incident type Elasticsearch Case.
 - display: Fetch alerts for case
   name: fetch_alerts_for_case
   type: 8
@@ -232,7 +232,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When enabled, fetches alerts associated with each Elasticsearch Case. You must have read privileges for the Cases feature in the Management, Observability, or Security section of the Kibana feature privileges.
+  additionalinfo: Whether to fetch alerts associated with each Elasticsearch Case. You must have read privileges for the Cases feature in the Management, Observability, or Security section of the Kibana feature privileges.
 - display: Close Mirrored XSOAR Incident
   name: close_incident
   type: 8
@@ -240,7 +240,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closing the Elasticsearch alert or case is mirrored in Cortex XSOAR.
+  additionalinfo: Whether closing the Elasticsearch alert or case is mirrored in Cortex XSOAR.
 - display: Close Mirrored Elasticsearch Incident
   name: close_elastic_incident
   type: 8
@@ -248,7 +248,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Elasticsearch.
+  additionalinfo: Whether closing the Cortex XSOAR incident is mirrored in Elasticsearch.
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch v2
 name: Elasticsearch v2
@@ -429,12 +429,12 @@ script:
       required: true
       description: The remote incident ID.
     - name: lastUpdate
-      description: ISO format date with timezone. Retrieve entries that were created after lastUpdate.
+      description: The ISO format date with timezone. Retrieves entries that were created after lastUpdate.
   - name: get-modified-remote-data
     description: Gets the list of incidents that were modified since the last update time. This command is used for mirroring in and should be used for debugging purposes.
     arguments:
     - name: lastUpdate
-      description: ISO format date with timezone. Retrieve entries that were modified after lastUpdate.
+      description: The ISO format date with timezone. Retrieves entries that were modified after lastUpdate.
   - name: update-remote-system
     description: Updates the remote system with local incident changes. This command is used for mirroring out and should be used for debugging purposes.
     arguments:
