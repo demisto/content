@@ -1134,6 +1134,216 @@ def _try_parse_json_value(value: Any) -> Any:
         return value
 
 
+def _is_empty_alert_event_field_value(value: Any) -> bool:
+    """Return True when a field value should be treated as empty for _raw promotion."""
+    return value is None or value == "" or value == {} or value == []
+
+
+def _deep_merge_alert_event_dicts(
+    base: dict[str, Any],
+    incoming: dict[str, Any],
+    *,
+    prefer_existing: bool = True,
+) -> dict[str, Any]:
+    """Deep-merge dictionaries used while promoting alert-event fields."""
+    merged = dict(base)
+    for key, incoming_value in incoming.items():
+        if key not in merged or _is_empty_alert_event_field_value(merged.get(key)):
+            merged[key] = incoming_value
+            continue
+        existing_value = merged[key]
+        if isinstance(existing_value, dict) and isinstance(incoming_value, dict):
+            merged[key] = _deep_merge_alert_event_dicts(
+                existing_value,
+                incoming_value,
+                prefer_existing=prefer_existing,
+            )
+        elif isinstance(existing_value, list) and isinstance(incoming_value, list):
+            merged[key] = _merge_alert_event_object_lists(
+                existing_value,
+                incoming_value,
+                prefer_existing=prefer_existing,
+            )
+        elif not prefer_existing and not _is_empty_alert_event_field_value(incoming_value):
+            merged[key] = incoming_value
+    return merged
+
+
+def _merge_alert_event_object_lists(
+    left: list[Any],
+    right: list[Any],
+    *,
+    prefer_existing: bool = True,
+) -> list[Any]:
+    """Merge list values by index so Splunk multivalue object fields combine cleanly."""
+    length = max(len(left), len(right))
+    merged: list[Any] = []
+    for index in range(length):
+        left_value = left[index] if index < len(left) else None
+        right_value = right[index] if index < len(right) else None
+        if isinstance(left_value, dict) and isinstance(right_value, dict):
+            merged.append(_deep_merge_alert_event_dicts(left_value, right_value, prefer_existing=prefer_existing))
+        elif _is_empty_alert_event_field_value(left_value):
+            merged.append(right_value)
+        elif _is_empty_alert_event_field_value(right_value):
+            merged.append(left_value)
+        else:
+            merged.append(left_value if prefer_existing else right_value)
+    return merged
+
+
+def _parse_splunk_style_field_path(key: str) -> list[tuple[str, bool]]:
+    """
+    Parse Splunk-style field names into path segments.
+
+    Examples:
+        vendorInformation.provider -> [("vendorInformation", False), ("provider", False)]
+        securityResources{}.resourceType -> [("securityResources", True), ("resourceType", False)]
+    """
+    segments: list[tuple[str, bool]] = []
+    for part in str(key).split("."):
+        if not part:
+            continue
+        if part.endswith("{}"):
+            name = part[:-2]
+            if name:
+                segments.append((name, True))
+            continue
+        segments.append((part, False))
+    return segments
+
+
+def _assign_splunk_style_segments(
+    current: dict[str, Any],
+    segments: list[tuple[str, bool]],
+    value: Any,
+) -> None:
+    """Assign a value into current using parsed Splunk path segments."""
+    if not segments:
+        return
+
+    name, is_array = segments[0]
+    rest = segments[1:]
+    is_last = not rest
+
+    if is_array:
+        existing = current.get(name)
+        if not isinstance(existing, list):
+            existing = [] if _is_empty_alert_event_field_value(existing) else [existing]
+            current[name] = existing
+        arr: list[Any] = current[name]
+        values = value if isinstance(value, list) else [value]
+
+        if is_last:
+            for item_index, item_value in enumerate(values):
+                while len(arr) <= item_index:
+                    arr.append(None)
+                if _is_empty_alert_event_field_value(arr[item_index]):
+                    arr[item_index] = item_value
+            return
+
+        for item_index, item_value in enumerate(values):
+            while len(arr) <= item_index:
+                arr.append({})
+            if not isinstance(arr[item_index], dict):
+                if not _is_empty_alert_event_field_value(arr[item_index]):
+                    continue
+                arr[item_index] = {}
+            _assign_splunk_style_segments(arr[item_index], rest, item_value)
+        return
+
+    if is_last:
+        existing_value = current.get(name)
+        if _is_empty_alert_event_field_value(existing_value):
+            current[name] = value
+        elif isinstance(existing_value, dict) and isinstance(value, dict):
+            current[name] = _deep_merge_alert_event_dicts(existing_value, value, prefer_existing=True)
+        return
+
+    nested = current.get(name)
+    if not isinstance(nested, dict):
+        if not _is_empty_alert_event_field_value(nested):
+            return
+        nested = {}
+        current[name] = nested
+    _assign_splunk_style_segments(nested, rest, value)
+
+
+def _assign_splunk_style_path(root: dict[str, Any], key: str, value: Any) -> None:
+    """Assign a value into root using Splunk dotted / {}-array field naming."""
+    segments = _parse_splunk_style_field_path(key)
+    if segments:
+        _assign_splunk_style_segments(root, segments, value)
+
+
+def _expand_flat_raw_fields(raw_fields: dict[str, Any]) -> dict[str, Any]:
+    """
+    Expand flat Splunk-style keys into nested objects/arrays.
+
+    Keys without '.' or '{}' are copied as-is. Already-nested values are preserved.
+    """
+    expanded: dict[str, Any] = {}
+    for key, value in raw_fields.items():
+        key_name = str(key)
+        if key_name in ALERT_EVENT_JSON_TRUNCATE_KEYS:
+            continue
+        if "{}" in key_name or "." in key_name:
+            _assign_splunk_style_path(expanded, key_name, value)
+            continue
+        if key_name not in expanded or _is_empty_alert_event_field_value(expanded.get(key_name)):
+            expanded[key_name] = value
+        elif isinstance(expanded[key_name], dict) and isinstance(value, dict):
+            expanded[key_name] = _deep_merge_alert_event_dicts(expanded[key_name], value, prefer_existing=True)
+    return expanded
+
+
+def _promote_raw_into_alert_event_fields(fields: dict[str, Any]) -> dict[str, Any]:
+    """
+    Parse fields._raw and promote its contents to top-level keys under fields.
+
+    Existing non-empty schema values win on conflict. `_raw` is retained for fidelity.
+    """
+    raw_value = fields.get("_raw")
+    if raw_value is None:
+        return fields
+
+    parsed_raw = _try_parse_json_value(raw_value)
+    if not isinstance(parsed_raw, dict):
+        return fields
+
+    promoted = _expand_flat_raw_fields(parsed_raw)
+    if not promoted:
+        return fields
+
+    # Keep original _raw payload; merge promoted keys without wiping schema fields.
+    original_raw = fields.get("_raw")
+    merged = _deep_merge_alert_event_dicts(fields, promoted, prefer_existing=True)
+    if original_raw is not None:
+        merged["_raw"] = original_raw
+    return merged
+
+
+def _enrich_alert_event(event: dict[str, Any]) -> dict[str, Any]:
+    """
+    Return an alert event with fields JSON-parsed and `_raw` promoted for automation use.
+
+    Dynamic per event: only transforms when `fields` / `fields._raw` are present and parseable.
+    """
+    enriched = dict(event)
+    fields_value = enriched.get("fields")
+    parsed_fields = _try_parse_json_value(fields_value)
+    if not isinstance(parsed_fields, dict):
+        return enriched
+
+    enriched["fields"] = _promote_raw_into_alert_event_fields(dict(parsed_fields))
+    return enriched
+
+
+def _enrich_alert_events(events: list[dict]) -> list[dict]:
+    """Enrich a list of Vega alert events for searchable/filterable context usage."""
+    return [_enrich_alert_event(event) for event in events]
+
+
 def _format_alert_events_cell_value(value: Any) -> str:
     """Format a single alert-event table cell for markdown display."""
     if value is None:
@@ -1169,6 +1379,10 @@ def _flatten_alert_event_value(
             return
         for key, nested_value in value.items():
             nested_key = f"{prefix}.{key}" if prefix else str(key)
+            # Keep raw payloads as a single cell; promoted fields already expose usable keys.
+            if str(key) in ALERT_EVENT_JSON_TRUNCATE_KEYS:
+                flattened[nested_key] = nested_value
+                continue
             _flatten_alert_event_value(nested_key, nested_value, flattened, depth=depth + 1)
         return
 
@@ -1222,7 +1436,7 @@ def _collect_alert_event_columns(normalized_events: list[dict[str, Any]]) -> lis
         return []
 
     ordered = sorted(discovered, key=_alert_event_column_sort_key)
-    return ordered[:ALERT_EVENT_MAX_COLUMNS]
+    return ordered
 
 
 def _alert_events_table_rows(events: list[dict]) -> tuple[list[str], list[dict[str, str]]]:
@@ -1314,7 +1528,7 @@ def fetch_alert_events_page(
     except (TypeError, ValueError):
         total = 0
 
-    events = _parse_alert_events_results(response.get("results"))
+    events = _enrich_alert_events(_parse_alert_events_results(response.get("results")))
     if total == 0 and events:
         total = len(events)
     return events, total
@@ -1501,6 +1715,7 @@ def fetch_alert_events_command(client: Client, args: dict[str, Any]) -> CommandR
             "Count": len(page_events),
             "HasAlertEvents": has_alert_events,
             "Cached": False,
+            "Events": page_events,
             "CustomFields": persisted_fields,
         },
     )
