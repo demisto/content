@@ -1095,7 +1095,7 @@ script:
         Note: this option requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
       name: share_url
     - auto: PREDEFINED
-      description: Whether to include the sharepointIds property, which contains the listItemUniqueId value used to correlate the file with SharePoint list items. Microsoft Graph does not return this property unless it is explicitly requested.
+      description: Whether to include the sharepointIds property, which contains the listItemUniqueId and listId values used to correlate the file with SharePoint list items. Microsoft Graph does not return this property as part of the driveItem, so when enabled the command issues an additional request and merges the result into a single output.
       name: include_sharepoint_ids
       predefined:
       - 'true'
@@ -1103,7 +1103,8 @@ script:
       defaultValue: 'true'
     description: |-
       Retrieves the metadata of a file or folder (driveItem). The item can be addressed by ID, by path relative to the drive root, or by a sharing URL. Exactly one of item_id, item_path, or share_url must be provided.
-    name: msgraph-driveitem-get
+      Note: addressing the item by share_url requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
+    name: msgraph-driveitem-metadata-get
     outputs:
     - contextPath: MsGraphFiles.Files.ID
       description: The unique identifier of the driveItem.
@@ -1156,31 +1157,21 @@ script:
     - contextPath: MsGraphFiles.Files.SharepointIds.ListItemUniqueId
       description: The unique identifier of the item within the SharePoint list. Used to correlate the driveItem with SharePoint list items.
       type: String
+    - contextPath: MsGraphFiles.Files.SharepointIds.ListId
+      description: The identifier of the SharePoint list containing the item.
+      type: String
     - contextPath: MsGraphFiles.Files.SharepointIds.SiteId
       description: The SharePoint site identifier.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The MS Graph resource. For 'sites', 'groups' and 'users' the command first resolves the default drive, because Microsoft Graph only documents this endpoint under /drives.
-      name: object_type
-      predefined:
-      - drives
-      - groups
-      - sites
-      - users
-      defaultValue: drives
-      required: true
     - description: |-
-        MS Graph resource ID.
-        For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.
-        For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command.
-      name: object_type_id
+        The ID of the SharePoint site containing the item.
+        To get the ID, use the msgraph-list-sharepoint-sites command.
+      name: site_id
       required: true
     - description: |-
         The ID of the driveItem whose activities to retrieve.
-        To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-get command.
+        To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-metadata-get command.
         Note: this endpoint does not support addressing the item by path.
       name: item_id
       required: true
@@ -1190,6 +1181,7 @@ script:
       name: next_page_url
     description: |-
       Retrieves the recent activities that took place on a file or folder (driveItem), such as who accessed it and when.
+      Activities are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the activities from the list item. This resolution is internal - only site_id and item_id are needed.
       Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error. Activities are not available for personal Microsoft accounts.
     name: msgraph-driveitem-activities-list
     outputs:
@@ -1220,11 +1212,8 @@ script:
     - contextPath: MsGraphFiles.ItemActivity.ItemId
       description: Echo of the item_id argument supplied to the command (for context joining).
       type: String
-    - contextPath: MsGraphFiles.ItemActivity.ObjectType
-      description: Echo of the object_type argument supplied to the command.
-      type: String
-    - contextPath: MsGraphFiles.ItemActivity.ObjectTypeId
-      description: Echo of the object_type_id argument supplied to the command.
+    - contextPath: MsGraphFiles.ItemActivity.SiteID
+      description: Echo of the site_id argument supplied to the command.
       type: String
     - contextPath: MsGraphFiles.ItemActivity.OdataContext
       description: The OData context.
@@ -1233,85 +1222,14 @@ script:
       description: The @odata.nextLink value. Pass this to next_page_url to fetch the next page.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The MS Graph resource that holds the file.
-      name: object_type
-      predefined:
-      - drives
-      - groups
-      - sites
-      - users
-      defaultValue: sites
-      required: true
     - description: |-
-        MS Graph resource ID.
-        For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.
-        For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command.
-      name: object_type_id
-      required: true
-    - description: |-
-        The ID of the file whose sensitivity labels to extract. Mutually exclusive with item_path - provide exactly one of them.
-        To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-get command.
-      name: item_id
-    - description: The path of the file relative to the drive root, for example "Documents/report.docx". Mutually exclusive with item_id - provide exactly one of them.
-      name: item_path
-    description: |-
-      Extracts the sensitivity labels that are embedded in the content of a file, and refreshes the labels stored on the file metadata.
-      Unlike msgraph-get-sensitivity-label, which returns only the single label already stamped on the item metadata, this command reads the full set of labels out of the file itself.
-      Note: if the file is locked (for example because it uses double key encryption), the command fails with an error explaining the reason. Only the "fileDecryptionDeferred" reason is worth retrying.
-    name: msgraph-driveitem-sensitivity-labels-extract
-    outputs:
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabels.ItemId
-      description: Echo of the item_id argument supplied to the command (for context joining).
-      type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabels.ItemPath
-      description: Echo of the item_path argument supplied to the command.
-      type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabels.ObjectType
-      description: Echo of the object_type argument supplied to the command.
-      type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabels.ObjectTypeId
-      description: Echo of the object_type_id argument supplied to the command.
-      type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabels.Labels.SensitivityLabelId
-      description: The unique identifier of the sensitivity label.
-      type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabels.Labels.DisplayName
-      description: The display name of the sensitivity label.
-      type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabels.Labels.Tooltip
-      description: The tooltip describing the sensitivity label.
-      type: String
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabels.Labels.IsEncrypted
-      description: Whether the label applies encryption to the file.
-      type: Boolean
-    - contextPath: MsGraphFiles.ExtractedSensitivityLabels.Labels.AssignmentMethod
-      description: How the label was applied, for example standard, privileged or auto.
-      type: String
-  - arguments:
-    - auto: PREDEFINED
-      description: The MS Graph resource that holds the file. For 'sites', 'groups' and 'users' the command first resolves the default drive, because Microsoft Graph only documents per-item analytics under /drives.
-      name: object_type
-      predefined:
-      - drives
-      - groups
-      - sites
-      - users
-      defaultValue: drives
-      required: true
-    - description: |-
-        MS Graph resource ID.
-        For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.
-        For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command.
-      name: object_type_id
+        The ID of the SharePoint site containing the item.
+        To get the ID, use the msgraph-list-sharepoint-sites command.
+      name: site_id
       required: true
     - description: |-
         The ID of the driveItem whose analytics to retrieve.
-        To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-get command.
+        To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-metadata-get command.
         Note: this endpoint does not support addressing the item by path.
       name: item_id
       required: true
@@ -1324,17 +1242,15 @@ script:
       defaultValue: allTime
     description: |-
       Retrieves activity statistics for a file or folder (driveItem), such as how many times it was viewed and by how many people.
+      Analytics are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the analytics from the list item. This resolution is internal - only site_id and item_id are needed.
       Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error.
     name: msgraph-driveitem-analytics-get
     outputs:
     - contextPath: MsGraphFiles.ItemAnalytics.ItemId
       description: Echo of the item_id argument supplied to the command (for context joining).
       type: String
-    - contextPath: MsGraphFiles.ItemAnalytics.ObjectType
-      description: Echo of the object_type argument supplied to the command.
-      type: String
-    - contextPath: MsGraphFiles.ItemAnalytics.ObjectTypeId
-      description: Echo of the object_type_id argument supplied to the command.
+    - contextPath: MsGraphFiles.ItemAnalytics.SiteID
+      description: Echo of the site_id argument supplied to the command.
       type: String
     - contextPath: MsGraphFiles.ItemAnalytics.TimeRange
       description: The time range the returned statistics cover.
