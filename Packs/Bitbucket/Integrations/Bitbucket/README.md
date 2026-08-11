@@ -7,29 +7,29 @@ Bitbucket Cloud has deprecated app passwords (which will cease to work entirely 
 
 To authenticate with an API Token:
 
-* Go to **Atlassian account settings** -> **Security** -> **API tokens** (https://id.atlassian.com/manage-profile/security/api-tokens).
+1. Go to **Atlassian account settings** -> **Security** -> **API tokens** (https://id.atlassian.com/manage-profile/security/api-tokens).
 
-* **Create an API token with scopes**.
+2. **Create an API token with scopes**.
 
-* In the integration instance:
+3. In the integration instance:
 
-  * **User Name** = your **Atlassian account email address**.
+   * **User Name** = your **Atlassian account email address**.
 
-  * **API Token** = the token you copied.
+   * **API Token** = the token you copied.
 
 To authenticate with OAuth 2.0 client credentials:
 
 Create an **OAuth consumer** in the Bitbucket workspace and enable the client-credentials grant:
 
-* In Bitbucket Cloud, go to **Workspace settings** -> under **Apps and features** select **OAuth clients**.
+1. In Bitbucket Cloud, go to **Workspace settings** -> under **Apps and features** select **OAuth clients**.
 
-* Select the required **Permissions/scopes** (e.g., read access to Account, Repositories, Projects, Pull requests, and Issues, matching the commands you intend to run).
+2. Select the required **Permissions/scopes** (e.g., read access to Account, Repositories, Projects, Pull requests, and Issues, matching the commands you intend to run).
 
-* In the integration instance:
+3. In the integration instance:
 
-  * **Client ID** = the consumer **Key**.
+   * **Client ID** = the consumer **Key**.
 
-  * **Client Secret** = the consumer **Secret**.
+   * **Client Secret** = the consumer **Secret**.
 
 ## Configure Bitbucket on Cortex XSOAR
 
