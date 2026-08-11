@@ -1,7 +1,9 @@
 import json
+from datetime import datetime
 
 import pytest
 from Bitbucket import Client
+from freezegun import freeze_time
 
 
 @pytest.fixture
@@ -644,7 +646,8 @@ def test_pull_request_comment_update_command(mocker, bitbucket_client):
 
 """ AUTHENTICATION TESTS """
 
-FROZEN_NOW = 1700000000
+FROZEN_NOW_DATETIME = datetime(2026, 8, 1)
+FROZEN_NOW = int(FROZEN_NOW_DATETIME.timestamp())
 OAUTH_TOKEN_RESPONSE = {
     "access_token": "tok123",
     "scopes": "repository",
@@ -701,17 +704,11 @@ def integration_context(mocker):
     return context
 
 
-@pytest.fixture
-def frozen_time(mocker):
-    """Freezes time.time, so the token expiration assertions are deterministic."""
-    mocker.patch("Bitbucket.time.time", return_value=FROZEN_NOW)
-    return FROZEN_NOW
-
-
 class TestOAuthAccessToken:
     """The OAuth 2.0 client credentials token retrieval and its caching in the integration context."""
 
-    def test_mints_a_new_token_when_the_cache_is_empty(self, mocker, bitbucket_oauth_client, integration_context, frozen_time):
+    @freeze_time(FROZEN_NOW_DATETIME)
+    def test_mints_a_new_token_when_the_cache_is_empty(self, mocker, bitbucket_oauth_client, integration_context):
         """
         Given:
             - An OAuth client and an empty integration context.
@@ -729,11 +726,10 @@ class TestOAuthAccessToken:
 
         assert access_token == "tok123"
         Bitbucket.set_integration_context.assert_called_once()
-        assert integration_context == {"access_token": "tok123", "valid_until": frozen_time + 7200 - 60, "client_id": "client_id"}
+        assert integration_context == {"access_token": "tok123", "valid_until": FROZEN_NOW + 7200 - 60, "client_id": "client_id"}
 
-    def test_reuses_the_cached_token_while_it_is_still_valid(
-        self, mocker, bitbucket_oauth_client, integration_context, frozen_time
-    ):
+    @freeze_time(FROZEN_NOW_DATETIME)
+    def test_reuses_the_cached_token_while_it_is_still_valid(self, mocker, bitbucket_oauth_client, integration_context):
         """
         Given:
             - An OAuth client and an integration context holding a token that is still valid.
@@ -744,18 +740,19 @@ class TestOAuthAccessToken:
         """
         from CommonServerPython import BaseClient
 
-        integration_context.update({"access_token": "cached_token", "valid_until": frozen_time + 100, "client_id": "client_id"})
+        integration_context.update({"access_token": "cached_token", "valid_until": FROZEN_NOW + 100, "client_id": "client_id"})
         base_http_request = mocker.patch.object(BaseClient, "_http_request")
 
         access_token = bitbucket_oauth_client.get_access_token()
 
         assert access_token == "cached_token"
         base_http_request.assert_not_called()
-        assert integration_context == {"access_token": "cached_token", "valid_until": frozen_time + 100, "client_id": "client_id"}
+        assert integration_context == {"access_token": "cached_token", "valid_until": FROZEN_NOW + 100, "client_id": "client_id"}
 
+    @freeze_time(FROZEN_NOW_DATETIME)
     @pytest.mark.parametrize("valid_until_offset", [-3600, 0], ids=["already_expired", "expiring_exactly_now"])
     def test_replaces_a_token_that_is_no_longer_valid(
-        self, mocker, bitbucket_oauth_client, integration_context, frozen_time, valid_until_offset
+        self, mocker, bitbucket_oauth_client, integration_context, valid_until_offset
     ):
         """
         Given:
@@ -768,7 +765,7 @@ class TestOAuthAccessToken:
         from CommonServerPython import BaseClient
 
         integration_context.update(
-            {"access_token": "old_token", "valid_until": frozen_time + valid_until_offset, "client_id": "client_id"}
+            {"access_token": "old_token", "valid_until": FROZEN_NOW + valid_until_offset, "client_id": "client_id"}
         )
         base_http_request = mocker.patch.object(BaseClient, "_http_request", return_value=OAUTH_TOKEN_RESPONSE)
 
@@ -776,9 +773,10 @@ class TestOAuthAccessToken:
 
         assert access_token == "tok123"
         assert base_http_request.call_count == 1
-        assert integration_context == {"access_token": "tok123", "valid_until": frozen_time + 7200 - 60, "client_id": "client_id"}
+        assert integration_context == {"access_token": "tok123", "valid_until": FROZEN_NOW + 7200 - 60, "client_id": "client_id"}
 
-    def test_requests_a_client_credentials_grant(self, mocker, bitbucket_oauth_client, integration_context, frozen_time):
+    @freeze_time(FROZEN_NOW_DATETIME)
+    def test_requests_a_client_credentials_grant(self, mocker, bitbucket_oauth_client, integration_context):
         """
         Given:
             - An OAuth client and an empty integration context.
@@ -802,7 +800,8 @@ class TestOAuthAccessToken:
             data={"grant_type": "client_credentials"},
         )
 
-    def test_ignores_cached_token_when_client_id_changes(self, mocker, bitbucket_oauth_client, integration_context, frozen_time):
+    @freeze_time(FROZEN_NOW_DATETIME)
+    def test_ignores_cached_token_when_client_id_changes(self, mocker, bitbucket_oauth_client, integration_context):
         """
         Given:
             - An OAuth client whose client_id is "client_id".
@@ -817,7 +816,7 @@ class TestOAuthAccessToken:
         integration_context.update(
             {
                 "access_token": "old_token",
-                "valid_until": frozen_time + 3600,
+                "valid_until": FROZEN_NOW + 3600,
                 "client_id": "different_client_id",
             }
         )
@@ -908,7 +907,8 @@ class TestTestModule:
 
         assert test_module(bitbucket_basic_auth_client) == "ok"
 
-    def test_returns_ok_with_oauth(self, mocker, bitbucket_oauth_client, integration_context, frozen_time):
+    @freeze_time(FROZEN_NOW_DATETIME)
+    def test_returns_ok_with_oauth(self, mocker, bitbucket_oauth_client, integration_context):
         """
         Given:
             - A client configured with OAuth client credentials and an empty integration context.
