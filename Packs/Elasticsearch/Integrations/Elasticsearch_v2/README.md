@@ -40,7 +40,7 @@ The permissions required to use this integration depends on which operations you
 | Fetch incident types | The type of incident to fetch from Elasticsearch (Elasticsearch Entity, Elasticsearch Security Alert, or Elasticsearch Case). | False |
 | Incident Mirroring Direction | Mirroring works only for the Elasticsearch Security Alert and Elasticsearch Case incident types. | False |
 | Fetch cases by Severity | Case severities to fetch. If none is chosen, all severity levels will be returned. Relevant only for incident type Elasticsearch Case. | False |
-| Fetch cases by Status | Case statuses to fetch. If none is chosen, in-progress and open will be returned. Relevant only for incident type Elasticsearch Case. | False |
+| Fetch cases by Status | Case statuses to fetch. If none are chosen, in-progress and open will be returned. Relevant only for incident type Elasticsearch Case. | False |
 | Fetch alerts for case | When enabled, fetches alerts associated with each Elasticsearch Case. You must have read privileges for the Cases feature in the Management, Observability, or Security section of the Kibana feature privileges. | False |
 | Close Mirrored XSOAR Incident | When selected, closing the Elasticsearch alert or case is mirrored in Cortex XSOAR. | False |
 | Close Mirrored Elasticsearch Incident | Whether closing the Cortex XSOAR incident is mirrored in Elasticsearch. | False |
