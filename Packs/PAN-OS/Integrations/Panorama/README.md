@@ -3991,6 +3991,8 @@ Downloads the latest app/threat dynamic update.
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
 | polling | When set to false, the function will not use polling and will immediately return the ID of the download job. Possible values are: true, false. | Optional |
+| timeout_in_seconds | The polling timeout in seconds. When polling is enabled, the command will keep checking the download status until this timeout is reached. Default is 3600. | Optional |
+| interval_in_seconds | The polling interval in seconds. Controls how often the download status is checked. Default is 30. | Optional |
 
 #### Context Output
 
@@ -4051,6 +4053,8 @@ Installs the latest app/threat dynamic update.
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
 | polling | When set to false, the function will not use polling and will immediately return the ID of the install job. Possible values are: true, false. | Optional |
+| timeout_in_seconds | The polling timeout in seconds. When polling is enabled, the command will keep checking the install status until this timeout is reached. Default is 3600. | Optional |
+| interval_in_seconds | The polling interval in seconds. Controls how often the install status is checked. Default is 30. | Optional |
 
 #### Context Output
 
@@ -6320,6 +6324,9 @@ Get all the jobs from the devices in the environment, or a single job when ID is
 | status | Filter to return jobs by status. | Optional |
 | job_type | Filter to return jobs by type. | Optional |
 | id | Filter by ID. | Optional |
+| polling | Whether to poll the job status until it reaches a terminal state (FIN). Only takes effect when a single job "id" is provided. Possible values are: true, false. Default is false. | Optional |
+| interval_in_seconds | The interval between poll attempts, in seconds. Default is 30. | Optional |
+| timeout_in_seconds | The maximum time to wait for the job to reach a terminal state, in seconds. If the timeout is reached before the job finishes, the command returns the last known result. Default is 3600. | Optional |
 
 #### Context Output
 
@@ -10025,6 +10032,9 @@ Downloads the latest antivirus dynamic update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the download job. Possible values are: true, false. | Optional |
+| timeout_in_seconds | The polling timeout in seconds. When polling is enabled, the command will keep checking the download status until this timeout is reached. Default is 3600. | Optional |
+| interval_in_seconds | The polling interval in seconds. Controls how often the download status is checked. Default is 30. | Optional |
 
 #### Context Output
 
@@ -10048,6 +10058,9 @@ Downloads the latest WildFire dynamic update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the download job. Possible values are: true, false. | Optional |
+| timeout_in_seconds | The polling timeout in seconds. When polling is enabled, the command will keep checking the download status until this timeout is reached. Default is 3600. | Optional |
+| interval_in_seconds | The polling interval in seconds. Controls how often the download status is checked. Default is 30. | Optional |
 
 #### Context Output
 
@@ -10071,6 +10084,9 @@ Downloads the latest GlobalProtect Clientless VPN dynamic update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the download job. Possible values are: true, false. | Optional |
+| timeout_in_seconds | The polling timeout in seconds. When polling is enabled, the command will keep checking the download status until this timeout is reached. Default is 3600. | Optional |
+| interval_in_seconds | The polling interval in seconds. Controls how often the download status is checked. Default is 30. | Optional |
 
 #### Context Output
 
@@ -10094,6 +10110,9 @@ Installs the latest Antivirus update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the install job. Possible values are: true, false. | Optional |
+| timeout_in_seconds | The polling timeout in seconds. When polling is enabled, the command will keep checking the install status until this timeout is reached. Default is 3600. | Optional |
+| interval_in_seconds | The polling interval in seconds. Controls how often the install status is checked. Default is 30. | Optional |
 
 #### Context Output
 
@@ -10117,6 +10136,9 @@ Installs the latest WildFire dynamic update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the install job. Possible values are: true, false. | Optional |
+| timeout_in_seconds | The polling timeout in seconds. When polling is enabled, the command will keep checking the install status until this timeout is reached. Default is 3600. | Optional |
+| interval_in_seconds | The polling interval in seconds. Controls how often the install status is checked. Default is 30. | Optional |
 
 #### Context Output
 
@@ -10140,6 +10162,9 @@ Installs the latest GlobalProtect Clientless VPN dynamic update.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| polling | When set to false, the function will not use polling and will immediately return the ID of the install job. Possible values are: true, false. | Optional |
+| timeout_in_seconds | The polling timeout in seconds. When polling is enabled, the command will keep checking the install status until this timeout is reached. Default is 3600. | Optional |
+| interval_in_seconds | The polling interval in seconds. Controls how often the install status is checked. Default is 30. | Optional |
 
 #### Context Output
 
