@@ -15,7 +15,7 @@ class Config:
     """Global static configuration."""
 
     # Bump on every hotfix so the running build can be confirmed from the `[Version]` debug log.
-    VERSION_TAG = "o365-message-trace/2.0.1-fetch-lookback"
+    VERSION_TAG = "o365-message-trace/2.0.2-fetch-lookback"
 
     VENDOR = "microsoft"
     PRODUCT = "o365_message_trace"
@@ -644,18 +644,15 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
     if last_fetch_str and lookback_minutes:
         prev_last_fetch_dt = parse_datetime(last_fetch_str)
         recovered = [event for event in new_events if event.get("_time") and parse_datetime(event["_time"]) < prev_last_fetch_dt]
-        demisto.debug(f"[Fetch] {len(recovered)} new events recovered by the {lookback_minutes}m look-back (older than last_fetch)")
-
-    if new_events:
-        # Strip the internal dedup key so it never lands in the dataset.
-        for event in new_events:
-            event.pop("_dedup_key", None)
-        send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[Fetch] Sent {len(new_events)} events to XSIAM")
+        demisto.debug(
+            f"[Fetch] {len(recovered)} new events recovered by the {lookback_minutes}m look-back (older than last_fetch)"
+        )
 
     # New high-water mark. With no events, advance to the window end.
     new_last_fetch = format_datetime_for_filter(window_end_dt)
 
+    # NOTE: compute the high-water mark and seen_ids BEFORE stripping ``_dedup_key`` below - the
+    # events sent to XSIAM share the same dict objects, so popping the key first would empty this.
     timed_events = [event for event in events if event.get("_time") and event.get("_dedup_key")]
     if timed_events:
         new_last_fetch = max(event["_time"] for event in timed_events)
@@ -670,6 +667,14 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
     # every key and re-send the whole overlap each run.
     overlap_cutoff_dt = parse_datetime(new_last_fetch) - timedelta(minutes=lookback_minutes)
     seen_set = {event["_dedup_key"] for event in timed_events if parse_datetime(event["_time"]) >= overlap_cutoff_dt}
+
+    if new_events:
+        # Strip the internal dedup key so it never lands in the dataset. Done AFTER seen_set is
+        # built, since new_events and events share dict objects (popping earlier would empty it).
+        for event in new_events:
+            event.pop("_dedup_key", None)
+        send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        demisto.debug(f"[Fetch] Sent {len(new_events)} events to XSIAM")
 
     # If the high-water mark did NOT advance, this run did not re-fetch anything newer than the
     # previous boundary, so previously-seen ids must be retained (they would otherwise be re-sent
