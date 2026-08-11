@@ -717,7 +717,7 @@ class TestOAuthAccessToken:
         Then:
             - A token is minted and persisted with an expiration of now + expires_in - the safety margin.
         """
-        import Bitbucket
+        from Bitbucket import set_integration_context
         from CommonServerPython import BaseClient
 
         mocker.patch.object(BaseClient, "_http_request", return_value=OAUTH_TOKEN_RESPONSE)
@@ -725,7 +725,7 @@ class TestOAuthAccessToken:
         access_token = bitbucket_oauth_client.get_access_token()
 
         assert access_token == "tok123"
-        Bitbucket.set_integration_context.assert_called_once()
+        set_integration_context.assert_called_once()
         assert integration_context == {"access_token": "tok123", "valid_until": FROZEN_NOW + 7200 - 60, "client_id": "client_id"}
 
     @freeze_time(FROZEN_NOW_DATETIME)
