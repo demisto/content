@@ -11,7 +11,7 @@ import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Any
 from collections.abc import Callable
-from tempfile import gettempdir, NamedTemporaryFile
+from tempfile import gettempdir
 from dateutil import parser
 from datetime import timedelta
 
@@ -25,6 +25,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # Integration context fields
 ACCESS_TOKEN_CONST = "access_token"  # guardrails-disable-line
 EXPIRES_IN = "expires_in"
+SCM_EXPIRATION_CONST = "expiration"
 INSTANCE_ID_CONST = "instance_id"
 API_URL_CONST = "api_url"
 FIRST_FAILURE_TIME_CONST = "first_failure_time"
@@ -122,8 +123,6 @@ class Client(BaseClient):
         enc_key,
         client_secret: Optional[str] = None,
         auth_mode: str = AUTH_MODE_OPROXY,
-        cert: Optional[str] = None,
-        cert_key: Optional[str] = None,
     ):
         self.auth_mode = auth_mode
         headers = get_x_content_info_headers()
@@ -139,29 +138,7 @@ class Client(BaseClient):
         self.client_secret = client_secret
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
-        if cert and cert_key:
-            self._session.cert = self._write_cert_files(cert, cert_key)
         self._set_access_token()
-
-    @staticmethod
-    def _write_cert_files(cert: str, cert_key: str) -> tuple[str, str]:
-        """Write PEM-encoded cert and key to temporary files and return their paths.
-
-        The files are not auto-deleted (delete=False) so that the requests session
-        can reference them by path for the lifetime of the integration execution.
-        """
-        cert_file = NamedTemporaryFile(mode="w", suffix=".pem", delete=False, dir=gettempdir())
-        cert_file.write(cert)
-        cert_file.flush()
-        cert_file.close()
-
-        key_file = NamedTemporaryFile(mode="w", suffix=".pem", delete=False, dir=gettempdir())
-        key_file.write(cert_key)
-        key_file.flush()
-        key_file.close()
-
-        demisto.debug(f"CDL mTLS: wrote cert to {cert_file.name}, key to {key_file.name}")
-        return cert_file.name, key_file.name
 
     def _set_access_token(self):
         """
@@ -233,12 +210,6 @@ class Client(BaseClient):
             raise
 
         raw_text = raw_response.text or ""
-        demisto.debug(
-            f"CDL SCM raw response status={raw_response.status_code} "
-            f"content_type={raw_response.headers.get('Content-Type')!r} "
-            f"content_length={raw_response.headers.get('Content-Length')!r} "
-            f"body_len={len(raw_text)} history={[h.status_code for h in raw_response.history]}"
-        )
         if not raw_text.strip():
             raise DemistoException(
                 f"SCM returned an empty response body (status={raw_response.status_code}, "
@@ -257,11 +228,17 @@ class Client(BaseClient):
         access_token = response.get(ACCESS_TOKEN_CONST)
         if not access_token:
             raise DemistoException("Missing access_token in SCM response.")
-        expires_in = int(response.get(EXPIRES_IN, MINUTES_60) or 0)
-        demisto.debug(f"CDL: SCM auth succeeded (expires_in={expires_in})")
-        api_url = DEFAULT_API_URL
-        instance_id = ""
+        # The SCM gateway supplies the data-plane address and instance to query, alongside the token.
+        # It reports the TTL as "expiration"; fall back to "expires_in" and then to a default.
+        expires_in = int(response.get(SCM_EXPIRATION_CONST) or response.get(EXPIRES_IN) or 0)
+        api_url = response.get("url") or DEFAULT_API_URL
+        instance_id = response.get(INSTANCE_ID_CONST) or ""
         refresh_token = None
+        if not response.get("url"):
+            demisto.debug(f"CDL: SCM response has no 'url'; falling back to the default API URL {DEFAULT_API_URL}.")
+        if not instance_id:
+            demisto.debug("CDL: SCM response has no 'instance_id'; queries will not be scoped to an instance.")
+        demisto.debug(f"CDL: SCM auth succeeded (expires_in={expires_in}, api_url={api_url}, instance_id={instance_id})")
         return access_token, api_url, instance_id, refresh_token, expires_in
 
     def _oproxy_authorize(self) -> tuple[Any, Any, Any, Any, int]:
@@ -469,7 +446,10 @@ class Client(BaseClient):
 
     def initial_query_service(self) -> QueryService:
         credentials = Credentials(access_token=self.access_token, verify=self.use_ssl)
-        query_service = QueryService(url=self.api_url, credentials=credentials, trust_env=self.trust_env)
+        # `verify` has to be handed to the QueryService explicitly: passing it to Credentials only
+        # affects the SDK's own token-refresh call, leaving the data-plane session verifying against
+        # the default CA bundle. Without this the "Trust any certificate" parameter is ignored for queries.
+        query_service = QueryService(url=self.api_url, credentials=credentials, trust_env=self.trust_env, verify=self.use_ssl)
         return query_service
 
     def add_instance_id_to_query(self, query: str) -> str:
@@ -1753,9 +1733,6 @@ def main():
         return
 
     token_retrieval_url, registration_id = extract_client_args(registration_id_and_url)
-    credentials_cert = params.get("credentials_cert", {})
-    cert = credentials_cert.get("identifier")
-    cert_key = credentials_cert.get("password")
     client = Client(
         token_retrieval_url,
         registration_id,
@@ -1765,8 +1742,6 @@ def main():
         enc_key,
         client_secret=client_secret,
         auth_mode=auth_mode,
-        cert=cert,
-        cert_key=cert_key,
     )
 
     try:
