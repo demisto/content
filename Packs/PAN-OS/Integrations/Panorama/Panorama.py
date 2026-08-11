@@ -12563,15 +12563,29 @@ def get_jobs_command(args: dict):
     job reaches a terminal status (FIN) or the timeout is reached. Without
     polling (or when no id is supplied), behaves like the original
     non-polling command.
+
+    Note: while polling a specific job by id, the status/job_type filters are
+    ignored. Otherwise a still-running job (e.g. status=ACT) would be filtered
+    out when a terminal status like FIN is requested, causing polling to stop
+    prematurely.
+
+    Polling requires a single job "id" (polling can only track one job), so an
+    error is raised when polling=true without an id.
     """
     topology = get_topology()
     job_id = args.get("id")
+    polling = argToBoolean(args.get("polling", "false"))
+
+    if polling and not job_id:
+        raise DemistoException("The 'id' argument is required when 'polling' is set to true.")
+
+    ignore_filters = polling and bool(job_id)
 
     result = get_jobs(
         topology,
         device_filter_string=args.get("device_filter_string"),
-        status=args.get("status"),
-        job_type=args.get("job_type"),
+        status=None if ignore_filters else args.get("status"),
+        job_type=None if ignore_filters else args.get("job_type"),
         id=job_id,
         target=args.get("target"),
     )
