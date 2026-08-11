@@ -93,12 +93,30 @@ class Client(BaseClient):
             ],
         }
 
-        demisto.debug(f"In get_alerts (Serving Layer API) request payload: {json.dumps(payload)}")
+        demisto.debug(f"[Client] get_alerts (Serving Layer API) request payload: {json.dumps(payload)}")
 
         return self._http_request(method="POST", url_suffix="/serving-layer/query", json_data=payload)
 
 
 """ HELPER FUNCTIONS """
+
+
+def safe_parse_datetime(raw_value: Optional[str], field_name: str = "timestamp", context: str = "") -> Optional[datetime]:
+    """Parse ``raw_value`` with ``arg_to_datetime``, returning ``None`` if missing/unparseable.
+
+    ``arg_to_datetime`` raises on unparseable input; this wrapper catches that and logs the full
+    traceback so callers never crash on a single bad timestamp.
+    """
+    if not raw_value:
+        return None
+    try:
+        return arg_to_datetime(arg=raw_value)
+    except Exception as e:
+        demisto.debug(
+            f"[safe_parse_datetime] arg_to_datetime failed parsing '{field_name}'{f' for {context}' if context else ''} "
+            f"with value '{raw_value}'. Error: {e}\n{traceback.format_exc()}"
+        )
+        return None
 
 
 def add_time_key_to_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -131,29 +149,21 @@ def add_time_key_to_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, Any]]
         # Prefer LastUpdated (sync time); fall back to CreatedAt if it is missing/unparseable.
         event_time = None
         for field_name, raw_value in (("LastUpdated", last_updated_str), ("CreatedAt", create_time_str)):
-            if not raw_value:
-                continue
-            try:
-                event_time = arg_to_datetime(arg=raw_value)
-                if event_time:
-                    break
-            except Exception as e:
-                demisto.debug(
-                    f"arg_to_datetime failed unexpectedly while parsing '{field_name}' for AlertId: {alert_id} "
-                    f"with value '{raw_value}'. Error: {e}"
-                )
+            event_time = safe_parse_datetime(raw_value, field_name, f"AlertId: {alert_id}")
+            if event_time:
+                break
 
         if event_time:
             alert["_time"] = event_time.strftime(DATE_FORMAT)
         else:
             demisto.info(
-                f"Could not parse or find 'LastUpdated'/'CreatedAt' value for AlertId: {alert_id}. "
+                f"[add_time_key_to_alerts] Could not parse or find 'LastUpdated'/'CreatedAt' value for AlertId: {alert_id}. "
                 f"Raw values were LastUpdated='{last_updated_str}', CreatedAt='{create_time_str}'. "
                 f"Setting '_time' to {fallback_time_str}."
             )
             alert["_time"] = fallback_time_str
 
-        demisto.debug(f"Processed AlertId: {alert_id}, final _time: {alert.get('_time')}")
+        demisto.debug(f"[add_time_key_to_alerts] Processed AlertId: {alert_id}, final _time: {alert.get('_time')}")
 
     return alerts
 
@@ -180,15 +190,17 @@ def add_entry_status_to_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, A
     for alert in alerts:
         alert_data = alert.get("data", {})
         alert_id = alert_data.get("AlertId", {}).get("value") or alert.get("id", "UNKNOWN_ID")
-        created_time = arg_to_datetime(arg=alert_data.get("CreatedAt", {}).get("value"))
-        last_updated_time = arg_to_datetime(arg=alert_data.get("LastUpdated", {}).get("value"))
+        created_time = safe_parse_datetime(alert_data.get("CreatedAt", {}).get("value"), "CreatedAt", f"AlertId: {alert_id}")
+        last_updated_time = safe_parse_datetime(
+            alert_data.get("LastUpdated", {}).get("value"), "LastUpdated", f"AlertId: {alert_id}"
+        )
 
         if created_time and last_updated_time and last_updated_time > created_time:
             alert["_ENTRY_STATUS"] = "updated"
         else:
             alert["_ENTRY_STATUS"] = "new"
 
-        demisto.debug(f"Processed AlertId: {alert_id}, _ENTRY_STATUS: {alert.get('_ENTRY_STATUS')}")
+        demisto.debug(f"[add_entry_status_to_alerts] Processed AlertId: {alert_id}, _ENTRY_STATUS: {alert.get('_ENTRY_STATUS')}")
 
     return alerts
 
@@ -258,7 +270,7 @@ def get_alerts(
         current_page_size = min(page_size, max_fetch - len(alerts))
         response = client.get_alerts_request(current_page_size, start_index, last_fetch, end_time)
         page = response.get("data", [])
-        demisto.debug(f"Get Alerts page: {start_index=} , {current_page_size=} , returned={len(page)}")
+        demisto.debug(f"[get_alerts] page: {start_index=} , {current_page_size=} , returned={len(page)}")
 
         if not page:
             # Empty page - no more results.
@@ -274,13 +286,13 @@ def get_alerts(
             break
 
     # Summary line: confirms pagination is looping (vs the old single-page behavior).
-    demisto.debug(f"Get Alerts summary: fetched {len(alerts)} event(s) across {pages_fetched} page(s) from {start_offset=}")
+    demisto.info(f"[get_alerts] summary: fetched {len(alerts)} event(s) across {pages_fetched} page(s) from {start_offset=}")
     # If we stopped because we hit max_fetch (rather than exhausting the window), a backlog
     # remains for the next run. This is the key signal to watch during the tenant catch-up:
     # it means the window still has more events than max_fetch could carry this cycle.
     if len(alerts) >= max_fetch:
         demisto.info(
-            f"Get Alerts reached max_fetch cap ({max_fetch}); more events remain in the window "
+            f"[get_alerts] reached max_fetch cap ({max_fetch}); more events remain in the window "
             f"[LastUpdated >= {last_fetch} AND < {end_time}]. They will be collected on the next run."
         )
     return alerts
@@ -293,9 +305,7 @@ def normalize_last_updated(raw_value: Optional[str]) -> Optional[str]:
     boundary comparisons (dedup_alerts, get_boundary_ids) must normalize both sides so
     the same instant compares equal. Returns ``None`` if missing/unparseable.
     """
-    if not raw_value:
-        return None
-    parsed = arg_to_datetime(arg=raw_value)
+    parsed = safe_parse_datetime(raw_value, "LastUpdated")
     return parsed.strftime(DATE_FORMAT) if parsed else None
 
 
@@ -305,10 +315,7 @@ def add_one_second(cursor: str) -> str:
     Steps the cursor past a drained boundary second so the inclusive lower bound does not
     re-read it. Safe because every event at that second was already fetched via the offset walk.
     """
-    try:
-        parsed = arg_to_datetime(arg=cursor)
-    except ValueError:
-        return cursor
+    parsed = safe_parse_datetime(cursor, "cursor")
     if not parsed:
         return cursor
     return (parsed + timedelta(seconds=1)).strftime(DATE_FORMAT)
@@ -344,7 +351,7 @@ def dedup_alerts(alerts: List[Dict[str, Any]], seen_ids: List[str], boundary_tim
             and alert.get("data", {}).get("AlertId", {}).get("value") in seen
         )
     ]
-    demisto.debug(f"Dedup removed {len(alerts) - len(deduped)} boundary duplicate(s) at {normalized_boundary}")
+    demisto.debug(f"[dedup_alerts] removed {len(alerts) - len(deduped)} boundary duplicate(s) at {normalized_boundary}")
     return deduped
 
 
@@ -378,7 +385,8 @@ def main() -> None:
     command = demisto.command()
     api_token = demisto.params().get("credentials", {}).get("password")
     server_url = f"{demisto.params().get('server_url')}/api"
-    first_fetch = demisto.params().get("first_fetch") or "3 days"
+    # Event Collectors default to now - 1 minute when no first_fetch is configured.
+    first_fetch = demisto.params().get("first_fetch") or "1 minute"
     max_fetch = arg_to_number(demisto.params().get("max_fetch")) or 1000
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
@@ -388,8 +396,8 @@ def main() -> None:
     first_fetch_time = first_fetch_time.strftime(DATE_FORMAT) if first_fetch_time else ""
     # Fixed exclusive upper bound for this run, so events synced mid-run aren't half-fetched.
     end_time = datetime.now(timezone.utc).strftime(DATE_FORMAT)
-    demisto.debug(f"{first_fetch_time=} {end_time=}")
-    demisto.info(f"Orca Security. Command being called is {command}")
+    demisto.debug(f"[Main] {first_fetch_time=} {end_time=}")
+    demisto.info(f"[Main] Orca Security. Command being called is {command}")
     try:
         headers: dict = {"Authorization": f"Token {api_token}"}
 
@@ -397,7 +405,7 @@ def main() -> None:
 
         last_run = demisto.getLastRun()
         if not last_run:
-            demisto.debug(f"first run {last_run=}")
+            demisto.debug(f"[Fetch Events] first run {last_run=}")
             last_fetch = first_fetch_time
             last_run_ids: list = []
             last_run_offset = 0
@@ -407,13 +415,15 @@ def main() -> None:
             # In-second resume point: how many events at the boundary second were already consumed.
             # Non-zero only when a single LastUpdated second holds more events than max_fetch.
             last_run_offset = last_run.get("lastRunOffset", 0)
-            demisto.debug(f"Isn't the first run {last_fetch=} {last_run_ids=} {last_run_offset=}")
+            demisto.debug(f"[Fetch Events] Isn't the first run {last_fetch=} {last_run_ids=} {last_run_offset=}")
 
         if command == "test-module":
             return_results(orca_test_module(client, last_fetch, end_time))
         elif command in ("fetch-events", "orca-security-get-events"):
             # Explicit fetch window for this run (lower inclusive -> upper exclusive), for diagnostics.
-            demisto.debug(f"Fetch window: LastUpdated >= {last_fetch} AND < {end_time} ({max_fetch=} {last_run_offset=})")
+            demisto.debug(
+                f"[Fetch Events] Fetch window: LastUpdated >= {last_fetch} AND < {end_time} ({max_fetch=} {last_run_offset=})"
+            )
             alerts = get_alerts(client, max_fetch, last_fetch, end_time, start_offset=last_run_offset)
             # Capture the RAW page size and newest timestamp BEFORE dedup: the wedge guard must key
             # off these, since dedup can empty a full page and hide the "full page, same second" signal.
@@ -440,11 +450,12 @@ def main() -> None:
                 # Distribution of new vs updated: proves the LastUpdated cursor now captures updates.
                 updated_count = sum(1 for alert in alerts if alert.get("_ENTRY_STATUS") == "updated")
                 demisto.debug(
-                    f"Entry status distribution: new={len(alerts) - updated_count}, updated={updated_count}, total={len(alerts)}"
+                    f"[Fetch Events] Entry status distribution: new={len(alerts) - updated_count}, "
+                    f"updated={updated_count}, total={len(alerts)}"
                 )
-                demisto.debug(f"before send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
+                demisto.debug(f"[Fetch Events] before send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
                 send_events_to_xsiam(alerts, VENDOR, PRODUCT)
-                demisto.debug(f"after send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
+                demisto.debug(f"[Fetch Events] after send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
 
             # Only the scheduled fetch-events run advances the cursor; the manual get-events command
             # must never touch lastRun.
@@ -462,7 +473,7 @@ def main() -> None:
                     new_last_run_offset = 0
                     new_last_run_ids: list[str] = []
                     demisto.info(
-                        f"Boundary second {last_fetch} fully drained (empty page at offset "
+                        f"[Fetch Events] Boundary second {last_fetch} fully drained (empty page at offset "
                         f"{last_run_offset}); stepping cursor to {new_last_fetch} and resetting offset."
                     )
                 elif page_was_full and same_second:
@@ -472,7 +483,7 @@ def main() -> None:
                     new_last_run_offset = last_run_offset + raw_fetched_count
                     new_last_run_ids = get_boundary_ids(alerts, new_last_fetch) if alerts else last_run_ids
                     demisto.info(
-                        f"Boundary second {new_last_fetch} not fully drained; advancing lastRunOffset "
+                        f"[Fetch Events] Boundary second {new_last_fetch} not fully drained; advancing lastRunOffset "
                         f"to {new_last_run_offset} (max_fetch={max_fetch})"
                     )
                 else:
@@ -488,10 +499,10 @@ def main() -> None:
 
                 demisto.setLastRun(current_last_run)
                 demisto.debug(
-                    f"Persisted lastRun={new_last_fetch} with {len(new_last_run_ids)} boundary id(s), "
+                    f"[Fetch Events] Persisted lastRun={new_last_fetch} with {len(new_last_run_ids)} boundary id(s), "
                     f"lastRunOffset={new_last_run_offset}"
                 )
-                demisto.debug(f"{current_last_run=}")
+                demisto.debug(f"[Fetch Events] {current_last_run=}")
 
         else:
             raise NotImplementedError("This command is not implemented yet.")
