@@ -851,6 +851,7 @@ script:
     - description: The device-level management ID of the computer to lock. Provide either "id" or "management_id".
       name: management_id
     description: 'Locks a computer. This logs the user out of the computer, restarts it, and then locks it. Optionally displays a message on the computer when it locks.'
+    execution: true
     name: jamf-computer-lock
     outputs:
     - contextPath: JAMF.ComputerCommand.name
@@ -878,6 +879,7 @@ script:
       name: id
       required: true
     description: Erases a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
+    execution: true
     name: jamf-computer-erase
     outputs:
     - contextPath: JAMF.ComputerCommand.name
@@ -2275,6 +2277,7 @@ script:
       name: management_id
     description: |-
       Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen. At least one of 'lost_mode_message' or 'lost_mode_phone' must be provided.
+      execution: true
     name: jamf-mobile-device-lost-mode
     outputs:
     - contextPath: JAMF.MobileDeviceCommands.name
@@ -2330,6 +2333,7 @@ script:
       - 'True'
       - 'False'
     description: Permanently erases all data on the device and deactivates the device.
+    execution: true
     name: jamf-mobile-device-erase
     outputs:
     - contextPath: JAMF.MobileDeviceCommands.name
@@ -2525,3 +2529,4 @@ script:
 tests:
 - Jamf_v2_test
 fromversion: 5.5.0
+
