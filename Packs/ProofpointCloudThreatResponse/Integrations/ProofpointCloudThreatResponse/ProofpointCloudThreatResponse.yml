@@ -167,7 +167,7 @@ script:
       - medium
       - low
     - name: sort
-      description: Sort order for results by creation time.
+      description: The sort order for results by creation time.
       auto: PREDEFINED
       predefined:
       - asc
@@ -282,22 +282,22 @@ script:
     description: Returns a list of Proofpoint Cloud Threat Response manual workflows.
     arguments:
     - name: enabled
-      description: If true, returns only enabled manual workflows.
+      description: Whether to return only enabled manual workflows.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - name: type
-      description: Filter workflows by type.
+      description: The type of workflows to filter by.
       auto: PREDEFINED
       predefined:
       - incident
       - message
     - name: limit
-      description: The maximum number of workflows to return. Default is 50.
+      description: The maximum number of workflows to return.
       defaultValue: '50'
     - name: all_results
-      description: If true, ignore the limit and return all workflows.
+      description: Whether to ignore the limit and return all workflows.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -317,7 +317,7 @@ script:
       description: The workflow type.
       type: String
     - contextPath: ProofPointCloud.Workflow.createdAt
-      description: The workflow creation timestamp.
+      description: The workflow creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: proofpoint-ctr-run-workflow
     description: Runs a Proofpoint Cloud Threat Response manual workflow on the specified incident or message IDs, and polls for the run result. Only workflows listed in the Manual Workflows tab (Responses -> Automation Workflows) can be triggered.
@@ -334,14 +334,14 @@ script:
       description: The ID of an existing workflow run to poll. Used internally by the polling mechanism.
       hidden: true
     - name: polling
-      description: Use Cortex XSOAR built-in polling to retrieve the result when it is ready.
+      description: Whether to use Cortex XSOAR built-in polling to retrieve the result when it is ready.
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
       defaultValue: 'true'
     - name: interval_in_seconds
-      description: Interval in seconds between each poll.
+      description: The interval in seconds between each poll.
       defaultValue: '30'
     - name: timeout_in_seconds
       description: The timeout in seconds until polling ends.
@@ -357,10 +357,10 @@ script:
       description: The workflow definition ID.
       type: String
     - contextPath: ProofPointCloud.Workflow.createdAt
-      description: The run creation timestamp.
+      description: The run creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ProofPointCloud.Workflow.updatedAt
-      description: The run last-update timestamp.
+      description: The run last-update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: proofpoint-ctr-message-list
     description: Retrieves a single Proofpoint Cloud Threat Response message by its UUID, or a filtered list of messages.
@@ -377,7 +377,7 @@ script:
       description: A comma-separated list of sender email addresses to filter by.
       isArray: true
     - name: subject
-      description: A substring to search for in the message subject.
+      description: The substring to search for in the message subject.
     - name: start_time
       description: The start of the time range filter. Accepts a free text date (e.g., `2 hours`, `2024-11-26T16:18:07Z`).
     - name: end_time
@@ -496,7 +496,7 @@ script:
       - tap_threat_type_delivered_url_threat
       - tap_threat_type_unprotected_url_threat
     - name: limit
-      description: The maximum number of messages to return. Default is 50.
+      description: The maximum number of messages to return.
       defaultValue: '50'
     outputs:
     - contextPath: ProofPointCloud.Message.id
@@ -512,7 +512,7 @@ script:
       description: The message recipient address.
       type: String
     - contextPath: ProofPointCloud.Message.received_at
-      description: The timestamp the message was received.
+      description: The timestamp the message was received in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ProofPointCloud.Message.disposition
       description: The message disposition.
@@ -603,10 +603,10 @@ script:
       description: The PPS Cluster ID.
       required: true
     - name: limit
-      description: The maximum number of entries to return. Default is 50.
+      description: The maximum number of entries to return.
       defaultValue: '50'
     - name: all_results
-      description: If true, ignore the limit and return all Safe List entries.
+      description: Whether to ignore the limit and return all Safe List entries.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -654,7 +654,7 @@ script:
       description: The value for the entry.
       required: true
     - name: comment
-      description: An optional comment for the entry.
+      description: The optional comment for the entry.
     outputs: []
   - name: proofpoint-ctr-safelist-remove-entry
     description: Removes an entry from the organizational Safe List.
@@ -692,10 +692,10 @@ script:
       description: The PPS Cluster ID.
       required: true
     - name: limit
-      description: The maximum number of entries to return. Default is 50.
+      description: The maximum number of entries to return.
       defaultValue: '50'
     - name: all_results
-      description: If true, ignore the limit and return all Block List entries.
+      description: Whether to ignore the limit and return all Block List entries.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -745,7 +745,7 @@ script:
       description: The value for the entry.
       required: true
     - name: comment
-      description: An optional comment for the entry.
+      description: The optional comment for the entry.
     outputs: []
   - name: proofpoint-ctr-blocklist-remove-entry
     description: Removes an entry from the organizational Block List.
