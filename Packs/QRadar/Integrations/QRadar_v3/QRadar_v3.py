@@ -2919,7 +2919,7 @@ def long_running_execution_command(client: Client, params: dict):
     fetch_mode = params.get("fetch_mode", "")
     first_fetch = params.get("first_fetch", "3 days")
     ip_enrich, asset_enrich = get_offense_enrichment(params.get("enrichment", "IPs And Assets"))
-    offenses_per_fetch = int(params.get("offenses_per_fetch"))  # type: ignore
+    offenses_per_fetch = int(params.get("offenses_per_fetch") or DEFAULT_OFFENSES_PER_FETCH)
     user_query = params.get("query", "")
     events_columns = params.get("events_columns") or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get("events_limit") or DEFAULT_EVENTS_LIMIT)

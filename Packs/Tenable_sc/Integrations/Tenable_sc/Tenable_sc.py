@@ -3380,6 +3380,7 @@ def main():  # pragma: no cover
                         snapshot_id=snapshot_id,
                         items_count=str(items_count),
                         should_update_health_module=False,
+                        add_proxy_to_request=proxy,
                     )
 
                 elif not assets_fetch_in_progress:
@@ -3398,6 +3399,7 @@ def main():  # pragma: no cover
                             snapshot_id=snapshot_id,
                             items_count=str(cumulative_total),
                             should_update_health_module=False,
+                            add_proxy_to_request=proxy,
                         )
 
                 # Send vulnerabilities to XSIAM
@@ -3408,6 +3410,7 @@ def main():  # pragma: no cover
                         data=vulnerabilities,
                         vendor=VENDOR,
                         product=f"{PRODUCT}_vulnerabilities",
+                        add_proxy_to_request=proxy,
                     )
 
                 # Update module health

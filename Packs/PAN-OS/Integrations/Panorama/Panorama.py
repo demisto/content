@@ -6813,6 +6813,8 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
     job_id = args.get("job_id")
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
     polling = argToBoolean(args.get("polling", "true"))
+    timeout_in_seconds = arg_to_number(args.get("timeout_in_seconds")) or 3600
+    interval_in_seconds = arg_to_number(args.get("interval_in_seconds")) or 30
 
     # Map update type to command name
     command_map = {
@@ -6848,9 +6850,9 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
                 args["job_id"] = job_id
                 scheduled_command = ScheduledCommand(
                     command=command_to_run,
-                    next_run_in_seconds=10,
+                    next_run_in_seconds=interval_in_seconds,
                     args=args,
-                    timeout_in_seconds=300,
+                    timeout_in_seconds=timeout_in_seconds,
                 )
 
                 command_results = CommandResults(
@@ -6891,9 +6893,9 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
             args["job_id"] = job_id
             scheduled_command = ScheduledCommand(
                 command=command_to_run,
-                next_run_in_seconds=10,
+                next_run_in_seconds=interval_in_seconds,
                 args=args,
-                timeout_in_seconds=300,
+                timeout_in_seconds=timeout_in_seconds,
             )
 
             command_results = CommandResults(
@@ -7012,6 +7014,8 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
     job_id = args.get("job_id")
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
     polling = argToBoolean(args.get("polling", "true"))
+    timeout_in_seconds = arg_to_number(args.get("timeout_in_seconds")) or 3600
+    interval_in_seconds = arg_to_number(args.get("interval_in_seconds")) or 30
 
     # Map update type to command name
     command_map = {
@@ -7048,9 +7052,9 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
                 args["job_id"] = job_id
                 scheduled_command = ScheduledCommand(
                     command=command_to_run,
-                    next_run_in_seconds=10,
+                    next_run_in_seconds=interval_in_seconds,
                     args=args,
-                    timeout_in_seconds=300,
+                    timeout_in_seconds=timeout_in_seconds,
                 )
 
                 command_results = CommandResults(
@@ -7091,9 +7095,9 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
             args["job_id"] = job_id
             scheduled_command = ScheduledCommand(
                 command=command_to_run,
-                next_run_in_seconds=10,
+                next_run_in_seconds=interval_in_seconds,
                 args=args,
-                timeout_in_seconds=300,
+                timeout_in_seconds=timeout_in_seconds,
             )
 
             command_results = CommandResults(
@@ -12545,6 +12549,66 @@ def get_jobs(
     return UniversalCommand.show_jobs(topology, device_filter_string, job_type=job_type, status=status, id=_id, target=target)
 
 
+@polling_function(
+    name="pan-os-platform-get-jobs",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 3600)),
+    requires_polling_arg=True,
+)
+def get_jobs_command(args: dict):
+    """
+    Wrapper for pan-os-platform-get-jobs that adds native polling support.
+
+    When polling=true and a single id is supplied, keep polling until the
+    job reaches a terminal status (FIN) or the timeout is reached. Without
+    polling (or when no id is supplied), behaves like the original
+    non-polling command.
+
+    Note: while polling a specific job by id, the status/job_type filters are
+    ignored. Otherwise a still-running job (e.g. status=ACT) would be filtered
+    out when a terminal status like FIN is requested, causing polling to stop
+    prematurely.
+
+    Polling requires a single job "id" (polling can only track one job), so an
+    error is raised when polling=true without an id.
+    """
+    topology = get_topology()
+    job_id = args.get("id")
+    polling = argToBoolean(args.get("polling", "false"))
+
+    if polling and not job_id:
+        raise DemistoException("The 'id' argument is required when 'polling' is set to true.")
+
+    ignore_filters = polling and bool(job_id)
+
+    result = get_jobs(
+        topology,
+        device_filter_string=args.get("device_filter_string"),
+        status=None if ignore_filters else args.get("status"),
+        job_type=None if ignore_filters else args.get("job_type"),
+        id=job_id,
+        target=args.get("target"),
+    )
+    command_results = dataclasses_to_command_results(result, empty_result_message="No jobs returned")
+
+    # Polling only if a single job id was supplied. With an id, get_jobs is
+    # guaranteed to return a single ShowJobsAllResultData (or raise
+    # DemistoException if the job is not found on any device)
+    if not job_id or not isinstance(result, ShowJobsAllResultData):
+        return PollResult(response=command_results, continue_to_poll=False)
+
+    is_terminal = (result.status or "").upper() == "FIN"
+
+    return PollResult(
+        response=command_results,
+        continue_to_poll=not is_terminal,
+        args_for_next_run=args,
+        partial_result=CommandResults(
+            readable_output=f"Waiting for job ID {job_id} to reach a terminal state (current status: {result.status})...",
+        ),
+    )
+
+
 def download_software(
     topology: Topology,
     version: str,
@@ -16376,10 +16440,10 @@ def main():  # pragma: no cover
         # Fetch incidents
         elif command == "fetch-incidents":
             last_run: LastRun = demisto.getLastRun()  # type: ignore
-            first_fetch = params["first_fetch"]
-            configured_max_fetch = arg_to_number(params["max_fetch"])
+            first_fetch = params.get("first_fetch") or "24 hours"
+            configured_max_fetch = arg_to_number(params.get("max_fetch") or "100")
             queries = log_types_queries_to_dict(params)
-            fetch_max_attempts = arg_to_number(params["fetch_job_polling_max_num_attempts"])
+            fetch_max_attempts = arg_to_number(params.get("fetch_job_polling_max_num_attempts") or "10")
             max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch))
 
             new_last_run, incident_entries = fetch_incidents(last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
@@ -16847,7 +16911,15 @@ def main():  # pragma: no cover
             )
         elif command == "pan-os-platform-get-system-info":
             topology = get_topology()
-            return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
+            return_results(
+                dataclasses_to_command_results(
+                    get_system_info(
+                        topology,
+                        device_filter_string=args.get("device_filter_string"),
+                        target=args.get("target"),
+                    )
+                )
+            )
         elif command == "pan-os-platform-get-device-groups":
             topology = get_topology()
             return_results(
@@ -16891,10 +16963,7 @@ def main():  # pragma: no cover
                 )
             )
         elif command == "pan-os-platform-get-jobs":
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(get_jobs(topology, **demisto.args()), empty_result_message="No jobs returned")
-            )
+            return_results(get_jobs_command(demisto.args()))
         elif command == "pan-os-platform-download-software":
             topology = get_topology()
             return_results(

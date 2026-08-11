@@ -1119,3 +1119,206 @@ Account: All accounts - Account WAF:Read
 >| eab6abfa0d754c629a9bce69ab3cc5fb | 120.2.2.8 | 2022-04-25T12:45:50Z | 2022-04-25T12:46:05Z |
 >| eccdf2f286804a988850accbaaeaa462 | 120.2.2.8 | 2022-04-25T12:45:50Z | 2022-04-25T12:46:05Z |
 >| d3b69c4d7bc34384a7448498dd8d9b45 | 120.2.2.8 | 2022-04-25T12:45:50Z | 2022-04-25T12:46:05Z |
+
+### cloudflare-waf-ruleset-list
+
+***
+The command lists all rulesets at the account or zone level.
+
+#### Base Command
+
+`cloudflare-waf-ruleset-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| zone_id | Zone identifier. If provided, lists zone-level rulesets. If not provided, lists account-level rulesets. The value set in the instance configuration is used by default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudflareWAF.Ruleset.id | String | The ruleset identifier. |
+| CloudflareWAF.Ruleset.name | String | The name of the ruleset. |
+| CloudflareWAF.Ruleset.kind | String | The kind of the ruleset. |
+| CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
+| CloudflareWAF.Ruleset.description | String | A description of the ruleset. |
+| CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
+| CloudflareWAF.Ruleset.last_updated | Date | The timestamp of when the ruleset was last updated. |
+
+#### Command example
+
+```!cloudflare-waf-ruleset-list```
+
+#### Human Readable Output
+
+>### Ruleset list
+>
+>|Id|Name|Kind|Phase|Description|Version|Last Updated|
+>|---|---|---|---|---|---|---|
+>| abc123 | Cloudflare Managed Ruleset | managed | http_request_firewall_managed | Managed ruleset | 1 | 2023-01-15T10:00:00Z |
+
+### cloudflare-waf-ruleset-get
+
+***
+The command retrieves a specific ruleset by ID, including its list of rules.
+
+#### Base Command
+
+`cloudflare-waf-ruleset-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ruleset_id | The ruleset identifier. | Required |
+| zone_id | Zone identifier. If provided, gets a zone-level ruleset. If not provided, gets an account-level ruleset. The value set in the instance configuration is used by default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudflareWAF.Ruleset.id | String | The ruleset identifier. |
+| CloudflareWAF.Ruleset.name | String | The name of the ruleset. |
+| CloudflareWAF.Ruleset.kind | String | The kind of the ruleset. |
+| CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
+| CloudflareWAF.Ruleset.description | String | A description of the ruleset. |
+| CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
+| CloudflareWAF.Ruleset.last_updated | Date | The timestamp of when the ruleset was last updated. |
+| CloudflareWAF.Ruleset.rules.id | String | The rule identifier. |
+| CloudflareWAF.Ruleset.rules.action | String | The action to perform when the rule matches. |
+| CloudflareWAF.Ruleset.rules.expression | String | The filter expression for the rule. |
+| CloudflareWAF.Ruleset.rules.description | String | A description of the rule. |
+| CloudflareWAF.Ruleset.rules.enabled | Boolean | Whether the rule is enabled. |
+| CloudflareWAF.Ruleset.rules.version | String | The version of the rule. |
+| CloudflareWAF.Ruleset.rules.ref | String | The reference of the rule. |
+
+#### Command example
+
+```!cloudflare-waf-ruleset-get ruleset_id="abc123"```
+
+#### Human Readable Output
+
+>### Ruleset details
+>
+>|Id|Name|Kind|Phase|Description|Version|Last Updated|
+>|---|---|---|---|---|---|---|
+>| abc123 | Cloudflare Managed Ruleset | managed | http_request_firewall_managed | Managed ruleset | 1 | 2023-01-15T10:00:00Z |
+>
+>### Ruleset rules
+>
+>|Id|Action|Expression|Description|Enabled|Version|Ref|
+>|---|---|---|---|---|---|---|
+>| rule_1 | block | (ip.src eq 192.0.2.1) | Block bad IP | true | 1 | ref_1 |
+
+### cloudflare-waf-ruleset-create
+
+***
+The command creates a new ruleset at the account or zone level.
+
+#### Base Command
+
+`cloudflare-waf-ruleset-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the ruleset. | Required |
+| kind | The kind of the ruleset. Possible values are: managed, custom, root, zone. | Required |
+| phase | The phase of the ruleset. Possible values are: ddos_l4, ddos_l7, http_config_settings, http_custom_errors, http_log_custom_fields, http_ratelimit, http_request_cache_settings, http_request_dynamic_redirect, http_request_firewall_custom, http_request_firewall_managed, http_request_late_transform, http_request_origin, http_request_redirect, http_request_sanitize, http_request_sbfm, http_request_transform, http_response_compression, http_response_firewall_managed, http_response_headers_transform, magic_transit. | Required |
+| description | A description of the ruleset. | Optional |
+| rules | A JSON array of rule objects to include in the ruleset. For example: [{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}]. | Optional |
+| zone_id | Zone identifier. If provided, creates a zone-level ruleset. If not provided, creates an account-level ruleset. The value set in the instance configuration is used by default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudflareWAF.Ruleset.id | String | The ruleset identifier. |
+| CloudflareWAF.Ruleset.name | String | The name of the ruleset. |
+| CloudflareWAF.Ruleset.kind | String | The kind of the ruleset. |
+| CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
+| CloudflareWAF.Ruleset.description | String | A description of the ruleset. |
+| CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
+| CloudflareWAF.Ruleset.last_updated | Date | The timestamp of when the ruleset was last updated. |
+
+#### Command example
+
+```!cloudflare-waf-ruleset-create name="My Custom Ruleset" kind="custom" phase="http_request_firewall_custom" description="A custom ruleset"```
+
+#### Human Readable Output
+
+>### Ruleset was successfully created
+>
+>|Id|Name|Kind|Phase|Description|Version|Last Updated|
+>|---|---|---|---|---|---|---|
+>| new_id | My Custom Ruleset | custom | http_request_firewall_custom | A custom ruleset | 1 | 2023-03-10T08:00:00Z |
+
+### cloudflare-waf-ruleset-update
+
+***
+The command updates an existing ruleset by ID. Note that this replaces the entire ruleset configuration.
+
+#### Base Command
+
+`cloudflare-waf-ruleset-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ruleset_id | The ruleset identifier. | Required |
+| name | The name of the ruleset. | Optional |
+| description | A description of the ruleset. | Optional |
+| rules | A JSON array of rule objects to set in the ruleset. This replaces all existing rules. For example: [{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}]. | Optional |
+| zone_id | Zone identifier. If provided, updates a zone-level ruleset. If not provided, updates an account-level ruleset. The value set in the instance configuration is used by default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CloudflareWAF.Ruleset.id | String | The ruleset identifier. |
+| CloudflareWAF.Ruleset.name | String | The name of the ruleset. |
+| CloudflareWAF.Ruleset.kind | String | The kind of the ruleset. |
+| CloudflareWAF.Ruleset.phase | String | The phase of the ruleset. |
+| CloudflareWAF.Ruleset.description | String | A description of the ruleset. |
+| CloudflareWAF.Ruleset.version | String | The version of the ruleset. |
+| CloudflareWAF.Ruleset.last_updated | Date | The timestamp of when the ruleset was last updated. |
+
+#### Command example
+
+```!cloudflare-waf-ruleset-update ruleset_id="abc123" name="Updated Ruleset" description="Updated description"```
+
+#### Human Readable Output
+
+>Ruleset abc123 was successfully updated.
+
+### cloudflare-waf-ruleset-delete
+
+***
+The command deletes a ruleset by ID.
+
+#### Base Command
+
+`cloudflare-waf-ruleset-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ruleset_id | The ruleset identifier. | Required |
+| zone_id | Zone identifier. If provided, deletes a zone-level ruleset. If not provided, deletes an account-level ruleset. The value set in the instance configuration is used by default. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!cloudflare-waf-ruleset-delete ruleset_id="abc123"```
+
+#### Human Readable Output
+
+>Ruleset abc123 was successfully deleted.
