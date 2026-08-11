@@ -4185,8 +4185,7 @@ def get_modified_remote_data_command(args: Dict[str, Any], proxies: dict) -> Get
 
 
 def main():  # pragma: no cover
-    proxies = handle_proxy()
-    proxies = proxies if proxies else None
+    proxies = handle_proxy() or {}
     args = demisto.args()
     try:
         LOG(f"command is {demisto.command()}")
