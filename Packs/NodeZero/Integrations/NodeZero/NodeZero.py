@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timedelta, UTC
 import time
-from typing import Any, Literal, TypeAlias, TypedDict
+from typing import Any, Literal, TypedDict
 
 import demistomock as demisto
 import requests
@@ -155,7 +155,8 @@ class UnauthenticatedError(Exception):
 
 
 @dataclass(frozen=True)
-class TokenExpiredError(Exception): ...
+class TokenExpiredError(Exception):
+    pass
 
 
 @dataclass(frozen=True)
@@ -166,9 +167,6 @@ class ResponseValidationError(Exception):
 @dataclass(frozen=True)
 class ParametersValidationError(Exception):
     validation_error: ValidationError
-
-
-HTTPError: TypeAlias = requests.HTTPError
 
 
 class Client(BaseClient):
