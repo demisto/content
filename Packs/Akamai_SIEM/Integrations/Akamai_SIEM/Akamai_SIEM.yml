@@ -89,7 +89,7 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
-  advanced: true
+  advanced: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -124,7 +124,7 @@ configuration:
   supportedModules:
   - xsiam
   defaultvalue: '1'
-  advanced: true
+  advanced: false
 - display: Fetch Events
   name: isFetchEvents
   type: 8
@@ -155,6 +155,7 @@ configuration:
   supportedModules:
   - xsiam
   section: Collect
+  advanced: true
 - display: Page Size - high performance mode
   name: beta_page_size
   type: 0
@@ -166,6 +167,7 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
+  advanced: true
 - display: Max allowed concurrent tasks
   name: max_concurrent_tasks
   type: 0
@@ -177,6 +179,7 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
+  advanced: true
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 script:
   commands:
