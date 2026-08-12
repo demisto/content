@@ -43,6 +43,7 @@ from MicrosoftGraphSecurity import (
     release_ediscovery_custodian_command,
     reopen_ediscovery_case_command,
     search_alerts_command,
+    set_url_suffix_list_incidents,
     to_msg_command_results,
     update_ediscovery_case_command,
     update_ediscovery_search_command,
@@ -354,6 +355,49 @@ def test_fetch_incidents_and_alerts_migrates_old_flat_last_run(mocker):
 
     assert fetch_alerts_mock.call_args.kwargs["last_run"] == {"time": old_time}
     assert fetch_incidents_mock.call_args.kwargs["last_run"] == {"time": old_time}
+
+
+@pytest.mark.parametrize(
+    "expand_alerts, should_expand",
+    [("true", True), ("false", False), (None, False)],
+)
+def test_set_url_suffix_list_incidents_expand_alerts(expand_alerts, should_expand):
+    """
+    Given:
+    - The msg-list-security-incident args, with the expand_alerts arg set to true/false/unset.
+
+    When:
+    - Building the request URL suffix.
+
+    Then:
+    - $expand=alerts is included only when expand_alerts is true.
+    """
+    args = {"limit": "50"}
+    if expand_alerts is not None:
+        args["expand_alerts"] = expand_alerts
+
+    url_suffix = set_url_suffix_list_incidents(args)
+
+    assert ("$expand=alerts" in url_suffix) is should_expand
+
+
+def test_set_url_suffix_list_incidents_expand_alerts_with_filter():
+    """
+    Given:
+    - expand_alerts=true together with a typed filter (severity).
+
+    When:
+    - Building the request URL suffix.
+
+    Then:
+    - Both $expand=alerts and the $filter clause are present.
+    """
+    args = {"limit": "50", "expand_alerts": "true", "severity": "high"}
+
+    url_suffix = set_url_suffix_list_incidents(args)
+
+    assert "$expand=alerts" in url_suffix
+    assert "$filter=severity eq 'high'" in url_suffix
 
 
 def test_fetch_incidents_does_not_mutate_last_run(mocker):

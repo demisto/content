@@ -2239,6 +2239,7 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 | severity | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional |
 | classification | The specification for the incident. | Optional |
 | odata | Filter incidents using 'odata' query. | Optional |
+| expand_alerts | Whether to include each incident's related alerts in the response (using $expand=alerts). Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 

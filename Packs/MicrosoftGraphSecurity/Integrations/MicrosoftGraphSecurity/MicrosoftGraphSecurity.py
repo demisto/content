@@ -1120,6 +1120,7 @@ def set_url_suffix_list_incidents(args: dict) -> str:
             - 'severity' (str): Filter by severity.
             - 'classification' (str): Filter by classification.
             - 'odata' (str): Filter by odata.
+            - 'expand_alerts' (bool): Whether to include each incident's related alerts (via $expand=alerts).
 
     Returns:
         str: The URL suffix for the request.
@@ -1138,6 +1139,9 @@ def set_url_suffix_list_incidents(args: dict) -> str:
 
     filters = []
     url_suffix = "security/incidents?"
+    if argToBoolean(args.get("expand_alerts", False)):
+        # Include each incident's related alerts as part of the response.
+        url_suffix += "$expand=alerts&"
     if top:
         url_suffix += f"$top={top!s}"
     if any(args_for_filter.values()) or odata:
@@ -1185,6 +1189,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
 
     new_last_run: dict = dict(last_run)
     fetched: list = []
+    demisto.debug(f"Starting fetch. Types: {fetch_incidents_type}. Limit per type: {fetch_limit}.")
 
     if "Alerts" in fetch_incidents_type:
         alerts, alerts_last_run = fetch_alerts(
@@ -1195,6 +1200,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
             service_sources=fetch_service_sources,
             last_run=last_run.get("alerts_last_run", {}),
         )
+        demisto.debug(f"Fetched {len(alerts)} alerts. New alerts last run: {alerts_last_run}.")
         fetched.extend(alerts)
         new_last_run["alerts_last_run"] = alerts_last_run
 
@@ -1206,6 +1212,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
             filter=fetch_incidents_filter,
             last_run=last_run.get("incidents_last_run", {}),
         )
+        demisto.debug(f"Fetched {len(incidents)} incidents. New incidents last run: {incidents_last_run}.")
         fetched.extend(incidents)
         new_last_run["incidents_last_run"] = incidents_last_run
     demisto.setLastRun(new_last_run)
@@ -2150,8 +2157,12 @@ def get_list_security_incident_command(client: MsGraphClient, args: dict) -> Com
     timeout = arg_to_number(args["timeout"])  # default value is defined
     incident_id = arg_to_number(args.get("incident_id"))
 
+    expand_alerts = argToBoolean(args.get("expand_alerts", False))
     if incident_id:  # Case of single incident
         url_suffix = f"security/incidents/{incident_id}"
+        if expand_alerts:
+            # Include the incident's related alerts as part of the response.
+            url_suffix += "?$expand=alerts"
         incident_response = client.get_incidents_request(url_suffix, timeout)  # type:ignore[arg-type]
         if incident_response.get("@odata.context"):
             del incident_response["@odata.context"]
@@ -2263,6 +2274,13 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
         params: dict = demisto.params()
 
         if params.get("isFetch"):
+            fetch_limit = arg_to_number(params.get("fetch_limit")) or 10
+            if fetch_limit > MAX_ITEMS_PER_RESPONSE:
+                raise DemistoException(
+                    f"The fetch limit per type cannot be higher than {MAX_ITEMS_PER_RESPONSE}, "
+                    "due to a Microsoft limitation when fetching incidents."
+                )
+
             fetch_time = params.get("fetch_time", "1 day")
             fetch_filter = params.get("fetch_filter", "")
             fetch_service_sources = params.get("fetch_service_sources", "")

@@ -2221,6 +2221,13 @@ script:
       description: The specification for the incident.
     - name: odata
       description: Filter incidents using 'odata' query.
+    - name: expand_alerts
+      description: Whether to include each incident's related alerts in the response (using $expand=alerts).
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
     description: Get a list of incident objects that Microsoft graph created to track attacks in an organization. If you want a specific incident, just enter incident_id.
     name: msg-list-security-incident
     outputs:
