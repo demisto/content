@@ -684,5 +684,9 @@
     "name": "Threat Actor",
     "system": false,
     "version": -1,
-    "description": "Threat Actor Indicator Layout"
+    "description": "Threat Actor Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
