@@ -6652,3 +6652,136 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# Migrated from the legacy GoogleCloudLogging integration
+# (command: gcp-logging-log-entries-list -> logging_log_entries_list).
+# ---------------------------------------------------------------------------
+
+
+def test_logging_log_entries_list_success(mocker):
+    """
+    Given: Valid credentials and snake_case args scoping the request to a project.
+    When: logging_log_entries_list is called.
+    Then: It POSTs the expected request body to entries().list and returns CommandResults
+          with the GCP.Logging.LogEntry prefix and the nextPageToken.
+    """
+    from GCP import logging_log_entries_list
+
+    mock_response = util_load_json("test_data/logging_log_entries_list_response.json")
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {
+        "project_id": "mock_project_id",
+        "filter": None,
+        "order_by": None,
+        "limit": 2,
+    }
+    result = logging_log_entries_list(mock_creds, args)
+
+    request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
+    assert request_body["resourceNames"] == ["projects/mock_project_id"]
+    assert request_body["pageSize"] == 2
+    assert result.outputs_prefix == "GCP.Logging.LogEntry"
+    assert result.outputs_key_field == "insertId"
+    assert result.outputs["GCP.Logging.LogEntry(val.insertId && val.insertId == obj.insertId)"] == mock_response.get("entries")
+    assert result.outputs["GCP.Logging(true)"]["LogEntryNextToken"] == "xxxxxx-xxxxxx"
+
+
+def test_logging_log_entries_list_multiple_resources(mocker):
+    """
+    Given: Args providing project, organization, billing account, and folder resources.
+    When: logging_log_entries_list is called.
+    Then: The request body's resourceNames contains the correctly prefixed resource paths.
+    """
+    from GCP import logging_log_entries_list
+
+    mock_response = util_load_json("test_data/logging_log_entries_list_response.json")
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {
+        "project_id": "mock_project_id",
+        "organization_name": "mock_org",
+        "billing_account_name": "mock_billing",
+        "folder_name": "mock_folder",
+        "limit": 5,
+    }
+    logging_log_entries_list(mock_creds, args)
+
+    request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
+    assert request_body["resourceNames"] == [
+        "projects/mock_project_id",
+        "organizations/mock_org",
+        "billingAccounts/mock_billing",
+        "folders/mock_folder",
+    ]
+
+
+def test_logging_log_entries_list_next_token(mocker):
+    """
+    Given: Args providing a page_token and page_size but no limit.
+    When: logging_log_entries_list is called.
+    Then: The request body carries the pageToken and pageSize for the next page.
+    """
+    from GCP import logging_log_entries_list
+
+    mock_response = util_load_json("test_data/logging_log_entries_list_response.json")
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {
+        "project_id": "mock_project_id",
+        "page_token": "mock_next_token",
+        "page_size": 3,
+    }
+    logging_log_entries_list(mock_creds, args)
+
+    request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
+    assert request_body["pageToken"] == "mock_next_token"
+    assert request_body["pageSize"] == 3
+
+
+def test_logging_log_entries_list_no_resources(mocker):
+    """
+    Given: Args that provide none of the parent resource identifiers.
+    When: logging_log_entries_list is called.
+    Then: It raises a DemistoException instructing the caller to provide at least one resource.
+    """
+    from GCP import logging_log_entries_list
+    from CommonServerPython import DemistoException
+
+    mock_creds = mocker.MagicMock()
+
+    with pytest.raises(DemistoException) as e:
+        logging_log_entries_list(mock_creds, {})
+
+    assert "At least one of the following resources must be provided" in str(e.value)
+
+
+def test_logging_log_entries_list_empty_results(mocker):
+    """
+    Given: A mocked Logging client returning no entries.
+    When: logging_log_entries_list is called.
+    Then: It returns CommandResults with empty outputs and no nextPageToken.
+    """
+    from GCP import logging_log_entries_list
+
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = {"entries": []}
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    result = logging_log_entries_list(mock_creds, {"project_id": "mock_project_id"})
+
+    assert result.outputs["GCP.Logging.LogEntry(val.insertId && val.insertId == obj.insertId)"] == []
+    assert "LogEntryNextToken" not in result.outputs.get("GCP.Logging(true)", {})
+    assert result.outputs_prefix == "GCP.Logging.LogEntry"

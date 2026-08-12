@@ -72,6 +72,7 @@ class GCPServices(Enum):
     CONTAINER = ("container", "v1", "container.googleapis.com")
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
     BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
+    LOGGING = ("logging", "v2", "logging.googleapis.com")
 
     # The following services are currently unsupported:
     # IAM_V1 = ("iam", "v1", "iam.googleapis.com")
@@ -327,6 +328,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-iam-project-policy-binding-remove": (
         GCPServices.RESOURCE_MANAGER,
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
+    ),
+    "gcp-logging-log-entries-list": (
+        GCPServices.LOGGING,
+        ["logging.logEntries.list"],
     ),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
@@ -2398,6 +2403,95 @@ def bq_dataset_policy_remove_command(creds: Credentials, args: dict[str, Any]) -
     )
 
 
+def logging_log_entries_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists log entries from one or more parent resources (project/organization/billing account/folder).
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Cloud Logging API.
+        args (dict): Command arguments including:
+            - project_id (str, optional): The GCP project to read log entries from.
+            - organization_name (str, optional): Comma-separated organization IDs to read log entries from.
+            - billing_account_name (str, optional): Comma-separated billing account IDs to read log entries from.
+            - folder_name (str, optional): Comma-separated folder IDs to read log entries from.
+            - filter (str, optional): Advanced logs filter expression.
+            - order_by (str, optional): "timestamp asc" or "timestamp desc".
+            - limit (int, optional): The maximum number of entries to return (1-1000).
+            - page_size (int, optional): The maximum number of results per page. Defaults to 50.
+            - page_token (str, optional): Token to retrieve the next page of results.
+
+    Returns:
+        CommandResults: The log entries under `GCP.Logging.LogEntry` and the continuation
+        token under `GCP.Logging(true).LogEntryNextToken`.
+
+    Raises:
+        DemistoException: If none of the parent resource arguments are provided.
+    """
+    resource_project = argToList(args.get("project_id"))
+    resource_organizations = argToList(args.get("organization_name"))
+    resource_billing_accounts = argToList(args.get("billing_account_name"))
+    resource_folders = argToList(args.get("folder_name"))
+
+    if not (resource_project or resource_organizations or resource_billing_accounts or resource_folders):
+        raise DemistoException(
+            "At least one of the following resources must be provided: "
+            "project_id, organization_name, billing_account_name, or folder_name."
+        )
+
+    resource_names = [f"projects/{project}" for project in resource_project]
+    resource_names += [f"organizations/{organization}" for organization in resource_organizations]
+    resource_names += [f"billingAccounts/{billing_account}" for billing_account in resource_billing_accounts]
+    resource_names += [f"folders/{folder}" for folder in resource_folders]
+
+    limit = arg_to_number(args.get("limit"))
+    page_size = arg_to_number(args.get("page_size")) or 50
+    page_token = args.get("page_token")
+
+    request_body: dict[str, Any] = {
+        "resourceNames": resource_names,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+        "pageSize": limit or page_size,
+        "pageToken": page_token,
+    }
+    remove_nulls_from_dictionary(request_body)
+
+    logging_service = GCPServices.LOGGING.build(creds)
+    response = logging_service.entries().list(body=request_body).execute()  # pylint: disable=E1101
+    entries = response.get("entries", [])
+    next_token = response.get("nextPageToken")
+
+    headers = ["timestamp", "logName", "insertId", "resource", "severity", "operation"]
+    metadata = (
+        "Run the following command to retrieve the next batch of log entries:\n"
+        f"!gcp-logging-log-entries-list page_token={next_token}"
+        if next_token
+        else None
+    )
+    readable_output = tableToMarkdown(
+        "GCP Logging Log Entries",
+        entries,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
+
+    outputs: dict[str, Any] = {
+        "GCP.Logging.LogEntry(val.insertId && val.insertId == obj.insertId)": entries,
+        "GCP.Logging(true)": {"LogEntryNextToken": next_token},
+    }
+    if not next_token:
+        outputs.pop("GCP.Logging(true)")
+    return CommandResults(
+        outputs_prefix="GCP.Logging.LogEntry",
+        outputs_key_field="insertId",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def validate_limit(limit):
     """
     Validates that the provided limit argument is within the allowed range.
@@ -3006,6 +3100,8 @@ def main():  # pragma: no cover
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # BigQuery commands
             "gcp-bq-dataset-policy-remove": bq_dataset_policy_remove_command,
+            # Logging commands
+            "gcp-logging-log-entries-list": logging_log_entries_list,
             # Quick Actions - Firewall
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy
