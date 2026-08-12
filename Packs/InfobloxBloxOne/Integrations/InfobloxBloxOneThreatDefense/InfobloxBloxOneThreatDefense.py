@@ -2907,11 +2907,15 @@ def list_iq_for_td_insight_assets_command(client: BloxOneTDClient, args: dict[st
             readable_output="No assets found for the given IQ for TD Insight.",
             raw_response=assets,
         )
+    outputs = [
+        dict(asset, insight_id=insight_id, asset_key=f"{insight_id}|{asset.get('device_name')}")
+        for asset in remove_empty_elements(assets)
+    ]
     return CommandResults(
         readable_output=prepare_hr_for_iq_for_td_insight_assets(assets, insight_id),
         outputs_prefix="InfobloxCloud.IQForTDInsightAsset",
-        outputs_key_field="device_name",
-        outputs=remove_empty_elements(assets),
+        outputs_key_field=["asset_key"],
+        outputs=outputs,
         raw_response=assets,
     )
 

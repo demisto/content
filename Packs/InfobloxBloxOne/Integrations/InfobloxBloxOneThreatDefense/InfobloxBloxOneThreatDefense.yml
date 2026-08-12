@@ -2491,6 +2491,9 @@ script:
     - contextPath: InfobloxCloud.IQForTDInsightAsset.description
       description: Human-readable summary describing the asset's role or involvement in the insight.
       type: String
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.asset_key
+      description: Internal composite key used to merge duplicate assets in context across command runs.
+      type: String
   - arguments:
     - name: insight_id
       required: true

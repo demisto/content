@@ -2815,10 +2815,13 @@ class TestListIQForTDInsightAssets:
         result = list_iq_for_td_insight_assets_command(blox_client, {"insight_id": "insight-v2-001"})
 
         assert result.outputs_prefix == "InfobloxCloud.IQForTDInsightAsset"
-        assert result.outputs_key_field == "device_name"
+        assert result.outputs_key_field == ["asset_key"]
         assert len(result.outputs) == 2
         assert result.readable_output == util_load_text_data("iq-for-td-insight-asset-list-readable.md")
-        assert result.outputs == return_data.get("assets")
+        for asset, expected in zip(result.outputs, return_data.get("assets")):
+            assert asset["insight_id"] == "insight-v2-001"
+            assert asset["asset_key"] == f"insight-v2-001|{expected.get('device_name')}"
+            assert {k: v for k, v in asset.items() if k not in ("insight_id", "asset_key")} == expected
 
     def test_list_iq_for_td_insight_assets_with_filters(self, return_data, blox_client, requests_mock):
         """Test list_iq_for_td_insight_assets_command with filters applied, including comma-separated list cleaning."""

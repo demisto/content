@@ -1,4 +1,4 @@
-Infoblox Threat Defense with DDI integration leverages DNS as the first line of defense to detect and block cyber threats, while also using threat intelligence to manage SOC Insight incident response and enrich indicators.
+Infoblox Threat Defense with DDI integration leverages DNS as the first line of defense to detect and block cyber threats, while also using threat intelligence to manage IQ for TD Insight incident response and enrich indicators.
 This integration was integrated and tested with version 1.0.0 of Infoblox Threat Defense with DDI.
 
 ## Configure Infoblox Threat Defense with DDI in Cortex
@@ -2245,6 +2245,7 @@ List assets associated with a specific IQ for TD Insight from Infoblox Cloud.
 | InfobloxCloud.IQForTDInsightAsset.first_detected | Date | Timestamp of the earliest event involving this asset within the insight. |
 | InfobloxCloud.IQForTDInsightAsset.last_detected | Date | Timestamp of the most recent event involving this asset within the insight. |
 | InfobloxCloud.IQForTDInsightAsset.description | String | Human-readable summary describing the asset's role or involvement in the insight. |
+| InfobloxCloud.IQForTDInsightAsset.asset_key | String | Internal composite key used to merge duplicate assets in context across command runs. |
 
 #### Command example
 
@@ -2278,7 +2279,9 @@ List assets associated with a specific IQ for TD Insight from Infoblox Cloud.
                 ],
                 "first_detected": "2026-11-30T00:00:00Z",
                 "last_detected": "2026-12-01T00:00:00Z",
-                "description": "Sample asset flagged for repeated contact with a malicious domain."
+                "description": "Sample asset flagged for repeated contact with a malicious domain.",
+                "insight_id": "insight-v2-001",
+                "asset_key": "insight-v2-001|dummy-host-01"
             },
             {
                 "device_name": "dummy-host-02",
@@ -2302,7 +2305,9 @@ List assets associated with a specific IQ for TD Insight from Infoblox Cloud.
                 ],
                 "first_detected": "2026-11-30T11:00:00Z",
                 "last_detected": "2026-12-01T11:00:00Z",
-                "description": "Sample unverified asset observed beaconing to a threat indicator."
+                "description": "Sample unverified asset observed beaconing to a threat indicator.",
+                "insight_id": "insight-v2-001",
+                "asset_key": "insight-v2-001|dummy-host-02"
             }
         ]
     }

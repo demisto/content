@@ -26,7 +26,7 @@ To create a service API key, complete the following:
 
 1. Configure an integration instance with a valid Service API Key.
 2. Click **Test** to validate the connection.
-3. To fetch Infoblox IQ for TD Insights, DNS Security Events, or SOC Insights (deprecated) as an incidents in XSOAR, select the option `Fetches incidents` and follow the table to update configuration parameters.
+3. To fetch Infoblox IQ for TD Insights, DNS Security Events, or SOC Insights (deprecated) as incidents in XSOAR, select the option `Fetches incidents` and follow the table to update configuration parameters.
 
 | **Parameter**                           | **Description**                                                                                                                                                                                      |
 |-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
