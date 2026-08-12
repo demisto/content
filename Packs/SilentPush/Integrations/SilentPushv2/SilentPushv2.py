@@ -4618,6 +4618,8 @@ def main() -> None:
     try:
         params = demisto.params()
         api_key = params.get("credentials", {})
+        if not api_key:
+            return_error("API Key is required. Please provide a valid API Key in the integration configuration.")
         threat_check_key = params.get("threat-check-key", {})
         base_url = params.get("url", "https://api.silentpush.com")
         verify_ssl = not params.get("insecure", False)

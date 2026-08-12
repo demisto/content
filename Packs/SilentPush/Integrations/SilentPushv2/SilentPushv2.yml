@@ -1,32 +1,42 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
 description: The Silent Push Platform uses first-party data and a proprietary scanning engine to enrich global DNS data with risk and reputation scoring, giving security teams the ability to join the dots across the entire IPv4 and IPv6 range, and identify adversary infrastructure before an attack is launched. The content pack integrates with the Silent Push system to gain insights into domain/IP information, reputations, enrichment, and infratag-related details. It also provides functionality to live-scan URLs and take screenshots of them. Additionally, it allows fetching future attack feeds from the Silent Push system.
 commonfields:
   id: SilentPush_v2
   version: -1
 name: SilentPush_v2
 display: SilentPush
+provider: SilentPush
 configuration:
 - display: Base URL
   name: url
   type: 0
   required: true
+  section: Connect
   defaultvalue: https://api.silentpush.com
 - display: API Key
   name: credentials
   type: 4
-  required: true
+  required: false
+  section: Connect
 - display: Threat Check Access Key
   name: threat-check-key
   type: 4
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  advanced: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  advanced: true
+  section: Connect
 script:
   commands:
   - deprecated: false
@@ -827,18 +837,6 @@ script:
       required: false
       secret: false
       default: false
-    - name: subdomains
-      isArray: false
-      description: The flag to include subdomains in the lookup results.
-      required: false
-      secret: false
-      default: false
-    - name: regex
-      isArray: false
-      description: The regular expression to filter the DNS records.
-      required: false
-      secret: false
-      default: false
     outputs:
     - contextPath: SilentPush.PADNSLookup.SilentPush.PADNS.qname
       description: The DNS record name that was looked up.
@@ -970,13 +968,13 @@ script:
     arguments:
     - name: domain
       isArray: false
-      description: The domain name to search
+      description: The domain name to search.
       required: true
       secret: false
       default: false
     - name: result_format
       isArray: false
-      description: 'The format of returned results: compact (default) = return ASN and AS Name only, full = return details of domain hosts in each ASN'
+      description: 'The format of returned results: compact (default) = return ASN and AS Name only, full = return details of domain hosts in each ASN.'
       required: false
       secret: false
       default: false
@@ -993,7 +991,7 @@ script:
     arguments:
     - name: export_type
       isArray: false
-      description: The export type (iofa, organisation, etc)
+      description: The export type (iofa, organisation, etc).
       required: true
       secret: false
       default: false
@@ -1747,7 +1745,7 @@ script:
     arguments:
     - name: subnet
       isArray: false
-      description: 'The IPv4 subnet in the format IP/NETMASK for which reputation information needs to be retrieved, i.e.: 192.35.168.0/23'
+      description: 'The IPv4 subnet in the format IP/NETMASK for which reputation information needs to be retrieved, i.e.: 192.35.168.0/23.'
       required: true
       secret: false
       default: false
@@ -1803,31 +1801,31 @@ script:
       default: false
     - name: window
       isArray: false
-      description: The use records with a last_seen more recently than days ago, default = 30
+      description: The use records with a last_seen more recently than days ago, default = 30.
       required: false
       secret: false
       default: false
     - name: asn
       isArray: false
-      description: Whether to include asn diversity, 0 = do not include, 1 (default) = include asn diversity
+      description: Whether to include asn diversity, 0 = do not include, 1 (default) = include asn diversity.
       required: false
       secret: false
       default: false
     - name: timeline
       isArray: false
-      description: Whether include timeline of {ip, first_seen, last_seen} (+asn if asn=1), 0 (default) = do not include, 1 = include timeline
+      description: Whether include timeline of {ip, first_seen, last_seen} (+asn if asn=1), 0 (default) = do not include, 1 = include timeline.
       required: false
       secret: false
       default: false
     - name: verbose
       isArray: false
-      description: Whether return ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data
+      description: Whether return ips, dates, timeline, (and asns if asn=1), 0 (default) = do not include, 1 = include all data.
       required: false
       secret: false
       default: false
     - name: scope
       isArray: false
-      description: 'The exact or near match results by qtype, *scope=live is automatically set when timeline=1 or verbose=1. *for qtype = a: host - exact match (default when qtype=a), domain - match all hosts in this domain (domain extracted from {query}), subdomain - match all hosts at this subdomain level (i.e. *.{query}), live - calculate values from live data instead of pre-aggregated values - also switches to exact match only. *for qtype = aaaa, live - only this mode is supported for qtype=aaaa'
+      description: 'The exact or near match results by qtype, *scope=live is automatically set when timeline=1 or verbose=1. *for qtype = a: host - exact match (default when qtype=a), domain - match all hosts in this domain (domain extracted from {query}), subdomain - match all hosts at this subdomain level (i.e. *.{query}), live - calculate values from live data instead of pre-aggregated values - also switches to exact match only. *for qtype = aaaa, live - only this mode is supported for qtype=aaaa.'
       required: false
       secret: false
       default: false
@@ -1985,7 +1983,7 @@ script:
       default: false
     - name: timeline
       isArray: false
-      description: Whether to include details of IPs, ASNs, first_seen and last_seen for each domain, 0 (default) = do not include, 1 = include timeline
+      description: Whether to include details of IPs, ASNs, first_seen and last_seen for each domain, 0 (default) = do not include, 1 = include timeline.
       required: false
       secret: false
       default: false
@@ -2058,12 +2056,6 @@ script:
     - name: asn_diversity_min
       isArray: false
       description: The minimum ASN diversity limit to filter domains.
-      required: false
-      secret: false
-      default: false
-    - name: ip_diversity_all_min
-      isArray: false
-      description: The minimum diversity limit, default = 1.
       required: false
       secret: false
       default: false
@@ -2561,18 +2553,6 @@ script:
       required: false
       secret: false
       default: false
-    - name: subdomains
-      isArray: false
-      description: The flag to include subdomains in the lookup results.
-      required: false
-      secret: false
-      default: false
-    - name: regex
-      isArray: false
-      description: The regular expression to filter the DNS records.
-      required: false
-      secret: false
-      default: false
     - name: answer
       isArray: false
       description: The DNS record answer to lookup.
@@ -2652,7 +2632,7 @@ script:
     arguments:
     - name: job_id
       isArray: false
-      description: The Job ID to retry
+      description: The Job ID to retry.
       required: true
       secret: false
       default: false
@@ -2754,18 +2734,6 @@ script:
     - name: output_format
       isArray: false
       description: The format in which the results should be returned (e.g., JSON, XML).
-      required: false
-      secret: false
-      default: false
-    - name: subdomains
-      isArray: false
-      description: The flag to include subdomains in the lookup results.
-      required: false
-      secret: false
-      default: false
-    - name: regex
-      isArray: false
-      description: The regular expression to filter the DNS records.
       required: false
       secret: false
       default: false
@@ -2982,7 +2950,7 @@ script:
       default: false
     - name: timeline
       isArray: false
-      description: Whether to include details of IPs, ASNs, first_seen and last_seen for each domain, 0 (default) = do not include, 1 = include timeline
+      description: Whether to include details of IPs, ASNs, first_seen and last_seen for each domain, 0 (default) = do not include, 1 = include timeline.
       required: false
       secret: false
       default: false
@@ -3055,12 +3023,6 @@ script:
     - name: asn_diversity_min
       isArray: false
       description: The minimum ASN diversity limit to filter domains.
-      required: false
-      secret: false
-      default: false
-    - name: ip_diversity_all_min
-      isArray: false
-      description: The minimum diversity limit, default = 1.
       required: false
       secret: false
       default: false
@@ -3354,7 +3316,7 @@ script:
     arguments:
     - name: domain
       isArray: false
-      description: The domain name to search
+      description: The domain name to search.
       required: true
       secret: false
       default: false
@@ -3363,54 +3325,54 @@ script:
       description: Name or partial name of the registrar used to register domains.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.name
-      description: The registrant name
+      description: The registrant name.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.whois_server
-      description: The server queried
+      description: The server queried.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.org
-      description: Organization
+      description: Organization.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.address
-      description: Address
+      description: Address.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.city
-      description: City
+      description: City.
       type: Number
     - contextPath: SilentPush.whois.SilentPush.Whois.country
-      description: Country
+      description: Country.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.created
-      description: Date created
+      description: Date created.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.date
-      description: Date
+      description: Date.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.domain
-      description: Domain
+      description: Domain.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.emails
-      description: Emails
+      description: Emails.
       type: Number
     - contextPath: SilentPush.whois.SilentPush.Whois.expires
-      description: Expires
+      description: Expires.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.nameservers
-      description: Nameservers
+      description: Nameservers.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.state
-      description: State
+      description: State.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.updated
-      description: Date updated
+      description: Date updated.
       type: String
     - contextPath: SilentPush.whois.SilentPush.Whois.zipcode
-      description: Zip code
+      description: Zip code.
       type: String
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/xsoar-tools:1.0.0.8457987
+  dockerimage: demisto/xsoar-tools:1.0.0.11815981
   feed: false
   isfetch: false
   runonce: false

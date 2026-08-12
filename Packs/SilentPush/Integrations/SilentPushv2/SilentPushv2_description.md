@@ -1,16 +1,3 @@
-### Partner Contributed Integration
-
-#### Integration Author: Silent Push
-
-Support and maintenance for this integration are provided by the author. Please use the following contact details:
-
-- **Email**: [integrations@silentpush.com](mailto:integrations@silentpush.com)
-- **URL**: [https://www.silentpush.com/contact/](https://www.silentpush.com/contact/)
-
-***
-
-#### Integration Author: Silent Push
-
 #### Silent Push
 
 The Silent Push platform focuses on proactive threat intelligence and threat hunting. It offers a comprehensive view of global internet-facing infrastructure, helping organizations detect and counteract cyber threats before they manifest.
