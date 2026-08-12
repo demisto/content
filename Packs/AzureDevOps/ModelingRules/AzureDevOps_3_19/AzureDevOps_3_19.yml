@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: Azure_DevOps_ModelingRule
-name: Azure DevOps Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
