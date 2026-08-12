@@ -100,6 +100,39 @@ def encode_sharing_url(share_url: str) -> str:
     return f"u!{encoded.rstrip('=')}"
 
 
+def _select_addressing_mode(addressing_args: dict[str, str], allow_path: bool, allow_share_url: bool) -> str:
+    """Return the single addressing argument the caller supplied, or raise explaining why not.
+
+    Args:
+        addressing_args: The addressing arguments, keyed by name, already normalized to strings.
+        allow_path: Whether the endpoint supports 'root:/{item-path}:' addressing.
+        allow_share_url: Whether the endpoint supports the /shares/{token} route.
+
+    Returns:
+        The name of the supplied argument: 'item_id', 'item_path' or 'share_url'.
+
+    Raises:
+        DemistoException: If an unsupported argument is used, or if the number supplied is not
+            exactly one.
+    """
+    if addressing_args["item_path"] and not allow_path:
+        raise DemistoException(
+            "The item_path argument is not supported by this command. Microsoft Graph does not "
+            "document path addressing for this endpoint. Use item_id instead."
+        )
+    if addressing_args["share_url"] and not allow_share_url:
+        raise DemistoException("The share_url argument is not supported by this command. Use item_id instead.")
+
+    supplied = [name for name, value in addressing_args.items() if value]
+    if len(supplied) == 1:
+        return supplied[0]
+
+    allowed = ["item_id"] + (["item_path"] if allow_path else []) + (["share_url"] if allow_share_url else [])
+    if not supplied:
+        raise DemistoException(f"Provide one of the following arguments: {', '.join(allowed)}.")
+    raise DemistoException(f"Provide only one of the following arguments, but got {', '.join(supplied)}.")
+
+
 def resolve_item_addressing(args: dict[str, str], allow_path: bool = True, allow_share_url: bool = False) -> dict[str, str]:
     """Validate and normalize the arguments that address a single driveItem.
 
@@ -120,40 +153,21 @@ def resolve_item_addressing(args: dict[str, str], allow_path: bool = True, allow
         DemistoException: If zero or more than one addressing argument is supplied, if an
             unsupported one is used, or if a required companion argument is missing.
     """
-    item_id = args.get("item_id") or ""
-    item_path = args.get("item_path") or ""
-    share_url = args.get("share_url") or ""
+    # Insertion order matters: it drives the order names appear in the error messages.
+    addressing_args = {name: args.get(name) or "" for name in ("item_id", "item_path", "share_url")}
 
-    if item_path and not allow_path:
-        raise DemistoException(
-            "The item_path argument is not supported by this command. Microsoft Graph does not "
-            "document path addressing for this endpoint. Use item_id instead."
-        )
-    if share_url and not allow_share_url:
-        raise DemistoException("The share_url argument is not supported by this command. Use item_id instead.")
-
-    supplied = [name for name, value in (("item_id", item_id), ("item_path", item_path), ("share_url", share_url)) if value]
-    allowed = ["item_id"] + (["item_path"] if allow_path else []) + (["share_url"] if allow_share_url else [])
-    allowed_text = ", ".join(allowed)
-
-    if not supplied:
-        raise DemistoException(f"Provide one of the following arguments: {allowed_text}.")
-    if len(supplied) > 1:
-        raise DemistoException(f"Provide only one of the following arguments, but got {', '.join(supplied)}.")
-
-    mode = supplied[0]
+    mode = _select_addressing_mode(addressing_args, allow_path, allow_share_url)
     if mode == "share_url":
-        return {"mode": "share_url", "value": share_url}
+        return {"mode": "share_url", "value": addressing_args["share_url"]}
 
-    object_type = args.get("object_type") or ""
     object_type_id = args.get("object_type_id") or ""
     if not object_type_id:
         raise DemistoException(f"The object_type_id argument is required when addressing an item by {mode}.")
 
     return {
         "mode": mode,
-        "value": item_id or item_path,
-        "object_type": object_type,
+        "value": addressing_args[mode],
+        "object_type": args.get("object_type") or "",
         "object_type_id": object_type_id,
     }
 
@@ -1922,6 +1936,39 @@ def delete_driveitem_permission_command(client: MsGraphClient, args: dict[str, s
     )
 
 
+def _driveitem_metadata_readable(context_entry: dict) -> str:
+    """Render the human-readable table for a single driveItem's metadata.
+
+    ListItemUniqueId is surfaced alongside the plain metadata because it is the identifier the
+    activities and analytics commands need, and it is otherwise buried inside sharepointIds.
+
+    Args:
+        context_entry: The parsed (title-cased) driveItem.
+
+    Returns:
+        A markdown table.
+    """
+    sharepoint_ids = context_entry.get("SharepointIds") or {}
+    human_readable_content = {
+        "ID": context_entry.get("ID"),
+        "Name": context_entry.get("Name"),
+        "Size": context_entry.get("Size"),
+        "CreatedDateTime": context_entry.get("CreatedDateTime"),
+        "LastModifiedDateTime": context_entry.get("LastModifiedDateTime"),
+        "CreatedBy": (context_entry.get("CreatedBy") or {}).get("User", {}).get("DisplayName"),
+        "LastModifiedBy": (context_entry.get("LastModifiedBy") or {}).get("User", {}).get("DisplayName"),
+        "ListItemUniqueId": sharepoint_ids.get("ListItemUniqueId"),
+        "WebUrl": context_entry.get("WebUrl"),
+    }
+    remove_nulls_from_dictionary(human_readable_content)
+    return tableToMarkdown(
+        "DriveItem metadata",
+        human_readable_content,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+
 def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
     """Retrieve the metadata of a single driveItem (file or folder).
 
@@ -1960,32 +2007,42 @@ def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) 
     context_entry["ItemID"] = context_entry.get("ID")
     remove_nulls_from_dictionary(context_entry)
 
-    sharepoint_ids = context_entry.get("SharepointIds") or {}
-    human_readable_content = {
-        "ID": context_entry.get("ID"),
-        "Name": context_entry.get("Name"),
-        "Size": context_entry.get("Size"),
-        "CreatedDateTime": context_entry.get("CreatedDateTime"),
-        "LastModifiedDateTime": context_entry.get("LastModifiedDateTime"),
-        "CreatedBy": (context_entry.get("CreatedBy") or {}).get("User", {}).get("DisplayName"),
-        "LastModifiedBy": (context_entry.get("LastModifiedBy") or {}).get("User", {}).get("DisplayName"),
-        "ListItemUniqueId": sharepoint_ids.get("ListItemUniqueId"),
-        "WebUrl": context_entry.get("WebUrl"),
-    }
-    remove_nulls_from_dictionary(human_readable_content)
-    readable_output = tableToMarkdown(
-        "DriveItem metadata",
-        human_readable_content,
-        headerTransform=pascalToSpace,
-        removeNull=True,
-    )
-
     return CommandResults(
         outputs_prefix="MsGraphFiles.Files",
         outputs_key_field="ID",
         outputs=context_entry,
         raw_response=raw_response,
-        readable_output=readable_output,
+        readable_output=_driveitem_metadata_readable(context_entry),
+    )
+
+
+def _driveitem_activities_readable(parsed_activities: list, item_id: str) -> str:
+    """Render the human-readable table for a driveItem's activities.
+
+    Args:
+        parsed_activities: The parsed (title-cased) itemActivity entries.
+        item_id: The driveItem ID, used in the table title and the empty-result message.
+
+    Returns:
+        A markdown table, or a plain message when there are no activities.
+    """
+    if not parsed_activities:
+        return f"No activities were found for item {item_id}."
+
+    readable_rows = [
+        {
+            "ID": activity.get("ID"),
+            "RecordedDateTime": _activity_recorded_time(activity),
+            "Actor": _summarize_identity_set(activity.get("Actor") or {}),
+            "Action": _summarize_activity_actions(activity),
+        }
+        for activity in parsed_activities
+    ]
+    return tableToMarkdown(
+        f"Activities for item {item_id}",
+        readable_rows,
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
 
 
@@ -2034,31 +2091,48 @@ def list_driveitem_activities_command(client: MsGraphClient, args: dict[str, str
     }
     remove_nulls_from_dictionary(outputs)
 
-    if not parsed_activities:
-        readable_output = f"No activities were found for item {item_id}."
-    else:
-        readable_rows = [
-            {
-                "ID": activity.get("ID"),
-                "RecordedDateTime": _activity_recorded_time(activity),
-                "Actor": _summarize_identity_set(activity.get("Actor") or {}),
-                "Action": _summarize_activity_actions(activity),
-            }
-            for activity in parsed_activities
-        ]
-        readable_output = tableToMarkdown(
-            f"Activities for item {item_id}",
-            readable_rows,
-            headerTransform=pascalToSpace,
-            removeNull=True,
-        )
-
     return CommandResults(
         outputs_prefix="MsGraphFiles.ItemActivity",
         outputs_key_field="ItemId",
         outputs=outputs,
         raw_response=raw_response,
-        readable_output=readable_output,
+        readable_output=_driveitem_activities_readable(parsed_activities, item_id),
+    )
+
+
+def _driveitem_analytics_readable(parsed_stats: dict, item_id: str, time_range: str) -> str:
+    """Render the human-readable table for a driveItem's analytics.
+
+    Only the four itemActivityStat facets Microsoft Graph documents are surfaced, and only when
+    present, so an absent facet does not become an empty row.
+
+    Args:
+        parsed_stats: The parsed (title-cased) itemActivityStat object.
+        item_id: The driveItem ID, used in the table title and the empty-result message.
+        time_range: The requested time range, used in the same two places.
+
+    Returns:
+        A markdown table, or a plain message when no analytics data was returned.
+    """
+    readable_rows = [
+        {
+            "Action": action,
+            "ActionCount": (parsed_stats.get(action) or {}).get("ActionCount"),
+            "ActorCount": (parsed_stats.get(action) or {}).get("ActorCount"),
+        }
+        for action in ("Access", "Create", "Edit", "Delete")
+        if isinstance(parsed_stats.get(action), dict)
+    ]
+    if not readable_rows:
+        return (
+            f"No analytics data was returned for item {item_id} over '{time_range}'. "
+            f"This can also mean the tenant plan does not surface analytics data."
+        )
+    return tableToMarkdown(
+        f"Analytics for item {item_id} ({time_range})",
+        readable_rows,
+        headerTransform=pascalToSpace,
+        removeNull=True,
     )
 
 
@@ -2102,34 +2176,12 @@ def get_driveitem_analytics_command(client: MsGraphClient, args: dict[str, str])
     }
     remove_nulls_from_dictionary(outputs)
 
-    readable_rows = [
-        {
-            "Action": action,
-            "ActionCount": (parsed_stats.get(action) or {}).get("ActionCount"),
-            "ActorCount": (parsed_stats.get(action) or {}).get("ActorCount"),
-        }
-        for action in ("Access", "Create", "Edit", "Delete")
-        if isinstance(parsed_stats.get(action), dict)
-    ]
-    if not readable_rows:
-        readable_output = (
-            f"No analytics data was returned for item {item_id} over '{time_range}'. "
-            f"This can also mean the tenant plan does not surface analytics data."
-        )
-    else:
-        readable_output = tableToMarkdown(
-            f"Analytics for item {item_id} ({time_range})",
-            readable_rows,
-            headerTransform=pascalToSpace,
-            removeNull=True,
-        )
-
     return CommandResults(
         outputs_prefix="MsGraphFiles.ItemAnalytics",
         outputs_key_field="ItemId",
         outputs=outputs,
         raw_response=raw_response,
-        readable_output=readable_output,
+        readable_output=_driveitem_analytics_readable(parsed_stats, item_id, time_range),
     )
 
 
