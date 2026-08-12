@@ -1675,3 +1675,212 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
+
+### gcp-storage-bucket-create
+
+***
+Creates a new Google Cloud Storage (GCS) bucket in the specified project. Required permission: storage.buckets.create.
+
+#### Base Command
+
+`gcp-storage-bucket-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | The name of the bucket to create. | Required |
+| location | The location of the bucket (for example, US, EU, ASIA, us-central1). If not provided, the GCS API default (US) is used. | Optional |
+| bucket_acl | A predefined ACL to apply to the bucket. Possible values are: authenticatedRead, private, projectPrivate, publicRead, publicReadWrite. | Optional |
+| default_object_acl | A predefined default object ACL to apply to objects added to the bucket. Possible values are: authenticatedRead, bucketOwnerFullControl, bucketOwnerRead, private, projectPrivate, publicRead. | Optional |
+| uniform_bucket_level_access | Whether to enable Uniform Bucket-Level Access (UBLA) on the bucket. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.Bucket.name | String | The name of the created bucket. |
+| GCP.Storage.Bucket.id | String | The ID of the created bucket. |
+| GCP.Storage.Bucket.location | String | The location of the created bucket. |
+| GCP.Storage.Bucket.storageClass | String | The storage class of the created bucket. |
+| GCP.Storage.Bucket.timeCreated | Date | The creation timestamp of the bucket. |
+
+### gcp-storage-bucket-delete
+
+***
+Deletes a Google Cloud Storage (GCS) bucket. The bucket must be empty unless the force argument is set to true. Required permissions: storage.buckets.delete, storage.objects.list, storage.objects.delete.
+
+#### Base Command
+
+`gcp-storage-bucket-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | The name of the bucket to delete. | Required |
+| force | Whether to delete all objects in the bucket before deleting the bucket itself. When false, deleting a non-empty bucket fails. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-storage-bucket-block-public-access
+
+***
+Sets the public access prevention configuration on a GCS bucket. Required permission: storage.buckets.update.
+
+#### Base Command
+
+`gcp-storage-bucket-block-public-access`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | The name of the bucket. | Required |
+| public_access_prevention | The public access prevention setting to apply. "enforced" blocks all public access; "inherited" defers to the organization policy. Possible values are: enforced, inherited. Default is enforced. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.Bucket.name | String | The name of the bucket. |
+| GCP.Storage.Bucket.id | String | The ID of the bucket. |
+| GCP.Storage.Bucket.iamConfiguration.publicAccessPrevention | String | The public access prevention setting applied to the bucket. |
+
+### gcp-storage-bucket-object-upload
+
+***
+Uploads a War Room file (by entry ID) to a GCS bucket as an object. Required permission: storage.objects.create.
+
+#### Base Command
+
+`gcp-storage-bucket-object-upload`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | The name of the bucket to upload the object to. | Required |
+| object_name | The name to give the uploaded object in the bucket. | Required |
+| entry_id | The War Room entry ID of the file to upload. | Required |
+| object_acl | A predefined ACL to apply to the uploaded object. Cannot be used when Uniform Bucket-Level Access is enabled on the bucket. Possible values are: authenticatedRead, bucketOwnerFullControl, bucketOwnerRead, private, projectPrivate, publicRead. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObject.name | String | The name of the uploaded object. |
+| GCP.Storage.BucketObject.id | String | The ID of the uploaded object. |
+| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.BucketObject.contentType | String | The content type of the uploaded object. |
+| GCP.Storage.BucketObject.size | String | The size of the uploaded object in bytes. |
+| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the uploaded object. |
+
+### gcp-storage-bucket-object-download
+
+***
+Downloads an object from a GCS bucket and returns it as a War Room file. Required permission: storage.objects.get.
+
+#### Base Command
+
+`gcp-storage-bucket-object-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | The name of the bucket containing the object. | Required |
+| object_name | The name of the object to download. | Required |
+| saved_file_name | The name to give the downloaded file in the War Room. Defaults to the last path segment of the object name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Name | String | The name of the downloaded file. |
+| File.EntryID | String | The War Room entry ID of the downloaded file. |
+| File.Size | Number | The size of the downloaded file in bytes. |
+| File.MD5 | String | The MD5 hash of the downloaded file. |
+| File.SHA1 | String | The SHA1 hash of the downloaded file. |
+| File.SHA256 | String | The SHA256 hash of the downloaded file. |
+
+### gcp-storage-bucket-object-copy
+
+***
+Copies an object from a source bucket to a destination bucket. Required permissions: storage.objects.get, storage.objects.create.
+
+#### Base Command
+
+`gcp-storage-bucket-object-copy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| source_bucket_name | The name of the source bucket containing the object to copy. | Required |
+| source_object_name | The name of the object to copy. | Required |
+| destination_bucket_name | The name of the destination bucket to copy the object to. | Required |
+| destination_object_name | The name to give the copied object in the destination bucket. Defaults to the source object name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObject.name | String | The name of the copied object. |
+| GCP.Storage.BucketObject.id | String | The ID of the copied object. |
+| GCP.Storage.BucketObject.bucket | String | The name of the destination bucket containing the copied object. |
+| GCP.Storage.BucketObject.contentType | String | The content type of the copied object. |
+| GCP.Storage.BucketObject.size | String | The size of the copied object in bytes. |
+
+### gcp-storage-bucket-object-delete
+
+***
+Deletes an object from a GCS bucket. Required permission: storage.objects.delete.
+
+#### Base Command
+
+`gcp-storage-bucket-object-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | The name of the bucket containing the object. | Required |
+| object_name | The name of the object to delete. | Required |
+| generation | If present, permanently deletes a specific revision of the object instead of the latest version. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-storage-bucket-object-policy-delete
+
+***
+Removes an ACL entry (entity) from a GCS object's access control list. If Uniform Bucket-Level Access is enabled on the bucket, use gcp-storage-bucket-policy-delete instead. Required permissions: storage.objects.get, storage.objects.update.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | The name of the bucket containing the object. | Required |
+| object_name | The name of the object to remove the ACL entry from. | Required |
+| entity | The entity to remove from the object's ACL (for example, allUsers, allAuthenticatedUsers, user-test@example.com). | Required |
+| generation | If present, targets a specific revision of the object. | Optional |
+
+#### Context Output
+
+There is no context output for this command.

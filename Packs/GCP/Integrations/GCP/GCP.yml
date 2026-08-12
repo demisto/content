@@ -1411,6 +1411,271 @@ script:
       description: The path to the custom 404 page for the bucket website.
       type: String
 
+  - name: gcp-storage-bucket-create
+    description: "Creates a new Google Cloud Storage (GCS) bucket in the specified project. Required permission: storage.buckets.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket to create.
+    - name: location
+      required: false
+      description: The location of the bucket (for example, US, EU, ASIA, us-central1). If not provided, the GCS API default (US) is used.
+    - name: bucket_acl
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - authenticatedRead
+      - private
+      - projectPrivate
+      - publicRead
+      - publicReadWrite
+      description: A predefined ACL to apply to the bucket.
+    - name: default_object_acl
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - authenticatedRead
+      - bucketOwnerFullControl
+      - bucketOwnerRead
+      - private
+      - projectPrivate
+      - publicRead
+      description: A predefined default object ACL to apply to objects added to the bucket.
+    - name: uniform_bucket_level_access
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to enable Uniform Bucket-Level Access (UBLA) on the bucket.
+    outputs:
+    - contextPath: GCP.Storage.Bucket.name
+      description: The name of the created bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.id
+      description: The ID of the created bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.location
+      description: The location of the created bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.storageClass
+      description: The storage class of the created bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.timeCreated
+      description: The creation timestamp of the bucket.
+      type: Date
+
+  - name: gcp-storage-bucket-delete
+    description: "Deletes a Google Cloud Storage (GCS) bucket. The bucket must be empty unless the force argument is set to true. Required permissions: storage.buckets.delete, storage.objects.list, storage.objects.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket to delete.
+    - name: force
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+      description: Whether to delete all objects in the bucket before deleting the bucket itself. When false, deleting a non-empty bucket fails.
+    outputs: []
+
+  - name: gcp-storage-bucket-block-public-access
+    description: "Sets the public access prevention configuration on a GCS bucket. Required permission: storage.buckets.update."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket.
+    - name: public_access_prevention
+      required: false
+      description: The public access prevention setting to apply. "enforced" blocks all public access; "inherited" defers to the organization policy.
+      auto: PREDEFINED
+      predefined:
+      - enforced
+      - inherited
+      defaultValue: enforced
+    outputs:
+    - contextPath: GCP.Storage.Bucket.name
+      description: The name of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.id
+      description: The ID of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Bucket.iamConfiguration.publicAccessPrevention
+      description: The public access prevention setting applied to the bucket.
+      type: String
+
+  - name: gcp-storage-bucket-object-upload
+    description: "Uploads a War Room file (by entry ID) to a GCS bucket as an object. Required permission: storage.objects.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket to upload the object to.
+    - name: object_name
+      required: true
+      description: The name to give the uploaded object in the bucket.
+    - name: entry_id
+      required: true
+      description: The War Room entry ID of the file to upload.
+    - name: object_acl
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - authenticatedRead
+      - bucketOwnerFullControl
+      - bucketOwnerRead
+      - private
+      - projectPrivate
+      - publicRead
+      description: A predefined ACL to apply to the uploaded object. Cannot be used when Uniform Bucket-Level Access is enabled on the bucket.
+    outputs:
+    - contextPath: GCP.Storage.BucketObject.name
+      description: The name of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.id
+      description: The ID of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.bucket
+      description: The name of the bucket containing the object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.contentType
+      description: The content type of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.size
+      description: The size of the uploaded object in bytes.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.md5Hash
+      description: The MD5 hash of the uploaded object.
+      type: String
+
+  - name: gcp-storage-bucket-object-download
+    description: "Downloads an object from a GCS bucket and returns it as a War Room file. Required permission: storage.objects.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: The name of the object to download.
+    - name: saved_file_name
+      required: false
+      description: The name to give the downloaded file in the War Room. Defaults to the last path segment of the object name.
+    outputs:
+    - contextPath: File.Name
+      description: The name of the downloaded file.
+      type: String
+    - contextPath: File.EntryID
+      description: The War Room entry ID of the downloaded file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the downloaded file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the downloaded file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the downloaded file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the downloaded file.
+      type: String
+
+  - name: gcp-storage-bucket-object-copy
+    description: "Copies an object from a source bucket to a destination bucket. Required permissions: storage.objects.get, storage.objects.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: source_bucket_name
+      required: true
+      description: The name of the source bucket containing the object to copy.
+    - name: source_object_name
+      required: true
+      description: The name of the object to copy.
+    - name: destination_bucket_name
+      required: true
+      description: The name of the destination bucket to copy the object to.
+    - name: destination_object_name
+      required: false
+      description: The name to give the copied object in the destination bucket. Defaults to the source object name.
+    outputs:
+    - contextPath: GCP.Storage.BucketObject.name
+      description: The name of the copied object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.id
+      description: The ID of the copied object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.bucket
+      description: The name of the destination bucket containing the copied object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.contentType
+      description: The content type of the copied object.
+      type: String
+    - contextPath: GCP.Storage.BucketObject.size
+      description: The size of the copied object in bytes.
+      type: String
+
+  - name: gcp-storage-bucket-object-delete
+    description: "Deletes an object from a GCS bucket. Required permission: storage.objects.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: The name of the object to delete.
+    - name: generation
+      required: false
+      description: If present, permanently deletes a specific revision of the object instead of the latest version.
+    outputs: []
+
+  - name: gcp-storage-bucket-object-policy-delete
+    description: "Removes an ACL entry (entity) from a GCS object's access control list. If Uniform Bucket-Level Access is enabled on the bucket, use gcp-storage-bucket-policy-delete instead. Required permissions: storage.objects.get, storage.objects.update."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: The name of the object to remove the ACL entry from.
+    - name: entity
+      required: true
+      description: The entity to remove from the object's ACL (for example, allUsers, allAuthenticatedUsers, user-test@example.com).
+    - name: generation
+      required: false
+      description: If present, targets a specific revision of the object.
+    outputs: []
+
   - name: gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action
     description: "Enables versioning on a GCP storage bucket to preserve object versions. Required permission: storage.buckets.update."
     prettyname: Enable GCP Bucket Versioning
