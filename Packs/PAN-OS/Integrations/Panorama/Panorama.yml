@@ -8764,13 +8764,13 @@ script:
       name: status
     - description: The filter to return jobs by type.
       name: job_type
-    - description: The filter to return jobs by ID.
+    - description: The filter to return jobs by ID. Required when "polling" is set to true.
       name: id
     - description: The target number of the firewall. Used only on a Panorama instance.
       name: target
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to poll the job status until it reaches a terminal state (FIN). Only takes effect when a single job "id" is provided.
+      description: Whether to poll the job status until it reaches a terminal state (FIN). Requires a single job "id" to be provided. When enabled, the "status" and "job_type" filters are ignored.
       name: polling
       predefined:
       - 'true'
