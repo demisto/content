@@ -13,4 +13,7 @@ To ensure a successful connection, you must select the correct authentication me
 | Ends in trellix.com     | OAuth 2.0             | Client ID, Client Secret, and OAuth Scopes |
 | Ends in fireeye.com     | Legacy API Key        | API Key (only) |
 
+**Trellix GovCloud tenants:** Set the **Token URL** parameter to `https://iam.us.trellix-gov.com`.
+Leave empty to use the default Trellix IAM endpoint.
+
 For official documentation on configuring access, [see here.](https://docs.trellix.com/bundle/etp_api/page/UUID-30726aa3-e420-6f62-6b84-6ad0bdace483.html)
