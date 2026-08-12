@@ -28,9 +28,11 @@ GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
 ACCESS_TOKEN = "access_token"
 EXPIRES_IN = "expires_in"
 VALID_UNTIL = "valid_until"
-TENANT_URL = "tenantUrl"
 DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
 CACHE_BUFFER_SECONDS = 60
+# EPM SET API version segment used in the OAuth data-call paths, e.g.
+# https://<tenant>/EPM/API/<version>/Sets. Only applies to the Idira OAuth flow.
+EPM_API_VERSION = "26.7.0"
 XSIAM_EVENT_TYPE = {
     "policy_audits": "policy audit raw event details",
     "admin_audits": "set admin audit data",
@@ -56,6 +58,7 @@ class Client(BaseClient):
         auth_method=None,
         identity_url=None,
         web_app_id=None,
+        server_url=None,
     ):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._headers = {
@@ -69,6 +72,10 @@ class Client(BaseClient):
         self.application_url = application_url
         self.identity_url = identity_url
         self.web_app_id = web_app_id
+        # `server_url` is the EPM server address used only for the Idira OAuth method (e.g.
+        # https://example.epm.cyberark.com/). For the EPM/SAML methods the base URL is resolved
+        # from the login response within the code.
+        self.server_url = server_url
         # Resolve the authentication method. When `auth_method` is not provided (e.g. instances
         # created before the parameter existed), fall back to the legacy behavior: SAML when both
         # SAML URLs are set, otherwise EPM. This keeps existing instances backward compatible.
@@ -145,46 +152,16 @@ class Client(BaseClient):
 
         return access_token
 
-    def _get_tenant_url(self, access_token: str) -> str:
-        """Discover (and cache) the EPM tenant URL used for subsequent EPM data calls."""
-        cached_context = get_integration_context() or {}
-        cached_tenant_url = cached_context.get(TENANT_URL)
-        if cached_tenant_url:
-            return cached_tenant_url
-
-        headers = {
-            "Authorization": f"Bearer {access_token}",
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
-        try:
-            tenant_url_response = self._http_request(
-                method="GET",
-                full_url=f"{self._base_url.rstrip('/')}/EPM/API/accounts/tenanturl",
-                headers=headers,
-                resp_type="json",
-            )
-        except DemistoException as error:
-            error_msg = str(error)
-            demisto.error(f"[Tenant URL Request] Failed: {error_msg}")
-            raise DemistoException(f"Failed to obtain tenant URL: {error_msg}")
-
-        tenant_url = tenant_url_response.get(TENANT_URL)
-        if not tenant_url:
-            raise DemistoException("Failed to obtain tenant URL. Response missing tenant URL.")
-
-        tenant_url = tenant_url.rstrip("/")
-        demisto.debug(f"[Tenant URL Request] Success. tenant URL: {tenant_url}.")
-        cached_context[TENANT_URL] = tenant_url
-        set_integration_context(cached_context)
-
-        return tenant_url
-
     def oauth_auth_to_cyber_ark(self, force_refresh: bool = False):  # pragma: no cover
         # Reference: CyberArk Identity (Idira ISPSS) OAuth2 client_credentials flow.
+        # For the Idira OAuth method the EPM server address is provided directly via the
+        # `server_url` parameter, so there is no need to discover the tenant URL at runtime.
+        if not self.server_url:
+            raise DemistoException("Server URL is required for Idira OAuth authentication.")
         access_token = self._get_access_token(force_refresh=force_refresh)
-        tenant_url = self._get_tenant_url(access_token)
-        self._base_url = urljoin(tenant_url, "/EPM/API/")
+        # Match the CyberArk EPM SET API path used for OAuth data calls, e.g.
+        # https://<tenant>/EPM/API/26.7.0/Sets (uppercase path + version segment).
+        self._base_url = f"{self.server_url.rstrip('/')}/EPM/API/{EPM_API_VERSION}/"
         self._headers["Authorization"] = f"Bearer {access_token}"
 
     def _refresh_oauth_token(self) -> None:
@@ -200,8 +177,8 @@ class Client(BaseClient):
         cached_context.pop(ACCESS_TOKEN, None)
         cached_context.pop(VALID_UNTIL, None)
         set_integration_context(cached_context)
-        # Re-authenticating issues its own HTTP requests (token + tenant URL). Guard against
-        # those requests re-entering the 401 retry logic (which would recurse infinitely if the
+        # Re-authenticating issues its own HTTP request (the token request). Guard against
+        # that request re-entering the 401 retry logic (which would recurse infinitely if the
         # token endpoint itself returns 401, e.g. bad credentials).
         self._is_authenticating = True
         try:
@@ -697,6 +674,7 @@ def main():  # pragma: no cover
     auth_method = params.get("authentication_method")
     identity_url = params.get("identity_url")
     web_app_id = params.get("web_app_id")
+    server_url = params.get("server_url")
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
 
@@ -704,8 +682,8 @@ def main():  # pragma: no cover
     if not auth_method:
         return_error("Authentication Method is required.")
     if auth_method == AUTH_METHOD_OAUTH:
-        if not identity_url or not web_app_id:
-            return_error("Identity URL and Web App ID are required for Idira OAuth authentication.")
+        if not server_url or not identity_url or not web_app_id:
+            return_error("Server URL, Identity URL, and Web App ID are required for Idira OAuth authentication.")
         if "/oauth2/token" in identity_url:
             return_error(
                 "Identity URL must be the bare FQDN (e.g. https://<sub-domain>.id.cyberark.cloud) "
@@ -752,6 +730,7 @@ def main():  # pragma: no cover
             auth_method=auth_method,
             identity_url=identity_url,
             web_app_id=web_app_id,
+            server_url=server_url,
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)

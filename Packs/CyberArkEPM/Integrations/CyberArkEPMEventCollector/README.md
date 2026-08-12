@@ -5,7 +5,11 @@ This integration was integrated and tested with version 23.12.0 of CyberArk EPM.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| SAML/EPM Logon URL | SAML example: https://login.epm.cyberark.com/SAML/Logon. | True |
+| Authentication Method | The authentication method to use when connecting to CyberArk EPM. Options: Idira OAuth, EPM, SAML. | True |
+| SAML/EPM Logon URL | Required for EPM and SAML authentication methods only. SAML example: https://login.epm.cyberark.com/SAML/Logon. | False |
+| Identity URL | Required for Idira OAuth authentication only. The CyberArk Identity FQDN, e.g. https://\<sub-domain\>.id.cyberark.cloud. Used only to obtain the OAuth token; must not include a /oauth2/token suffix. | False |
+| Web App ID | Required for Idira OAuth authentication only. The registered OAuth2 web-app identifier in CyberArk Identity Administration, used as a URL path segment on the token endpoint (/oauth2/token/\<web_app_id\>). | False |
+| Server URL (only for Idira Oauth) | Required for OAuth 2.0 only. For example: https://example.epm.cyberark.com/ | False |
 | Username |  | True |
 | Password |  | True |
 | Set name | A comma-separated list of set names. | True |

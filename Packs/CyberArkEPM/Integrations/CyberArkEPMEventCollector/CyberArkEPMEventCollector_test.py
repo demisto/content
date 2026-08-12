@@ -378,3 +378,84 @@ def test_prepare_next_run_with_zero_events(event_type, last_fetch, expected_next
 
     assert last_run["set123"][event_type]["next_cursor"] == expected_next_cursor
     assert last_run["set123"][event_type]["from_date"] == expected_from_date
+
+
+""" TEST OAUTH (IDIRA) AUTHENTICATION """
+
+
+def test_oauth_uses_server_url_as_base_url(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth configuration with a Server URL, Identity URL, and Web App ID.
+
+    When:
+        - Building the Client (which performs the OAuth authentication flow).
+
+    Then:
+        - The token is requested from the Identity URL token endpoint.
+        - No tenant-URL discovery call is made; the Server URL is used directly.
+        - The base URL is built from the Server URL with the versioned EPM SET API path,
+          and the Bearer header is set from the token response.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+
+    token_matcher = requests_mock.post(
+        f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900}
+    )
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+
+    assert token_matcher.called
+    # Only the token endpoint should have been called (no tenant-URL discovery).
+    assert requests_mock.call_count == 1
+    assert client._headers["Authorization"] == "Bearer TOKEN123"
+    # Data calls must use the uppercase, versioned EPM SET API path (matches CyberArk Postman).
+    assert client._base_url == f"{server_url}/EPM/API/26.7.0/"
+
+
+def test_oauth_missing_server_url_raises(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth configuration WITHOUT a Server URL.
+
+    When:
+        - Building the Client (which performs the OAuth authentication flow).
+
+    Then:
+        - A DemistoException is raised indicating the Server URL is required.
+    """
+    from CyberArkEPMEventCollector import Client
+    from CommonServerPython import DemistoException
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
+
+    with pytest.raises(DemistoException, match="Server URL is required"):
+        Client(
+            base_url="",
+            username="user",
+            password="pass",
+            application_id="1",
+            auth_method="Idira OAuth",
+            identity_url=identity_url,
+            web_app_id="web-app-1",
+            server_url="",
+        )
