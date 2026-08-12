@@ -6652,3 +6652,304 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# Container (GKE) commands - migrated from the legacy GoogleKubernetesEngine pack
+# ---------------------------------------------------------------------------
+
+
+def test_container_cluster_list_success(mocker):
+    """
+    Given: Valid credentials and snake_case args for listing GKE clusters in a location.
+    When: container_cluster_list is called.
+    Then: It calls the container clusters().list endpoint with the correct parent and
+          returns CommandResults with the GCP.Container.Clusters prefix.
+    """
+    from GCP import container_cluster_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"clusters": [{"name": "mock-cluster-1", "status": "RUNNING", "location": "us-central1-c"}]}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().list().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    result = container_cluster_list(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().list.call_args
+    assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c"
+    assert result.outputs_prefix == "GCP.Container.Clusters"
+    assert result.outputs == mock_response.get("clusters")
+
+
+def test_container_cluster_list_no_results(mocker):
+    """
+    Given: A container client returning no clusters.
+    When: container_cluster_list is called.
+    Then: It returns empty outputs and a readable output indicating no clusters were found.
+    """
+    from GCP import container_cluster_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().list().execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    result = container_cluster_list(mock_creds, args)
+
+    assert result.outputs == []
+    assert "No clusters found" in result.readable_output
+
+
+def test_container_cluster_get_success(mocker):
+    """
+    Given: Valid credentials and snake_case args identifying a single GKE cluster.
+    When: container_cluster_get is called.
+    Then: It calls clusters().get with the correct name and returns the cluster in
+          the GCP.Container.Clusters context.
+    """
+    from GCP import container_cluster_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "mock-cluster-1", "status": "RUNNING", "location": "us-central1-c"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().get().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "resource_name": "mock-cluster-1"}
+    result = container_cluster_get(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().get.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
+    assert result.outputs_prefix == "GCP.Container.Clusters"
+    assert result.outputs == mock_response
+
+
+def test_container_node_pool_list_success(mocker):
+    """
+    Given: Valid credentials and snake_case args for listing node pools of a cluster.
+    When: container_node_pool_list is called.
+    Then: It calls nodePools().list with the correct parent and returns the node pools
+          in the GCP.Container.NodePools context.
+    """
+    from GCP import container_node_pool_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"nodePools": [{"name": "mock-pool-1", "status": "RUNNING", "version": "1.29"}]}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().list().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "cluster": "mock-cluster-1"}
+    result = container_node_pool_list(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().nodePools().list.call_args
+    assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
+    assert result.outputs_prefix == "GCP.Container.NodePools"
+    assert result.outputs == mock_response.get("nodePools")
+
+
+def test_container_node_pool_get_success(mocker):
+    """
+    Given: Valid credentials and snake_case args identifying a single node pool.
+    When: container_node_pool_get is called.
+    Then: It calls nodePools().get with the correct name and returns the node pool in
+          the GCP.Container.NodePools context.
+    """
+    from GCP import container_node_pool_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "mock-pool-1", "status": "RUNNING", "version": "1.29"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().get().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+    }
+    result = container_node_pool_get(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().nodePools().get.call_args
+    assert (
+        called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1/nodePools/mock-pool-1"
+    )
+    assert result.outputs_prefix == "GCP.Container.NodePools"
+    assert result.outputs == mock_response
+
+
+def test_container_node_pool_management_set_success(mocker):
+    """
+    Given: Valid credentials and snake_case args toggling node-pool auto-repair/auto-upgrade.
+    When: container_node_pool_management_set is called.
+    Then: It calls nodePools().setManagement with the correct name and management body and
+          returns the operation in the GCP.Container.Operations context.
+    """
+    from GCP import container_node_pool_management_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().setManagement().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+        "auto_repair": "true",
+        "auto_upgrade": "false",
+    }
+    result = container_node_pool_management_set(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().nodePools().setManagement.call_args
+    assert (
+        called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1/nodePools/mock-pool-1"
+    )
+    assert called_kwargs["body"]["management"]["autoRepair"] is True
+    assert called_kwargs["body"]["management"]["autoUpgrade"] is False
+    assert result.outputs_prefix == "GCP.Container.Operations"
+    assert result.outputs == mock_response
+
+
+def test_container_operation_list_success(mocker):
+    """
+    Given: Valid credentials and snake_case args for listing GKE operations in a location.
+    When: container_operation_list is called.
+    Then: It calls operations().list with the correct parent and returns the operations in
+          the GCP.Container.Operations context.
+    """
+    from GCP import container_operation_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"operations": [{"name": "operation-123", "status": "DONE", "operationType": "UPGRADE_MASTER"}]}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().list().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    result = container_operation_list(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().operations().list.call_args
+    assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c"
+    assert result.outputs_prefix == "GCP.Container.Operations"
+    assert result.outputs == mock_response.get("operations")
+
+
+def test_container_operation_get_success(mocker):
+    """
+    Given: Valid credentials and snake_case args identifying a single GKE operation.
+    When: container_operation_get is called.
+    Then: It calls operations().get with the correct name and returns the operation in
+          the GCP.Container.Operations context.
+    """
+    from GCP import container_operation_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "DONE", "operationType": "UPGRADE_MASTER"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().get().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "operation": "operation-123"}
+    result = container_operation_get(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().operations().get.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/operations/operation-123"
+    assert result.outputs_prefix == "GCP.Container.Operations"
+    assert result.outputs == mock_response
+
+
+def test_container_operation_cancel_success(mocker):
+    """
+    Given: Valid credentials and snake_case args identifying a GKE operation to cancel.
+    When: container_operation_cancel is called.
+    Then: It calls operations().cancel with the correct name and returns a readable
+          output confirming cancellation.
+    """
+    from GCP import container_operation_cancel
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().cancel().execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "operation": "operation-123"}
+    result = container_operation_cancel(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().operations().cancel.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/operations/operation-123"
+    assert "operation-123" in result.readable_output
+    assert "cancel" in result.readable_output.lower()
+
+
+def test_container_cluster_security_update_binary_authorization(mocker):
+    """
+    Given: A GKE cluster needs Binary Authorization enabled.
+    When: container_cluster_security_update is called with enable_binary_authorization.
+    Then: The function issues an update with the desiredBinaryAuthorization body and returns
+          the operation in the GCP.Container.Operations context.
+    """
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().update().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_binary_authorization": "true",
+    }
+    result = container_cluster_security_update(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().update.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
+    assert called_kwargs["body"]["update"]["desiredBinaryAuthorization"]["enabled"] is True
+    assert result.outputs == mock_response
+
+
+def test_container_cluster_security_update_addons(mocker):
+    """
+    Given: A GKE cluster needs an addon (HTTP load balancing) toggled.
+    When: container_cluster_security_update is called with enable_http_load_balancing.
+    Then: The function issues an update with the desiredAddonsConfig body and returns the
+          operation in the GCP.Container.Operations context.
+    """
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().update().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_http_load_balancing": "false",
+    }
+    result = container_cluster_security_update(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().update.call_args
+    addons = called_kwargs["body"]["update"]["desiredAddonsConfig"]
+    assert addons["httpLoadBalancing"]["disabled"] is True
+    assert result.outputs == mock_response
