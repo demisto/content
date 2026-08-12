@@ -1684,25 +1684,48 @@ def _decode_sharepoint_login_name(login_name: str) -> str:
     return encoded_upn
 
 
+# The role keys an identitySet may nest an identity under, in the order they should be preferred.
+# 'siteUser' matters for SharePoint sharing entries, where it is often the only one populated.
+IDENTITY_ROLE_KEYS = ("user", "siteUser", "group", "application", "device")
+
+
+def _lookup(source: dict, *names: str) -> Any:
+    """Return the first truthy value among 'names', matching keys case-insensitively.
+
+    Graph payloads reach these helpers in two different casings. Anything that went through
+    parse_key_to_context is title-cased ('Email'), but that function does not recurse into
+    lists, so identities nested inside a list - grantedToIdentitiesV2, for example - keep
+    Microsoft's original camelCase ('email'). Matching case-insensitively handles both without
+    every call site having to spell out each key twice.
+
+    Args:
+        source: The dict to read from. A non-dict is treated as empty.
+        names: Candidate key names, in priority order.
+
+    Returns:
+        The first truthy value found, or None.
+    """
+    if not isinstance(source, dict):
+        return None
+    lowered = {key.lower(): value for key, value in source.items()}
+    for name in names:
+        value = lowered.get(name.lower())
+        if value:
+            return value
+    return None
+
+
 def _identity_label(identity: dict) -> str:
     """Return the best human-readable label for an IdentitySet identity (user/siteUser/group/application/device).
 
     Prefers an email, then a loginName (decoded if SharePoint claims-encoded), then a
     displayName, then an ID. Returns an empty string when nothing useful is present.
     """
-    if not isinstance(identity, dict):
-        return ""
-    email = identity.get("Email") or identity.get("email")
-    if email:
+    if email := _lookup(identity, "email"):
         return email
-    login_name = identity.get("LoginName") or identity.get("loginName")
-    if login_name:
+    if login_name := _lookup(identity, "loginName"):
         return _decode_sharepoint_login_name(login_name)
-    display_name = identity.get("DisplayName") or identity.get("displayName")
-    if display_name:
-        return display_name
-    identity_id = identity.get("ID") or identity.get("id")
-    return identity_id or ""
+    return _lookup(identity, "displayName", "id") or ""
 
 
 def _summarize_identity_set(identity_set: dict) -> str:
@@ -1718,14 +1741,9 @@ def _summarize_identity_set(identity_set: dict) -> str:
     Returns:
         The label of the first identity present, or an empty string.
     """
-    if not isinstance(identity_set, dict):
-        return ""
-    for role in ("User", "user", "Application", "application", "Device", "device", "Group", "group"):
-        identity = identity_set.get(role)
-        if isinstance(identity, dict):
-            label = _identity_label(identity)
-            if label:
-                return label
+    for role in IDENTITY_ROLE_KEYS:
+        if label := _identity_label(_lookup(identity_set, role) or {}):
+            return label
     return ""
 
 
@@ -1783,23 +1801,19 @@ def _summarize_permission_grantees(perm: dict) -> str:
     application and device. Duplicates are removed while preserving order.
     """
     identity_sets: list[dict] = []
-    for single_key in ("GrantedToV2", "GrantedTo"):
-        single = perm.get(single_key)
-        if isinstance(single, dict):
-            identity_sets.append(single)
-    for list_key in ("GrantedToIdentitiesV2", "GrantedToIdentities"):
-        listed = perm.get(list_key)
-        if isinstance(listed, list):
-            identity_sets.extend([item for item in listed if isinstance(item, dict)])
+    single = _lookup(perm, "grantedToV2", "grantedTo")
+    if isinstance(single, dict):
+        identity_sets.append(single)
+    listed = _lookup(perm, "grantedToIdentitiesV2", "grantedToIdentities")
+    if isinstance(listed, list):
+        identity_sets.extend(item for item in listed if isinstance(item, dict))
 
     labels: list[str] = []
-    seen: set[str] = set()
     for identity_set in identity_sets:
-        for identity_key in ("User", "SiteUser", "Group", "Application", "Device"):
-            label = _identity_label(identity_set.get(identity_key) or {})
-            if label and label not in seen:
+        for role in IDENTITY_ROLE_KEYS:
+            label = _identity_label(_lookup(identity_set, role) or {})
+            if label and label not in labels:
                 labels.append(label)
-                seen.add(label)
     return ", ".join(labels)
 
 

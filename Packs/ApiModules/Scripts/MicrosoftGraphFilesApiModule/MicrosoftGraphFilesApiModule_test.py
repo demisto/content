@@ -10,6 +10,7 @@ from CommonServerPython import CommandResults, DemistoException
 from MicrosoftGraphFilesApiModule import (
     MsGraphClient,
     _decode_sharepoint_login_name,
+    _summarize_identity_set,
     _summarize_permission_grantees,
     assign_sensitivity_label_command,
     copy_driveitem_command,
@@ -1590,6 +1591,62 @@ def test_summarize_permission_grantees_multiple_identities() -> None:
         ],
     }
     assert _summarize_permission_grantees(perm) == "alice@example.com, bob@example.com"
+
+
+def test_summarize_permission_grantees_camel_case_keys_from_a_list() -> None:
+    """
+    Given:
+        - A permission whose grantedToIdentitiesV2 entries still carry Microsoft's original
+          camelCase keys, which is what actually reaches this function at runtime:
+          parse_key_to_context title-cases dict keys but does NOT recurse into lists.
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - The grantees are still found. Matching only title-cased keys silently dropped every
+          identity that came from a list, so the Granted To column rendered empty for exactly
+          the permissions that matter most - files shared with specific people.
+    """
+    perm = {
+        "ID": "perm-link",
+        "GrantedToIdentitiesV2": [
+            {"user": {"email": "alice@example.com"}},
+            {"user": {"displayName": "Bob"}},
+        ],
+    }
+
+    assert _summarize_permission_grantees(perm) == "alice@example.com, Bob"
+
+
+def test_summarize_permission_grantees_mixed_casing() -> None:
+    """
+    Given:
+        - A permission mixing a title-cased single identity set with a camelCase list entry,
+          which is the realistic shape after parse_key_to_context.
+    When:
+        - _summarize_permission_grantees is called
+    Then:
+        - Both are labelled, in discovery order.
+    """
+    perm = {
+        "GrantedToV2": {"SiteUser": {"LoginName": "i:0#.f|membership|single@example.com"}},
+        "GrantedToIdentitiesV2": [{"user": {"email": "fromlist@example.com"}}],
+    }
+
+    assert _summarize_permission_grantees(perm) == "single@example.com, fromlist@example.com"
+
+
+def test_summarize_identity_set_handles_both_casings() -> None:
+    """
+    Given:
+        - An itemActivity actor in Microsoft's original camelCase, and the same in title case.
+    When:
+        - _summarize_identity_set is called
+    Then:
+        - Both are labelled. The same helper is fed parsed and unparsed payloads depending on
+          the call site, so it cannot assume either casing.
+    """
+    assert _summarize_identity_set({"user": {"email": "actor@example.com"}}) == "actor@example.com"
+    assert _summarize_identity_set({"User": {"Email": "actor@example.com"}}) == "actor@example.com"
 
 
 def test_summarize_permission_grantees_empty() -> None:
