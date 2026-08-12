@@ -22188,6 +22188,7 @@ def test_update_logging_configuration_command_api_error(mocker):
 
     mock_error_handler.assert_called_once()
 
+
 # ---------------------------------------------------------------------------
 # YML <-> PY wiring assertion tests
 #
