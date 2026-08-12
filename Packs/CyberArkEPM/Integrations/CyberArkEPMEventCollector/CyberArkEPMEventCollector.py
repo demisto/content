@@ -733,17 +733,25 @@ def main():  # pragma: no cover
             server_url=server_url,
         )
 
-        set_ids = get_set_ids_by_set_names(client, set_names)
-        demisto.debug(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
-        demisto.debug(f"[main] resolved {set_ids=}")
+        if auth_method == AUTH_METHOD_OAUTH:
+            # For the Idira OAuth method we do not resolve set names against `GET Sets`
+            # (the endpoint may return no sets for the token's service user). Instead we use the
+            # configured set names directly as set IDs and let the per-set data calls surface any
+            # error if a set does not exist / is not accessible.
+            set_ids = set_names
+            demisto.debug(f"[main] Idira OAuth: using configured set names directly as set IDs: {set_ids}")
+        else:
+            set_ids = get_set_ids_by_set_names(client, set_names)
+            demisto.debug(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
+            demisto.debug(f"[main] resolved {set_ids=}")
 
-        # Validate we got set IDs
-        if not set_ids:
-            raise DemistoException(
-                f"No set IDs were resolved from configured set names: {set_names}. "
-                f"Please verify that the set names in the integration configuration match "
-                f"the actual set names in CyberArk EPM."
-            )
+            # Validate we got set IDs (older auth methods only).
+            if not set_ids:
+                raise DemistoException(
+                    f"No set IDs were resolved from configured set names: {set_names}. "
+                    f"Please verify that the set names in the integration configuration match "
+                    f"the actual set names in CyberArk EPM."
+                )
 
         if command != "fetch-events" or not demisto.getLastRun():
             from_date = args.get("from_date") or datetime.now() - timedelta(hours=3)
@@ -788,10 +796,20 @@ def main():  # pragma: no cover
             demisto.debug(
                 f"[main] executing cyberarkepm-get-events with limit={max_limit}, "
                 f"from_date={args.get('from_date')}, "
-                f"raw_events_event_type={raw_events_event_type}, "
+                f"raw_events_event_type={raw_events_event_type}, {enable_admin_audits=}, "
                 f"should_push_events={argToBoolean(args.get('should_push_events', False))}"
             )
             events, command_result = get_events_command(client, "detailed_events", last_run, max_limit)  # type: ignore
+            # When admin audits are enabled in the instance configuration, also fetch and include
+            # them in this command's results (in addition to the detailed events).
+            if enable_admin_audits:
+                admin_events, _ = get_events_command(client, "admin_audits", last_run, max_limit)  # type: ignore
+                demisto.debug(f"[cyberarkepm-get-events] admin audits enabled, fetched {len(admin_events)} admin audit(s)")
+                events = events + admin_events
+                command_result = CommandResults(
+                    readable_output=tableToMarkdown("CyberArk EPM Events", events),
+                    raw_response=events,
+                )
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.debug(f"[cyberarkepm-get-events] send_events_to_xsiam: {len(events)} events, {events=}")
