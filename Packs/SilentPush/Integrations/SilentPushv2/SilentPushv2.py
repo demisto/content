@@ -4617,10 +4617,10 @@ def main() -> None:
     """main function, parses params and runs command functions"""
     try:
         params = demisto.params()
-        api_key = params.get("credentials", {})
+        api_key = params.get("credentials", {}).get("password")
         if not api_key:
             return_error("API Key is required. Please provide a valid API Key in the integration configuration.")
-        threat_check_key = params.get("threat-check-key", {})
+        threat_check_key = params.get("threat-check-key", {}).get("password")
         base_url = params.get("url", "https://api.silentpush.com")
         verify_ssl = not params.get("insecure", False)
         proxy = params.get("proxy", False)
