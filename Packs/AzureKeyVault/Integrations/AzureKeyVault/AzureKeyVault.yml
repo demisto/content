@@ -92,15 +92,15 @@ configuration:
   options:
   - Store in XSOAR
   - External Credentials Vault (on-demand)
-  additionalinfo: 'The mode for fetching credentials. Set to "External Credentials Vault (on-demand)" if your security policy does not allow secrets to be stored inside the Cortex XSOAR credentials store. In this mode, the credentials picker in other integrations lists the configured secrets by name (KEY_VAULT_NAME/SECRET_NAME), but no secret values are pulled from Azure Key Vault. When a playbook or command actually executes an integration that uses one of those credentials, the secret value is fetched live from Azure Key Vault and passed in memory only.'
+  additionalinfo: 'The mode for fetching credentials. Set to "External Credentials Vault (on-demand)" if your security policy does not allow secrets to be stored inside the Cortex XSOAR credentials store. In this mode, the credentials picker in other integrations lists the configured secrets by name (KEY_VAULT_NAME/SECRET_NAME), but no secret values are pulled from Azure Key Vault. When a playbook or command executes an integration that uses one of those credentials, the secret value is fetched live from Azure Key Vault and is passed in memory only.'
   section: Collect
   required: false
-- display: Key Vault names - comma separated list of Key Vaults to fetch secrets from.
+- display: Key Vault names - a comma separated list of Key Vaults to fetch secrets from.
   name: key_vaults
   type: 0
   section: Collect
   required: false
-- display: Secret names - comma separated list of secrets to fetch.
+- display: Secret names - a comma separated list of secrets to fetch.
   name: secrets
   type: 0
   section: Collect

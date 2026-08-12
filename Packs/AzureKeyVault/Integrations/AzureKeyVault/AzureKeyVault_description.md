@@ -68,6 +68,6 @@ Username: SECRET_NAME
 Password: SECRET_VALUE
 
 ### Credentials Fetch Mode
-Set **Credentials Fetch Mode** to **External Credentials Vault (on-demand)** if your security policy does not allow secrets to be stored inside the Cortex credentials store. In this mode, the credentials picker in other integrations will list the configured secrets by name (KEY_VAULT_NAME/SECRET_NAME), but no secret values are pulled from Azure Key Vault. When a playbook or command actually executes an integration that uses one of those credentials, the secret value is fetched live from Azure Key Vault and passed in memory only. Nothing is persisted in Cortex.
+Set **Credentials Fetch Mode** to **External Credentials Vault (on-demand)** if your security policy does not allow secrets to be stored inside the Cortex credentials store. In this mode, the credentials picker in other integrations will list the configured secrets by name (KEY_VAULT_NAME/SECRET_NAME), but no secret values are pulled from Azure Key Vault. When a playbook or command actually executes an integration that uses one of those credentials, the secret value is fetched live from Azure Key Vault and is passed in memory only. Nothing is persisted in Cortex.
 
-The default mode, **Store in XSOAR**, keeps the existing behavior: the secret values are fetched and stored in the Cortex credentials store.
+The default mode **Store in XSOAR** keeps the existing behavior: The secret values are fetched and stored in the Cortex credentials store.
