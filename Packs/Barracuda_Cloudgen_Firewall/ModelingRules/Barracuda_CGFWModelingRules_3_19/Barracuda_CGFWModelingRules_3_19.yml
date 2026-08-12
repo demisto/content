@@ -1,6 +1,6 @@
 fromversion: 8.15.0
 id: Barracuda_Cloudgen_Firewall_ModelingRule
-name: Barracuda_Cloudgen_Firewall Modeling Rule
+name: Barracuda Cloudgen Firewall Modeling Rule
 rules: ''
 schema: ''
 tags:

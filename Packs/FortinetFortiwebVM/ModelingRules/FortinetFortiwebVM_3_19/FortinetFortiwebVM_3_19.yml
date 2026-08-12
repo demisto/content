@@ -1,6 +1,6 @@
 fromversion: 8.15.0
 id: Fortinet_Fortiweb_ModelingRule
-name: FortinetFortiwebVM Modeling Rule
+name: Fortinet Fortiweb Modeling Rule
 rules: ''
 schema: ''
 tags: 

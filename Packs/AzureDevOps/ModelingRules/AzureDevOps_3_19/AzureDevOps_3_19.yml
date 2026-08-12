@@ -1,6 +1,6 @@
 fromversion: 8.15.0
 id: Azure_DevOps_ModelingRule
-name: AzureDevOps Modeling Rule
+name: Azure DevOps Modeling Rule
 rules: ''
 schema: ''
 tags: ''
