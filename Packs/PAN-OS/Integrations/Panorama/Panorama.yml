@@ -132,6 +132,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
   additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible. The maximum is 5,000.
@@ -8764,13 +8767,13 @@ script:
       name: status
     - description: The filter to return jobs by type.
       name: job_type
-    - description: The filter to return jobs by ID.
+    - description: The filter to return jobs by ID. Required when "polling" is set to true.
       name: id
     - description: The target number of the firewall. Used only on a Panorama instance.
       name: target
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to poll the job status until it reaches a terminal state (FIN). Only takes effect when a single job "id" is provided.
+      description: Whether to poll the job status until it reaches a terminal state (FIN). Requires a single job "id" to be provided. When enabled, the "status" and "job_type" filters are ignored.
       name: polling
       predefined:
       - 'true'
@@ -8866,8 +8869,22 @@ script:
     - description: The serial number, or IP address for a Panorama instance, to reboot.
       name: target
       required: true
-    description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
+    - auto: PREDEFINED
+      description: Whether to use polling. When set to "true", the command polls the target device until it becomes available (operational mode "normal") or the timeout is reached.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The interval (in seconds) between polling attempts.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+      defaultValue: '1200'
+    description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal. Supports polling to wait until the device becomes available.
     name: pan-os-platform-get-system-status
+    polling: true
     outputs:
     - contextPath: PANOS.SystemStatus.hostid
       type: String
