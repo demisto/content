@@ -3026,27 +3026,20 @@ def test_qradar_set_integration_context_no_last_fetch(mocker):
     assert QRadar_v3.LAST_FETCHED_ID is None
 
 
-def test_qradar_reference_map_value_upsert_command(mocker):
+@pytest.mark.parametrize(
+    "command, ref_name, key, value", [("reference_map_value_upsert", "Monitoring Identifier Gaps", "testkey", "12345")]
+)
+def test_qradar_reference_map_value_upsert_command(mocker, command, ref_name, key, value):
     mocker.patch.object(
         client,
-        "_http_request",
-        return_value={
-            "collection_id": 136,
-            "creation_time": 1747235527932,
-            "element_type": "NUM",
-            "name": "Monitoring Identifier Gaps",
-            "namespace": "SHARED",
-            "number_of_elements": 3,
-            "timeout_type": "UNKNOWN",
-        },
+        "http_request",
+        return_value=command_test_data[command]["response"],
     )
-    res = qradar_reference_map_value_upsert_command(
-        client, {"ref_name": "Monitoring Identifier Gaps", "key": "identifier_1", "value": "1"}
-    )
-    assert (
-        res.readable_output
-        == "identifier_1 in reference map Monitoring Identifier Gaps was successfully added or updated to with value 1."
-    )
+    res = qradar_reference_map_value_upsert_command(client, {"ref_name": ref_name, "key": key, "value": value})
+
+    assert res.outputs_prefix == command_test_data[command]["expected"]["outputs_prefix"]
+    assert res.outputs_key_field == command_test_data[command]["expected"]["outputs_key_field"]
+    assert res.outputs == command_test_data[command]["expected"]["outputs"]
 
 
 def test_qradar_reference_map_value_upsert_command_exception(mocker):

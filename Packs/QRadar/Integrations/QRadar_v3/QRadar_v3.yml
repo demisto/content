@@ -953,8 +953,8 @@ script:
     description: Retrieves a list of reference maps.
     outputs:
     - contextPath: QRadar.ReferenceMaps.CollectionID
-      description: 'The Collection id of the Reference map'
-      type: String
+      description: The Collection id of the Reference map.
+      type: Number
     - contextPath: QRadar.ReferenceMaps.NumberOfElements
       description: The number of elements in the reference map.
       type: Number
@@ -987,13 +987,13 @@ script:
       type: String
     arguments:
     - name: ref_name
-      description:  The reference name of the reference map for which to retrieve its details. Specify ref_name to get details about a specific reference map.
+      description: The reference name of the reference map for which to retrieve its details. Specify ref_name to get details about a specific reference map.
     - name: range
       description: 'The range of results to return (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
     - name: filter
-      description: |-  
-        The query by which to filter reference maps, e.g., "timeout_type=FIRST_SEEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html.  
+      description: |-
+        The query by which to filter reference maps, e.g., "timeout_type=FIRST_SEEN". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html.
         When using both ref_name and filter arguments, the filter should be from the data values of the specified reference map, e.g. "value='1.1.1.1'".
     - name: fields
       description: 'A comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-maps-GET.html.'
@@ -1138,35 +1138,34 @@ script:
   - name: qradar-reference-map-value-upsert
     description: Adds or updates an element in a reference map.
     outputs:
-    - contextPath: QRadar.ReferenceMaps.TimeoutType
-      description: 'The timeout type of the reference map. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN".'
+    - contextPath: QRadar.ReferenceMaps.CollectionID
+      description: The Collection id of the Reference map.
+      type: Number
+    - contextPath: QRadar.ReferenceMaps.CreationTime
+      description: The date when the reference map was created in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: QRadar.ReferenceMaps.ElementType
+      description: The type of the elements in the reference map.
+      type: String
+    - contextPath: QRadar.ReferenceMaps.KeyLabel
+      description: The label of the the that was added or updated.
+      type: String
+    - contextPath: QRadar.ReferenceMaps.Name
+      description: The name of the reference map.
+      type: String
+    - contextPath: QRadar.ReferenceMaps.Namespace
+      description: 'The namespace of the reference map. Possible values: "PRIVATE", "SHARED", "TENANT".'
       type: String
     - contextPath: QRadar.ReferenceMaps.NumberOfElements
       description: The number of elements in the reference map.
       type: Number
     - contextPath: QRadar.ReferenceMaps.TimeToLive
       description: The time left to live for the reference.
-      type: String
-    - contextPath: QRadar.ReferenceMaps.Data.LastSeen
-      description: The date when this data was last seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).  
-      type: Date
-    - contextPath: QRadar.ReferenceMaps.Data.FirstSeen
-      description: The date when this data was first seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
-      type: Date
-    - contextPath: QRadar.ReferenceMaps.Data.Source
-      description: The source of this data.
-      type: String
-    - contextPath: QRadar.ReferenceMaps.Data.Value
-      description: The data value.
-      type: String
-    - contextPath: QRadar.ReferenceMaps.CreationTime
-      description: The date when the reference map was created in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
-      type: Date
-    - contextPath: QRadar.ReferenceMaps.Name
-      description: The name of the reference map.
-      type: String
-    - contextPath: QRadar.ReferenceMaps.ElementType
-      description: The type of the elements in the reference map.
+    - contextPath: QRadar.ReferenceMaps.TimeoutType
+      description: 'The timeout type of the reference map. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN".'
+      type: String  
+    - contextPath: QRadar.ReferenceMaps.ValueLabel
+      description: The label data value that was added or updated.
       type: String
     arguments:
     - name: ref_name
@@ -1177,7 +1176,7 @@ script:
       description: "The value to insert or update in the reference map."
     - name: key
       required: true
-      description: The key to update 
+      description: The key to update.
     - name: source
       description: The indication of where the data originated.
       defaultValue: 'reference data api'
