@@ -653,7 +653,7 @@ script:
     - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.configurations
       description: List of configurations related to the alert.
       type: Array
-  dockerimage: demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
