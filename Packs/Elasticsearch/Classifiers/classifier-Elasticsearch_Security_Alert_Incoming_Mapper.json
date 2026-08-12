@@ -40,7 +40,7 @@
                 "Elasticsearch Timestamp": {
                     "simple": "@timestamp"
                 },
-                "tags": {
+                "Tags": {
                     "simple": "kibana.alert.workflow_tags"
                 },
                 "Risk Score": {
@@ -58,5 +58,9 @@
     "name": "Elasticsearch Security Alert - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.2.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
