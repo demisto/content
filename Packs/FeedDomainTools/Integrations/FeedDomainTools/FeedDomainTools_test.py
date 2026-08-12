@@ -234,3 +234,82 @@ def test_calling_command_using_main(mocker, dt_feeds_client):
     main()
     results = demisto.results.call_args[0]
     assert results[0] == "ok"
+
+
+class TestGetDtFeeds:
+    def test_dispatches_correct_api_method(self, mocker, dt_feeds_client):
+        """_get_dt_feeds calls the correct domaintools API method via FEED_METHOD_MAP."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "realtime_domain_risk", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(feed_type="domainrisk", top=10)
+
+        mock_method.assert_called_once_with(top=10)
+
+    def test_filters_none_kwargs(self, mocker, dt_feeds_client):
+        """None values are not passed as kwargs to the API method."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "nod", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(feed_type="nod", session_id="s1", domain=None, top=5)
+
+        call_kwargs = mock_method.call_args.kwargs
+        assert "domain" not in call_kwargs
+        assert call_kwargs == {"sessionID": "s1", "top": 5}
+
+    def test_returns_list_of_lines(self, mocker, dt_feeds_client):
+        """Returns list of NDJSON lines from FeedsResults.response()."""
+        lines = ['{"domain":"example.com"}', '{"domain":"test.com"}']
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter(lines)
+        mocker.patch.object(dt_feeds_client._api, "nod", return_value=mock_response, create=True)
+
+        result = dt_feeds_client._get_dt_feeds(feed_type="nod")
+
+        assert result == lines
+
+    def test_invalid_feed_type_raises(self, dt_feeds_client):
+        """_get_dt_feeds raises DemistoException for unknown feed types."""
+        with pytest.raises(DemistoException, match="Unsupported feed type"):
+            dt_feeds_client._get_dt_feeds(feed_type="invalidfeed")
+
+    def test_feed_type_lowercased(self, mocker, dt_feeds_client):
+        """_get_dt_feeds normalizes feed_type to lowercase before lookup."""
+        mock_response = mocker.MagicMock()
+        mock_response.response.return_value = iter([])
+        mock_method = mocker.MagicMock(return_value=mock_response)
+        mocker.patch.object(dt_feeds_client._api, "nod", mock_method, create=True)
+
+        dt_feeds_client._get_dt_feeds(feed_type="NOD")
+
+        mock_method.assert_called_once()
+
+
+def test_missing_credentials():
+    """DomainToolsClient raises DemistoException when credentials are empty."""
+    with pytest.raises(DemistoException):
+        DomainToolsClient(api_username="", api_key="")
+
+
+def test_format_parameter_prepends_dash(dt_feeds_client):
+    """_format_parameter prepends '-' to after/before values that lack it."""
+    assert dt_feeds_client._format_parameter("after", "60") == "-60"
+    assert dt_feeds_client._format_parameter("after", "-60") == "-60"
+    assert dt_feeds_client._format_parameter("before", "120") == "-120"
+
+
+def test_test_module_all_feed_type_falls_back_to_nod(mocker, dt_feeds_client):
+    """test_module falls back to 'nod' when feed_type param is 'ALL'."""
+    from FeedDomainTools import test_module
+
+    mocker.patch.object(
+        dt_feeds_client,
+        "_get_dt_feeds",
+        return_value=feed_mock_response.NOD_FEED_RESPONSE,
+    )
+    result = test_module(dt_feeds_client, args={}, params={"feed_type": "ALL"})
+    assert result == "ok"
