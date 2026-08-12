@@ -2068,10 +2068,10 @@ script:
       description: A comma-separated list of folder IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.
       required: false
     - name: filter
-      description: 'When specified, the results are limited to log entries that match the filter. The maximum length of a filter is 20,000 characters. For example: "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name".'
+      description: 'The filter to limit results to log entries that match. The maximum length of a filter is 20,000 characters. For example: "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name".'
       required: false
     - name: order_by
-      description: How the results should be sorted.
+      description: The criteria to use for sorting the results. Can be "timestamp asc" or "timestamp desc".
       required: false
       auto: PREDEFINED
       defaultValue: timestamp asc
@@ -2079,14 +2079,14 @@ script:
       - timestamp asc
       - timestamp desc
     - name: limit
-      description: The maximum number of results to return. Valid range 1-1000.
+      description: The maximum number of results to return. Valid range is 1-1000.
       required: false
     - name: page_size
       description: The maximum number of results to return per page. Default is 50. If the value is negative or exceeds 1000, the request is rejected.
       required: false
       defaultValue: '50'
     - name: page_token
-      description: If present, retrieve the next batch of results. Must be the value of the LogEntryNextToken from the previous response.
+      description: The token used to retrieve the next batch of results. Must be the value of LogEntryNextToken from the previous response.
       required: false
     outputs:
       - contextPath: GCP.Logging.LogEntry.logName
@@ -2096,7 +2096,7 @@ script:
         description: The monitored resource type.
         type: String
       - contextPath: GCP.Logging.LogEntry.resource.labels
-        description: Values for all of the labels listed in the associated monitored resource descriptor.
+        description: The values for all labels listed in the associated monitored resource descriptor.
         type: Unknown
       - contextPath: GCP.Logging.LogEntry.timestamp
         description: The time the event described by the log entry occurred.
@@ -2114,10 +2114,10 @@ script:
         description: The HTTP request associated with the log entry, containing requestMethod, requestUrl, status, userAgent, remoteIp, and other fields.
         type: Unknown
       - contextPath: GCP.Logging.LogEntry.labels
-        description: A map of key, value pairs that provides additional information about the log entry.
+        description: The map of key-value pairs that provides additional information about the log entry.
         type: Unknown
       - contextPath: GCP.Logging.LogEntry.operation
-        description: Information about an operation associated with the log entry, containing id, producer, first, and last fields.
+        description: The information about an operation associated with the log entry, containing the ID, producer, first, and last fields.
         type: Unknown
       - contextPath: GCP.Logging.LogEntry.trace
         description: The REST resource name of the trace being written to Cloud Trace in association with this log entry.
@@ -2132,7 +2132,7 @@ script:
         description: The source code location information associated with the log entry, containing file, line, and function fields.
         type: Unknown
       - contextPath: GCP.Logging.LogEntry.split
-        description: Information indicating this LogEntry is part of a sequence of multiple log entries split from a single LogEntry, containing uid, index, and totalSplits fields.
+        description: The information indicating this LogEntry is part of a sequence of multiple log entries split from a single LogEntry, containing the UID, index, and totalSplits fields.
         type: Unknown
       - contextPath: GCP.Logging.LogEntry.protoPayload
         description: The log entry payload, represented as a protocol buffer.
@@ -2144,7 +2144,7 @@ script:
         description: The log entry payload, represented as a structure that is expressed as a JSON object.
         type: Unknown
       - contextPath: GCP.Logging.LogEntryNextToken
-        description: If there might be more results than those appearing in this response, nextPageToken is included. To get the next set of results, call this command again using the value of nextPageToken as page_token.
+        description: The nextPageToken included when there are more results than those appearing in this response. To get the next set of results, call this command again using the value of nextPageToken as page_token.
         type: String
 
 # The command is currently unsupported.
