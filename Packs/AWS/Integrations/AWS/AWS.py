@@ -1897,7 +1897,7 @@ class S3:
                 client.upload_fileobj(data, bucket, key)
                 return CommandResults(readable_output=f"File {key} was uploaded successfully to {bucket}")
         except ClientError as err:
-            return AWSErrorHandler.handle_client_error(err)
+            AWSErrorHandler.handle_client_error(err)
         except Exception as e:
             raise DemistoException(f"Error: {str(e)}")
         return CommandResults(readable_output="Failed to upload file")

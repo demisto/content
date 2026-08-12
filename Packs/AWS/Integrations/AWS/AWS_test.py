@@ -22211,9 +22211,19 @@ PLATFORM_STANDARD_ARGS = {
 # outputs_prefix in the handler. `File.*` entries come from fileResult().
 PLATFORM_STANDARD_OUTPUT_ROOTS = ("File.",)
 
+# An ``ast`` node that declares a function (sync or async).
+FunctionNode = ast.FunctionDef | ast.AsyncFunctionDef
+
 
 def _is_included_command(command_name: str) -> bool:
-    """Return True if the command should be checked (not test-module / quick-action)."""
+    """Return whether the command should be checked by the YML <-> PY assertions.
+
+    Args:
+        command_name: The command name as declared in the YML / COMMANDS_MAPPING.
+
+    Returns:
+        True if the command is neither ``test-module`` nor a quick action, False otherwise.
+    """
     return command_name != "test-module" and not command_name.endswith(QUICK_ACTION_SUFFIX)
 
 
@@ -22226,7 +22236,7 @@ def _load_yml_spec() -> dict:
     than read directly in the command handler.
 
     Returns:
-        dict mapping command_name -> {"args": [arg_names], "outputs": [contextPaths]}
+        A dict mapping command_name -> {"args": [arg_names], "outputs": [contextPaths]}
         for every non-quick-action, non-test-module command.
     """
     import yaml
@@ -22234,7 +22244,7 @@ def _load_yml_spec() -> dict:
     with open(_YML_PATH, encoding="utf-8") as f:
         yml = yaml.safe_load(f)
 
-    spec: dict = {}
+    spec: dict[str, dict[str, list[str]]] = {}
     for command in yml.get("script", {}).get("commands", []):
         name = command.get("name", "")
         if not _is_included_command(name):
@@ -22246,33 +22256,49 @@ def _load_yml_spec() -> dict:
 
 
 def _load_py_tree() -> ast.Module:
-    """Parse the integration .py file into an AST."""
+    """Parse the integration .py file into an AST.
+
+    Returns:
+        The parsed AWS.py module as an ``ast.Module``.
+    """
     with open(_PY_PATH, encoding="utf-8") as f:
         return ast.parse(f.read())
 
 
 @pytest.fixture(scope="module")
 def yml_spec() -> dict:
-    """The parsed AWS.yml command specifications, loaded once for the whole module."""
+    """Provide the AWS.yml command specifications, parsed once for the whole module.
+
+    Returns:
+        The value of :func:`_load_yml_spec`, shared by every test in this module.
+    """
     return _load_yml_spec()
 
 
 @pytest.fixture(scope="module")
 def py_tree() -> ast.Module:
-    """The parsed AWS.py AST, loaded once for the whole module."""
+    """Provide the AWS.py AST, parsed once for the whole module.
+
+    Returns:
+        The value of :func:`_load_py_tree`, shared by every test in this module.
+    """
     return _load_py_tree()
 
 
-def _parse_commands_mapping(tree: ast.Module) -> dict:
+def _parse_commands_mapping(tree: ast.Module) -> dict[str, str]:
     """Parse ``COMMANDS_MAPPING`` in AWS.py, mapping command name -> handler name.
 
     ``COMMANDS_MAPPING`` is an annotated assignment (``: dict[str, Callable]``),
     so both ``Assign`` and ``AnnAssign`` nodes are considered.
 
+    Args:
+        tree: The parsed AWS.py module.
+
     Returns:
-        dict mapping command_name -> dotted handler name (e.g. "S3.buckets_list_command").
+        A dict mapping command_name -> dotted handler name (e.g. "S3.buckets_list_command"),
+        excluding test-module and quick-action commands.
     """
-    mapping: dict = {}
+    mapping: dict[str, str] = {}
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
             targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
@@ -22291,14 +22317,27 @@ def _parse_commands_mapping(tree: ast.Module) -> dict:
 def _index_functions(tree: ast.Module) -> tuple:
     """Index every function in the module by qualified name and by short name.
 
-    Returns:
-        (qualified_index, short_index) where qualified names look like
-        "S3.buckets_list_command" and short names look like "buckets_list_command".
-    """
-    qualified: dict = {}
-    short: dict = {}
+    Args:
+        tree: The parsed AWS.py module.
 
-    def walk(node, prefix=""):
+    Returns:
+        A ``(qualified_index, short_index)`` tuple of dicts mapping a function name to its
+        definition node, where qualified names look like "S3.buckets_list_command" and short
+        names look like "buckets_list_command" (first definition wins on a short-name clash).
+    """
+    qualified: dict[str, FunctionNode] = {}
+    short: dict[str, FunctionNode] = {}
+
+    def walk(node: ast.AST, prefix: str = "") -> None:
+        """Recursively index the functions declared under ``node``.
+
+        Args:
+            node: The AST node whose ``body`` is scanned (module, class, or function).
+            prefix: The dotted name prefix accumulated from the enclosing scopes.
+
+        Returns:
+            None. ``qualified`` and ``short`` are populated in place.
+        """
         for child in node.body:
             if isinstance(child, ast.ClassDef):
                 walk(child, f"{prefix}{child.name}.")
@@ -22312,29 +22351,66 @@ def _index_functions(tree: ast.Module) -> tuple:
     return qualified, short
 
 
-def _resolve(name: str, qualified: dict, short: dict):
-    """Resolve a (possibly dotted) callee name to its FunctionDef node."""
+def _resolve(name: str, qualified: dict, short: dict) -> FunctionNode | None:
+    """Resolve a (possibly dotted) callee name to its function definition node.
+
+    Args:
+        name: The callee name as written in the source (e.g. "S3.buckets_list_command").
+        qualified: Index of functions by qualified (dotted) name.
+        short: Index of functions by bare function name.
+
+    Returns:
+        The matching function definition node, or None if the name is not defined in AWS.py.
+    """
     return qualified.get(name) or short.get(name.split(".")[-1])
 
 
 def _camel_to_snake(value: str) -> str:
-    return re.sub(r"(?<!^)(?=[A-Z])", "_", value).lower()
+    """Convert a CamelCase string to its snake_case form.
+
+    Mirrors ``CommonServerPython.camel_case_to_underscore``, which AWS.py uses at
+    runtime to derive argument names from AWS API keys, so consecutive uppercase
+    letters (acronyms) are kept together instead of being split letter by letter.
+
+    Args:
+        value: The string to convert (e.g. "KMSKeyId").
+
+    Returns:
+        The snake_case form of the string (e.g. "kms_key_id").
+    """
+    partially_split = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", value)
+    return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", partially_split).lower()
 
 
-def _string_literals(node) -> set:
-    """All string literals in a function, plus their snake_case forms.
+def _string_literals(node: ast.AST) -> set[str]:
+    """Collect all string literals in a function, plus their snake_case forms.
 
     Some handlers derive the argument name from a CamelCase AWS API key, e.g.
     ``camel_case_to_underscore("Runtime")`` -> ``"runtime"``, so the snake_case
     variants are included to avoid false positives.
+
+    Args:
+        node: The AST node (typically a function definition) to scan.
+
+    Returns:
+        A set of every string literal found under the node, unioned with the snake_case
+        form of each of those literals.
     """
     literals = {n.value for n in ast.walk(node) if isinstance(n, ast.Constant) and isinstance(n.value, str)}
     return literals | {_camel_to_snake(v) for v in literals}
 
 
-def _callees_receiving_args(node) -> list:
-    """Names of functions this function calls while forwarding its ``args`` dict."""
-    callees = []
+def _callees_receiving_args(node: ast.AST) -> list[str]:
+    """Find the functions a handler calls while forwarding its ``args`` dict.
+
+    Args:
+        node: The AST node (typically a handler's function definition) to scan.
+
+    Returns:
+        A list of callee names (as written in the source) that receive ``args`` either
+        positionally or as a keyword argument.
+    """
+    callees: list[str] = []
     for child in ast.walk(node):
         if not isinstance(child, ast.Call):
             continue
@@ -22346,8 +22422,26 @@ def _callees_receiving_args(node) -> list:
     return callees
 
 
-def _collect_arg_names(node, qualified: dict, short: dict, depth: int = 6, seen=None) -> set:
-    """Collect argument names read by a handler, following ``args`` delegation."""
+def _collect_arg_names(
+    node: ast.AST,
+    qualified: dict,
+    short: dict,
+    depth: int = 6,
+    seen: set[int] | None = None,
+) -> set[str]:
+    """Collect argument names read by a handler, following ``args`` delegation.
+
+    Args:
+        node: The handler function definition to scan.
+        qualified: Index of functions by qualified (dotted) name.
+        short: Index of functions by bare function name.
+        depth: Maximum delegation depth to follow into callees that receive ``args``.
+        seen: Ids of already-visited function nodes, used to avoid infinite recursion.
+
+    Returns:
+        A set of candidate argument names (string literals, plus their snake_case forms)
+        read by the handler and by the helpers it forwards ``args`` to.
+    """
     seen = seen if seen is not None else set()
     found = _string_literals(node)
     if depth <= 0:
@@ -22360,8 +22454,26 @@ def _collect_arg_names(node, qualified: dict, short: dict, depth: int = 6, seen=
     return found
 
 
-def _collect_output_prefixes(node, qualified: dict, short: dict, depth: int = 4, seen=None) -> set:
-    """Collect context-path-like literals produced by a handler and its helpers."""
+def _collect_output_prefixes(
+    node: ast.AST,
+    qualified: dict,
+    short: dict,
+    depth: int = 4,
+    seen: set[int] | None = None,
+) -> set[str]:
+    """Collect context-path-like literals produced by a handler and its helpers.
+
+    Args:
+        node: The handler function definition to scan.
+        qualified: Index of functions by qualified (dotted) name.
+        short: Index of functions by bare function name.
+        depth: Maximum call depth to follow into helper functions.
+        seen: Ids of already-visited function nodes, used to avoid infinite recursion.
+
+    Returns:
+        A set of dotted string literals (with any trailing ``(...)`` DT filter stripped)
+        that look like context output prefixes.
+    """
     seen = seen if seen is not None else set()
     found = {re.sub(r"\(.*\)$", "", literal) for literal in _string_literals(node) if "." in literal}
     if depth <= 0:
@@ -22376,12 +22488,42 @@ def _collect_output_prefixes(node, qualified: dict, short: dict, depth: int = 4,
     return found
 
 
-def test_yml_commands_are_wired_in_py(yml_spec, py_tree):
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("Runtime", "runtime"),
+        ("RuntimeVersion", "runtime_version"),
+        ("bucketName", "bucket_name"),
+        ("KMSKeyId", "kms_key_id"),
+        ("S3Bucket", "s3_bucket"),
+        ("already_snake", "already_snake"),
+    ],
+)
+def test_camel_to_snake(value: str, expected: str) -> None:
+    """
+    Given: A CamelCase string, either a plain one or one containing an acronym.
+    When: Converting it with _camel_to_snake.
+    Then: The result matches what CommonServerPython.camel_case_to_underscore produces
+          at runtime, keeping consecutive uppercase letters together instead of
+          splitting them letter by letter.
+
+    Args:
+        value: The string to convert.
+        expected: The expected snake_case form.
+    """
+    assert _camel_to_snake(value) == expected
+
+
+def test_yml_commands_are_wired_in_py(yml_spec: dict, py_tree: ast.Module) -> None:
     """
     Given: The integration YML declaring command names.
     When: Comparing against the COMMANDS_MAPPING wired in AWS.py.
     Then: Every non-quick-action YML command must be wired in the .py, and every
           wired handler must resolve to a real function.
+
+    Args:
+        yml_spec: The parsed AWS.yml command specifications (module-scoped fixture).
+        py_tree: The parsed AWS.py AST (module-scoped fixture).
     """
     # When
     command_map = _parse_commands_mapping(py_tree)
@@ -22401,7 +22543,7 @@ def test_yml_commands_are_wired_in_py(yml_spec, py_tree):
     )
 
 
-def test_yml_args_match_py_handler_verbatim(yml_spec, py_tree):
+def test_yml_args_match_py_handler_verbatim(yml_spec: dict, py_tree: ast.Module) -> None:
     """
     Given: The arguments declared per command in the integration YML.
     When: Comparing (verbatim) against the argument names read in that command's
@@ -22409,13 +22551,17 @@ def test_yml_args_match_py_handler_verbatim(yml_spec, py_tree):
     Then: Each YML argument name must appear exactly as-is in the handler.
           Any naming difference (snake_case vs camelCase, casing) fails, except
           for platform-standard args.
+
+    Args:
+        yml_spec: The parsed AWS.yml command specifications (module-scoped fixture).
+        py_tree: The parsed AWS.py AST (module-scoped fixture).
     """
     # Given
     command_map = _parse_commands_mapping(py_tree)
     qualified, short = _index_functions(py_tree)
 
     # When
-    mismatches: list = []
+    mismatches: list[str] = []
     for command_name in sorted(yml_spec):
         handler = command_map.get(command_name)
         node = _resolve(handler, qualified, short) if handler else None
@@ -22437,7 +22583,7 @@ def test_yml_args_match_py_handler_verbatim(yml_spec, py_tree):
     )
 
 
-def test_yml_output_prefixes_match_py_handler(yml_spec, py_tree):
+def test_yml_output_prefixes_match_py_handler(yml_spec: dict[str, dict[str, list[str]]], py_tree: ast.Module) -> None:
     """
     Given: The output contextPaths declared per command in the integration YML.
     When: Comparing against the output prefixes declared in that command's
@@ -22445,6 +22591,10 @@ def test_yml_output_prefixes_match_py_handler(yml_spec, py_tree):
     Then: Every YML output contextPath must be covered by an output prefix
           declared in the handler (the prefix must be a leading segment of the
           contextPath), except for platform-produced outputs.
+
+    Args:
+        yml_spec: The parsed AWS.yml command specifications (module-scoped fixture).
+        py_tree: The parsed AWS.py AST (module-scoped fixture).
     """
     # Given
     command_map = _parse_commands_mapping(py_tree)
