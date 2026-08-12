@@ -6,6 +6,38 @@ import demistomock as demisto
 import pytest
 
 from CommonServerPython import CommandResults, DemistoException
+import ast
+import os
+import re
+
+QUICK_ACTION_SUFFIX = "-quick-action"
+_INTEGRATION_DIR = os.path.dirname(os.path.abspath(__file__))
+_YML_PATH = os.path.join(_INTEGRATION_DIR, "AWS.yml")
+_PY_PATH = os.path.join(_INTEGRATION_DIR, "AWS.py")
+
+# Platform-standard arguments that are resolved centrally rather than read with
+# args.get(...) inside each command handler:
+#   - region / account_id -> consumed by get_service_client() when building the
+#     boto3 client and by the multi-account fan-out in execute_aws_command().
+#   - limit / next_token  -> consumed by the shared build_pagination_kwargs().
+#   - polling_timeout / interval_in_seconds / hide_polling_output -> consumed by
+#     the @polling_function decorator, not by the handler body.
+PLATFORM_STANDARD_ARGS = {
+    "region",
+    "account_id",
+    "limit",
+    "next_token",
+    "polling_timeout",
+    "interval_in_seconds",
+    "hide_polling_output",
+}
+
+# Output roots produced by platform helpers rather than by an explicit
+# outputs_prefix in the handler. `File.*` entries come from fileResult().
+PLATFORM_STANDARD_OUTPUT_ROOTS = ("File.",)
+
+# An ``ast`` node that declares a function (sync or async).
+FunctionNode = ast.FunctionDef | ast.AsyncFunctionDef
 
 
 def test_parse_resource_ids_with_valid_input():
@@ -22180,39 +22212,6 @@ def test_update_logging_configuration_command_api_error(mocker):
 # text. They perform no network/API calls, read no environment variables, and
 # are independent of execution order and of the system clock.
 # ---------------------------------------------------------------------------
-
-import ast
-import os
-import re
-
-QUICK_ACTION_SUFFIX = "-quick-action"
-_INTEGRATION_DIR = os.path.dirname(os.path.abspath(__file__))
-_YML_PATH = os.path.join(_INTEGRATION_DIR, "AWS.yml")
-_PY_PATH = os.path.join(_INTEGRATION_DIR, "AWS.py")
-
-# Platform-standard arguments that are resolved centrally rather than read with
-# args.get(...) inside each command handler:
-#   - region / account_id -> consumed by get_service_client() when building the
-#     boto3 client and by the multi-account fan-out in execute_aws_command().
-#   - limit / next_token  -> consumed by the shared build_pagination_kwargs().
-#   - polling_timeout / interval_in_seconds / hide_polling_output -> consumed by
-#     the @polling_function decorator, not by the handler body.
-PLATFORM_STANDARD_ARGS = {
-    "region",
-    "account_id",
-    "limit",
-    "next_token",
-    "polling_timeout",
-    "interval_in_seconds",
-    "hide_polling_output",
-}
-
-# Output roots produced by platform helpers rather than by an explicit
-# outputs_prefix in the handler. `File.*` entries come from fileResult().
-PLATFORM_STANDARD_OUTPUT_ROOTS = ("File.",)
-
-# An ``ast`` node that declares a function (sync or async).
-FunctionNode = ast.FunctionDef | ast.AsyncFunctionDef
 
 
 def _is_included_command(command_name: str) -> bool:
