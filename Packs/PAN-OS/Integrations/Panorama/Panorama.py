@@ -12563,15 +12563,29 @@ def get_jobs_command(args: dict):
     job reaches a terminal status (FIN) or the timeout is reached. Without
     polling (or when no id is supplied), behaves like the original
     non-polling command.
+
+    Note: while polling a specific job by id, the status/job_type filters are
+    ignored. Otherwise a still-running job (e.g. status=ACT) would be filtered
+    out when a terminal status like FIN is requested, causing polling to stop
+    prematurely.
+
+    Polling requires a single job "id" (polling can only track one job), so an
+    error is raised when polling=true without an id.
     """
     topology = get_topology()
     job_id = args.get("id")
+    polling = argToBoolean(args.get("polling", "false"))
+
+    if polling and not job_id:
+        raise DemistoException("The 'id' argument is required when 'polling' is set to true.")
+
+    ignore_filters = polling and bool(job_id)
 
     result = get_jobs(
         topology,
         device_filter_string=args.get("device_filter_string"),
-        status=args.get("status"),
-        job_type=args.get("job_type"),
+        status=None if ignore_filters else args.get("status"),
+        job_type=None if ignore_filters else args.get("job_type"),
         id=job_id,
         target=args.get("target"),
     )
@@ -12654,6 +12668,46 @@ def system_status(topology: Topology, target: str) -> CheckSystemStatus:
     :param target: ID of host (serial or hostname) to check.
     """
     return UniversalCommand.check_system_availability(topology, hostid=target)
+
+
+@polling_function(
+    name="pan-os-platform-get-system-status",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    timeout=arg_to_number(demisto.args().get("timeout", 1200)),
+    requires_polling_arg=True,
+)
+def system_status_command(args: dict) -> PollResult:
+    """
+    Wraps `system_status` with polling support.
+
+    When `polling=true`, keeps polling until the target device reports operational mode
+    "normal" (i.e. `up=True`), or until the timeout is reached.
+
+    On every poll iteration the current `CheckSystemStatus` is written to context via the
+    `partial_result`. This guarantees that if the timeout is reached before the device
+    comes up, the war-room still shows the last known status (with `PANOS.SystemStatus.up`)
+    instead of only the generic "waiting" message, and no unhandled error is raised.
+    """
+    target = args.get("target")
+    if not target:
+        raise DemistoException("The 'target' argument is required.")
+
+    topology = get_topology()
+    status = system_status(topology, target=target)
+
+    is_up = bool(getattr(status, "up", False))
+
+    # Always include `PANOS.SystemStatus` in CommandResults, even on polling timeout.
+    command_result = dataclasses_to_command_results(status, empty_result_message="No system status.")
+    if not is_up:
+        command_result.readable_output = f"Waiting for device {target} to become available (current status: up={is_up})..."
+
+    return PollResult(
+        response=command_result,
+        continue_to_poll=not is_up,
+        args_for_next_run=args,
+        partial_result=command_result,
+    )
 
 
 def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabilityStateStatus:
@@ -16974,12 +17028,7 @@ def main():  # pragma: no cover
                 )
             )
         elif command == "pan-os-platform-get-system-status":
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    system_status(topology, **demisto.args()), empty_result_message="No system status."
-                )
-            )
+            return_results(system_status_command(args))
         elif command == "pan-os-platform-update-ha-state":
             topology = get_topology()
             return_results(
