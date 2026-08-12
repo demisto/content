@@ -1,5 +1,9 @@
+name: BoxEventsCollector
+display: Box Event Collector
+description: Collect events from Box's logs.
 category: Analytics & SIEM
 provider: Box
+supportlevelheader: xsoar
 sectionorder:
 - Connect
 - Collect
@@ -57,9 +61,6 @@ configuration:
   required: false
   section: Collect
   advanced: true
-description: Collect events from Box's logs.
-display: Box Event Collector
-name: BoxEventsCollector
 script:
   commands:
   - arguments:
