@@ -33,5 +33,5 @@ Create an **OAuth consumer** in the Bitbucket workspace and enable the client-cr
 ### Known Limitations
 
 * To perform the project commands, ensure the **API Token** or **OAuth consumer** has **Read** permissions for **Projects**.
-*Performing the ***bitbucket-issue-create*** command requires an issue tracker.
+* Performing the ***bitbucket-issue-create*** command requires an issue tracker.
 * To create an issue tracker, click the relevant repo and select **Repository settings** > **Issue tracker**, then create it.
