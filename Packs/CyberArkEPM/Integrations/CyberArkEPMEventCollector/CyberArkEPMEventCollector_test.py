@@ -280,6 +280,43 @@ def test_get_set_ids_by_set_names(mocker, requests_mock):
     assert get_set_ids_by_set_names(client, set_names) == ["id1", "id2"]
 
 
+def test_get_set_ids_by_set_names_preserves_token_in_context(mocker, requests_mock):
+    """
+    Given:
+        - An integration context that already holds a cached OAuth token
+          (access_token / valid_until) alongside no cached set_items.
+
+    When:
+        - get_set_ids_by_set_names resolves and persists set_items to the context.
+
+    Then:
+        - The cached token keys are preserved (not clobbered) and set_items is added,
+          proving the set-name write and the token write can coexist in the context.
+    """
+    from CyberArkEPMEventCollector import get_set_ids_by_set_names
+
+    # Stateful fake integration context shared by the get/set mocks.
+    fake_context = {"access_token": "cached-token", "valid_until": "9999999999"}
+
+    mocker.patch(
+        "CyberArkEPMEventCollector.get_integration_context",
+        side_effect=lambda: dict(fake_context),
+    )
+    mocker.patch(
+        "CyberArkEPMEventCollector.set_integration_context",
+        side_effect=lambda ctx: fake_context.update(ctx),
+    )
+
+    set_names = ["set_name1", "set_name2"]
+    client = mocked_client(requests_mock)
+
+    assert get_set_ids_by_set_names(client, set_names) == ["id1", "id2"]
+    # Token keys must survive the set_items write.
+    assert fake_context["access_token"] == "cached-token"
+    assert fake_context["valid_until"] == "9999999999"
+    assert fake_context["set_items"] == {"set_name1": "id1", "set_name2": "id2"}
+
+
 """ TEST COMMAND FUNCTION """
 
 

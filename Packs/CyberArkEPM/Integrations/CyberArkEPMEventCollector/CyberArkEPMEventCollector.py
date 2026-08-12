@@ -159,8 +159,6 @@ class Client(BaseClient):
         if not self.server_url:
             raise DemistoException("Server URL is required for Idira OAuth authentication.")
         access_token = self._get_access_token(force_refresh=force_refresh)
-        # Match the CyberArk EPM SET API path used for OAuth data calls, e.g.
-        # https://<tenant>/EPM/API/26.7.0/Sets (uppercase path + version segment).
         self._base_url = f"{self.server_url.rstrip('/')}/EPM/API/{EPM_API_VERSION}/"
         self._headers["Authorization"] = f"Bearer {access_token}"
 
@@ -444,7 +442,8 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
     demisto.debug(f"[get_set_ids_by_set_names] Requested set_names from config: {set_names}")
-    context_set_items = get_integration_context().get("set_items", {})
+    integration_context = get_integration_context() or {}
+    context_set_items = integration_context.get("set_items", {})
     demisto.debug(f"[get_set_ids_by_set_names] Cached set_items in context: {context_set_items}")
 
     if context_set_items.keys() != set(set_names):
@@ -471,7 +470,11 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
                 f"{unresolved_set_names}. These sets will not be fetched."
             )
 
-        set_integration_context({"set_items": context_set_items})
+        # Merge into the existing context instead of overwriting it, so we don't clobber
+        # other cached keys (e.g. the OAuth `access_token`/`valid_until` written by
+        # `_get_access_token`).
+        integration_context["set_items"] = context_set_items
+        set_integration_context(integration_context)
     else:
         demisto.debug("[get_set_ids_by_set_names] Using cached set_items from integration context")
 
@@ -733,25 +736,20 @@ def main():  # pragma: no cover
             server_url=server_url,
         )
 
-        if auth_method == AUTH_METHOD_OAUTH:
-            # For the Idira OAuth method we do not resolve set names against `GET Sets`
-            # (the endpoint may return no sets for the token's service user). Instead we use the
-            # configured set names directly as set IDs and let the per-set data calls surface any
-            # error if a set does not exist / is not accessible.
-            set_ids = set_names
-            demisto.debug(f"[main] Idira OAuth: using configured set names directly as set IDs: {set_ids}")
-        else:
-            set_ids = get_set_ids_by_set_names(client, set_names)
-            demisto.debug(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
-            demisto.debug(f"[main] resolved {set_ids=}")
+        # Resolve the configured set names to their real set IDs for all authentication methods.
+        # The EPM data endpoints - Events/Search and policyaudits/search -
+        # require the numeric/GUID set Id; passing a set name yields no results for those endpoints.
+        set_ids = get_set_ids_by_set_names(client, set_names)
+        demisto.debug(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
+        demisto.debug(f"[main] resolved {set_ids=}")
 
-            # Validate we got set IDs (older auth methods only).
-            if not set_ids:
-                raise DemistoException(
-                    f"No set IDs were resolved from configured set names: {set_names}. "
-                    f"Please verify that the set names in the integration configuration match "
-                    f"the actual set names in CyberArk EPM."
-                )
+        # Validate we got set IDs.
+        if not set_ids:
+            raise DemistoException(
+                f"No set IDs were resolved from configured set names: {set_names}. "
+                f"Please verify that the set names in the integration configuration match "
+                f"the actual set names in CyberArk EPM."
+            )
 
         if command != "fetch-events" or not demisto.getLastRun():
             from_date = args.get("from_date") or datetime.now() - timedelta(hours=3)
