@@ -2221,7 +2221,7 @@ script:
       description: The specification for the incident.
     - name: odata
       description: Filter incidents using 'odata' query.
-    - name: expand_alerts
+    - name: extra_data
       description: Whether to include each incident's related alerts in the response.
       auto: PREDEFINED
       predefined:

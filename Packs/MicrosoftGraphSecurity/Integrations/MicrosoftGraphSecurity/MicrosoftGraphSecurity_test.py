@@ -358,33 +358,33 @@ def test_fetch_incidents_and_alerts_migrates_old_flat_last_run(mocker):
 
 
 @pytest.mark.parametrize(
-    "expand_alerts, should_expand",
+    "extra_data, should_expand",
     [("true", True), ("false", False), (None, False)],
 )
-def test_set_url_suffix_list_incidents_expand_alerts(expand_alerts, should_expand):
+def test_set_url_suffix_list_incidents_extra_data(extra_data, should_expand):
     """
     Given:
-    - The msg-list-security-incident args, with the expand_alerts arg set to true/false/unset.
+    - The msg-list-security-incident args, with the extra_data arg set to true/false/unset.
 
     When:
     - Building the request URL suffix.
 
     Then:
-    - $expand=alerts is included only when expand_alerts is true.
+    - $expand=alerts is included only when extra_data is true.
     """
     args = {"limit": "50"}
-    if expand_alerts is not None:
-        args["expand_alerts"] = expand_alerts
+    if extra_data is not None:
+        args["extra_data"] = extra_data
 
     url_suffix = set_url_suffix_list_incidents(args)
 
     assert ("$expand=alerts" in url_suffix) is should_expand
 
 
-def test_set_url_suffix_list_incidents_expand_alerts_with_filter():
+def test_set_url_suffix_list_incidents_extra_data_with_filter():
     """
     Given:
-    - expand_alerts=true together with a typed filter (severity).
+    - extra_data=true together with a typed filter (severity).
 
     When:
     - Building the request URL suffix.
@@ -392,7 +392,7 @@ def test_set_url_suffix_list_incidents_expand_alerts_with_filter():
     Then:
     - Both $expand=alerts and the $filter clause are present.
     """
-    args = {"limit": "50", "expand_alerts": "true", "severity": "high"}
+    args = {"limit": "50", "extra_data": "true", "severity": "high"}
 
     url_suffix = set_url_suffix_list_incidents(args)
 

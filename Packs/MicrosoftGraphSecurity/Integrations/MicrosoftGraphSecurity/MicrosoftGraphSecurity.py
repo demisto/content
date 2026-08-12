@@ -1120,7 +1120,7 @@ def set_url_suffix_list_incidents(args: dict) -> str:
             - 'severity' (str): Filter by severity.
             - 'classification' (str): Filter by classification.
             - 'odata' (str): Filter by odata.
-            - 'expand_alerts' (bool): Whether to include each incident's related alerts (via $expand=alerts).
+            - 'extra_data' (bool): Whether to include each incident's related alerts.
 
     Returns:
         str: The URL suffix for the request.
@@ -1139,7 +1139,7 @@ def set_url_suffix_list_incidents(args: dict) -> str:
 
     filters = []
     url_suffix = "security/incidents?"
-    if argToBoolean(args.get("expand_alerts", False)):
+    if argToBoolean(args.get("extra_data", False)):
         # Include each incident's related alerts as part of the response.
         url_suffix += "$expand=alerts&"
     if top:
@@ -2157,10 +2157,10 @@ def get_list_security_incident_command(client: MsGraphClient, args: dict) -> Com
     timeout = arg_to_number(args["timeout"])  # default value is defined
     incident_id = arg_to_number(args.get("incident_id"))
 
-    expand_alerts = argToBoolean(args.get("expand_alerts", False))
+    extra_data = argToBoolean(args.get("extra_data", False))
     if incident_id:  # Case of single incident
         url_suffix = f"security/incidents/{incident_id}"
-        if expand_alerts:
+        if extra_data:
             # Include the incident's related alerts as part of the response.
             url_suffix += "?$expand=alerts"
         incident_response = client.get_incidents_request(url_suffix, timeout)  # type:ignore[arg-type]
