@@ -9,7 +9,7 @@ PRODUCT = "slack"
 
 # Recommended page size by Slack for the Audit Logs API.
 API_PAGE_SIZE = 200
-# Default maximum time range (in seconds) to fetch in a single run to avoid
+# The maximum time range (in seconds) to fetch in a single run to avoid
 # timeouts / out-of-memory when a very large backlog needs to be collected.
 DEFAULT_MAX_FETCH_WINDOW = 24 * 60 * 60  # 1 day
 # Maximum number of forward windows a single fetch run may walk. This bounds the run's
