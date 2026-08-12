@@ -1,6 +1,5 @@
-fromversion: 8.3.0
-toversion: 8.14.0
-id: Workday_Workday_ModelingRule
+fromversion: 8.15.0
+id: Workday_ModelingRule
 name: Workday Modeling Rule
 rules: ''
 schema: ''

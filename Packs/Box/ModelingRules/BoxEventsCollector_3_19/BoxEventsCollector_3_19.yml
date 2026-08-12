@@ -1,0 +1,7 @@
+fromversion: 8.15.0
+id: Box_ModelingRule
+name: Box Modeling Rule
+rules: ''
+schema: ''
+supportedModules:
+- xsiam

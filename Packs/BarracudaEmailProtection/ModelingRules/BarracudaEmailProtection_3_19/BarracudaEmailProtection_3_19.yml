@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: BarracudaEmailProtection_ModelingRule
+name: BarracudaEmailProtection Modeling Rule
+rules: ''
+schema: ''
+tags: Barracuda, Email
+supportedModules:
+- xsiam
