@@ -86,8 +86,9 @@ def remove_identity_key(source: Any) -> dict:
 def encode_sharing_url(share_url: str) -> str:
     """Encode a sharing URL into the token accepted by GET /shares/{token}.
 
-    Implements the encoding documented for the shares API: base64-encode the URL, strip the
-    '=' padding, translate to the base64url alphabet ('/' -> '_', '+' -> '-'), and prefix 'u!'.
+    Implements the encoding documented for the shares API: base64url-encode the URL, strip the
+    '=' padding, and prefix 'u!'. urlsafe_b64encode already emits the base64url alphabet, so the
+    '/' -> '_' and '+' -> '-' translations the documentation describes come for free.
 
     Args:
         share_url: A sharing URL, for example a SharePoint or OneDrive "copy link" URL.
@@ -95,8 +96,8 @@ def encode_sharing_url(share_url: str) -> str:
     Returns:
         The encoded sharing token, including the leading 'u!'.
     """
-    encoded = base64.b64encode(share_url.encode("utf-8")).decode("utf-8")
-    return "u!" + encoded.rstrip("=").replace("/", "_").replace("+", "-")
+    encoded = base64.urlsafe_b64encode(share_url.encode("utf-8")).decode("utf-8")
+    return f"u!{encoded.rstrip('=')}"
 
 
 def resolve_item_addressing(args: dict[str, str], allow_path: bool = True, allow_share_url: bool = False) -> dict[str, str]:
