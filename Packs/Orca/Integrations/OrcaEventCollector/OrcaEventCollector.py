@@ -14,6 +14,8 @@ VENDOR = "orca"
 PRODUCT = "security"
 DEFAULT_PAGE_SIZE = 100  # Serving Layer API default page size (SQL LIMIT)
 TEST_MODULE_LIMIT = 1  # Minimal page size for the connectivity test
+DEFAULT_GET_EVENTS_LIMIT = 1000  # Fallback cap for the manual get-events command
+DEFAULT_GET_EVENTS_START = "1 minute"  # Fallback lower bound for the manual get-events command
 
 """ CLIENT CLASS """
 
@@ -381,6 +383,133 @@ def get_boundary_ids(alerts: List[Dict[str, Any]], boundary_time: str) -> List[s
 """ MAIN FUNCTION """
 
 
+def fetch_events(
+    client: Client,
+    start_time: str,
+    last_run_ids: list,
+    last_run_offset: int,
+    max_fetch: int,
+    end_time: str,
+) -> None:
+    """Scheduled fetch: pull alerts, dedup, push to XSIAM, and advance the persisted cursor.
+
+    ``start_time`` is the persisted cursor (inclusive lower bound on ``LastUpdated``) from the
+    previous run's ``lastRun``.
+    """
+    # Explicit fetch window for this run (lower inclusive -> upper exclusive), for diagnostics.
+    demisto.debug(f"[Fetch Events] Fetch window: LastUpdated >= {start_time} AND < {end_time} ({max_fetch=} {last_run_offset=})")
+    alerts = get_alerts(client, max_fetch, start_time, end_time, start_offset=last_run_offset)
+    # Capture the RAW page size and newest timestamp BEFORE dedup: the wedge guard must key
+    # off these, since dedup can empty a full page and hide the "full page, same second" signal.
+    raw_fetched_count = len(alerts)
+    newest_before_dedup = alerts[-1].get("data", {}).get("LastUpdated", {}).get("value") if alerts else None
+
+    # Drop alerts already emitted at the previous run's boundary second (inclusive lower bound).
+    alerts = dedup_alerts(alerts, last_run_ids, start_time)
+
+    if alerts:
+        alerts = add_time_key_to_alerts(alerts)
+        alerts = add_entry_status_to_alerts(alerts)
+        # Distribution of new vs updated: proves the LastUpdated cursor now captures updates.
+        updated_count = sum(1 for alert in alerts if alert.get("_ENTRY_STATUS") == "updated")
+        demisto.debug(
+            f"[Fetch Events] Entry status distribution: new={len(alerts) - updated_count}, "
+            f"updated={updated_count}, total={len(alerts)}"
+        )
+        demisto.debug(f"[Fetch Events] before send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
+        send_events_to_xsiam(alerts, VENDOR, PRODUCT)
+        demisto.debug(f"[Fetch Events] after send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
+
+    # Advance the cursor using the newest RAW timestamp (dedup may have emptied the list).
+    new_last_fetch = normalize_last_updated(newest_before_dedup) or start_time
+    page_was_full = raw_fetched_count == max_fetch
+    same_second = new_last_fetch == normalize_last_updated(start_time)
+
+    if raw_fetched_count == 0 and last_run_offset > 0:
+        # Drained-second terminator: an empty page while resuming at a non-zero offset proves
+        # the boundary second is fully consumed. Step the cursor +1s and clear the offset so
+        # the inclusive lower bound does not re-read it forever (infinite duplicate loop).
+        new_last_fetch = add_one_second(start_time)
+        new_last_run_offset = 0
+        new_last_run_ids: list[str] = []
+        demisto.info(
+            f"[Fetch Events] Boundary second {start_time} fully drained (empty page at offset "
+            f"{last_run_offset}); stepping cursor to {new_last_fetch} and resetting offset."
+        )
+    elif page_was_full and same_second:
+        # Wedge guard: a full raw page still on the same second means that second holds more
+        # than max_fetch events. Keep the timestamp but advance an in-second offset so the
+        # next run reads the next slice.
+        new_last_run_offset = last_run_offset + raw_fetched_count
+        # Same second: accumulate (union) ids so earlier slices aren't lost when the offset resets.
+        current_ids = get_boundary_ids(alerts, new_last_fetch) if alerts else []
+        new_last_run_ids = list(set(last_run_ids + current_ids))
+        demisto.info(
+            f"[Fetch Events] Boundary second {new_last_fetch} not fully drained; advancing lastRunOffset "
+            f"to {new_last_run_offset} (max_fetch={max_fetch})"
+        )
+    else:
+        # Normal path: page not full or crossed into a newer second. Reset the offset.
+        new_last_run_offset = 0
+        current_ids = get_boundary_ids(alerts, new_last_fetch) if alerts else []
+        if same_second:
+            # Offset reset while still on the same second: union so accumulated ids survive the reset.
+            new_last_run_ids = list(set(last_run_ids + current_ids))
+        else:
+            # Second advanced: only the new second's ids matter.
+            new_last_run_ids = current_ids if alerts else last_run_ids
+
+    current_last_run = {
+        "lastRun": new_last_fetch,
+        "lastRunIds": new_last_run_ids,
+        "lastRunOffset": new_last_run_offset,
+    }
+
+    demisto.setLastRun(current_last_run)
+    demisto.debug(
+        f"[Fetch Events] Persisted lastRun={new_last_fetch} with {len(new_last_run_ids)} boundary id(s), "
+        f"lastRunOffset={new_last_run_offset}"
+    )
+    demisto.debug(f"[Fetch Events] {current_last_run=}")
+
+
+def get_events_command(client: Client, args: dict) -> None:
+    """Manual debug command: pull alerts for an explicit window and optionally push them.
+
+    Driven entirely by its own ``start_time`` / ``end_time`` / ``limit`` arguments - it does NOT read
+    or write the persisted ``lastRun`` cursor, so it is safe to run on demand without disrupting the
+    scheduled fetch. When an argument is omitted, a sensible default window/cap is used.
+    """
+    start = safe_parse_datetime(args.get("start_time") or DEFAULT_GET_EVENTS_START, "start_time")
+    start_time = start.strftime(DATE_FORMAT) if start else ""
+    end = safe_parse_datetime(args.get("end_time"), "end_time")
+    end_time = end.strftime(DATE_FORMAT) if end else datetime.now(timezone.utc).strftime(DATE_FORMAT)
+    limit = arg_to_number(args.get("limit")) or DEFAULT_GET_EVENTS_LIMIT
+    should_push_events = argToBoolean(args.get("should_push_events", False))
+
+    demisto.debug(f"[Get Events] Fetch window: LastUpdated >= {start_time} AND < {end_time} ({limit=})")
+    alerts = get_alerts(client, limit, start_time, end_time)
+
+    # Normalize before returning so the CommandResults outputs carry the parsed events (_time / _ENTRY_STATUS).
+    if alerts:
+        alerts = add_time_key_to_alerts(alerts)
+        alerts = add_entry_status_to_alerts(alerts)
+
+    return_results(
+        CommandResults(
+            readable_output=tableToMarkdown(t=alerts, name=f"{VENDOR} - {PRODUCT} events", removeNull=True),
+            outputs_prefix=f"{VENDOR.capitalize()}.Events",
+            outputs=alerts,
+            raw_response=alerts,
+        )
+    )
+
+    if should_push_events and alerts:
+        demisto.debug(f"[Get Events] before send_events_to_xsiam {VENDOR=} {PRODUCT=} count={len(alerts)}")
+        send_events_to_xsiam(alerts, VENDOR, PRODUCT)
+        demisto.debug(f"[Get Events] after send_events_to_xsiam {VENDOR=} {PRODUCT=} count={len(alerts)}")
+
+
 def main() -> None:
     command = demisto.command()
     api_token = demisto.params().get("credentials", {}).get("password")
@@ -419,91 +548,10 @@ def main() -> None:
 
         if command == "test-module":
             return_results(orca_test_module(client, last_fetch, end_time))
-        elif command in ("fetch-events", "orca-security-get-events"):
-            # Explicit fetch window for this run (lower inclusive -> upper exclusive), for diagnostics.
-            demisto.debug(
-                f"[Fetch Events] Fetch window: LastUpdated >= {last_fetch} AND < {end_time} ({max_fetch=} {last_run_offset=})"
-            )
-            alerts = get_alerts(client, max_fetch, last_fetch, end_time, start_offset=last_run_offset)
-            # Capture the RAW page size and newest timestamp BEFORE dedup: the wedge guard must key
-            # off these, since dedup can empty a full page and hide the "full page, same second" signal.
-            raw_fetched_count = len(alerts)
-            newest_before_dedup = alerts[-1].get("data", {}).get("LastUpdated", {}).get("value") if alerts else None
-
-            if command == "fetch-events":
-                should_push_events = True
-                # Drop alerts already emitted at the previous run's boundary second (inclusive lower bound).
-                alerts = dedup_alerts(alerts, last_run_ids, last_fetch)
-
-            else:  # command == 'orca-security-get-events'
-                should_push_events = argToBoolean(demisto.args().get("should_push_events", False))
-                return_results(
-                    CommandResults(
-                        readable_output=tableToMarkdown(t=alerts, name=f"{VENDOR} - {PRODUCT} events", removeNull=True),
-                        raw_response=alerts,
-                    )
-                )
-
-            if should_push_events and alerts:
-                alerts = add_time_key_to_alerts(alerts)
-                alerts = add_entry_status_to_alerts(alerts)
-                # Distribution of new vs updated: proves the LastUpdated cursor now captures updates.
-                updated_count = sum(1 for alert in alerts if alert.get("_ENTRY_STATUS") == "updated")
-                demisto.debug(
-                    f"[Fetch Events] Entry status distribution: new={len(alerts) - updated_count}, "
-                    f"updated={updated_count}, total={len(alerts)}"
-                )
-                demisto.debug(f"[Fetch Events] before send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
-                send_events_to_xsiam(alerts, VENDOR, PRODUCT)
-                demisto.debug(f"[Fetch Events] after send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}")
-
-            # Only the scheduled fetch-events run advances the cursor; the manual get-events command
-            # must never touch lastRun.
-            if command == "fetch-events":
-                # Advance the cursor using the newest RAW timestamp (dedup may have emptied the list).
-                new_last_fetch = normalize_last_updated(newest_before_dedup) or last_fetch
-                page_was_full = raw_fetched_count == max_fetch
-                same_second = new_last_fetch == normalize_last_updated(last_fetch)
-
-                if raw_fetched_count == 0 and last_run_offset > 0:
-                    # Drained-second terminator: an empty page while resuming at a non-zero offset proves
-                    # the boundary second is fully consumed. Step the cursor +1s and clear the offset so
-                    # the inclusive lower bound does not re-read it forever (infinite duplicate loop).
-                    new_last_fetch = add_one_second(last_fetch)
-                    new_last_run_offset = 0
-                    new_last_run_ids: list[str] = []
-                    demisto.info(
-                        f"[Fetch Events] Boundary second {last_fetch} fully drained (empty page at offset "
-                        f"{last_run_offset}); stepping cursor to {new_last_fetch} and resetting offset."
-                    )
-                elif page_was_full and same_second:
-                    # Wedge guard: a full raw page still on the same second means that second holds more
-                    # than max_fetch events. Keep the timestamp but advance an in-second offset so the
-                    # next run reads the next slice.
-                    new_last_run_offset = last_run_offset + raw_fetched_count
-                    new_last_run_ids = get_boundary_ids(alerts, new_last_fetch) if alerts else last_run_ids
-                    demisto.info(
-                        f"[Fetch Events] Boundary second {new_last_fetch} not fully drained; advancing lastRunOffset "
-                        f"to {new_last_run_offset} (max_fetch={max_fetch})"
-                    )
-                else:
-                    # Normal path: page not full or crossed into a newer second. Reset the offset.
-                    new_last_run_offset = 0
-                    new_last_run_ids = get_boundary_ids(alerts, new_last_fetch) if alerts else last_run_ids
-
-                current_last_run = {
-                    "lastRun": new_last_fetch,
-                    "lastRunIds": new_last_run_ids,
-                    "lastRunOffset": new_last_run_offset,
-                }
-
-                demisto.setLastRun(current_last_run)
-                demisto.debug(
-                    f"[Fetch Events] Persisted lastRun={new_last_fetch} with {len(new_last_run_ids)} boundary id(s), "
-                    f"lastRunOffset={new_last_run_offset}"
-                )
-                demisto.debug(f"[Fetch Events] {current_last_run=}")
-
+        elif command == "fetch-events":
+            fetch_events(client, last_fetch, last_run_ids, last_run_offset, max_fetch, end_time)
+        elif command == "orca-security-get-events":
+            get_events_command(client, demisto.args())
         else:
             raise NotImplementedError("This command is not implemented yet.")
 

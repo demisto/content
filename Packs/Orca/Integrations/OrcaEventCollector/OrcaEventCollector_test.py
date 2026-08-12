@@ -675,9 +675,12 @@ def test_main_fetch_events_stuck_cursor_regression(mocker):
     # Nothing is re-sent: both boundary events were recognized as duplicates.
     mock_send_events.assert_not_called()
     # Cursor is held on the boundary second with its ids preserved (no forward loop onto itself).
-    mock_set_last_run.assert_called_once_with(
-        {"lastRun": boundary_z, "lastRunIds": ["orca-7679203", "orca-7704352"], "lastRunOffset": 0}
-    )
+    mock_set_last_run.assert_called_once()
+    persisted = mock_set_last_run.call_args[0][0]
+    assert persisted["lastRun"] == boundary_z
+    assert persisted["lastRunOffset"] == 0
+    # lastRunIds is used as a membership set for dedup, so order is irrelevant.
+    assert set(persisted["lastRunIds"]) == {"orca-7679203", "orca-7704352"}
 
 
 @freeze_time(FROZEN_NOW)
