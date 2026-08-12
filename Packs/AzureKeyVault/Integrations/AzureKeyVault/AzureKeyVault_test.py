@@ -49,7 +49,7 @@ CERTIFICATE_PREFIX = "AzureKeyVault.Certificate"
 # The following two values must match the "Credentials Fetch Mode" options in AzureKeyVault.yml.
 # They are intentionally hard-coded (not imported from the integration) so the tests verify that
 # the code recognizes the exact strings the YAML/platform sends, and catch any drift between them.
-STORE_IN_XSOAR_MODE_YML = "Store in XSOAR"
+STORE_IN_CORTEX_MODE_YML = "Store in Cortex"
 ON_DEMAND_MODE_YML = "External Credentials Vault (on-demand)"
 OBJECT_ID = "00000000-0000-0000-0000-000000000000"
 
@@ -685,12 +685,12 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert "ok" in AzureKeyVault.return_results.call_args_list[0][0]
 
 
-def test_fetch_credentials_store_in_xsoar_mode(mocker):
+def test_fetch_credentials_store_in_cortex_mode(mocker):
     """
-    Scenario: Fetch credentials in the default "Store in XSOAR" mode.
+    Scenario: Fetch credentials in the default "Store in Cortex" mode.
     Given:
      - Configured key vaults and secrets, no specific identifier.
-     - Credentials Fetch Mode is "Store in XSOAR".
+     - Credentials Fetch Mode is "Store in Cortex".
     When:
      - fetch_credentials is called.
     Then:
@@ -706,7 +706,7 @@ def test_fetch_credentials_store_in_xsoar_mode(mocker):
     )
     credentials_mock = mocker.patch.object(demisto, "credentials")
 
-    fetch_credentials(client, [VAULT_NAME], [SECRET_NAME], "", STORE_IN_XSOAR_MODE_YML)
+    fetch_credentials(client, [VAULT_NAME], [SECRET_NAME], "", STORE_IN_CORTEX_MODE_YML)
 
     get_secret_mock.assert_called_once_with(VAULT_NAME, SECRET_NAME)
     credentials = credentials_mock.call_args[0][0]
@@ -769,7 +769,7 @@ def test_fetch_credentials_on_demand_mode_with_identifier_fetches_value(mocker):
     assert credentials == [{"user": SECRET_NAME, "password": "value", "name": f"{VAULT_NAME}/{SECRET_NAME}"}]
 
 
-def test_fetch_credentials_defaults_to_store_in_xsoar_mode(mocker):
+def test_fetch_credentials_defaults_to_store_in_cortex_mode(mocker):
     """
     Scenario: Fetch credentials without explicitly passing a fetch mode.
     Given:
@@ -778,7 +778,7 @@ def test_fetch_credentials_defaults_to_store_in_xsoar_mode(mocker):
     When:
      - fetch_credentials is called.
     Then:
-     - Ensure the default behavior is "Store in XSOAR": the secret values are fetched from
+     - Ensure the default behavior is "Store in Cortex": the secret values are fetched from
        Azure Key Vault and returned with passwords.
     """
     from AzureKeyVault import fetch_credentials

@@ -14,7 +14,7 @@ VAULT_NAME_CONTEXT_FIELD = "key_vault_name"
 DEFAULT_LIMIT = 50
 DEFAULT_OFFSET = 0
 
-STORE_IN_XSOAR_MODE = "Store in XSOAR"
+STORE_IN_CORTEX_MODE = "Store in Cortex"
 ON_DEMAND_MODE = "External Credentials Vault (on-demand)"
 
 
@@ -1391,7 +1391,7 @@ def fetch_credentials(
     key_vaults_to_fetch_from: list[str],
     secrets_to_fetch: list[str],
     credentials_name: str,
-    fetch_mode: str = STORE_IN_XSOAR_MODE,
+    fetch_mode: str = STORE_IN_CORTEX_MODE,
 ) -> None:
     """
     Fetch credentials from secrets which reside in the specified Key Vaults list.
@@ -1401,18 +1401,18 @@ def fetch_credentials(
        fetched live from Azure Key Vault (this is the runtime lookup used by both modes).
     2. Fetch credentials based on instance parameters: key_vaults list and secret list.
        The behavior of this scenario depends on ``fetch_mode``:
-       - "Store in XSOAR" (default): the actual secret values are fetched and returned so
-         Cortex XSOAR stores them in the credentials store.
+       - "Store in Cortex" (default): the actual secret values are fetched and returned so
+         Cortex stores them in the credentials store.
        - "External Credentials Vault (on-demand)": only the credential names
          (KEY_VAULT_NAME/SECRET_NAME) are returned, with empty passwords. No secret values
-         are fetched from Azure Key Vault and nothing is persisted in Cortex XSOAR. The value
+         are fetched from Azure Key Vault and nothing is persisted in Cortex. The value
          is fetched live only when an integration requests a specific credential by identifier.
     Args:
         client (KeyVaultClient):  Azure Key Vault API client.
         key_vaults_to_fetch_from (List[str]): List of Key Vaults to fetch secrets from.
         secrets_to_fetch (List[str]): List of secrets to fetch.
         credentials_name (str): Name of a specific set of credentials to fetch.
-        fetch_mode (str): The credentials fetch mode. One of STORE_IN_XSOAR_MODE or ON_DEMAND_MODE.
+        fetch_mode (str): The credentials fetch mode. One of STORE_IN_CORTEX_MODE or ON_DEMAND_MODE.
 
     Returns:
         None
@@ -1538,7 +1538,7 @@ def main() -> None:  # pragma: no cover
     args: dict[str, Any] = demisto.args() or {}
     key_vaults_to_fetch_from = argToList(params.get("key_vaults", []))
     secrets_to_fetch = argToList(params.get("secrets", []))
-    credentials_fetch_mode = params.get("credentials_fetch_mode", STORE_IN_XSOAR_MODE)
+    credentials_fetch_mode = params.get("credentials_fetch_mode", STORE_IN_CORTEX_MODE)
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     identifier = args.get("identifier", "")
