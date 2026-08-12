@@ -2222,7 +2222,7 @@ script:
     - name: odata
       description: Filter incidents using 'odata' query.
     - name: expand_alerts
-      description: Whether to include each incident's related alerts in the response (using $expand=alerts).
+      description: Whether to include each incident's related alerts in the response.
       auto: PREDEFINED
       predefined:
       - 'true'
