@@ -86,34 +86,17 @@ def remove_identity_key(source: Any) -> dict:
 def encode_sharing_url(share_url: str) -> str:
     """Encode a sharing URL into the token accepted by GET /shares/{token}.
 
-    Implements the encoding documented for the shares API: base64url-encode the URL, strip the
-    '=' padding, and prefix 'u!'. urlsafe_b64encode already emits the base64url alphabet, so the
-    '/' -> '_' and '+' -> '-' translations the documentation describes come for free.
-
-    Args:
-        share_url: A sharing URL, for example a SharePoint or OneDrive "copy link" URL.
-
-    Returns:
-        The encoded sharing token, including the leading 'u!'.
+    Per the shares API: base64url-encode, strip the '=' padding, prefix 'u!'.
     """
     encoded = base64.urlsafe_b64encode(share_url.encode("utf-8")).decode("utf-8")
     return f"u!{encoded.rstrip('=')}"
 
 
 def _select_addressing_mode(addressing_args: dict[str, str], allow_path: bool, allow_share_url: bool) -> str:
-    """Return the single addressing argument the caller supplied, or raise explaining why not.
-
-    Args:
-        addressing_args: The addressing arguments, keyed by name, already normalized to strings.
-        allow_path: Whether the endpoint supports 'root:/{item-path}:' addressing.
-        allow_share_url: Whether the endpoint supports the /shares/{token} route.
-
-    Returns:
-        The name of the supplied argument: 'item_id', 'item_path' or 'share_url'.
+    """Return the name of the single addressing argument supplied, or raise explaining why not.
 
     Raises:
-        DemistoException: If an unsupported argument is used, or if the number supplied is not
-            exactly one.
+        DemistoException: If an unsupported argument is used, or the number supplied is not one.
     """
     if addressing_args["item_path"] and not allow_path:
         raise DemistoException(
@@ -136,24 +119,17 @@ def _select_addressing_mode(addressing_args: dict[str, str], allow_path: bool, a
 def resolve_item_addressing(args: dict[str, str], allow_path: bool = True, allow_share_url: bool = False) -> dict[str, str]:
     """Validate and normalize the arguments that address a single driveItem.
 
-    Microsoft Graph exposes several ways to address the same driveItem, and which ones are
-    valid differs per endpoint. YAML cannot express "exactly one of these arguments", so the
-    rule is enforced here and the error messages name the arguments explicitly.
-
-    Args:
-        args: The raw command arguments.
-        allow_path: Whether the endpoint supports 'root:/{item-path}:' addressing.
-        allow_share_url: Whether the endpoint supports the /shares/{token} route.
+    Graph offers several ways to address the same item, and which are valid differs per
+    endpoint. YAML cannot express "exactly one of these", so the rule is enforced here.
 
     Returns:
-        A dict with 'mode' (one of 'item_id', 'item_path', 'share_url') and the matching value
-        under 'value'. For the id and path modes, 'object_type' and 'object_type_id' are included.
+        {'mode': 'item_id'|'item_path'|'share_url', 'value': ...}, plus 'object_type' and
+        'object_type_id' for the id and path modes.
 
     Raises:
-        DemistoException: If zero or more than one addressing argument is supplied, if an
-            unsupported one is used, or if a required companion argument is missing.
+        DemistoException: If the addressing arguments are missing, ambiguous or unsupported.
     """
-    # Insertion order matters: it drives the order names appear in the error messages.
+    # Insertion order drives the order names appear in the error messages.
     addressing_args = {name: args.get(name) or "" for name in ("item_id", "item_path", "share_url")}
 
     mode = _select_addressing_mode(addressing_args, allow_path, allow_share_url)
@@ -436,21 +412,11 @@ class MsGraphClient:
     def _driveitem_path_uri(object_type: str, object_type_id: str, item_path: str, suffix: str = "") -> str:
         """Build a /v1.0 relative URL addressing a driveItem by its path under the drive root.
 
-        Microsoft Graph addresses items by path as 'root:/{item-path}' and, when a sub-resource
-        follows, closes the path with a colon: 'root:/{item-path}:/{suffix}'. Only some endpoints
-        support path addressing - the caller is responsible for knowing which.
-
-        Args:
-            object_type: One of drives, groups, sites, users.
-            object_type_id: ID of the parent resource.
-            item_path: Path relative to the drive root, for example 'Documents/report.docx'.
-            suffix: Optional sub-resource appended after the path (no leading slash).
-
-        Returns:
-            Relative URL suitable for ms_client.http_request(url_suffix=...).
+        Graph addresses items by path as 'root:/{item-path}', closing with a colon when a
+        sub-resource follows: 'root:/{item-path}:/{suffix}'. Only some endpoints support this.
         """
-        # Percent-encode each path segment while preserving the '/' separators, so that spaces
-        # and other reserved characters in file names do not break the URL.
+        # Encode the segments but keep the '/' separators, so spaces and other reserved
+        # characters in file names do not break the URL.
         encoded_path = quote(item_path.strip("/"), safe="/")
         prefix = f"{object_type}/{object_type_id}" if object_type == "drives" else f"{object_type}/{object_type_id}/drive"
         root = f"{prefix}/root:"
@@ -789,18 +755,11 @@ class MsGraphClient:
         raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: drives, groups, sites, users.")
 
     def get_sharepoint_ids(self, site_id: str, item_id: str) -> dict:
-        """Retrieve the SharePoint identifiers of a driveItem.
+        """Retrieve the SharePoint identifiers of a driveItem, or {} if it exposes none.
 
-        sharepointIds is not returned by a regular driveItem request, so it has to be asked for
-        on its own. It carries listId and listItemUniqueId, which are the join keys between the
+        sharepointIds is not returned by a regular driveItem request, so it has to be asked
+        for on its own. It carries listId and listItemUniqueId, the join keys between the
         drive world and the SharePoint list world.
-
-        Args:
-            site_id: ID of the SharePoint site holding the item.
-            item_id: ID of the driveItem.
-
-        Returns:
-            The sharepointIds object, or an empty dict when the item exposes none.
         """
         response = self.ms_client.http_request(
             method="GET",
@@ -810,19 +769,11 @@ class MsGraphClient:
         return response.get("sharepointIds") or {}
 
     def resolve_list_item_ids(self, site_id: str, item_id: str) -> tuple:
-        """Resolve the list ID and list item ID needed to address a driveItem as a list item.
+        """Return the (list_id, list_item_unique_id) that address a driveItem as a list item.
 
-        The activities and analytics endpoints hang off the SharePoint list representation of an
-        item rather than its drive representation, and they key off listItemUniqueId rather than
-        the driveItem ID. Callers pass only site_id and item_id, so both values are resolved here
-        and the SharePoint list layer stays out of the command signature.
-
-        Args:
-            site_id: ID of the SharePoint site holding the item.
-            item_id: ID of the driveItem.
-
-        Returns:
-            A (list_id, list_item_unique_id) tuple.
+        Activities and analytics hang off the SharePoint list representation of an item, and
+        key off listItemUniqueId rather than the driveItem ID. Resolving here keeps the list
+        layer out of the command signatures.
 
         Raises:
             DemistoException: If the item exposes no SharePoint identifiers.
@@ -840,20 +791,11 @@ class MsGraphClient:
     def list_driveitem_activities(self, site_id: str, item_id: str, next_page_url: str = "") -> dict:
         """List the activities that took place on a driveItem.
 
-        Maps to GET /sites/{site-id}/lists/{list-id}/items/{list-item-id}/activities. The list and
-        list-item identifiers are resolved from the item's sharepointIds first, so callers only
-        supply site_id and item_id.
+        GET /sites/{site-id}/lists/{list-id}/items/{list-item-id}/activities, with the list
+        identifiers resolved from sharepointIds first.
 
-        This endpoint supports no OData query parameters, so there is no $top - result limiting
-        has to happen client-side.
-
-        Args:
-            site_id: ID of the SharePoint site holding the item.
-            item_id: ID of the driveItem.
-            next_page_url: Optional full URL from a previous @odata.nextLink.
-
-        Returns:
-            The raw response from Microsoft Graph, with value[] and an optional @odata.nextLink.
+        This endpoint supports no OData query parameters, so there is no $top - result
+        limiting has to happen client-side.
         """
         if next_page_url:
             url = url_validation(next_page_url)
@@ -864,26 +806,18 @@ class MsGraphClient:
         return self.ms_client.http_request(method="GET", url_suffix=url_suffix)
 
     def get_driveitem_analytics(self, site_id: str, item_id: str, time_range: str) -> dict:
-        """Retrieve activity statistics for a driveItem.
+        """Retrieve activity statistics for a driveItem ('allTime' or 'lastSevenDays').
 
-        Maps to GET /sites/{site-id}/lists/{list-id}/items/{list-item-id}/analytics/{time_range},
-        using the same list-item addressing as the activities endpoint. Note that
-        /sites/{id}/analytics is the analytics of the site itself, a different resource.
-
-        Args:
-            site_id: ID of the SharePoint site holding the item.
-            item_id: ID of the driveItem.
-            time_range: Either 'allTime' or 'lastSevenDays'.
-
-        Returns:
-            The itemAnalytics object returned by Microsoft Graph.
+        GET /sites/{site-id}/lists/{list-id}/items/{list-item-id}/analytics/{time_range},
+        same list-item addressing as activities. Note /sites/{id}/analytics is the analytics
+        of the site itself - a different resource.
         """
         list_id, list_item_unique_id = self.resolve_list_item_ids(site_id, item_id)
         url_suffix = f"sites/{site_id}/lists/{list_id}/items/{list_item_unique_id}/analytics/{time_range}"
         return self.ms_client.http_request(method="GET", url_suffix=url_suffix)
 
-    # Fields requested when reading driveItem metadata. Listed explicitly because using $select
-    # narrows the projection - anything omitted here will be absent from the response.
+    # Listed explicitly because $select narrows the projection - anything omitted here will
+    # be absent from the response.
     DRIVEITEM_SELECT_FIELDS = (
         "id,name,size,webUrl,createdDateTime,lastModifiedDateTime,createdBy,lastModifiedBy,parentReference,file,folder"
     )
@@ -897,31 +831,18 @@ class MsGraphClient:
         share_url: str = "",
         include_sharepoint_ids: bool = True,
     ) -> dict:
-        """Retrieve the metadata of a single driveItem.
+        """Retrieve the metadata of a single driveItem, with sharepointIds merged in.
 
-        Supports the three addressing modes Microsoft Graph documents for this resource: by item
-        ID, by path relative to the drive root, and by sharing URL via the /shares route. Exactly
-        one of item_id, item_path or share_url is expected - the caller validates that.
+        Supports the three addressing modes Graph documents here: by item ID, by path under
+        the drive root, and by sharing URL. Exactly one is expected - the caller validates it.
 
-        sharepointIds is not returned by a regular driveItem request even when asked for in
-        $select, so it is fetched with a second call and merged into the result. That projection
-        carries listId and listItemUniqueId, which the activities and analytics commands need.
-
-        Args:
-            object_type: One of drives, groups, sites, users. Unused for the share_url mode.
-            object_type_id: ID of the parent resource. Unused for the share_url mode.
-            item_id: ID of the driveItem.
-            item_path: Path of the driveItem relative to the drive root.
-            share_url: A sharing URL pointing at the driveItem.
-            include_sharepoint_ids: Whether to make the second call for sharepointIds.
-
-        Returns:
-            The driveItem object returned by Microsoft Graph, with sharepointIds merged in.
+        sharepointIds is not returned even when asked for in $select, so it is fetched with a
+        second call. It carries the identifiers activities and analytics need.
         """
         params = {"$select": self.DRIVEITEM_SELECT_FIELDS}
 
         if share_url:
-            # The /shares route needs Files.ReadWrite.All (application), a higher permission
+            # The /shares route needs Files.ReadWrite.All (application) - a higher permission
             # than the other two modes, even though this is a read.
             url_suffix = f"shares/{encode_sharing_url(share_url)}/driveItem"
         elif item_path:
@@ -932,8 +853,8 @@ class MsGraphClient:
         response = self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params)
 
         if include_sharepoint_ids:
-            # The lookup is site-scoped, so the site ID has to come from the response itself for
-            # the share_url and path modes, where the caller may not know it up front.
+            # The lookup is site-scoped, and for the share_url and path modes the caller may
+            # not know the site ID, so take it from the response.
             site_id = (response.get("parentReference") or {}).get("siteId")
             resolved_item_id = response.get("id")
             if site_id and resolved_item_id:
@@ -1698,26 +1619,18 @@ def _decode_sharepoint_login_name(login_name: str) -> str:
     return encoded_upn
 
 
-# The role keys an identitySet may nest an identity under, in the order they should be preferred.
-# 'siteUser' matters for SharePoint sharing entries, where it is often the only one populated.
+# The role keys an identitySet may nest an identity under, in preference order. 'siteUser'
+# matters for SharePoint sharing entries, where it is often the only one populated.
 IDENTITY_ROLE_KEYS = ("user", "siteUser", "group", "application", "device")
 
 
 def _lookup(source: dict, *names: str) -> Any:
     """Return the first truthy value among 'names', matching keys case-insensitively.
 
-    Graph payloads reach these helpers in two different casings. Anything that went through
-    parse_key_to_context is title-cased ('Email'), but that function does not recurse into
-    lists, so identities nested inside a list - grantedToIdentitiesV2, for example - keep
-    Microsoft's original camelCase ('email'). Matching case-insensitively handles both without
-    every call site having to spell out each key twice.
-
-    Args:
-        source: The dict to read from. A non-dict is treated as empty.
-        names: Candidate key names, in priority order.
-
-    Returns:
-        The first truthy value found, or None.
+    Graph payloads reach these helpers in two casings: parse_key_to_context title-cases
+    ('Email'), but does not recurse into lists, so identities nested in a list such as
+    grantedToIdentitiesV2 keep Microsoft's camelCase ('email'). Matching case-insensitively
+    handles both without every call site spelling out each key twice.
     """
     if not isinstance(source, dict):
         return None
@@ -1743,17 +1656,10 @@ def _identity_label(identity: dict) -> str:
 
 
 def _summarize_identity_set(identity_set: dict) -> str:
-    """Return a human-readable label for an identitySet (a wrapper around one or more identities).
+    """Return a label for an identitySet, for example the 'actor' of an itemActivity.
 
-    An identitySet nests the actual identity under a role key such as 'user', 'application' or
-    'device'. This unwraps the first populated one and labels it. Note this differs from
-    _identity_label, which expects an already-unwrapped identity.
-
-    Args:
-        identity_set: An identitySet object, for example the 'actor' of an itemActivity.
-
-    Returns:
-        The label of the first identity present, or an empty string.
+    An identitySet nests the identity under a role key, so this unwraps the first populated
+    one and labels it. Unlike _identity_label, which expects an already-unwrapped identity.
     """
     for role in IDENTITY_ROLE_KEYS:
         if label := _identity_label(_lookup(identity_set, role) or {}):
@@ -1762,18 +1668,11 @@ def _summarize_identity_set(identity_set: dict) -> str:
 
 
 def _summarize_activity_actions(activity: dict) -> str:
-    """Summarize which action facets an itemActivity represents.
+    """Summarize which action facets an itemActivity represents, comma-separated.
 
-    The v1.0 itemActivity nests its facets under 'action', for example
-    {"edit": {}, "version": {"newVersion": "2.0"}} or {"share": {}}. The facet *names* carry the
-    information - most of them have an empty object as their value. Any facet Microsoft Graph
-    adds later is surfaced automatically, so this needs no change to keep working.
-
-    Args:
-        activity: A parsed itemActivity.
-
-    Returns:
-        A comma-separated list of action names, or an empty string.
+    v1.0 nests the facets under 'action', e.g. {"edit": {}, "version": {"newVersion": "2.0"}}.
+    The facet *names* carry the information - most have an empty object as their value. Any
+    facet Graph adds later is surfaced automatically.
     """
     action = activity.get("Action")
     if not isinstance(action, dict):
@@ -1788,17 +1687,10 @@ def _summarize_activity_actions(activity: dict) -> str:
 
 
 def _activity_recorded_time(activity: dict) -> str:
-    """Return the timestamp of an itemActivity.
+    """Return the ISO timestamp of an itemActivity, or an empty string.
 
-    The v1.0 payload carries the timestamp as 'times.recordedDateTime'. 'activityDateTime' is
-    accepted as a fallback because it appears on the beta endpoint and in parts of the
-    documentation, so both shapes render correctly.
-
-    Args:
-        activity: A parsed itemActivity.
-
-    Returns:
-        An ISO timestamp, or an empty string.
+    v1.0 carries it as 'times.recordedDateTime'. 'activityDateTime' is accepted as a fallback
+    because it appears on the beta endpoint and in parts of the documentation.
     """
     times = activity.get("Times")
     if isinstance(times, dict) and times.get("RecordedDateTime"):
@@ -1939,14 +1831,8 @@ def delete_driveitem_permission_command(client: MsGraphClient, args: dict[str, s
 def _driveitem_metadata_readable(context_entry: dict) -> str:
     """Render the human-readable table for a single driveItem's metadata.
 
-    ListItemUniqueId is surfaced alongside the plain metadata because it is the identifier the
-    activities and analytics commands need, and it is otherwise buried inside sharepointIds.
-
-    Args:
-        context_entry: The parsed (title-cased) driveItem.
-
-    Returns:
-        A markdown table.
+    ListItemUniqueId is surfaced alongside the plain metadata because it is the identifier
+    the activities and analytics commands need, and is otherwise buried in sharepointIds.
     """
     sharepoint_ids = context_entry.get("SharepointIds") or {}
     human_readable_content = {
@@ -1972,20 +1858,9 @@ def _driveitem_metadata_readable(context_entry: dict) -> str:
 def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
     """Retrieve the metadata of a single driveItem (file or folder).
 
-    Maps to Microsoft Graph:
-        GET /v1.0/{drive-prefix}/items/{item-id}
-        GET /v1.0/{drive-prefix}/root:/{item-path}
-        GET /v1.0/shares/{encoded-sharing-url}/driveItem
-
-    Exactly one of item_id, item_path or share_url must be supplied. YAML cannot express that
-    rule, so it is enforced here.
-
-    Args:
-        client: The Microsoft Graph client.
-        args: Command arguments. See the YAML for the full list.
-
-    Returns:
-        CommandResults with the driveItem under MsGraphFiles.Files.
+    Maps to GET /v1.0/{drive-prefix}/items/{item-id}, /root:/{item-path} or
+    /shares/{encoded-sharing-url}/driveItem, depending on the addressing argument supplied.
+    Exactly one is required; YAML cannot express that rule, so it is enforced here.
     """
     addressing = resolve_item_addressing(args, allow_path=True, allow_share_url=True)
     include_sharepoint_ids = argToBoolean(args.get("include_sharepoint_ids", "true"))
@@ -2000,8 +1875,8 @@ def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) 
     )
 
     context_entry = parse_key_to_context(raw_response)
-    # SiteID is surfaced at the top level because it is the value callers need for follow-up
-    # commands, and it is otherwise buried inside parentReference.
+    # SiteID is surfaced at the top level because callers need it for follow-up commands,
+    # and it is otherwise buried inside parentReference.
     parent_reference = context_entry.get("ParentReference") or {}
     context_entry["SiteID"] = parent_reference.get("SiteId")
     context_entry["ItemID"] = context_entry.get("ID")
@@ -2017,15 +1892,7 @@ def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) 
 
 
 def _driveitem_activities_readable(parsed_activities: list, item_id: str) -> str:
-    """Render the human-readable table for a driveItem's activities.
-
-    Args:
-        parsed_activities: The parsed (title-cased) itemActivity entries.
-        item_id: The driveItem ID, used in the table title and the empty-result message.
-
-    Returns:
-        A markdown table, or a plain message when there are no activities.
-    """
+    """Render the activities table, or a plain message when there are none."""
     if not parsed_activities:
         return f"No activities were found for item {item_id}."
 
@@ -2049,22 +1916,12 @@ def _driveitem_activities_readable(parsed_activities: list, item_id: str) -> str
 def list_driveitem_activities_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
     """List the activities that took place on a driveItem.
 
-    Maps to Microsoft Graph:
-        GET /v1.0/sites/{site-id}/lists/{list-id}/items/{list-item-id}/activities
+    Maps to GET /v1.0/sites/{site-id}/lists/{list-id}/items/{list-item-id}/activities.
+    Activities hang off the SharePoint list representation, but resolving the list
+    identifiers is internal - callers supply only site_id and item_id.
 
-    Activities hang off the SharePoint list representation of an item, so the list and list-item
-    identifiers are resolved from the item's sharepointIds first. That lookup is kept internal -
-    callers supply only site_id and item_id, so playbooks never deal with the list layer.
-
-    The endpoint accepts no OData query parameters, so 'limit' is applied client-side after
-    the response is received rather than sent as $top.
-
-    Args:
-        client: The Microsoft Graph client.
-        args: Command arguments. See the YAML for the full list.
-
-    Returns:
-        CommandResults with MsGraphFiles.ItemActivity context.
+    The endpoint accepts no OData query parameters, so 'limit' is applied client-side
+    rather than sent as $top.
     """
     site_id = args["site_id"]
     item_id = args["item_id"]
@@ -2101,18 +1958,10 @@ def list_driveitem_activities_command(client: MsGraphClient, args: dict[str, str
 
 
 def _driveitem_analytics_readable(parsed_stats: dict, item_id: str, time_range: str) -> str:
-    """Render the human-readable table for a driveItem's analytics.
+    """Render the analytics table, or a plain message when no data was returned.
 
-    Only the four itemActivityStat facets Microsoft Graph documents are surfaced, and only when
-    present, so an absent facet does not become an empty row.
-
-    Args:
-        parsed_stats: The parsed (title-cased) itemActivityStat object.
-        item_id: The driveItem ID, used in the table title and the empty-result message.
-        time_range: The requested time range, used in the same two places.
-
-    Returns:
-        A markdown table, or a plain message when no analytics data was returned.
+    Only the four documented itemActivityStat facets are surfaced, and only when present,
+    so an absent facet does not become an empty row.
     """
     readable_rows = [
         {
@@ -2139,19 +1988,9 @@ def _driveitem_analytics_readable(parsed_stats: dict, item_id: str, time_range: 
 def get_driveitem_analytics_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
     """Retrieve activity statistics (views, edits) for a driveItem.
 
-    Maps to Microsoft Graph:
-        GET /v1.0/sites/{site-id}/lists/{list-id}/items/{list-item-id}/analytics/{time_range}
-
-    Uses the same list-item addressing as the activities command, with the list identifiers
-    resolved internally from the item's sharepointIds. /sites/{id}/analytics is site-level
-    analytics - a different resource - and is deliberately not used here.
-
-    Args:
-        client: The Microsoft Graph client.
-        args: Command arguments. See the YAML for the full list.
-
-    Returns:
-        CommandResults with MsGraphFiles.ItemAnalytics context.
+    Maps to GET /v1.0/sites/{site-id}/lists/{list-id}/items/{list-item-id}/analytics/
+    {time_range}, same internal list-item addressing as the activities command.
+    /sites/{id}/analytics is site-level analytics - a different resource - and is not used.
     """
     site_id = args["site_id"]
     item_id = args["item_id"]
