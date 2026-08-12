@@ -736,14 +736,10 @@ def main():  # pragma: no cover
             server_url=server_url,
         )
 
-        # Resolve the configured set names to their real set IDs for all authentication methods.
-        # The EPM data endpoints - Events/Search and policyaudits/search -
-        # require the numeric/GUID set Id; passing a set name yields no results for those endpoints.
         set_ids = get_set_ids_by_set_names(client, set_names)
         demisto.debug(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
         demisto.debug(f"[main] resolved {set_ids=}")
 
-        # Validate we got set IDs.
         if not set_ids:
             raise DemistoException(
                 f"No set IDs were resolved from configured set names: {set_names}. "
