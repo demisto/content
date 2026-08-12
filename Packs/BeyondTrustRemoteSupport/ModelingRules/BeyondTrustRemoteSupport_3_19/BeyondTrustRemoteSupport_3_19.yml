@@ -1,6 +1,6 @@
 fromversion: 8.15.0
 id: BeyondTrust_Remote_Support_ModelingRule
-name: BeyondTrustRemoteSupport Modeling Rule
+name: BeyondTrust Remote Support Modeling Rule
 rules: ''
 schema: ''
 tags: BeyondTrust
