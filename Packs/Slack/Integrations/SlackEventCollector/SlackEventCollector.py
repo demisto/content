@@ -46,6 +46,7 @@ def prepare_query_params(params: dict) -> dict:
         "entity": params.get("entity"),
         "cursor": params.get("cursor"),
     }
+    demisto.debug(f"Prepared query params: {query_params}")
     return query_params
 
 
@@ -124,6 +125,9 @@ def compute_window_start(params: dict, last_run: dict, now: int) -> int:
     window_start = last_run.get("last_fetched_time")
     if window_start is None:
         window_start = arg_to_timestamp(params.get("oldest")) or now
+        demisto.debug(f"No last_fetched_time in last run; computed window start from first-fetch config: {window_start}")
+    else:
+        demisto.debug(f"Resuming from last_fetched_time; window start: {window_start}")
     return window_start
 
 
@@ -142,7 +146,12 @@ def filter_already_fetched(events: list[dict], last_run: dict) -> list[dict]:
     boundary_ids = set(last_run.get("last_fetched_ids") or [])
     if boundary_time is None or not boundary_ids:
         return events
-    return [e for e in events if not (e.get("date_create") == boundary_time and e.get("id") in boundary_ids)]
+    filtered = [e for e in events if not (e.get("date_create") == boundary_time and e.get("id") in boundary_ids)]
+    demisto.debug(
+        f"Deduplication: filtered out {len(events) - len(filtered)} already-fetched events "
+        f"at boundary_time={boundary_time}; {len(filtered)} new events remain."
+    )
+    return filtered
 
 
 def sort_events_oldest_first(events: list[dict]) -> list[dict]:
@@ -173,6 +182,10 @@ def update_last_run(last_run: dict, sent_events: list[dict], window_end: int, re
     new boundary ids are MERGED with the previous ones (not replaced) so events already sent at
     that timestamp on earlier runs are still deduped and never re-sent.
     """
+    demisto.debug(
+        f"Updating last run: sent_events={len(sent_events)}, window_end={window_end}, "
+        f"reached_limit={reached_limit}, caught_up={caught_up}"
+    )
     if sent_events and (reached_limit or caught_up):
         newest_time = sent_events[-1].get("date_create")
         ids_at_newest = [e.get("id") for e in sent_events if e.get("date_create") == newest_time]
@@ -181,10 +194,12 @@ def update_last_run(last_run: dict, sent_events: list[dict], window_end: int, re
             ids_at_newest = list(set(last_run.get("last_fetched_ids") or []) | set(ids_at_newest))
         last_run["last_fetched_time"] = newest_time
         last_run["last_fetched_ids"] = ids_at_newest
+        demisto.debug(f"Advanced last_fetched_time to newest sent event: {newest_time}")
     elif not caught_up and window_end > (last_run.get("last_fetched_time") or 0):
         # Drained (or empty) window still below 'now' -> jump straight to the window end.
         last_run["last_fetched_time"] = window_end
         last_run["last_fetched_ids"] = []
+        demisto.debug(f"Drained window below 'now'; advanced last_fetched_time to window_end: {window_end}")
 
 
 def test_module_command(client: Client, params: dict) -> str:
@@ -200,6 +215,7 @@ def test_module_command(client: Client, params: dict) -> str:
         (str) 'ok' if success.
     """
     client.get_logs({"limit": 1})
+    demisto.debug("test-module succeeded.")
     return "ok"
 
 
@@ -231,6 +247,7 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
         last_run = {}
     limit = arg_to_number(params.get("limit")) or 1000
     now = get_now_timestamp()
+    demisto.debug(f"Starting Slack event collection cycle. limit={limit}, now={now}, last_run={last_run}")
     extra_params = {
         "action": params.get("action"),
         "actor": params.get("actor"),
@@ -306,7 +323,9 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     """
     # Use a copy of the last run so the manual command never mutates the collector state.
     last_run_copy = dict(demisto.getLastRun() or {})
+    demisto.debug(f"slack-get-events invoked (no state mutation). Using last run copy: {last_run_copy}")
     events = fetch_slack_events(client, args, last_run_copy)
+    demisto.debug(f"slack-get-events retrieved {len(events)} events.")
     results = CommandResults(
         readable_output=tableToMarkdown(
             "Slack Audit Logs",
