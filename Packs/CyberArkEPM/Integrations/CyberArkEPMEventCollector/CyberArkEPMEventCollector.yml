@@ -143,6 +143,19 @@ configuration:
   - Access
   - Skipped
   section: Collect
+- defaultvalue: 'false'
+  display: Fetch events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
 description: CyberArk EPM Event Collector fetches events.
 display: CyberArk EPM Event Collector
 name: CyberArkEPMEventCollector
