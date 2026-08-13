@@ -431,6 +431,11 @@ def main(command: str, demisto_params: dict):
 
         after = demisto_params.get("after") or DEFAULT_FROM_FETCH_PARAMETER
 
+        # TEMPORARY (XSUP-72224): hardcoded first-fetch lookback for diagnosis. REMOVE LATER.
+        # Used only as the per-type fallback when a type has no last-run watermark.
+        after = "1 hour"
+        demisto.debug("MD: CUSTOM VERSION - using hardcoded first-fetch lookback: 1 hour")
+
         if after and not isinstance(after, int):
             demisto.debug(f"MD: Got after argument: {after}")
             timestamp = dateparser.parse(after)  # type: ignore
