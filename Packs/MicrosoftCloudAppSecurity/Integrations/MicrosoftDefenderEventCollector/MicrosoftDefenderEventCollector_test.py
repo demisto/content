@@ -160,3 +160,64 @@ class TestRunPaginationRegression:
         assert by_type["activities_admin"] == 10  # low-volume type NOT discarded
         assert by_type["alerts"] == 5  # low-volume type NOT discarded
         assert len(result) == 1015
+
+
+class TestGetLastRunWatermark:
+    """Regression for XSUP-72224: a fetched type that returns 0 events must still get a
+    watermark, otherwise it re-scans the same first-fetch lookback window forever."""
+
+    NOW_MS = 1_700_000_000_000
+
+    def _patch_env(self, mocker, stored_last_run: dict):
+        mocker.patch.object(demisto, "getLastRun", return_value=dict(stored_last_run))
+        mocker.patch.object(demisto, "debug")
+        # Freeze "now" so the seeded watermark is deterministic.
+        import MicrosoftDefenderEventCollector as md
+
+        fake_dt = mocker.Mock()
+        fake_dt.now.return_value.timestamp.return_value = self.NOW_MS / 1000
+        mocker.patch.object(md, "datetime", fake_dt)
+
+    def test_empty_type_with_no_watermark_is_seeded_forward(self, mocker):
+        """login/admin return 0 events and have no prior watermark -> seeded to 'now'."""
+        self._patch_env(mocker, stored_last_run={})
+        events = [{"timestamp": 111, "event_type_name": "alerts"}]
+
+        last_run = DefenderGetEvents.get_last_run(events, fetched_types=["alerts", "activities_login", "activities_admin"])
+
+        assert last_run["alerts"] == 112  # type with events advances to max+1
+        assert last_run["activities_login"] == self.NOW_MS  # 0-event type seeded forward
+        assert last_run["activities_admin"] == self.NOW_MS  # 0-event type seeded forward
+
+    def test_empty_type_with_existing_watermark_is_preserved(self, mocker):
+        """A 0-event type that already has a watermark must keep it (no data skipped)."""
+        self._patch_env(mocker, stored_last_run={"activities_login": 555})
+        events = [{"timestamp": 111, "event_type_name": "alerts"}]
+
+        last_run = DefenderGetEvents.get_last_run(events, fetched_types=["alerts", "activities_login"])
+
+        assert last_run["activities_login"] == 555  # preserved, NOT overwritten with now
+        assert last_run["alerts"] == 112
+
+    def test_type_with_events_advances_past_newest(self, mocker):
+        """A type with events advances to the newest timestamp + 1 (ms), ignoring order."""
+        self._patch_env(mocker, stored_last_run={})
+        events = [
+            {"timestamp": 300, "event_type_name": "activities_login"},
+            {"timestamp": 500, "event_type_name": "activities_login"},
+            {"timestamp": 400, "event_type_name": "activities_login"},
+        ]
+
+        last_run = DefenderGetEvents.get_last_run(events, fetched_types=["activities_login"])
+
+        assert last_run["activities_login"] == 501  # max(300,500,400) + 1
+
+    def test_unfetched_types_are_not_seeded(self, mocker):
+        """Only fetched types are seeded; a type not fetched this cycle is untouched."""
+        self._patch_env(mocker, stored_last_run={})
+        events = [{"timestamp": 111, "event_type_name": "alerts"}]
+
+        last_run = DefenderGetEvents.get_last_run(events, fetched_types=["alerts"])
+
+        assert "activities_login" not in last_run
+        assert "activities_admin" not in last_run

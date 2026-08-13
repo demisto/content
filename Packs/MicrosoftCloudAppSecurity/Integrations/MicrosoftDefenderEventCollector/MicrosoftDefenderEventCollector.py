@@ -1,6 +1,6 @@
 import traceback
 from abc import ABC
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from enum import Enum
 from typing import Any, NamedTuple
 
@@ -350,30 +350,33 @@ class DefenderGetEvents(IntegrationGetEvents):
             yield events
 
     @staticmethod
-    def get_last_run(events: list) -> dict:
+    def get_last_run(events: list, fetched_types: Iterable[str] | None = None) -> dict:
         last_run = demisto.getLastRun()
         demisto.debug(f"MD: Got the last run: {last_run}")
-        alerts_last_run = 0
-        activities_admin_last_run = 0
-        activities_login_last_run = 0
 
+        latest_per_type: dict[str, int] = {}
         for event in events:
             event_type = event["event_type_name"]
             timestamp = event["timestamp"]
             demisto.debug(f"MD: Got event from type {event_type}, with timestamp {timestamp}")
-            if event_type == "alerts":
-                alerts_last_run = timestamp
-            elif event_type == "activities_login":
-                activities_login_last_run = timestamp
-            elif event_type == "activities_admin":
-                activities_admin_last_run = timestamp
+            if timestamp > latest_per_type.get(event_type, 0):
+                latest_per_type[event_type] = timestamp
 
-        if alerts_last_run:
-            last_run["alerts"] = alerts_last_run + 1
-        if activities_login_last_run:
-            last_run["activities_login"] = activities_login_last_run + 1
-        if activities_admin_last_run:
-            last_run["activities_admin"] = activities_admin_last_run + 1
+        # Seed a watermark for every fetched type, including ones with 0 events, so a type
+        # without a watermark stops re-scanning the same first-fetch window every cycle.
+        types_in_play = set(latest_per_type)
+        if fetched_types is not None:
+            types_in_play |= set(fetched_types)
+
+        now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+        for event_type in types_in_play:
+            latest = latest_per_type.get(event_type, 0)
+            if latest:
+                last_run[event_type] = latest + 1
+            elif event_type not in last_run:
+                # No events and no existing watermark: move forward so we don't loop.
+                demisto.debug(f"MD: seeding forward watermark for {event_type=} to {now_ms}")
+                last_run[event_type] = now_ms
 
         return last_run
 
@@ -454,7 +457,7 @@ def main(command: str, demisto_params: dict):
             if command == "fetch-events":
                 # publishing events to XSIAM
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
-                next_run = DefenderGetEvents.get_last_run(events)
+                next_run = DefenderGetEvents.get_last_run(events, get_events.filter_name_to_attributes.keys())
                 demisto.debug(f"MD: setting the next run: {next_run}")
                 demisto.setLastRun(next_run)
 
