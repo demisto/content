@@ -1177,7 +1177,6 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
     fetch_incidents_type = argToList(params.get("fetch_incidents_type"))
     if not fetch_incidents_type:
         raise DemistoException("Please provide at least one incident type to fetch or uncheck the fetch incidents checkbox.")
-
     last_run = demisto.getLastRun() or {}
 
     # Migrate the old flat last_run format ({"time": "..."}) to the new nested format,
@@ -2282,20 +2281,39 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
                 )
 
             fetch_time = params.get("fetch_time", "1 day")
-            fetch_filter = params.get("fetch_filter", "")
-            fetch_service_sources = params.get("fetch_service_sources", "")
-
-            filter_query = create_filter_query(fetch_filter, fetch_service_sources)
+            fetch_incidents_type = argToList(params.get("fetch_incidents_type"))
             time_from = parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]
             time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
-            args = {"time_to": time_to, "time_from": time_from, "filter": filter_query}
-            params = create_search_alerts_filters(args, is_fetch=True)
-            try:
-                client.search_alerts(params)["value"]
-            except Exception as e:
-                if "Invalid ODATA query filter" in e.args[0]:
-                    raise DemistoException("Wrong filter format, correct usage: {property} eq '{property-value}'\n\n" + e.args[0])
-                raise e
+
+            if "Alerts" in fetch_incidents_type:
+                fetch_filter = params.get("fetch_filter", "")
+                fetch_service_sources = params.get("fetch_service_sources", "")
+                filter_query = create_filter_query(fetch_filter, fetch_service_sources)
+                args = {"time_to": time_to, "time_from": time_from, "filter": filter_query}
+                alerts_params = create_search_alerts_filters(args, is_fetch=True)
+                try:
+                    client.search_alerts(alerts_params)["value"]
+                except Exception as e:
+                    if "Invalid ODATA query filter" in e.args[0]:
+                        raise DemistoException(
+                            "Wrong alerts filter format, correct usage: {property} eq '{property-value}'\n\n" + e.args[0]
+                        )
+                    raise e
+
+            if "Incidents" in fetch_incidents_type:
+                fetch_incidents_filter = params.get("fetch_incidents_filter", "")
+                filter_expression = f"createdDateTime gt {time_from} and createdDateTime le {time_to}"
+                if fetch_incidents_filter:
+                    filter_expression += f" and {fetch_incidents_filter}"
+                url_suffix = f"security/incidents?$top=1&$filter={filter_expression}"
+                try:
+                    client.get_incidents_request(url_suffix, FETCH_INCIDENTS_TIMEOUT)
+                except Exception as e:
+                    if "Invalid ODATA query filter" in e.args[0]:
+                        raise DemistoException(
+                            "Wrong incidents filter format, correct usage: {property} eq '{property-value}'\n\n" + e.args[0]
+                        )
+                    raise e
 
         return "ok", None, None
 
