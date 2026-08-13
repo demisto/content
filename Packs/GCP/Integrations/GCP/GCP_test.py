@@ -6872,6 +6872,45 @@ def test_container_operation_get_success(mocker):
     assert result.outputs == mock_response
 
 
+def test_container_operation_get_api_error_propagates(mocker):
+    """
+    Given: A container client whose operations().get raises an HttpError.
+    When: container_operation_get is called.
+    Then: The error propagates (handled centrally in main), rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_operation_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().get().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "operation": "operation-123"}
+    with pytest.raises(HttpError):
+        container_operation_get(mock_creds, args)
+
+
+def test_container_cluster_security_update_no_flag_raises(mocker):
+    """
+    Given: A security update request that provides none of the mutually-exclusive security flags.
+    When: container_cluster_security_update is called.
+    Then: It raises a DemistoException indicating exactly one flag is required.
+    """
+    from GCP import DemistoException, container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=MagicMock())
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "resource_name": "mock-cluster-1"}
+    with pytest.raises(DemistoException, match="Only one update can be applied"):
+        container_cluster_security_update(mock_creds, args)
+
+
 def test_container_operation_cancel_success(mocker):
     """
     Given: Valid credentials and snake_case args identifying a GKE operation to cancel.

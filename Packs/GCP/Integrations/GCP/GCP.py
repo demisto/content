@@ -1718,9 +1718,12 @@ def _container_operation_result(response: dict[str, Any]) -> CommandResults:
         "Google Cloud Container Cluster Security Update Operation Started Successfully",
         t=response,
         headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
         removeNull=True,
     )
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response)
+    return CommandResults(
+        readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response, outputs_key_field="name"
+    )
 
 
 def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1767,7 +1770,7 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
         "enable_stackdriver_kubernetes",
     ]
     provided_flags = [flag for flag in update_flags if flag in args]
-    if len(provided_flags) > 1:
+    if len(provided_flags) != 1:
         raise DemistoException(
             "Only one update can be applied to a cluster with each request. "
             f"Please provide exactly one of: {', '.join(update_flags)}."
@@ -1797,10 +1800,10 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
 
     update_fields: dict[str, Any] = {}
 
-    if enable_intra := args.get("enable_intra_node_visibility"):
+    if (enable_intra := args.get("enable_intra_node_visibility")) is not None:
         update_fields["desiredIntraNodeVisibilityConfig"] = {"enabled": argToBoolean(enable_intra)}
 
-    if enable_master := args.get("enable_master_authorized_networks"):
+    if (enable_master := args.get("enable_master_authorized_networks")) is not None:
         update_fields["desiredControlPlaneEndpointsConfig"] = {
             "ipEndpointsConfig": {
                 "authorizedNetworksConfig": {
@@ -1810,7 +1813,7 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
             }
         }
 
-    if enable_binary_auth := args.get("enable_binary_authorization"):
+    if (enable_binary_auth := args.get("enable_binary_authorization")) is not None:
         update_fields["desiredBinaryAuthorization"] = {"enabled": argToBoolean(enable_binary_auth)}
 
     if (enable_http_lb := args.get("enable_http_load_balancing")) is not None:
@@ -1840,10 +1843,12 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
         "Google Cloud Container Cluster Security Update Operation Started Successfully",
         t=response,
         headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
         removeNull=True,
     )
-
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response)
+    return CommandResults(
+        readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response, outputs_key_field="name"
+    )
 
 
 def container_cluster_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -2039,9 +2044,12 @@ def container_node_pool_management_set(creds: Credentials, args: dict[str, Any])
         "Google Cloud Container Node Pool Management Update Operation Started Successfully",
         t=response,
         headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
         removeNull=True,
     )
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response)
+    return CommandResults(
+        readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response, outputs_key_field="name"
+    )
 
 
 def container_operation_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -2075,6 +2083,7 @@ def container_operation_list(creds: Credentials, args: dict[str, Any]) -> Comman
         f"Google Cloud Container Operations (Project={project_id}, Location={region})",
         t=operations,
         headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
         removeNull=True,
     )
     return CommandResults(
@@ -2110,6 +2119,7 @@ def container_operation_get(creds: Credentials, args: dict[str, Any]) -> Command
         f"Google Cloud Container Operation {operation}",
         t=response,
         headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
         removeNull=True,
     )
     return CommandResults(

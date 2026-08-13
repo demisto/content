@@ -993,9 +993,7 @@ script:
       - "false"
       description: Whether to enable Master Authorized Networks on the cluster.
     - name: cidrs
-      description: |
-        The comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
-        If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
+      description: The comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS. If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
       isArray: true
     - name: enable_binary_authorization
       required: false
@@ -1091,7 +1089,7 @@ script:
       type: String
     - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
       description: The list of authorized CIDR blocks that can access the GKE cluster master.
-      type: Unknown
+      type: List
     - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
       description: Whether master authorized networks are enabled for the cluster.
       type: Boolean
@@ -1109,7 +1107,7 @@ script:
       type: String
     - contextPath: GCP.Container.Operations.nodePools
       description: The list of node pools in the cluster, with their configuration and security settings.
-      type: Unknown
+      type: List
     - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
       description: Whether private nodes are enabled in the cluster.
       type: Boolean

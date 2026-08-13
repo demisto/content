@@ -5,7 +5,7 @@ This integration was integrated and tested with version v1 (Compute, Storage, Co
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. In the Google Cloud Console, go to IAM &amp;amp; Admin &amp;gt; Service Accounts and create a service account with the required roles. Then under the Keys tab, create a JSON key. Paste the downloaded JSON contents here. | False |
+| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. In the Google Cloud Console, go to IAM &amp; Admin &gt; Service Accounts and create a service account with the required roles. Then under the Keys tab, create a JSON key. Paste the downloaded JSON contents here. | False |
 | GCP Project ID | The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). If left empty, the project ID from the Service Account private key JSON is used. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -95,8 +95,6 @@ There is no context output for this command.
 
 ### gcp-compute-subnet-update
 
-### gcp-compute-subnet-update
-
 ***
 Enables flow logs or Private Google Access on a subnet. Required permissions: compute.subnetworks.setPrivateIpGoogleAccess, compute.subnetworks.update, compute.subnetworks.get, compute.subnetworks.list.
 
@@ -148,7 +146,7 @@ Configures security settings for GKE clusters, including access controls and vis
 | resource_name | The name of the GKE cluster. | Required |
 | enable_intra_node_visibility | Whether to enable intra-node visibility on the cluster. Possible values are: true, false. | Optional |
 | enable_master_authorized_networks | Whether to enable Master Authorized Networks on the cluster. Possible values are: true, false. | Optional |
-| cidrs | The comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+| cidrs | The comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS. If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked. | Optional |
 | enable_binary_authorization | Whether to enable Binary Authorization on the cluster. Possible values are: true, false. | Optional |
 | enable_http_load_balancing | Whether to enable the HTTP load balancing addon on the cluster. Possible values are: true, false. | Optional |
 | enable_kubernetes_dashboard | Whether to enable the Kubernetes dashboard addon on the cluster. Possible values are: true, false. | Optional |
@@ -175,13 +173,13 @@ Configures security settings for GKE clusters, including access controls and vis
 | GCP.Container.Operations.enableBinaryAuthorization | Boolean | Whether Binary Authorization is enabled for the cluster. |
 | GCP.Container.Operations.enableLegacyABAC | Boolean | Whether legacy ABAC is enabled for the cluster. |
 | GCP.Container.Operations.clusterIpv4Cidr | String | The cluster’s IPv4 CIDR block. |
-| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | Unknown | The list of authorized CIDR blocks that can access the GKE cluster master. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | List | The list of authorized CIDR blocks that can access the GKE cluster master. |
 | GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled | Boolean | Whether master authorized networks are enabled for the cluster. |
 | GCP.Container.Operations.network | String | The network to which the GKE cluster belongs. |
 | GCP.Container.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
 | GCP.Container.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
 | GCP.Container.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
-| GCP.Container.Operations.nodePools | Unknown | The list of node pools in the cluster, with their configuration and security settings. |
+| GCP.Container.Operations.nodePools | List | The list of node pools in the cluster, with their configuration and security settings. |
 
 ### gcp-container-cluster-list
 
@@ -991,8 +989,6 @@ Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.get
 
 ### gcp-storage-bucket-policy-set
 
-### gcp-storage-bucket-policy-set
-
 ***
 Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPolicy.
 
@@ -1040,8 +1036,6 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 | GCP.Storage.BucketObjectPolicy.bucketName | String | Name of the bucket containing the object. |
 | GCP.Storage.BucketObjectPolicy.objectName | String | Name of the object. |
 | GCP.Storage.BucketObjectPolicy.bindings | List | List of role bindings for the object. |
-
-### gcp-storage-bucket-object-policy-set
 
 ### gcp-storage-bucket-object-policy-list
 
