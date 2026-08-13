@@ -568,24 +568,10 @@ def main() -> None:  # pragma: no cover
     :rtype:
     """
     # get pack version - use default if any step fails
+    # get pack version - use default if any step fails
     pack_version = "2.1.0"
     try:
-        if is_demisto_version_ge("6.1.0"):
-            response = demisto.internalHttpRequest("GET", "/contentpacks/metadata/installed")
-            if response and response.get("body"):
-                packs = json.loads(response["body"])
-
-                if isinstance(packs, list):
-                    for pack in packs:
-                        if isinstance(pack, dict) and pack.get("name") == "GreyNoise":
-                            current_version = pack.get("currentVersion")
-                            if current_version:
-                                pack_version = current_version
-                            break
-                elif isinstance(packs, dict) and packs.get("name") == "GreyNoise":
-                    current_version = packs.get("currentVersion")
-                    if current_version:
-                        pack_version = current_version
+        pack_version = get_pack_version()
     except Exception as e:
         demisto.debug(f"Failed to retrieve pack version, using default: {str(e)}")
 
