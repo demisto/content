@@ -43,6 +43,11 @@
                 "extractAsIsIndicatorTypeId": "domainRepUnified",
                 "isExtractingAllIndicatorTypes": false,
                 "extractIndicatorTypesIDs": []
+            },
+            "spycloudtargetsubdomain": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
             }
         }
     },

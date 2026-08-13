@@ -69,7 +69,7 @@ def safe_log(msg: str) -> str:
 
 class Client(BaseClient):
     def __init__(self, base_url: str, apikey: str, verify=None, proxy=None):
-        headers = {"Accept": "application/json", "X-API-Key": apikey, "User-Agent": "XSOAR-ENT/1.0.9"}
+        headers = {"Accept": "application/json", "X-API-Key": apikey, "User-Agent": "XSOAR-ENT/1.0.11"}
         super().__init__(
             base_url=base_url,
             verify=verify,
