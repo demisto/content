@@ -2327,7 +2327,7 @@ def test_get_driveitem_metadata_command_merges_sharepoint_ids(mocker: MockerFixt
     )
 
     result = get_driveitem_metadata_command(
-        CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"}
+        CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1", "include_sharepoint_ids": "true"}
     )
 
     assert http_request.call_count == 2
