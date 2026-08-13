@@ -51,7 +51,7 @@ import pytest
 
 from unittest.mock import Mock, patch, call
 
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 import json
 
 try:
@@ -76,6 +76,15 @@ import sys
 import unittest
 
 from CybleEventsV2 import migrate_data, validate_iocs_input, get_alert_payload
+from CybleEventsV2 import (
+    get_execution_timeout_seconds,
+    should_stop_before_next_page,
+    save_events_fetch_checkpoint,
+    parse_events_resume_state,
+    DEFAULT_EXECUTION_TIMEOUT_SECONDS,
+    CHUNK_MINUTES,
+    MAX_API_TAKE,
+)
 
 demisto_mock = Mock()
 sys.modules["demisto"] = demisto_mock
@@ -1666,8 +1675,8 @@ def test_migrate_data_success(monkeypatch):
     # Use DummyDatetime for returned timestamps too
     mock_client = Mock()
     mock_client.get_data_with_retry.side_effect = [
-        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 13, 0, 0, tzinfo=pytz.UTC)),
-        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 14, 0, 0, tzinfo=pytz.UTC)),
+        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 13, 0, 0, tzinfo=pytz.UTC), False),
+        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 14, 0, 0, tzinfo=pytz.UTC), False),
     ]
 
     input_params = {
@@ -1680,12 +1689,13 @@ def test_migrate_data_success(monkeypatch):
         "take": 10,
     }
 
-    result_alerts, result_time = migrate_data(mock_client, input_params)
+    result_alerts, result_time, stopped_early = migrate_data(mock_client, input_params)
 
     assert len(result_alerts) == 2
     assert result_alerts[0] == {"alert": "test_alert"}
     assert isinstance(result_time, datetime)
     assert result_time == datetime(2023, 1, 1, 14, 0, 0, tzinfo=pytz.UTC)
+    assert stopped_early is False
     assert mock_client.get_data_with_retry.call_count == 2
 
 
@@ -1825,7 +1835,12 @@ class TestClientMethods(unittest.TestCase):
         mock_sleep.assert_not_called()
 
     def test_insert_data_in_cortex_successful_processing(self):
-        test_input_params = {"limit": "10", "hce": False}
+        test_input_params = {
+            "limit": "10",
+            "hce": False,
+            "gte": "2024-01-01T12:00:00Z",
+            "lte": "2024-01-01T13:00:00Z",
+        }
 
         mock_response_with_data = {
             "data": [
@@ -1857,13 +1872,14 @@ class TestClientMethods(unittest.TestCase):
             mock_demisto.debug = Mock()
             mock_demisto.error = Mock()
 
-            result_incidents, result_time = self.client.insert_data_in_cortex(
+            result_incidents, result_time, stopped_early = self.client.insert_data_in_cortex(
                 self.test_service, test_input_params, is_update=False
             )
 
             assert self.client.get_data.called, "get_data should be called"
             assert isinstance(result_incidents, list), "result_incidents should be a list"
             assert isinstance(result_time, datetime), "result_time should be a datetime"
+            assert stopped_early is False
 
             if len(mock_response_with_data.get("data", [])) > 0 and mock_format_incidents.called:
                 mock_format_incidents.assert_called()
@@ -1873,7 +1889,12 @@ class TestClientMethods(unittest.TestCase):
                 assert len(result_incidents) == 2
 
     def test_insert_data_in_cortex_pagination_logic(self):
-        test_input_params = {"limit": 5, "hce": True}
+        test_input_params = {
+            "limit": 5,
+            "hce": True,
+            "gte": "2024-01-01T12:00:00Z",
+            "lte": "2024-01-01T13:00:00Z",
+        }
         skip_values = []
         call_count = 0
 
@@ -1893,11 +1914,12 @@ class TestClientMethods(unittest.TestCase):
             patch("CybleEventsV2.get_event_format", return_value={"formatted": "event"}),
             patch("CybleEventsV2.demisto"),
         ):
-            result_incidents, result_time = self.client.insert_data_in_cortex(
+            result_incidents, result_time, stopped_early = self.client.insert_data_in_cortex(
                 self.test_service, test_input_params, is_update=False
             )
 
-            assert skip_values == [0, 5, 10]
+            assert skip_values == [0, 1, 2]
+            assert stopped_early is False
 
     def test_get_all_services_success_and_failure(self):
         # --- SUCCESS CASE ---
@@ -1989,14 +2011,12 @@ class TestClientMethods(unittest.TestCase):
         mock_inserted_alerts = [{"id": "abc"}]
         mock_time = datetime(2024, 1, 1, 13, 0, 0)
 
-        with (
-            patch.object(self.client, "get_data", return_value=mock_response),
-            patch.object(self.client, "insert_data_in_cortex", return_value=(mock_inserted_alerts, mock_time)),
-        ):
-            result_alerts, result_time = self.client.get_data_with_retry(service, input_params)
+        with patch.object(self.client, "insert_data_in_cortex", return_value=(mock_inserted_alerts, mock_time, False)):
+            result_alerts, result_time, stopped_early = self.client.get_data_with_retry(service, input_params)
 
             assert result_alerts == mock_inserted_alerts
             assert isinstance(result_time, datetime)
+            assert stopped_early is False
 
     @patch("CybleEventsV2.demisto")
     @patch("CybleEventsV2.time_diff_in_mins", return_value=60)
@@ -2060,51 +2080,57 @@ class TestCybleEventsFunctions(unittest.TestCase):
     @patch("CybleEventsV2.demisto")
     def test_migrate_data_empty_services(self, mock_demisto):
         input_params = {"services": []}
-        result_alerts, result_time = migrate_data(self.mock_client, input_params)
+        result_alerts, result_time, stopped_early = migrate_data(self.mock_client, input_params)
         assert result_alerts == []
         assert isinstance(result_time, datetime)
+        assert stopped_early is False
         mock_demisto.debug.assert_called_with("No services found in input_params")
 
     @patch("CybleEventsV2.demisto")
     def test_migrate_data_no_services_key(self, mock_demisto):
         input_params = {}
-        result_alerts, result_time = migrate_data(self.mock_client, input_params)
+        result_alerts, result_time, stopped_early = migrate_data(self.mock_client, input_params)
         assert result_alerts == []
         assert isinstance(result_time, datetime)
+        assert stopped_early is False
         mock_demisto.debug.assert_called_with("No services found in input_params")
 
     @patch("CybleEventsV2.demisto")
     def test_migrate_data_successful_execution(self, mock_demisto):
-        input_params = {"services": ["service1", "service2", "service3"]}
+        input_params = {"services": ["service1", "service2", "service3"], "gte": "2023-01-01T00:00:00Z"}
         test_time = datetime(2023, 1, 1, 12, 0, 0)
-        self.mock_client.get_data_with_retry.return_value = ([{"alert": "test_alert"}], test_time)
+        self.mock_client.get_data_with_retry.return_value = ([{"alert": "test_alert"}], test_time, False)
 
-        result_alerts, result_time = migrate_data(self.mock_client, input_params)
+        result_alerts, result_time, stopped_early = migrate_data(self.mock_client, input_params)
         assert len(result_alerts) == 3
         assert isinstance(result_time, datetime)
+        assert stopped_early is False
         assert self.mock_client.get_data_with_retry.call_count == 3
 
     @patch("CybleEventsV2.demisto")
     def test_migrate_data_with_exception(self, mock_demisto):
-        input_params = {"services": ["service1"]}
+        input_params = {"services": ["service1"], "gte": "2023-01-01T00:00:00Z", "lte": "2023-01-01T23:59:59Z"}
         self.mock_client.get_data_with_retry.side_effect = Exception("Test error")
 
-        with pytest.raises(SystemExit) as exit_info:
-            migrate_data(self.mock_client, input_params)
+        result_alerts, result_time, stopped_early = migrate_data(self.mock_client, input_params)
 
-        assert exit_info.type is SystemExit  # FIX: use `is` instead of `==`
-        assert exit_info.value.code == 0
-        mock_demisto.error.assert_called_with("[migrate_data] Error in future: Test error")
+        assert result_alerts == []
+        assert stopped_early is True
+        mock_demisto.error.assert_called()
 
     @patch("CybleEventsV2.demisto")
     def test_migrate_data_is_update_true(self, mock_demisto):
-        input_params = {"services": ["service1"]}
+        input_params = {"services": ["service1"], "gte": "2023-01-01T00:00:00Z"}
         test_time = datetime(2023, 1, 1, 12, 0, 0)
-        self.mock_client.get_data_with_retry.return_value = ([{"alert": "test_alert"}], test_time)
+        self.mock_client.get_data_with_retry.return_value = ([{"alert": "test_alert"}], test_time, False)
 
-        result_alerts, result_time = migrate_data(self.mock_client, input_params, is_update=True)
+        result_alerts, result_time, stopped_early = migrate_data(self.mock_client, input_params, is_update=True)
         assert len(result_alerts) == 1
-        self.mock_client.get_data_with_retry.assert_called_with("service1", input_params, True)
+        assert stopped_early is False
+        call_args = self.mock_client.get_data_with_retry.call_args
+        assert call_args[0][0] == "service1"
+        assert call_args[0][1] == input_params
+        assert call_args[0][2] is True
 
     @patch("CybleEventsV2.demisto")
     def test_validate_iocs_input_valid_params(self, mock_demisto):
@@ -2257,6 +2283,60 @@ class TestFunctions(unittest.TestCase):
         aware_dt = datetime(2025, 6, 3, 12, 0, 0, tzinfo=local_tz)
         utc_dt = ensure_aware(aware_dt)
         assert utc_dt.tzinfo == pytz.UTC
+
+
+def test_get_execution_timeout_seconds_default(mocker):
+    mocker.patch("CybleEventsV2.demisto.callingContext", {"context": {}})
+    assert get_execution_timeout_seconds() == float(DEFAULT_EXECUTION_TIMEOUT_SECONDS)
+
+
+def test_should_stop_before_next_page_first_page():
+    execution_start = datetime.utcnow()
+    assert should_stop_before_next_page(0, 0, execution_start) is False
+
+
+def test_should_stop_before_next_page_low_remaining_budget(mocker):
+    execution_start = datetime.utcnow() - timedelta(seconds=170)
+    mocker.patch("CybleEventsV2.get_execution_timeout_seconds", return_value=180.0)
+    assert should_stop_before_next_page(1, 20.0, execution_start) is True
+
+
+def test_should_stop_before_next_page_enough_budget(mocker):
+    execution_start = datetime.utcnow() - timedelta(seconds=30)
+    mocker.patch("CybleEventsV2.get_execution_timeout_seconds", return_value=900.0)
+    assert should_stop_before_next_page(1, 20.0, execution_start) is False
+
+
+def test_parse_events_resume_state():
+    assert parse_events_resume_state({})["service"] is None
+    assert parse_events_resume_state({"service": "stealer_logs", "skip": "10"})["skip"] == 10
+    assert parse_events_resume_state({"service": "stealer_logs", "event_pull_start_date": "2025-12-01T00:00:00Z"})[
+        "window_gte"
+    ] == "2025-12-01T00:00:00Z"
+
+
+@patch("CybleEventsV2.demisto.setLastRun")
+def test_save_events_fetch_checkpoint(mock_set_last_run):
+    save_events_fetch_checkpoint(
+        "2025-12-01T00:00:00Z",
+        "2025-12-01T06:00:00Z",
+        "2025-12-01T00:00:00Z",
+        "2025-12-01T00:15:00Z",
+        "stealer_logs",
+        2,
+        50,
+    )
+    mock_set_last_run.assert_called_once_with(
+        {
+            "event_pull_start_date": "2025-12-01T00:00:00Z",
+            "window_lte": "2025-12-01T06:00:00Z",
+            "chunk_gte": "2025-12-01T00:00:00Z",
+            "chunk_lte": "2025-12-01T00:15:00Z",
+            "service": "stealer_logs",
+            "service_index": "2",
+            "skip": "50",
+        }
+    )
 
 
 if __name__ == "__main__":
