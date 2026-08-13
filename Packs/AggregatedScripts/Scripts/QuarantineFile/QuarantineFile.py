@@ -468,6 +468,12 @@ class XDRHandler(BrandHandler):
         else:
             self.quarantine_command = "xdr-file-quarantine"
 
+    @property
+    def display_brand(self) -> str:
+        """Brand label shown to the user. On the platform the Core-IR action runs as a
+        Builtin command (no integration instance), so report it as "Builtin"."""
+        return "Builtin" if self.use_builtin else self.brand
+
     def validate_args(self, args: dict) -> None:
         """
         Validates that the 'file_path' argument is provided for XDR actions.
@@ -615,7 +621,11 @@ class XDRHandler(BrandHandler):
             demisto.debug(f"[{self.brand} Handler] Quarantine action failed for {endpoint_id}. Reason: {message}")
 
         return QuarantineResult.create(
-            endpoint_id=endpoint_id, status=status, message=message, brand=self.brand, script_args=self.orchestrator.args
+            endpoint_id=endpoint_id,
+            status=status,
+            message=message,
+            brand=self.display_brand,
+            script_args=self.orchestrator.args,
         )
 
     def initiate_quarantine(self, args: dict) -> dict:
@@ -732,7 +742,7 @@ class XDRHandler(BrandHandler):
                         endpoint_id=quarantine_endpoint_result.get("endpoint_id", "Unknown"),
                         status=QuarantineResult.Statuses.FAILED,
                         message=QuarantineResult.Messages.GENERAL_FAILURE,
-                        brand=self.brand,
+                        brand=self.display_brand,
                         script_args=self.orchestrator.args,
                     )
                 )
