@@ -1313,7 +1313,7 @@ def fetch_alerts(
             if alert_time > last_alert_time and count < fetch_limit:
                 demisto_alerts.append(
                     {
-                        "name": alert.get("title") + " - " + alert.get("id"),
+                        "name": f'{alert.get("title", "Unknown")} - {alert.get("id", "Unknown")}',
                         "occurred": alert.get("createdDateTime"),
                         "severity": SEVERITY_MAP.get(alert.get("severity", ""), 0),
                         "rawJSON": json.dumps(alert),
