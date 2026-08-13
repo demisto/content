@@ -447,9 +447,16 @@ class BrandHandler(ABC):
         """
 
     @abstractmethod
-    def finalize(self, last_poll_response: list) -> list[QuarantineResult]:
+    def finalize(self, last_poll_response: list, poll_args: dict | None = None) -> list[QuarantineResult]:
         """
         Processes the final results of a completed polling job for the brand.
+
+        Args:
+            last_poll_response (list): The raw response from the final polling command.
+            poll_args (dict | None): The scheduled command's polling args from the completed
+                job. On the unified platform (PCI Builtin) these carry the originating analyst
+                identity (user_id / user_name / is_manual_flow) that must be forwarded to any
+                follow-up RBAC-enforced command (e.g. getFileQuarantineStatus). See CRTX-265660.
         """
 
 
@@ -504,7 +511,14 @@ class XDRHandler(BrandHandler):
                 f"The '{QuarantineOrchestrator.FILE_PATH_ARG}' argument is required for brand {self.brand}."
             )
 
-    def _execute_quarantine_status_command(self, endpoint_id: str, file_hash: str, file_path: str) -> dict:
+    # Internal poll-identity marker arg names (mirror PCI common.HiddenPollIdentityArgs).
+    # Forwarded into the RBAC-enforced PCI status command so PCI's RebuildPollCmdCtx can
+    # restore the originating analyst identity on scheduled poll re-runs. See CRTX-265660.
+    POLL_IDENTITY_ARG_NAMES = ("user_id", "user_name", "is_manual_flow")
+
+    def _execute_quarantine_status_command(
+        self, endpoint_id: str, file_hash: str, file_path: str, poll_args: dict | None = None
+    ) -> dict:
         """
         Checks if a file is already quarantined on a specific endpoint.
 
@@ -512,6 +526,11 @@ class XDRHandler(BrandHandler):
             endpoint_id (str): The ID of the endpoint to check.
             file_hash (str): The SHA256 hash of the file.
             file_path (str): The path of the file on the endpoint.
+            poll_args (dict | None): The completed job's polling args. On the unified platform
+                (PCI Builtin) these carry the originating analyst identity (user_id / user_name /
+                is_manual_flow), which is forwarded into the RBAC-enforced getFileQuarantineStatus
+                call so it does not 403 under the DBotWeak automation identity the scheduler
+                substitutes on poll re-runs. See CRTX-265660.
 
         Returns:
             dict: The response from the 'get-quarantine-status' command.
@@ -523,6 +542,7 @@ class XDRHandler(BrandHandler):
                           'status': False if not quarantined, True if quarantined
                       }
         """
+        poll_args = poll_args or {}
         demisto.debug(f"[{self.brand} Handler] Checking quarantine status for endpoint {endpoint_id}.")
         # On the unified Cortex platform the Core-IR status command is exposed as the PCI Builtin
         # "getFileQuarantineStatus". Off-platform we keep the legacy integration command
@@ -531,13 +551,26 @@ class XDRHandler(BrandHandler):
             status_command_name = XDRHandler.PCI_QUARANTINE_STATUS_COMMAND
         else:
             status_command_name = f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}"
+
+        status_args = {"endpoint_id": endpoint_id, "file_hash": file_hash, "file_path": file_path}
+        # CRTX-265660: forward the persisted analyst identity into the PCI status command so
+        # PCI's RebuildPollCmdCtx can authenticate the RBAC-enforced call as the original user
+        # rather than the DBotWeak automation identity. Only relevant on the PCI Builtin path.
+        forwarded_identity = {}
+        if self.use_pci_builtin and poll_args:
+            for identity_arg in XDRHandler.POLL_IDENTITY_ARG_NAMES:
+                if poll_args.get(identity_arg):
+                    status_args[identity_arg] = poll_args[identity_arg]
+                    forwarded_identity[identity_arg] = poll_args[identity_arg]
+
         demisto.info(
             f"[MIGRATE-QF] status: brand={self.brand!r}, use_pci_builtin={self.use_pci_builtin}, "
-            f"status_command={status_command_name!r}, endpoint_id={endpoint_id!r}"
+            f"status_command={status_command_name!r}, endpoint_id={endpoint_id!r}, "
+            f"forwarded_identity={forwarded_identity}"
         )
         status_cmd = Command(
             name=status_command_name,
-            args={"endpoint_id": endpoint_id, "file_hash": file_hash, "file_path": file_path},
+            args=status_args,
             brand=self.brand,
         )
         raw_response, verbose_res = status_cmd.execute()
@@ -550,27 +583,26 @@ class XDRHandler(BrandHandler):
 
         return list(status_context[0].values())[0]
 
-    def _process_final_endpoint_status(self, endpoint_result: dict) -> QuarantineResult:
+    def _process_final_endpoint_status(self, endpoint_result: dict, poll_args: dict | None = None) -> QuarantineResult:
         """
         Processes the final result for a single endpoint from a completed polling job.
 
-        Behavior depends on the runtime path:
+        If the action-runner reported the quarantine action as successful, this method
+        makes a second, separate call to the brand's quarantine-status command to
+        confirm the file is *actually* in quarantine on the endpoint. This second check
+        is required (validated with the code owner) because the action-status API only
+        reports whether the action-runner *job* completed — it can report
+        `COMPLETED_SUCCESSFULLY` in edge cases where the file was never actually
+        quarantined (e.g. the file did not exist on disk, or the endpoint was offline),
+        which would otherwise be reported as a false positive.
 
-        * Legacy (off-platform, `use_pci_builtin=False`): if the initial quarantine
-          action was reported as successful, make a second call to
-          `<brand>-get-quarantine-status` to confirm the file is actually quarantined
-          on the endpoint. Preserved to keep existing off-platform behavior identical.
-
-        * PCI Builtin (on-platform, `use_pci_builtin=True`, CRTX-265660): trust
-          `Status=COMPLETED_SUCCESSFULLY` returned by `Core.GetActionStatus` and skip
-          the follow-up `getFileQuarantineStatus` call. Two reasons:
-            1. `Core.GetActionStatus` is the platform's authoritative source of truth
-               for whether the action-runner reported success for the endpoint.
-            2. The follow-up `getFileQuarantineStatus` call is issued from the polling
-               re-run (finalize step) under the scheduler's `DBotWeak` identity and
-               currently fails with 403 because that PCI Builtin command does not
-               go through the `HandleActionStatusPoll` / `RebuildPollCmdCtx` path.
-               Skipping it removes the false-negative UI failure without losing signal.
+        On the unified Cortex platform (PCI Builtin, `use_pci_builtin=True`), the
+        quarantine-status command is the RBAC-enforced `getFileQuarantineStatus`. When
+        the finalize step runs inside a scheduled poll re-run, the incoming identity is
+        the `DBotWeak` automation principal, which 403s on that endpoint. To avoid that,
+        the originating analyst identity persisted in the poll args (`user_id` /
+        `user_name` / `is_manual_flow`) is forwarded into the status call so PCI's
+        `RebuildPollCmdCtx` can restore it. See CRTX-265660.
 
         Args:
             endpoint_result (dict): The result object for a single endpoint from the polling command.
@@ -579,10 +611,13 @@ class XDRHandler(BrandHandler):
                                     PCI Builtin `Core.GetActionStatus` shape (CRTX-265660 migration):
                                         {'ActionID': 123, 'EndpointID': 'EP_ID', 'Status': 'COMPLETED_SUCCESSFULLY',
                                          'ErrorDescription': '', 'ErrorReasons': {}}
+            poll_args (dict | None): The completed job's polling args, used to forward the
+                originating analyst identity into the PCI status call (see above).
 
         Returns:
             QuarantineResult: A structured result object for the endpoint.
         """
+        poll_args = poll_args or {}
         # Accept both legacy snake_case and PCI CamelCase key shapes so this handler
         # works on-platform (PCI Builtin) and off-platform (legacy integration).
         endpoint_id = str(endpoint_result.get("endpoint_id") or endpoint_result.get("EndpointID"))
@@ -596,39 +631,31 @@ class XDRHandler(BrandHandler):
         demisto.debug(f"[{self.brand} Handler] Processing final status for endpoint {endpoint_id}.")
 
         if action_status == XDRHandler.QUARANTINE_STATUS_SUCCESS:
-            if self.use_pci_builtin:
-                # PCI path (CRTX-265660): trust `Core.GetActionStatus` and skip the
-                # follow-up `getFileQuarantineStatus` confirmation call. See docstring.
-                demisto.info(
-                    f"[MIGRATE-QF] finalize.per_endpoint: PCI path — trusting "
-                    f"Status=COMPLETED_SUCCESSFULLY for endpoint {endpoint_id!r}, "
-                    f"skipping follow-up getFileQuarantineStatus call."
-                )
-                message = QuarantineResult.Messages.SUCCESS
-                status = QuarantineResult.Statuses.SUCCESS
-            else:
-                # Legacy path: confirm with a second call to the brand's get-quarantine-status.
-                quarantine_status_data = self._execute_quarantine_status_command(
-                    endpoint_id,
-                    self.orchestrator.args.get(QuarantineOrchestrator.FILE_HASH_ARG),
-                    self.orchestrator.args.get(QuarantineOrchestrator.FILE_PATH_ARG),
-                )
-                # PCI `getFileQuarantineStatus` returns `status`/`endpointId`/`filePath`/`fileHash`
-                # per QuarantineStatusResponse; legacy `*-get-quarantine-status` returns `status`
-                # (lowercase). Try both shapes.
-                quarantine_status = quarantine_status_data.get("status")
-                if quarantine_status is None:
-                    quarantine_status = quarantine_status_data.get("Status")
+            # Confirm the file is actually quarantined (guards against action-status
+            # false positives such as file-not-found / endpoint-offline). On PCI this
+            # forwards the originating analyst identity from poll_args (CRTX-265660).
+            quarantine_status_data = self._execute_quarantine_status_command(
+                endpoint_id,
+                self.orchestrator.args.get(QuarantineOrchestrator.FILE_HASH_ARG),
+                self.orchestrator.args.get(QuarantineOrchestrator.FILE_PATH_ARG),
+                poll_args,
+            )
+            # PCI `getFileQuarantineStatus` returns `status`/`endpointId`/`filePath`/`fileHash`
+            # per QuarantineStatusResponse; legacy `*-get-quarantine-status` returns `status`
+            # (lowercase). Try both shapes.
+            quarantine_status = quarantine_status_data.get("status")
+            if quarantine_status is None:
+                quarantine_status = quarantine_status_data.get("Status")
 
-                message = (
-                    QuarantineResult.Messages.SUCCESS
-                    if quarantine_status
-                    else QuarantineResult.Messages.FAILED_WITH_REASON.format(
-                        reason=quarantine_status_data.get("error_description")
-                        or quarantine_status_data.get("ErrorDescription", "")
-                    )
+            message = (
+                QuarantineResult.Messages.SUCCESS
+                if quarantine_status
+                else QuarantineResult.Messages.FAILED_WITH_REASON.format(
+                    reason=quarantine_status_data.get("error_description")
+                    or quarantine_status_data.get("ErrorDescription", "")
                 )
-                status = QuarantineResult.Statuses.SUCCESS if quarantine_status else QuarantineResult.Statuses.FAILED
+            )
+            status = QuarantineResult.Statuses.SUCCESS if quarantine_status else QuarantineResult.Statuses.FAILED
             demisto.debug(f"[{self.brand} Handler] Final status for {endpoint_id}: {status}")
         else:
             message = QuarantineResult.Messages.FAILED_WITH_REASON.format(reason=error_description)
@@ -729,7 +756,7 @@ class XDRHandler(BrandHandler):
         demisto.info(f"[MIGRATE-QF] initiate.job: brand={self.brand!r}, job={job}")
         return job
 
-    def finalize(self, last_poll_response: list) -> list[QuarantineResult]:
+    def finalize(self, last_poll_response: list, poll_args: dict | None = None) -> list[QuarantineResult]:
         """
         Finalizes a completed quarantine job for the XDR brand.
 
@@ -739,10 +766,16 @@ class XDRHandler(BrandHandler):
 
         Args:
             last_poll_response (list): The raw response from the final polling command.
+            poll_args (dict | None): The completed job's polling args. On the unified platform
+                (PCI Builtin) these carry the originating analyst identity (user_id / user_name /
+                is_manual_flow) which is forwarded to the RBAC-enforced getFileQuarantineStatus
+                confirmation call so it does not 403 under the DBotWeak automation identity that
+                the scheduler substitutes on poll re-runs. See CRTX-265660.
 
         Returns:
             list[QuarantineResult]: A list of final QuarantineResult objects.
         """
+        poll_args = poll_args or {}
         final_results = []
 
         quarantine_endpoints_final_results: list = Command.get_entry_context_object_containing_key(
@@ -760,7 +793,7 @@ class XDRHandler(BrandHandler):
         demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
         for quarantine_endpoint_result in quarantine_endpoints_final_results:
             try:
-                final_results.append(self._process_final_endpoint_status(quarantine_endpoint_result))
+                final_results.append(self._process_final_endpoint_status(quarantine_endpoint_result, poll_args))
             except Exception as e:
                 demisto.error(
                     f"[{self.brand} Handler] Failed to get status of quarantine for endpoint:"
@@ -882,9 +915,13 @@ class MDEHandler(BrandHandler):
         demisto.debug(f"[{self.brand} Handler] Created new polling job object: {job}")
         return job
 
-    def finalize(self, last_poll_response: list):
+    def finalize(self, last_poll_response: list, poll_args: dict | None = None):
         """
         Finalizes a completed quarantine job for the MDE brand.
+
+        Note: `poll_args` is accepted for interface parity with the abstract
+        BrandHandler.finalize signature (used by the XDR handler for PCI identity
+        forwarding, CRTX-265660). MDE does not use it.
 
         It parses the results from the last polling response and calls
 
@@ -1387,7 +1424,10 @@ class QuarantineOrchestrator:
             else:
                 demisto.debug(f"[Orchestrator] Polling complete for job brand '{job['brand']}'. Finalizing.")
                 handler = handler_factory(job["brand"], self)
-                final_results = handler.finalize(raw_response)
+                # CRTX-265660: forward the completed job's poll_args (which carry the persisted
+                # analyst identity on the PCI Builtin path) so finalize's RBAC-enforced
+                # getFileQuarantineStatus confirmation call runs as the original user.
+                final_results = handler.finalize(raw_response, job.get("poll_args", {}))
                 self.completed_results.extend(final_results)
 
         self.pending_jobs = remaining_jobs
