@@ -1,5 +1,4 @@
 The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-This integration was integrated and tested with version xx of CrowdstrikeFalcon.
 
 ## Configure CrowdStrike Falcon in Cortex
 
@@ -43,6 +42,107 @@ This integration was integrated and tested with version xx of CrowdstrikeFalcon.
 | Assets Fetch Interval | The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
+
+### Required API client scope
+
+In order to use the CrowdStrike Falcon integration, the API client must have the following scope and permissions:
+
+- Real Time Response - Read and Write|
+- Real Time Response Admin - Write
+- Alerts - Read and Write
+- IOC Manager - Read and Write
+- IOCs - Read and Write
+- IOA Exclusions - Read and Write
+- Machine Learning Exclusions - Read and Write
+- Detections - Read and Write
+- Hosts - Read and Write
+- Host Groups - Read and Write
+- Incidents - Read and Write
+- Spotlight Vulnerabilities - Read
+- User Management - Read
+- On-Demand Scans (ODS) - Read and Write
+- Identity Protection Entities - Read and Write
+- Identity Protection Detections - Read and Write
+- Identity Protection Timeline - Read
+- Identity Protection Assessment - Read
+- Falcon Container Image - Read
+- Recon - Read and Write
+- Workflow - Read and Write
+
+## Incident Mirroring (Cortex XSOAR Only)
+
+You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Fetch types* integration parameter, select what types to mirror.
+3. Optional: You can go to one of the *fetch query* parameters and select the query to fetch the events from CrowdStrike Falcon.
+4. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in CrowdStrike Falcon events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in CrowdStrike Falcon events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and CrowdStrike Falcon events will be reflected in both directions. |
+
+5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in CrowdStrike Falcon.
+6. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex XSOAR incident is closed.
+
+Newly fetched Cortex XSOAR incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+**Important Notes**
+
+- To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and CrowdStrike Falcon.
+- When *mirroring in* incidents from CrowdStrike Falcon to Cortex XSOAR:
+  - For the `tags` field, tags can only be added from the remote system.
+  - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
+  - In case the *look-back* parameter is initialized with a certain value and during a time that incidents were fetched, if changing
+   the lookback to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
+   If the integration was already set with lookback > 0, and the lookback is not being increased at any point of time, then those incident duplications would not occur.
+
+## Fetch Incidents (Cortex XSOAR Only)
+
+CrowdStrike Falcon incidents or detections can be fetched as incidents in Cortex XSOAR.
+Users can specify a fetch query per CrowdStrike Falcon fetch type when configuring the integration instance to control which records are fetched.
+
+### Indicator of Misconfiguration (IOM) Fetch Query
+
+The IOM Fetch query relies on an [FQL](https://falconpy.io/Usage/Falcon-Query-Language.html) filter expression.
+
+Available filters:
+
+- `use_current_scan_ids` (use this to get records for latest scans)
+- `account_name`
+- `account_id`
+- `agent_id`
+- `attack_types`
+- `azure_subscription_id`
+- `cloud_provider`
+- `cloud_service_keyword`
+- `custom_policy_id`
+- `is_managed`
+- `policy_id`
+- `policy_type`
+- `resource_id`
+- `region`
+- `status`
+- `severity`
+- `severity_string`
+
+For example: `cloud_provider: 'aws'+account_id: 'my_id'`
+
+### Indicator of Attack (IOA) Fetch Query
+
+Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).
+
+## Fetch Assets
+
+CrowdStrike Falcon assets and vulnerabilities can be fetched and ingested into the Cortex XSIAM [Unified Asset Inventory (UAI)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Unified-Asset-Inventory).
+Select the desired method in the Fetch Assets Type parameter:
+
+- Spotlight: Fetches vulnerabilities from the Spotlight Vulnerabilities Endpoint and enriches them with the associated host details. Both the vulnerabilities and the corresponding assets are ingested into the Unified Asset Inventory. Only vulnerabilities updated within the last 100 days are retrieved, keeping each collection focused on recent data.
+- CNAPP Alerts: Fetches Cloud Native Application Protection Platform (CNAPP) alerts as assets.
 
 ## Commands
 
@@ -97,6 +197,72 @@ Searches for a device that matches the query.
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 | Endpoint.OSVersion | String | The endpoint operation system version. | 
 
+#### Command Example
+
+`!cs-falcon-search-device ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
+
+#### Context Example
+
+```json
+{
+   "CrowdStrike": {
+        "Device": [
+            {
+                "ExternalIP": "94.188.164.68",
+                "MacAddress": "8c-85-90-3d-ed-3e",
+                "Hostname": "154.132.82-test-co.in-addr.arpa",
+                "LocalIP": "192.168.1.76",
+                "LastSeen": "2019-03-28T02:36:41Z",
+                "OS": "Mojave (10.14)",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "FirstSeen": "2017-12-28T22:38:11Z",
+                "Status": "contained"
+            },
+            {
+                "ExternalIP": "94.188.164.68",
+                "MacAddress": "f0-18-98-74-8c-31",
+                "Hostname": "154.132.82-test-co.in-addr.arpa",
+                "LocalIP": "172.22.14.237",
+                "LastSeen": "2019-03-17T10:03:17Z",
+                "OS": "Mojave (10.14)",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "FirstSeen": "2017-12-10T11:01:20Z",
+                "Status": "contained"
+            }
+        ]
+    },
+    "Endpoint": [
+        {
+            "Hostname": "154.132.82-test-co.in-addr.arpa",
+            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "IPAddress": "192.168.1.76",
+            "OS": "Mojave (10.14)",
+            "Status": "Online",
+            "Vendor": "CrowdStrike Falcon",
+            "MACAddress": "1-1-1-1"
+        },
+        {
+            "Hostname": "154.132.82-test-co.in-addr.arpa",
+            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "IPAddress": "172.22.14.237",
+            "OS": "Mojave (10.14)",
+            "Status": "Online",
+            "Vendor": "CrowdStrike Falcon",
+            "MACAddress": "1-1-1-1"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Devices
+
+>| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen | Status |
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
+
 ### cs-falcon-search-detection
 
 ***
@@ -135,6 +301,118 @@ Search for details of specific detections, either using a filter query, or by pr
 | CrowdStrike.Detection.MachineDomain | String | The name of the domain of the detection machine. | 
 | CrowdStrike.Detection.ID | String | The detection ID. | 
 | CrowdStrike.Detection.ProcessStartTime | Date | The start time of the process that generated the detection. | 
+
+#### Command Example
+
+`!cs-falcon-search-detection filter="product:'idp'"`
+
+`!cs-falcon-search-detection filter="product:'mobile'"`
+
+`!cs-falcon-search-detection filter="product:'ngsiem'"`
+
+`!cs-falcon-search-detection filter="product:'thirdparty'"`
+
+`!cs-falcon-search-detection ids=ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347,ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902`
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "Detection": [
+            { 
+                "Status": "false_positive", 
+                "ProcessStartTime": "2019-03-21T20:32:55.654489974Z", 
+                "Behavior": [
+                    {
+                        "IOCType": "domain", 
+                        "ProcessID": "2279170016592", 
+                        "Scenario": "intel_detection", 
+                        "ParentProcessID": "2257232915544", 
+                        "CommandLine": "C:\\Python27\\pythonw.exe -c __import__('idlelib.run').run.main(True) 1250", 
+                        "UserName": "josh", 
+                        "FileName": "pythonw.exe", 
+                        "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "ID": "4900", 
+                        "IOCValue": "systemlowcheck.com", 
+                        "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                    }, 
+                    {
+                        "IOCType": "domain", 
+                        "ProcessID": "2283087267593", 
+                        "Scenario": "intel_detection", 
+                        "ParentProcessID": "2279170016592", 
+                        "CommandLine": "ping.exe systemlowcheck.com", 
+                        "UserName": "josh", 
+                        "FileName": "PING.EXE", 
+                        "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "ID": "4900", 
+                        "IOCValue": "systemlowcheck.com", 
+                        "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                    }
+                ], 
+                "MaxSeverity": 70, 
+                "System": "DESKTOP-S49VMIL", 
+                "ID": "ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347", 
+                "MachineDomain": "", 
+                "ShowInUi": true, 
+                "CustomerID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+            }, 
+            {
+                "Status": "new", 
+                "ProcessStartTime": "2019-02-04T07:05:57.083205971Z", 
+                "Behavior": [
+                    {
+                        "IOCType": "sha256", 
+                        "ProcessID": "201917905370426448", 
+                        "Scenario": "known_malware", 
+                        "ParentProcessID": "201917902773103685", 
+                        "CommandLine": "./xSf", 
+                        "UserName": "user@u-MacBook-Pro-2.local", 
+                        "FileName": "xSf", 
+                        "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "ID": "3206", 
+                        "IOCValue": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                    }, 
+                    {
+                        "IOCType": "sha256", 
+                        "ProcessID": "201917905370426448", 
+                        "Scenario": "known_malware", 
+                        "ParentProcessID": "201917902773103685", 
+                        "CommandLine": "./xSf", 
+                        "UserName": "user@u-MacBook-Pro-2.local", 
+                        "FileName": "xSf", 
+                        "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "ID": "3206", 
+                        "IOCValue": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
+                        "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                    }
+                ], 
+                "MaxSeverity": 30, 
+                "System": "u-MacBook-Pro-2.local", 
+                "ID": "ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902", 
+                "MachineDomain": "", 
+                "ShowInUi": true, 
+                "CustomerID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Detections Found
+
+>|ID                                                         |Status|            System                 |     Process Start Time     |          Customer ID                       | Max Severity|
+>|----------------------------------------------------------| ----------------- |--------------------------- |-------------------------------- |---------------------------------- |--------------|
+>|ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1  | 70|
+>|ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902|   new             |  u-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1  | 30|
 
 ### cs-falcon-resolve-detection
 
@@ -197,6 +475,15 @@ Lifts containment on the host, which returns its network communications to norma
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-lift-host-containment ids="a]1234567890abcdef12345678"```
+
+#### Human Readable Output
+
+>Containment has been lifted off host 'a]1234567890abcdef12345678'
+
 ### cs-falcon-run-command
 
 ***
@@ -234,6 +521,41 @@ Sends commands to hosts.
 | CrowdStrike.Command.NextSequenceID | number | \(For single host\) The next sequence ID. | 
 | CrowdStrike.Command.BatchID | String | The Batch ID that the command was executed on. | 
 
+#### Command Example
+
+`cs-falcon-run-command host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 command_type=ls full_command="ls C:\\"`
+
+#### Context Example
+
+```json
+{
+    'CrowdStrike': {
+        'Command': [{
+            'HostID': 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1',
+            'Stdout': 'Directory listing for C:\\ -\n\n'
+            'BatchID': 'batch_id'
+            'Name                                     Type         Size (bytes)    Size (MB)       '
+            'Last Modified (UTC-5)     Created (UTC-5)          \n----                             '
+            '        ----         ------------    ---------       ---------------------     -------'
+            '--------          \n$Recycle.Bin                             <Directory>  --          '
+            '    --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     \nITAYDI       '
+            '                            <Directory>  --              --              11/19/2018 1:'
+            '31:42 PM     11/19/2018 1:31:42 PM    ',
+            'Stderr': '',
+            'BaseCommand': 'ls',
+            'Command': 'ls C:\\'
+        }]
+}
+```
+
+#### Human Readable Output
+
+>### Command ls C:\\ results
+
+>|BaseCommand|Command|HostID|Stderr|Stdout|BatchID|
+>|---|---|---|---|---|---|
+>| ls | ls C:\ | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     | batch_id |
+
 ### cs-falcon-upload-script
 
 ***
@@ -254,6 +576,19 @@ Uploads a script to Falcon CrowdStrike.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!cs-falcon-upload-script name=greatscript content="Write-Output 'Hello, World!'"`
+
+#### Human Readable Output
+
+The script was uploaded successfully.
+
+#### Context Output
+
+There is no context output for this command.
+
 ### cs-falcon-upload-file
 
 ***
@@ -272,6 +607,19 @@ Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command)
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!cs-falcon-upload-file entry_id=4@4`
+
+#### Human Readable Output
+
+The file was uploaded successfully.
+
+#### Context Output
+
+There is no context output for this command.
+
 ### cs-falcon-delete-file
 
 ***
@@ -291,6 +639,19 @@ Deletes a file based on the provided ID or name. Can delete only one file at a t
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!cs-falcon-delete-file file_id=le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
+
+#### Human Readable Output
+
+File le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 was deleted successfully.
+
+#### Context Output
+
+There is no context output for this command.
+
 ### cs-falcon-get-file
 
 ***
@@ -325,6 +686,39 @@ Returns files based on the provided IDs. These files are used for the RTR 'put' 
 | File.SHA256 | String | The SHA-256 hash of the file. | 
 | File.Size | Number | The size of the file in bytes. | 
 
+#### Command Example
+
+`!cs-falcon-get-file file_id=le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
+
+#### Context Example
+
+```json
+{
+   "CrowdStrike": {
+      "File": {
+            "CreatedBy": "spongobob@demisto.com",
+            "CreatedTime": "2019-10-17T13:41:48.487520845Z",
+            "Description": "Demisto",
+            "ID": "le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedBy": "spongobob@demisto.com",
+            "ModifiedTime": "2019-10-17T13:41:48.487521161Z",
+            "Name": "Demisto",
+            "Permission": "private",
+            "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "Type": "script"
+        }
+   }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon file le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+
+>|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
+
 ### cs-falcon-list-files
 
 ***
@@ -357,6 +751,41 @@ Returns a list of put-file IDs that are available for the user in the 'put' comm
 | File.Name | String | The full name of the file. | 
 | File.SHA256 | String | The SHA-256 hash of the file. | 
 | File.Size | Number | The size of the file in bytes. | 
+
+#### Command Example
+
+`!cs-falcon-list-files`
+
+#### Context Example
+
+```json
+{
+   "CrowdStrike": {
+      "File": [
+         {
+            "CreatedBy": "spongobob@demisto.com",
+            "CreatedTime": "2019-10-17T13:41:48.487520845Z",
+            "Description": "Demisto",
+            "ID": "le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedBy": "spongobob@demisto.com",
+            "ModifiedTime": "2019-10-17T13:41:48.487521161Z",
+            "Name": "Demisto",
+            "Permission": "private",
+            "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "Type": "script"
+         }
+      ]
+   }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon files
+
+>|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
 
 ### cs-falcon-get-script
 
@@ -391,6 +820,43 @@ Returns custom scripts based on the provided ID. Used for the RTR 'runscript' co
 | CrowdStrike.Script.Platform | String | The list of operating system platforms on which the script can run. For example, Windows. | 
 | CrowdStrike.Script.WriteAccess | Boolean | Whether the user has write access to the script. | 
 
+#### Command Example
+
+`!cs-falcon-get-script file_id=le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "Script": [
+            {
+                "CreatedBy": "spongobob@demisto.com",
+                "CreatedTime": "2019-10-17T13:41:48.487520845Z",
+                "Description": "Demisto",
+                "ID": "le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "spongobob@demisto.com",
+                "ModifiedTime": "2019-10-17T13:41:48.487521161Z",
+                "Name": "Demisto",
+                "Permission": "private",
+                "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "RunAttemptCount": 0,
+                "RunSuccessCount": 0,
+                "WriteAccess": true
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon script le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+
+>|CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|
+>|---|---|---|---|---|---|---|---|---|
+>| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+
 ### cs-falcon-delete-script
 
 ***
@@ -409,6 +875,19 @@ Deletes a custom-script based on the provided ID. Can delete only one script at 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!cs-falcon-delete-script script_id=le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
+
+#### Human Readable Output
+
+Script le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 was deleted successfully.
+
+#### Context Output
+
+There is no context output for this command.
+
 ### cs-falcon-list-scripts
 
 ***
@@ -441,6 +920,43 @@ Returns a list of custom script IDs that are available for the user in the 'runs
 | CrowdStrike.Script.Platform | String | The list of operating system platforms on which the script can run. For example, Windows. | 
 | CrowdStrike.Script.WriteAccess | Boolean | Whether the user has write access to the script. | 
 
+#### Command Example
+
+`!cs-falcon-list-scripts`
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "Script": [
+            {
+                "CreatedBy": "spongobob@demisto.com",
+                "CreatedTime": "2019-10-17T13:41:48.487520845Z",
+                "Description": "Demisto",
+                "ID": "le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "spongobob@demisto.com",
+                "ModifiedTime": "2019-10-17T13:41:48.487521161Z",
+                "Name": "Demisto",
+                "Permission": "private",
+                "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "RunAttemptCount": 0,
+                "RunSuccessCount": 0,
+                "WriteAccess": true
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon scripts
+
+>| CreatedBy | CreatedTime | Description | ID | ModifiedBy | ModifiedTime | Name | Permission| SHA256 |
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+>| <spongobob@demisto.com> |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+
 ### cs-falcon-run-script
 
 ***
@@ -470,6 +986,36 @@ Runs a script on the agent host.
 | CrowdStrike.Command.Stderr | String | The standard error of the command. | 
 | CrowdStrike.Command.BaseCommand | String | The base command. | 
 | CrowdStrike.Command.FullCommand | String | The full command. | 
+
+#### Command Example
+
+`cs-falcon-run-script host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 raw="Write-Output 'Hello, World!'"`
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "Command": [
+            {
+                "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "Stdout": "Hello, World!",
+                "Stderr": "",
+                "BaseCommand": "runscript",
+                "Command": "runscript -Raw=Write-Output 'Hello, World!'"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Command runscript -Raw=Write-Output 'Hello, World! results
+
+>|BaseCommand|Command|HostID|Stderr|Stdout|
+>|---|---|---|---|---|
+>| runscript | runscript -Raw=Write-Output 'Hello, World! | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
 ### cs-falcon-run-get-command
 
@@ -502,6 +1048,39 @@ Batch executes 'get' command across hosts to retrieve files.
 | CrowdStrike.Command.GetRequestID | string | The ID of the command request that was accepted. | 
 | CrowdStrike.Command.Complete | boolean | True if the command completed. | 
 | CrowdStrike.Command.FilePath | string | The file path. | 
+
+#### Command Example
+
+`cs-falcon-run-get-command host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 file_path="""c:\Windows\notepad.exe"""`
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "Command": [
+            {
+                "BaseCommand": "get",
+                "Complete": true,
+                "FilePath": "c:\\Windows\\notepad.exe",
+                "GetRequestID": "84ee4d50-f499-482e-bac6-b0e296149bbf",
+                "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "Stderr": "",
+                "Stdout": "C:\\Windows\\notepad.exe",
+                "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Get command has requested for a file c:\Windows\notepad.exe
+
+>|BaseCommand|Complete|FilePath|GetRequestID|HostID|Stderr|Stdout|TaskID|
+>|---|---|---|---|---|---|---|---|
+>| get | true | c:\Windows\notepad.exe | 107199bc-544c-4b0c-8f20-3094c062a115 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | C:\Windows\notepad.exe | 9c820b97-6a60-4238-bc23-f63513970ec8 |
 
 ### cs-falcon-status-get-command
 
@@ -536,6 +1115,42 @@ Retrieves the status of the specified batch 'get' command.
 | File.Size | number | The size of the file in bytes. | 
 | File.SHA256 | string | The SHA256 hash of the file. | 
 
+#### Command Example
+
+`!cs-falcon-status-get-command request_ids="84ee4d50-f499-482e-bac6-b0e296149bbf"`
+
+#### Context Example
+
+```json
+{
+   "CrowdStrike": {
+      "File": {
+         "CreatedAt": "2020-05-01T16:09:00Z",
+         "DeletedAt": null,
+         "ID": 185596,
+         "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+         "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+         "Size": 0,
+         "TaskID": "b5c8f140-280b-43fd-8501-9900f837510b",
+         "UpdatedAt": "2020-05-01T16:09:00Z"
+      }
+   },
+   "File": {
+      "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "Size": 0
+   }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon files
+
+>|CreatedAt|DeletedAt|ID|Name|SHA256|Size|TaskID|UpdatedAt|
+>|---|---|---|---|---|---|---|---|
+>| 2020-05-01T16:09:00Z |  | 185596 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 0 | b5c8f140-280b-43fd-8501-9900f837510b | 2020-05-01T16:09:00Z |
+
 ### cs-falcon-status-command
 
 ***
@@ -565,6 +1180,38 @@ Gets the status of a command executed on a host.
 | CrowdStrike.Command.SequenceID | number | The sequence ID in the current request. | 
 | CrowdStrike.Command.NextSequenceID | number | The sequence ID for the next request in the chunk request. | 
 
+#### Command Example
+
+`!cs-falcon-status-command request_id="ae323961-5aa8-442e-8461-8d05c4541d7d"`
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": [
+        {
+            "BaseCommand": "ls",
+            "Complete": true,
+            "NextSequenceID": null,
+            "SequenceID": null,
+            "Stderr": "",
+            "Stdout": "Directory listing for C:\\ -\n\nName                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC+9)     Created (UTC+9)          \n----                                     ----         ------------    ---------       ---------------------     ---------------          \n$Recycle.Bin                             \u003cDirectory\u003e  --              --              2020/01/10 16:05:59       2019/03/19 13:52:43      \nConfig.Msi                               \u003cDirectory\u003e  --              --              2020/05/01 23:12:50       2020/01/10 16:52:09      \nDocuments and Settings                   \u003cDirectory\u003e  --              --              2019/09/12 15:03:21       2019/09/12 15:03:21      \nPerfLogs                                 \u003cDirectory\u003e  --              --              2019/03/19 13:52:43       2019/03/19 13:52:43      \nProgram Files                            \u003cDirectory\u003e  --              --              2020/01/10 17:11:47       2019/03/19 13:52:43      \nProgram Files (x86)                      \u003cDirectory\u003e  --              --              2020/05/01 23:12:53       2019/03/19 13:52:44      \nProgramData                              \u003cDirectory\u003e  --              --              2020/01/10 17:16:51       2019/03/19 13:52:44      \nRecovery                                 \u003cDirectory\u003e  --              --              2019/09/11 20:13:59       2019/09/11 20:13:59      \nSystem Volume Information                \u003cDirectory\u003e  --              --              2019/09/12 15:08:21       2019/09/11 20:08:43      \nUsers                                    \u003cDirectory\u003e  --              --              2019/09/22 22:26:11       2019/03/19 13:37:22      \nWindows                                  \u003cDirectory\u003e  --              --              2020/05/01 23:09:08       2019/03/19 13:37:22      \npagefile.sys                             .sys         2334928896      2226.762        2020/05/02 2:10:05        2019/09/11 20:08:44      \nswapfile.sys                             .sys         268435456       256             2020/05/01 23:09:13       2019/09/11 20:08:44      \n",
+            "TaskID": "ae323961-5aa8-442e-8461-8d05c4541d7d"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Command status results
+
+>|BaseCommand|Complete|Stdout|TaskID|
+>|---|---|---|---|
+>| ls | true | Directory listing for C:\\ ...... | ae323961-5aa8-442e-8461-8d05c4541d7d |
+
 ### cs-falcon-get-extracted-file
 
 ***
@@ -585,6 +1232,15 @@ Gets the RTR extracted file contents for the specified session and SHA256 hash.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!cs-falcon-get-extracted-file host_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" sha256="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"`
+
+#### Context Output
+
+There is no context output for this command.
+
 ### cs-falcon-list-host-files
 
 ***
@@ -619,6 +1275,48 @@ Gets a list of files for the specified RTR session on a host.
 | File.Size | number | The size of the file in bytes. | 
 | File.SHA256 | string | The SHA256 hash of the file. | 
 
+#### Command Example
+
+`!cs-falcon-list-host-files host_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"`
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+        "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "SessionID": "fdd6408f-6688-441b-8659-41bcad25441c",
+        "TaskID": "1269ad9e-c11f-4e38-8aba-1a0275304f9c"
+    },
+    "File": {
+        "CreatedAt": "2020-05-01T17:57:42Z",
+        "DeletedAt": null,
+        "ID": 186811,
+        "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+        "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+        "Size": 0,
+        "Stderr": null,
+        "Stdout": null,
+        "UpdatedAt": "2020-05-01T17:57:42Z"
+    }
+  },
+  "File": {
+      "Name": "\\Device\\HarddiskVolume2\\Windows\\notepad.exe",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "Size": 0
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon files
+
+>|CreatedAt|DeletedAt|ID|Name|SHA256|Size|Stderr|Stdout|UpdatedAt|
+>|---|---|---|---|---|---|---|---|---|
+>| 2020-05-01T17:57:42Z |  | 186811 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 0 |  |  | 2020-05-01T17:57:42Z |
+
 ### cs-falcon-refresh-session
 
 ***
@@ -637,6 +1335,19 @@ Refresh a session timeout on a single host.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+`!cs-falcon-refresh-session host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
+
+#### Human Readable Output
+
+CrowdStrike Session Refreshed: fdd6408f-6688-441b-8659-41bcad25441c
+
+#### Context Output
+
+There is no context output for this command.
+
 ### cs-falcon-search-custom-iocs
 
 ***
@@ -678,6 +1389,64 @@ Returns a list of your uploaded IOCs that match the search criteria.
 | CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. | 
 | CrowdStrike.NextPageToken | unknown | A pagination token used with the limit parameter to manage pagination of results. | 
 
+#### Command Example
+
+```!cs-falcon-search-custom-iocs limit=2```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOC": [
+            {
+                "Action": "no_action",
+                "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "CreatedTime": "2022-02-16T17:17:25.992164453Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex",
+                "Type": "ipv4",
+                "Value": "1.1.8.9"
+            },
+            {
+                "Action": "no_action",
+                "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "CreatedTime": "2022-02-16T17:16:44.514398876Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedTime": "2022-02-16T17:16:44.514398876Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex",
+                "Type": "ipv4",
+                "Value": "4.1.8.9"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicators of Compromise
+
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex |  |
+
 ### cs-falcon-get-custom-ioc
 
 ***
@@ -712,6 +1481,48 @@ Gets the full definition of one or more indicators that you are watching.
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
 | CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. | 
+
+#### Command Example
+
+```!cs-falcon-get-custom-ioc type=ipv4 value=7.5.9.8```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "Action": "no_action",
+            "MobileAction": "no_action",
+            "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "CreatedTime": "2022-02-16T14:25:22.968603813Z",
+            "Expiration": "2022-02-17T17:55:09Z",
+            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedTime": "2022-02-16T14:25:22.968603813Z",
+            "Platforms": [
+                "linux"
+            ],
+            "Severity": "informational",
+            "Source": "Cortex",
+            "Tags": [
+                "test",
+                "test1"
+            ],
+            "Type": "ipv4",
+            "Value": "7.5.9.8"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicator of Compromise
+
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z | linux |  |  | Cortex | test,<br/>test1 |
 
 ### cs-falcon-upload-custom-ioc
 
@@ -761,6 +1572,41 @@ Uploads an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | 
 | CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. | 
 
+#### Command Example
+
+```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac" mobile_action="no_action"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "CreatedTime": "2020-10-02T13:55:26Z",
+            "Description": "Test ioc",
+            "Expiration": "2020-11-01T00:00:00Z",
+            "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
+            "ModifiedTime": "2020-10-02T13:55:26Z",
+            "Action": "prevent",
+            "MobileAction": "no_action",
+            "Severity": "high",
+            "Source": "Demisto playbook",
+            "Type": "domain",
+            "Value": "test.domain.com",
+            "Platforms": ["mac"]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom IOC was created successfully
+
+>|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
+
 ### cs-falcon-update-custom-ioc
 
 ***
@@ -803,6 +1649,40 @@ Updates an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | 
 | CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. | 
 
+#### Command Example
+
+```!cs-falcon-update-custom-ioc  ioc_id="4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r" severity="high"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "CreatedTime": "2020-10-02T13:55:26Z",
+            "Description": "Test ioc",
+            "Expiration": "2020-11-01T00:00:00Z",
+            "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
+            "ModifiedTime": "2020-10-02T13:55:26Z",
+            "Action": "prevent",
+            "MobileAction": "no_action",
+            "Severity": "high",
+            "Source": "Demisto playbook",
+            "Type": "domain",
+            "Value": "test.domain.com"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom IOC was updated successfully
+
+>|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
+
 ### cs-falcon-delete-custom-ioc
 
 ***
@@ -821,6 +1701,15 @@ Deletes a monitored indicator.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-delete-custom-ioc ioc_id="4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r"```
+
+#### Human Readable Output
+
+>Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.
+
 ### cs-falcon-device-count-ioc
 
 ***
@@ -845,6 +1734,29 @@ The number of hosts that observed the provided IOC.
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
 | CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
 | CrowdStrike.IOC.DeviceCount | number | The number of devices the IOC ran on. | 
+
+#### Command Example
+
+```!cs-falcon-device-count-ioc type="domain" value="value"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "DeviceCount": 1,
+            "ID": "domain:value",
+            "Type": "domain",
+            "Value": "value"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Indicator of Compromise **domain:value** device count: **1**
 
 ### cs-falcon-processes-ran-on
 
@@ -872,6 +1784,38 @@ Get processes associated with a given IOC.
 | CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
 | CrowdStrike.IOC.Process.ID | number | The processes IDs associated with the given IOC. | 
 | CrowdStrike.IOC.Process.DeviceID | number | The device the process ran on. | 
+
+#### Command Example
+
+```!cs-falcon-processes-ran-on device_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 type=domain value=value```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "ID": "domain:value",
+            "Process": {
+                "DeviceID": "pid",
+                "ID": [
+                    "pid:pid:650164094720"
+                ]
+            },
+            "Type": "domain",
+            "Value": "value"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Processes with custom IOC domain:value on device device_id
+
+>|Process ID|
+>|---|
+>| pid:pid:650164094720 |
 
 ### cs-falcon-process-details
 
@@ -902,6 +1846,38 @@ Retrieves the details of a process, according to the process ID that is running 
 | CrowdStrike.Process.stop_timestamp_raw | Date | The stop datetime of the process in Unix time format. For example: 132460167512852140. | 
 | CrowdStrike.Process.stop_timestamp | Date | The stop datetime of the process in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 
+#### Command Example
+
+```!cs-falcon-process-details ids="pid:pid:pid"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "Process": {
+            "command_line": "\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\"",
+            "device_id": "deviceId",
+            "file_name": "\\Device\\HarddiskVolume1\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+            "process_id": "deviceId:pid",
+            "process_id_local": "pid",
+            "start_timestamp": "2020-10-01T09:05:51Z",
+            "start_timestamp_raw": "132460167512852140",
+            "stop_timestamp": "2020-10-02T06:43:45Z",
+            "stop_timestamp_raw": "132460946259334768"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Details for process: pid:pid:pid
+
+>|command_line|device_id|file_name|process_id|process_id_local|start_timestamp|start_timestamp_raw|stop_timestamp|stop_timestamp_raw|
+>|---|---|---|---|---|---|---|---|---|
+>| "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" | deviceId | \Device\HarddiskVolume1\Program Files (x86)\Google\Chrome\Application\chrome.exe | device_id:pid | pid | 2020-10-01T09:05:51Z | 132460167512852140 | 2020-10-02T06:43:45Z | 132460946259334768 |
+
 ### cs-falcon-device-ran-on
 
 ***
@@ -923,6 +1899,30 @@ Returns a list of device IDs an indicator ran on.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CrowdStrike.DeviceID | string | Device IDs an indicator ran on. | 
+
+#### Command Example
+
+```!cs-falcon-device-ran-on type=domain value=value```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "DeviceID": [
+            "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Devices that encountered the IOC domain:value
+
+>|Device ID|
+>|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 ### cs-falcon-list-detection-summaries
 
@@ -1018,121 +2018,199 @@ Lists detection summaries.
 | CrowdStrike.Detections.seconds_to_triaged | Number | The amount of time it took to move a detection from "new" to "in_progress". | 
 | CrowdStrike.Detections.seconds_to_resolved | Number | The amount of time it took to move a detection from new to a resolved state \("true_positive", "false_positive", and "ignored"\). | 
 
-### cs-falcon-list-case-summaries
+#### Command Example
+
+```!cs-falcon-list-detection-summaries```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "Detections": [
+            {
+                "behaviors": [
+                    {
+                        "alleged_filetype": "exe",
+                        "behavior_id": "10197",
+                        "cmdline": "choice  /m crowdstrike_sample_detection",
+                        "confidence": 80,
+                        "control_graph_id": "ctg:ctg:ctg",
+                        "device_id": "deviceid",
+                        "display_name": "",
+                        "filename": "choice.exe",
+                        "filepath": "",
+                        "ioc_description": "",
+                        "ioc_source": "",
+                        "ioc_type": "",
+                        "ioc_value": "",
+                        "md5": "md5",
+                        "objective": "Falcon Detection Method",
+                        "parent_details": {
+                            "parent_cmdline": "\"C:\\Windows\\system32\\cmd.exe\" ",
+                            "parent_md5": "md5",
+                            "parent_process_graph_id": "pid:pid:pid",
+                            "parent_sha256": "sha256"
+                        },
+                        "pattern_disposition": 0,
+                        "pattern_disposition_details": {
+                            "bootup_safeguard_enabled": false,
+                            "critical_process_disabled": false,
+                            "detect": false,
+                            "fs_operation_blocked": false,
+                            "inddet_mask": false,
+                            "indicator": false,
+                            "kill_parent": false,
+                            "kill_process": false,
+                            "kill_subprocess": false,
+                            "operation_blocked": false,
+                            "policy_disabled": false,
+                            "process_blocked": false,
+                            "quarantine_file": false,
+                            "quarantine_machine": false,
+                            "registry_operation_blocked": false,
+                            "rooting": false,
+                            "sensor_only": false
+                        },
+                        "scenario": "suspicious_activity",
+                        "severity": 30,
+                        "sha256": "sha256",
+                        "tactic": "Malware",
+                        "tactic_id": "",
+                        "technique": "Malicious File",
+                        "technique_id": "",
+                        "template_instance_id": "382",
+                        "timestamp": "2020-07-06T08:10:44Z",
+                        "triggering_process_graph_id": "pid:pid:pid",
+                        "user_id": "user_id",
+                        "user_name": "user_name"
+                    }
+                ],
+                "behaviors_processed": [
+                    "pid:pid:pid:10197"
+                ],
+                "cid": "cid",
+                "created_timestamp": "2020-07-06T08:10:55.538668036Z",
+                "detection_id": "ldt:ldt:ldt",
+                "device": {
+                    "agent_load_flags": "0",
+                    "agent_local_time": "2020-07-02T01:42:07.640Z",
+                    "agent_version": "5.32.11406.0",
+                    "bios_manufacturer": "Google",
+                    "bios_version": "Google",
+                    "cid": "cid",
+                    "config_id_base": "id",
+                    "config_id_build": "id",
+                    "config_id_platform": "3",
+                    "device_id": "device_id",
+                    "external_ip": "external_ip",
+                    "first_seen": "2020-02-10T12:40:18Z",
+                    "hostname": "FALCON-CROWDSTR",
+                    "last_seen": "2020-07-06T07:59:12Z",
+                    "local_ip": "local_ip",
+                    "mac_address": "mac_address",
+                    "major_version": "major_version",
+                    "minor_version": "minor_version",
+                    "modified_timestamp": "modified_timestamp",
+                    "os_version": "os_version",
+                    "platform_id": "platform_id",
+                    "platform_name": "platform_name",
+                    "product_type": "product_type",
+                    "product_type_desc": "product_type_desc",
+                    "status": "status",
+                    "system_manufacturer": "system_manufacturer",
+                    "system_product_name": "system_product_name"
+                },
+                "email_sent": false,
+                "first_behavior": "2020-07-06T08:10:44Z",
+                "hostinfo": {
+                    "domain": ""
+                },
+                "last_behavior": "2020-07-06T08:10:44Z",
+                "max_confidence": 80,
+                "max_severity": 30,
+                "max_severity_displayname": "Low",
+                "seconds_to_resolved": 0,
+                "seconds_to_triaged": 0,
+                "show_in_ui": true,
+                "status": "new"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Detections
+
+>|detection_id|created_time|status|max_severity|
+>|---|---|---|---|
+>| ldt:ldt:ldt | 2020-07-06T08:10:55.538668036Z | new | Low |
+
+### cs-falcon-list-incident-summaries
 
 ***
-Lists case summaries.
+Lists incident summaries.
 
 #### Base Command
 
-`cs-falcon-list-case-summaries`
+`cs-falcon-list-incident-summaries`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of case IDs. | Optional | 
+| fetch_query | The query used to filter the results. | Optional |
+| ids | A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Case.id | String | The ID of the case. | 
-| CrowdStrike.Case.name | String | The name of the case. | 
-| CrowdStrike.Case.created_timestamp | Date | The date and time the case was created. | 
-| CrowdStrike.Case.status | String | The status of the case. | 
-| CrowdStrike.Case.version | String | The version of the case. | 
-| CrowdStrike.Case.description | String | The description of the case. | 
-| CrowdStrike.Case.severity | String | The severity of the case. | 
-| CrowdStrike.Case.assigned_to | String | The name of the user assigned to the case. | 
-| CrowdStrike.Case.tags | String | The tags of the case. | 
+| CrowdStrike.Incidents.incident_id | String | The ID of the incident. |
+| CrowdStrike.Incidents.cid | String | The organization's customer ID \(CID\). |
+| CrowdStrike.Incidents.host_ids | String | The device IDs of all the hosts on which the incident occurred. |
+| CrowdStrike.Incidents.hosts.device_id | String | The device ID as seen by CrowdStrike. |
+| CrowdStrike.Incidents.hosts.cid | String | The host's organization's customer ID \(CID\). |
+| CrowdStrike.Incidents.hosts.agent_load_flags | String | The CrowdStrike agent load flags. |
+| CrowdStrike.Incidents.hosts.agent_local_time | Date | The local time of the sensor. |
+| CrowdStrike.Incidents.hosts.agent_version | String | The version of the agent that the device is running. For example: 5.32.11406.0. |
+| CrowdStrike.Incidents.hosts.bios_manufacturer | String | The BIOS manufacturer. |
+| CrowdStrike.Incidents.hosts.bios_version | String | The BIOS version of the device. |
+| CrowdStrike.Incidents.hosts.config_id_base | String | The base of the sensor that the device is running. |
+| CrowdStrike.Incidents.hosts.config_id_build | String | The version of the sensor that the device is running. For example: 11406. |
+| CrowdStrike.Incidents.hosts.config_id_platform | String | The platform ID of the sensor that the device is running. |
+| CrowdStrike.Incidents.hosts.external_ip | String | The external IP address of the host. |
+| CrowdStrike.Incidents.hosts.hostname | String | The name of the host. |
+| CrowdStrike.Incidents.hosts.first_seen | Date | The datetime the host was first seen by CrowdStrike Falcon. |
+| CrowdStrike.Incidents.hosts.last_seen | Date | The datetime the host was last seen by CrowdStrike Falcon. |
+| CrowdStrike.Incidents.hosts.local_ip | String | The device local IP address. |
+| CrowdStrike.Incidents.hosts.mac_address | String | The device MAC address. |
+| CrowdStrike.Incidents.hosts.major_version | String | The major version of the operating system. |
+| CrowdStrike.Incidents.hosts.minor_version | String | The minor version of the operating system. |
+| CrowdStrike.Incidents.hosts.os_version | String | The operating system of the host. |
+| CrowdStrike.Incidents.hosts.platform_id | String | The platform ID of the device that runs the sensor. |
+| CrowdStrike.Incidents.hosts.platform_name | String | The platform name of the host. |
+| CrowdStrike.Incidents.hosts.product_type_desc | String | The value indicating the product type. For example, 1 = Workstation, 2 = Domain Controller, 3 = Server. |
+| CrowdStrike.Incidents.hosts.status | String | The incident status as a number. For example, 20 = New, 25 = Reopened, 30 = In Progress, 40 = Closed. |
+| CrowdStrike.Incidents.hosts.system_manufacturer | String | The system manufacturer of the device. |
+| CrowdStrike.Incidents.hosts.system_product_name | String | The product name of the system. |
+| CrowdStrike.Incidents.hosts.modified_timestamp | Date | The datetime a user modified the incident in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. |
+| CrowdStrike.Incidents.created | Date | The datetime that the incident was created. |
+| CrowdStrike.Incidents.start | Date | The recorded datetime of the earliest incident. |
+| CrowdStrike.Incidents.end | Date | The recorded datetime of the latest incident. |
+| CrowdStrike.Incidents.state | String | The state of the incident. |
+| CrowdStrike.Incidents.status | Number | The status of the incident. |
+| CrowdStrike.Incidents.name | String | The name of the incident. |
+| CrowdStrike.Incidents.description | String | The description of the incident. |
+| CrowdStrike.Incidents.tags | String | The tags of the incident. |
+| CrowdStrike.Incidents.fine_score | Number | The incident score. |
 
-### cs-falcon-get-evidence-for-case
+#### Command Example
 
-***
-Get evidence for a specific case.
+```!cs-falcon-list-incident-summaries```
 
-#### Base Command
-
-`cs-falcon-get-evidence-for-case`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | The ID of the case to retrieve evidence for. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.CaseEvidence.alerts | Array | The alerts associated with the case. | 
-| CrowdStrike.CaseEvidence.events | Array | The events associated with the case. | 
-| CrowdStrike.CaseEvidence.leads | Array | The leads associated with the case. | 
-
-### cs-falcon-add-case-tag
-
-***
-Adds tags to the specified case.
-
-#### Base Command
-
-`cs-falcon-add-case-tag`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| tags | A comma-separated list of tags. | Required | 
-| id | The ID of the case the tags will be added to. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### cs-falcon-delete-case-tag
-
-***
-Deletes a tag from the specified case.
-
-#### Base Command
-
-`cs-falcon-delete-case-tag`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | The ID of the case the tags will be deleted from. | Required | 
-| tag | The tag to delete. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-### cs-falcon-resolve-case
-
-***
-Resolves or updates a case.
-
-#### Base Command
-
-`cs-falcon-resolve-case`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | The ID of the case to resolve. | Required | 
-| status | The status to set for the case. Possible values are: new, in_progress, closed, reopened. | Optional | 
-| assigned_to_uuid | A UUID of a user to assign the case to. | Optional | 
-| description | A new description for the case. | Optional | 
-| remove_user_assignment | Whether to remove case assignment from the current user.<br/>If set to true and assigned_to_uuid is not provided, the case becomes unassigned.<br/>If set to false and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.<br/>If set to true and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.<br/>If this field is omitted and assigned_to_uuid is provided, the case is reassigned to the specified user UUID. Possible values are: true, false. Default is false. | Optional | 
-| severity | The new case severity rating (10-100). | Optional | 
-| template_id | The unique ID of the template to apply to the case. | Optional | 
-| name | The new name for the case. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
 ### endpoint
 
 ***
@@ -1163,6 +2241,36 @@ Returns information about an endpoint. Does not support regex.
 | Endpoint.MACAddress | String | The endpoint's MAC address. | 
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 | Endpoint.OSVersion | String | The endpoint's operation system version. | 
+
+#### Command Example
+
+```!endpoint id=15dbb9d5fe9f61eb46e829d986```
+
+#### Context Example
+
+```json
+{
+  "Endpoint":
+    {
+      "Hostname": "Hostname",
+      "ID": "15dbb9d5fe9f61eb46e829d986",
+      "IPAddress": "1.1.1.1",
+      "OS": "Windows",
+      "OSVersion": "Windows Server 2019",
+      "Status": "Online",
+      "￿Vendor": "CrowdStrike Falcon",
+      "￿MACAddress": "1-1-1-1"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoints
+
+>|ID|IPAddress|OS|OSVersion|Hostname|Status|MACAddress|Vendor
+>|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 1.1.1.1 | Windows | Windows Server 2019| Hostname | Online | 1-1-1-1 | CrowdStrike Falcon|\n"
 
 ### cs-falcon-create-host-group
 
@@ -1195,6 +2303,37 @@ Create a host group.
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
 | CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 
+#### Command Example
+
+```!cs-falcon-create-host-group name="test_name_1" description="test_description" group_type=static```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "created_timestamp": "2021-08-25T08:02:02.060242909Z",
+            "description": "test_description",
+            "group_type": "static",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_timestamp": "2021-08-25T08:02:02.060242909Z",
+            "name": "test_name_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+
+>|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|
+>| api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:02.060242909Z | test_description | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:02.060242909Z | test_name_1 |
+
 ### cs-falcon-list-host-groups
 
 ***
@@ -1225,6 +2364,557 @@ List the available host groups.
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
 | CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 
+#### Command Example
+
+```!cs-falcon-list-host-groups```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": [
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T14:35:23.765624811Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T14:35:23.765624811Z",
+                "name": "InnerServicesModuleMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T14:35:25.506030441Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T14:35:25.506030441Z",
+                "name": "Rasterize_default_instanceMon Aug 23 2021"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['','FALCON-CROWDSTR']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-07-27T12:34:59.13917402Z",
+                "description": "",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-07-27T12:34:59.13917402Z",
+                "name": "Static by id group test"
+            },
+            {
+                "assignment_rule": "device_id:[],hostname:[]",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-07-27T12:24:18.364057533Z",
+                "description": "Group test",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-07-27T12:24:18.364057533Z",
+                "name": "Static group test"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T14:35:26.069515348Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T14:35:26.069515348Z",
+                "name": "ad-loginMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T14:35:25.556897468Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T14:35:25.556897468Z",
+                "name": "ad-queryMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T14:35:23.737307612Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T14:35:23.737307612Z",
+                "name": "d2Mon Aug 23 2021"
+            },
+            {
+                "created_by": "someone@email.com",
+                "created_timestamp": "2021-07-27T12:27:43.503021999Z",
+                "description": "dhfh",
+                "group_type": "staticByID",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "someone@email.com",
+                "modified_timestamp": "2021-07-27T12:27:43.503021999Z",
+                "name": "ddfxgh"
+            },
+            {
+                "assignment_rule": "device.hostname:'FALCON-CROWDSTR'",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-07-27T12:46:39.058352326Z",
+                "description": "",
+                "group_type": "dynamic",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-07-27T12:46:39.058352326Z",
+                "name": "dynamic 1 group test"
+            },
+            {
+                "assignment_rule": "lkjlk:'FalconGroupingTags/example_tag'",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T13:12:56.338590022Z",
+                "description": "",
+                "group_type": "dynamic",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T13:12:56.338590022Z",
+                "name": "dynamic 13523 group test"
+            },
+            {
+                "assignment_rule": "lkjlk:'FalconGroupingTags/example_tag'",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-07-27T14:02:05.538065349Z",
+                "description": "",
+                "group_type": "dynamic",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-07-27T14:02:05.538065349Z",
+                "name": "dynamic 1353 group test"
+            },
+            {
+                "assignment_rule": "tags:'FalconGroupingTags/example_tag'",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-07-27T12:41:33.127997409Z",
+                "description": "",
+                "group_type": "dynamic",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-07-27T12:41:33.127997409Z",
+                "name": "dynamic 2 group test"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T14:35:23.7402217Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T14:35:23.7402217Z",
+                "name": "fcm_default_instanceMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-11T09:55:23.801049103Z",
+                "description": "ilan test",
+                "group_type": "dynamic",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-11T09:55:23.801049103Z",
+                "name": "ilan"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-12T11:24:51.434863056Z",
+                "description": "ilan test",
+                "group_type": "dynamic",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-12T11:24:51.434863056Z",
+                "name": "ilan 2"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['FALCON-CROWDSTR']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-12T11:55:57.943490809Z",
+                "description": "ilan test",
+                "group_type": "dynamic",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-12T11:55:57.943490809Z",
+                "name": "ilan 23"
+            },
+            {
+                "assignment_rule": "",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-17T11:28:39.855075106Z",
+                "description": "after change",
+                "group_type": "dynamic",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T09:26:15.351650252Z",
+                "name": "ilan 2345"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-17T11:58:42.453661998Z",
+                "description": "ilan test",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-17T11:58:42.453661998Z",
+                "name": "ilan 23e"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-11T13:54:59.695821727Z",
+                "description": "",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-11T13:54:59.695821727Z",
+                "name": "ilan test 2"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-12T10:56:49.2127345Z",
+                "description": "ilan test",
+                "group_type": "dynamic",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-12T11:35:35.76509212Z",
+                "name": "ilan2"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T14:35:23.766284685Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T14:35:23.766284685Z",
+                "name": "splunkMon Aug 23 2021"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:09:15.36414377Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:09:15.36414377Z",
+                "name": "test_1629731353498"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:12:20.69203954Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:12:20.69203954Z",
+                "name": "test_1629731538458"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:14:20.650781714Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:14:23.026511269Z",
+                "name": "test_16297316587261629731658726"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:18:53.896505566Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:18:56.2598933Z",
+                "name": "test_16297319320381629731932038"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:19:51.91067257Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:19:54.269898808Z",
+                "name": "test_16297319902371629731990237"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:25:42.99601887Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:25:42.99601887Z",
+                "name": "test_1629732339973"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:26:12.280379354Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:26:14.973676462Z",
+                "name": "test_16297323698941629732369894"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:26:58.717706381Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:27:01.648623079Z",
+                "name": "test_16297324168771629732416877"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:28:18.674512647Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:28:21.781563212Z",
+                "name": "test_16297324965761629732496576"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['FALCON-CROWDSTR','INSTANCE-1','falcon-crowdstrike-sensor-centos7']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:31:41.142748214Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:31:43.800147323Z",
+                "name": "test_16297326990981629732699098"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:34:20.195778795Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:34:23.212828317Z",
+                "name": "test_16297328579781629732857978"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:34:55.837119719Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:34:58.490114093Z",
+                "name": "test_16297328938791629732893879"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-23T15:37:42.911344704Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-23T15:37:45.620464598Z",
+                "name": "test_16297330605301629733060530"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-24T07:05:55.813475476Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-24T07:05:58.805702883Z",
+                "name": "test_16297887501421629788750142"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-24T07:07:30.422517324Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-24T07:07:34.291988227Z",
+                "name": "test_16297888481381629788848138"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-24T08:03:15.522772079Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-24T08:03:18.622015517Z",
+                "name": "test_16297921932741629792193274"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T09:09:52.379925975Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T09:09:52.379925975Z",
+                "name": "test_1629967211800"
+            },
+            {
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T12:34:36.934507422Z",
+                "description": "description",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T12:34:36.934507422Z",
+                "name": "test_162996721180000"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T08:46:09.996065663Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T08:46:11.572092204Z",
+                "name": "test_16299675695531629967569553"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T08:53:15.35181954Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T08:53:17.041535905Z",
+                "name": "test_16299679949831629967994983"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T08:59:52.639696743Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T08:59:54.538170036Z",
+                "name": "test_16299683923121629968392312"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T09:06:21.891707157Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T09:06:23.846219163Z",
+                "name": "test_16299687814871629968781487"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T09:12:53.982989Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T09:12:55.571265187Z",
+                "name": "test_16299691732871629969173287"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T09:17:58.206157753Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T09:17:59.659515838Z",
+                "name": "test_16299694779051629969477905"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T09:19:23.276267291Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T09:19:25.318976241Z",
+                "name": "test_16299695623981629969562398"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T09:26:22.538367707Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T09:26:25.085214782Z",
+                "name": "test_16299699813871629969981387"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T09:33:46.303790983Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T09:33:48.288311235Z",
+                "name": "test_16299704254441629970425444"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T09:55:09.157561612Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T09:55:10.741852436Z",
+                "name": "test_16299717065381629971706538"
+            },
+            {
+                "assignment_rule": "device_id:[''],hostname:['']",
+                "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "created_timestamp": "2021-08-26T10:02:50.175530821Z",
+                "description": "description2",
+                "group_type": "static",
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "modified_timestamp": "2021-08-26T10:02:52.026307768Z",
+                "name": "test_16299721694081629972169408"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-26T10:02:50.175530821Z | description2 | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-26T10:02:52.026307768Z | test_16299721694081629972169408 |
+
 ### cs-falcon-delete-host-groups
 
 ***
@@ -1243,6 +2933,16 @@ Deletes the requested host groups.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-delete-host-groups host_group_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
+
+#### Human Readable Output
+
+>host group id a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 deleted successfully
+>host group id a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 deleted successfully
+
 ### cs-falcon-update-host-group
 
 ***
@@ -1273,6 +2973,38 @@ Updates a host group.
 | CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
 | CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+
+#### Command Example
+
+```!cs-falcon-update-host-group host_group_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 name="test_name_update_1" description="test_description_update"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['']",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
 ### cs-falcon-list-host-group-members
 
@@ -1307,6 +3039,84 @@ Gets the list of host group members.
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.Status | String | The device status. | 
 
+#### Command Example
+
+```!cs-falcon-list-host-group-members```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "Device": [
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-12T16:13:26Z",
+                "Hostname": "FALCON-CROWDSTR",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-23T04:59:48Z",
+                "LocalIP": "10.128.0.21",
+                "MacAddress": "42-01-0a-80-00-15",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2020-02-10T12:40:18Z",
+                "Hostname": "FALCON-CROWDSTR",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-25T07:42:47Z",
+                "LocalIP": "10.128.0.7",
+                "MacAddress": "42-01-0a-80-00-07",
+                "OS": "Windows Server 2019",
+                "Status": "contained"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-23T05:04:41Z",
+                "Hostname": "INSTANCE-1",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-25T07:49:06Z",
+                "LocalIP": "10.128.0.20",
+                "MacAddress": "42-01-0a-80-00-14",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-11T13:57:29Z",
+                "Hostname": "INSTANCE-1",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-23T04:45:37Z",
+                "LocalIP": "10.128.0.20",
+                "MacAddress": "42-01-0a-80-00-14",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-08T11:33:21Z",
+                "Hostname": "falcon-crowdstrike-sensor-centos7",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-25T07:50:47Z",
+                "LocalIP": "10.128.0.19",
+                "MacAddress": "42-01-0a-80-00-13",
+                "OS": "CentOS 7.9",
+                "Status": "normal"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Devices
+
+>|ID|External IP|Local IP|Hostname|OS|Mac Address|First Seen|Last Seen|Status|
+>|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
+
 ### cs-falcon-add-host-group-members
 
 ***
@@ -1336,6 +3146,38 @@ Add host group members.
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
 | CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 
+#### Command Example
+
+```!cs-falcon-add-host-group-members host_group_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" host_ids="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7','']",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
 ### cs-falcon-remove-host-group-members
 
 ***
@@ -1364,6 +3206,72 @@ Remove host group members.
 | CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
 | CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+
+#### Command Example
+
+```!cs-falcon-remove-host-group-members host_group_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" host_ids="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['']",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
+### cs-falcon-resolve-incident
+
+***
+Resolve and update incidents using the specified settings.
+
+#### Base Command
+
+`cs-falcon-resolve-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of incident IDs. | Required |
+| status | The new status of the incident. Possible values are: New, In Progress, Reopened, Closed. | Optional |
+| assigned_to_uuid | UUID of a user to assign the incident to. Mutually exclusive with the 'username' argument. | Optional |
+| username | Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user. | Optional |
+| add_tag | Add a new tag to the incidents. | Optional |
+| remove_tag | Remove a tag from the incidents. | Optional |
+| add_comment | Add a comment to the incident. Comment is limited to 1024 characters. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-resolve-incident ids="inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" status="Closed"```
+
+#### Human Readable Output
+
+>inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
+>inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
 
 ### cs-falcon-batch-upload-custom-ioc
 
@@ -1401,6 +3309,44 @@ Uploads a batch of indicators.
 | CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
 | CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. | 
 
+#### Command Example
+
+```!cs-falcon-batch-upload-custom-ioc multiple_indicators_json=`[{"description": "test", "expiration": "2022-02-17T13:47:57Z", "type": "ipv4", "severity": "Informational", "value": "1.1.8.9", "action": "no_action", "platforms": ["mac"], "source": "Cortex", "applied_globally": true}]` ```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "Action": "no_action",
+            "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "CreatedTime": "2022-02-16T17:17:25.992164453Z",
+            "Description": "test",
+            "Expiration": "2022-02-17T13:47:57Z",
+            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
+            "Platforms": [
+                "mac"
+            ],
+            "Severity": "informational",
+            "Source": "Cortex",
+            "Type": "ipv4",
+            "Value": "1.1.8.9"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom IOC 1.1.8.9 was created successfully
+
+>|Action|CreatedBy|CreatedTime|Description|Expiration|ID|ModifiedBy|ModifiedTime|Platforms|Severity|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| no_action | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex | ipv4 | 1.1.8.9 |
+
 ### cs-falcon-rtr-kill-process
 
 ***
@@ -1426,6 +3372,44 @@ Execute an active responder kill command on a single host.
 | CrowdStrike.Command.kill.ProcessID | String | The process ID that was killed. | 
 | CrowdStrike.Command.kill.Error | String | The error message raised if the command failed. | 
 | CrowdStrike.Command.kill.HostID | String | The host ID. | 
+
+#### Command Example
+
+```!cs-falcon-rtr-kill-process host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 process_ids=5260,123```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "kill": [
+        {
+          "Error": "Cannot find a process with the process identifier 123.",
+          "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "ProcessID": "123"
+        },
+        {
+          "Error": "Success",
+          "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+          "ProcessID": "5260"
+        }
+      ]
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon kill command on host a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+
+>|ProcessID|Error|
+>|---|---|
+>| 123 | Cannot find a process with the process identifier 123. |
+>| 5260 | Success |
+>Note: you don't see the following IDs in the results as the request was failed for them.
+> ID 123 failed as it was not found.
 
 ### cs-falcon-rtr-remove-file
 
@@ -1453,6 +3437,33 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
 | CrowdStrike.Command.rm.HostID | String | The host ID. | 
 | CrowdStrike.Command.rm.Error | String | The error message raised if the command failed. | 
 
+#### Command Example
+
+```!cs-falcon-rtr-remove-file file_path="c:\\testfolder" host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 os=Windows```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "rm": {
+        "Error": "Success",
+        "HostID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+      }
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon rm over the file: c:\testfolder
+
+>|HostID|Error|
+>|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | Success |
+
 ### cs-falcon-rtr-list-processes
 
 ***
@@ -1475,6 +3486,44 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CrowdStrike.Command.ps.Filename | String | The name of the result file to be returned. | 
+
+#### Command Example
+
+```!cs-falcon-rtr-list-processes host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "ps": {
+        "Filename": "ps-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+      }
+    }
+  },
+  "File": {
+    "EntryID": "1792@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+    "Info": "text/plain",
+    "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "Name": "ps-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a115919af3",
+    "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SSDeep": "768:4jcAkTBaZ61QUEcDBdMoFwIxVvroYrohrbY2akHLnsa5fbqFEJtPNObzVj0ff+3K:4IraZ61QUEcDBdMoFwIxRJEbY2akHLnr",
+    "Size": 30798,
+    "Type": "ASCII text"
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon ps command on host a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+
+>|Stdout|
+>|---|
+>|TOO MUCH INFO TO DISPLAY|
 
 ### cs-falcon-rtr-list-network-stats
 
@@ -1499,6 +3548,44 @@ Executes an RTR active-responder netstat command to get a list of network status
 | --- | --- | --- |
 | CrowdStrike.Command.netstat.Filename | String | The name of the result file to be returned. | 
 
+#### Command Example
+
+```!cs-falcon-rtr-list-network-stats host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "netstat": {
+        "Filename": "netstat-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+      }
+    }
+  },
+  "File": {
+    "EntryID": "1797@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+    "Info": "text/plain",
+    "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "Name": "netstat-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1864ce595",
+    "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SSDeep": "48:XSvprPoeCfd8saowYL8zjt6yjjRchg24OI58RtTLvWptl6TtCla5n1lEtClMw/u:CRQeCxRmxVpIHUchCIvsCo",
+    "Size": 4987,
+    "Type": "ASCII text, with CRLF line terminators"
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon netstat command on host a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+
+>|Stdout|
+>|---|
+>|TOO MUCH INFO TO DISPLAY|
+
 ### cs-falcon-rtr-read-registry
 
 ***
@@ -1520,6 +3607,54 @@ Executes an RTR active-responder read registry keys command across the given hos
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-rtr-read-registry host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 registry_keys=`
+HKEY_LOCAL_MACHINE,HKEY_USERS````
+
+#### Context Example
+
+```json
+{
+  "File": [
+    {
+      "EntryID": "1806@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+      "Info": "text/plain",
+      "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "Name": "reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_USERS",
+      "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a139dd0333",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "SSDeep": "12:uSn3PtdoI1pZI2WUNI2e6NI2vboI2vbP3I2zd:uSQIpZIII1aIUMIUjIcd",
+      "Size": 656,
+      "Type": "ASCII text, with CRLF, LF line terminators"
+    },
+    {
+      "EntryID": "1807@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+      "Info": "text/plain",
+      "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "Name": "reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_LOCAL_MACHINE",
+      "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a18e3b4919",
+      "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+      "SSDeep": "6:zYuSugMQEYPtdWCMwdiwf2Jai2FU42DGE25/:zYuSnMQXPtd9/eJqy7yfh",
+      "Size": 320,
+      "Type": "ASCII text, with CRLF, LF line terminators"
+    }
+  ]
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon reg command on hosts ['a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1']
+
+>|FileName| Stdout                    |
+>|---------------------------|---|
+>| reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_USERS | TOO MUCH INFO TO DISPLAY  |
+>| reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_LOCAL_MACHINE | TOO MUCH INFO TO DISPLAY  |
+
 ### cs-falcon-rtr-list-scheduled-tasks
 
 ***
@@ -1540,6 +3675,45 @@ Executes an RTR active-responder netstat command to get a list of scheduled task
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-rtr-list-scheduled-tasks host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "runscript": {
+        "Filename": "runscript-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+      }
+    }
+  },
+  "File": {
+    "EntryID": "1812@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+    "Info": "text/plain",
+    "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "Name": "runscript-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1c589bf80",
+    "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SHA512": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "SSDeep": "3072:zjQ3/3YHGa8dbXbpbItbo4W444ibNb9MTf2Wat4cuuEqk4W4ybmF54c4eEEEjX6f:EXN8Nbw",
+    "Size": 299252,
+    "Type": "ASCII text"
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon runscript command on host a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1
+
+>| Stdout                    |
+---------------------------|---|
+>| TOO MUCH INFO TO DISPLAY  |
+
 ### cs-falcon-rtr-retrieve-file
 
 ***
@@ -1580,6 +3754,68 @@ Gets the RTR extracted file contents for the specified file path.
 | File.Type | String | The file type. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The extension of the file. | 
+
+#### Command Example
+
+```!cs-falcon-rtr-retrieve-file file_path=`C:\Windows\System32\Windows.Media.FaceAnalysis.dll` host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
+
+#### Human Readable Output
+
+> Waiting for the polling execution
+
+### cs-falcon-get-detections-for-incident
+
+***
+Gets the detections for a specific incident.
+
+#### Base Command
+
+`cs-falcon-get-detections-for-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID to get detections for. A list of all available incident IDs can be retrieved by running the 'cs-falcon-list-incident-summaries' command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IncidentDetection.incident_id | String | The incident ID. |
+| CrowdStrike.IncidentDetection.behavior_id | String | The behavior ID connected to the incident. |
+| CrowdStrike.IncidentDetection.detection_ids | String | A list of detection IDs connected to the incident. |
+
+#### Command Example
+
+```!cs-falcon-get-detections-for-incident incident_id=`inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1````
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IncidentDetection": {
+            "behavior_id": "ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162589633341-10303-6705920",
+            "detection_ids": [
+                "ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38655034604"
+            ],
+            "incident_id": "inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Detection For Incident
+
+>|behavior_id|detection_ids|incident_id|
+>|---|---|---|
+>| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162590282130-10303-6707968 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38656254663 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162596456872-10303-6710016 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38657629548 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162597577534-10305-6712576 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38658614774 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162589633341-10303-6705920 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38655034604 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 ### get-mapping-fields
 
@@ -1652,89 +3888,6 @@ Updates the remote incident or detection with local incident or detection change
 #### Context Output
 
 There is no context output for this command.
-### cs-falcon-spotlight-search-vulnerability
-
-***
-Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
-
-#### Base Command
-
-`cs-falcon-spotlight-search-vulnerability`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| filter | Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'. | Optional | 
-| aid | A comma-separated list of unique agent identifiers (AIDs) of a sensor. | Optional | 
-| cve_id | A comma-separated list of unique identifiers for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional | 
-| cve_severity | A comma-separated list of severities of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional | 
-| tags | A comma-separated list of names of a tag assigned to a host. Retrieve tags from Host Tags APIs. | Optional | 
-| status | Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired. | Optional | 
-| platform_name | Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux. | Optional | 
-| host_group | A comma-separated list of unique system-assigned IDs of a host group. Retrieve the host group ID from Host Group APIs. | Optional | 
-| host_type | A comma-separated list of types of hosts a sensor is running on. | Optional | 
-| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days  to look back. For example, last_seen_within:10. | Optional | 
-| is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule. Possible values are: true, false. | Optional | 
-| display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
-| display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
-| display_host_info | Whether to return host information type of data for each vulnerability entity. Possible values are: True, False. Default is False. | Optional | 
-| limit | The maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages. Default is 50. | Optional | 
-| next_token | Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Provide this value to fetch the next page of vulnerabilities. Expires in 120 seconds. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.Vulnerability.id | String | Unique system-assigned ID of the vulnerability. | 
-| CrowdStrike.Vulnerability.cid | String | Unique system-generated customer identifier \(CID\) of the account. | 
-| CrowdStrike.Vulnerability.aid | String | Unique agent identifier \(AID\) of the sensor where the vulnerability was found. | 
-| CrowdStrike.Vulnerability.created_timestamp | Date | UTC date and time of when the vulnerability was created in Spotlight. | 
-| CrowdStrike.Vulnerability.updated_timestamp | Date | UTC date and time of the last update made on the vulnerability. | 
-| CrowdStrike.Vulnerability.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. | 
-| CrowdStrike.Vulnerability.apps.product_name_version | String | Name and version of the product associated with the vulnerability. | 
-| CrowdStrike.Vulnerability.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen. | 
-| CrowdStrike.Vulnerability.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability. | 
-| CrowdStrike.Vulnerability.host_info.hostname | String | Name of the machine. | 
-| CrowdStrike.Vulnerability.host_info.instance_id | String | Cloud instance ID of the host. | 
-| CrowdStrike.Vulnerability.host_info.service_provider_account_id | String | Cloud service provider account ID for the host. | 
-| CrowdStrike.Vulnerability.host_info.service_provider | String | Cloud service provider for the host. | 
-| CrowdStrike.Vulnerability.host_info.os_build | String | Operating system build. | 
-| CrowdStrike.Vulnerability.host_info.product_type_desc | String | Type of host a sensor is running on. | 
-| CrowdStrike.Vulnerability.host_info.local_ip | String | Device's local IP address. | 
-| CrowdStrike.Vulnerability.host_info.machine_domain | String | Active directory domain name. | 
-| CrowdStrike.Vulnerability.host_info.os_version | String | Operating system version. | 
-| CrowdStrike.Vulnerability.host_info.ou | String | Active directory organizational unit name. | 
-| CrowdStrike.Vulnerability.host_info.site_name | String | Active directory site name. | 
-| CrowdStrike.Vulnerability.host_info.system_manufacturer | String | Name of the system manufacturer. | 
-| CrowdStrike.Vulnerability.host_info.groups.id | String | Array of host group IDs that the host is assigned to. | 
-| CrowdStrike.Vulnerability.host_info.groups.name | String | Array of host group names that the host is assigned to. | 
-| CrowdStrike.Vulnerability.host_info.tags | String | Name of a tag assigned to a host. | 
-| CrowdStrike.Vulnerability.host_info.platform | String | Operating system platform. This filter supports negation. | 
-| CrowdStrike.Vulnerability.remediation.entities.id | String | Unique ID of the remediation. | 
-| CrowdStrike.Vulnerability.remediation.entities.reference | String | Relevant reference for the remediation that can be used to get additional details for the remediation. | 
-| CrowdStrike.Vulnerability.remediation.entities.title | String | Short description of the remediation. | 
-| CrowdStrike.Vulnerability.remediation.entities.action | String | Expanded description of the remediation. | 
-| CrowdStrike.Vulnerability.remediation.entities.link | String | Link to the remediation page for the vendor. In certain cases, this field is null. | 
-| CrowdStrike.Vulnerability.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database \(NVD\). | 
-| CrowdStrike.Vulnerability.cve.base_score | Number | Base score of the CVE \(float value between 1 and 10\). | 
-| CrowdStrike.Vulnerability.cve.severity | String | CVSS severity rating of the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.exploit_status | Number | Numeric value of the most severe known exploit. | 
-| CrowdStrike.Vulnerability.cve.exprt_rating | String | ExPRT rating assigned by CrowdStrike's predictive AI rating system. | 
-| CrowdStrike.Vulnerability.cve.description | String | Brief description of the CVE. | 
-| CrowdStrike.Vulnerability.cve.published_date | Date | UTC timestamp with the date and time of when the vendor published the CVE. | 
-| CrowdStrike.Vulnerability.cve.vendor_advisory | String | Link to the vendor page where the CVE was disclosed. | 
-| CrowdStrike.Vulnerability.cve.exploitability_score | Number | Exploitability score of the CVE \(float values from 1-4\). | 
-| CrowdStrike.Vulnerability.cve.impact_score | Number | Impact score of the CVE \(float values from 1-6\). | 
-| CrowdStrike.Vulnerability.cve.vector | String | Textual representation of the metric values used to score the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.remediation_level | String | CVSS remediation level of the vulnerability \(U = Unavailable, or O = Official fix\). | 
-| CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev | Boolean | Whether to filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities \(KEV\) catalog. | 
-| CrowdStrike.Vulnerability.cve.cisa_info.due_date | Date | Date before which CISA mandates subject organizations to patch the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.spotlight_published_date | Date | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. | 
-| CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. | 
-| CrowdStrike.VulnerabilityNextToken | String | Pagination cursor returned by CrowdStrike when more results are available. Pass this value back as the \`next_token\` argument on the next invocation. Absent when no more pages exist. Expires in 120 seconds. | 
-
 ### cve
 
 ***
@@ -1760,51 +3913,15 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 
-### cs-falcon-spotlight-list-host-by-vulnerability
+#### Command Example
 
-***
-Retrieve vulnerability details for a specific ID and host. Supported with the CrowdStrike Spotlight license.
+``` cve cve=CVE-2021-2222 ```
 
-#### Base Command
+#### Human Readable Output
 
-`cs-falcon-spotlight-list-host-by-vulnerability`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | Maximum number of items to return (1-5000). Default is 50. | Optional | 
-| cve_ids | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.VulnerabilityHost.id | String | Unique system-assigned ID of the vulnerability. | 
-| CrowdStrike.VulnerabilityHost.cid | String | Unique system-generated customer identifier \(CID\) of the account. | 
-| CrowdStrike.VulnerabilityHost.aid | String | Unique agent identifier \(AID\) of the sensor where the vulnerability was found. | 
-| CrowdStrike.VulnerabilityHost.created_timestamp | Date | UTC date and time of when the vulnerability was created in Spotlight. | 
-| CrowdStrike.VulnerabilityHost.updated_timestamp | Date | UTC date and time of the last update made on the vulnerability. | 
-| CrowdStrike.VulnerabilityHost.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. | 
-| CrowdStrike.VulnerabilityHost.apps.product_name_version | String | Name and version of the product associated with the vulnerability. | 
-| CrowdStrike.VulnerabilityHost.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen. | 
-| CrowdStrike.VulnerabilityHost.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability. | 
-| CrowdStrike.VulnerabilityHost.apps.evaluation_logic.id | String | Unique system-assigned ID of the vulnerability evaluation logic. | 
-| CrowdStrike.VulnerabilityHost.suppression_info.is_suppressed | Boolean | Indicates if the vulnerability is suppressed by a suppression rule. | 
-| CrowdStrike.VulnerabilityHost.host_info.hostname | String | Name of the machine. | 
-| CrowdStrike.VulnerabilityHost.host_info.local_ip | String | Device's local IP address. | 
-| CrowdStrike.VulnerabilityHost.host_info.machine_domain | String | Active directory domain name. | 
-| CrowdStrike.VulnerabilityHost.host_info.os_version | String | Operating system version. | 
-| CrowdStrike.VulnerabilityHost.host_info.ou | String | Active directory organizational unit name. | 
-| CrowdStrike.VulnerabilityHost.host_info.site_name | String | Active directory site name. | 
-| CrowdStrike.VulnerabilityHost.host_info.system_manufacturer | String | Name of the system manufacturer. | 
-| CrowdStrike.VulnerabilityHost.host_info.platform | String | Operating system platform. This filter supports negation. | 
-| CrowdStrike.VulnerabilityHost.host_info.instance_id | String | Cloud instance ID of the host. | 
-| CrowdStrike.VulnerabilityHost.host_info.service_provider_account_id | String | Cloud service provider account ID for the host. | 
-| CrowdStrike.VulnerabilityHost.host_info.service_provider | String | Cloud service provider for the host. | 
-| CrowdStrike.VulnerabilityHost.host_info.os_build | String | Operating system build. | 
-| CrowdStrike.VulnerabilityHost.host_info.product_type_desc | String | Type of host a sensor is running on. | 
-| CrowdStrike.VulnerabilityHost.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database \(NVD\). | 
+| ID | Severity | Published Date | Base Score |
+| --- | --- | --- | --- |
+| CVE-2021-2222 | HIGH | 2021-09-16T15:12:42Z | 1 |
 
 ### cs-falcon-create-ml-exclusion
 
@@ -1848,6 +3965,54 @@ Create an ML exclusion.
 | CrowdStrike.MLExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.MLExclusion.created_by | String | Indicate who created the rule. | 
 
+#### Command Example
+
+```!cs-falcon-create-ml-exclusion value=/demo-test excluded_from=blocking groups=999999```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "MLExclusion": {
+            "applied_globally": false,
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-06T13:57:14.853546312Z",
+            "excluded_from": [
+                "blocking"
+            ],
+            "groups": [
+                {
+                    "assignment_rule": "device_id",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "123456",
+            "last_modified": "2023-03-06T13:57:14.853546312Z",
+            "modified_by": "api-client-id:123456",
+            "regexp_value": "\\/demo-test",
+            "value": "/demo-test",
+            "value_hash": "abcdef123456"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon machine learning exclusion
+
+>|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | /demo-test | \/demo-test | abcdef123456 | ***values***: blocking | **-** ***id***: 999999<br/> ***group_type***: static<br/> ***name***: Lab env<br/> ***description***: <br/> ***assignment_rule***: device_id:<br/> ***created_by***: <admin@test.com><br/> ***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/> ***modified_by***: <admin@test.com><br/> ***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:14.853546312Z | api-client-id:123456 | 2023-03-06T13:57:14.853546312Z | api-client-id:123456 |
+
 ### cs-falcon-update-ml-exclusion
 
 ***
@@ -1890,6 +4055,55 @@ Updates an ML exclusion. At least one argument is required in addition to the id
 | CrowdStrike.MLExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.MLExclusion.created_by | String | Indicate who created the rule. | 
 
+#### Command Example
+
+```!cs-falcon-update-ml-exclusion id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 comment=demo-comment```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "MLExclusion": {
+            "applied_globally": false,
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-06T13:56:25.940685483Z",
+            "excluded_from": [
+                "extraction",
+                "blocking"
+            ],
+            "groups": [
+                {
+                    "assignment_rule": "device_id:",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "last_modified": "2023-03-06T13:57:21.57829431Z",
+            "modified_by": "api-client-id:123456",
+            "regexp_value": "\\/demo",
+            "value": "/demo",
+            "value_hash": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon machine learning exclusion
+
+>|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | /demo | \/demo | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | ***values***: extraction, blocking | **-** ***id***: 999999<br/> ***group_type***: static<br/> ***name***: Lab env<br/> ***description***: <br/> ***assignment_rule***: device_id:<br/> ***created_by***: <admin@test.com><br/> ***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/> ***modified_by***: <admin@test.com><br/> ***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:21.57829431Z | api-client-id:123456 | 2023-03-06T13:56:25.940685483Z | api-client-id:123456 |
+
 ### cs-falcon-delete-ml-exclusion
 
 ***
@@ -1908,6 +4122,15 @@ Delete the ML exclusions by ID.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-delete-ml-exclusion ids=123456```
+
+#### Human Readable Output
+
+>'The machine learning exclusions with IDs '123456' was successfully deleted.'
+
 ### cs-falcon-search-ml-exclusion
 
 ***
@@ -1951,6 +4174,54 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 | CrowdStrike.MLExclusion.modified_by | String | Indicate who last modified the rule. | 
 | CrowdStrike.MLExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.MLExclusion.created_by | String | Indicate who created the rule. | 
+
+#### Command Example
+
+```!cs-falcon-search-ml-exclusion limit=1```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "MLExclusion": {
+            "applied_globally": false,
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-01T18:51:07.196018144Z",
+            "excluded_from": [
+                "blocking"
+            ],
+            "groups": [
+                {
+                    "assignment_rule": "device_id",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "123456",
+            "last_modified": "2023-03-01T18:51:07.196018144Z",
+            "modified_by": "api-client-id:123456",
+            "regexp_value": "\\/MosheTest2-432",
+            "value": "/MosheTest2-432",
+            "value_hash": "abcdef123456"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon machine learning exclusions
+
+>|Id|Value|RegexpValue|ValueHash|ExcludedFrom|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | /MosheTest2-432 | \/MosheTest2-432 | abcdef123456 | ***values***: blocking | **-** ***id***: 999999<br/> ***group_type***: static<br/> ***name***: Lab env<br/> ***description***: <br/> ***assignment_rule***: device_id<br/> ***created_by***: <admin@test.com><br/> ***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/> ***modified_by***: <admin@test.com><br/> ***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-01T18:51:07.196018144Z | api-client-id:123456 | 2023-03-01T18:51:07.196018144Z | api-client-id:123456 |
 
 ### cs-falcon-create-ioa-exclusion
 
@@ -2001,6 +4272,55 @@ Create an IOA exclusion.
 | CrowdStrike.IOAExclusion.modified_by | String | Indicate who last modified the rule. | 
 | CrowdStrike.IOAExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.IOAExclusion.created_by | String | Indicate who created the rule. | 
+
+#### Command Example
+
+```!cs-falcon-create-ioa-exclusion exclusion_name=demo-test pattern_id=101010 cl_regex=.* ifn_regex="c:\\\\windows\\\\system32\\\\test.exe" groups=999999```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOAExclusion": {
+            "applied_globally": false,
+            "cl_regex": ".*",
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-06T13:57:41.746172897Z",
+            "description": "",
+            "detection_json": "",
+            "groups": [
+                {
+                    "assignment_rule": "device_id",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "123456",
+            "ifn_regex": "c:\\\\windows\\\\system32\\\\test.exe",
+            "last_modified": "2023-03-06T13:57:41.746172897Z",
+            "modified_by": "api-client-id:123456",
+            "name": "demo-test",
+            "pattern_id": "101010",
+            "pattern_name": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon IOA exclusion
+
+>|Id|Name|PatternId|IfnRegex|ClRegex|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | demo-test | 101010 | c:\\windows\\system32\\poqexec\.exe | .* | **-** ***id***: 999999<br/> ***group_type***: static<br/> ***name***: Lab env<br/> ***description***: <br/> ***assignment_rule***: device_id<br/> ***created_by***: <admin@test.com><br/> ***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/> ***modified_by***: <admin@test.com><br/> ***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:41.746172897Z | api-client-id:123456 | 2023-03-06T13:57:41.746172897Z | api-client-id:123456 |
 
 ### cs-falcon-update-ioa-exclusion
 
@@ -2053,6 +4373,55 @@ Updates an IOA exclusion. At least one argument is required in addition to the i
 | CrowdStrike.IOAExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.IOAExclusion.created_by | String | Indicate who created the rule. | 
 
+#### Command Example
+
+```!cs-falcon-update-ioa-exclusion id=123456 description=demo-description```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOAExclusion": {
+            "applied_globally": false,
+            "cl_regex": ".*",
+            "created_by": "api-client-id:123456",
+            "created_on": "2023-03-06T13:46:58.137122925Z",
+            "description": "demo-description",
+            "detection_json": "",
+            "groups": [
+                {
+                    "assignment_rule": "device_id",
+                    "created_by": "admin@test.com",
+                    "created_timestamp": "2023-01-23T15:01:11.846726918Z",
+                    "description": "",
+                    "group_type": "static",
+                    "id": "999999",
+                    "modified_by": "admin@test.com",
+                    "modified_timestamp": "2023-01-23T15:18:52.316882546Z",
+                    "name": "Lab env"
+                }
+            ],
+            "id": "123456",
+            "ifn_regex": "c:\\\\windows\\\\system32\\\\poqexec\\.exe",
+            "last_modified": "2023-03-06T13:57:49.086458198Z",
+            "modified_by": "api-client-id:123456",
+            "name": "demo",
+            "pattern_id": "101010",
+            "pattern_name": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon IOA exclusion
+
+>|Id|Name|Description|PatternId|IfnRegex|ClRegex|Groups|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | demo | demo-description | 101010 | c:\\windows\\system32\\poqexec\.exe | .* | **-** ***id***: 999999<br/> ***group_type***: static<br/> ***name***: Lab env<br/> ***description***: <br/> ***assignment_rule***: device_id<br/> ***created_by***: <admin@test.com><br/> ***created_timestamp***: 2023-01-23T15:01:11.846726918Z<br/> ***modified_by***: <admin@test.com><br/> ***modified_timestamp***: 2023-01-23T15:18:52.316882546Z |  | 2023-03-06T13:57:49.086458198Z | api-client-id:123456 | 2023-03-06T13:46:58.137122925Z | api-client-id:123456 |
+
 ### cs-falcon-delete-ioa-exclusion
 
 ***
@@ -2071,6 +4440,15 @@ Delete the IOA exclusions by ID.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-delete-ioa-exclusion ids=123456```
+
+#### Human Readable Output
+
+>'The IOA exclusions with IDs '123456' was successfully deleted.'
+
 ### cs-falcon-search-ioa-exclusion
 
 ***
@@ -2117,6 +4495,43 @@ Get a list of IOA exclusions by specifying their IDs or a filter.
 | CrowdStrike.IOAExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.IOAExclusion.created_by | String | Indicate who created the rule. | 
 
+#### Command Example
+
+```!cs-falcon-search-ioa-exclusion limit=1```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "IOAExclusion": {
+            "applied_globally": true,
+            "cl_regex": "regex",
+            "created_by": "user@test.com",
+            "created_on": "2023-02-06T16:42:19.29906839Z",
+            "description": "demo description",
+            "detection_json": "",
+            "groups": [],
+            "id": "123456",
+            "ifn_regex": ".*\\\\Windows\\\\System32\\\\choice\\.exe",
+            "last_modified": "2023-02-26T15:30:04.554767735Z",
+            "modified_by": "api-client-id:123456",
+            "name": "My IOA Exclusion",
+            "pattern_id": "101010",
+            "pattern_name": "P_name"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon IOA exclusions
+
+>|Id|Name|Description|PatternId|PatternName|IfnRegex|ClRegex|AppliedGlobally|LastModified|ModifiedBy|CreatedOn|CreatedBy|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 123456 | My IOA Exclusion | demo description | 101010 | P_name | .*\\Windows\\System32\\choice\.exe | choice\s+/m\s+crowdstrike_sample_detection |  | 2023-02-26T15:30:04.554767735Z | api-client-id:123456 | 2023-02-06T16:42:19.29906839Z | <user@test.com> |
+
 ### cs-falcon-list-quarantined-file
 
 ***
@@ -2158,6 +4573,48 @@ Get quarantine file metadata by specified IDs or filter.
 | CrowdStrike.QuarantinedFile.date_updated | Date | The date the quarantined file was last updated. | 
 | CrowdStrike.QuarantinedFile.date_created | Date | The date the quarantined file was created. | 
 
+#### Command Example
+
+```!cs-falcon-list-quarantined-file limit=1```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "QuarantinedFile": {
+            "aid": "a123456",
+            "cid": "c123456",
+            "date_created": "2022-12-13T14:23:49Z",
+            "date_updated": "2023-03-06T13:47:30Z",
+            "detect_ids": [
+                "ldt:a123456:456789"
+            ],
+            "hostname": "INSTANCE-1",
+            "id": "a123456_sha123456",
+            "paths": [
+                {
+                    "filename": "nc.exe",
+                    "path": "\\Device\\HarddiskVolume3\\Users\\admin\\Downloads\\hamuzim\\test.exe",
+                    "state": "quarantined"
+                }
+            ],
+            "sha256": "sha123456",
+            "state": "deleted",
+            "username": "admin"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon Quarantined File
+
+>|Id|Aid|Cid|Sha256|Paths|State|DetectIds|Hostname|Username|DateUpdated|DateCreated|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| a123456_sha123456 | a123456 | c123456 | sha123456 | **-** ***path***: \Device\HarddiskVolume3\Users\admin\Downloads\hamuzim\netcat-1.11\nc.exe<br/> ***filename***: nc.exe<br/> ***state***: quarantined | deleted | ***values***: ldt:a123456:456789 | INSTANCE-1 | admin | 2023-03-06T13:47:30Z | 2022-12-13T14:23:49Z |
+
 ### cs-falcon-apply-quarantine-file-action
 
 ***
@@ -2184,6 +4641,15 @@ Apply action to quarantined files by file IDs or filter.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-apply-quarantine-file-action filename=nc.exe action=delete comment=demo-comment```
+
+#### Human Readable Output
+
+>The Quarantined File with IDs ['a123456_sha123456'] was successfully updated.
+
 ### cs-falcon-ods-query-scan
 
 ***
@@ -2249,6 +4715,159 @@ Retrieve ODS scan details.
 | CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. | 
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. | 
 
+#### Command Example
+
+```!cs-falcon-ods-query-scan  initiated_from=some_admin_name severity=high scan_started_on=2023-02-27T09:51:33.91608286Z```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "ODSScan": [
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 4,
+                "cloud_ml_level_prevention": 4,
+                "cpu_priority": 5,
+                "created_by": "someone@email.com",
+                "created_on": "2023-05-03T08:45:41.688556439Z",
+                "endpoint_notification": true,
+                "file_paths": [
+                    "C:\\Users\\admin\\Downloads\\hamuzim\\netcat-1.11\\eicar_com.exe"
+                ],
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "some_admin_name",
+                "last_updated": "2023-05-03T08:45:43.348230927Z",
+                "max_duration": 0,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-05-03T08:45:43.274953782Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 0
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-05-03T08:45:43.61797613Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-05-03T08:45:43.069273028Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818675190,
+                    26405458936832,
+                    26405458936833,
+                    26405458936834,
+                    26405458936835,
+                    26405458936840,
+                    26405458936841,
+                    26405458936842,
+                    26405458936843,
+                    26456998543793,
+                    26456998544045,
+                    26456998543652,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-05-03T08:45:43.274953782Z",
+                "scan_inclusions": [
+                    "**\\Downloads\\**"
+                ],
+                "scan_started_on": "2023-02-27T09:51:33.91608286Z",
+                "sensor_ml_level_detection": 4,
+                "sensor_ml_level_prevention": 4,
+                "status": "completed"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "cloud_ml_level_detection": 3,
+                "cloud_ml_level_prevention": 3,
+                "cpu_priority": 4,
+                "created_by": "someone@email.com",
+                "created_on": "2023-03-12T14:54:43.659773852Z",
+                "endpoint_notification": true,
+                "filecount": {},
+                "hosts": [
+                    "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+                ],
+                "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "initiated_from": "some_admin_name",
+                "last_updated": "2023-04-05T16:56:14.972317443Z",
+                "max_duration": 2,
+                "max_file_size": 60,
+                "metadata": [
+                    {
+                        "completed_on": "2023-03-12T14:57:37.338506965Z",
+                        "filecount": {
+                            "malicious": 0,
+                            "quarantined": 0,
+                            "scanned": 0,
+                            "skipped": 0,
+                            "traversed": 518485
+                        },
+                        "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "last_updated": "2023-03-12T14:57:37.338585331Z",
+                        "scan_host_metadata_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                        "started_on": "2023-02-27T09:51:33.91608286Z",
+                        "status": "completed"
+                    }
+                ],
+                "pause_duration": 2,
+                "policy_setting": [
+                    26439818674573,
+                    26439818674574,
+                    26439818674575,
+                    26405458936832,
+                    26456998543653,
+                    26456998543656,
+                    26456998543654,
+                    26456998543950,
+                    26456998543963
+                ],
+                "preemption_priority": 1,
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "quarantine": true,
+                "scan_completed_on": "2023-03-12T14:57:37.338506965Z",
+                "scan_inclusions": [
+                    "*"
+                ],
+                "scan_started_on": "2023-03-12T14:54:45.210172175Z",
+                "sensor_ml_level_detection": 3,
+                "sensor_ml_level_prevention": 3,
+                "status": "failed"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon ODS Scans
+
+>|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
+>|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518464 | desc3456346 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | 2023-02-27T09:51:33.91608286Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | failed |  | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 518511 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-03-13T14:50:26.259846586Z | 2023-02-27T09:51:33.91608286Z | <someone@email.com> |
+
 ### cs-falcon-ods-query-scheduled-scan
 
 ***
@@ -2305,6 +4924,104 @@ Retrieve ODS scheduled scan details.
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. | 
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
 
+#### Command Example
+
+```!cs-falcon-ods-query-scheduled-scan ids=123456789```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "ODSScheduledScan": {
+            "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "cloud_ml_level_detection": 2,
+            "cloud_ml_level_prevention": 2,
+            "cpu_priority": 3,
+            "created_by": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "created_on": "2023-05-08T09:04:20.8414225Z",
+            "deleted": false,
+            "endpoint_notification": true,
+            "host_groups": [
+                "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+            ],
+            "id": "123456789",
+            "initiated_from": "cloud_scheduled",
+            "last_updated": "2023-05-08T09:22:48.408487143Z",
+            "max_duration": 2,
+            "max_file_size": 60,
+            "metadata": [
+                {
+                    "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                    "last_updated": "2023-05-08T09:22:48.408487143Z"
+                }
+            ],
+            "pause_duration": 3,
+            "policy_setting": [
+                26439818674573,
+                26439818674574,
+                26439818675074,
+                26405458936702,
+                26405458936703,
+                26405458936707,
+                26439818675124,
+                26439818675125,
+                26439818675157,
+                26439818675158,
+                26439818675182,
+                26439818675183,
+                26439818675190,
+                26439818675191,
+                26439818675196,
+                26439818675197,
+                26439818675204,
+                26439818675205,
+                26405458936760,
+                26405458936761,
+                26405458936793,
+                26405458936794,
+                26405458936818,
+                26405458936819,
+                26405458936825,
+                26405458936826,
+                26405458936832,
+                26405458936833,
+                26405458936840,
+                26405458936841,
+                26456998543793,
+                26456998544045,
+                26456998543652,
+                26456998543653,
+                26456998543656,
+                26456998543654,
+                26456998543950,
+                26456998543963
+            ],
+            "preemption_priority": 15,
+            "quarantine": true,
+            "scan_inclusions": [
+                "*"
+            ],
+            "schedule": {
+                "interval": 14,
+                "start_timestamp": "2023-05-20T06:49"
+            },
+            "sensor_ml_level_detection": 2,
+            "sensor_ml_level_prevention": 2,
+            "status": "scheduled"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon ODS Scheduled Scans
+
+>|ID|Hosts targeted|Description|Host groups|Start time|Created by|
+>|---|---|---|---|---|---|
+>|  123456789 | 1 |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2023-05-20T06:49 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
+
 ### cs-falcon-ods-query-scan-host
 
 ***
@@ -2347,6 +5064,59 @@ Retrieve ODS scan host details.
 | CrowdStrike.ODSScanHost.completed_on | Date | The date and time when the scan completed. | 
 | CrowdStrike.ODSScanHost.last_updated | Date | The date and time when the scan event was last updated. | 
 
+#### Command Example
+
+```!cs-falcon-ods-query-scan-host filter="scan_id:[\"123456789\",\"987654321\"]"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "ODSScanHost": [
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "filecount": {},
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "123456789",
+                "last_updated": "2022-11-27T17:15:50.056840267Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "status": "pending"
+            },
+            {
+                "cid": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "completed_on": "2023-05-07T08:28:56.856506979Z",
+                "filecount": {
+                    "malicious": 0,
+                    "quarantined": 0,
+                    "scanned": 0,
+                    "skipped": 0,
+                    "traversed": 524581
+                },
+                "host_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "host_scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "id": "987654321",
+                "last_updated": "2023-05-07T08:28:56.856575358Z",
+                "profile_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "scan_id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "started_on": "2023-05-07T08:25:48.336234188Z",
+                "status": "completed"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon ODS Scan Hosts
+
+>|ID|Scan ID|Host ID|Filecount|Status|Severity|Started on|
+>|---|---|---|---|---|---|---|
+>| 123456789 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | pending |  |  |
+>| 987654321 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | scanned: 0<br/>malicious: 0<br/>quarantined: 0<br/>skipped: 0<br/>traversed: 524581 | completed |  | 2023-05-07T08:25:48.336234188Z |
+
 ### cs-falcon-ods-query-malicious-files
 
 ***
@@ -2386,6 +5156,14 @@ Retrieve ODS malicious file details.
 | CrowdStrike.ODSMaliciousFile.severity | Number | A severity score assigned to the detection event, ranging from 0 to 100. | 
 | CrowdStrike.ODSMaliciousFile.quarantined | Boolean | Indicates whether the file was quarantined. | 
 | CrowdStrike.ODSMaliciousFile.last_updated | Date | The date and time when the detection event was last updated. | 
+
+#### Command Example
+
+```!cs-falcon-ods-query-malicious-files```
+
+#### Human Readable Output
+
+>No malicious files match the arguments/filter.
 
 ### cs-falcon-ods-create-scan
 
@@ -2465,6 +5243,81 @@ Create an ODS scan and wait for the results.
 | CrowdStrike.ODSScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs \(PUPs\) Adware detection level. | 
 | CrowdStrike.ODSScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs \(PUPs\) Adware prevention level. | 
 
+#### Command Example
+
+```!cs-falcon-ods-create-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b scan_inclusions=* cpu_priority=Highest max_duration=1 pause_duration=1```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "ODSScan": {
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "cloud_ml_level_detection": 2,
+            "cloud_ml_level_prevention": 2,
+            "cpu_priority": 5,
+            "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+            "created_on": "2023-06-11T13:23:05.139153881Z",
+            "filecount": {
+                "malicious": 0,
+                "quarantined": 0,
+                "scanned": 0,
+                "skipped": 0,
+                "traversed": 0
+            },
+            "host_groups": [
+                "7471ba0636b34cbb8c65fae7979a6a9b"
+            ],
+            "id": "9ba8489e9f604b61bf9b4a2c5f95ede7",
+            "initiated_from": "cloud_adhoc",
+            "last_updated": "2023-06-11T13:23:05.139153881Z",
+            "max_duration": 1,
+            "max_file_size": 60,
+            "metadata": [
+                {
+                    "filecount": {},
+                    "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                    "last_updated": "2023-06-11T13:23:05.139153881Z",
+                    "scan_host_metadata_id": "31052e821a5a4189a1a9a2814cc88e4e",
+                    "status": "complete"
+                }
+            ],
+            "pause_duration": 1,
+            "policy_setting": [
+                26439818674573,
+                26439818674574,
+                26439818675074,
+                26405458936702,
+                26405458936703,
+                26456998543654,
+                26456998543950,
+                26456998543963
+            ],
+            "preemption_priority": 1,
+            "profile_id": "335198a96e1a4a6b880d62b2e7ccbb91",
+            "quarantine": true,
+            "scan_inclusions": [
+                "*"
+            ],
+            "sensor_ml_level_detection": 2,
+            "sensor_ml_level_prevention": 2,
+            "cloud_pup_adware_level_prevention": 1,
+            "cloud_pup_adware_level_detection": 1,
+            "status": "complete"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CrowdStrike Falcon ODS Scans
+>
+>|ID|Status|Severity|File Count|Description|Hosts/Host groups|End time|Start time|Run by|
+>|---|---|---|---|---|---|---|---|---|
+>| 9ba8489e9f604b61bf9b4a2c5f95ede7 | complete |  |  |  | 7471ba0636b34cbb8c65fae7979a6a9b |  |  | f7acf1bd5d3d4b40afe77546cbbaefde |
+
 ### cs-falcon-ods-create-scheduled-scan
 
 ***
@@ -2531,6 +5384,105 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs \(PUPs\) Adware detection level. | 
 | CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs \(PUPs\) Adware prevention level. | 
 
+#### Command Example
+
+```!cs-falcon-ods-create-scheduled-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b schedule_interval=daily schedule_start_timestamp=tomorrow cpu_priority=Highest scan_inclusions=*```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "ODSScan": {
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "cloud_ml_level_detection": 2,
+            "cloud_ml_level_prevention": 2,
+            "cpu_priority": 5,
+            "created_by": "f7acf1bd5d3d4b40afe77546cbbaefde",
+            "created_on": "2023-06-11T13:23:10.564070276Z",
+            "deleted": false,
+            "host_groups": [
+                "7471ba0636b34cbb8c65fae7979a6a9b"
+            ],
+            "id": "7d08d9a3088f49b3aa20efafc355aef0",
+            "initiated_from": "cloud_scheduled",
+            "last_updated": "2023-06-11T13:23:10.564070276Z",
+            "max_duration": 2,
+            "max_file_size": 60,
+            "metadata": [
+                {
+                    "host_id": "046761c46ec84f40b27b6f79ce7cd32c",
+                    "last_updated": "2023-06-11T13:23:10.564070276Z"
+                }
+            ],
+            "pause_duration": 2,
+            "policy_setting": [
+                26439818674573,
+                26439818674574,
+                26439818675074,
+                26405458936702,
+                26405458936703,
+                26405458936707,
+                26439818675124,
+                26439818675125,
+                26439818675157,
+                26439818675158,
+                26439818675182,
+                26439818675183,
+                26439818675190,
+                26439818675191,
+                26439818675196,
+                26439818675197,
+                26439818675204,
+                26439818675205,
+                26405458936760,
+                26405458936761,
+                26405458936793,
+                26405458936794,
+                26405458936818,
+                26405458936819,
+                26405458936825,
+                26405458936826,
+                26405458936832,
+                26405458936833,
+                26405458936840,
+                26405458936841,
+                26456998543793,
+                26456998544045,
+                26456998543652,
+                26456998543653,
+                26456998543656,
+                26456998543654,
+                26456998543950,
+                26456998543963
+            ],
+            "preemption_priority": 15,
+            "quarantine": true,
+            "scan_inclusions": [
+                "*"
+            ],
+            "schedule": {
+                "interval": 1,
+                "start_timestamp": "2023-06-12T13:23"
+            },
+            "sensor_ml_level_detection": 2,
+            "sensor_ml_level_prevention": 2,
+            "cloud_pup_adware_level_prevention": 1,
+            "cloud_pup_adware_level_detection": 1,
+            "status": "scheduled"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Scheduled Scan Created
+>
+>|Scan ID|
+>|---|
+>| 7d08d9a3088f49b3aa20efafc355aef0 |
+
 ### cs-falcon-ods-delete-scheduled-scan
 
 ***
@@ -2550,6 +5502,19 @@ Delete ODS scheduled scans.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-ods-delete-scheduled-scan  ids=9acf0c069d3d4a5b82badb170966e77c```
+
+#### Human Readable Output
+
+>### Deleted Scans
+
+>|Scan ID|
+>|---|
+>| 9acf0c069d3d4a5b82badb170966e77c |
+
 ### cs-falcon-list-identity-entities
 
 ***
@@ -2646,6 +5611,130 @@ Given a CSV list of policy IDs, returns detailed policy information.
 | CrowdStrike.CSPMPolicy.is_enabled | Boolean | Whether the policy is enabled or not. | 
 | CrowdStrike.CSPMPolicy.account_scope | String | The account scope. | 
 
+#### Command Example
+
+```!cs-falcon-cspm-list-policy-details policy_ids=1,2```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "CSPMPolicy": [
+            {
+                "CreatedAt": "2020-08-18T08:30:21.760579Z",
+                "DeletedAt": null,
+                "ID": 1,
+                "UpdatedAt": "2023-06-21T18:47:44.371539Z",
+                "account_scope": "",
+                "alert_logic": "1. List all IAM users.|\n2. Filter on users with active access keys.|\n3. Filter on access keys that have not been rotated in 90 days.|\n4. Alert on each user.",
+                "api_command": "ListUsers, ListAccessKeys",
+                "asset_type_id": 8,
+                "attack_types": [
+                    "Credential policy violation"
+                ],
+                "cis_benchmark_ids": [
+                    108,
+                    641,
+                    740
+                ],
+                "cli_command": "aws2 iam list-users, aws2 iam list-access-keys",
+                "cloud_asset_type": "user",
+                "cloud_document": "https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html",
+                "cloud_platform_type": "aws",
+                "cloud_service_subtype": "Access Keys",
+                "cloud_service_type": "IAM",
+                "default_severity": "informational",
+                "description": "Because IAM access keys are long-term credentials, as time goes on, the risk of these keys being exposed is increased.\n\nKeys are often left on old servers, accidentally published through Git, or stolen from developer machines. The longer the keys are valid, the more likely they are to be discovered in one of these places. By ensuring keys are rotated at least every 90 days, you can be confident that if those keys are discovered, they cannot be abused.",
+                "is_enabled": true,
+                "is_remediable": false,
+                "mitre_attack_cloud_matrix": "https://attack.mitre.org/tactics/TA0006/",
+                "mitre_attack_cloud_subtype": "https://attack.mitre.org/techniques/T1528/",
+                "nist_benchmark_ids": [
+                    2,
+                    3,
+                    281,
+                    941
+                ],
+                "pci_benchmark_ids": [
+                    120
+                ],
+                "policy_remediation": "Step 1. From the AWS Console, navigate to the IAM page.|\nStep 2. Locate and click on the offending IAM User.|\nStep 3. Click on the Security Credentials tab.|\nStep 4. Navigate to the Access Keys section and choose between making the access key inactive, deleting the key, or rotating the key.",
+                "policy_statement": "IAM user access key active longer than 90 days",
+                "policy_type": "Configuration",
+                "tactic": "Credential Access",
+                "tactic_id": "TA0006",
+                "tactic_url": "https://attack.mitre.org/tactics/TA0006/",
+                "technique": "Steal Application Access Token",
+                "technique_id": "T1528",
+                "technique_url": "https://attack.mitre.org/techniques/T1528/"
+            },
+            {
+                "CreatedAt": "2022-10-19T15:00:00Z",
+                "DeletedAt": null,
+                "ID": 2,
+                "UpdatedAt": "2023-07-20T19:14:47.972998Z",
+                "account_scope": "",
+                "alert_logic": "1. List Launch Configurations.|\n2. Decode Base64-encoded User Data field.|\n3. Search for strings indicating credentials are present.|\n4. Alert on each instance.",
+                "api_command": "DescribeLaunchConfigurations",
+                "asset_type_id": 81,
+                "cis_benchmark_ids": [
+                    714
+                ],
+                "cisa_benchmark_ids": [
+                    16
+                ],
+                "cli_command": "aws autoscaling describe-launch-configurations",
+                "cloud_asset_type": "launchconfig",
+                "cloud_document": "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html",
+                "cloud_platform_type": "aws",
+                "cloud_service_type": "Auto Scaling",
+                "default_severity": "informational",
+                "description": "EC2 instance data is used to pass start up information into the EC2 instance. This User Data must not contain any sort of credentials. Instead, use an IAM Instance Profile assigned to the instance to grant access to other AWS Services.",
+                "is_enabled": true,
+                "is_remediable": false,
+                "iso_benchmark_ids": [
+                    10,
+                    15,
+                    62,
+                    63
+                ],
+                "mitre_attack_cloud_matrix": "https://attack.mitre.org/tactics/TA0006/",
+                "mitre_attack_cloud_subtype": "https://attack.mitre.org/techniques/T1552/005/",
+                "nist_benchmark_ids": [
+                    16,
+                    65,
+                    66,
+                    531
+                ],
+                "policy_remediation": "Step 1. From the console navigate to the EC2 page.|\nStep 2. From the sub-menu, click on 'Launch Configurations' under 'Auto Scaling'.|\nStep 3. Select the offending launch configuration.|\nStep 4. Scroll down to the 'Details' section and click 'View user data'.|\nStep 5. Validate whether or not any credentials are present.|\nStep 6. If credentials are present, re-create the launch configuration without exposing any credentials in the user data field.",
+                "policy_statement": "Auto Scaling group launch configuration User Data with potential credentials exposed",
+                "policy_type": "Configuration",
+                "soc2_benchmark_ids": [
+                    15,
+                    17
+                ],
+                "tactic": "Credential Access",
+                "tactic_id": "TA0006",
+                "tactic_url": "https://attack.mitre.org/tactics/TA0006/",
+                "technique": "Unsecured Credentials: Cloud Instance Metadata API",
+                "technique_id": "T1552.005",
+                "technique_url": "https://attack.mitre.org/techniques/T1552/005/"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CSPM Policy Details
+
+>|Id|Description|Policy Statement|Policy Remediation|Cloud Service Subtype|Cloud Platform Type|Cloud Service Type|Default Severity|Policy Type|Tactic|Technique|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 1 | Because IAM access keys are long-term credentials, as time goes on, the risk of these keys being exposed is increased.<br/><br/>Keys are often left on old servers, accidentally published through Git, or stolen from developer machines. The longer the keys are valid, the more likely they are to be discovered in one of these places. By ensuring keys are rotated at least every 90 days, you can be confident that if those keys are discovered, they cannot be abused. | IAM user access key active longer than 90 days | Step 1. From the AWS Console, navigate to the IAM page.\|<br/>Step 2. Locate and click on the offending IAM User.\|<br/>Step 3. Click on the Security Credentials tab.\|<br/>Step 4. Navigate to the Access Keys section and choose between making the access key inactive, deleting the key, or rotating the key. | Access Keys | aws | IAM | informational | Configuration | Credential Access | Steal Application Access Token |
+>| 2 | EC2 instance data is used to pass start up information into the EC2 instance. This User Data must not contain any sort of credentials. Instead, use an IAM Instance Profile assigned to the instance to grant access to other AWS Services. | Auto Scaling group launch configuration User Data with potential credentials exposed | Step 1. From the console navigate to the EC2 page.\|<br/>Step 2. From the sub-menu, click on 'Launch Configurations' under 'Auto Scaling'.\|<br/>Step 3. Select the offending launch configuration.\|<br/>Step 4. Scroll down to the 'Details' section and click 'View user data'.\|<br/>Step 5. Validate whether or not any credentials are present.\|<br/>Step 6. If credentials are present, re-create the launch configuration without exposing any credentials in the user data field. |  | aws | Auto Scaling | informational | Configuration | Credential Access | Unsecured Credentials: Cloud Instance Metadata API |
+
 ### cs-falcon-cspm-list-service-policy-settings
 
 ***
@@ -2702,6 +5791,156 @@ Returns information about current policy settings.
 | CrowdStrike.CSPMPolicySetting.nist_benchmark.recommendation_number | String | The NIST benchmark recommendation number. | 
 | CrowdStrike.CSPMPolicySetting.attack_types | Array | The attack types. | 
 
+#### Command Example
+
+```!cs-falcon-cspm-list-service-policy-settings limit=2```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "CSPMPolicySetting": [
+            {
+                "cis_benchmark": [
+                    {
+                        "benchmark_short": "CIS Controls v8",
+                        "id": 722,
+                        "recommendation_number": "3.11"
+                    }
+                ],
+                "cloud_asset_type": "filesystem",
+                "cloud_asset_type_id": 107,
+                "cloud_provider": "aws",
+                "cloud_service": "efs",
+                "cloud_service_friendly": "EFS",
+                "cloud_service_subtype": "N/A",
+                "created_at": "2022-08-02T22:17:56.53081Z",
+                "default_severity": "informational",
+                "fql_policy": "aws_encrypted:['true']+aws_kms_key_id:['']",
+                "is_remediable": false,
+                "name": "EFS File System is encrypted without CMK",
+                "nist_benchmark": [
+                    {
+                        "benchmark_short": "NIST 800-53 REV 5",
+                        "id": 932,
+                        "recommendation_number": "SC-8(1)"
+                    },
+                    {
+                        "benchmark_short": "NIST 800-53 REV 5",
+                        "id": 989,
+                        "recommendation_number": "SC-28(1)"
+                    }
+                ],
+                "pci_benchmark": [
+                    {
+                        "benchmark_short": "PCI DSS v3.2.1",
+                        "id": 41,
+                        "recommendation_number": "3.4"
+                    }
+                ],
+                "policy_id": 1,
+                "policy_settings": [
+                    {
+                        "account_id": "537409938058",
+                        "enabled": true,
+                        "regions": [
+                            "af-south-1",
+                            "ap-east-1",
+                            "ap-northeast-1",
+                            "ap-northeast-2",
+                            "ap-northeast-3"
+                        ],
+                        "severity": "informational",
+                        "tag_excluded": false
+                    }
+                ],
+                "policy_timestamp": "0001-01-01T00:00:00Z",
+                "policy_type": "Configuration",
+                "updated_at": "2023-07-19T17:31:45.372476Z"
+            },
+            {
+                "cis_benchmark": [
+                    {
+                        "benchmark_short": "CIS 1.4.0 AWS Foundations",
+                        "id": 143,
+                        "recommendation_number": "4.13"
+                    }
+                ],
+                "cloud_asset_type": "awsaccount",
+                "cloud_asset_type_id": 116,
+                "cloud_provider": "aws",
+                "cloud_service": "awsaccount",
+                "cloud_service_friendly": "CloudWatch",
+                "cloud_service_subtype": "Route Table",
+                "created_at": "2023-01-04T19:57:23.897865Z",
+                "default_severity": "informational",
+                "is_remediable": false,
+                "iso_benchmark": [
+                    {
+                        "benchmark_short": "ISO",
+                        "id": 25,
+                        "recommendation_number": "5.25"
+                    }
+                ],
+                "name": "CloudWatch log metric filter and alarm missing for changes to route tables",
+                "nist_benchmark": [
+                    {
+                        "benchmark_short": "NIST 800-53 REV 5",
+                        "id": 184,
+                        "recommendation_number": "AU-6(1)"
+                    },
+                    {
+                        "benchmark_short": "NIST 800-53 REV 5",
+                        "id": 183,
+                        "recommendation_number": "AU-6"
+                    }
+                ],
+                "pci_benchmark": [
+                    {
+                        "benchmark_short": "PCI DSS v4.0",
+                        "id": 428,
+                        "recommendation_number": "10.4.1"
+                    }
+                ],
+                "policy_id": 2,
+                "policy_settings": [
+                    {
+                        "account_id": "537409938058",
+                        "enabled": true,
+                        "regions": [
+                            "af-south-1",
+                            "ap-east-1"
+                        ],
+                        "severity": "informational",
+                        "tag_excluded": false
+                    }
+                ],
+                "policy_timestamp": "0001-01-01T00:00:00Z",
+                "policy_type": "Configuration",
+                "soc2_benchmark": [
+                    {
+                        "benchmark_short": "TSC 2017 rev 2020",
+                        "id": 27,
+                        "recommendation_number": "CC7.3"
+                    }
+                ],
+                "updated_at": "2023-09-18T16:11:58.369644Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CSPM Policy Settings
+
+>|Policy Id|Is Remediable|Remediation Summary|Name|Policy Type|Cloud Service Subtype|Cloud Service|Default Severity|
+>|---|---|---|---|---|---|---|---|
+>| 1 | false |  | EFS File System is encrypted without CMK | Configuration | N/A | efs | informational |
+>| 2 | false |  | CloudWatch log metric filter and alarm missing for changes to route tables | Configuration | Route Table | awsaccount | informational |
+
 ### cs-falcon-cspm-update-policy_settings
 
 ***
@@ -2725,6 +5964,15 @@ Updates a policy setting. Can be used to override policy severity or to disable 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-cspm-update-policy_settings policy_id=1 enabled=true regions="eu-central-1,eu-central-2" severity=high tag_excluded=false```
+
+#### Human Readable Output
+
+>Policy 1 was updated successfully
+
 ### cs-falcon-resolve-identity-detection
 
 ***
@@ -2809,6 +6057,69 @@ List users.
 | CrowdStrike.Users.last_login_at | String | The timestamp of the user's last login. | 
 | CrowdStrike.Users.created_at | String | The timestamp of the user's creation. | 
 
+### cs-falcon-get-incident-behavior
+
+***
+Get incident behavior information.
+
+#### Base Command
+
+`cs-falcon-get-incident-behavior`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| behavior_ids | A comma-separated list of ID(s) of behaviors to list. Behavior IDs can be retrieved by running the 'cs-falcon-get-detections-for-incident' command. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IncidentBehavior.behavior_id | String | The behavior ID. |
+| CrowdStrike.IncidentBehavior.cid | String | The customer ID. |
+| CrowdStrike.IncidentBehavior.aid | String | The agent ID. |
+| CrowdStrike.IncidentBehavior.incident_id | String | The incident ID. |
+| CrowdStrike.IncidentBehavior.incident_ids | List | The incident IDs. |
+| CrowdStrike.IncidentBehavior.pattern_id | Number | The pattern ID. |
+| CrowdStrike.IncidentBehavior.template_instance_id | Number | The template instance ID. |
+| CrowdStrike.IncidentBehavior.timestamp | String | The timestamp. |
+| CrowdStrike.IncidentBehavior.cmdline | String | The command line. |
+| CrowdStrike.IncidentBehavior.filepath | String | The file path. |
+| CrowdStrike.IncidentBehavior.domain | String | The domain. |
+| CrowdStrike.IncidentBehavior.pattern_disposition | Number | The pattern disposition. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.indicator | Boolean | Whether the pattern disposition is an indicator. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.detect | Boolean | Whether the pattern disposition is a detect. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.inddet_mask | Boolean | The pattern disposition indicator detect mask. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.sensor_only | Boolean | Whether the pattern disposition is sensor only. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.rooting | Boolean | Whether the pattern disposition is rooting. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_process | Boolean | Whether the process was killed. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_subprocess | Boolean | Whether the subprocess was killed. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_machine | Boolean | Whether the machine was quarantined. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_file | Boolean | Whether the file was quarantined. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.policy_disabled | Boolean | Whether the policy was disabled. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_parent | Boolean | Whether the parent was killed. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.operation_blocked | Boolean | Whether the operation was blocked. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.process_blocked | Boolean | Whether the process was blocked. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.registry_operation_blocked | Boolean | Whether the registry operation was blocked. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.critical_process_disabled | Boolean | Whether the critical process was disabled. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.bootup_safeguard_enabled | Boolean | Whether the bootup safeguard was enabled. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.fs_operation_blocked | Boolean | Whether the file system operation was blocked. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.handle_operation_downgraded | Boolean | Whether the handle operation was downgraded. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_action_failed | Boolean | Whether the kill action failed. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.blocking_unsupported | Boolean | Whether the blocking is unsupported. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_process | Boolean | Whether the process was suspended. |
+| CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_parent | Boolean | Whether the parent was suspended. |
+| CrowdStrike.IncidentBehavior.sha256 | String | The SHA256 hash. |
+| CrowdStrike.IncidentBehavior.user_name | String | The username. |
+| CrowdStrike.IncidentBehavior.tactic | String | The tactic used. |
+| CrowdStrike.IncidentBehavior.tactic_id | String | The tactic ID. |
+| CrowdStrike.IncidentBehavior.technique | String | The technique used. |
+| CrowdStrike.IncidentBehavior.technique_id | String | The technique ID. |
+| CrowdStrike.IncidentBehavior.display_name | String | The display name. |
+| CrowdStrike.IncidentBehavior.objective | String | The objective. |
+| CrowdStrike.IncidentBehavior.compound_tto | String | The compound Time to Operate \(TTO\). |
+
 ### cs-falcon-get-ioarules
 
 ***
@@ -2852,6 +6163,289 @@ Get IOA Rules.
 | CrowdStrike.IOARules.ruletype_name | String | The IOA rule's rule type name. | 
 | CrowdStrike.IOARules.version_ids | String | The IOA rule's version ID. | 
 
+### Using Spotlight APIs
+
+Spotlight identifies and gives info about specific vulnerabilities on your hosts using the Falcon sensor.
+
+### Required API client scope
+
+To access the Spotlight API, your API client must be assigned the spotlight-vulnerabilities:read scope.
+
+### Validating API data
+
+The Falcon sensor continuously monitors hosts for any changes and reports them as they occur.
+Depending on the timing of requests, Spotlight APIs can return values that are different from those shown by the Falcon console or an external source.
+There are other factors that can cause differences between API responses and other data sources.
+
+### API query syntax
+
+If an API query doesn’t exactly match the query used on the Spotlight Vulnerabilities page, the values might differ.
+
+### Expired vulnerabilities in Spotlight APIs
+
+If a host is deleted or inactive for 45 days, the status of vulnerabilities on that host changes to expired. Expired vulnerabilities are removed from Spotlight after 3 days.
+Expired vulnerabilities are only visible in API responses and are not included in reports or the Falcon console.
+An external data source might not use the same data retention policy, which can lead to discrepancies with Spotlight APIs. For more info, see Data retention in Spotlight [https://falcon.crowdstrike.com/login/?next=%2Fdocumentation%2F43%2Ffalcon-spotlight-overview#data-retention-in-spotlight].
+
+### The following commands uses the Spotlight API
+
+### cs-falcon-spotlight-search-vulnerability
+
+***
+Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
+
+#### Base Command
+
+`cs-falcon-spotlight-search-vulnerability`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'. | Optional | 
+| aid | A comma-separated list of unique agent identifiers (AIDs) of a sensor. | Optional | 
+| cve_id | A comma-separated list of unique identifiers for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional | 
+| cve_severity | A comma-separated list of severities of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional | 
+| tags | A comma-separated list of names of a tag assigned to a host. Retrieve tags from Host Tags APIs. | Optional | 
+| status | Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired. | Optional | 
+| platform_name | Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux. | Optional | 
+| host_group | A comma-separated list of unique system-assigned IDs of a host group. Retrieve the host group ID from Host Group APIs. | Optional | 
+| host_type | A comma-separated list of types of hosts a sensor is running on. | Optional | 
+| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days  to look back. For example, last_seen_within:10. | Optional | 
+| is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule. Possible values are: true, false. | Optional | 
+| display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
+| display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
+| display_host_info | Whether to return host information type of data for each vulnerability entity. Possible values are: True, False. Default is False. | Optional | 
+| limit | The maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages. Default is 50. | Optional | 
+| next_token | Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Provide this value to fetch the next page of vulnerabilities. Expires in 120 seconds. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Vulnerability.id | String | Unique system-assigned ID of the vulnerability. | 
+| CrowdStrike.Vulnerability.cid | String | Unique system-generated customer identifier \(CID\) of the account. | 
+| CrowdStrike.Vulnerability.aid | String | Unique agent identifier \(AID\) of the sensor where the vulnerability was found. | 
+| CrowdStrike.Vulnerability.created_timestamp | Date | UTC date and time of when the vulnerability was created in Spotlight. | 
+| CrowdStrike.Vulnerability.updated_timestamp | Date | UTC date and time of the last update made on the vulnerability. | 
+| CrowdStrike.Vulnerability.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. | 
+| CrowdStrike.Vulnerability.apps.product_name_version | String | Name and version of the product associated with the vulnerability. | 
+| CrowdStrike.Vulnerability.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen. | 
+| CrowdStrike.Vulnerability.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability. | 
+| CrowdStrike.Vulnerability.host_info.hostname | String | Name of the machine. | 
+| CrowdStrike.Vulnerability.host_info.instance_id | String | Cloud instance ID of the host. | 
+| CrowdStrike.Vulnerability.host_info.service_provider_account_id | String | Cloud service provider account ID for the host. | 
+| CrowdStrike.Vulnerability.host_info.service_provider | String | Cloud service provider for the host. | 
+| CrowdStrike.Vulnerability.host_info.os_build | String | Operating system build. | 
+| CrowdStrike.Vulnerability.host_info.product_type_desc | String | Type of host a sensor is running on. | 
+| CrowdStrike.Vulnerability.host_info.local_ip | String | Device's local IP address. | 
+| CrowdStrike.Vulnerability.host_info.machine_domain | String | Active directory domain name. | 
+| CrowdStrike.Vulnerability.host_info.os_version | String | Operating system version. | 
+| CrowdStrike.Vulnerability.host_info.ou | String | Active directory organizational unit name. | 
+| CrowdStrike.Vulnerability.host_info.site_name | String | Active directory site name. | 
+| CrowdStrike.Vulnerability.host_info.system_manufacturer | String | Name of the system manufacturer. | 
+| CrowdStrike.Vulnerability.host_info.groups.id | String | Array of host group IDs that the host is assigned to. | 
+| CrowdStrike.Vulnerability.host_info.groups.name | String | Array of host group names that the host is assigned to. | 
+| CrowdStrike.Vulnerability.host_info.tags | String | Name of a tag assigned to a host. | 
+| CrowdStrike.Vulnerability.host_info.platform | String | Operating system platform. This filter supports negation. | 
+| CrowdStrike.Vulnerability.remediation.entities.id | String | Unique ID of the remediation. | 
+| CrowdStrike.Vulnerability.remediation.entities.reference | String | Relevant reference for the remediation that can be used to get additional details for the remediation. | 
+| CrowdStrike.Vulnerability.remediation.entities.title | String | Short description of the remediation. | 
+| CrowdStrike.Vulnerability.remediation.entities.action | String | Expanded description of the remediation. | 
+| CrowdStrike.Vulnerability.remediation.entities.link | String | Link to the remediation page for the vendor. In certain cases, this field is null. | 
+| CrowdStrike.Vulnerability.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database \(NVD\). | 
+| CrowdStrike.Vulnerability.cve.base_score | Number | Base score of the CVE \(float value between 1 and 10\). | 
+| CrowdStrike.Vulnerability.cve.severity | String | CVSS severity rating of the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.exploit_status | Number | Numeric value of the most severe known exploit. | 
+| CrowdStrike.Vulnerability.cve.exprt_rating | String | ExPRT rating assigned by CrowdStrike's predictive AI rating system. | 
+| CrowdStrike.Vulnerability.cve.description | String | Brief description of the CVE. | 
+| CrowdStrike.Vulnerability.cve.published_date | Date | UTC timestamp with the date and time of when the vendor published the CVE. | 
+| CrowdStrike.Vulnerability.cve.vendor_advisory | String | Link to the vendor page where the CVE was disclosed. | 
+| CrowdStrike.Vulnerability.cve.exploitability_score | Number | Exploitability score of the CVE \(float values from 1-4\). | 
+| CrowdStrike.Vulnerability.cve.impact_score | Number | Impact score of the CVE \(float values from 1-6\). | 
+| CrowdStrike.Vulnerability.cve.vector | String | Textual representation of the metric values used to score the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.remediation_level | String | CVSS remediation level of the vulnerability \(U = Unavailable, or O = Official fix\). | 
+| CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev | Boolean | Whether to filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities \(KEV\) catalog. | 
+| CrowdStrike.Vulnerability.cve.cisa_info.due_date | Date | Date before which CISA mandates subject organizations to patch the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.spotlight_published_date | Date | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. | 
+| CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. | 
+| CrowdStrike.VulnerabilityNextToken | String | Pagination cursor returned by CrowdStrike when more results are available. Pass this value back as the \`next_token\` argument on the next invocation. Absent when no more pages exist. Expires in 120 seconds. | 
+
+#### Command Example
+
+``` cs-falcon-spotlight-search-vulnerability filter=status:['open','closed'] cve_id=CVE-2021-2222 cve_severity='LOW,HIGH' display_host_info=false display_evaluation_logic_info=false display_remediation_info=false limit=1 ```
+
+#### Context Example
+
+```json
+{
+    "resources": [
+        {
+            "id": "id_num",
+            "cid": "cid_num",
+            "aid": "aid_num",
+            "created_timestamp": "2021-07-13T01:12:57Z",
+            "updated_timestamp": "2022-10-27T18:32:21Z",
+            "status": "open",
+            "apps": [
+                {
+                    "product_name_version": "product",
+                    "sub_status": "open",
+                    "remediation": {
+                        "ids": [
+                            "1234"
+                        ]
+                    },
+                    "evaluation_logic": {
+                        "id": "1234"
+                    }
+                }
+            ],
+            "suppression_info": {
+                "is_suppressed": false
+            },
+            "cve": {
+                "id": "CVE-2021-2222",
+                "base_score": 5.5,
+                "severity": "MEDIUM",
+                "exploit_status": 0,
+                "exprt_rating": "LOW",
+                "remediation_level": "O",
+                "cisa_info": {
+                    "is_cisa_kev": false
+                },
+                "spotlight_published_date": "2021-05-10T17:08:00Z",
+                "description": "description\n",
+                "published_date": "2021-02-25T23:15:00Z",
+                "vendor_advisory": [
+                    "web address"
+                ],
+                "exploitability_score": 1.8,
+                "impact_score": 3.6,
+                "vector": "vendor"
+            }
+        }
+    ],
+    "VulnerabilityNextToken": "next_token"
+    
+}
+```
+
+#### Human Readable Output
+
+| CVE ID | CVE Severity | CVE Base Score | CVE Published Date | CVE Impact Score | CVE Exploitability Score | CVE Vector |
+| --- | --- | --- | --- | --- | --- |  --- |
+| CVE-2021-2222 | LOW | 5.5 | 2021-05-10T17:08:00Z | 3.6 | 0 | vendor |
+
+### cs-falcon-spotlight-list-host-by-vulnerability
+
+***
+Retrieve vulnerability details for a specific ID and host. Supported with the CrowdStrike Spotlight license.
+
+#### Base Command
+
+`cs-falcon-spotlight-list-host-by-vulnerability`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of items to return (1-5000). Default is 50. | Optional | 
+| cve_ids | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.VulnerabilityHost.id | String | Unique system-assigned ID of the vulnerability. | 
+| CrowdStrike.VulnerabilityHost.cid | String | Unique system-generated customer identifier \(CID\) of the account. | 
+| CrowdStrike.VulnerabilityHost.aid | String | Unique agent identifier \(AID\) of the sensor where the vulnerability was found. | 
+| CrowdStrike.VulnerabilityHost.created_timestamp | Date | UTC date and time of when the vulnerability was created in Spotlight. | 
+| CrowdStrike.VulnerabilityHost.updated_timestamp | Date | UTC date and time of the last update made on the vulnerability. | 
+| CrowdStrike.VulnerabilityHost.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. | 
+| CrowdStrike.VulnerabilityHost.apps.product_name_version | String | Name and version of the product associated with the vulnerability. | 
+| CrowdStrike.VulnerabilityHost.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen. | 
+| CrowdStrike.VulnerabilityHost.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability. | 
+| CrowdStrike.VulnerabilityHost.apps.evaluation_logic.id | String | Unique system-assigned ID of the vulnerability evaluation logic. | 
+| CrowdStrike.VulnerabilityHost.suppression_info.is_suppressed | Boolean | Indicates if the vulnerability is suppressed by a suppression rule. | 
+| CrowdStrike.VulnerabilityHost.host_info.hostname | String | Name of the machine. | 
+| CrowdStrike.VulnerabilityHost.host_info.local_ip | String | Device's local IP address. | 
+| CrowdStrike.VulnerabilityHost.host_info.machine_domain | String | Active directory domain name. | 
+| CrowdStrike.VulnerabilityHost.host_info.os_version | String | Operating system version. | 
+| CrowdStrike.VulnerabilityHost.host_info.ou | String | Active directory organizational unit name. | 
+| CrowdStrike.VulnerabilityHost.host_info.site_name | String | Active directory site name. | 
+| CrowdStrike.VulnerabilityHost.host_info.system_manufacturer | String | Name of the system manufacturer. | 
+| CrowdStrike.VulnerabilityHost.host_info.platform | String | Operating system platform. This filter supports negation. | 
+| CrowdStrike.VulnerabilityHost.host_info.instance_id | String | Cloud instance ID of the host. | 
+| CrowdStrike.VulnerabilityHost.host_info.service_provider_account_id | String | Cloud service provider account ID for the host. | 
+| CrowdStrike.VulnerabilityHost.host_info.service_provider | String | Cloud service provider for the host. | 
+| CrowdStrike.VulnerabilityHost.host_info.os_build | String | Operating system build. | 
+| CrowdStrike.VulnerabilityHost.host_info.product_type_desc | String | Type of host a sensor is running on. | 
+| CrowdStrike.VulnerabilityHost.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database \(NVD\). | 
+
+#### Command Example
+
+``` cs-falcon-spotlight-list-host-by-vulnerability cve_ids=CVE-2021-2222 ```
+
+#### Context Example
+
+```json
+{
+        {
+            "id": "id",
+            "cid": "cid",
+            "aid": "aid",
+            "created_timestamp": "2021-09-16T15:12:42Z",
+            "updated_timestamp": "2022-10-19T00:54:43Z",
+            "status": "open",
+            "apps": [
+                {
+                    "product_name_version": "prod",
+                    "sub_status": "open",
+                    "remediation": {
+                        "ids": [
+                            "id"
+                        ]
+                    },
+                    "evaluation_logic": {
+                        "id": "id"
+                    }
+                }
+            ],
+            "suppression_info": {
+                "is_suppressed": false
+            },
+            "host_info": {
+                "hostname": "host",
+                "local_ip": "10.128.0.7",
+                "machine_domain": "",
+                "os_version": "version",
+                "ou": "",
+                "site_name": "",
+                "system_manufacturer": "manufactor",
+                "tags": [],
+                "platform": "Windows",
+                "instance_id": "instance id",
+                "service_provider_account_id": "id",
+                "service_provider": "id",
+                "os_build": "os build",
+                "product_type_desc": "Server"
+            },
+            "cve": {
+                "id": "CVE-20212-2222"
+            }
+        }
+    
+}
+```
+
+#### Human Readable Output
+
+| CVE ID | Host Info hostname | Host Info os Version | Host Info Product Type Desc | Host Info Local IP | Host Info ou | Host Info Machine Domain | Host Info Site Name | CVE Exploitability Score | CVE Vector |
+| --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
+| CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
+
 ### cs-falcon-list-cnapp-alerts
 
 ***
@@ -2880,6 +6474,184 @@ Returns a list of CNAPP alerts. Used for debugging fetch-assets.
 | CrowdStrike.CnappAlert.last_seen_timestamp | String | The last time the alert was seen. | 
 | CrowdStrike.CnappAlert.severity | String | The severity of the alert. | 
 
+#### Command Example
+
+``` cs-falcon-list-cnapp-alerts ```
+
+#### Context Example
+
+```json
+{
+    "severity": "Critical",
+    "first_seen_timestamp": "2025-11-24T11:04:03Z",
+    "last_seen_timestamp": "2025-11-26T10:18:35Z",
+    "detection_name": "PotentialKernelTampering",
+    "detection_event_simple_name": "BPFCommandIssued",
+    "detection_description": "some decription.",
+    "containers_impacted_count": "1",
+    "containers_impacted_ids": ["id1", "id2"],
+}
+```
+
+#### Human Readable Output
+
+|severity|first_seen_timestamp|last_seen_timestamp|detection_name|detection_event_simple_name|detection_description|containers_impacted_count|containers_impacted_ids|
+|---|---|---|---|---|---|---|---|
+| Critical | 2025-11-24T11:04:03Z | 2025-11-26T10:18:35Z | PotentialKernelTampering | BPFCommandIssued | alert description. | 1 | test |
+
+## Troubleshooting
+
+- In the different fetch query configuration parameters such as "Endpoint Detections fetch query" and "Endpoint Incidents fetch query", to query for multiple values in the same field use the following format: `field:['value1','value2','value3']`.
+  - For example, filtering by "severity_name" equal to "Medium", "High", or "Critical" can be achieved by specifying `severity_name:['Medium','High','Critical']`
+
+- When encountering the error "400 - Reason: Bad Request: Invalid element in the request", ensure the integration instance is configured correctly and verify the command arguments.
+  - For example, the error appears when using the ID of a detection prior to the Raptor release (legacy API) in an integration configured to run with Raptor.
+
+- When experiencing connectivity or authorization errors in Cortex XSOAR 8 or Cortex XSIAM, ensure that the IP addresses associated with the relevant CrowdStrike Falcon region are added to the allow list for the Cortex tenant. For detailed instructions, refer to the **Egress** section or search for **Egress** in the product documentation:
+  - [Enable access to Cortex XSOAR 8](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Enable-access-to-Palo-Alto-Networks-resources)
+  - [Enable Access to Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Resources-Required-to-Enable-Access)
+
+- When encountering HTTP 429 errors from CrowdStrike Falcon, install custom engine on the the Cortex tenant and use it in the configuration of the integration instance:
+  - [Cortex XSOAR 8 Engines](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Engines)
+  - [Cortex XSIAM Engines](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Engines)
+
+- When encountering missing incidents in Cortex XSOAR, make sure that the 'Fetch Type' integration parameter includes the type of the missing incidents.
+  - Optional types are:
+    - Endpoint Incident
+    - Endpoint Detection
+    - IDP Detection
+    - Indicator of Misconfiguration
+    - Indicator of Attack
+    - Mobile Detection
+    - On-Demand Scans Detection
+    - OFP Detection
+
+  - Notes:
+    - Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: "Endpoint Detection" and "OFP Detection".
+    - For CNAPP Alerts, you will need one of the following subscriptions:
+      - Falcon Cloud Security with Containers CNAPP
+      - Falcon Cloud Security CNAPP
+      - Falcon Cloud Security with Containers Runtime Protection
+      - Falcon for Managed Containers Runtime Protection
+      - Falcon Cloud Security Proactive
+      - Falcon Cloud Security with Containers
+      - Falcon for Managed Containers
+
+### cs-falcon-list-case-summaries
+
+***
+Lists case summaries.
+
+#### Base Command
+
+`cs-falcon-list-case-summaries`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of case IDs. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Case.id | String | The ID of the case. | 
+| CrowdStrike.Case.name | String | The name of the case. | 
+| CrowdStrike.Case.created_timestamp | Date | The date and time the case was created. | 
+| CrowdStrike.Case.status | String | The status of the case. | 
+| CrowdStrike.Case.version | String | The version of the case. | 
+| CrowdStrike.Case.description | String | The description of the case. | 
+| CrowdStrike.Case.severity | String | The severity of the case. | 
+| CrowdStrike.Case.assigned_to | String | The name of the user assigned to the case. | 
+| CrowdStrike.Case.tags | String | The tags of the case. | 
+
+### cs-falcon-add-case-tag
+
+***
+Adds tags to the specified case.
+
+#### Base Command
+
+`cs-falcon-add-case-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tags | A comma-separated list of tags. | Required | 
+| id | The ID of the case the tags will be added to. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### cs-falcon-get-evidence-for-case
+
+***
+Get evidence for a specific case.
+
+#### Base Command
+
+`cs-falcon-get-evidence-for-case`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the case to retrieve evidence for. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.CaseEvidence.alerts | Array | The alerts associated with the case. | 
+| CrowdStrike.CaseEvidence.events | Array | The events associated with the case. | 
+| CrowdStrike.CaseEvidence.leads | Array | The leads associated with the case. | 
+
+### cs-falcon-resolve-case
+
+***
+Resolves or updates a case.
+
+#### Base Command
+
+`cs-falcon-resolve-case`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the case to resolve. | Required | 
+| status | The status to set for the case. Possible values are: new, in_progress, closed, reopened. | Optional | 
+| assigned_to_uuid | A UUID of a user to assign the case to. | Optional | 
+| description | A new description for the case. | Optional | 
+| remove_user_assignment | Whether to remove case assignment from the current user.<br/>If set to true and assigned_to_uuid is not provided, the case becomes unassigned.<br/>If set to false and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.<br/>If set to true and assigned_to_uuid is provided, the case is reassigned to the specified user UUID.<br/>If this field is omitted and assigned_to_uuid is provided, the case is reassigned to the specified user UUID. Possible values are: true, false. Default is false. | Optional | 
+| severity | The new case severity rating (10-100). | Optional | 
+| template_id | The unique ID of the template to apply to the case. | Optional | 
+| name | The new name for the case. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### cs-falcon-delete-case-tag
+
+***
+Deletes a tag from the specified case.
+
+#### Base Command
+
+`cs-falcon-delete-case-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The ID of the case the tags will be deleted from. | Required | 
+| tag | The tag to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
 ### cs-falcon-search-ngsiem-events
 
 ***
@@ -2916,6 +6688,43 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
 | CrowdStrike.NGSiemEvent.id | String | The event ID. | 
 | CrowdStrike.NGSiemEvent.timestamp | String | Event timestamp. | 
 
+#### Command Example
+
+`!cs-falcon-search-ngsiem-events query="#event_simpleName = \"Event_name\"" repository="search-all" start="1d" end="now" limit=2 interval=60 timeout=120`
+
+`!cs-falcon-search-ngsiem-events query="*" repository="search-all" start="7d" end="now" around_event_id="aaa" around_number_events_before=1 around_number_events_after=1 around_timestamp=1700000000000 interval=60 timeout=120`
+
+`!cs-falcon-search-ngsiem-events query="id=aaaaa_anchor_event" repository="search-all" ingest_start=1700000000000 ingest_end=1700000002000 use_ingest_time=true limit=2 interval=60 timeout=120`
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "NGSiemEvent": [
+      {
+        "@id": "aaaaa_event_1",
+        "@timestamp": 1700000000000,
+        "@ingesttimestamp": "1700000001000",
+        "id": "aaaaa_event_1",
+        "event_simpleName": "Event_APIActivityAuditEvent"
+      },
+      {
+        "@id": "aaaaa_event_2",
+        "@timestamp": 1700000002000,
+        "@ingesttimestamp": "1700000003000",
+        "id": "aaaaa_event_2",
+        "event_simpleName": "Event_APIActivityAuditEvent"
+      }
+    ]
+  }
+}
+```
+
+## Workflow Commands
+
+The following commands are available from the CrowdStrike Falcon integration. Note that for these commands, the required API client scope is: `Workflows - Read and Write`.
+
 ### cs-falcon-list-workflow-definitions
 
 ***
@@ -2941,6 +6750,11 @@ Lists workflow definitions from CrowdStrike Falcon.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-list-workflow-definitions limit=5`
+
 ### cs-falcon-workflow-execute
 
 ***
@@ -2964,6 +6778,11 @@ Executes an on-demand workflow. Use cs-falcon-list-workflow-definitions to find 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-workflow-execute definition_id="abc123" body="{}"`
+
 ### cs-falcon-list-workflow-executions
 
 ***
@@ -2988,6 +6807,11 @@ Lists workflow executions from CrowdStrike Falcon. Use cs-falcon-workflow-execut
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-list-workflow-executions limit=10`
+
 ### cs-falcon-list-workflow-execution-results
 
 ***
@@ -3006,6 +6830,11 @@ Gets detailed results for specific workflow executions. Use cs-falcon-list-workf
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-list-workflow-execution-results ids="exec_id_1,exec_id_2"`
+
 ### cs-falcon-workflow-execution-action
 
 ***
@@ -3025,21 +6854,8 @@ Performs an action (cancel or resume) on one or more workflow executions. Use cs
 #### Context Output
 
 There is no context output for this command.
-## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon corresponding events (available from Cortex XSOAR version 6.0.0).
-To set up the mirroring:
-1. Enable *Fetching incidents* in your instance configuration.
-2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+#### Command example
 
-    | **Option** | **Description** |
-    | --- | --- |
-    | None | Turns off incident mirroring. |
-    | Incoming | Any changes in CrowdStrike Falcon events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in CrowdStrike Falcon events (outgoing mirrored fields). |
-    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and CrowdStrike Falcon events will be reflected in both directions. |
+`!cs-falcon-workflow-execution-action ids="exec_id_1" action_name="cancel"`
 
-3. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in CrowdStrike Falcon.
-
-Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and CrowdStrike Falcon.
