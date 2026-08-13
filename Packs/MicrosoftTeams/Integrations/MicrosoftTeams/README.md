@@ -1556,3 +1556,38 @@ This command enables direct communication with users without requiring them to b
 ##### Human Readable Output
 
 Message was sent successfully.
+
+### microsoft-teams-message-update-policy-violation
+
+***
+Applies a data loss prevention policy violation to a Microsoft Teams message, quarantining a chat message, a channel message, or a channel reply. HTTP error responses from Microsoft Graph are surfaced verbatim as a command error.
+
+#### Base Command
+
+`microsoft-teams-message-update-policy-violation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| chat_id | The chat ID hosting the message. Provide this for a chat message. Retrieve chat IDs from the Microsoft Teams client URL or via the Microsoft Graph list chats endpoint. Mutually exclusive with team_id and channel_id. | Optional |
+| team_id | The team ID hosting the channel message. Provide together with channel_id for a channel message. Retrieve team IDs from the Microsoft Teams admin center or via the Microsoft Graph list joinedTeams endpoint. | Optional |
+| channel_id | The channel ID hosting the message. Provide together with team_id for a channel message. Retrieve channel IDs from the Microsoft Teams client URL or via the Microsoft Graph list channels endpoint. | Optional |
+| parent_message_id | The parent message ID when targeting a channel reply. Only supported for channel messages. Retrieve message IDs via the Microsoft Graph list channel messages endpoint. | Optional |
+| message_id | The ID of the message to update. Retrieve message IDs via the Microsoft Graph list messages endpoint for the chat or channel. | Required |
+| dlp_action | The action taken on the message. One of NoAction, BlockAccess, BlockAccessExternal. Possible values are: NoAction, BlockAccess, BlockAccessExternal. | Optional |
+| policy_tip_general_text | The explanatory text shown to the user in the policy tip. | Optional |
+| verdict_details | The reviewer actions available on the flagged message. One of None, AllowOverride, AllowOverrideWithoutJustification, AllowOverrideWithJustification. When omitted, Microsoft Graph applies its default behavior. Possible values are: None, AllowOverride, AllowOverrideWithoutJustification, AllowOverrideWithJustification. | Optional |
+| payment_model | The billing model appended as the model query parameter. Provide when the tenant uses a specific Microsoft Graph metered API payment model. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftTeams.TeamsMessagePolicyViolation.messageId | String | The ID of the message the policy violation was applied to. |
+| MicrosoftTeams.TeamsMessagePolicyViolation.chatId | String | The ID of the chat hosting the message, when targeting a chat message. |
+| MicrosoftTeams.TeamsMessagePolicyViolation.teamId | String | The ID of the team hosting the message, when targeting a channel message. |
+| MicrosoftTeams.TeamsMessagePolicyViolation.channelId | String | The ID of the channel hosting the message, when targeting a channel message. |
+| MicrosoftTeams.TeamsMessagePolicyViolation.parentMessageId | String | The ID of the parent message, when targeting a channel reply. |
+| MicrosoftTeams.TeamsMessagePolicyViolation.dlpAction | String | The data loss prevention action that was applied to the message. |
+| MicrosoftTeams.TeamsMessagePolicyViolation.verdictDetails | String | The reviewer actions that were made available on the flagged message. |
