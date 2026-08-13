@@ -1588,7 +1588,7 @@ def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> Command
     return CommandResults(
         readable_output=readable_output,
         outputs=response,
-        outputs_prefix=" GCP.Compute.Operations",
+        outputs_prefix="GCP.Compute.Operations",
         outputs_key_field="id",
         raw_response=response,
     )
