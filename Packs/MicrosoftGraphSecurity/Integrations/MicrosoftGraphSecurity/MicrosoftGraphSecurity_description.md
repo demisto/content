@@ -9,7 +9,7 @@ Use the **Fetch incidents type** parameter to control what this integration inge
 * **Alerts** - Each Microsoft Graph Security alert is fetched individually.
 * **Incidents** - Each Microsoft Graph Security incident is fetched individually, with all associated alerts embedded within it and stored as raw JSON. This provides a single grouped incident containing its underlying alerts, rather than multiple separate alerts.
 
-You can narrow what is fetched using the **Fetched Alerts filter** and **Fetched Incidents filter** parameters. These accept an OData `$filter` expression, for example `severity eq 'medium' and status eq 'active'`. For the supported syntax and operators, see [Microsoft query parameters](https://learn.microsoft.com/en-us/graph/query-parameters?tabs=http).
+You can narrow what is fetched using the **Alerts Filter** and **Incidents Filter** parameters. These accept an OData `$filter` expression, for example `severity eq 'medium' and status eq 'active'`. For the supported syntax and operators, see [Microsoft query parameters](https://learn.microsoft.com/en-us/graph/query-parameters?tabs=http).
 
 # Authentication
 You can authenticate either by Entra ID applications or by Azure Managed Identities.
