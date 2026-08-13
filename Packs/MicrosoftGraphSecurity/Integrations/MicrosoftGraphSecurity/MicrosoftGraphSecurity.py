@@ -1175,7 +1175,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
     Returns:
         list: all the fetched items (alerts and/or incidents) together.
     """
-    fetch_time = params.get("fetch_time", "1 day")
+    fetch_time = params.get("fetch_time", "3 days")
     fetch_limit = params.get("fetch_limit", MAX_ITEMS_PER_RESPONSE) or MAX_ITEMS_PER_RESPONSE
     fetch_service_sources = params.get("fetch_service_sources", "")
     fetch_alerts_filter = params.get("fetch_filter", "")
@@ -2288,7 +2288,7 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
                     "due to a Microsoft limitation when fetching incidents."
                 )
 
-            fetch_time = params.get("fetch_time", "1 day")
+            fetch_time = params.get("fetch_time", "3 days")
             fetch_incidents_type = argToList(params.get("fetch_incidents_type"))
             time_from = parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]
             time_to = datetime.now().strftime(TIMESTAMP_FORMAT)
