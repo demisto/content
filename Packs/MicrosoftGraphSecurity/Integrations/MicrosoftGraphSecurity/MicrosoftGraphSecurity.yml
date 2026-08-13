@@ -184,7 +184,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-  defaultvalue: '10'
+  defaultvalue: '50'
 - display: Alerts Service Sources
   additionalinfo: Relevant only when fetching alerts. A comma-separated list of service sources, for example, "microsoftDefenderForEndpoint,microsoftDefenderForIdentity". If empty, alerts from all service sources will be fetched.
   name: fetch_service_sources

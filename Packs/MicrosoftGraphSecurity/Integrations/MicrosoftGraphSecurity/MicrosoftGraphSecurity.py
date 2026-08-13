@@ -1170,7 +1170,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
         list: all the fetched items (alerts and/or incidents) together.
     """
     fetch_time = params.get("fetch_time", "1 day")
-    fetch_limit = params.get("fetch_limit", 10) or 10
+    fetch_limit = params.get("fetch_limit", MAX_ITEMS_PER_RESPONSE) or MAX_ITEMS_PER_RESPONSE
     fetch_service_sources = params.get("fetch_service_sources", "")
     fetch_alerts_filter = params.get("fetch_filter", "")
     fetch_incidents_filter = params.get("fetch_incidents_filter", "")
@@ -2275,7 +2275,7 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
         params: dict = demisto.params()
 
         if params.get("isFetch"):
-            fetch_limit = arg_to_number(params.get("fetch_limit")) or 10
+            fetch_limit = arg_to_number(params.get("fetch_limit")) or MAX_ITEMS_PER_RESPONSE
             if fetch_limit > MAX_ITEMS_PER_RESPONSE:
                 raise DemistoException(
                     f"The fetch limit per type cannot be higher than {MAX_ITEMS_PER_RESPONSE}, "
