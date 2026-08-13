@@ -2709,7 +2709,7 @@ script:
     description: Retrieve the results of a previously submitted investigation query using the request ID.
     execution: false
     name: vectra-investigation-result-get
-  dockerimage: demisto/python3:3.12.13.8927230
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
