@@ -967,7 +967,7 @@ script:
       type: String
 
   - name: gcp-container-cluster-security-update
-    description: "Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
+    description: "Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list, container.clusters.setMasterAuth, container.clusters.setLegacyAbac."
     arguments:
     - name: project_id
       required: false
@@ -1025,6 +1025,27 @@ script:
       - "true"
       - "false"
       description: Enable the network policy addon on the cluster.
+    - name: enable_basic_auth
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enable basic (username/password) authentication on the cluster. Enabling creates an "admin" user with a generated password; disabling clears the username. Note that basic authentication is disabled by default on modern GKE clusters.
+    - name: enable_legacy_authorization
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enable legacy ABAC authorization on the cluster.
+    - name: enable_stackdriver_kubernetes
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Enable Stackdriver Kubernetes monitoring and logging on the cluster.
     outputs:
     - contextPath: GCP.Container.Operations.name
       description: The name of the GKE cluster.

@@ -318,7 +318,13 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
-        ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
+        [
+            "container.clusters.update",
+            "container.clusters.get",
+            "container.clusters.list",
+            "container.clusters.setMasterAuth",
+            "container.clusters.setLegacyAbac",
+        ],
     ),
     "gcp-container-cluster-list": (GCPServices.CONTAINER, ["container.clusters.list"]),
     "gcp-container-cluster-get": (GCPServices.CONTAINER, ["container.clusters.get"]),
@@ -1698,6 +1704,25 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
+def _container_operation_result(response: dict[str, Any]) -> CommandResults:
+    """
+    Builds the standard CommandResults for a GKE cluster-update operation response.
+
+    Args:
+        response (dict[str, Any]): The operation response returned by the container API.
+
+    Returns:
+        CommandResults: Operation rendered under the GCP.Container.Operations context.
+    """
+    hr = tableToMarkdown(
+        "Google Cloud Container Cluster Security Update Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
+    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response)
+
+
 def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Updates security-related configurations for a GKE cluster.
@@ -1716,6 +1741,10 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
             - enable_http_load_balancing: Whether to enable the HTTP load balancing addon.
             - enable_kubernetes_dashboard: Whether to enable the Kubernetes dashboard addon.
             - enable_network_policy: Whether to enable the network policy addon.
+            - enable_basic_auth: Whether to enable basic (username/password) authentication. Enabling creates
+                                 an "admin" user; disabling clears the username.
+            - enable_legacy_authorization: Whether to enable legacy ABAC authorization.
+            - enable_stackdriver_kubernetes: Whether to enable Stackdriver Kubernetes monitoring and logging.
 
     Returns:
         CommandResults: Result of the cluster update operation.
@@ -1724,6 +1753,7 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     region = args.get("region")
     resource_name = args.get("resource_name")
     cidrs = argToList(args.get("cidrs"))
+    cluster_path = f"projects/{project_id}/locations/{region}/clusters/{resource_name}"
 
     update_flags = [
         "enable_intra_node_visibility",
@@ -1732,6 +1762,9 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
         "enable_http_load_balancing",
         "enable_kubernetes_dashboard",
         "enable_network_policy",
+        "enable_basic_auth",
+        "enable_legacy_authorization",
+        "enable_stackdriver_kubernetes",
     ]
     provided_flags = [flag for flag in update_flags if flag in args]
     if len(provided_flags) > 1:
@@ -1747,6 +1780,21 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
         )
 
     container = GCPServices.CONTAINER.build(creds)
+    clusters = container.projects().locations().clusters()  # pylint: disable=E1101
+
+    # Basic auth uses the dedicated setMasterAuth endpoint (SET_USERNAME action).
+    if (enable_basic_auth := args.get("enable_basic_auth")) is not None:
+        response = clusters.setMasterAuth(
+            name=cluster_path,
+            body={"action": "SET_USERNAME", "update": {"username": "admin" if argToBoolean(enable_basic_auth) else ""}},
+        ).execute()
+        return _container_operation_result(response)
+
+    # Legacy ABAC uses the dedicated setLegacyAbac endpoint.
+    if (enable_legacy_auth := args.get("enable_legacy_authorization")) is not None:
+        response = clusters.setLegacyAbac(name=cluster_path, body={"enabled": argToBoolean(enable_legacy_auth)}).execute()
+        return _container_operation_result(response)
+
     update_fields: dict[str, Any] = {}
 
     if enable_intra := args.get("enable_intra_node_visibility"):
@@ -1774,13 +1822,15 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     if (enable_net_policy := args.get("enable_network_policy")) is not None:
         update_fields["desiredAddonsConfig"] = {"networkPolicyConfig": {"disabled": not argToBoolean(enable_net_policy)}}
 
-    response = (
-        container.projects()  # pylint: disable=E1101
-        .locations()
-        .clusters()
-        .update(name=f"projects/{project_id}/locations/{region}/clusters/{resource_name}", body={"update": update_fields})
-        .execute()
-    )
+    if (enable_stackdriver := args.get("enable_stackdriver_kubernetes")) is not None:
+        if argToBoolean(enable_stackdriver):
+            update_fields["desiredMonitoringService"] = "monitoring.googleapis.com/kubernetes"
+            update_fields["desiredLoggingService"] = "logging.googleapis.com/kubernetes"
+        else:
+            update_fields["desiredMonitoringService"] = "none"
+            update_fields["desiredLoggingService"] = "none"
+
+    response = clusters.update(name=cluster_path, body={"update": update_fields}).execute()
 
     hr = tableToMarkdown(
         "Google Cloud Container Cluster Security Update Operation Started Successfully",

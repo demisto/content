@@ -6953,3 +6953,120 @@ def test_container_cluster_security_update_addons(mocker):
     addons = called_kwargs["body"]["update"]["desiredAddonsConfig"]
     assert addons["httpLoadBalancing"]["disabled"] is True
     assert result.outputs == mock_response
+
+
+def test_container_cluster_security_update_basic_auth(mocker):
+    """
+    Given: A GKE cluster needs basic (username/password) authentication enabled.
+    When: container_cluster_security_update is called with enable_basic_auth=true.
+    Then: The function calls setMasterAuth with action SET_USERNAME and username "admin",
+          returning the operation in the GCP.Container.Operations context.
+    """
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().setMasterAuth().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_basic_auth": "true",
+    }
+    result = container_cluster_security_update(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().setMasterAuth.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
+    assert called_kwargs["body"]["action"] == "SET_USERNAME"
+    assert called_kwargs["body"]["update"]["username"] == "admin"
+    assert result.outputs == mock_response
+
+
+def test_container_cluster_security_update_basic_auth_disable(mocker):
+    """
+    Given: A GKE cluster needs basic authentication disabled.
+    When: container_cluster_security_update is called with enable_basic_auth=false.
+    Then: setMasterAuth is called with an empty username to disable basic auth.
+    """
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().setMasterAuth().execute.return_value = {"name": "operation-123"}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_basic_auth": "false",
+    }
+    container_cluster_security_update(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().setMasterAuth.call_args
+    assert called_kwargs["body"]["update"]["username"] == ""
+
+
+def test_container_cluster_security_update_legacy_authorization(mocker):
+    """
+    Given: A GKE cluster needs legacy ABAC authorization enabled.
+    When: container_cluster_security_update is called with enable_legacy_authorization=true.
+    Then: The function calls setLegacyAbac with enabled True, returning the operation in the
+          GCP.Container.Operations context.
+    """
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().setLegacyAbac().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_legacy_authorization": "true",
+    }
+    result = container_cluster_security_update(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().setLegacyAbac.call_args
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
+    assert called_kwargs["body"]["enabled"] is True
+    assert result.outputs == mock_response
+
+
+def test_container_cluster_security_update_stackdriver_kubernetes(mocker):
+    """
+    Given: A GKE cluster needs Stackdriver Kubernetes monitoring/logging enabled.
+    When: container_cluster_security_update is called with enable_stackdriver_kubernetes=true.
+    Then: The function issues a clusters.update with the desiredMonitoringService and
+          desiredLoggingService fields set to the kubernetes-integrated services.
+    """
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_response = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().update().execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_stackdriver_kubernetes": "true",
+    }
+    result = container_cluster_security_update(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().update.call_args
+    update_body = called_kwargs["body"]["update"]
+    assert update_body["desiredMonitoringService"] == "monitoring.googleapis.com/kubernetes"
+    assert update_body["desiredLoggingService"] == "logging.googleapis.com/kubernetes"
+    assert result.outputs == mock_response

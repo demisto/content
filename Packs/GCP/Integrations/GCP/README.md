@@ -133,7 +133,7 @@ Enables flow logs or Private Google Access on a subnet. Required permissions: co
 ### gcp-container-cluster-security-update
 
 ***
-Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
+Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list, container.clusters.setMasterAuth, container.clusters.setLegacyAbac.
 
 #### Base Command
 
@@ -153,6 +153,9 @@ Configures security settings for GKE clusters, including access controls and vis
 | enable_http_load_balancing | Enable the HTTP load balancing addon on the cluster. Possible values are: true, false. | Optional |
 | enable_kubernetes_dashboard | Enable the Kubernetes dashboard addon on the cluster. Possible values are: true, false. | Optional |
 | enable_network_policy | Enable the network policy addon on the cluster. Possible values are: true, false. | Optional |
+| enable_basic_auth | Enable basic (username/password) authentication on the cluster. Enabling creates an "admin" user with a generated password; disabling clears the username. Note that basic authentication is disabled by default on modern GKE clusters. Possible values are: true, false. | Optional |
+| enable_legacy_authorization | Enable legacy ABAC authorization on the cluster. Possible values are: true, false. | Optional |
+| enable_stackdriver_kubernetes | Enable Stackdriver Kubernetes monitoring and logging on the cluster. Possible values are: true, false. | Optional |
 
 #### Context Output
 
