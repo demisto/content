@@ -60,15 +60,28 @@ def domain_enrichment_script(
     command_batch2: list[Command] = []
     if is_xsiam():
         demisto.debug("Command Batch 2: Internal commands (for XSIAM)")
-        command_batch2.append(
-            Command(
-                name="core-get-domain-analytics-prevalence",
-                args={"domain_name": valid_inputs},
-                command_type=CommandType.INTERNAL,
-                brand="Cortex Core - IR",  # keep the brand you use elsewhere
-                context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
+        # On platform, we use the built-in commands and brand Builtin
+        if is_platform():
+            command_batch2.append(
+                Command(
+                    name="getDomainAnalyticsPrevalence",
+                    args={"domain_name": valid_inputs},
+                    command_type=CommandType.BUILTIN,
+                    brand="Builtin",
+                    context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
+                    ignore_using_brand=True,
+                )
             )
-        )
+        else:
+            command_batch2.append(
+                Command(
+                    name="core-get-domain-analytics-prevalence",
+                    args={"domain_name": valid_inputs},
+                    command_type=CommandType.INTERNAL,
+                    brand="Cortex Core - IR",  # keep the brand you use elsewhere
+                    context_output_mapping={"Core.AnalyticsPrevalence.Domain": "Core.AnalyticsPrevalence.Domain"},
+                )
+            )
     demisto.debug("Command Batch 2: Enriching indicators")
     command_batch2.append(
         Command(

@@ -203,7 +203,7 @@ def main():  # pragma: no cover
 
     platform = params.get("platform")
     hostname = params.get("hostname")
-    port = params.get("port")
+    port = params.get("port") or "22"
     try:
         port = int(port)
     except Exception as err:
