@@ -1042,8 +1042,8 @@ def build_blocked_senders_v2_hr_row(policy: dict) -> dict:
     receiver = policy.get("to") or {}
     return {
         "Policy ID": policy.get("id"),
-        "Sender": sender.get("emailAddress") or sender.get("domain") or sender.get("groupId"),
-        "Receiver": receiver.get("emailAddress") or receiver.get("domain") or receiver.get("groupId"),
+        "Sender": sender.get("emailAddress") or sender.get("domain") or (sender.get("group") or {}).get("id"),
+        "Receiver": receiver.get("emailAddress") or receiver.get("domain") or (receiver.get("group") or {}).get("id"),
         "Bidirectional": policy.get("bidirectional"),
         "Start": policy.get("fromDateTime"),
         "End": policy.get("toDateTime"),
