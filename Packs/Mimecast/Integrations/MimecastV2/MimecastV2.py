@@ -3612,7 +3612,7 @@ def list_account_command(args: dict) -> CommandResults:
 def list_blocked_senders_policies_command() -> CommandResults:
     """List Blocked Senders policies using the v2 GET API. The flat items are emitted verbatim."""
     response = http_request("GET", BLOCKED_SENDERS_V2_ENDPOINT)
-    policies = response.get("policies", [])
+    policies = response.get("definitions", [])
     demisto.debug(f"Got {len(policies)} blocked-senders policies, nextPage={response.get('meta', {}).get('nextPage')}")
 
     title = "Mimecast list blockedsenders policies: \n These are the existing blockedsenders Policies:"
