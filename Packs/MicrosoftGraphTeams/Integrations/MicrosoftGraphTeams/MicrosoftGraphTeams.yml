@@ -341,11 +341,11 @@ script:
     - description: The explanatory text shown to the user in the policy tip.
       name: policy_tip_general_text
     - auto: PREDEFINED
-      description: The reviewer actions available on the flagged message. One of None, AllowOverride, AllowOverrideWithoutJustification, AllowOverrideWithJustification. When omitted, Microsoft Graph applies its default behavior.
+      description: The reviewer actions available on the flagged message. One of None, AllowFalsePositiveOverride, AllowOverrideWithoutJustification, AllowOverrideWithJustification. When omitted, Microsoft Graph applies its default behavior.
       name: verdict_details
       predefined:
       - None
-      - AllowOverride
+      - AllowFalsePositiveOverride
       - AllowOverrideWithoutJustification
       - AllowOverrideWithJustification
     - description: The billing model appended as the model query parameter. Provide when the tenant uses a specific Microsoft Graph metered API payment model.

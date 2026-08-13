@@ -322,7 +322,7 @@ Applies a data loss prevention policy violation to a Microsoft Teams message, qu
 | message_id | The ID of the message to update. Retrieve message IDs via the Microsoft Graph list messages endpoint for the chat or channel. | Required |
 | dlp_action | The action taken on the message. One of NoAction, BlockAccess, BlockAccessExternal. Possible values are: NoAction, BlockAccess, BlockAccessExternal. | Optional |
 | policy_tip_general_text | The explanatory text shown to the user in the policy tip. | Optional |
-| verdict_details | The reviewer actions available on the flagged message. One of None, AllowOverride, AllowOverrideWithoutJustification, AllowOverrideWithJustification. When omitted, Microsoft Graph applies its default behavior. Possible values are: None, AllowOverride, AllowOverrideWithoutJustification, AllowOverrideWithJustification. | Optional |
+| verdict_details | The reviewer actions available on the flagged message. One of None, AllowFalsePositiveOverride, AllowOverrideWithoutJustification, AllowOverrideWithJustification. When omitted, Microsoft Graph applies its default behavior. Possible values are: None, AllowFalsePositiveOverride, AllowOverrideWithoutJustification, AllowOverrideWithJustification. | Optional |
 | payment_model | The billing model appended as the model query parameter. Provide when the tenant uses a specific Microsoft Graph metered API payment model. | Optional |
 
 #### Context Output

@@ -93,9 +93,9 @@ def test_build_policy_violation_body_includes_verdict_when_set():
         - The verdictDetails field is included.
     """
     body = build_policy_violation_body(
-        dlp_action="BlockAccess", policy_tip_general_text="Blocked.", verdict_details="AllowOverride"
+        dlp_action="BlockAccess", policy_tip_general_text="Blocked.", verdict_details="AllowFalsePositiveOverride"
     )
-    assert body["policyViolation"]["verdictDetails"] == "AllowOverride"
+    assert body["policyViolation"]["verdictDetails"] == "AllowFalsePositiveOverride"
 
 
 @pytest.mark.parametrize(
@@ -176,7 +176,7 @@ def test_update_teams_message_policy_violation_command_channel_reply(mocker):
         "message_id": "msg-1",
         "dlp_action": "BlockAccess",
         "policy_tip_general_text": "Blocked.",
-        "verdict_details": "AllowOverride",
+        "verdict_details": "AllowFalsePositiveOverride",
         "payment_model": "A",
     }
 
@@ -188,13 +188,13 @@ def test_update_teams_message_policy_violation_command_channel_reply(mocker):
             "policyViolation": {
                 "dlpAction": "BlockAccess",
                 "policyTip": {"generalText": "Blocked."},
-                "verdictDetails": "AllowOverride",
+                "verdictDetails": "AllowFalsePositiveOverride",
             }
         },
     )
     result = return_results.call_args[0][0]
     assert result.outputs["parentMessageId"] == "parent-1"
-    assert result.outputs["verdictDetails"] == "AllowOverride"
+    assert result.outputs["verdictDetails"] == "AllowFalsePositiveOverride"
 
 
 def test_update_teams_message_policy_violation_command_invalid_target(mocker):
