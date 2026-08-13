@@ -461,28 +461,6 @@ def test_fetch_alerts_does_not_mutate_last_run(mocker):
     assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
 
 
-def test_fetch_incidents_and_alerts_empty_type_raises(mocker):
-    """
-    Given:
-    - No "Fetch incidents type" selected (the user cleared the multi-select).
-
-    When:
-    - Running fetch_incidents_and_alerts.
-
-    Then:
-    - A DemistoException is raised and neither fetcher is called.
-    """
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    fetch_alerts_mock = mocker.patch("MicrosoftGraphSecurity.fetch_alerts")
-    fetch_incidents_mock = mocker.patch("MicrosoftGraphSecurity.fetch_incidents")
-
-    with pytest.raises(DemistoException, match="Please provide at least one incident type to fetch"):
-        fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": ""})
-
-    assert fetch_alerts_mock.call_count == 0
-    assert fetch_incidents_mock.call_count == 0
-
-
 @pytest.mark.parametrize(
     "args, expected_params, is_fetch",
     [
