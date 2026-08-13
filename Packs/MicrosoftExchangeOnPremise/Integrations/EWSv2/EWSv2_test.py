@@ -98,7 +98,10 @@ def test_keys_to_camel_case():
     assert res["thisIsAList"][0] == "listValue"
 
 
-def test_start_logging():
+def test_start_logging(mocker):
+    mocker.patch.object(EWSv2, "is_debug_mode", return_value=True)
+    EWSv2.log_stream = None
+    EWSv2.log_handler = None
     EWSv2.start_logging()
     logging.getLogger().debug("test this")
     assert "test this" in EWSv2.log_stream.getvalue()
@@ -1286,3 +1289,59 @@ def test_get_client_from_params(mocker, manual_username, expected_username):
     assert BaseProtocol.TIMEOUT == 60
     assert client.mark_as_read
     assert not client.insecure
+
+
+def test_start_logging_does_not_leak_exchangelib_output_to_stdout(mocker, capsys):
+    """
+    Given:
+        The instance Log Level is set to debug/verbose (is_debug_mode() is True), and a
+        stdout StreamHandler is attached to the root logger (as the docker runner environment does).
+    When:
+        start_logging() has run and exchangelib emits its HTTP transaction dump via logging
+        (e.g. "Request headers: {...}" and "Response XML: b'<xml/>'").
+    Then:
+        The exchangelib dump lines must NOT appear on real stdout (they would corrupt the
+        returned entry JSON), but they MUST still be captured in the in-memory debug buffer
+        so the error-path "Full debug log" feature keeps working.
+    """
+    import sys
+
+    mocker.patch.object(EWSv2, "is_debug_mode", return_value=True)
+
+    # Reset the module-level logging state so start_logging() re-initializes cleanly.
+    if EWSv2.log_handler is not None:
+        logging.getLogger().removeHandler(EWSv2.log_handler)
+        for logger_name in EWSv2.EXCHANGELIB_LOGGERS:
+            logging.getLogger(logger_name).removeHandler(EWSv2.log_handler)
+    EWSv2.log_stream = None
+    EWSv2.log_handler = None
+
+    # Simulate the docker runner environment: a stdout handler on the root logger.
+    stdout_handler = logging.StreamHandler(stream=sys.stdout)
+    root_logger = logging.getLogger()
+    root_logger.addHandler(stdout_handler)
+    try:
+        EWSv2.start_logging()
+
+        exchangelib_logger = logging.getLogger("exchangelib")
+        exchangelib_logger.debug("Request headers: {'X-Foo': 'bar'}")
+        exchangelib_logger.debug("Response XML: b'<xml/>'")
+
+        captured = capsys.readouterr()
+        # The exchangelib dump must not reach stdout.
+        assert "Request headers: {" not in captured.out
+        assert "Response XML:" not in captured.out
+
+        # But it must still be captured in the in-memory debug buffer.
+        debug_log = EWSv2.log_stream.getvalue()
+        assert "Request headers: {" in debug_log
+        assert "Response XML:" in debug_log
+        assert logging.getLogger("exchangelib").propagate is False
+    finally:
+        root_logger.removeHandler(stdout_handler)
+        if EWSv2.log_handler is not None:
+            logging.getLogger().removeHandler(EWSv2.log_handler)
+            for logger_name in EWSv2.EXCHANGELIB_LOGGERS:
+                logging.getLogger(logger_name).removeHandler(EWSv2.log_handler)
+        EWSv2.log_stream = None
+        EWSv2.log_handler = None
