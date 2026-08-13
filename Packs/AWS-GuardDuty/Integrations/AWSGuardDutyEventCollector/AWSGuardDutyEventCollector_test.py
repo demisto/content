@@ -5,7 +5,6 @@ from unittest.mock import call
 
 import demistomock as demisto
 import pytest
-import AWSGuardDutyEventCollector as gd_collector
 from AWSGuardDutyEventCollector import (
     STALE_BOUNDARY_MARGIN,
     _cursor_second,
@@ -2094,15 +2093,7 @@ def test_finding_without_id_does_not_leak_none_into_last_ids(mocker):
     assert None not in new_last_ids.get("det1", []), "None must never be persisted as a same-second sibling id."
 
 
-class _FrozenDatetime(datetime):
-    """datetime subclass whose utcnow() returns a fixed instant, for deterministic
-    stale-boundary tests (avoids flakiness when a slow CI runner crosses the margin)."""
-
-    _frozen = datetime(2026, 8, 1, 12, 0, 0)
-
-    @classmethod
-    def utcnow(cls):
-        return cls._frozen
+FROZEN_NOW = datetime(2026, 8, 1, 12, 0, 0)
 
 
 @pytest.mark.parametrize(
@@ -2138,9 +2129,9 @@ def test_stale_boundary_margin_edges_with_frozen_clock(mocker, age, should_advan
         AWSGuardDutyEventCollector.get_events — the time-gated fully-deduped
         stale-boundary advance (STALE_BOUNDARY_MARGIN).
     """
-    mocker.patch.object(gd_collector, "datetime", _FrozenDatetime)
+    mocker.patch("AWSGuardDutyEventCollector.datetime.utcnow", return_value=FROZEN_NOW)
 
-    now = _FrozenDatetime.utcnow()
+    now = FROZEN_NOW
     boundary_second = now - age
     cursor_str = boundary_second.strftime("%Y-%m-%dT%H:%M:%S.%f")
 
