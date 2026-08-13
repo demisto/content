@@ -6688,7 +6688,7 @@ def test_container_cluster_list_no_results(mocker):
     """
     Given: A container client returning no clusters.
     When: container_cluster_list is called.
-    Then: It returns empty outputs and a readable output indicating no clusters were found.
+    Then: It returns no outputs and a readable output indicating no clusters were found.
     """
     from GCP import container_cluster_list
 
@@ -6700,7 +6700,7 @@ def test_container_cluster_list_no_results(mocker):
     args = {"project_id": "mock_project_id", "region": "us-central1-c"}
     result = container_cluster_list(mock_creds, args)
 
-    assert result.outputs == []
+    assert result.outputs is None
     assert "No clusters found" in result.readable_output
 
 

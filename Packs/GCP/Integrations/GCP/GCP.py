@@ -1814,13 +1814,17 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
         update_fields["desiredBinaryAuthorization"] = {"enabled": argToBoolean(enable_binary_auth)}
 
     if (enable_http_lb := args.get("enable_http_load_balancing")) is not None:
-        update_fields["desiredAddonsConfig"] = {"httpLoadBalancing": {"disabled": not argToBoolean(enable_http_lb)}}
+        update_fields.setdefault("desiredAddonsConfig", {})["httpLoadBalancing"] = {"disabled": not argToBoolean(enable_http_lb)}
 
     if (enable_dashboard := args.get("enable_kubernetes_dashboard")) is not None:
-        update_fields["desiredAddonsConfig"] = {"kubernetesDashboard": {"disabled": not argToBoolean(enable_dashboard)}}
+        update_fields.setdefault("desiredAddonsConfig", {})["kubernetesDashboard"] = {
+            "disabled": not argToBoolean(enable_dashboard)
+        }
 
     if (enable_net_policy := args.get("enable_network_policy")) is not None:
-        update_fields["desiredAddonsConfig"] = {"networkPolicyConfig": {"disabled": not argToBoolean(enable_net_policy)}}
+        update_fields.setdefault("desiredAddonsConfig", {})["networkPolicyConfig"] = {
+            "disabled": not argToBoolean(enable_net_policy)
+        }
 
     if (enable_stackdriver := args.get("enable_stackdriver_kubernetes")) is not None:
         if argToBoolean(enable_stackdriver):
@@ -1867,11 +1871,7 @@ def container_cluster_list(creds: Credentials, args: dict[str, Any]) -> CommandR
 
     clusters = response.get("clusters", [])
     if not clusters:
-        return CommandResults(
-            readable_output=f"No clusters found for project {project_id} in location {region}.",
-            outputs_prefix="GCP.Container.Clusters",
-            outputs=[],
-        )
+        return CommandResults(readable_output=f"No clusters found for project {project_id} in location {region}.")
 
     hr = tableToMarkdown(
         f"Google Cloud Container Clusters (Project={project_id}, Location={region})",
@@ -1944,11 +1944,7 @@ def container_node_pool_list(creds: Credentials, args: dict[str, Any]) -> Comman
 
     node_pools = response.get("nodePools", [])
     if not node_pools:
-        return CommandResults(
-            readable_output=f"No node pools found for cluster {cluster}.",
-            outputs_prefix="GCP.Container.NodePools",
-            outputs=[],
-        )
+        return CommandResults(readable_output=f"No node pools found for cluster {cluster}.")
 
     hr = tableToMarkdown(
         f"Google Cloud Container Node Pools (Cluster={cluster})",
@@ -2073,11 +2069,7 @@ def container_operation_list(creds: Credentials, args: dict[str, Any]) -> Comman
 
     operations = response.get("operations", [])
     if not operations:
-        return CommandResults(
-            readable_output=f"No operations found for project {project_id} in location {region}.",
-            outputs_prefix="GCP.Container.Operations",
-            outputs=[],
-        )
+        return CommandResults(readable_output=f"No operations found for project {project_id} in location {region}.")
 
     hr = tableToMarkdown(
         f"Google Cloud Container Operations (Project={project_id}, Location={region})",
