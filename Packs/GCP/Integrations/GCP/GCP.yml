@@ -1433,7 +1433,7 @@ script:
       - projectPrivate
       - publicRead
       - publicReadWrite
-      description: A predefined ACL to apply to the bucket.
+      description: The predefined ACL to apply to the bucket.
     - name: default_object_acl
       required: false
       auto: PREDEFINED
@@ -1444,7 +1444,7 @@ script:
       - private
       - projectPrivate
       - publicRead
-      description: A predefined default object ACL to apply to objects added to the bucket.
+      description: The predefined default object ACL to apply to objects added to the bucket.
     - name: uniform_bucket_level_access
       required: false
       auto: PREDEFINED
@@ -1544,7 +1544,7 @@ script:
       - private
       - projectPrivate
       - publicRead
-      description: A predefined ACL to apply to the uploaded object. Cannot be used when Uniform Bucket-Level Access is enabled on the bucket.
+      description: The predefined ACL to apply to the uploaded object. Cannot be used when Uniform Bucket-Level Access is enabled on the bucket.
     outputs:
     - contextPath: GCP.Storage.BucketObject.name
       description: The name of the uploaded object.
@@ -1652,7 +1652,7 @@ script:
       description: The name of the object to delete.
     - name: generation
       required: false
-      description: If present, permanently deletes a specific revision of the object instead of the latest version.
+      description: The specific revision of the object to permanently delete instead of the latest version.
     outputs: []
 
   - name: gcp-storage-bucket-object-policy-delete
@@ -1673,7 +1673,7 @@ script:
       description: The entity to remove from the object's ACL (for example, allUsers, allAuthenticatedUsers, user-test@example.com).
     - name: generation
       required: false
-      description: If present, targets a specific revision of the object.
+      description: The specific revision of the object to target.
     outputs: []
 
   - name: gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action

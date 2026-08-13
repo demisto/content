@@ -381,6 +381,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
+# Safety bounds for API-driven loops, so a misbehaving API cannot cause a command timeout.
+MAX_OBJECT_LIST_PAGES = 100
+MAX_DOWNLOAD_CHUNKS = 10000
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -527,7 +530,7 @@ def _delete_all_bucket_objects(storage_client, bucket_name: str) -> int:
     """
     deleted = 0
     page_token = None
-    while True:
+    for _ in range(MAX_OBJECT_LIST_PAGES):
         request_params = {"bucket": bucket_name, "versions": True, "pageToken": page_token}
         remove_nulls_from_dictionary(request_params)
         response = storage_client.objects().list(**request_params).execute()  # pylint: disable=E1101
@@ -539,6 +542,11 @@ def _delete_all_bucket_objects(storage_client, bucket_name: str) -> int:
         page_token = response.get("nextPageToken")
         if not page_token:
             break
+    if page_token:
+        demisto.debug(
+            f"[GCP: _delete_all_bucket_objects] Reached the maximum page limit ({MAX_OBJECT_LIST_PAGES}) "
+            f"while deleting objects in bucket {bucket_name}. {deleted} objects were deleted."
+        )
     return deleted
 
 
@@ -1979,6 +1987,9 @@ def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> Co
 
     Returns:
         CommandResults: Human-readable confirmation and metadata of the uploaded object.
+
+    Raises:
+        DemistoException: If the War Room entry does not expose a file path and name.
     """
     bucket_name = args["bucket_name"]
     object_name = args["object_name"]
@@ -1986,8 +1997,11 @@ def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> Co
     object_acl = args.get("object_acl")
 
     file = demisto.getFilePath(entry_id)
-    file_path = file["path"]
-    file_name = file["name"]
+    try:
+        file_path = file["path"]
+        file_name = file["name"]
+    except (KeyError, TypeError) as e:
+        raise DemistoException(f"Failed to retrieve the file path or name for entry ID {entry_id}.") from e
 
     media_body = MediaFileUpload(file_path, resumable=True)
     request_params = {
@@ -2025,10 +2039,16 @@ def storage_bucket_object_download(creds: Credentials, args: dict[str, Any]) -> 
 
     Returns:
         dict[str, Any]: A file result entry for the downloaded object.
+
+    Raises:
+        DemistoException: If the download did not complete within MAX_DOWNLOAD_CHUNKS chunks.
     """
     bucket_name = args["bucket_name"]
     object_name = args["object_name"]
-    saved_file_name = args.get("saved_file_name") or object_name.replace("\\", "/").split("/")[-1] or demisto.uniqueFile()
+    requested_file_name = args.get("saved_file_name") or object_name
+    # Keep only the base name so that a value containing path separators cannot write outside
+    # the working directory (for example "../../etc/passwd").
+    saved_file_name = os.path.basename(requested_file_name.replace("\\", "/").rstrip("/")) or demisto.uniqueFile()
 
     storage = GCPServices.STORAGE.build(creds)
     demisto.debug(f"[GCP: storage_bucket_object_download] Downloading {object_name} from bucket {bucket_name}")
@@ -2038,8 +2058,16 @@ def storage_bucket_object_download(creds: Credentials, args: dict[str, Any]) -> 
     with open(file_path, "wb") as file_handle:
         downloader = MediaIoBaseDownload(file_handle, request)
         done = False
-        while not done:
+        for _ in range(MAX_DOWNLOAD_CHUNKS):
             _, done = downloader.next_chunk()
+            if done:
+                break
+
+    if not done:
+        raise DemistoException(
+            f"Reached the maximum chunk limit ({MAX_DOWNLOAD_CHUNKS}) while downloading object {object_name} "
+            f"from bucket {bucket_name}. The downloaded file is incomplete."
+        )
 
     return file_result_existing_file(file_path, saved_file_name)
 

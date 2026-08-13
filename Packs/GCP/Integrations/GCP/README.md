@@ -1692,8 +1692,8 @@ Creates a new Google Cloud Storage (GCS) bucket in the specified project. Requir
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | The name of the bucket to create. | Required |
 | location | The location of the bucket (for example, US, EU, ASIA, us-central1). If not provided, the GCS API default (US) is used. | Optional |
-| bucket_acl | A predefined ACL to apply to the bucket. Possible values are: authenticatedRead, private, projectPrivate, publicRead, publicReadWrite. | Optional |
-| default_object_acl | A predefined default object ACL to apply to objects added to the bucket. Possible values are: authenticatedRead, bucketOwnerFullControl, bucketOwnerRead, private, projectPrivate, publicRead. | Optional |
+| bucket_acl | The predefined ACL to apply to the bucket. Possible values are: authenticatedRead, private, projectPrivate, publicRead, publicReadWrite. | Optional |
+| default_object_acl | The predefined default object ACL to apply to objects added to the bucket. Possible values are: authenticatedRead, bucketOwnerFullControl, bucketOwnerRead, private, projectPrivate, publicRead. | Optional |
 | uniform_bucket_level_access | Whether to enable Uniform Bucket-Level Access (UBLA) on the bucket. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -1769,7 +1769,7 @@ Uploads a War Room file (by entry ID) to a GCS bucket as an object. Required per
 | bucket_name | The name of the bucket to upload the object to. | Required |
 | object_name | The name to give the uploaded object in the bucket. | Required |
 | entry_id | The War Room entry ID of the file to upload. | Required |
-| object_acl | A predefined ACL to apply to the uploaded object. Cannot be used when Uniform Bucket-Level Access is enabled on the bucket. Possible values are: authenticatedRead, bucketOwnerFullControl, bucketOwnerRead, private, projectPrivate, publicRead. | Optional |
+| object_acl | The predefined ACL to apply to the uploaded object. Cannot be used when Uniform Bucket-Level Access is enabled on the bucket. Possible values are: authenticatedRead, bucketOwnerFullControl, bucketOwnerRead, private, projectPrivate, publicRead. | Optional |
 
 #### Context Output
 
@@ -1856,7 +1856,7 @@ Deletes an object from a GCS bucket. Required permission: storage.objects.delete
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | The name of the bucket containing the object. | Required |
 | object_name | The name of the object to delete. | Required |
-| generation | If present, permanently deletes a specific revision of the object instead of the latest version. | Optional |
+| generation | The specific revision of the object to permanently delete instead of the latest version. | Optional |
 
 #### Context Output
 
@@ -1879,7 +1879,7 @@ Removes an ACL entry (entity) from a GCS object's access control list. If Unifor
 | bucket_name | The name of the bucket containing the object. | Required |
 | object_name | The name of the object to remove the ACL entry from. | Required |
 | entity | The entity to remove from the object's ACL (for example, allUsers, allAuthenticatedUsers, user-test@example.com). | Required |
-| generation | If present, targets a specific revision of the object. | Optional |
+| generation | The specific revision of the object to target. | Optional |
 
 #### Context Output
 

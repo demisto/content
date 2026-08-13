@@ -6992,6 +6992,33 @@ def test_storage_bucket_object_upload_api_error(mocker):
         storage_bucket_object_upload(creds, args)
 
 
+@pytest.mark.parametrize(
+    "file_path_result",
+    [
+        {"name": "f.txt"},  # missing "path"
+        {"path": "/tmp/f"},  # missing "name"
+        {},  # empty entry
+        None,  # entry could not be resolved at all
+    ],
+)
+def test_storage_bucket_object_upload_missing_file_path_keys(mocker, file_path_result):
+    """
+    Given: A War Room entry that does not expose both a path and a name.
+    When: storage_bucket_object_upload is called.
+    Then: A DemistoException naming the entry ID is raised instead of an unhandled
+          KeyError or TypeError.
+    """
+    from GCP import DemistoException, storage_bucket_object_upload
+
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mocker.Mock())
+    mocker.patch("GCP.demisto.getFilePath", return_value=file_path_result)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entry_id": "1@1"}
+    with pytest.raises(DemistoException, match="Failed to retrieve the file path or name for entry ID 1@1"):
+        storage_bucket_object_upload(creds, args)
+
+
 # ---------------------------------------------------------------------------
 # gcp-storage-bucket-object-download
 # ---------------------------------------------------------------------------
@@ -7093,6 +7120,72 @@ def test_storage_bucket_object_download_api_error(mocker):
     creds = mocker.Mock(spec=Credentials)
     with pytest.raises(Exception, match="API Error"):
         storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+
+@pytest.mark.parametrize(
+    "saved_file_name, expected",
+    [
+        ("../../etc/passwd", "passwd"),
+        ("..\\..\\windows\\system32\\evil.dll", "evil.dll"),
+        ("/absolute/path/file.txt", "file.txt"),
+        ("nested/dir/report.csv", "report.csv"),
+    ],
+)
+def test_storage_bucket_object_download_sanitizes_saved_file_name(mocker, saved_file_name, expected):
+    """
+    Given: A saved_file_name containing path separators or traversal segments.
+    When: storage_bucket_object_download is called.
+    Then: Only the base name is used, so the file cannot be written outside the working
+          directory.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, True)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mocker.patch("GCP.open", mocker.mock_open())
+    mock_file_result = mocker.patch("GCP.file_result_existing_file", return_value={"File": expected})
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_download(
+        creds,
+        {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "saved_file_name": saved_file_name},
+    )
+
+    assert mock_file_result.call_args[0][1] == expected
+    # The written path stays inside the working directory.
+    assert mock_file_result.call_args[0][0] == os.path.join(os.getcwd(), expected)
+
+
+def test_storage_bucket_object_download_stops_at_max_chunks(mocker):
+    """
+    Given: A downloader that never reports done.
+    When: storage_bucket_object_download is called.
+    Then: The loop stops at MAX_DOWNLOAD_CHUNKS and an error is raised instead of
+          looping forever until the command times out.
+    """
+    from GCP import MAX_DOWNLOAD_CHUNKS, DemistoException, storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, False)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mocker.patch("GCP.open", mocker.mock_open())
+    mock_file_result = mocker.patch("GCP.file_result_existing_file")
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(DemistoException, match="maximum chunk limit"):
+        storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+    assert mock_downloader.next_chunk.call_count == MAX_DOWNLOAD_CHUNKS
+    mock_file_result.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
@@ -7290,6 +7383,29 @@ def test_delete_all_bucket_objects_empty_bucket(mocker):
 
     assert _delete_all_bucket_objects(mock_storage, "b1") == 0
     mock_objects.delete.assert_not_called()
+
+
+def test_delete_all_bucket_objects_stops_at_max_pages(mocker):
+    """
+    Given: A listing API that always returns another nextPageToken.
+    When: _delete_all_bucket_objects is called.
+    Then: It stops after MAX_OBJECT_LIST_PAGES pages instead of paging forever until
+          the command times out.
+    """
+    from GCP import MAX_OBJECT_LIST_PAGES, _delete_all_bucket_objects
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "generation": "1"}],
+        "nextPageToken": "always-more",
+    }
+
+    deleted = _delete_all_bucket_objects(mock_storage, "b1")
+
+    assert mock_objects.list.call_count == MAX_OBJECT_LIST_PAGES
+    assert deleted == MAX_OBJECT_LIST_PAGES
 
 
 # ---------------------------------------------------------------------------
