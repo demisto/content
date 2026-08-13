@@ -25,7 +25,7 @@ In order to use the collector, use the [XDRC (XDR Collector)](#xdrc-xdr-collecto
 
 ### XDRC (XDR Collector)
 
-To create or configure the Amazon S3 collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Documentation/Ingest-network-flow-logs-from-Amazon-S3).
+To create or configure the Amazon S3 collector, use the information described [here](https://cortex-docs.paloaltonetworks.com/cortex-xdr-5.x/configure-cortex-xdr/cortex-xdr-data-sources/vendor-specific-data-sources/amazon/amazon-s3/ingest-network-flow-logs-from-amazon-s3).
 
 You can configure the specific vendor and product for this instance.
 
@@ -45,6 +45,6 @@ You can configure the specific vendor and product for this instance.
    | `Log Format`  | Enter **Raw**.
    | `Compression` | Enter **uncompressed**.
 
-For additional information, see [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3).
+For additional information, see [here](https://cortex-docs.paloaltonetworks.com/cortex-xsiam/configure-cortex-xsiam/cortex-xsiam-data-sources/vendor-specific-data-sources-and-connectors/amazon/amazon-s3/ingest-generic-logs-from-amazon-s3).
 
 </~XSIAM>
