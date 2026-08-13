@@ -26,6 +26,10 @@ class Brands(StrEnum):
     def normalize(cls, value: str):
         _ALIASES = {
             "Microsoft Defender ATP": "Microsoft Defender Advanced Threat Protection",
+            # On the unified platform, get-endpoint-data reports Core endpoints under the
+            # built-in brand "Builtin". Map it to "Cortex Core - IR" so the correct handler
+            # is selected and the legacy Core quarantine commands are used.
+            "Builtin": cls.CORTEX_CORE_IR.value,
         }
         """Normalize a brand string (alias → canonical enum)."""
         canonical = _ALIASES.get(value, value)

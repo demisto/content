@@ -10353,21 +10353,23 @@ if 'requests' in sys.modules:
             """
             try:
                 method_whitelist = "allowed_methods" if hasattr(
-                    Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
-                whitelist_kawargs = {
+                    Retry.DEFAULT, "allowed_methods"
+                ) else "method_whitelist"  # type: ignore[attr-defined]
+                dynamic_kwargs = {
                     method_whitelist: frozenset(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
                 }
+                if hasattr(Retry.DEFAULT, "backoff_jitter"):
+                    dynamic_kwargs["backoff_jitter"] = backoff_jitter
                 retry = Retry(
                     total=retries,
                     read=retries,
                     connect=retries,
                     backoff_factor=backoff_factor,
-                    backoff_jitter=backoff_jitter,
                     status=retries,
                     status_forcelist=status_list_to_retry,
                     raise_on_status=raise_on_status,
                     raise_on_redirect=raise_on_redirect,
-                    **whitelist_kawargs  # type: ignore[arg-type]
+                    **dynamic_kwargs  # type: ignore[arg-type]
                 )
                 http_adapter = HTTPAdapter(max_retries=retry)
 
