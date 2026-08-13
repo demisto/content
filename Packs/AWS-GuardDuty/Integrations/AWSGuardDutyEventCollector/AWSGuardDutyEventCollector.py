@@ -1,5 +1,5 @@
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, UTC
 from typing import TYPE_CHECKING
 
 import demistomock as demisto  # noqa: F401
@@ -17,7 +17,7 @@ MAX_IDS_PER_REQ = 50
 MAX_RESULTS = 50
 GD_SEVERITY_DICT = {"Low": 1, "Medium": 4, "High": 7}
 
-# XSUP-71079: a fully-deduped cursor boundary second is only escaped once it is
+# A fully-deduped cursor boundary second is only escaped once it is
 # at least this far in the past relative to the fetch start time. This keeps a
 # still-current second pinned (so a genuine later same-second update is still
 # catchable) while breaking a boundary that has clearly gone stale.
@@ -58,7 +58,7 @@ def _normalize_last_ids_entry(value) -> set[str]:
     """Coerce a stored ``last_ids`` value into a set of ids.
 
     The integration historically stored ``last_ids[detector_id]`` as a single
-    string (the last finding id seen). To fix XSUP-67097 we now track every
+    string (the last finding id seen). We now track every
     finding id sharing the cursor's ``UpdatedAt`` second, which means the
     value is conceptually a set. ``demisto.setLastRun`` serializes as JSON,
     so the on-disk representation must be a ``list``. This helper normalizes
@@ -89,7 +89,7 @@ def _build_finding_criterion(updated_at: Optional[datetime], severity: str, excl
         updated_at: Inclusive lower bound on ``updatedAt``.
         severity: Minimum severity label (Low/Medium/High).
         exclude_archived: When ``True``, adds ``service.archived = false`` so suppressed/archived
-            findings (XSUP-67097 / XSUP-71079 complaint #2) are not re-fetched.
+            findings are not re-fetched.
 
     Returns:
         The criterion dict.
@@ -110,32 +110,46 @@ def _event_updated_at(event: dict) -> Any:
 
 
 def _cursor_second(value: Any) -> datetime:
-    """Return the whole-second (microseconds truncated) datetime for a timestamp.
+    """Return the whole-second (microseconds truncated), naive-UTC datetime for a timestamp.
 
-    XSUP-73410: GuardDuty findings carry MILLISECOND-precision ``UpdatedAt``
+    GuardDuty findings carry MILLISECOND-precision ``UpdatedAt``
     values, and several findings routinely share the same whole second while
     differing in their milliseconds. The fetch cursor and the same-second
-    sibling dedup (XSUP-67097 / 71079 / 72455) are defined at SECOND resolution,
+    sibling dedup are defined at SECOND resolution,
     so all comparisons and grouping must truncate sub-second precision. Doing so
     keeps the cursor deterministic (independent of AWS ``get_findings`` ordering)
     and lets every finding sharing the cursor second be recognized as an
     already-seen sibling on the inclusive ``Gte`` re-query.
 
+    Timezone normalization: values reach this function from two sources with
+    different awareness. ``first_fetch`` (via ``arg_to_datetime``) is tz-AWARE for
+    absolute dates, while finding timestamps go through ``parse_date_string``
+    (``strptime`` with no ``%z``) and are always NAIVE. Comparing the two (dedup
+    equality, and the stale-boundary ``<`` check against ``datetime.utcnow()``,
+    which is naive) would either never match (silent re-ingestion) or raise
+    ``TypeError: can't compare offset-naive and offset-aware datetimes``. To make
+    every cursor value consistently comparable, a tz-aware input is first
+    CONVERTED to UTC and THEN stripped of ``tzinfo`` (order matters — dropping
+    tzinfo before converting would shift, e.g., a ``+05:00`` cursor by 5 hours).
+
     Args:
-        value: A timestamp string or a ``datetime``. Every GuardDuty finding
-            carries a real ``UpdatedAt``/``CreatedAt``, so a value is always present.
+        value: A timestamp string or a ``datetime`` (naive or tz-aware). Every
+            GuardDuty finding carries a real ``UpdatedAt``/``CreatedAt``, so a
+            value is always present.
 
     Returns:
-        The corresponding ``datetime`` truncated to whole seconds.
+        The corresponding naive-UTC ``datetime`` truncated to whole seconds.
 
     Raises:
         ValueError: If ``value`` is not a parseable timestamp. This is not
             expected from real GuardDuty data and surfaces loudly rather than
             silently corrupting the fetch cursor.
     """
-    if isinstance(value, datetime):
-        return value.replace(microsecond=0)
-    return parse_date_string(value).replace(microsecond=0)
+    dt = value if isinstance(value, datetime) else parse_date_string(value)
+    if dt.tzinfo is not None:
+        # Convert to UTC first, then drop tzinfo so the result is naive-UTC.
+        dt = dt.astimezone(UTC).replace(tzinfo=None)
+    return dt.replace(microsecond=0)
 
 
 def get_events(
@@ -172,7 +186,7 @@ def get_events(
             Each value is a ``list[str]`` (JSON-serializable for setLastRun).
         new_collect_from (dict): The new collect_from dict, expected to receive as collect_from input in the next run.
 
-    Note (XSUP-71079): The fetch cursor is second-resolution and the ``updatedAt`` filter is inclusive
+    Note: The fetch cursor is second-resolution and the ``updatedAt`` filter is inclusive
     (``Gte``). To avoid silently skipping findings, the cursor is NEVER advanced into a second that was
     only partially consumed because ``limit`` was reached. When a fetch is truncated mid-second the cursor
     is rolled back to the last fully-drained second (and its sibling ids are persisted) so the next run
