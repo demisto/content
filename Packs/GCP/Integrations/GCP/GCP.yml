@@ -974,27 +974,27 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
-      description: GCP region.
+      description: The GCP location (zone or region) of the cluster.
     - name: resource_name
       required: true
-      description: Name of the GKE cluster.
+      description: The name of the GKE cluster.
     - name: enable_intra_node_visibility
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable intra-node visibility.
+      description: Whether to enable intra-node visibility on the cluster.
     - name: enable_master_authorized_networks
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable Master Authorized Networks.
+      description: Whether to enable Master Authorized Networks on the cluster.
     - name: cidrs
       description: |
-        Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
+        The comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
         If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
       isArray: true
     - name: enable_binary_authorization
@@ -1003,49 +1003,49 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Enable Binary Authorization on the cluster.
+      description: Whether to enable Binary Authorization on the cluster.
     - name: enable_http_load_balancing
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable the HTTP load balancing addon on the cluster.
+      description: Whether to enable the HTTP load balancing addon on the cluster.
     - name: enable_kubernetes_dashboard
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable the Kubernetes dashboard addon on the cluster.
+      description: Whether to enable the Kubernetes dashboard addon on the cluster.
     - name: enable_network_policy
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable the network policy addon on the cluster.
+      description: Whether to enable the network policy addon on the cluster.
     - name: enable_basic_auth
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable basic (username/password) authentication on the cluster. Enabling creates an "admin" user with a generated password; disabling clears the username. Note that basic authentication is disabled by default on modern GKE clusters.
+      description: Whether to enable basic (username/password) authentication on the cluster. Enabling creates an "admin" user with a generated password; disabling clears the username. Note that basic authentication is disabled by default on modern GKE clusters.
     - name: enable_legacy_authorization
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable legacy ABAC authorization on the cluster.
+      description: Whether to enable legacy ABAC authorization on the cluster.
     - name: enable_stackdriver_kubernetes
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Enable Stackdriver Kubernetes monitoring and logging on the cluster.
+      description: Whether to enable Stackdriver Kubernetes monitoring and logging on the cluster.
     outputs:
     - contextPath: GCP.Container.Operations.name
       description: The name of the GKE cluster.
@@ -1090,7 +1090,7 @@ script:
       description: The cluster’s IPv4 CIDR block.
       type: String
     - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
-      description: List of authorized CIDR blocks that can access the GKE cluster master.
+      description: The list of authorized CIDR blocks that can access the GKE cluster master.
       type: Unknown
     - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
       description: Whether master authorized networks are enabled for the cluster.
@@ -1108,7 +1108,7 @@ script:
       description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
       type: String
     - contextPath: GCP.Container.Operations.nodePools
-      description: A list of node pools in the cluster, with their configuration and security settings.
+      description: The list of node pools in the cluster, with their configuration and security settings.
       type: Unknown
     - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
       description: Whether private nodes are enabled in the cluster.
@@ -1247,14 +1247,14 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether node auto-repair is enabled for the node pool.
+      description: Whether to enable node auto-repair for the node pool.
     - name: auto_upgrade
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether node auto-upgrade is enabled for the node pool.
+      description: Whether to enable node auto-upgrade for the node pool.
     outputs:
     - contextPath: GCP.Container.Operations.name
       description: The name of the operation.
@@ -1268,6 +1268,12 @@ script:
     - contextPath: GCP.Container.Operations.zone
       description: The zone in which the operation is taking place.
       type: String
+    - contextPath: GCP.Container.Operations.startTime
+      description: The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z").
+      type: Date
+    - contextPath: GCP.Container.Operations.endTime
+      description: The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z").
+      type: Date
   - name: gcp-container-operation-list
     description: "Lists all GKE operations in a project for the specified location. Required permissions: container.operations.list."
     arguments:
@@ -1290,6 +1296,12 @@ script:
     - contextPath: GCP.Container.Operations.zone
       description: The zone in which the operation is taking place.
       type: String
+    - contextPath: GCP.Container.Operations.startTime
+      description: The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z").
+      type: Date
+    - contextPath: GCP.Container.Operations.endTime
+      description: The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z").
+      type: Date
   - name: gcp-container-operation-get
     description: "Gets the details of a specific GKE operation. Required permissions: container.operations.get."
     arguments:
@@ -1315,6 +1327,12 @@ script:
     - contextPath: GCP.Container.Operations.zone
       description: The zone in which the operation is taking place.
       type: String
+    - contextPath: GCP.Container.Operations.startTime
+      description: The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z").
+      type: Date
+    - contextPath: GCP.Container.Operations.endTime
+      description: The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z").
+      type: Date
   - name: gcp-container-operation-cancel
     description: "Cancels a specific GKE operation. Required permissions: container.operations.update."
     arguments:

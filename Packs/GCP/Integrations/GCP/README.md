@@ -144,18 +144,18 @@ Configures security settings for GKE clusters, including access controls and vis
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| region | GCP region. | Required |
-| resource_name | Name of the GKE cluster. | Required |
-| enable_intra_node_visibility | Enable intra-node visibility. Possible values are: true, false. | Optional |
-| enable_master_authorized_networks | Enable Master Authorized Networks. Possible values are: true, false. | Optional |
-| cidrs | Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
-| enable_binary_authorization | Enable Binary Authorization on the cluster. Possible values are: true, false. | Optional |
-| enable_http_load_balancing | Enable the HTTP load balancing addon on the cluster. Possible values are: true, false. | Optional |
-| enable_kubernetes_dashboard | Enable the Kubernetes dashboard addon on the cluster. Possible values are: true, false. | Optional |
-| enable_network_policy | Enable the network policy addon on the cluster. Possible values are: true, false. | Optional |
-| enable_basic_auth | Enable basic (username/password) authentication on the cluster. Enabling creates an "admin" user with a generated password; disabling clears the username. Note that basic authentication is disabled by default on modern GKE clusters. Possible values are: true, false. | Optional |
-| enable_legacy_authorization | Enable legacy ABAC authorization on the cluster. Possible values are: true, false. | Optional |
-| enable_stackdriver_kubernetes | Enable Stackdriver Kubernetes monitoring and logging on the cluster. Possible values are: true, false. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| resource_name | The name of the GKE cluster. | Required |
+| enable_intra_node_visibility | Whether to enable intra-node visibility on the cluster. Possible values are: true, false. | Optional |
+| enable_master_authorized_networks | Whether to enable Master Authorized Networks on the cluster. Possible values are: true, false. | Optional |
+| cidrs | The comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+| enable_binary_authorization | Whether to enable Binary Authorization on the cluster. Possible values are: true, false. | Optional |
+| enable_http_load_balancing | Whether to enable the HTTP load balancing addon on the cluster. Possible values are: true, false. | Optional |
+| enable_kubernetes_dashboard | Whether to enable the Kubernetes dashboard addon on the cluster. Possible values are: true, false. | Optional |
+| enable_network_policy | Whether to enable the network policy addon on the cluster. Possible values are: true, false. | Optional |
+| enable_basic_auth | Whether to enable basic (username/password) authentication on the cluster. Enabling creates an "admin" user with a generated password; disabling clears the username. Note that basic authentication is disabled by default on modern GKE clusters. Possible values are: true, false. | Optional |
+| enable_legacy_authorization | Whether to enable legacy ABAC authorization on the cluster. Possible values are: true, false. | Optional |
+| enable_stackdriver_kubernetes | Whether to enable Stackdriver Kubernetes monitoring and logging on the cluster. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -175,13 +175,13 @@ Configures security settings for GKE clusters, including access controls and vis
 | GCP.Container.Operations.enableBinaryAuthorization | Boolean | Whether Binary Authorization is enabled for the cluster. |
 | GCP.Container.Operations.enableLegacyABAC | Boolean | Whether legacy ABAC is enabled for the cluster. |
 | GCP.Container.Operations.clusterIpv4Cidr | String | The cluster’s IPv4 CIDR block. |
-| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | Unknown | List of authorized CIDR blocks that can access the GKE cluster master. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | Unknown | The list of authorized CIDR blocks that can access the GKE cluster master. |
 | GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled | Boolean | Whether master authorized networks are enabled for the cluster. |
 | GCP.Container.Operations.network | String | The network to which the GKE cluster belongs. |
 | GCP.Container.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
 | GCP.Container.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
 | GCP.Container.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
-| GCP.Container.Operations.nodePools | Unknown | A list of node pools in the cluster, with their configuration and security settings. |
+| GCP.Container.Operations.nodePools | Unknown | The list of node pools in the cluster, with their configuration and security settings. |
 
 ### gcp-container-cluster-list
 
@@ -306,8 +306,8 @@ Enables or disables the auto-repair and/or auto-upgrade management features of a
 | region | The GCP location (zone or region) of the cluster. | Required |
 | cluster | The name of the GKE cluster. | Required |
 | node_pool | The name of the node pool. | Required |
-| auto_repair | Whether node auto-repair is enabled for the node pool. Possible values are: true, false. | Optional |
-| auto_upgrade | Whether node auto-upgrade is enabled for the node pool. Possible values are: true, false. | Optional |
+| auto_repair | Whether to enable node auto-repair for the node pool. Possible values are: true, false. | Optional |
+| auto_upgrade | Whether to enable node auto-upgrade for the node pool. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -317,6 +317,8 @@ Enables or disables the auto-repair and/or auto-upgrade management features of a
 | GCP.Container.Operations.operationType | String | The type of the operation. |
 | GCP.Container.Operations.status | String | The current status of the operation. |
 | GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
+| GCP.Container.Operations.startTime | Date | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | Date | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
 
 ### gcp-container-operation-list
 
@@ -342,6 +344,8 @@ Lists all GKE operations in a project for the specified location. Required permi
 | GCP.Container.Operations.operationType | String | The type of the operation. |
 | GCP.Container.Operations.status | String | The current status of the operation. |
 | GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
+| GCP.Container.Operations.startTime | Date | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | Date | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
 
 ### gcp-container-operation-get
 
@@ -368,6 +372,8 @@ Gets the details of a specific GKE operation. Required permissions: container.op
 | GCP.Container.Operations.operationType | String | The type of the operation. |
 | GCP.Container.Operations.status | String | The current status of the operation. |
 | GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
+| GCP.Container.Operations.startTime | Date | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | Date | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
 
 ### gcp-container-operation-cancel
 
