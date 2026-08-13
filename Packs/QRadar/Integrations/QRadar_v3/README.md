@@ -1776,7 +1776,7 @@ Adds or updates an element in a reference set.
 | ref_name | The name of the reference set to add or update an element in. Reference names can be found by the 'Name' field in the 'qradar-reference-sets-list' command. | Required |
 | value | Comma-separated list of the values to add or update in the reference set. If the values are dates, the supported date formats are: epoch, ISO, and time range (&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days.). | Required |
 | source | An indication of where the data originated. Default is reference data api. | Optional |
-| date_value | True if the specified value  type was date. Possible values are: true, false. | Optional |
+| date_value | True if the specified value type was date. Possible values are: true, false. | Optional |
 | fields | Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "name,timeout_type". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--reference_data-sets-name-POST.html. | Optional |
 | quiet_mode | If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large. Possible values are: true, false. | Optional |
 
@@ -3756,7 +3756,7 @@ Retrieves a list of reference maps.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.ReferenceMaps.CollectionID | Number | The Collection id of the Reference map. |
+| QRadar.ReferenceMaps.CollectionID | Number | The collection ID of the reference map. |
 | QRadar.ReferenceMaps.NumberOfElements | Number | The number of elements in the reference map. |
 | QRadar.ReferenceMaps.TimeToLive | String | The time left to live for the reference. |
 | QRadar.ReferenceMaps.Data.LastSeen | Date | The date when this data was last seen in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
@@ -3766,6 +3766,7 @@ Retrieves a list of reference maps.
 | QRadar.ReferenceMaps.Data.Key | String | The data map entry key. |
 | QRadar.ReferenceMaps.CreationTime | Date | The date when the reference map was created in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
 | QRadar.ReferenceMaps.Name | String | The name of the reference map. |
+| QRadar.ReferenceMaps.Namespace | String | The namespace of the reference map. Possible values: "PRIVATE", "SHARED", "TENANT". |
 | QRadar.ReferenceMaps.ElementType | String | The type of the elements in the reference map. |
 
 #### Command example
@@ -3808,7 +3809,7 @@ Retrieves a list of reference maps.
 >
 > |Name|ElementType|Namespace|CollectionID|TimeoutType|NumberOfElements|ValueLabel|CreationTime|TimeToLive|
 > |---|---|---|---|---|---|---|---|---|
-> | Monitoring Identifier Groups | ALN | SHARED | 145 | LAST_SEEN | 6 | Log Source Group | 2025-06-03T07:15:04.824000> +00:00 |  |
+> | Monitoring Identifier Groups | ALN | SHARED | 145 | LAST_SEEN | 6 | Log Source Group | 2025-06-03T07:15:04.824000+00:00 |  |
 > | Monitoring Identifier Gaps | NUM | SHARED | 136 | UNKNOWN | 3 |  | 2025-05-14T15:12:07.932000+00:00 |  |
 
 #### Command example
@@ -3870,7 +3871,7 @@ Retrieves a list of reference maps.
 > |---|---|---|---|---|
 > | 2026-02-10T13:22:50.372000+00:00 | Key1 | 2026-02-10T13:22:50.372000+00:00 | reference data api | 1234.0 |
 > | 2026-02-10T13:27:57.647000+00:00 | Key2 | 2026-02-10T13:27:57.647000+00:00 | reference data api | 4567.0 |
-> | 2026-08-07T06:29:06.602000+00:00 | demoKey | 2026-08-12T06:30:15.537000+00:00 | reference data api | 12345.0 |
+> | 2026-08-07T06:29:06.602000+00:00 | demoKey | 2026-08-11T10:40:15.379000+00:00 | reference data api | 12345.0 |
 
 ### qradar-reference-map-value-upsert
 
@@ -3894,16 +3895,16 @@ Adds or updates an element in a reference map.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.ReferenceMaps.CollectionID | Number | The Collection id of the Reference map. |
+| QRadar.ReferenceMaps.CollectionID | Number | The collection ID of the reference map. |
 | QRadar.ReferenceMaps.CreationTime | Date | The date when the reference map was created in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
 | QRadar.ReferenceMaps.ElementType | String | The type of the elements in the reference map. |
-| QRadar.ReferenceMaps.KeyLabel | String | The label of the the that was added or updated. |
+| QRadar.ReferenceMaps.KeyLabel | String | The label of the key that was added or updated. |
 | QRadar.ReferenceMaps.Name | String | The name of the reference map. |
 | QRadar.ReferenceMaps.Namespace | String | The namespace of the reference map. Possible values: "PRIVATE", "SHARED", "TENANT". |
 | QRadar.ReferenceMaps.NumberOfElements | Number | The number of elements in the reference map. |
-| QRadar.ReferenceMaps.TimeToLive | unknown | The time left to live for the reference. |
+| QRadar.ReferenceMaps.TimeToLive | String | The time left to live for the reference. |
 | QRadar.ReferenceMaps.TimeoutType | String | The timeout type of the reference map. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN". |
-| QRadar.ReferenceMaps.ValueLabel | String | The label data value that was added or updated. |
+| QRadar.ReferenceMaps.ValueLabel | String | The label of the data value that was added or updated. |
 
 #### Command example
 

@@ -3684,7 +3684,7 @@ def qradar_reference_maps_list_command(client: Client, args: dict) -> CommandRes
     final_outputs = sanitize_outputs(outputs, REFERENCE_MAPS_RAW_FORMATTED)
     headers = ["Name", "ElementType", "Namespace", "CollectionID", "TimeoutType", "NumberOfElements", "CreationTime"]
     readable = tableToMarkdown("Reference Maps List", final_outputs, headers, removeNull=True)
-    if ref_name:
+    if ref_name and final_outputs:
         readable = f'{readable}\n{tableToMarkdown("Reference Map Data", final_outputs[0].get("Data",[]), removeNull=True)}'
 
     return CommandResults(
@@ -3800,9 +3800,10 @@ def qradar_reference_map_value_upsert_command(client: Client, args: dict[str, An
     """
     Update or insert new value to a reference map from QRadar service.
     possible arguments:
-    - ref_name (Required): The reference name to insert/update a value for.
+    - ref_name (Required): The name of the reference map to insert/update a value for.
     - value (Required): The value to be inserted/updated.
     - key: The key to update.
+    - source: An indication of where the data originated. Default is reference data api.
     Args:
         client (Client): QRadar client to perform the API call.
         args (Dict): Demisto args.
