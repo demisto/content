@@ -127,15 +127,15 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'drive': To get a list of all drives in your site, use the **msgraph-list-drives-in-site** command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': To get a list of all sites, use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
         The ID of the item to delete.
-        To get the ID of the file you want to delete, use the msgraph-list-drive-content command.
+        To get the ID of the file you want to delete, use the **msgraph-list-drive-content** command.
       name: item_id
       required: true
     description: Deletes an item from OneDrive.
@@ -152,15 +152,15 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'drive': To get a list of all drives in your site, use the **msgraph-list-drives-in-site** command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': To get a list of all sites, use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
         The ID of the folder in which to upload the file.
-        To get the ID of a folder, use the msgraph-list-drive-content command.
+        To get the ID of a folder, use the **msgraph-list-drive-content** command.
       name: parent_id
       required: true
     - description: The name of the file to upload.
@@ -250,15 +250,15 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'drive': To get a list of all drives in your site, use the **msgraph-list-drives-in-site** command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': To get a list of all sites, use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
         The MS Graph item ID of the file you want to replace.
-        To get the ID of the file you want to replace, use the msgraph-list-drive-content command.
+        To get the ID of the file you want to replace, use the **msgraph-list-drive-content** command.
       name: item_id
       required: true
     - description: The Cortex XSOAR entry ID of the new file that will replace the current file.
@@ -345,16 +345,16 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'drive': To get a list of all drives in your site, use the **msgraph-list-drives-in-site** command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': To get a list of all sites, use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
         The ID of the parent in which to upload the new folder.
         Parent can be either 'root' or another folder.
-        To get the required folder ID, use the msgraph-list-drive-content command.
+        To get the required folder ID, use the **msgraph-list-drive-content** command.
       name: parent_id
       required: true
     - description: The name of the new folder.
@@ -423,7 +423,7 @@ script:
   - arguments:
     - description: |-
         The ID of the site for which to return available drive resources.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+        To find a list of all sites, use the **msgraph-list-sharepoint-sites** command.
       name: site_id
     - description: The maximum number of results to return.
       name: limit
@@ -485,9 +485,9 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'drive': To get a list of all drives in your site, use the **msgraph-list-drives-in-site** command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': To get a list of all sites, use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
@@ -497,7 +497,7 @@ script:
         Passing a folder ID retrieves files from a specified folder.
         The default is 'root': It retrieves the content in the root of the drive.
 
-        To get the required folder ID, use the msgraph-list-drive-content command and leave the argument empty in order to get a list of folders that are located in the root.
+        To get the required folder ID, use the **msgraph-list-drive-content** command and leave the argument empty in order to get a list of folders that are located in the root.
 
         If your folder is nested inside another folder, pass the parent ID found when running the msgraph-list-drive-content command without an 'item_id' in this argument to get the required folder ID.
       name: item_id
@@ -624,15 +624,15 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'drive': To get a list of all drives in your site, use the **msgraph-list-drives-in-site** command.
         For resource type 'group': To get a list of all groups that exists, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': To get a list of all sites, use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': To get a list of all users that exists, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
         The MS Graph item ID.
-        To get the ID of the file you want to download, use the msgraph-list-drive-content command.
+        To get the ID of the file you want to download, use the **msgraph-list-drive-content** command.
       name: item_id
       required: true
     - name: file_name
@@ -684,7 +684,7 @@ script:
       defaultValue: 50
     - description: |-
         The ID of the site. Required if site_name is not provided.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+        To find a list of all sites, use the **msgraph-list-sharepoint-sites** command.
       name: site_id
     - description: The name of the site. Required if site_id is not provided.
       name: site_name
@@ -715,7 +715,7 @@ script:
   - arguments:
     - description: |-
         The ID of the site. Required if site_name is not provided.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+        To find a list of all sites, use the **msgraph-list-sharepoint-sites** command.
       name: site_id
     - description: The name of the site. Required if site_id is not provided.
       name: site_name
@@ -743,7 +743,7 @@ script:
       name: site_name
     - description: |-
         The ID of the site. Required if site_name is not provided.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+        To find a list of all sites, use the **msgraph-list-sharepoint-sites** command.
       name: site_id
     - description: The unique identifier of the permission to update.
       name: permission_id
@@ -764,7 +764,7 @@ script:
   - arguments:
     - description: |-
         Unique identifier for SharePoint site. Required if site_name is not provided.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+        To find a list of all sites, use the **msgraph-list-sharepoint-sites** command.
       name: site_id
     - description: The name of the site. Required if site_id is not provided.
       name: site_name
@@ -789,20 +789,20 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.
+        For resource type 'drives': use the **msgraph-list-drives-in-site** command to retrieve drive IDs.
         For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
         The ID of the driveItem to update.
-        To get the ID, use the msgraph-list-drive-content command.
+        To get the ID, use the **msgraph-list-drive-content** command.
       name: item_id
       required: true
     - description: |-
         New parent folder ID for a move operation. Sets parentReference.id in the request body.
-        To get a folder ID, use the msgraph-list-drive-content command.
+        To get a folder ID, use the **msgraph-list-drive-content** command.
       name: new_parent_id
     - description: |-
         New parent drive ID for a cross-drive move. Sets parentReference.driveId in the request body.
@@ -879,20 +879,20 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.
+        For resource type 'drives': use the **msgraph-list-drives-in-site** command to retrieve drive IDs.
         For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
         The ID of the source driveItem to copy.
-        To get the ID, use the msgraph-list-drive-content command.
+        To get the ID, use the **msgraph-list-drive-content** command.
       name: item_id
       required: true
     - description: |-
         Destination parent folder ID. Sets parentReference.id in the request body.
-        To get a folder ID, use the msgraph-list-drive-content command.
+        To get a folder ID, use the **msgraph-list-drive-content** command.
       name: destination_parent_id
     - description: |-
         Destination drive ID. Sets parentReference.driveId in the request body.
@@ -941,15 +941,15 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.
+        For resource type 'drives': use the **msgraph-list-drives-in-site** command to retrieve drive IDs.
         For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
         The ID of the driveItem whose sharing permissions to list.
-        To get the ID, use the msgraph-list-drive-content command.
+        To get the ID, use the **msgraph-list-drive-content** command.
       name: item_id
       required: true
     - description: The maximum number of permissions to return per page. Sets the $top query parameter.
@@ -1030,15 +1030,15 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.
+        For resource type 'drives': use the **msgraph-list-drives-in-site** command to retrieve drive IDs.
         For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
     - description: |-
         The ID of the driveItem whose permission to delete.
-        To get the ID, use the msgraph-list-drive-content command.
+        To get the ID, use the **msgraph-list-drive-content** command.
       name: item_id
       required: true
     - description: |-
@@ -1069,7 +1069,7 @@ script:
     name: msgraph-driveitem-metadata-get
     arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Required unless share_url is used.
+      description: The MS Graph resource. Required unless `share_url` is used.
       name: object_type
       predefined:
       - drives
@@ -1078,25 +1078,25 @@ script:
       - users
       defaultValue: sites
     - description: |-
-        MS Graph resource ID. Required unless share_url is used.
-        For resource type 'drives': use the msgraph-list-drives-in-site command to retrieve drive IDs.
+        MS Graph resource ID. Required unless `share_url` is used.
+        For resource type 'drives': use the **msgraph-list-drives-in-site** command to retrieve drive IDs.
         For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
     - description: |-
         The ID of the driveItem whose metadata to retrieve.
-        Provide exactly one of item_id, item_path, or share_url.
-        To get the ID, use the msgraph-list-drive-content command.
+        Provide exactly one of `item_id`, `item_path`, or `share_url`.
+        To get the ID, use the **msgraph-list-drive-content** command.
       name: item_id
     - description: |-
         The path of the file or folder relative to the drive root, for example "Documents/report.docx".
-        Provide exactly one of item_id, item_path, or share_url.
+        Provide exactly one of `item_id`, `item_path`, or `share_url`.
       name: item_path
     - description: |-
         A sharing URL pointing to the file, for example a "copy link" URL.
-        Provide exactly one of item_id, item_path, or share_url.
-        Note: this option requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
+        Provide exactly one of `item_id`, `item_path`, or `share_url`.
+        Note: This option requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
       name: share_url
     - auto: PREDEFINED
       description: Whether to include the sharepointIds property, which contains the listItemUniqueId and listId values used to correlate the file with SharePoint list items. Microsoft Graph does not return this property as part of the driveItem, so when enabled the command issues an additional request and merges the result into a single output.
@@ -1166,18 +1166,18 @@ script:
   - description: |-
       Retrieves the recent activities that took place on a file or folder (driveItem), such as who accessed it and when.
       Activities are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the activities from the list item. This resolution is internal - only site_id and item_id are needed.
-      Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error. Activities are not available for personal Microsoft accounts.
+      Note: This command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error. Activities are not available for personal Microsoft accounts.
     name: msgraph-driveitem-activities-list
     arguments:
     - description: |-
         The ID of the SharePoint site containing the item.
-        To get the ID, use the msgraph-list-sharepoint-sites command.
+        To get the ID, use the **msgraph-list-sharepoint-sites** command.
       name: site_id
       required: true
     - description: |-
         The ID of the driveItem whose activities to retrieve.
-        To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-metadata-get command.
-        Note: this endpoint does not support addressing the item by path.
+        To get the ID, use the **msgraph-list-drive-content** or **msgraph-driveitem-metadata-get** command.
+        Note: This endpoint does not support addressing the item by path.
       name: item_id
       required: true
     - description: The maximum number of activities to return. This endpoint does not support server-side paging parameters, so the limit is applied after the results are retrieved.
@@ -1192,7 +1192,7 @@ script:
       description: The date and time the activity was recorded.
       type: Date
     - contextPath: MsGraphFiles.ItemActivity.Value.Action
-      description: The action facets of the activity, for example Access, Edit, Share, Rename, Move, Delete, Restore, Comment or Version. Each facet is present only when the activity included that action.
+      description: The action components of the activity, for example Access, Edit, Share, Rename, Move, Delete, Restore, Comment or Version. Each facet is present only when the activity included that action.
       type: Unknown
     - contextPath: MsGraphFiles.ItemActivity.Value.Action.Version.NewVersion
       description: The resulting version number, when the activity created a new version.
@@ -1224,13 +1224,13 @@ script:
   - arguments:
     - description: |-
         The ID of the SharePoint site containing the item.
-        To get the ID, use the msgraph-list-sharepoint-sites command.
+        To get the ID, use the **msgraph-list-sharepoint-sites** command.
       name: site_id
       required: true
     - description: |-
         The ID of the driveItem whose analytics to retrieve.
-        To get the ID, use the msgraph-list-drive-content or msgraph-driveitem-metadata-get command.
-        Note: this endpoint does not support addressing the item by path.
+        To get the ID, use the **msgraph-list-drive-content** or **msgraph-driveitem-metadata-get** command.
+        Note: This endpoint does not support addressing the item by path.
       name: item_id
       required: true
     - description: The time range the statistics cover.
@@ -1243,7 +1243,7 @@ script:
     description: |-
       Retrieves activity statistics for a file or folder (driveItem), such as how many times it was viewed and by how many people.
       Analytics are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the analytics from the list item. This resolution is internal - only site_id and item_id are needed.
-      Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error.
+      Note: This command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error.
     name: msgraph-driveitem-analytics-get
     outputs:
     - contextPath: MsGraphFiles.ItemAnalytics.ItemId
@@ -1292,9 +1292,9 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'drive': To get a list of all drives in your site, use the **msgraph-list-drives-in-site** command.
         For resource type 'group': To get a list of all groups that exist, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': To get a list of all sites, use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': To get a list of all users that exist, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
@@ -1328,9 +1328,9 @@ script:
       required: true
     - description: |-
         MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'drive': To get a list of all drives in your site, use the **msgraph-list-drives-in-site** command.
         For resource type 'group': To get a list of all groups that exist, configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'sites': To get a list of all sites, use the **msgraph-list-sharepoint-sites** command.
         For resource type 'users': To get a list of all users that exist, configure the 'Entra ID Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
