@@ -34,6 +34,12 @@ _PY_TREE = ast.parse(_PY_SOURCE)
 # command handler. They are exempt from the per-handler verbatim arg check.
 PLATFORM_STANDARD_ARGS = {"project_id", "account_id"}
 
+# Output prefixes populated by the platform itself rather than by an
+# outputs_prefix in the handler. Commands that return a War Room file entry
+# (via file_result_existing_file / fileResult) declare File.* outputs in the YML,
+# but the entry is built by the platform, so no handler prefix exists to match.
+PLATFORM_STANDARD_OUTPUT_PREFIXES = {"File"}
+
 
 def test_parse_firewall_rule_valid_input():
     """
@@ -6541,6 +6547,9 @@ def test_yml_output_prefixes_match_py_handler():
             continue
         handler_prefixes = _extract_output_prefixes(handler_node)
         for context_path in _YML_SPEC[command_name]["outputs"]:
+            if _is_covered(context_path, PLATFORM_STANDARD_OUTPUT_PREFIXES):
+                # Built by the platform (War Room file entry), not by a handler prefix.
+                continue
             if not _is_covered(context_path, handler_prefixes):
                 uncovered.append(f"{command_name} (handler {handler}) -> {context_path}")
 
