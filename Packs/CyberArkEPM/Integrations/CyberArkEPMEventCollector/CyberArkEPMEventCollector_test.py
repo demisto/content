@@ -335,7 +335,7 @@ def test_get_events_command(requests_mock, event_type):
     Then:
         - Validates that the function works as expected.
     """
-    from CyberArkEPMEventCollector import create_last_run, get_events_command
+    from CyberArkEPMEventCollector import OUTPUTS_PREFIX, create_last_run, get_events_command
 
     from CommonServerPython import string_to_table_header
 
@@ -346,6 +346,8 @@ def test_get_events_command(requests_mock, event_type):
 
     assert len(events) == 6
     assert string_to_table_header(event_type) in command_results.readable_output
+    assert command_results.outputs == events
+    assert command_results.outputs_prefix == OUTPUTS_PREFIX[event_type]
 
 
 def test_fetch_events(requests_mock):
@@ -496,3 +498,152 @@ def test_oauth_missing_server_url_raises(mocker, requests_mock):
             web_app_id="web-app-1",
             server_url="",
         )
+
+
+def _build_oauth_client(requests_mock, identity_url, server_url):
+    """Helper: build an Idira OAuth Client with the token endpoint mocked.
+
+    Returns a tuple of (client, token_matcher) so callers can assert on the token
+    endpoint call count using the same matcher that actually served the requests.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    token_matcher = requests_mock.post(
+        f"{identity_url}/oauth2/token/web-app-1",
+        json={"access_token": "TOKEN123", "expires_in": 900},
+    )
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+    return client, token_matcher
+
+
+def test_oauth_token_endpoint_401_raises_without_retry(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth configuration whose token endpoint returns 401 (bad credentials).
+
+    When:
+        - Building the Client (which performs the initial OAuth token request).
+
+    Then:
+        - The failure surfaces as a clean "Failed to obtain access token" error.
+        - The token endpoint is called exactly once (the token request must NOT enter the
+          401 refresh-and-retry logic).
+    """
+    from CyberArkEPMEventCollector import Client
+    from CommonServerPython import DemistoException
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    # Avoid writing to stdout (the XSOAR test harness fails tests that leave stdout output).
+    mocker.patch("CyberArkEPMEventCollector.demisto.error")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    token_matcher = requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", status_code=401, json={"error": "unauthorized"})
+
+    with pytest.raises(DemistoException, match="Failed to obtain access token"):
+        Client(
+            base_url="",
+            username="user",
+            password="pass",
+            application_id="1",
+            auth_method="Idira OAuth",
+            identity_url=identity_url,
+            web_app_id="web-app-1",
+            server_url="https://example.epm.cyberark.com",
+        )
+
+    # Exactly one token call: no refresh-and-retry for the token request itself.
+    assert token_matcher.call_count == 1
+
+
+def test_oauth_data_call_401_refreshes_and_retries_once(mocker, requests_mock):
+    """
+    Given:
+        - A valid Idira OAuth Client.
+        - A data endpoint that returns 401 on the first call and 200 on the second.
+
+    When:
+        - A data request is made through the overridden `_http_request`.
+
+    Then:
+        - The client refreshes the token once and retries the data request exactly once,
+          ultimately returning the successful response.
+        - The token endpoint is called twice (initial auth + reactive refresh).
+    """
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    # Avoid writing to stdout (the XSOAR test harness fails tests that leave stdout output).
+    mocker.patch("CyberArkEPMEventCollector.demisto.error")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+
+    client, token_matcher = _build_oauth_client(requests_mock, identity_url, server_url)
+
+    data_matcher = requests_mock.get(
+        f"{server_url}/EPM/API/26.7.0/Sets",
+        [
+            {"status_code": 401, "json": {"error": "unauthorized"}},
+            {"status_code": 200, "json": {"Sets": [{"Id": "id1", "Name": "set_name1"}]}},
+        ],
+    )
+
+    result = client._http_request("GET", url_suffix="Sets")
+
+    assert result == {"Sets": [{"Id": "id1", "Name": "set_name1"}]}
+    # First auth token call + one reactive refresh after the 401.
+    assert token_matcher.call_count == 2
+    # Data endpoint hit twice: original 401 + single retry.
+    assert data_matcher.call_count == 2
+
+
+def test_oauth_token_expires_in_as_string_is_handled(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth token response whose `expires_in` value is a string (e.g. "900").
+
+    When:
+        - Building the Client (which requests and caches the token).
+
+    Then:
+        - No TypeError is raised when computing `valid_until`.
+        - The cached `valid_until` is a numeric string derived from the integer TTL.
+    """
+    from CyberArkEPMEventCollector import Client, CACHE_BUFFER_SECONDS
+
+    saved_context: dict = {}
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", side_effect=lambda: dict(saved_context))
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context", side_effect=lambda ctx: saved_context.update(ctx))
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    mocker.patch("CyberArkEPMEventCollector.time.time", return_value=1000)
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    # `expires_in` returned as a string.
+    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": "900"})
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+
+    assert client._headers["Authorization"] == "Bearer TOKEN123"
+    # valid_until = current_time (1000) + 900 - CACHE_BUFFER_SECONDS.
+    assert saved_context["valid_until"] == str(1000 + 900 - CACHE_BUFFER_SECONDS)

@@ -39,6 +39,14 @@ XSIAM_EVENT_TYPE = {
     "detailed_events": "detailed raw",
 }
 
+# Context outputs prefix per event type. The *-get-events commands expose the parsed/normalized
+# events under these prefixes so operators can verify the normalization while debugging.
+OUTPUTS_PREFIX = {
+    "policy_audits": "CyberArkEPM.PolicyAudit",
+    "admin_audits": "CyberArkEPM.AdminAudit",
+    "detailed_events": "CyberArkEPM.Event",
+}
+
 """ CLIENT CLASS """
 
 
@@ -125,7 +133,10 @@ class Client(BaseClient):
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         try:
-            token_response = self._http_request(
+            # Use `super()._http_request` (not `self._http_request`) so the token request itself
+            # never enters the OAuth 401 retry logic. A 401 here means bad credentials, and it
+            # should surface directly as an auth failure rather than triggering a refresh-and-retry.
+            token_response = super()._http_request(
                 method="POST",
                 full_url=token_url,
                 data=token_data,
@@ -135,6 +146,7 @@ class Client(BaseClient):
             )
         except DemistoException as error:
             error_msg = str(error)
+            demisto.debug(traceback.format_exc())
             demisto.error(f"[Token Request] Failed: {error_msg}")
             raise DemistoException(f"Failed to obtain access token: {error_msg}")
 
@@ -142,7 +154,7 @@ class Client(BaseClient):
         if not access_token:
             raise DemistoException("Failed to obtain access token. Response missing access_token.")
 
-        token_expires_in = token_response.get(EXPIRES_IN, DEFAULT_TOKEN_TTL_SECONDS)
+        token_expires_in = arg_to_number(token_response.get(EXPIRES_IN)) or DEFAULT_TOKEN_TTL_SECONDS
         token_valid_until = current_timestamp + token_expires_in - CACHE_BUFFER_SECONDS
         demisto.debug(f"[Token Request] Success. Expires in {token_expires_in}s.")
 
@@ -580,7 +592,14 @@ def get_events_command(client: Client, event_type: str, last_run: dict, limit: i
 
     human_readable = tableToMarkdown(string_to_table_header(event_type), events_list)
 
-    return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
+    # Expose the parsed/normalized events in `outputs` so operators can verify the normalization
+    # while debugging (in addition to the raw response).
+    return events_list, CommandResults(
+        readable_output=human_readable,
+        outputs_prefix=OUTPUTS_PREFIX[event_type],
+        outputs=events_list,
+        raw_response=events_list,
+    )
 
 
 def fetch_events(
@@ -674,16 +693,13 @@ def main():  # pragma: no cover
     application_id = params.get("application_id")
     authentication_url = params.get("authentication_url")
     application_url = params.get("application_url")
-    auth_method = params.get("authentication_method")
+    auth_method = params.get("authentication_method") or AUTH_METHOD_EPM
     identity_url = params.get("identity_url")
     web_app_id = params.get("web_app_id")
     server_url = params.get("server_url")
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
 
-    # Validate the parameters required for the selected authentication method.
-    if not auth_method:
-        return_error("Authentication Method is required.")
     if auth_method == AUTH_METHOD_OAUTH:
         if not server_url or not identity_url or not web_app_id:
             return_error("Server URL, Identity URL, and Web App ID are required for Idira OAuth authentication.")
@@ -794,20 +810,19 @@ def main():  # pragma: no cover
                 f"should_push_events={argToBoolean(args.get('should_push_events', False))}"
             )
             events, command_result = get_events_command(client, "detailed_events", last_run, max_limit)  # type: ignore
+            command_results = [command_result]
             # When admin audits are enabled in the instance configuration, also fetch and include
-            # them in this command's results (in addition to the detailed events).
+            # them in this command's results (in addition to the detailed events). Keep the admin
+            # audits as their own CommandResults so their normalized `outputs` are preserved.
             if enable_admin_audits:
-                admin_events, _ = get_events_command(client, "admin_audits", last_run, max_limit)  # type: ignore
+                admin_events, admin_command_result = get_events_command(client, "admin_audits", last_run, max_limit)  # type: ignore
                 demisto.debug(f"[cyberarkepm-get-events] admin audits enabled, fetched {len(admin_events)} admin audit(s)")
                 events = events + admin_events
-                command_result = CommandResults(
-                    readable_output=tableToMarkdown("CyberArk EPM Events", events),
-                    raw_response=events,
-                )
+                command_results.append(admin_command_result)
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.debug(f"[cyberarkepm-get-events] send_events_to_xsiam: {len(events)} events, {events=}")
-            return_results(command_result)
+            return_results(command_results)
 
         elif command in "fetch-events":
             events, next_run = fetch_events(client, last_run, max_fetch, enable_admin_audits)  # type: ignore
