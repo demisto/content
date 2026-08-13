@@ -1181,8 +1181,6 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
     fetch_alerts_filter = params.get("fetch_filter", "")
     fetch_incidents_filter = params.get("fetch_incidents_filter", "")
     fetch_incidents_type = argToList(params.get("fetch_incidents_type"))
-    if not fetch_incidents_type:
-        raise DemistoException("Please provide at least one incident type to fetch or uncheck the fetch incidents checkbox.")
     last_run = demisto.getLastRun() or {}
 
     # Migrate the old flat last_run format ({"time": "..."}) to the new nested format,
