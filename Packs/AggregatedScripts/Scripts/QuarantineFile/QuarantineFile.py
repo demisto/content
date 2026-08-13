@@ -155,34 +155,12 @@ class Command:
             QuarantineException: If the command execution returns an error entry.
         """
         demisto.debug(f"[Command] Executing: '{self.name}' with args: {self.args} for brand: {self.brand}")
-        demisto.info(
-            f"[MIGRATE-QF] execute.before: is_platform={is_platform()}, brand={self.brand!r}, "
-            f"cmd={self.name!r}, args={self.args}"
-        )
         raw_response = demisto.executeCommand(self.name, self.args)
-        # Log a compact summary of the raw response for tenant-side debugging of the PCI migration.
-        try:
-            response_summary = [
-                {
-                    "Type": r.get("Type") if isinstance(r, dict) else None,
-                    "is_error": is_error(r) if isinstance(r, dict) else None,
-                    "Metadata": (r.get("Metadata") if isinstance(r, dict) else None),
-                }
-                for r in (raw_response or [])
-            ]
-        except Exception as _log_exc:  # noqa: BLE001 - logging must not break flow
-            response_summary = f"<failed to summarize: {_log_exc}>"
-        demisto.info(
-            f"[MIGRATE-QF] execute.after: cmd={self.name!r}, brand={self.brand!r}, " f"response_summary={response_summary}"
-        )
 
         verbose_results = []
         for result in raw_response:
             if is_error(result):
                 demisto.error(f"Error executing {self.name}:\n{get_error(result)}")
-                demisto.info(
-                    f"[MIGRATE-QF] execute.error: cmd={self.name!r}, brand={self.brand!r}, " f"error={get_error(result)!r}"
-                )
                 hr = f"Error executing {self.name}:\n{get_error(result)}"
             else:
                 hr = result.get("HumanReadable", f"Successfully executed {self.name}")
@@ -453,10 +431,9 @@ class BrandHandler(ABC):
 
         Args:
             last_poll_response (list): The raw response from the final polling command.
-            poll_args (dict | None): The scheduled command's polling args from the completed
-                job. On the unified platform (PCI Builtin) these carry the originating analyst
-                identity (user_id / user_name / is_manual_flow) that must be forwarded to any
-                follow-up RBAC-enforced command (e.g. getFileQuarantineStatus). See CRTX-265660.
+            poll_args (dict | None): The completed job's polling args. On the platform these
+                carry the originating identity (user_id / user_name / is_manual_flow) forwarded
+                to any follow-up RBAC-enforced command (e.g. getFileQuarantineStatus).
         """
 
 
@@ -467,9 +444,9 @@ class XDRHandler(BrandHandler):
     XDR_COMMAND_PREFIX = "xdr"
     QUARANTINE_STATUS_COMMAND = "get-quarantine-status"
     QUARANTINE_STATUS_SUCCESS = "COMPLETED_SUCCESSFULLY"
-    # PCI Builtin command names (used on the unified Cortex platform for the Core brand).
-    PCI_QUARANTINE_COMMAND = "quarantineFile"
-    PCI_QUARANTINE_STATUS_COMMAND = "getFileQuarantineStatus"
+    # Builtin command names (used on the Cortex platform for the Core brand).
+    BUILTIN_QUARANTINE_COMMAND = "quarantineFile"
+    BUILTIN_QUARANTINE_STATUS_COMMAND = "getFileQuarantineStatus"
     def __init__(self, brand: str, orchestrator):
         """
         Initializes the XDRHandler.
@@ -480,20 +457,16 @@ class XDRHandler(BrandHandler):
         """
         super().__init__(brand, orchestrator)
         self.command_prefix = self.CORE_COMMAND_PREFIX if self.brand == Brands.CORTEX_CORE_IR else self.XDR_COMMAND_PREFIX
-        # On the unified Cortex platform, the Core-IR quarantine command is exposed as the PCI
-        # Builtin "quarantineFile" (no integration instance needed). Keep the legacy commands
-        # for non-platform (XSOAR/XSIAM legacy) and for the XDR brand which is not a PCI Builtin.
-        self.use_pci_builtin = self.command_prefix == self.CORE_COMMAND_PREFIX and is_platform()
-        if self.use_pci_builtin:
-            self.quarantine_command = XDRHandler.PCI_QUARANTINE_COMMAND
+        # On the Cortex platform the Core-IR quarantine command is the Builtin "quarantineFile"
+        # (no integration instance needed). Off-platform, and for the XDR brand, use the legacy
+        # integration commands.
+        self.use_builtin = self.command_prefix == self.CORE_COMMAND_PREFIX and is_platform()
+        if self.use_builtin:
+            self.quarantine_command = XDRHandler.BUILTIN_QUARANTINE_COMMAND
         elif self.command_prefix == self.CORE_COMMAND_PREFIX:
             self.quarantine_command = "core-quarantine-files"
         else:
             self.quarantine_command = "xdr-file-quarantine"
-        demisto.info(
-            f"[MIGRATE-QF] XDRHandler.__init__: brand={self.brand!r}, is_platform={is_platform()}, "
-            f"use_pci_builtin={self.use_pci_builtin}, quarantine_command={self.quarantine_command!r}"
-        )
 
     def validate_args(self, args: dict) -> None:
         """
@@ -511,9 +484,8 @@ class XDRHandler(BrandHandler):
                 f"The '{QuarantineOrchestrator.FILE_PATH_ARG}' argument is required for brand {self.brand}."
             )
 
-    # Internal poll-identity marker arg names (mirror PCI common.HiddenPollIdentityArgs).
-    # Forwarded into the RBAC-enforced PCI status command so PCI's RebuildPollCmdCtx can
-    # restore the originating analyst identity on scheduled poll re-runs. See CRTX-265660.
+    # Identity marker args forwarded into the RBAC-enforced Builtin status command so the
+    # platform can restore the originating identity on scheduled poll re-runs.
     POLL_IDENTITY_ARG_NAMES = ("user_id", "user_name", "is_manual_flow")
 
     def _execute_quarantine_status_command(
@@ -526,11 +498,10 @@ class XDRHandler(BrandHandler):
             endpoint_id (str): The ID of the endpoint to check.
             file_hash (str): The SHA256 hash of the file.
             file_path (str): The path of the file on the endpoint.
-            poll_args (dict | None): The completed job's polling args. On the unified platform
-                (PCI Builtin) these carry the originating analyst identity (user_id / user_name /
-                is_manual_flow), which is forwarded into the RBAC-enforced getFileQuarantineStatus
-                call so it does not 403 under the DBotWeak automation identity the scheduler
-                substitutes on poll re-runs. See CRTX-265660.
+            poll_args (dict | None): The completed job's polling args. On the platform these
+                carry the originating identity (user_id / user_name / is_manual_flow) forwarded
+                into the RBAC-enforced getFileQuarantineStatus call so it authenticates as the
+                original user on scheduled poll re-runs.
 
         Returns:
             dict: The response from the 'get-quarantine-status' command.
@@ -544,30 +515,21 @@ class XDRHandler(BrandHandler):
         """
         poll_args = poll_args or {}
         demisto.debug(f"[{self.brand} Handler] Checking quarantine status for endpoint {endpoint_id}.")
-        # On the unified Cortex platform the Core-IR status command is exposed as the PCI Builtin
-        # "getFileQuarantineStatus". Off-platform we keep the legacy integration command
-        # (core-get-quarantine-status / xdr-get-quarantine-status).
-        if self.use_pci_builtin:
-            status_command_name = XDRHandler.PCI_QUARANTINE_STATUS_COMMAND
+        # On the platform the Core-IR status command is the Builtin "getFileQuarantineStatus".
+        # Off-platform, use the legacy integration command.
+        if self.use_builtin:
+            status_command_name = XDRHandler.BUILTIN_QUARANTINE_STATUS_COMMAND
         else:
             status_command_name = f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}"
 
         status_args = {"endpoint_id": endpoint_id, "file_hash": file_hash, "file_path": file_path}
-        # CRTX-265660: forward the persisted analyst identity into the PCI status command so
-        # PCI's RebuildPollCmdCtx can authenticate the RBAC-enforced call as the original user
-        # rather than the DBotWeak automation identity. Only relevant on the PCI Builtin path.
-        forwarded_identity = {}
-        if self.use_pci_builtin and poll_args:
+        # Forward the persisted identity so the RBAC-enforced Builtin status call runs as the
+        # original user. Only relevant on the platform Builtin path.
+        if self.use_builtin and poll_args:
             for identity_arg in XDRHandler.POLL_IDENTITY_ARG_NAMES:
                 if poll_args.get(identity_arg):
                     status_args[identity_arg] = poll_args[identity_arg]
-                    forwarded_identity[identity_arg] = poll_args[identity_arg]
 
-        demisto.info(
-            f"[MIGRATE-QF] status: brand={self.brand!r}, use_pci_builtin={self.use_pci_builtin}, "
-            f"status_command={status_command_name!r}, endpoint_id={endpoint_id!r}, "
-            f"forwarded_identity={forwarded_identity}"
-        )
         status_cmd = Command(
             name=status_command_name,
             args=status_args,
@@ -596,53 +558,43 @@ class XDRHandler(BrandHandler):
         quarantined (e.g. the file did not exist on disk, or the endpoint was offline),
         which would otherwise be reported as a false positive.
 
-        On the unified Cortex platform (PCI Builtin, `use_pci_builtin=True`), the
-        quarantine-status command is the RBAC-enforced `getFileQuarantineStatus`. When
-        the finalize step runs inside a scheduled poll re-run, the incoming identity is
-        the `DBotWeak` automation principal, which 403s on that endpoint. To avoid that,
-        the originating analyst identity persisted in the poll args (`user_id` /
-        `user_name` / `is_manual_flow`) is forwarded into the status call so PCI's
-        `RebuildPollCmdCtx` can restore it. See CRTX-265660.
+        On the platform the quarantine-status command is the RBAC-enforced Builtin
+        `getFileQuarantineStatus`. When finalize runs inside a scheduled poll re-run the
+        incoming identity is the automation principal, which 403s. The originating identity
+        persisted in the poll args (`user_id` / `user_name` / `is_manual_flow`) is forwarded
+        into the status call so the platform can restore it.
 
         Args:
             endpoint_result (dict): The result object for a single endpoint from the polling command.
                                     Legacy Core/XDR integration shape:
                                         {'action_id': 123, 'endpoint_id': 'EP_ID', 'status': 'COMPLETED_SUCCESSFULLY'}
-                                    PCI Builtin `Core.GetActionStatus` shape (CRTX-265660 migration):
+                                    Builtin `Core.GetActionStatus` shape:
                                         {'ActionID': 123, 'EndpointID': 'EP_ID', 'Status': 'COMPLETED_SUCCESSFULLY',
                                          'ErrorDescription': '', 'ErrorReasons': {}}
             poll_args (dict | None): The completed job's polling args, used to forward the
-                originating analyst identity into the PCI status call (see above).
+                originating identity into the Builtin status call (see above).
 
         Returns:
             QuarantineResult: A structured result object for the endpoint.
         """
         poll_args = poll_args or {}
-        # Accept both legacy snake_case and PCI CamelCase key shapes so this handler
-        # works on-platform (PCI Builtin) and off-platform (legacy integration).
+        # Accept both legacy snake_case and Builtin CamelCase key shapes.
         endpoint_id = str(endpoint_result.get("endpoint_id") or endpoint_result.get("EndpointID"))
         action_status = endpoint_result.get("status") or endpoint_result.get("Status")
         error_description = endpoint_result.get("error_description") or endpoint_result.get("ErrorDescription", "")
-        demisto.info(
-            f"[MIGRATE-QF] finalize.per_endpoint: brand={self.brand!r}, use_pci_builtin={self.use_pci_builtin}, "
-            f"endpoint_id={endpoint_id!r}, action_status={action_status!r}, "
-            f"raw_keys={sorted(endpoint_result.keys()) if isinstance(endpoint_result, dict) else None}"
-        )
         demisto.debug(f"[{self.brand} Handler] Processing final status for endpoint {endpoint_id}.")
 
         if action_status == XDRHandler.QUARANTINE_STATUS_SUCCESS:
-            # Confirm the file is actually quarantined (guards against action-status
-            # false positives such as file-not-found / endpoint-offline). On PCI this
-            # forwards the originating analyst identity from poll_args (CRTX-265660).
+            # Confirm the file is actually quarantined (guards against action-status false
+            # positives such as file-not-found / endpoint-offline).
             quarantine_status_data = self._execute_quarantine_status_command(
                 endpoint_id,
                 self.orchestrator.args.get(QuarantineOrchestrator.FILE_HASH_ARG),
                 self.orchestrator.args.get(QuarantineOrchestrator.FILE_PATH_ARG),
                 poll_args,
             )
-            # PCI `getFileQuarantineStatus` returns `status`/`endpointId`/`filePath`/`fileHash`
-            # per QuarantineStatusResponse; legacy `*-get-quarantine-status` returns `status`
-            # (lowercase). Try both shapes.
+            # Builtin `getFileQuarantineStatus` returns `status` (CamelCase shape);
+            # legacy `*-get-quarantine-status` returns `status` (lowercase). Try both.
             quarantine_status = quarantine_status_data.get("status")
             if quarantine_status is None:
                 quarantine_status = quarantine_status_data.get("Status")
@@ -705,21 +657,15 @@ class XDRHandler(BrandHandler):
         """
         demisto.debug(f"[{self.brand} Handler] Initiating quarantine action.")
 
-        # PCI Builtin `quarantineFile` uses `endpoint_ids` (plural, IsArray); legacy commands
+        # Builtin `quarantineFile` uses `endpoint_ids` (plural, IsArray); legacy commands
         # `core-quarantine-files` / `xdr-file-quarantine` use `endpoint_id_list`.
-        endpoint_ids_arg_name = "endpoint_ids" if self.use_pci_builtin else "endpoint_id_list"
+        endpoint_ids_arg_name = "endpoint_ids" if self.use_builtin else "endpoint_id_list"
         quarantine_args = {
             endpoint_ids_arg_name: args.get(QuarantineOrchestrator.ENDPOINT_IDS_ARG),
             "file_hash": args.get(QuarantineOrchestrator.FILE_HASH_ARG),
             "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
             "timeout_in_seconds": args.get("timeout", DEFAULT_TIMEOUT),
         }
-        demisto.info(
-            f"[MIGRATE-QF] initiate: brand={self.brand!r}, use_pci_builtin={self.use_pci_builtin}, "
-            f"cmd={self.quarantine_command!r}, endpoint_ids_arg={endpoint_ids_arg_name!r}, "
-            f"quarantine_args={quarantine_args}"
-        )
-
         cmd = Command(name=self.quarantine_command, args=quarantine_args, brand=self.brand)
         raw_response, verbose_res = cmd.execute()
         if self.orchestrator.verbose:
@@ -727,21 +673,11 @@ class XDRHandler(BrandHandler):
 
         metadata = raw_response[0].get("Metadata", {}) if raw_response else {}
         demisto.debug(f"[{self.brand} Handler] Received metadata for polling: {metadata}")
-        demisto.info(
-            f"[MIGRATE-QF] initiate.metadata: brand={self.brand!r}, cmd={self.quarantine_command!r}, "
-            f"pollingCommand={metadata.get('pollingCommand')!r}, pollingArgs={metadata.get('pollingArgs')}"
-        )
 
-        # CRTX-265660: Identity restoration on scheduled poll re-runs is handled entirely
-        # inside PCI (core-content-module). At initiate time PCI's `buildQuarantineResultEntry`
-        # persists the originating analyst identity (`user_id` / `user_name` /
-        # `is_manual_flow`) into the scheduled command's `pollingArgs`; on each poll re-run
-        # PCI's `HandleActionStatusPoll` calls `RebuildPollCmdCtx(args, cmdCtx)` which
-        # restores that identity so the RBAC-enforcing `/actions/get_action_status/`
-        # platform call is authenticated as the original analyst rather than as the
-        # DBotWeak automation identity the scheduler substitutes on every re-run.
-        # The aggregated script does not need to opt in — just forward the metadata's
-        # pollingArgs unchanged.
+        # Identity restoration on scheduled poll re-runs is handled by the platform: it
+        # persists the originating identity into the scheduled command's pollingArgs at
+        # initiate time and restores it on each re-run. The script just forwards the
+        # metadata's pollingArgs unchanged.
         polling_args = metadata.get("pollingArgs", {}) or {}
 
         job = {
@@ -753,7 +689,6 @@ class XDRHandler(BrandHandler):
                 "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
             },
         }
-        demisto.info(f"[MIGRATE-QF] initiate.job: brand={self.brand!r}, job={job}")
         return job
 
     def finalize(self, last_poll_response: list, poll_args: dict | None = None) -> list[QuarantineResult]:
@@ -766,11 +701,10 @@ class XDRHandler(BrandHandler):
 
         Args:
             last_poll_response (list): The raw response from the final polling command.
-            poll_args (dict | None): The completed job's polling args. On the unified platform
-                (PCI Builtin) these carry the originating analyst identity (user_id / user_name /
-                is_manual_flow) which is forwarded to the RBAC-enforced getFileQuarantineStatus
-                confirmation call so it does not 403 under the DBotWeak automation identity that
-                the scheduler substitutes on poll re-runs. See CRTX-265660.
+            poll_args (dict | None): The completed job's polling args. On the platform these
+                carry the originating identity (user_id / user_name / is_manual_flow) forwarded
+                to the RBAC-enforced getFileQuarantineStatus confirmation call so it
+                authenticates as the original user on scheduled poll re-runs.
 
         Returns:
             list[QuarantineResult]: A list of final QuarantineResult objects.
@@ -781,14 +715,8 @@ class XDRHandler(BrandHandler):
         quarantine_endpoints_final_results: list = Command.get_entry_context_object_containing_key(
             last_poll_response, "GetActionStatus"
         )
-        # `get_entry_context_object_containing_key` may return None when the key is absent
-        # (e.g., unexpected PCI polling response shape). Guard against NoneType iteration.
+        # May return None when the key is absent; guard against NoneType iteration.
         quarantine_endpoints_final_results = quarantine_endpoints_final_results or []
-        demisto.info(
-            f"[MIGRATE-QF] finalize: brand={self.brand!r}, use_pci_builtin={self.use_pci_builtin}, "
-            f"GetActionStatus_len={len(quarantine_endpoints_final_results)}, "
-            f"GetActionStatus={quarantine_endpoints_final_results}"
-        )
 
         demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
         for quarantine_endpoint_result in quarantine_endpoints_final_results:
@@ -920,8 +848,8 @@ class MDEHandler(BrandHandler):
         Finalizes a completed quarantine job for the MDE brand.
 
         Note: `poll_args` is accepted for interface parity with the abstract
-        BrandHandler.finalize signature (used by the XDR handler for PCI identity
-        forwarding, CRTX-265660). MDE does not use it.
+        BrandHandler.finalize signature (used by the XDR handler for identity
+        forwarding). MDE does not use it.
 
         It parses the results from the last polling response and calls
 
@@ -1330,15 +1258,10 @@ class QuarantineOrchestrator:
         the results are collected.
         """
         demisto.debug(f"[Orchestrator] Checking status of {len(self.pending_jobs)} pending jobs.")
-        demisto.info(f"[MIGRATE-QF] poll.tick: pending_jobs_count={len(self.pending_jobs)}, " f"is_platform={is_platform()}")
         remaining_jobs = []
         for job in self.pending_jobs:
             demisto.debug(f"[Orchestrator] The Job: {job}")
             demisto.debug(f"[Orchestrator] Polling job for brand '{job['brand']}'.")
-            demisto.info(
-                f"[MIGRATE-QF] poll.before: brand={job['brand']!r}, "
-                f"poll_command={job.get('poll_command')!r}, poll_args={job.get('poll_args')}"
-            )
 
             # Get the command for this job to poll for status. i.e.: GetActionStatus
             poll_cmd = Command(name=job["poll_command"], args=job["poll_args"], brand=job["brand"])
@@ -1348,74 +1271,6 @@ class QuarantineOrchestrator:
 
             metadata = raw_response[0].get("Metadata", {}) if raw_response else {}
             demisto.debug(f"The raw response from executing: {raw_response}")
-            demisto.info(
-                f"[MIGRATE-QF] poll.after: brand={job['brand']!r}, "
-                f"poll_command={job.get('poll_command')!r}, "
-                f"metadata_polling={metadata.get('polling')}, "
-                f"next_pollingCommand={metadata.get('pollingCommand')!r}"
-            )
-
-            # ------------------------------------------------------------------------------
-            # PROBE (temporary, ticket CRTX-265660): if we just polled a PCI Builtin command
-            # and it failed (or completed with no `polling` signal), try calling PCI
-            # `getFileQuarantineStatus` for the first endpoint to learn whether that command
-            # also 403s under the scheduled-run identity (DBotWeak). This helps decide the
-            # workaround path without shipping the full Option 2 rework.
-            # This block is READ-ONLY, does not mutate `job` or `remaining_jobs`, and its
-            # results are logged only.
-            # ------------------------------------------------------------------------------
-            try:
-                poll_response_is_error = any(isinstance(r, dict) and is_error(r) for r in (raw_response or []))
-                looks_like_pci_builtin = job.get("poll_command") in (
-                    XDRHandler.PCI_QUARANTINE_COMMAND,
-                    XDRHandler.PCI_QUARANTINE_STATUS_COMMAND,
-                )
-                if is_platform() and looks_like_pci_builtin and poll_response_is_error:
-                    endpoint_ids_from_poll = job.get("poll_args", {}).get("endpoint_ids")
-                    if isinstance(endpoint_ids_from_poll, str):
-                        probe_endpoint = endpoint_ids_from_poll
-                    elif isinstance(endpoint_ids_from_poll, list) and endpoint_ids_from_poll:
-                        probe_endpoint = str(endpoint_ids_from_poll[0])
-                    else:
-                        probe_endpoint = None
-                    finalize_args = job.get("finalize_args", {}) or {}
-                    probe_file_hash = finalize_args.get("file_hash") or job.get("poll_args", {}).get("file_hash")
-                    probe_file_path = finalize_args.get("file_path") or job.get("poll_args", {}).get("file_path")
-                    demisto.info(
-                        f"[MIGRATE-QF] probe.start: brand={job['brand']!r}, "
-                        f"probe_endpoint={probe_endpoint!r}, "
-                        f"has_hash={bool(probe_file_hash)}, has_path={bool(probe_file_path)}"
-                    )
-                    if probe_endpoint and probe_file_hash and probe_file_path:
-                        probe_cmd = Command(
-                            name=XDRHandler.PCI_QUARANTINE_STATUS_COMMAND,
-                            args={
-                                "endpoint_id": probe_endpoint,
-                                "file_hash": probe_file_hash,
-                                "file_path": probe_file_path,
-                            },
-                            brand=job["brand"],
-                        )
-                        probe_raw, _probe_verbose = probe_cmd.execute()
-                        probe_is_error = any(isinstance(r, dict) and is_error(r) for r in (probe_raw or []))
-                        probe_error_code = None
-                        for r in probe_raw or []:
-                            if isinstance(r, dict) and is_error(r):
-                                probe_error_code = (r.get("Metadata", {}) or {}).get("extendedPayload", {}).get("error_code")
-                                break
-                        demisto.info(
-                            f"[MIGRATE-QF] probe.done: brand={job['brand']!r}, "
-                            f"probe_endpoint={probe_endpoint!r}, "
-                            f"probe_is_error={probe_is_error}, "
-                            f"probe_error_code={probe_error_code!r}"
-                        )
-                    else:
-                        demisto.info("[MIGRATE-QF] probe.skipped: missing endpoint/hash/path for probe.")
-            except Exception as _probe_exc:  # noqa: BLE001 - probe must not break flow
-                demisto.info(f"[MIGRATE-QF] probe.exception: {_probe_exc!r}")
-            # ------------------------------------------------------------------------------
-            # END PROBE
-            # ------------------------------------------------------------------------------
 
             if self._job_is_still_polling(metadata):
                 demisto.debug(f"[Orchestrator] Job for brand '{job['brand']}' is still pending. Re-scheduling.")
@@ -1424,9 +1279,9 @@ class QuarantineOrchestrator:
             else:
                 demisto.debug(f"[Orchestrator] Polling complete for job brand '{job['brand']}'. Finalizing.")
                 handler = handler_factory(job["brand"], self)
-                # CRTX-265660: forward the completed job's poll_args (which carry the persisted
-                # analyst identity on the PCI Builtin path) so finalize's RBAC-enforced
-                # getFileQuarantineStatus confirmation call runs as the original user.
+                # Forward the completed job's poll_args (which carry the persisted identity on
+                # the platform path) so finalize's RBAC-enforced status call runs as the
+                # original user.
                 final_results = handler.finalize(raw_response, job.get("poll_args", {}))
                 self.completed_results.extend(final_results)
 
