@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Bitbucket Cloud has deprecated app passwords (from **June 9, 2026**) in favor of scoped API tokens. For more information, see the [Bitbucket Cloud documentation](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords). Issue-related commands no longer work."
+}
