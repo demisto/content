@@ -1063,7 +1063,11 @@ script:
     - contextPath: MsGraphFiles.RemovedItemPermission.ObjectTypeId
       description: Echo of the object_type_id argument supplied to the command.
       type: String
-  - arguments:
+  - description: |-
+      Retrieves the metadata of a file or folder (driveItem). The item can be addressed by ID, by path relative to the drive root, or by a sharing URL. Exactly one of item_id, item_path, or share_url must be provided.
+      Note: addressing the item by share_url requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
+    name: msgraph-driveitem-metadata-get
+    arguments:
     - auto: PREDEFINED
       description: The MS Graph resource. Required unless share_url is used.
       name: object_type
@@ -1100,11 +1104,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultValue: 'true'
-    description: |-
-      Retrieves the metadata of a file or folder (driveItem). The item can be addressed by ID, by path relative to the drive root, or by a sharing URL. Exactly one of item_id, item_path, or share_url must be provided.
-      Note: addressing the item by share_url requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
-    name: msgraph-driveitem-metadata-get
+      defaultValue: 'false'
     outputs:
     - contextPath: MsGraphFiles.Files.ID
       description: The unique identifier of the driveItem.
@@ -1163,7 +1163,12 @@ script:
     - contextPath: MsGraphFiles.Files.SharepointIds.SiteId
       description: The SharePoint site identifier.
       type: String
-  - arguments:
+  - description: |-
+      Retrieves the recent activities that took place on a file or folder (driveItem), such as who accessed it and when.
+      Activities are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the activities from the list item. This resolution is internal - only site_id and item_id are needed.
+      Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error. Activities are not available for personal Microsoft accounts.
+    name: msgraph-driveitem-activities-list
+    arguments:
     - description: |-
         The ID of the SharePoint site containing the item.
         To get the ID, use the msgraph-list-sharepoint-sites command.
@@ -1179,11 +1184,6 @@ script:
       name: limit
     - description: The URL for the next results page (the @odata.nextLink value from a previous response, surfaced under MsGraphFiles.ItemActivity.NextToken).
       name: next_page_url
-    description: |-
-      Retrieves the recent activities that took place on a file or folder (driveItem), such as who accessed it and when.
-      Activities are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the activities from the list item. This resolution is internal - only site_id and item_id are needed.
-      Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error. Activities are not available for personal Microsoft accounts.
-    name: msgraph-driveitem-activities-list
     outputs:
     - contextPath: MsGraphFiles.ItemActivity.Value.ID
       description: The unique identifier of the activity.
@@ -1233,9 +1233,9 @@ script:
         Note: this endpoint does not support addressing the item by path.
       name: item_id
       required: true
-    - auto: PREDEFINED
-      description: The time range the statistics cover.
+    - description: The time range the statistics cover.
       name: time_range
+      auto: PREDEFINED
       predefined:
       - allTime
       - lastSevenDays
@@ -1273,10 +1273,10 @@ script:
     - contextPath: MsGraphFiles.ItemAnalytics.Stats.Edit.ActorCount
       description: The number of distinct users who edited the item.
       type: Number
-  - description: Tests connectivity to Microsoft.
-    execution: false
+  - arguments: []
+    description: Tests connectivity to Microsoft.
     name: msgraph-files-auth-test
-    arguments: []
+    execution: false
   - description: Generate the login URL used for Authorization code flow.
     name: msgraph-files-generate-login-url
     arguments: []

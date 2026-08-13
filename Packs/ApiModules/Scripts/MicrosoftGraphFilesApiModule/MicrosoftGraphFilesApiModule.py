@@ -829,7 +829,7 @@ class MsGraphClient:
         item_id: str = "",
         item_path: str = "",
         share_url: str = "",
-        include_sharepoint_ids: bool = True,
+        include_sharepoint_ids: bool = False,
     ) -> dict:
         """Retrieve the metadata of a single driveItem, with sharepointIds merged in.
 
@@ -1863,7 +1863,7 @@ def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) 
     Exactly one is required; YAML cannot express that rule, so it is enforced here.
     """
     addressing = resolve_item_addressing(args, allow_path=True, allow_share_url=True)
-    include_sharepoint_ids = argToBoolean(args.get("include_sharepoint_ids", "true"))
+    include_sharepoint_ids = argToBoolean(args.get("include_sharepoint_ids", "false"))
 
     raw_response = client.get_driveitem(
         object_type=addressing.get("object_type", ""),
@@ -1908,6 +1908,7 @@ def _driveitem_activities_readable(parsed_activities: list, item_id: str) -> str
     return tableToMarkdown(
         f"Activities for item {item_id}",
         readable_rows,
+        headers=["ID", "RecordedDateTime", "Actor", "Action"],
         headerTransform=pascalToSpace,
         removeNull=True,
     )
@@ -1995,6 +1996,8 @@ def get_driveitem_analytics_command(client: MsGraphClient, args: dict[str, str])
     site_id = args["site_id"]
     item_id = args["item_id"]
     time_range = args.get("time_range") or "allTime"
+    if time_range not in ("allTime", "lastSevenDays"):
+        raise DemistoException(f"Invalid time_range: {time_range}. Allowed values are: allTime, lastSevenDays.")
 
     raw_response = client.get_driveitem_analytics(
         site_id=site_id,

@@ -1243,6 +1243,11 @@ Retrieves the recent activities that took place on a file or folder (driveItem),
 Activities are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the activities from the list item. This resolution is internal - only site_id and item_id are needed.
 Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error. Activities are not available for personal Microsoft accounts.
 
+#### Required Permissions
+
+Client Credentials Flow - `Sites.Read.All - Application` or `Sites.ReadWrite.All - Application`  
+Authorization Code Flow - `Sites.Read.All - Delegated` or `Sites.ReadWrite.All - Delegated`
+
 #### Base Command
 
 `msgraph-driveitem-activities-list`
@@ -1279,6 +1284,11 @@ Note: this command requires a SharePoint/OneDrive plan that surfaces analytics d
 Retrieves the metadata of a file or folder (driveItem). The item can be addressed by ID, by path relative to the drive root, or by a sharing URL. Exactly one of item_id, item_path, or share_url must be provided.
 Note: addressing the item by share_url requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
 
+#### Required Permissions
+
+Client Credentials Flow - `Files.Read.All - Application` or `Files.ReadWrite.All - Application` (Note: addressing the item by `share_url` requires `Files.ReadWrite.All - Application`)  
+Authorization Code Flow - `Files.Read.All - Delegated` or `Files.ReadWrite.All - Delegated` (Note: addressing the item by `share_url` requires `Files.ReadWrite - Delegated`)
+
 #### Base Command
 
 `msgraph-driveitem-metadata-get`
@@ -1292,7 +1302,7 @@ Note: addressing the item by share_url requires the Files.ReadWrite.All applicat
 | item_id | The ID of the driveItem whose metadata to retrieve.<br/>Provide exactly one of item_id, item_path, or share_url.<br/>To get the ID, use the msgraph-list-drive-content command. | Optional |
 | item_path | The path of the file or folder relative to the drive root, for example "Documents/report.docx".<br/>Provide exactly one of item_id, item_path, or share_url. | Optional |
 | share_url | A sharing URL pointing to the file, for example a "copy link" URL.<br/>Provide exactly one of item_id, item_path, or share_url.<br/>Note: this option requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data. | Optional |
-| include_sharepoint_ids | Whether to include the sharepointIds property, which contains the listItemUniqueId and listId values used to correlate the file with SharePoint list items. Microsoft Graph does not return this property as part of the driveItem, so when enabled the command issues an additional request and merges the result into a single output. Possible values are: true, false. Default is true. | Optional |
+| include_sharepoint_ids | Whether to include the sharepointIds property, which contains the listItemUniqueId and listId values used to correlate the file with SharePoint list items. Microsoft Graph does not return this property as part of the driveItem, so when enabled the command issues an additional request and merges the result into a single output. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -1324,6 +1334,11 @@ Note: addressing the item by share_url requires the Files.ReadWrite.All applicat
 Retrieves activity statistics for a file or folder (driveItem), such as how many times it was viewed and by how many people.
 Analytics are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the analytics from the list item. This resolution is internal - only site_id and item_id are needed.
 Note: this command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error.
+
+#### Required Permissions
+
+Client Credentials Flow - `Sites.Read.All - Application` or `Sites.ReadWrite.All - Application`  
+Authorization Code Flow - `Sites.Read.All - Delegated` or `Sites.ReadWrite.All - Delegated`
 
 #### Base Command
 
