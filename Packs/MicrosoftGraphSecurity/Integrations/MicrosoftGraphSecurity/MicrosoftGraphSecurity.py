@@ -20,7 +20,13 @@ MAX_ITEMS_PER_RESPONSE = 50
 FETCH_INCIDENTS_TIMEOUT = 60
 TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 # Maps Microsoft Graph Security severity to Cortex XSOAR severity (used for both fetched alerts and incidents).
-SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "unknown": 0, "informational": 0.5}
+SEVERITY_MAP = {
+    "low": IncidentSeverity.LOW,
+    "medium": IncidentSeverity.MEDIUM,
+    "high": IncidentSeverity.HIGH,
+    "unknown": IncidentSeverity.UNKNOWN,
+    "informational": IncidentSeverity.INFO,
+}
 
 DataSourceType = {
     "USER": {

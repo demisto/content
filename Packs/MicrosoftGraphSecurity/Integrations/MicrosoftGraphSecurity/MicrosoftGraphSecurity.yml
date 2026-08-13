@@ -178,6 +178,7 @@ configuration:
   type: 0
   section: Collect
   required: false
+  defaultvalue: 1 day
 - display: Fetch limit per type
   additionalinfo: The maximum number of items to fetch per type. Applies to both alerts and incidents. Note that when fetching incidents, no more than 50 can be fetched per cycle, due to a Microsoft limitation.
   name: fetch_limit
