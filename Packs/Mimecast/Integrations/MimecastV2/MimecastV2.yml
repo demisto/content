@@ -2558,7 +2558,7 @@ script:
     - description: A new description for the policy.
       name: description
     - auto: PREDEFINED
-      description: The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email_domain.
+      description: The sender type by which to block senders in the policy. For email_domain, profile_group, and individual_email_address, supply the value in the fromValue argument. For address_attribute_value, supply the value in the from_attribute_id and from_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value.
       name: fromType
       predefined:
       - everyone
@@ -2569,7 +2569,7 @@ script:
       - address_attribute_value
       - individual_email_address
     - auto: PREDEFINED
-      description: The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email_domain.
+      description: The blocked receiver type by which to block receivers in the policy. For email_domain, profile_group, and individual_email_address, supply the value in the toValue argument. For address_attribute_value, supply the value in the to_attribute_id and to_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value.
       name: toType
       predefined:
       - everyone
