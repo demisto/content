@@ -51,7 +51,7 @@ configuration:
   type: 0
   defaultvalue: 3 days
   required: false
-  section: Collect  
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
@@ -65,7 +65,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.13.11879924
 tests:
 - MailListener-POP3 - Test
 fromversion: 5.0.0
