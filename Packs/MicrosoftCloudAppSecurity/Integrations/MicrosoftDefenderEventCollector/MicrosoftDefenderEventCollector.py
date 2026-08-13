@@ -18,7 +18,7 @@ from CommonServerUserPython import *  # noqa
 
 
 DEFAULT_LIMIT = 1000
-MAX_LIMIT = 1000
+MAX_LIMIT = 3000
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
 
 
@@ -443,6 +443,10 @@ def main(command: str, demisto_params: dict):
             demisto.debug(f"MD: Parsed the after arg: {after}")
 
         options = IntegrationOptions.parse_obj(demisto_params)
+
+        # TEMPORARY (XSUP-72224): force limit to 3000 to speed up backlog drain. REMOVE LATER.
+        options.limit = 3000
+        demisto.debug("MD: CUSTOM VERSION - using hardcoded limit: 3000")
         request = DefenderHTTPRequest.parse_obj(demisto_params)
         authenticator = DefenderAuthenticator.parse_obj(demisto_params)
 
