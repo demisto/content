@@ -768,7 +768,7 @@ class MsGraphClient:
         )
         return response.get("sharepointIds") or {}
 
-    def resolve_list_item_ids(self, site_id: str, item_id: str) -> tuple:
+    def resolve_list_item_ids(self, site_id: str, item_id: str) -> tuple[str, str]:
         """Return the (list_id, list_item_unique_id) that address a driveItem as a list item.
 
         Activities and analytics hang off the SharePoint list representation of an item, and
