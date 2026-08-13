@@ -93,10 +93,13 @@ def get_events(
     # Events are fetched in descending order by date.
     # For new fetches (not paginated), use the latest event's date as the "last_fetch".
     # For paginated fetches, retain the "last_fetch" from the previous batch.
+    # If no events were found in this window, advance the checkpoint to "end_date" (the point up to which we've
+    # confirmed there's nothing new) instead of losing the checkpoint, which would otherwise collapse the next
+    # fetch window down to "now minus 1 minute" and silently skip any events that occurred in the meantime.
     last_fetch = (
         last_run.get("last_fetch")
         if last_run.get("next_page")
-        else (fetched_events[0].get(DATE_KEYS.get(fetch_type, "")) if fetched_events else params.get("last_fetch"))
+        else (fetched_events[0].get(DATE_KEYS.get(fetch_type, "")) if fetched_events else end_date)
     )
     return fetched_events, {"last_fetch": last_fetch}
 
