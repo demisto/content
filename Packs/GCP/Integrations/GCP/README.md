@@ -1689,7 +1689,7 @@ Creates a new Google Cloud Storage (GCS) bucket in the specified project. Requir
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | The name of the bucket to create. | Required |
 | location | The location of the bucket (for example, US, EU, ASIA, us-central1). If not provided, the GCS API default (US) is used. | Optional |
 | bucket_acl | The predefined ACL to apply to the bucket. Possible values are: authenticatedRead, private, projectPrivate, publicRead, publicReadWrite. | Optional |
@@ -1719,7 +1719,7 @@ Deletes a Google Cloud Storage (GCS) bucket. The bucket must be empty unless the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | The name of the bucket to delete. | Required |
 | force | Whether to delete all objects in the bucket before deleting the bucket itself. When false, deleting a non-empty bucket fails. Possible values are: true, false. Default is false. | Optional |
 
@@ -1740,7 +1740,7 @@ Sets the public access prevention configuration on a GCS bucket. Required permis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | The name of the bucket. | Required |
 | public_access_prevention | The public access prevention setting to apply. "enforced" blocks all public access; "inherited" defers to the organization policy. Possible values are: enforced, inherited. Default is enforced. | Optional |
 
@@ -1765,7 +1765,7 @@ Uploads a War Room file (by entry ID) to a GCS bucket as an object. Required per
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | The name of the bucket to upload the object to. | Required |
 | object_name | The name to give the uploaded object in the bucket. | Required |
 | entry_id | The War Room entry ID of the file to upload. | Required |
@@ -1795,7 +1795,7 @@ Downloads an object from a GCS bucket and returns it as a War Room file. Require
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | The name of the bucket containing the object. | Required |
 | object_name | The name of the object to download. | Required |
 | saved_file_name | The name to give the downloaded file in the War Room. Defaults to the last path segment of the object name. | Optional |
@@ -1824,7 +1824,7 @@ Copies an object from a source bucket to a destination bucket. Required permissi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | source_bucket_name | The name of the source bucket containing the object to copy. | Required |
 | source_object_name | The name of the object to copy. | Required |
 | destination_bucket_name | The name of the destination bucket to copy the object to. | Required |
@@ -1853,7 +1853,7 @@ Deletes an object from a GCS bucket. Required permission: storage.objects.delete
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | The name of the bucket containing the object. | Required |
 | object_name | The name of the object to delete. | Required |
 | generation | The specific revision of the object to permanently delete instead of the latest version. | Optional |
@@ -1875,7 +1875,7 @@ Removes an ACL entry (entity) from a GCS object's access control list. If Unifor
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | The name of the bucket containing the object. | Required |
 | object_name | The name of the object to remove the ACL entry from. | Required |
 | entity | The entity to remove from the object's ACL (for example, allUsers, allAuthenticatedUsers, user-test@example.com). | Required |
