@@ -2093,54 +2093,73 @@ def test_finding_without_id_does_not_leak_none_into_last_ids(mocker):
     assert None not in new_last_ids.get("det1", []), "None must never be persisted as a same-second sibling id."
 
 
-FROZEN_NOW = datetime(2026, 8, 1, 12, 0, 0)
+def _fully_deduped_boundary_client(mocker, cursor_str):
+    """Build a client whose only finding is the already-seen boundary sibling."""
+    return create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det1"]}],
+        list_finding_ids_res=[{"FindingIds": ["finding_seen"]}],
+        get_findings_res=[{"Findings": [update_finding_id(FINDING.copy(), "finding_seen", updated_at=cursor_str)]}],
+    )[0]
 
 
-@pytest.mark.parametrize(
-    "age, should_advance",
-    [
-        # Just INSIDE the margin (younger than STALE_BOUNDARY_MARGIN) -> boundary is
-        # still current -> cursor stays pinned.
-        (STALE_BOUNDARY_MARGIN - timedelta(seconds=5), False),
-        # Just OUTSIDE the margin (older than STALE_BOUNDARY_MARGIN) -> boundary is
-        # stale -> cursor advances one second past it and seen ids are cleared.
-        (STALE_BOUNDARY_MARGIN + timedelta(seconds=5), True),
-    ],
-    ids=["just-inside-margin-pinned", "just-outside-margin-advanced"],
-)
-def test_stale_boundary_margin_edges_with_frozen_clock(mocker, age, should_advance):
+def test_stale_boundary_well_past_margin_advances_cursor(mocker):
     """
     Given:
-        A frozen wall clock and a fully-deduped boundary whose age relative to now
-        is either just inside or just outside STALE_BOUNDARY_MARGIN. The only
-        finding returned is already in last_ids at that second (nothing newer, not
-        limit-truncated).
+        A fully-deduped boundary whose second is one minute older than
+        STALE_BOUNDARY_MARGIN. The only finding returned is already in last_ids,
+        nothing is newer, and the page is not limit-truncated.
 
     When:
-        get_events runs with the clock frozen.
+        get_events runs.
 
     Then:
-        Inside the margin  -> the cursor is left pinned (a genuine later same-second
-                              update could still arrive) and seen ids are preserved.
-        Outside the margin -> the cursor advances exactly one second past the drained
-                              boundary and seen ids are cleared, breaking the stall.
+        The stale boundary advances exactly one second past the drained second and the
+        now-abandoned seen ids are cleared, breaking the stall.
 
     Reference:
         AWSGuardDutyEventCollector.get_events — the time-gated fully-deduped
         stale-boundary advance (STALE_BOUNDARY_MARGIN).
     """
-    mocker.patch("AWSGuardDutyEventCollector.datetime.utcnow", return_value=FROZEN_NOW)
-
-    now = FROZEN_NOW
-    boundary_second = now - age
+    boundary_second = datetime.utcnow() - (STALE_BOUNDARY_MARGIN + timedelta(minutes=1))
     cursor_str = boundary_second.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    mocked_client = _fully_deduped_boundary_client(mocker, cursor_str)
 
-    mocked_client, _, _, _ = create_mocked_client(
-        mocker=mocker,
-        list_detectors_res=[{"DetectorIds": ["det1"]}],
-        list_finding_ids_res=[{"FindingIds": ["finding_seen"]}],
-        get_findings_res=[{"Findings": [update_finding_id(FINDING.copy(), "finding_seen", updated_at=cursor_str)]}],
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=mocked_client,
+        collect_from={"det1": cursor_str},
+        collect_from_default=datetime(2026, 8, 1, 0, 0, 0),
+        last_ids={"det1": ["finding_seen"]},
+        severity="Low",
+        limit=10,
     )
+
+    expected_next = (boundary_second.replace(microsecond=0) + timedelta(seconds=1)).isoformat()
+    assert events == [], "The already-seen boundary finding must never be re-ingested."
+    assert new_collect_from == {"det1": expected_next}, "A stale boundary must advance one second past the drained second."
+    assert new_last_ids == {"det1": []}, "Stale-boundary advance must clear the now-abandoned seen ids."
+
+
+def test_current_boundary_within_margin_stays_pinned(mocker):
+    """
+    Given:
+        A fully-deduped boundary whose second is one minute inside
+        STALE_BOUNDARY_MARGIN. The only finding returned is already in last_ids,
+        nothing is newer, and the page is not limit-truncated.
+
+    When:
+        get_events runs.
+
+    Then:
+        The cursor is left pinned (a genuine later same-second update could still
+        arrive) and the seen ids are preserved.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — a recent boundary stays pinned.
+    """
+    boundary_second = datetime.utcnow() - (STALE_BOUNDARY_MARGIN - timedelta(minutes=1))
+    cursor_str = boundary_second.strftime("%Y-%m-%dT%H:%M:%S.%f")
+    mocked_client = _fully_deduped_boundary_client(mocker, cursor_str)
 
     events, new_last_ids, new_collect_from = get_events(
         aws_client=mocked_client,
@@ -2152,10 +2171,5 @@ def test_stale_boundary_margin_edges_with_frozen_clock(mocker, age, should_advan
     )
 
     assert events == [], "The already-seen boundary finding must never be re-ingested."
-    if should_advance:
-        expected_next = (boundary_second.replace(microsecond=0) + timedelta(seconds=1)).isoformat()
-        assert new_collect_from == {"det1": expected_next}, "A stale boundary must advance one second past the drained second."
-        assert new_last_ids == {"det1": []}, "Stale-boundary advance must clear the now-abandoned seen ids."
-    else:
-        assert new_collect_from == {"det1": cursor_str}, "A current boundary must stay pinned."
-        assert new_last_ids == {"det1": ["finding_seen"]}, "A pinned boundary must preserve its seen ids."
+    assert new_collect_from == {"det1": cursor_str}, "A current boundary must stay pinned."
+    assert new_last_ids == {"det1": ["finding_seen"]}, "A pinned boundary must preserve its seen ids."
