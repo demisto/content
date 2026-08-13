@@ -190,16 +190,16 @@ def test_fetch_alerts_command(mocker, test_case):
     mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19 08:14:21", "never mind"))
     test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
     mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
-    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", service_sources="", last_run={})
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", service_sources="", last_run={})
     assert len(alerts) == 3
     assert alerts[0].get("severity") == 2
     assert alerts[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
 
-    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=1, filter="", service_sources="", last_run={})
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=1, extra_filter="", service_sources="", last_run={})
     assert len(alerts) == 1
     assert alerts[0].get("name") == "test alert - da637218501473413212_-1554891308"
 
-    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=0, filter="", service_sources="", last_run={})
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=0, extra_filter="", service_sources="", last_run={})
     assert len(alerts) == 0
 
 
@@ -237,7 +237,7 @@ def test_fetch_incidents_command(mocker):
     }
     mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
 
-    incidents, new_last_run = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", last_run={})
+    incidents, new_last_run = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run={})
 
     assert len(incidents) == 2
     assert incidents[0].get("name") == "Incident One - 1"
@@ -270,7 +270,7 @@ def test_fetch_incidents_command_dedup_by_last_run(mocker):
         client_mocker,
         fetch_time="1 hour",
         fetch_limit=10,
-        filter="",
+        extra_filter="",
         last_run={"time": "2020-04-20T10:00:00.0000000Z"},
     )
 
@@ -419,7 +419,9 @@ def test_fetch_incidents_does_not_mutate_last_run(mocker):
     mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
 
     original_last_run = {"time": "2020-04-20T10:00:00.0000000Z"}
-    _, new_last_run = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", last_run=original_last_run)
+    _, new_last_run = fetch_incidents(
+        client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run=original_last_run
+    )
 
     assert original_last_run == {"time": "2020-04-20T10:00:00.0000000Z"}
     assert new_last_run is not original_last_run
@@ -449,7 +451,7 @@ def test_fetch_alerts_does_not_mutate_last_run(mocker):
         client_mocker,
         fetch_time="1 hour",
         fetch_limit=10,
-        filter="",
+        extra_filter="",
         service_sources="",
         last_run=original_last_run,
     )

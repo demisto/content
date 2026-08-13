@@ -1195,7 +1195,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
             client,
             fetch_time=fetch_time,
             fetch_limit=int(fetch_limit),
-            filter=fetch_alerts_filter,
+            extra_filter=fetch_alerts_filter,
             service_sources=fetch_service_sources,
             last_run=last_run.get("alerts_last_run", {}),
         )
@@ -1208,7 +1208,7 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
             client,
             fetch_time=fetch_time,
             fetch_limit=int(fetch_limit),
-            filter=fetch_incidents_filter,
+            extra_filter=fetch_incidents_filter,
             last_run=last_run.get("incidents_last_run", {}),
         )
         demisto.debug(f"Fetched {len(incidents)} incidents. New incidents last run: {incidents_last_run}.")
@@ -1218,7 +1218,9 @@ def fetch_incidents_and_alerts(client: MsGraphClient, params: dict) -> list:
     return fetched
 
 
-def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, last_run: dict) -> tuple[list, dict]:
+def fetch_incidents(
+    client: MsGraphClient, fetch_time: str, fetch_limit: int, extra_filter: str, last_run: dict
+) -> tuple[list, dict]:
     """
     Fetches up to `fetch_limit` incidents created within the fetch time window.
     Each fetched incident includes its related alerts as raw data.
@@ -1226,7 +1228,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
         client (MsGraphClient): MsGraphClient client object.
         fetch_time (str): how far back to fetch on the first run (e.g. "1 day").
         fetch_limit (int): the maximum number of incidents to fetch.
-        filter (str): an optional extra filter to add to the time window.
+        extra_filter (str): an optional extra filter to add to the time window.
         last_run (dict): the incidents last run from the previous fetch.
     Returns:
         tuple[list, dict]: the fetched incidents, and the updated incidents last run.
@@ -1240,8 +1242,8 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
     # Fetch incidents within the time window (plus the optional user filter), and include their alerts.
     # $top is set to fetch_limit so we request up to fetch_limit incidents in a single request.
     filter_expression = f"createdDateTime gt {time_from} and createdDateTime le {time_to}"
-    if filter:
-        filter_expression += f" and {filter}"
+    if extra_filter:
+        filter_expression += f" and {extra_filter}"
     url_suffix = f"security/incidents?$expand=alerts&$top={fetch_limit}&$filter={filter_expression}&$orderby=createdDateTime asc"
     # This header maps unknownFutureValue enum values to the appropriate real value (e.g. new service sources).
     headers = {"Prefer": "include-unknown-enum-members"}
@@ -1273,7 +1275,7 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
 
 
 def fetch_alerts(
-    client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, service_sources: str, last_run: dict
+    client: MsGraphClient, fetch_time: str, fetch_limit: int, extra_filter: str, service_sources: str, last_run: dict
 ) -> tuple[list, dict]:
     """
     Fetches up to `fetch_limit` alerts created within the fetch time window, matching the given filters.
@@ -1281,13 +1283,13 @@ def fetch_alerts(
         client (MsGraphClient): MsGraphClient client object.
         fetch_time (str): how far back to fetch on the first run (e.g. "1 day").
         fetch_limit (int): the maximum number of alerts to fetch.
-        filter (str): an optional user filter.
+        extra_filter (str): an optional user filter.
         service_sources (str): a comma separated list of service sources to fetch alerts by.
         last_run (dict): the alerts last run from the previous fetch.
     Returns:
         tuple[list, dict]: the fetched alerts, and the updated alerts last run.
     """
-    filter_query = create_filter_query(filter, service_sources)
+    filter_query = create_filter_query(extra_filter, service_sources)
 
     # Copy the input last_run so we never mutate the caller's argument.
     new_last_run = dict(last_run) if last_run else {"time": parse_date_range(fetch_time, date_format=TIMESTAMP_FORMAT)[0]}
