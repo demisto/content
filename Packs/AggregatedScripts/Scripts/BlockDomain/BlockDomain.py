@@ -1,3 +1,4 @@
+import ast
 import hashlib
 import re
 from typing import Any
@@ -14,8 +15,13 @@ OBJECT_NAME_PREFIX = "Cortex-"
 # PAN-OS object names are limited to 63 characters. Reserve room for the prefix and a hash suffix on overflow.
 MAX_OBJECT_NAME_LENGTH = 63
 HASH_SUFFIX_LENGTH = 8
+# Characters that are not allowed in a PAN-OS object name are normalised to a hyphen.
+OBJECT_NAME_SANITIZE_REGEX = re.compile(r"[^A-Za-z0-9.\-]")
 
 PRE_POST = "pre-rulebase"  # Q2: hard-coded for v1 (may become an argument later).
+
+# A permissive FQDN matcher: labels of alphanumerics/hyphens separated by dots, at least one dot.
+FQDN_REGEX = re.compile(r"^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))+$")
 
 # Status values.
 STATUS_DONE = "Done"
@@ -33,33 +39,48 @@ ACTION_MODIFIED = "Modified"
 ACTION_UNCHANGED = "Unchanged"
 ACTION_SIGNIFICANCE = {ACTION_UNCHANGED: 0, ACTION_MODIFIED: 1, ACTION_CREATED: 2}
 
-# A permissive FQDN matcher: labels of alphanumerics/hyphens separated by dots, at least one dot.
-FQDN_REGEX = re.compile(r"^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))+$")
-
-# Controls the polling loop, mirroring the BlockExternalIp pattern.
-POLLING = True
+# Controls the polling loop, mirroring the BlockExternalIp pattern. It starts False and is only
+# switched on by a polling function when a job is actually in flight.
+POLLING = False
 
 """ INPUT-VALIDATION / NAMING HELPERS """
 
 
 def is_wildcard(domain: str) -> bool:
-    """A domain is treated as a wildcard (and therefore unsupported) if it contains an asterisk."""
+    """Check whether a domain is a wildcard (unsupported).
+
+    Args:
+        domain (str): The domain to check.
+    Returns:
+        True if the domain contains an asterisk, False otherwise.
+    """
     return "*" in domain
 
 
 def is_valid_fqdn(domain: str) -> bool:
-    """Return True if the value looks like a valid, non-wildcard FQDN."""
+    """Check whether a value is a valid, non-wildcard FQDN.
+
+    Args:
+        domain (str): The domain to validate.
+    Returns:
+        True if the value looks like a valid FQDN, False otherwise.
+    """
     return bool(FQDN_REGEX.match(domain))
 
 
 def derive_object_name(domain: str) -> str:
-    """Derive a deterministic address-object name from a domain.
+    """Derive a deterministic PAN-OS address-object name from a domain.
 
     The name is a pure function of the domain so re-runs are idempotent. On overflow of the PAN-OS
     max object-name length, the sanitised body is truncated and a short deterministic hash suffix is
     appended to keep the name unique.
+
+    Args:
+        domain (str): The domain to derive the object name from.
+    Returns:
+        The derived object name (for example, 'Cortex-evil.example.com').
     """
-    sanitised = re.sub(r"[^A-Za-z0-9.\-]", "-", domain).strip("-")
+    sanitised = OBJECT_NAME_SANITIZE_REGEX.sub("-", domain).strip("-")
     candidate = f"{OBJECT_NAME_PREFIX}{sanitised}"
     if len(candidate) <= MAX_OBJECT_NAME_LENGTH:
         return candidate
@@ -71,7 +92,13 @@ def derive_object_name(domain: str) -> str:
 
 
 def most_significant_action(actions: list) -> str:
-    """Return the most significant action from a list (Created > Modified > Unchanged)."""
+    """Return the most significant action from a list.
+
+    Args:
+        actions (list): A list of action strings.
+    Returns:
+        The most significant action (Created > Modified > Unchanged).
+    """
     if not actions:
         return ACTION_UNCHANGED
     return max(actions, key=lambda action: ACTION_SIGNIFICANCE.get(action, 0))
@@ -87,7 +114,20 @@ def build_result_row(
     instance: str = "",
     rule_name: str = "",
 ) -> dict:
-    """Assemble a single BlockDomainResults row in the canonical field order."""
+    """Assemble a single BlockDomainResults row.
+
+    Args:
+        domain (str): The processed domain.
+        brand (str): The brand used.
+        status (str): The lifecycle status.
+        result (str): Success or Failed.
+        action (str): Created, Modified, or Unchanged.
+        message (str): A human-readable message.
+        instance (str): The integration instance.
+        rule_name (str): The rule name used (empty if none).
+    Returns:
+        A dict representing a single result row.
+    """
     return {
         "Domain": domain,
         "Brand": brand,
@@ -101,31 +141,36 @@ def build_result_row(
 
 
 def validate_domains(domain_list: list) -> tuple[list, list]:
-    """Split the input into (valid_domains, skipped_rows).
+    """Split the input into valid domains and failed-validation rows.
 
-    Wildcard and invalid entries never reach a vendor; they produce a per-row Skipped result while
-    the rest of the list continues.
+    Wildcard and invalid entries fail validation and never reach a vendor; they produce a per-row
+    Failed result while the rest of the list continues.
+
+    Args:
+        domain_list (list): The list of domains to validate.
+    Returns:
+        A tuple of (valid_domains, failed_rows).
     """
     valid_domains: list = []
-    skipped_rows: list = []
+    failed_rows: list = []
     for domain in domain_list:
         if is_wildcard(domain):
-            skipped_rows.append(
+            failed_rows.append(
                 build_result_row(
                     domain=domain,
                     brand="",
-                    status=STATUS_SKIPPED,
+                    status=STATUS_FAILED,
                     result=RESULT_FAILED,
                     action=ACTION_UNCHANGED,
                     message=f"Wildcard domain '{domain}' is not supported by this script; skipped.",
                 )
             )
         elif not is_valid_fqdn(domain):
-            skipped_rows.append(
+            failed_rows.append(
                 build_result_row(
                     domain=domain,
                     brand="",
-                    status=STATUS_SKIPPED,
+                    status=STATUS_FAILED,
                     result=RESULT_FAILED,
                     action=ACTION_UNCHANGED,
                     message=f"Invalid FQDN '{domain}' - skipped.",
@@ -133,11 +178,15 @@ def validate_domains(domain_list: list) -> tuple[list, list]:
             )
         else:
             valid_domains.append(domain)
-    return valid_domains, skipped_rows
+    return valid_domains, failed_rows
 
 
 def get_enabled_brands() -> set:
-    """Return the set of brands that have at least one active instance."""
+    """Return the set of brands that have at least one active instance.
+
+    Returns:
+        A set of enabled brand names.
+    """
     modules = demisto.getModules()
     enabled_brands = {module.get("brand") for module in modules.values() if module.get("state") == "active"}
     demisto.debug(f"BlockDomain: the enabled modules are: {enabled_brands=}")
@@ -148,7 +197,14 @@ def get_enabled_brands() -> set:
 
 
 def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
-    """Execute a command and return its raw entries."""
+    """Execute a command and return its raw entries.
+
+    Args:
+        command_name (str): The command to execute.
+        args (dict): The command arguments.
+    Returns:
+        The raw list of command entries.
+    """
     demisto.debug(f"BlockDomain: Executing command: {command_name} with {args=}")
     res = demisto.executeCommand(command_name, args)
     demisto.debug(f"BlockDomain: The response of {command_name} is {res}")
@@ -156,7 +212,14 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
 
 
 def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | list:
-    """Get the relevant context object from the execute_command response, tolerating suffixed keys."""
+    """Get the relevant context object from the execute_command response, tolerating suffixed keys.
+
+    Args:
+        original_context (dict): The 'EntryContext' from the command response.
+        key (str): The key to extract.
+    Returns:
+        A dict or list that is the relevant command context.
+    """
     if not original_context:
         return {}
     if relevant_context := original_context.get(key, {}):
@@ -167,21 +230,372 @@ def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | l
     return {}
 
 
-def is_error_entry(entry: dict) -> bool:
-    """Return True if an execute_command entry is an error entry."""
-    return isinstance(entry, dict) and entry.get("Type") == entryTypes["error"]
+""" PAN-OS FLOW """
 
 
-def get_entry_error(entry: dict) -> str:
-    """Extract a human-readable error message from an error entry."""
-    return str(entry.get("Contents", "Unknown error"))
+class DynamicGroupError(Exception):
+    """Raised when the target address-group exists and is dynamic (customer-managed)."""
 
 
-def as_list(value: Any) -> list:
-    """Normalise a context value that may be a dict, list, or None into a list."""
-    if value is None:
-        return []
-    return value if isinstance(value, list) else [value]
+class PanOs:
+    """Implements the PAN-OS static-address-group domain-blocking flow.
+
+    The address-group and the deny rule are singletons (their names are constant), so they are
+    ensured once per run. Each valid domain then gets an FQDN address-object that is added to the
+    group. Commit + optional push happen once after all domains are processed. Every write records
+    its effect (Created / Modified / Unchanged) so the aggregated per-domain row reflects the most
+    significant change.
+    """
+
+    def __init__(self, args: dict):
+        """Initialize the PanOs flow.
+
+        Args:
+            args (dict): The flow arguments (domains, rule_name, address_group, tag, etc.).
+        """
+        self.args = args
+        self.brand = "Panorama"
+        self.rule_name = args["rule_name"]
+        self.address_group = args["address_group"]
+        self.tag = args.get("tag", "")
+        self.log_forwarding_name = args.get("log_forwarding_name", "")
+        self.domains: list = args.get("domains", [])
+        self.responses: list = []
+
+    # ---- execution helper ----------------------------------------------
+
+    def execute_or_raise(self, command_name: str, command_args: dict, error_prefix: str) -> list[dict]:
+        """Run a command, record its response, and raise on error.
+
+        Args:
+            command_name (str): The command to execute.
+            command_args (dict): The command arguments.
+            error_prefix (str): A prefix for the raised error message.
+        Returns:
+            The raw command entries.
+        """
+        res = run_execute_command(command_name, command_args)
+        self.responses.append(res)
+        if is_error(res):
+            raise DemistoException(f"{error_prefix}: {get_error(res)}")
+        return res
+
+    # ---- context probes -------------------------------------------------
+
+    def address_object_exists(self, object_name: str) -> bool:
+        """Check whether an address-object already exists.
+
+        Args:
+            object_name (str): The address-object name to probe.
+        Returns:
+            True if the object exists, False otherwise.
+        """
+        res = run_execute_command("pan-os-get-address", {"name": object_name})
+        if is_error(res):
+            # get-address raises when the object is absent; treat that as 'does not exist'.
+            demisto.debug(f"BlockDomain: address '{object_name}' not found ({get_error(res)}).")
+            return False
+        self.responses.append(res)
+        context = get_relevant_context(res[0].get("EntryContext", {}), "Panorama.Addresses")
+        items = context if isinstance(context, list) else [context]
+        return any(item.get("Name") == object_name for item in items)
+
+    def get_address_group(self) -> dict | None:
+        """Return the target address-group context dict, or None if it does not exist.
+
+        Returns:
+            The address-group context dict, or None.
+        """
+        res = self.execute_or_raise("pan-os-list-address-groups", {}, "Failed to list address groups")
+        context = get_relevant_context(res[0].get("EntryContext", {}), "Panorama.AddressGroups")
+        items = context if isinstance(context, list) else [context]
+        for item in items:
+            if item.get("Name") == self.address_group:
+                return item
+        return None
+
+    def rule_destinations(self) -> tuple[bool, list]:
+        """Return whether the rule exists and its current destination list.
+
+        Returns:
+            A tuple of (rule_exists, destination_list).
+        """
+        res = self.execute_or_raise("pan-os-list-rules", {"pre_post": PRE_POST}, "Failed to list rules")
+        context = get_relevant_context(res[0].get("EntryContext", {}), "Panorama.SecurityRule")
+        items = context if isinstance(context, list) else [context]
+        for item in items:
+            if item.get("Name") == self.rule_name:
+                destination = item.get("Destination")
+                destination_list = destination if isinstance(destination, list) else [destination] if destination else []
+                return True, destination_list
+        return False, []
+
+    # ---- single-run writes (group + rule are singletons) ----------------
+
+    def ensure_group(self, group_context: dict | None) -> None:
+        """Ensure the static address-group exists, aborting if it is dynamic.
+
+        Args:
+            group_context (dict | None): The existing group context, or None if missing.
+        """
+        if group_context is None:
+            create_args: dict = {"name": self.address_group, "type": "static"}
+            if self.tag:
+                create_args["tags"] = self.tag
+            self.execute_or_raise(
+                "pan-os-create-address-group", create_args, f"Failed to create address-group '{self.address_group}'"
+            )
+            return
+        group_type = (group_context.get("Type") or "").lower()
+        if group_type == "dynamic":
+            raise DynamicGroupError(
+                f"Address-group '{self.address_group}' already exists as dynamic; "
+                f"will not modify a customer-managed dynamic group."
+            )
+
+    def ensure_rule(self, rule_present: bool, rule_destinations: list) -> None:
+        """Ensure the deny rule exists, points at the group, and sits at the top.
+
+        Args:
+            rule_present (bool): Whether the rule already exists.
+            rule_destinations (list): The rule's current destination list.
+        """
+        if not rule_present:
+            create_rule_args: dict = {
+                "rulename": self.rule_name,
+                "action": "deny",
+                "source": "any",
+                "destination": self.address_group,
+                "application": "any",
+                "service": "any",
+                "pre_post": PRE_POST,
+                "where": "top",
+            }
+            if self.tag:
+                create_rule_args["tags"] = self.tag
+            if self.log_forwarding_name:
+                create_rule_args["log_forwarding"] = self.log_forwarding_name
+            self.execute_or_raise("pan-os-create-rule", create_rule_args, f"Failed to create rule '{self.rule_name}'")
+        elif self.address_group not in rule_destinations:
+            # The rule exists but does not yet reference our group - add it without replacing existing destinations.
+            self.execute_or_raise(
+                "pan-os-edit-rule",
+                {
+                    "rulename": self.rule_name,
+                    "element_to_change": "destination",
+                    "element_value": self.address_group,
+                    "behaviour": "add",
+                    "pre_post": PRE_POST,
+                },
+                f"Failed to add group to rule '{self.rule_name}'",
+            )
+        # Always ensure the rule sits at the top of the rulebase.
+        self.execute_or_raise(
+            "pan-os-move-rule",
+            {"rulename": self.rule_name, "where": "top", "pre_post": PRE_POST},
+            f"Failed to move rule '{self.rule_name}' to top",
+        )
+
+    def ensure_domain(self, domain: str, current_members: list) -> tuple[str, str]:
+        """Ensure a single domain's address-object exists and belongs to the group.
+
+        Args:
+            domain (str): The domain to block.
+            current_members (list): The group's current member names.
+        Returns:
+            A tuple of (action, message) describing the effect for this domain.
+        """
+        object_name = derive_object_name(domain)
+        actions: list = []
+        messages: list = []
+
+        if self.address_object_exists(object_name):
+            actions.append(ACTION_UNCHANGED)
+            messages.append(f"Address-object '{object_name}' already exists.")
+        else:
+            create_args: dict = {"name": object_name, "fqdn": domain}
+            if self.tag:
+                create_args["tag"] = self.tag
+            self.execute_or_raise("pan-os-create-address", create_args, f"Failed to create address-object '{object_name}'")
+            actions.append(ACTION_CREATED)
+            messages.append(f"Address-object '{object_name}' created for '{domain}'.")
+
+        if object_name in current_members:
+            actions.append(ACTION_UNCHANGED)
+            messages.append(f"Already a member of '{self.address_group}'.")
+        else:
+            self.execute_or_raise(
+                "pan-os-edit-address-group",
+                {"name": self.address_group, "type": "static", "element_to_add": object_name},
+                f"Failed to add object to address-group '{self.address_group}'",
+            )
+            current_members.append(object_name)
+            actions.append(ACTION_MODIFIED)
+            messages.append(f"Added to '{self.address_group}'.")
+
+        return most_significant_action(actions), " ".join(messages)
+
+    # ---- orchestration --------------------------------------------------
+
+    def process_domains(self) -> list:
+        """Ensure the group and rule once, then loop over domains adding each object.
+
+        Returns:
+            The list of BlockDomainResults rows for the processed domains.
+        """
+        rows: list = []
+        try:
+            group_context = self.get_address_group()
+            self.ensure_group(group_context)
+            current_members = []
+            if group_context is not None:
+                members = group_context.get("Addresses")
+                current_members = list(members) if isinstance(members, list) else [members] if members else []
+
+            rule_present, rule_destinations = self.rule_destinations()
+            self.ensure_rule(rule_present, rule_destinations)
+
+            for domain in self.domains:
+                action, message = self.ensure_domain(domain, current_members)
+                rows.append(
+                    build_result_row(
+                        domain=domain,
+                        brand=self.brand,
+                        status=STATUS_DONE,
+                        result=RESULT_SUCCESS,
+                        action=action,
+                        rule_name=self.rule_name,
+                        message=f"{message} Rule '{self.rule_name}' enforced at top.",
+                    )
+                )
+        except DynamicGroupError as dyn_err:
+            # Abort the whole brand for this run; other brands (future) would continue.
+            for domain in self.domains:
+                rows.append(
+                    build_result_row(
+                        domain=domain,
+                        brand=self.brand,
+                        status=STATUS_SKIPPED,
+                        result=RESULT_SUCCESS,
+                        action=ACTION_UNCHANGED,
+                        rule_name="",
+                        message=str(dyn_err),
+                    )
+                )
+        except Exception as ex:
+            for domain in self.domains:
+                rows.append(
+                    build_result_row(
+                        domain=domain,
+                        brand=self.brand,
+                        status=STATUS_FAILED,
+                        result=RESULT_FAILED,
+                        action=ACTION_UNCHANGED,
+                        rule_name=self.rule_name,
+                        message=f"Failed to block '{domain}' on Panorama: {ex!s}",
+                    )
+                )
+        return rows
+
+    def pan_os_is_panorama(self) -> bool:
+        """Check whether the instance is a Panorama (vs a single firewall).
+
+        Returns:
+            True if the instance model is 'Panorama', False otherwise.
+        """
+        res = run_execute_command("pan-os", {"cmd": "<show><system><info></info></system></show>", "type": "op"})
+        self.responses.append(res)
+        context = get_relevant_context(res[0].get("EntryContext", {}), "Panorama.Command")
+        model = context.get("response", {}).get("result", {}).get("system", {}).get("model", "")  # type: ignore
+        return model == "Panorama"
+
+    def reduce_responses(self) -> list:
+        """Reduce the accumulated responses to the parts needed across polling cycles.
+
+        Returns:
+            A list of reduced response entries suitable for serialization to context.
+        """
+        reduced = []
+        for res in self.responses:
+            reduced.append(
+                [
+                    {
+                        "HumanReadable": entry.get("HumanReadable"),
+                        "Contents": entry.get("Contents"),
+                        "Type": entry.get("Type"),
+                        "Metadata": entry.get("Metadata"),
+                    }
+                    for entry in res
+                ]
+            )
+        return reduced
+
+    def manage_pan_os_flow(self) -> Any:  # pragma: no cover
+        """Manage the PAN-OS flow across polling cycles.
+
+        On re-entry (a push or commit job is in flight) the flow jumps straight to the relevant
+        status poller. Otherwise it runs the object/group/rule flow and starts the commit.
+
+        Returns:
+            A PollResult when a job is in flight, or the list of result rows when finished.
+        """
+        incident_context = demisto.context()
+        commit_job_id = self.args.get("commit_job_id") or demisto.get(incident_context, "commit_job_id")
+
+        # State: a push job is in flight -> poll its status.
+        if push_job_id := demisto.get(incident_context, "push_job_id"):
+            self.responses = ast.literal_eval(incident_context.get("panorama_responses", "[]") or "[]")
+            self.args["push_job_id"] = push_job_id
+            res_push_status = pan_os_push_status(self.args, self.responses)
+            if not POLLING:
+                return self.finish()
+            demisto.setContext("panorama_responses", str(self.reduce_responses()))
+            return res_push_status
+
+        # State: a commit job is in flight -> poll its status, then maybe push.
+        if commit_job_id:
+            self.args["commit_job_id"] = commit_job_id
+            self.responses = ast.literal_eval(incident_context.get("panorama_responses", "[]") or "[]")
+            poll_commit_status = pan_os_commit_status(self.args, self.responses)
+            if not POLLING:
+                if self.pan_os_is_panorama():
+                    poll_push = pan_os_push_to_device(self.args, self.responses)
+                    if not POLLING:
+                        return self.finish()
+                    demisto.setContext("panorama_responses", str(self.reduce_responses()))
+                    return poll_push
+                return self.finish()
+            demisto.setContext("panorama_responses", str(self.reduce_responses()))
+            return poll_commit_status
+
+        # State: beginning of the flow.
+        rows = self.process_domains()
+        demisto.setContext("block_domain_rows", str(rows))
+        made_changes = any(row["Status"] == STATUS_DONE for row in rows)
+        auto_commit = argToBoolean(self.args.get("auto_commit", True))
+        if made_changes and auto_commit:
+            poll_commit = pan_os_commit(self.args, self.responses)
+            if not POLLING:
+                return self.finish()
+            demisto.setContext("panorama_responses", str(self.reduce_responses()))
+            return poll_commit
+        return rows
+
+    def finish(self) -> list:  # pragma: no cover
+        """Clean up polling context and return the final result rows.
+
+        Returns:
+            The list of BlockDomainResults rows accumulated for the run.
+        """
+        rows_raw = demisto.context().get("block_domain_rows", "[]")
+        demisto.setContext("commit_job_id", "")
+        demisto.setContext("push_job_id", "")
+        demisto.setContext("panorama_responses", "")
+        demisto.setContext("block_domain_rows", "")
+        try:
+            return ast.literal_eval(rows_raw) if rows_raw else []
+        except (ValueError, SyntaxError):
+            return []
 
 
 """ POLLING FUNCTIONS (commit / push) """
@@ -189,7 +603,14 @@ def as_list(value: Any) -> list:
 
 @polling_function(name="block-domain", interval=60, timeout=1200)
 def pan_os_commit(args: dict, responses: list) -> PollResult:
-    """Execute pan-os-commit and start polling on the returned job."""
+    """Execute pan-os-commit.
+
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the commands executed so far.
+    Returns:
+        The PollResult object.
+    """
     res_commit = run_execute_command("pan-os-commit", {"polling": True})
     polling_args = res_commit[0].get("Metadata", {}).get("pollingArgs", {})
     job_id = polling_args.get("commit_job_id")
@@ -223,7 +644,14 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
 
 @polling_function(name="block-domain", interval=60, timeout=1200)
 def pan_os_commit_status(args: dict, responses: list) -> PollResult:
-    """Check the status of the commit job in pan-os."""
+    """Check the status of the commit job in pan-os.
+
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the previous command.
+    Returns:
+        The PollResult object.
+    """
     commit_job_id = args["commit_job_id"]
     res_commit_status = run_execute_command("pan-os-commit-status", {"job_id": commit_job_id})
     responses.append(res_commit_status)
@@ -246,7 +674,14 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
 
 @polling_function(name="block-domain", interval=60, timeout=1200)
 def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
-    """Execute pan-os-push-to-device-group and start polling on the returned job."""
+    """Execute pan-os-push-to-device-group.
+
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the previous command.
+    Returns:
+        The PollResult object.
+    """
     res_push_to_device = run_execute_command("pan-os-push-to-device-group", {"polling": True})
     responses.append(res_push_to_device)
     polling_args = res_push_to_device[0].get("Metadata", {}).get("pollingArgs", {})
@@ -275,7 +710,14 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
 
 @polling_function(name="block-domain", interval=60, timeout=1200)
 def pan_os_push_status(args: dict, responses: list) -> PollResult:
-    """Check the status of the push job in pan-os."""
+    """Check the status of the push job in pan-os.
+
+    Args:
+        args (dict): The arguments of the function.
+        responses (list): The responses of the previous command.
+    Returns:
+        The PollResult object.
+    """
     push_job_id = args["push_job_id"]
     res_push_status = run_execute_command("pan-os-push-status", {"job_id": push_job_id})
     responses.append(res_push_status)
@@ -296,268 +738,6 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
     )
 
 
-""" PAN-OS FLOW """
-
-
-class DynamicGroupError(Exception):
-    """Raised when the target address-group exists and is dynamic (customer-managed)."""
-
-
-class PanOs:
-    """Implements the PAN-OS static-address-group domain-blocking flow.
-
-    For each valid domain the flow probes/creates an FQDN address-object, ensures it belongs to the
-    static address-group, and ensures a single deny rule points at the group. Commit + optional push
-    happen once after all domains are processed. Every step records its effect (Created / Modified /
-    Unchanged) so the aggregated per-domain row reflects the most significant change.
-    """
-
-    def __init__(self, args: dict):
-        self.args = args
-        self.brand = "Panorama"
-        self.rule_name = args["rule_name"]
-        self.address_group = args["address_group"]
-        self.tag = args.get("tag", "")
-        self.log_forwarding_name = args.get("log_forwarding_name", "")
-        self.domains: list = args.get("domains", [])
-        self.responses: list = []
-        # Per-domain accumulated actions and messages, keyed by domain.
-        self.domain_actions: dict = {domain: [] for domain in self.domains}
-        self.domain_messages: dict = {domain: [] for domain in self.domains}
-
-    # ---- context probes -------------------------------------------------
-
-    def address_object_exists(self, object_name: str) -> bool:
-        """Return True if an address-object with this name already exists."""
-        res = run_execute_command("pan-os-get-address", {"name": object_name})
-        entry = res[0] if res else {}
-        if is_error_entry(entry):
-            # get-address raises when the object is absent; treat that as 'does not exist'.
-            demisto.debug(f"BlockDomain: address '{object_name}' not found ({get_entry_error(entry)}).")
-            return False
-        self.responses.append(res)
-        context = get_relevant_context(entry.get("EntryContext", {}), "Panorama.Addresses")
-        return any(item.get("Name") == object_name for item in as_list(context))
-
-    def get_address_group(self) -> dict | None:
-        """Return the target address-group context dict, or None if it does not exist."""
-        res = run_execute_command("pan-os-list-address-groups", {})
-        self.responses.append(res)
-        entry = res[0] if res else {}
-        if is_error_entry(entry):
-            raise DemistoException(f"Failed to list address groups: {get_entry_error(entry)}")
-        context = get_relevant_context(entry.get("EntryContext", {}), "Panorama.AddressGroups")
-        for item in as_list(context):
-            if item.get("Name") == self.address_group:
-                return item
-        return None
-
-    def group_members(self, group_context: dict) -> list:
-        """Return the current static-group member names."""
-        return as_list(group_context.get("Addresses"))
-
-    def rule_exists(self) -> bool:
-        """Return True if a rule named self.rule_name already exists in the rulebase."""
-        res = run_execute_command("pan-os-list-rules", {"pre_post": PRE_POST})
-        self.responses.append(res)
-        entry = res[0] if res else {}
-        if is_error_entry(entry):
-            raise DemistoException(f"Failed to list rules: {get_entry_error(entry)}")
-        context = get_relevant_context(entry.get("EntryContext", {}), "Panorama.SecurityRule")
-        return any(item.get("Name") == self.rule_name for item in as_list(context))
-
-    # ---- writes ---------------------------------------------------------
-
-    def ensure_address_object(self, domain: str, object_name: str) -> None:
-        """Create the FQDN address-object if it does not already exist."""
-        if self.address_object_exists(object_name):
-            self.domain_actions[domain].append(ACTION_UNCHANGED)
-            self.domain_messages[domain].append(f"Address-object '{object_name}' already exists.")
-            return
-        create_args: dict = {"name": object_name, "fqdn": domain}
-        if self.tag:
-            create_args["tag"] = self.tag
-        res = run_execute_command("pan-os-create-address", create_args)
-        self.responses.append(res)
-        entry = res[0] if res else {}
-        if is_error_entry(entry):
-            raise DemistoException(f"Failed to create address-object '{object_name}': {get_entry_error(entry)}")
-        self.domain_actions[domain].append(ACTION_CREATED)
-        self.domain_messages[domain].append(f"Address-object '{object_name}' created for '{domain}'.")
-
-    def ensure_group_membership(self, domain: str, object_name: str, group_context: dict | None) -> None:
-        """Create the static group or add the object to it, aborting if the group is dynamic."""
-        if group_context is None:
-            create_args: dict = {"name": self.address_group, "type": "static", "addresses": [object_name]}
-            if self.tag:
-                create_args["tags"] = self.tag
-            res = run_execute_command("pan-os-create-address-group", create_args)
-            self.responses.append(res)
-            entry = res[0] if res else {}
-            if is_error_entry(entry):
-                raise DemistoException(f"Failed to create address-group '{self.address_group}': {get_entry_error(entry)}")
-            self.domain_actions[domain].append(ACTION_CREATED)
-            self.domain_messages[domain].append(f"Static address-group '{self.address_group}' created.")
-            return
-
-        group_type = (group_context.get("Type") or "").lower()
-        if group_type == "dynamic":
-            raise DynamicGroupError(
-                f"Address-group '{self.address_group}' already exists as dynamic; "
-                f"will not modify a customer-managed dynamic group."
-            )
-
-        if object_name in self.group_members(group_context):
-            self.domain_actions[domain].append(ACTION_UNCHANGED)
-            self.domain_messages[domain].append(
-                f"Address-object '{object_name}' is already a member of '{self.address_group}'."
-            )
-            return
-
-        res = run_execute_command(
-            "pan-os-edit-address-group",
-            {"name": self.address_group, "type": "static", "element_to_add": object_name},
-        )
-        self.responses.append(res)
-        entry = res[0] if res else {}
-        if is_error_entry(entry):
-            raise DemistoException(f"Failed to add object to address-group '{self.address_group}': {get_entry_error(entry)}")
-        self.domain_actions[domain].append(ACTION_MODIFIED)
-        self.domain_messages[domain].append(f"Address-object '{object_name}' added to '{self.address_group}'.")
-
-    def ensure_rule(self, rule_present: bool) -> str:
-        """Create the deny rule if missing, then move it to the top. Returns the rule action."""
-        if not rule_present:
-            create_rule_args: dict = {
-                "rulename": self.rule_name,
-                "action": "deny",
-                "source": "any",
-                "destination": self.address_group,
-                "application": "any",
-                "service": "any",
-                "pre_post": PRE_POST,
-                "where": "top",
-            }
-            if self.tag:
-                create_rule_args["tags"] = self.tag
-            if self.log_forwarding_name:
-                create_rule_args["log_forwarding"] = self.log_forwarding_name
-            res = run_execute_command("pan-os-create-rule", create_rule_args)
-            self.responses.append(res)
-            entry = res[0] if res else {}
-            if is_error_entry(entry):
-                raise DemistoException(f"Failed to create rule '{self.rule_name}': {get_entry_error(entry)}")
-            rule_action = ACTION_CREATED
-        else:
-            rule_action = ACTION_UNCHANGED
-
-        # Always ensure the rule sits at the top of the rulebase.
-        res_move = run_execute_command("pan-os-move-rule", {"rulename": self.rule_name, "where": "top", "pre_post": PRE_POST})
-        self.responses.append(res_move)
-        move_entry = res_move[0] if res_move else {}
-        if is_error_entry(move_entry):
-            raise DemistoException(f"Failed to move rule '{self.rule_name}' to top: {get_entry_error(move_entry)}")
-        return rule_action
-
-    # ---- orchestration --------------------------------------------------
-
-    def process_domains(self) -> list:
-        """Run the per-domain object + group flow, then the single shared rule step.
-
-        Returns the list of BlockDomainResults rows for the processed domains.
-        """
-        rows: list = []
-        try:
-            group_context = self.get_address_group()
-            for domain in self.domains:
-                object_name = derive_object_name(domain)
-                self.ensure_address_object(domain, object_name)
-                self.ensure_group_membership(domain, object_name, group_context)
-                # Re-read the group once created so subsequent domains see the new membership.
-                if group_context is None:
-                    group_context = self.get_address_group()
-
-            rule_present = self.rule_exists()
-            rule_action = self.ensure_rule(rule_present)
-
-            for domain in self.domains:
-                actions = self.domain_actions[domain] + [rule_action]
-                rows.append(
-                    build_result_row(
-                        domain=domain,
-                        brand=self.brand,
-                        status=STATUS_DONE,
-                        result=RESULT_SUCCESS,
-                        action=most_significant_action(actions),
-                        rule_name=self.rule_name,
-                        message=" ".join(self.domain_messages[domain])
-                        + (f" Rule '{self.rule_name}' created at top." if rule_action == ACTION_CREATED else "")
-                        + (f" Rule '{self.rule_name}' already present; moved to top." if rule_action == ACTION_UNCHANGED else ""),
-                    )
-                )
-        except DynamicGroupError as dyn_err:
-            # Abort the whole brand for this run; other brands (future) would continue.
-            for domain in self.domains:
-                rows.append(
-                    build_result_row(
-                        domain=domain,
-                        brand=self.brand,
-                        status=STATUS_SKIPPED,
-                        result=RESULT_SUCCESS,
-                        action=ACTION_UNCHANGED,
-                        rule_name="",
-                        message=str(dyn_err),
-                    )
-                )
-        except Exception as ex:
-            for domain in self.domains:
-                rows.append(
-                    build_result_row(
-                        domain=domain,
-                        brand=self.brand,
-                        status=STATUS_FAILED,
-                        result=RESULT_FAILED,
-                        action=ACTION_UNCHANGED,
-                        rule_name=self.rule_name,
-                        message=f"Failed to block '{domain}' on Panorama: {ex!s}",
-                    )
-                )
-        return rows
-
-    def run(self) -> list:  # pragma: no cover
-        """Execute the full PAN-OS flow: per-domain writes, then commit + optional push."""
-        rows = self.process_domains()
-
-        # Only commit/push if at least one domain actually reached Done (i.e. no dynamic-group abort / failure).
-        made_changes = any(row["Status"] == STATUS_DONE for row in rows)
-        auto_commit = argToBoolean(self.args.get("auto_commit", True))
-        if made_changes and auto_commit:
-            try:
-                pan_os_commit(self.args, self.responses)
-                if self.pan_os_is_panorama():
-                    pan_os_push_to_device(self.args, self.responses)
-            except Exception as ex:
-                rows.append(
-                    build_result_row(
-                        domain="",
-                        brand=self.brand,
-                        status=STATUS_FAILED,
-                        result=RESULT_FAILED,
-                        action=ACTION_UNCHANGED,
-                        message=f"Commit/push failed: {ex!s}. Objects and rule are staged but may not be active.",
-                    )
-                )
-        return rows
-
-    def pan_os_is_panorama(self) -> bool:
-        """Return True if the instance is a Panorama (vs a single firewall)."""
-        res = run_execute_command("pan-os", {"cmd": "<show><system><info></info></system></show>", "type": "op"})
-        self.responses.append(res)
-        context = get_relevant_context(res[0].get("EntryContext", {}), "Panorama.Command")
-        model = context.get("response", {}).get("result", {}).get("system", {}).get("model", "")  # type: ignore
-        return model == "Panorama"
-
-
 """ MAIN FUNCTION """
 
 
@@ -576,8 +756,11 @@ def main():  # pragma: no cover
         brands_to_run = argToList(args.get("brands", ",".join(SUPPORTED_BRANDS)))
         demisto.debug(f"BlockDomain: {verbose=}, {brands_to_run=}")
 
-        valid_domains, skipped_rows = validate_domains(domain_list)
-        demisto.debug(f"BlockDomain: {valid_domains=}, skipped {len(skipped_rows)} entries.")
+        if not domain_list:
+            return_error("domain_list argument is required.")
+
+        valid_domains, failed_rows = validate_domains(domain_list)
+        demisto.debug(f"BlockDomain: {valid_domains=}, {len(failed_rows)} entries failed validation.")
 
         enabled_brands = get_enabled_brands()
         brands_to_run = brands_to_run or list(SUPPORTED_BRANDS)
@@ -589,7 +772,7 @@ def main():  # pragma: no cover
                 f"Please verify the brand instances' setup. Supported brands: {SUPPORTED_BRANDS}."
             )
 
-        results: list = list(skipped_rows)
+        results: list = list(failed_rows)
 
         for brand in brands_to_run:
             if brand not in SUPPORTED_BRANDS:
@@ -597,7 +780,7 @@ def main():  # pragma: no cover
                     build_result_row(
                         domain="",
                         brand=brand,
-                        status=STATUS_SKIPPED,
+                        status=STATUS_FAILED,
                         result=RESULT_FAILED,
                         action=ACTION_UNCHANGED,
                         message=f"The brand {brand} is not supported by 'block-domain'. Supported: {SUPPORTED_BRANDS}.",
@@ -608,7 +791,7 @@ def main():  # pragma: no cover
                     build_result_row(
                         domain="",
                         brand=brand,
-                        status=STATUS_SKIPPED,
+                        status=STATUS_FAILED,
                         result=RESULT_FAILED,
                         action=ACTION_UNCHANGED,
                         message=f"The brand {brand} isn't enabled.",
@@ -629,7 +812,11 @@ def main():  # pragma: no cover
                         "polling": True,
                     }
                 )
-                results.extend(pan_os.run())
+                pan_os_result = pan_os.manage_pan_os_flow()
+                if isinstance(pan_os_result, PollResult):
+                    return_results(pan_os_result)
+                    return
+                results.extend(pan_os_result)
 
         return_results(
             CommandResults(

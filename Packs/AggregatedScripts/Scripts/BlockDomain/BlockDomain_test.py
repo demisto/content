@@ -82,20 +82,21 @@ def test_derive_object_name_overflow_truncates_and_hashes():
     assert name == derive_object_name(long_domain)
 
 
-def test_validate_domains_splits_valid_and_skipped():
-    valid, skipped = validate_domains(["evil.example.com", "*.evil.com", "no-dot", "phish.attacker.net"])
+def test_validate_domains_splits_valid_and_failed():
+    valid, failed = validate_domains(["evil.example.com", "*.evil.com", "no-dot", "phish.attacker.net"])
 
     assert valid == ["evil.example.com", "phish.attacker.net"]
-    assert len(skipped) == 2
+    assert len(failed) == 2
 
-    wildcard_row = next(row for row in skipped if row["Domain"] == "*.evil.com")
-    assert wildcard_row["Status"] == STATUS_SKIPPED
-    assert wildcard_row["Result"] == RESULT_SUCCESS
+    wildcard_row = next(row for row in failed if row["Domain"] == "*.evil.com")
+    assert wildcard_row["Status"] == STATUS_FAILED
+    assert wildcard_row["Result"] == RESULT_FAILED
     assert wildcard_row["Action"] == ACTION_UNCHANGED
     assert "Wildcard" in wildcard_row["Message"]
 
-    invalid_row = next(row for row in skipped if row["Domain"] == "no-dot")
-    assert invalid_row["Status"] == STATUS_SKIPPED
+    invalid_row = next(row for row in failed if row["Domain"] == "no-dot")
+    assert invalid_row["Status"] == STATUS_FAILED
+    assert invalid_row["Result"] == RESULT_FAILED
     assert "Invalid FQDN" in invalid_row["Message"]
 
 
@@ -141,18 +142,18 @@ def _mock_execute(monkeypatch, side_effect):
 
 
 def test_process_domains_create_everything(monkeypatch):
-    # Group missing -> create group; address missing -> create address; rule missing -> create + move.
+    # Group missing -> create group; rule missing -> create + move; address missing -> create + add.
     _mock_execute(
         monkeypatch,
         [
             [ok_entry({"Panorama.AddressGroups": []})],  # list-address-groups (missing)
-            [err_entry("not found")],  # get-address (missing)
-            [ok_entry({"Panorama.Addresses": [{"Name": "Cortex-evil.example.com"}]})],  # create-address
-            [ok_entry()],  # create-address-group
-            [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static"}]})],  # re-list group
+            [ok_entry()],  # create-address-group (static, empty)
             [ok_entry({"Panorama.SecurityRule": []})],  # list-rules (missing)
             [ok_entry()],  # create-rule
             [ok_entry()],  # move-rule
+            [err_entry("not found")],  # get-address (missing)
+            [ok_entry()],  # create-address
+            [ok_entry()],  # edit-address-group (add member)
         ],
     )
     rows = _pan_os(["evil.example.com"]).process_domains()
@@ -169,9 +170,9 @@ def test_process_domains_all_unchanged(monkeypatch):
         monkeypatch,
         [
             [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj]}]})],
-            [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],  # get-address (exists)
-            [ok_entry({"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain"}]})],  # list-rules (exists)
+            [ok_entry({"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]})],
             [ok_entry()],  # move-rule
+            [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],  # get-address (exists)
         ],
     )
     rows = _pan_os(["evil.example.com"]).process_domains()
@@ -184,11 +185,11 @@ def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
         monkeypatch,
         [
             [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": []}]})],
+            [ok_entry({"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]})],
+            [ok_entry()],  # move-rule
             [err_entry("not found")],  # get-address (missing)
             [ok_entry()],  # create-address
             [ok_entry()],  # edit-address-group (add member)
-            [ok_entry({"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain"}]})],  # list-rules (exists)
-            [ok_entry()],  # move-rule
         ],
     )
     rows = _pan_os(["evil.example.com"]).process_domains()
@@ -196,13 +197,29 @@ def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
     assert rows[0]["Action"] == ACTION_CREATED  # object was created -> most significant
 
 
+def test_process_domains_existing_rule_missing_group_is_edited(monkeypatch):
+    obj = "Cortex-evil.example.com"
+    _mock_execute(
+        monkeypatch,
+        [
+            [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj]}]})],
+            # Rule exists but its destination does not reference our group -> triggers edit-rule.
+            [ok_entry({"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["something-else"]}]})],
+            [ok_entry()],  # edit-rule (add destination)
+            [ok_entry()],  # move-rule
+            [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],  # get-address (exists)
+        ],
+    )
+    rows = _pan_os(["evil.example.com"]).process_domains()
+    assert rows[0]["Status"] == STATUS_DONE
+    assert rows[0]["Action"] == ACTION_UNCHANGED  # object + membership unchanged; rule edit is a group-level fix
+
+
 def test_process_domains_dynamic_group_is_skipped(monkeypatch):
     _mock_execute(
         monkeypatch,
         [
             [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "dynamic", "Match": "x"}]})],
-            [err_entry("not found")],  # get-address (missing)
-            [ok_entry()],  # create-address
         ],
     )
     rows = _pan_os(["evil.example.com"]).process_domains()
@@ -216,6 +233,10 @@ def test_process_domains_failure_marks_row_failed(monkeypatch):
         monkeypatch,
         [
             [ok_entry({"Panorama.AddressGroups": []})],  # list-address-groups
+            [ok_entry()],  # create-address-group
+            [ok_entry({"Panorama.SecurityRule": []})],  # list-rules
+            [ok_entry()],  # create-rule
+            [ok_entry()],  # move-rule
             [err_entry("not found")],  # get-address (missing)
             [err_entry("permission denied")],  # create-address fails
         ],
