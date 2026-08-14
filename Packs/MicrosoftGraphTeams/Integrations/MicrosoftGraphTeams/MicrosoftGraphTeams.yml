@@ -17,21 +17,39 @@ configuration:
   display: Tenant ID
   hiddenusername: true
   name: tenant_id
-  required: true
+  required: false
   type: 4
+  section: Connect
+- name: credentials_tenant_id
+  type: 9
+  displaypassword: Token or Tenant ID
+  hiddenusername: true
+  required: false
   section: Connect
 - additionalinfo: ID or Client ID
   display: Client ID
   hiddenusername: true
   name: client_id
-  required: true
+  required: false
   type: 4
+  section: Connect
+- name: credentials_client_id
+  type: 9
+  displaypassword: ID or Client ID
+  hiddenusername: true
+  required: false
   section: Connect
 - additionalinfo: Key or Client Secret
   display: Client Secret
   hiddenusername: true
   name: secret
   type: 4
+  required: false
+  section: Connect
+- name: credentials_secret
+  type: 9
+  displaypassword: Key or Client Secret
+  hiddenusername: true
   required: false
   section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
@@ -50,6 +68,7 @@ configuration:
   name: self_deployed
   type: 8
   required: false
+  defaultvalue: "true"
   additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
   section: Connect
 - display: Application redirect URI (for Authorization Code flow mode)

@@ -480,11 +480,16 @@ def test_function(client, _):
     Returns ok if successful.
     """
     response = "ok"
-    if demisto.params().get("self_deployed", False):
+    params = demisto.params()
+    if params.get("self_deployed", False):
         response = "```✅ Success!```"
-        if demisto.command() == "test-module":
-            # cannot use test module due to the lack of ability to set refresh token to integration context
-            # for self deployed app
+        # The Authorization Code flow cannot be tested via test-module because it
+        # relies on a refresh token that cannot be persisted during a test run.
+        # The Client Credentials (app-only) flow has no such limitation — it
+        # performs a token exchange on every request — so it can be validated
+        # normally by falling through to the GET /chats call below.
+        is_auth_code_flow = bool(params.get("auth_code") or params.get("auth_code_creds", {}).get("password"))
+        if demisto.command() == "test-module" and is_auth_code_flow:
             raise Exception(
                 "When using a self-deployed configuration, "
                 "Please enable the integration and run the !msgraph-teams-test command in order to test it"
@@ -826,9 +831,9 @@ def main():
     """COMMANDS MANAGER / SWITCH PANEL"""
     params: dict = demisto.params()
     url = params.get("url", "").rstrip("/") + "/v1.0/"
-    tenant: str = params.get("tenant_id", "")
-    auth_and_token_url: str = params.get("client_id", "")
-    enc_key: str = params.get("secret", "")
+    tenant: str = params.get("credentials_tenant_id", {}).get("password") or params.get("tenant_id", "")
+    auth_and_token_url: str = params.get("credentials_client_id", {}).get("password") or params.get("client_id", "")
+    enc_key: str = params.get("credentials_secret", {}).get("password") or params.get("secret", "")
     verify: bool = not params.get("insecure", False)
     self_deployed: bool = params.get("self_deployed", False)
     redirect_uri: str = params.get("redirect_uri", "")
