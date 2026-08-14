@@ -485,15 +485,20 @@ def test_function(client, _):
         response = "```✅ Success!```"
         # The Authorization Code flow cannot be tested via test-module because it
         # relies on a refresh token that cannot be persisted during a test run.
-        # The Client Credentials (app-only) flow has no such limitation — it
-        # performs a token exchange on every request — so it can be validated
-        # normally by falling through to the GET /chats call below.
         is_auth_code_flow = bool(params.get("auth_code") or params.get("auth_code_creds", {}).get("password"))
         if demisto.command() == "test-module" and is_auth_code_flow:
             raise Exception(
                 "When using a self-deployed configuration, "
                 "Please enable the integration and run the !msgraph-teams-test command in order to test it"
             )
+        # The Client Credentials (app-only) flow has no user context, so the
+        # delegated-only GET /chats endpoint returns "not supported in
+        # application-only context". Validate the credentials by acquiring an
+        # app-only token instead — a successful token exchange confirms the
+        # tenant/client/secret are correct without calling a delegated endpoint.
+        client.ms_client.get_access_token()
+        return_results(CommandResults(readable_output="✅ Success!"))
+        return response, None, None
 
     client.ms_client.http_request(method="GET", url_suffix="chats")
     return_results(CommandResults(readable_output="✅ Success!"))
