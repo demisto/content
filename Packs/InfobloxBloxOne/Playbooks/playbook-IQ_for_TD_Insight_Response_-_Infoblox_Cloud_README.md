@@ -39,7 +39,7 @@ This playbook does not use any integrations.
 | insight_id | Collect IQ for TD Insight ID from incident. | incident.infobloxcloudinsightid | Optional |
 | incident_severity | Collect incident severity from incident. | incident.severity | Optional |
 | limit | No of indicators, events or assets to fetch for the provided IQ for TD Insight. | 50 | Optional |
-| onCall | Set to true to assign only the user that is currently on shift. Default is False. | false | Optional |
+| onCall | Set to true \(case-insensitive\) to assign only the user that is currently on shift. Default is False. | false | Optional |
 | insight_status | Workflow status to set on the insight at the end of the run. | Needs Review | Optional |
 
 ## Playbook Outputs

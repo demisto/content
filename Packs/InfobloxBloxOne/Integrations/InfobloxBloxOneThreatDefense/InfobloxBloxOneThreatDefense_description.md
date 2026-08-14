@@ -26,7 +26,7 @@ To create a service API key, complete the following:
 
 1. Configure an integration instance with a valid Service API Key.
 2. Click **Test** to validate the connection.
-3. To fetch Infoblox IQ for TD Insights, DNS Security Events, or SOC Insights (deprecated) as incidents in XSOAR, select the option `Fetches incidents` and follow the table to update configuration parameters.
+3. To fetch Infoblox IQ for TD Insights, DNS Security Events, or SOC Insights (deprecated) as incidents in Cortex XSOAR, select the option `Fetches incidents` and follow the table to update configuration parameters.
 
 | **Parameter**                           | **Description**                                                                                                                                                                                      |
 |-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -36,10 +36,10 @@ To create a service API key, complete the following:
 | Service API Key                         | The Service API Key required to connect to Infoblox Cloud.                                                                                                                                           |
 | Source Reliability                      | The reliability of the source providing the intelligence data.                                                                                                                                       |
 | Create relationships                    | Creates relationships between indicators as part of Enrichment.                                                                                                                                      |
-| Ingestion Type                          | Select the ingestion type to fetch as XSOAR incident. Default is IQ for TD Insight.                                                                                                                  |
+| Ingestion Type                          | Select the ingestion type to fetch as Cortex XSOAR incident. Default is IQ for TD Insight.                                                                                                                  |
 | IQ for TD Insight Status                | Retrieve the IQ for TD Insights matching the specified workflow status.                                                                                                                              |
 | IQ for TD Insight Severity              | Retrieve the IQ for TD Insights matching the specified severity.                                                                                                                                     |
-| IQ for TD Insight Threat Properties     | Retrieve the IQ for TD Insights matching the specified threat properties (free text), e.g. malware, phishing, ransomware.                                                                            |
+| IQ for TD Insight Threat Properties     | Retrieve the IQ for TD Insights matching the specified threat properties (free text), e.g., malware, phishing, ransomware.                                                                            |
 | Deprecated - SOC Insight Status         | Retrieve the SOC Insights as specified status.                                                                                                                                                       |
 | Deprecated - SOC Insight Threat Type    | Retrieve the SOC Insights as specified threat type.                                                                                                                                                  |
 | Deprecated - SOC Insight Priority Level | Retrieve the SOC Insights as specified priority level.                                                                                                                                               |
@@ -52,10 +52,10 @@ To create a service API key, complete the following:
 | DNS Security Event Threat Family        | Retrieve the DNS Security Events as specified threat family.                                                                                                                                         |
 | DNS Security Event Threat Indicator     | Retrieve the DNS Security Events as specified threat indicator.                                                                                                                                      |
 | DNS Security Event Threat Level         | Retrieve the DNS Security Events as specified threat level.                                                                                                                                          |
-| Max Fetch                               | The maximum number of IQ for TD Insight, SOC Insights, or DNS Security Events to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. Default is 50. |
-| First fetch timestamp                   | The date or relative timestamp from which to begin fetching incidents. Note: This parameter is only applicable for DNS Security Events and IQ for TD Insight. Default is '24 hours'.                 |
+| Max Fetch                               | The maximum number of IQ for TD Insights, SOC Insights, or DNS Security Events to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200. Default is 50. |
+| First fetch timestamp                   | The date or relative timestamp from which to begin fetching incidents. Note: This parameter is only applicable for DNS Security Events and IQ for TD Insights. Default is '24 hours'.                 |
 | Trust any certificate (not secure)      | Indicates whether to allow connections without verifying the SSL certificate's validity.                                                                                                             |
-| Use system proxy settings               | Indicates whether to use XSOAR's system proxy settings to connect to the API.                                                                                                                        |
+| Use system proxy settings               | Indicates whether to use Cortex XSOAR's system proxy settings to connect to the API.                                                                                                                        |
 | Incidents Fetch Interval                | The incident fetch interval.                                                                                                                                                                         |
 
 ### Support

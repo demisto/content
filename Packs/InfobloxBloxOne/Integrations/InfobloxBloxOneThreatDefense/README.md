@@ -10,7 +10,7 @@ This integration was integrated and tested with version 1.0.0 of Infoblox Threat
 | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
-| Ingestion Type | Select the ingestion type to fetch as XSOAR incident. Default is IQ for TD Insight. 'SOC Insight' is deprecated. | False |
+| Ingestion Type | Select the ingestion type to fetch as Cortex XSOAR incident. Default is IQ for TD Insight. 'SOC Insight' is deprecated. | False |
 | IQ for TD Insight Status | Retrieve the IQ for TD Insights matching the specified workflow status. | False |
 | IQ for TD Insight Severity | Retrieve the IQ for TD Insights matching the specified severity. | False |
 | IQ for TD Insight Threat Properties | Retrieve the IQ for TD Insights matching the specified threat properties \(free text\), e.g. malware, phishing, ransomware. | False |
@@ -50,7 +50,7 @@ The Dossier Lookup API returns detailed information on the specified indicator f
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_type | The type of indcator to search by. Possible values are: host, ip, url, hash, email. | Required |
+| indicator_type | The type of indicator to search by. Possible values are: host, ip, url, hash, email. | Required |
 | value | The indicator to search on. | Required |
 | sources | The sources to query. Multiple sources can be specified. If no source is specified, the call will search on all available sources. (You can see the list of the available sources by running bloxone-td-dossier-source-list). | Optional |
 | interval_in_seconds | The interval in seconds between each poll. Default is 10. | Optional |
@@ -1927,7 +1927,7 @@ List IQ for TD Insights from Infoblox Cloud.
 | InfobloxCloud.IQForTDInsight.description | String | Detailed description of what the insight represents. |
 | InfobloxCloud.IQForTDInsight.severity | String | Severity level: Critical, High, Medium, or Low. |
 | InfobloxCloud.IQForTDInsight.status | String | Current workflow status of the insight. |
-| InfobloxCloud.IQForTDInsight.date_created | Date | Timestamp when the insight was first created. |
+| InfobloxCloud.IQForTDInsight.date_created | Date | Timestamp when the insight was first created, e.g. 2026-08-19T07:01:56Z. |
 | InfobloxCloud.IQForTDInsight.evaluation_start_date | Date | Start of the time window evaluated to generate this insight. |
 | InfobloxCloud.IQForTDInsight.evaluation_end_date | Date | End of the time window evaluated to generate this insight. |
 | InfobloxCloud.IQForTDInsight.total_events | Number | Total number of DNS security events correlated into this insight. |
@@ -2233,6 +2233,7 @@ List assets associated with a specific IQ for TD Insight from Infoblox Cloud.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| InfobloxCloud.IQForTDInsightAsset.insight_id | String | The unique display identifier of the insight this asset belongs to. |
 | InfobloxCloud.IQForTDInsightAsset.device_name | String | Hostname or device name of the asset, when known. |
 | InfobloxCloud.IQForTDInsightAsset.ip_address | String | IP addresses observed for this asset during the insight evaluation window. |
 | InfobloxCloud.IQForTDInsightAsset.mac_address | String | MAC addresses observed for this asset, when available from DHCP or device telemetry. |
@@ -2504,6 +2505,7 @@ List threat indicators associated with a specific IQ for TD Insight from Infoblo
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| InfobloxCloud.IQForTDInsightIndicator.insight_id | String | The unique display identifier of the insight this indicator belongs to. |
 | InfobloxCloud.IQForTDInsightIndicator.threat_indicator | String | The indicator value \(e.g., malicious domain, IP, or URL\). |
 | InfobloxCloud.IQForTDInsightIndicator.threat_level | Number | Numeric threat severity assigned to the indicator. |
 | InfobloxCloud.IQForTDInsightIndicator.confidence_level | Number | Numeric confidence rating for the detection. |

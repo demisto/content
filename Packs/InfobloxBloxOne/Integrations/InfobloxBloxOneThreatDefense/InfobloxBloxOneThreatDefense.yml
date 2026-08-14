@@ -56,7 +56,7 @@ configuration:
   type: 15
   required: false
   defaultvalue: IQ for TD Insight
-  additionalinfo: Select the ingestion type to fetch as XSOAR incident. Default is IQ for TD Insight. 'SOC Insight' is deprecated.
+  additionalinfo: Select the ingestion type to fetch as Cortex XSOAR incident. Default is IQ for TD Insight. 'SOC Insight' is deprecated.
 - section: Collect
   advanced: true
   display: IQ for TD Insight Status
@@ -393,7 +393,7 @@ name: InfobloxBloxOneThreatDefense
 script:
   commands:
   - arguments:
-    - description: 'The type of indcator to search by. Available values: host, ip, url, hash, email.'
+    - description: 'The type of indicator to search by. Available values: host, ip, url, hash, email.'
       name: indicator_type
       required: true
       auto: PREDEFINED
@@ -2266,7 +2266,7 @@ script:
       description: 'Current workflow status of the insight.'
       type: String
     - contextPath: InfobloxCloud.IQForTDInsight.date_created
-      description: Timestamp when the insight was first created.
+      description: 'Timestamp when the insight was first created, e.g. 2026-08-19T07:01:56Z.'
       type: Date
     - contextPath: InfobloxCloud.IQForTDInsight.evaluation_start_date
       description: Start of the time window evaluated to generate this insight.
@@ -2455,6 +2455,9 @@ script:
     description: List assets associated with a specific IQ for TD Insight from Infoblox Cloud.
     name: infobloxcloud-iq-for-td-insight-asset-list
     outputs:
+    - contextPath: InfobloxCloud.IQForTDInsightAsset.insight_id
+      description: The unique display identifier of the insight this asset belongs to.
+      type: String
     - contextPath: InfobloxCloud.IQForTDInsightAsset.device_name
       description: Hostname or device name of the asset, when known.
       type: String
@@ -2723,6 +2726,9 @@ script:
     description: List threat indicators associated with a specific IQ for TD Insight from Infoblox Cloud.
     name: infobloxcloud-iq-for-td-insight-indicator-list
     outputs:
+    - contextPath: InfobloxCloud.IQForTDInsightIndicator.insight_id
+      description: The unique display identifier of the insight this indicator belongs to.
+      type: String
     - contextPath: InfobloxCloud.IQForTDInsightIndicator.threat_indicator
       description: The indicator value (e.g., malicious domain, IP, or URL).
       type: String

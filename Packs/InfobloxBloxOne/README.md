@@ -1,5 +1,7 @@
 Note: Support for this Pack was moved to Partner starting August 25, 2025. In case of any issues arise, please contact the Partner directly at <support@infoblox.com> or <https://support.infoblox.com/>.
 
+## What does this pack do?
+
 The Infoblox Threat Defense with DDI integration leverages DNS as a security control point to detect and block cyber threats. This integration enables threat intelligence sharing, automated IQ for TD Insight incident response, automated indicator enrichment, and DNS-based security controls within your Cortex XSOAR environment.
 
 #### DNS Security
@@ -30,7 +32,7 @@ The Infoblox Threat Defense with DDI integration leverages DNS as a security con
 
 - For technical support or troubleshooting, please contact Infoblox Support at [https://www.infoblox.com/support/](https://www.infoblox.com/support/)
 - For documentation and resources, visit [https://docs.infoblox.com/](https://docs.infoblox.com/)
-- For issues related to Cortex XSIAM (parsing/modeling rules, timestamp behavior, event collection), please open a support case with PAN support, as these are owned and maintained solely by the Cortex content team.
+- For issues related to Cortex XSIAM (parsing/modeling rules, timestamp behavior, event collection), please open a support case with Palo Alto Networks Support, as these are owned and maintained solely by the Cortex content team.
 
 #### Contact
 

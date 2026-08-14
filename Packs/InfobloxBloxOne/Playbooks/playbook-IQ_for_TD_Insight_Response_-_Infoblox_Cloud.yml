@@ -1724,7 +1724,7 @@ inputs:
   value:
     simple: "false"
   required: false
-  description: Set to true to assign only the user that is currently on shift. Default is False.
+  description: Set to true (case-insensitive) to assign only the user that is currently on shift. Default is False.
   playbookInputQuery:
 - key: insight_status
   value:
