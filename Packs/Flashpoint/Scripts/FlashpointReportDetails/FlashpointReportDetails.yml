@@ -5,11 +5,11 @@ name: FlashpointReportDetails
 script: ''
 type: python
 tags: []
-comment: Retrieves the body of the report.
+comment: Retrieves the full information of the report.
 enabled: true
 args:
 - name: report_id
-  description: "Specify the ID of the report.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+  description: "The ID of the report for which the details are to be fetched.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.13.10404775

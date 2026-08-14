@@ -1,4 +1,4 @@
-Retrieves the body of the report.
+Retrieves the full information of the report.
 
 ## Script Data
 
@@ -15,7 +15,7 @@ Retrieves the body of the report.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| report_id | Specify the ID of the report.<br/><br/>Note: If not provided, the script will try to retrieve it from the incident context. |
+| report_id | The ID of the report for which the details are to be fetched.<br/><br/>Note: If not provided, the script will try to retrieve it from the incident context. |
 
 ## Outputs
 

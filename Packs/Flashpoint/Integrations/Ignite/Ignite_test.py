@@ -2808,7 +2808,7 @@ def test_vulnerability_list_command_success(mock_client, requests_mock):
     Then:
        - Returns a valid output and verifies request parameters are sent correctly.
     """
-    mock_response = util_load_json("test_data/vulnurability_list_response.json")
+    mock_response = util_load_json("test_data/vulnerability_list_response.json")
 
     hr_output = open("test_data/vulnerability_list_hr.md").read()
     expected_outputs = util_load_json("test_data/vulnerability_list_context.json")
@@ -2853,7 +2853,7 @@ def test_vulnerability_list_command_with_vulnerability_ids(mock_client, requests
     Then:
        - Sends the IDs as the 'ids' key of the request body with the FP-VULN- prefix stripped.
     """
-    mock_response = util_load_json("test_data/vulnurability_list_response.json")
+    mock_response = util_load_json("test_data/vulnerability_list_response.json")
 
     requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIST"]}', json=mock_response, status_code=200)
 
@@ -2873,7 +2873,7 @@ def test_vulnerability_list_command_with_pagination(mock_client, requests_mock):
     Then:
        - Returns a valid output that includes a pagination hint in the human-readable output.
     """
-    mock_response = util_load_json("test_data/vulnurability_list_response.json")
+    mock_response = util_load_json("test_data/vulnerability_list_response.json")
 
     requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIST"]}', json=mock_response, status_code=200)
 
