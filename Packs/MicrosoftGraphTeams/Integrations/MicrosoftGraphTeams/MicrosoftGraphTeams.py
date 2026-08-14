@@ -497,11 +497,19 @@ def test_function(client, _):
         # app-only token instead — a successful token exchange confirms the
         # tenant/client/secret are correct without calling a delegated endpoint.
         client.ms_client.get_access_token()
-        return_results(CommandResults(readable_output="✅ Success!"))
+        if demisto.command() == "test-module":
+            # test-module must output the literal "ok" sentinel for the
+            # platform to record the connection as verified.
+            return_results("ok")
+        else:
+            return_results(CommandResults(readable_output="✅ Success!"))
         return response, None, None
 
     client.ms_client.http_request(method="GET", url_suffix="chats")
-    return_results(CommandResults(readable_output="✅ Success!"))
+    if demisto.command() == "test-module":
+        return_results("ok")
+    else:
+        return_results(CommandResults(readable_output="✅ Success!"))
     return response, None, None
 
 
