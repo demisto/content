@@ -1424,9 +1424,7 @@ def build_policy_target(target_type: str, value: str | None, attribute_id: str |
     address_attribute_value uses a nested 'attribute' object. The remaining types
     (everyone, internal_addresses, external_addresses) carry no value at all.
     """
-    attribute = (
-        assign_params(id=attribute_id, value=attribute_value) if target_type == "address_attribute_value" else None
-    )
+    attribute = assign_params(id=attribute_id, value=attribute_value) if target_type == "address_attribute_value" else None
 
     return assign_params(
         type=target_type,
