@@ -2626,7 +2626,15 @@ script:
     - name: limit
       description: The maximum number of results to return.
       defaultValue: 50
+    - name: page_token
+      description: Pagination token returned in a previous call as Mimecast.BlockedSendersPolicy.meta.nextPage. Only applicable when policyType is blockedsenders.
     outputs:
+    - contextPath: Mimecast.BlockedSendersPolicy.policies
+      description: List of blocked-senders policies returned for the current page.
+      type: Unknown
+    - contextPath: Mimecast.BlockedSendersPolicy.meta.nextPage
+      description: Pagination token for the next page of blocked-senders policies. Pass this value as page_token in the next call.
+      type: String
     - contextPath: Mimecast.AddressAlterationPolicy.ID
       description: Policy ID.
       type: string

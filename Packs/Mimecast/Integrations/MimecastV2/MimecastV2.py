@@ -3607,18 +3607,28 @@ def list_account_command(args: dict) -> CommandResults:
     return CommandResults(outputs_prefix="Mimecast.Account", outputs=response[0], outputs_key_field="accountCode")
 
 
-def list_blocked_senders_policies_command() -> CommandResults:
-    """List Blocked Senders policies using the v2 GET API. The flat items are emitted verbatim."""
-    response = http_request("GET", BLOCKED_SENDERS_V2_ENDPOINT)
+def list_blocked_senders_policies_command(args: dict) -> CommandResults:
+    """List Blocked Senders policies using the v2 GET API. The flat items are emitted verbatim.
+
+    Args:
+        args: Command arguments. Supports ``page_token`` to fetch a specific page returned
+              by a previous call (value comes from ``Mimecast.BlockedSendersPolicy.nextPageToken``).
+    """
+    params: dict = {}
+    if page_token := args.get("page_token"):
+        params["pageToken"] = page_token
+
+    response = http_request("GET", BLOCKED_SENDERS_V2_ENDPOINT, params=params)
     policies = response.get("policies", [])
-    demisto.debug(f"Got {len(policies)} blocked-senders policies, nextPage={response.get('meta', {}).get('nextPage')}")
+    next_page_token = (response.get("meta") or {}).get("nextPage")
+    demisto.debug(f"Got {len(policies)} blocked-senders policies, nextPage={next_page_token!r}")
 
     title = "Mimecast list blockedsenders policies: \n These are the existing blockedsenders Policies:"
     contents = [build_blocked_senders_v2_hr_row(policy) for policy in policies]
 
     return CommandResults(
         outputs_prefix="Mimecast.BlockedSendersPolicy",
-        outputs=policies,
+        outputs=response,
         readable_output=tableToMarkdown(title, contents, BLOCKED_SENDERS_HR_HEADERS),
         outputs_key_field="id",
     )
@@ -3631,7 +3641,7 @@ def list_policies_command(args: dict) -> CommandResults:
     limit = arg_to_number(args.get("limit"))
 
     if policy_type == DEFAULT_POLICY_TYPE:
-        return list_blocked_senders_policies_command()
+        return list_blocked_senders_policies_command(args)
 
     api_endpoints = {
         "antispoofing-bypass": "antispoofing-bypass/get-policy",
