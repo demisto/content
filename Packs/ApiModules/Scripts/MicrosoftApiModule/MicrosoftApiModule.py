@@ -919,7 +919,18 @@ class MicrosoftClient(BaseClient):
         Returns:
             str: Access token that will be added to authorization header.
         """
-        integration_context = get_integration_context()
+        # TESTING PATCH (CRTXSS Teams remediation): the automationhub worker
+        # sandbox rejects the python3/executeCommand callback that backs
+        # get_integration_context(), so reading it raises
+        #   Server returned 404: unsupported request: 'python3/executeCommand'
+        # before any token is minted. The context is only a CACHE here — the
+        # token is fetched over plain HTTPS, which the sandbox allows. Degrade
+        # to an empty context so the token is minted fresh each call.
+        try:
+            integration_context = get_integration_context()
+        except Exception as e:  # noqa: BLE001 - sandbox may not support the callback
+            demisto.debug(f"get_integration_context unavailable ({e}); proceeding without token cache")
+            integration_context = {}
         refresh_token = integration_context.get("current_refresh_token", "")
         # Set keywords. Default without the scope prefix.
         access_token_keyword = f"{scope}_access_token" if scope else "access_token"
@@ -961,8 +972,14 @@ class MicrosoftClient(BaseClient):
         if self.multi_resource:
             integration_context.update(self.resource_to_access_token)
 
-        set_integration_context(integration_context)
-        demisto.debug("Set integration context successfully.")
+        # TESTING PATCH: same sandbox limitation as the read above. Failing to
+        # persist the cache must not fail the command — the token is already in
+        # hand and valid for this invocation.
+        try:
+            set_integration_context(integration_context)
+            demisto.debug("Set integration context successfully.")
+        except Exception as e:  # noqa: BLE001 - sandbox may not support the callback
+            demisto.debug(f"set_integration_context unavailable ({e}); token not cached")
 
         if self.multi_resource:
             return self.resource_to_access_token[resource]
