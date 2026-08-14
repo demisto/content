@@ -19,6 +19,8 @@ Use the Google Threat Intelligence IoC Stream Feed integration to fetch indicato
 | feedFetchInterval | The feed fetch interval. | False |
 | feedMinimumGTIScore | The minimum GTI score to import as part of the feed. | True |
 | feedBypassExclusionList | Whether to bypass exclusion list. | False |
+| proxy | Whether to use the system proxy settings. | False |
+| insecure | Whether to trust any certificate (not secure). | False |
 
 4. Click **Test** to validate the Google Threat Intelligence API Key, and connection.
 

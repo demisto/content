@@ -19,6 +19,8 @@ Use this feed integration to fetch Google Threat Intelligence Threat Lists match
 | feedExpirationPolicy | The feed's expiration policy. | False |
 | feedFetchInterval | The feed fetch interval. | False |
 | feedBypassExclusionList | Whether to bypass exclusion list. | False |
+| proxy | Whether to use the system proxy settings. | False |
+| insecure | Whether to trust any certificate (not secure). | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

@@ -4,7 +4,8 @@ import json
 from unittest import mock
 
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import FeedIndicatorType  # noqa: F401
+import pytest
+from CommonServerPython import DemistoException, FeedIndicatorType  # noqa: F401
 from FeedIoCStream import Client, fetch_indicators_command, get_indicators_command, main
 
 
@@ -284,6 +285,41 @@ def test_main_test_command(mocker):
     main()
 
     assert get_api_indicators_mock.call_count == 1
+
+
+@pytest.mark.parametrize(
+    "raised_error, expected_error",
+    [
+        (
+            "Proxy Error - if the 'Use system proxy' checkbox in the integration configuration is selected,"
+            " try clearing the checkbox.",
+            "Proxy Error - if the 'Use system proxy' checkbox in the integration configuration is selected,"
+            " try clearing the checkbox.",
+        ),
+        (
+            "SSL Certificate Verification Failed - try selecting 'Trust any certificate' checkbox in"
+            " the integration configuration.",
+            "SSL Certificate Verification Failed - try selecting 'Trust any certificate' checkbox in"
+            " the integration configuration.",
+        ),
+        (
+            "Error in API call [401] - Unauthorized",
+            "Could not fetch Google Threat Intelligence IoC Stream Feed\n"
+            "\nCheck your API key and your connection to Google Threat Intelligence.",
+        ),
+    ],
+)
+def test_test_module_error(mocker, raised_error, expected_error):
+    from FeedIoCStream import test_module
+
+    """Tests test module errors, proxy and SSL errors are kept as they are."""
+    client = Client("https://fake")
+    mocker.patch.object(client, "get_api_indicators", side_effect=DemistoException(raised_error))
+
+    with pytest.raises(Exception) as exc:
+        test_module(client, {})
+
+    assert str(exc.value) == expected_error
 
 
 def test_get_api_indicators(mocker):
