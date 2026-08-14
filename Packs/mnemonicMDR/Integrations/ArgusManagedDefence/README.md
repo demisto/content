@@ -160,9 +160,6 @@ Adds a key, value tag to an Argus case.
 ### argus-list-case-tags
 
 ***
-### argus-list-case-tags
-
-***
 List tags attached to an Argus case.
 
 #### Base Command

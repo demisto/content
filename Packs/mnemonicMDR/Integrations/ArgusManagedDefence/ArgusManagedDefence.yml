@@ -134,6 +134,8 @@ script:
     - name: file_id
       required: true
       description: ID of attachement.
+    - name: mime_type
+      description: Media type of attachment.
     - name: context_output
       auto: PREDEFINED
       predefined:
@@ -6353,11 +6355,11 @@ script:
     - name: short_name
       required: false
       default: false
-      description: Short name of asset*.
+      description: Short name of asset.
     - name: name
       required: false
       default: false
-      description: Name of asset*.
+      description: Name of asset.
     - name: description
       required: false
       default: false
@@ -6778,7 +6780,28 @@ script:
       description: Name of vulnerability.
       type: String
     description: Get vulnerability definition metadata.
-  dockerimage: demisto/argus-toolbelt:3.0.0.2055215
+  - name: argus-calculate-reputation-domain
+    arguments:
+    - name: fqdn
+      required: true
+    description: Look up reputation observations for the given fqdn.
+  - name: argus-calculate-reputation-ip
+    arguments:
+    - name: ip
+      required: true
+    description: Look up reputation observations for the given IP.
+  - name: ip
+    arguments:
+    - isArray: true
+      name: ip
+      required: true
+      default: true
+  - name: domain
+    arguments:
+    - isArray: true
+      name: domain
+      required: true
+  dockerimage: demisto/argus-toolbelt:3.0.0.10133006
   isfetch: true
   subtype: python3
   isremotesyncin: true

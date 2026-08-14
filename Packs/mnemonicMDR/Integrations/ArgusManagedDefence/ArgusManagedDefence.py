@@ -63,6 +63,10 @@ from argus_api.lib.reputation.v1.observation import (
     fetch_observations_for_domain,
     fetch_observations_for_ip,
 )
+from argus_api.lib.reputation.v1.calculated.calculated_domain import (
+    calculate_reputation_for_domain,
+    calculate_reputation_for_ip,
+)
 from argus_api.lib.sampledb.v2.sample import (
     download_raw_sample,
     download_safe_sample,
@@ -93,6 +97,14 @@ ARGUS_STATUS_MAPPING = {
     "closed": 2,
 }
 ARGUS_PRIORITY_MAPPING = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+
+PARAMS = demisto.params()
+SUSPICIOUS_THRESHOLD = arg_to_number(PARAMS.get('suspicious_threshold', 0)) or 0
+MALICIOUS_THRESHOLD = arg_to_number(PARAMS.get('dboscore_threshold', -100))
+MAX_THRESHOLD_VALUE = 100
+MIN_THRESHOLD_VALUE = -100
+reliability = PARAMS.get('integrationReliability')
+reliability = reliability if reliability else DBotScoreReliability.B
 
 """ HELPER FUNCTIONS """
 
@@ -173,7 +185,10 @@ def pretty_print_case_metadata(result: dict, title: str = None) -> str:  # type:
     string += (
         f"_Priority: {data['priority']}, status: {data['status']}, last updated: {pretty_print_date(data['lastUpdatedTime'])}_\n"
     )
-    string += f"Reported by {data['publishedByUser']['name']} at {pretty_print_date(data['publishedTime'])}\n\n"
+    if data["publishedByUser"]:
+        string += f"Reported by {data['publishedByUser']['name']} at {pretty_print_date(data['publishedTime'])}\n\n"
+    else:
+        string += "Unpublished case\n\n"
     string += data["description"]
     return string
 
@@ -281,12 +296,21 @@ def pretty_print_sample(samples: list[dict]) -> str:
         string += (
             "## Sample\n"
             f"**Score:** {sample['latestVerdict']['score']}/100\n"
+            f"**Findings**\n"
+        )
+        analysis = sample['latestVerdict']['analysis']
+        for agent in analysis: 
+            string += f"{agent['userAgent']['name']}: {agent['analysisScore']}  "
+        string += (
+            f"\n**Metadata**\n"
+            f"**Description:** {sample['latestClassification']['metaData']['description']}\n"
+            f"**Mime:** {sample['latestClassification']['metaData']['mime']}\n"
+            f"**Filesize (bytes):** {sample['latestClassification']['metaData']['file_size']}\n"
             f"**Comment:** {sample['latestVerdict']['comment']}\n"
-            f"**Size (bytes):** {sample['size']}\n"
             f"**First observed:** {epochToTimestamp(sample['firstObservedTimestamp'])}\n"
             f"**Last observed:** {epochToTimestamp(sample['lastObservedTimestamp'])}\n"
             f"**First Submission:** {epochToTimestamp(sample['firstSubmittedTimestamp'])}\n"
-            f"**Last Submission:** {epochToTimestamp(sample['lastObservedTimestamp'])}\n"
+            f"**Last Submission:** {epochToTimestamp(sample['lastSubmittedTimestamp'])}\n"
             f"**sha256:** {sample['sha256']}\n"
             f"**sha1:** {sample['sha1']}\n"
             f"**md5:** {sample['md5']}\n"
@@ -311,13 +335,14 @@ def pretty_print_attachment_metadata(result: dict, title: str = None) -> str:  #
     return string
 
 
-def add_attachment_helper(case_id: int, file_id: str) -> dict:
+def add_attachment_helper(case_id: int, file_id: str, mime_type: str = None) -> dict:
     path_res = demisto.getFilePath(file_id)
     full_file_name = path_res.get("name")
     file_name, file_extension = os.path.splitext(full_file_name)
     file_name = f"{file_name}{ATTACHMENT_SUBSTRING}{file_extension}"
-    mime_type = mimetypes.guess_type(full_file_name)
-    if not mime_type[0]:
+    mime_type = mime_type if mime_type else mimetypes.guess_type(full_file_name)[0]
+
+    if not mime_type:
         error = f"File {full_file_name} mimetype unknown, not sending. Consider zipping file."
         demisto.error(error)
         return {"error": error}
@@ -326,9 +351,52 @@ def add_attachment_helper(case_id: int, file_id: str) -> dict:
         return add_attachment(
             caseID=case_id,
             name=file_name,
-            mimeType=mime_type[0],
+            mimeType=mime_type,
             data=b64_encode(file_to_send.read()),
         )
+
+
+def get_domain_reputation(domain):
+    result = calculate_reputation_for_domain(fqdn=domain)
+    reputation = result.get("data", [])
+
+    if not reputation:
+        return False
+    return reputation
+
+
+def get_ip_reputation(ip):
+    result = calculate_reputation_for_ip(ip=ip)
+    reputation = result.get("data", [])
+
+    if not reputation:
+        return False
+    return reputation
+
+
+def calculate_mnemonic_to_dbot_score(value: float | None, override: bool | None) -> int:
+    try:
+        if override:
+            return Common.DBotScore.GOOD
+        else:
+            if value == None:
+                raise RuntimeError(f"Somethings up with the value {value}.")
+            elif value  == 0:
+                return Common.DBotScore.GOOD
+            elif value <0.5:
+                return Common.DBotScore.SUSPICIOUS
+            elif value >=0.5:
+                return Common.DBotScore.BAD
+            else:
+                raise RuntimeError(f"Somethings up with the value {value}.")
+    except Exception as e:
+        error_message = f"Error of type {type(e).__name__} occurred: {str(e)}"
+        raise RuntimeError(f"Somethings up: {error_message}.")
+
+
+def extract_domain_name(url):
+    #from umbrella package
+    return url.split("//")[-1].split("/")[0]
 
 
 """ COMMAND FUNCTIONS """
@@ -616,6 +684,7 @@ def append_demisto_entry_to_argus_case(case_id: int, entry: dict) -> None:
 def add_attachment_command(args: dict) -> CommandResults:
     case_id = args.get("case_id")
     file_id = args.get("file_id")
+    mime_type = args.get("mime_type", None)
     context_output = args.get("context_output", "false")
 
     if not case_id:
@@ -623,20 +692,18 @@ def add_attachment_command(args: dict) -> CommandResults:
     if not file_id:
         raise ValueError("file_id not specified")
 
-    result = add_attachment_helper(case_id, file_id)
+    result = add_attachment_helper(case_id, file_id, mime_type)
     if "error" in result:
         raise Exception(result["error"])
 
     readable_output = pretty_print_attachment_metadata(result, f"# #{case_id}: attachment metadata\n")
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Argus.Attachments",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Attachments" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def add_case_tag_command(args: dict) -> CommandResults:
@@ -657,14 +724,12 @@ def add_case_tag_command(args: dict) -> CommandResults:
     headers = ["key", "value", "addedTime"]
     readable_output = tableToMarkdown(f"#{case_id}: Tags", result["data"], headers=headers)
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Argus.Tags",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Tags" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def add_comment_command(args: dict) -> CommandResults:
@@ -685,14 +750,13 @@ def add_comment_command(args: dict) -> CommandResults:
         originEmailAddress=args.get("origin_email_address"),
         associatedAttachmentID=args.get("associated_attachment_id"),
     )
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_comment(result["data"], f"# #{case_id}: Added comment\n"),
-            outputs_prefix="Argus.Comment",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_comment(result["data"], f"# #{case_id}: Added comment\n"))
+
+    return CommandResults(
+        readable_output=pretty_print_comment(result["data"], f"# #{case_id}: Added comment\n"),
+        outputs_prefix="Argus.Comment" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def advanced_case_search_command(args: dict) -> CommandResults:
@@ -739,14 +803,13 @@ def advanced_case_search_command(args: dict) -> CommandResults:
     )
     readable_output = f"Advanced Case Search: {result['count']} result(s)\n"
     readable_output += tableToMarkdown("Output not suitable for playground", result["data"])
-    if context_output == "true":
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Argus.Cases",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=readable_output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Cases" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def close_case_command(args: dict) -> CommandResults:
@@ -763,14 +826,12 @@ def close_case_command(args: dict) -> CommandResults:
     readable_output = f"# #{case_id}: close case\n"
     readable_output += f"_Status: {result['data']['status']}, at: {result['data']['closedTime']}_"
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Argus.Case",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Case" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def create_case_command(args: dict) -> CommandResults:
@@ -812,14 +873,12 @@ def create_case_command(args: dict) -> CommandResults:
         defaultWatchers=args.get("default_watchers"),
     )
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_case_metadata(result),
-            outputs_prefix="Argus.Case",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_case_metadata(result))
+    return CommandResults(
+        readable_output=pretty_print_case_metadata(result),
+        outputs_prefix="Argus.Case" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def delete_case_command(args: dict) -> CommandResults:
@@ -831,14 +890,12 @@ def delete_case_command(args: dict) -> CommandResults:
 
     result = delete_case(caseID=case_id)
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_case_metadata(result, "Case deleted"),
-            outputs_prefix="Argus.Case",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_case_metadata(result, "Case deleted"))
+    return CommandResults(
+        readable_output=pretty_print_case_metadata(result, "Case deleted"),
+        outputs_prefix="Argus.Case" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def delete_comment_command(args: dict) -> CommandResults:
@@ -853,14 +910,12 @@ def delete_comment_command(args: dict) -> CommandResults:
 
     result = delete_comment(caseID=case_id, commentID=comment_id)
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_comment(result["data"], f"# #{case_id}: Deleted comment\n"),
-            outputs_prefix="Argus.Comment",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_comment(result["data"], f"# #{case_id}: Deleted comment\n"))
+    return CommandResults(
+        readable_output=pretty_print_comment(result["data"], f"# #{case_id}: Deleted comment\n"),
+        outputs_prefix="Argus.Comment" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def download_attachment_by_filename_command(args: dict) -> dict:
@@ -930,14 +985,12 @@ def edit_comment_command(args: dict) -> CommandResults:
 
     result = edit_comment(caseID=case_id, commentID=comment_id, comment=comment)
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_comment(result["data"], f"# #{case_id}: Updated comment\n"),
-            outputs_prefix="Argus.Comment",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_comment(result["data"], f"# #{case_id}: Updated comment\n"))
+    return CommandResults(
+        readable_output=pretty_print_comment(result["data"], f"# #{case_id}: Updated comment\n"),
+        outputs_prefix="Argus.Comment" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_attachment_command(args: dict) -> CommandResults:
@@ -952,14 +1005,12 @@ def get_attachment_command(args: dict) -> CommandResults:
 
     result = get_attachment(caseID=case_id, attachmentID=attachment_id)
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_attachment_metadata(result, f"# #{case_id}: attachment metadata\n"),
-            outputs_prefix="Argus.Attachments",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_attachment_metadata(result, f"# #{case_id}: attachment metadata\n"))
+    return CommandResults(
+        readable_output=pretty_print_attachment_metadata(result, f"# #{case_id}: attachment metadata\n"),
+        outputs_prefix="Argus.Attachments" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_case_metadata_by_id_command(args: dict) -> CommandResults:
@@ -971,14 +1022,12 @@ def get_case_metadata_by_id_command(args: dict) -> CommandResults:
 
     result = get_case_metadata_by_id(id=case_id, skipRedirect=args.get("skip_redirect"))
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_case_metadata(result),
-            outputs_prefix="Argus.Case",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_case_metadata(result))
+    return CommandResults(
+        readable_output=pretty_print_case_metadata(result),
+        outputs_prefix="Argus.Case" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def print_case_metadata_by_id_command(args: dict) -> Dict:
@@ -1010,14 +1059,12 @@ def list_case_attachments_command(args: dict) -> CommandResults:
         readable_output += f"_id: {attachment['id']}_\n"
         readable_output += "* * *\n"
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Argus.Attachments",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Attachments" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def list_case_tags_command(args: dict) -> CommandResults:
@@ -1031,14 +1078,12 @@ def list_case_tags_command(args: dict) -> CommandResults:
     headers = ["key", "value", "addedTime", "id"]
     readable_output = tableToMarkdown(f"#{case_id}: Tags", result["data"], headers=headers)
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Argus.Tags",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Tags" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def print_case_comments_command(args: dict) -> list[dict]:
@@ -1089,14 +1134,12 @@ def list_case_comments_command(args: dict) -> CommandResults:
         sortBy=sort_by,
     )
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_comments(result["data"], f"# #{case_id}: Comments\n"),
-            outputs_prefix="Argus.Comments",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_comments(result["data"], f"# #{case_id}: Comments\n"))
+    return CommandResults(
+        readable_output=pretty_print_comments(result["data"], f"# #{case_id}: Comments\n"),
+        outputs_prefix="Argus.Comments" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def remove_case_tag_by_id_command(args: dict) -> CommandResults:
@@ -1113,14 +1156,12 @@ def remove_case_tag_by_id_command(args: dict) -> CommandResults:
     headers = ["key", "value", "addedTime", "id", "flags"]
     readable_output = tableToMarkdown(f"#{case_id}: Delete tags", result["data"], headers=headers)
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Argus.Tags",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Tags" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def remove_case_tag_by_key_value_command(args: dict) -> CommandResults:
@@ -1140,14 +1181,12 @@ def remove_case_tag_by_key_value_command(args: dict) -> CommandResults:
     headers = ["key", "value", "addedTime", "id", "flags"]
     readable_output = tableToMarkdown(f"#{case_id}: Delete tags", result["data"], headers=headers)
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Argus.Tags",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Tags" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def update_case_command(args: dict) -> CommandResults:
@@ -1174,14 +1213,12 @@ def update_case_command(args: dict) -> CommandResults:
         internalComment=args.get("internal_comment"),
     )
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_case_metadata(result),
-            outputs_prefix="Argus.Case",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_case_metadata(result))
+    return CommandResults(
+        readable_output=pretty_print_case_metadata(result),
+        outputs_prefix="Argus.Case" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_event_command(args: dict) -> CommandResults:
@@ -1202,14 +1239,12 @@ def get_event_command(args: dict) -> CommandResults:
 
     result = get_event_by_path(type=event_type, timestamp=timestamp, customerID=customer_id, eventID=event_id)
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=tableToMarkdown(f"Event: {event_id}", result["data"]),
-            outputs_prefix="Argus.Event",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=tableToMarkdown(f"Event: {event_id}", result["data"]))
+    return CommandResults(
+        readable_output=tableToMarkdown(f"Event: {event_id}", result["data"]),
+        outputs_prefix="Argus.Event" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_events_for_case_command(args: dict) -> CommandResults:
@@ -1220,14 +1255,12 @@ def get_events_for_case_command(args: dict) -> CommandResults:
 
     result = get_events_for_case(caseID=case_id, limit=args.get("limit"), offset=args.get("offset"))
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_events(dict(result), f"# #{case_id}: Associated Events\n"),
-            outputs_prefix="Argus.Events",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_events(dict(result), f"# #{case_id}: Associated Events\n"))
+    return CommandResults(
+        readable_output=pretty_print_events(dict(result), f"# #{case_id}: Associated Events\n"),
+        outputs_prefix="Argus.Events" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def find_aggregated_events_command(args: dict) -> CommandResults:
@@ -1274,14 +1307,12 @@ def find_aggregated_events_command(args: dict) -> CommandResults:
         excludeFlags=argToList(args.get("exclude_flags")),
     )
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_events(dict(result), "# Find events\n"),
-            outputs_prefix="Argus.Events",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_events(dict(result), "# Find events\n"))
+    return CommandResults(
+        readable_output=pretty_print_events(dict(result), "# Find events\n"),
+        outputs_prefix="Argus.Events" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def list_aggregated_events_command(args: dict) -> CommandResults:
@@ -1297,14 +1328,12 @@ def list_aggregated_events_command(args: dict) -> CommandResults:
         offset=args.get("offset"),
     )
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_events(dict(result), "# List Events\n"),
-            outputs_prefix="Argus.Events",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_events(dict(result), "# List Events\n"))
+    return CommandResults(
+        readable_output=pretty_print_events(dict(result), "# List Events\n"),
+        outputs_prefix="Argus.Events" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_payload_command(args: dict) -> CommandResults:
@@ -1327,14 +1356,12 @@ def get_payload_command(args: dict) -> CommandResults:
     readable_output += f"Event: {event_id}, type: {result['data']['type']}\n"
     readable_output += result["data"]["payload"]
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="Argus.Payload",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Argus.Payload" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_pcap_command(args: dict) -> Any:
@@ -1397,14 +1424,12 @@ def find_nids_events_command(args: dict) -> CommandResults:
         excludeFlags=argToList(args.get("exclude_flags")),
     )
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_events(dict(result), "# Find NIDS Events\n"),
-            outputs_prefix="Argus.NIDS",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_events(dict(result), "# Find NIDS Events\n"))
+    return CommandResults(
+        readable_output=pretty_print_events(dict(result), "# Find NIDS Events\n"),
+        outputs_prefix="Argus.NIDS" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def list_nids_events_command(args: dict) -> CommandResults:
@@ -1420,14 +1445,12 @@ def list_nids_events_command(args: dict) -> CommandResults:
         offset=args.get("offset"),
     )
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_events(dict(result), "# List NIDS Events\n"),
-            outputs_prefix="Argus.NIDS",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_events(dict(result), "# List NIDS Events\n"))
+    return CommandResults(
+        readable_output=pretty_print_events(dict(result), "# List NIDS Events\n"),
+        outputs_prefix="Argus.NIDS" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def search_records_command(args: dict) -> CommandResults:
@@ -1448,14 +1471,13 @@ def search_records_command(args: dict) -> CommandResults:
         limit=args.get("limit", 25),
         offset=args.get("offset"),
     )
-    if context_output == "true":
-        return CommandResults(
-            readable_output=tableToMarkdown("PDNS records", result["data"]),
-            outputs_prefix="Argus.PDNS",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=tableToMarkdown("PDNS records", result["data"]))
+
+    return CommandResults(
+        readable_output=tableToMarkdown("PDNS records", result["data"]),
+        outputs_prefix="Argus.PDNS" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def fetch_observations_for_domain_command(args: dict) -> CommandResults:
@@ -1466,14 +1488,13 @@ def fetch_observations_for_domain_command(args: dict) -> CommandResults:
         raise ValueError("fqdn not specified")
 
     result = fetch_observations_for_domain(fqdn=fqdn)
-    if context_output == "true":
-        return CommandResults(
-            readable_output=tableToMarkdown(f'Domain observations for "{fqdn}"', result["data"]),
-            outputs_prefix="Argus.ObservationsDomain",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=tableToMarkdown(f'Domain observations for "{fqdn}"', result["data"]))
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Domain observations for "{fqdn}"', result["data"]),
+        outputs_prefix="Argus.ObservationsDomain" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def fetch_observations_for_i_p_command(args: dict) -> CommandResults:
@@ -1484,14 +1505,13 @@ def fetch_observations_for_i_p_command(args: dict) -> CommandResults:
         raise ValueError("ip not specified")
 
     result = fetch_observations_for_ip(ip=ip)
-    if context_output == "true":
-        return CommandResults(
-            readable_output=tableToMarkdown(f'IP observations for "{ip}"', result["data"]),
-            outputs_prefix="Argus.ObservationsIP",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=tableToMarkdown(f'IP observations for "{ip}"', result["data"]))
+
+    return CommandResults(
+        readable_output=tableToMarkdown(f'IP observations for "{ip}"', result["data"]),
+        outputs_prefix="Argus.ObservationsIP" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_asset_command(args: dict) -> CommandResults:
@@ -1502,14 +1522,13 @@ def get_asset_command(args: dict) -> CommandResults:
         raise ValueError("id or shortname not given")
 
     result = get_asset(idOrShortName=id_shortname, customer=args.get("customer"))
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_asset([result["data"]]),
-            outputs_prefix="Argus.Asset",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_asset([result["data"]]))
+
+    return CommandResults(
+        readable_output=pretty_print_asset([result["data"]]),
+        outputs_prefix="Argus.Asset" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def list_assets_command(args: dict) -> CommandResults:
@@ -1526,14 +1545,14 @@ def list_assets_command(args: dict) -> CommandResults:
         offset=args.get("offset"),
         includeDeleted=args.get("include_deleted"),
     )
-    if args.get("context_output", "false") == "true":
-        return CommandResults(
-            readable_output=pretty_print_asset(result["data"]),
-            outputs_prefix="Argus.Asset",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_asset(result["data"]))
+    context_output = args.get("context_output", "false")
+
+    return CommandResults(
+        readable_output=pretty_print_asset(result["data"]),
+        outputs_prefix="Argus.Asset" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def add_asset_command(args: dict) -> CommandResults:
@@ -1548,18 +1567,19 @@ def add_asset_command(args: dict) -> CommandResults:
         components=argToList(args.get("components")),
         ttl=args.get("ttl"),
     )
-    if args.get("context_output", "false") == "true":
-        return CommandResults(
-            readable_output=pretty_print_asset([result["data"]]),
-            outputs_prefix="Argus.Asset",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_asset([result["data"]]))
+    context_output = args.get("context_output", "false")
+
+    return CommandResults(
+        readable_output=pretty_print_asset([result["data"]]),
+        outputs_prefix="Argus.Asset" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def delete_asset_command(args: dict) -> CommandResults:
     id_shortname = args.get("id_shortname")
+    context_output = args.get("context_output", "false")
     if not id_shortname:
         raise ValueError("id or shortname not given")
 
@@ -1567,18 +1587,18 @@ def delete_asset_command(args: dict) -> CommandResults:
         idOrShortName=id_shortname,
         customer=args.get("customer"),
     )
-    if args.get("context_output", "false") == "true":
-        return CommandResults(
-            readable_output=pretty_print_asset([result["data"]]),
-            outputs_prefix="Argus.Asset",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_asset([result["data"]]))
+
+    return CommandResults(
+        readable_output=pretty_print_asset([result["data"]]),
+        outputs_prefix="Argus.Asset" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def update_asset_command(args: dict) -> CommandResults:
     id_shortname = args.get("id_shortname")
+    context_output = args.get("context_output", "false")
     if not id_shortname:
         raise ValueError("id or shortname not given")
 
@@ -1594,14 +1614,13 @@ def update_asset_command(args: dict) -> CommandResults:
         deleteComponents=argToList(args.get("delete_components")),
         ttl=args.get("ttl"),
     )
-    if args.get("context_output", "false") == "true":
-        return CommandResults(
-            readable_output=pretty_print_asset([result["data"]]),
-            outputs_prefix="Argus.Asset",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_asset([result["data"]]))
+
+    return CommandResults(
+        readable_output=pretty_print_asset([result["data"]]),
+        outputs_prefix="Argus.Asset" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_vulnerability_by_asset_command(args: dict) -> CommandResults:
@@ -1618,14 +1637,13 @@ def get_vulnerability_by_asset_command(args: dict) -> CommandResults:
         offset=args.get("offset"),
         limit=args.get("limit"),
     )
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_vulnerability([result["data"]]),
-            outputs_prefix="Argus.Asset",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_vulnerability(result["data"]))
+
+    return CommandResults(
+        readable_output=pretty_print_vulnerability([result["data"]]),
+        outputs_prefix="Argus.Vulnerability" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_vulnerability_by_id_command(args: dict) -> CommandResults:
@@ -1636,14 +1654,13 @@ def get_vulnerability_by_id_command(args: dict) -> CommandResults:
         raise ValueError("Vulnerability UUID not given")
 
     result = get_vulnerability_by_id(id=vulnerability_uuid)
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_vulnerability([result["data"]]),
-            outputs_prefix="Argus.Vulnerability",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_vulnerability([result["data"]]))
+
+    return CommandResults(
+        readable_output=pretty_print_vulnerability([result["data"]]),
+        outputs_prefix="Argus.Vulnerability" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def list_vulnerabilities_command(args: dict) -> CommandResults:
@@ -1663,14 +1680,13 @@ def list_vulnerabilities_command(args: dict) -> CommandResults:
         timeFieldStrategy=args.get("time_field_strategy"),
         sortBy=args.get("sort_by"),
     )
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_vulnerability([result["data"]]),
-            outputs_prefix="Argus.Asset",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_vulnerability(result["data"]))
+
+    return CommandResults(
+        readable_output=pretty_print_vulnerability([result["data"]]),
+        outputs_prefix="Argus.Vulnerability" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def search_vulnerabilities_command(args: dict) -> CommandResults:
@@ -1688,14 +1704,14 @@ def search_vulnerabilities_command(args: dict) -> CommandResults:
         timeFieldStrategy=args.get("time_field_strategy"),
         sortBy=args.get("sort_by"),
     )
-    if args.get("context_output", "false") == "true":
-        return CommandResults(
-            readable_output=pretty_print_vulnerability(result["data"]),
-            outputs_prefix="Argus.Vulnerability",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_vulnerability(result["data"]))
+    context_output = args.get("context_output", "false")
+
+    return CommandResults(
+        readable_output=pretty_print_vulnerability(result["data"]),
+        outputs_prefix="Argus.Vulnerability" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_vulnerability_definition_command(args: dict) -> CommandResults:
@@ -1706,14 +1722,13 @@ def get_vulnerability_definition_command(args: dict) -> CommandResults:
         raise ValueError("Vulnerability definition id or identifier of vulnerability not given")
 
     result = get_vulnerability_definition(idOrVulnerabilityID=vulnerability_definition_uuid)
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_vulnerability_definition([result["data"]]),
-            outputs_prefix="Argus.Vulnerability.Definition",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_vulnerability_definition([result["data"]]))
+
+    return CommandResults(
+        readable_output=pretty_print_vulnerability_definition([result["data"]]),
+        outputs_prefix="Argus.Vulnerability.Definition" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def get_sample_metadata_command(args: dict) -> CommandResults:
@@ -1724,14 +1739,13 @@ def get_sample_metadata_command(args: dict) -> CommandResults:
         raise ValueError("id or shortname not given")
 
     result = get_sample_meta_data(sha256=sample_id)
-    if context_output == "true":
-        return CommandResults(
-            readable_output=pretty_print_sample([result["data"]]),
-            outputs_prefix="Argus.Sample",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=pretty_print_sample([result["data"]]))
+
+    return CommandResults(
+        readable_output=pretty_print_sample([result["data"]]),
+        outputs_prefix="Argus.Sample" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def add_sample_command(args: dict) -> CommandResults:
@@ -1751,14 +1765,12 @@ def add_sample_command(args: dict) -> CommandResults:
     human_readable += f"Size: {result['data']['sample']['size']}\n"
     human_readable += f"Exists: {result['data']['exists']}"
 
-    if context_output == "true":
-        return CommandResults(
-            readable_output=human_readable,
-            outputs_prefix="Argus.Sample",
-            outputs=result,
-            raw_response=result,
-        )
-    return CommandResults(readable_output=human_readable)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix="Argus.Sample" if context_output == "true" else None,
+        outputs=result if context_output == "true" else None,
+        raw_response=result,
+    )
 
 
 def download_sample_command(args: dict) -> fileResult:  # type: ignore
@@ -1776,6 +1788,192 @@ def download_sample_command(args: dict) -> fileResult:  # type: ignore
     else:
         raise ValueError(f"Unknown value for safe! safe={safe}")
     return fileResult(filename=filename, data=file.content)
+
+
+def calculate_reputation_for_domain_command(args: dict) -> CommandResults:
+    fqdn = args.get("fqdn")
+    context_output = args.get("context_output", "false")
+
+    if not fqdn:
+        raise ValueError("fqdn not specified")
+
+    result = calculate_reputation_for_domain(fqdn=fqdn)
+    if context_output == "true":
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                f'Domain reputation for "{fqdn}"', result["data"]
+            ),
+            outputs_prefix="Argus.ReputationDomain",
+            outputs=result,
+            raw_response=result,
+        )
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            f'Domain reputation for "{fqdn}"', result["data"]
+        ),
+        outputs=result,
+        raw_response=result["data"],
+    )
+
+
+def calculate_reputation_for_ip_command(args: dict) -> CommandResults:
+    ip = args.get("ip")
+    context_output = args.get("context_output", "false")
+
+    if not ip:
+        raise ValueError("ip not specified")
+
+    result = calculate_reputation_for_ip(ip=ip)
+    if context_output == "true":
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                f'IP reputation for "{ip}"', result["data"]
+            ),
+            outputs_prefix="Argus.ReputationIP",
+            outputs=result,
+            raw_response=result
+        )
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            f'IP reputation for "{ip}"', result["data"]
+        ),
+        outputs_prefix=result,
+        raw_response=result["data"]
+    )
+
+
+
+
+def get_domain_command():
+    results = []
+    domains_list = argToList(demisto.args()['domain'])
+    for domain in domains_list:
+        contents = []
+        context = {}
+        headers = []  # type: ignore
+        domain = extract_domain_name(domain)
+        domain_reputation = get_domain_reputation(domain)
+        try:
+            domain_reputation = get_domain_reputation(domain)
+            if domain_reputation:
+                domain_reputation = domain_reputation[0]
+                reputation_value = domain_reputation.get("value", None)
+                reputation_override = domain_reputation.get("override", False)
+                reputation_roles = domain_reputation.get("roles", [])
+                reputation_sourceIDs = domain_reputation.get("sourceIDs", [])
+                dbot_score = calculate_mnemonic_to_dbot_score(value=reputation_value,
+                                                            override=reputation_override)
+
+                context[outputPaths['domain']] = {
+                    'Name': domain,
+                    'mnemonic MDR': {
+                        'value': reputation_value,
+                        'roles': reputation_roles,
+                        'sourceIDs': reputation_sourceIDs
+                    }
+                }
+                # Add malicious if needed
+                if dbot_score == Common.DBotScore.BAD:
+                    context[outputPaths['domain']]['Malicious'] = {
+                        'Vendor': 'mnemonic MDR',
+                        'Description': 'Malicious domain found.'
+                    }
+
+                context[outputPaths['dbotscore']] = {
+                    'Indicator': domain,
+                    'Type': 'domain',
+                    'Vendor': 'mnemonic MDR',
+                    'Score': dbot_score,
+                    'Reliability': reliability
+                }
+                results.append(CommandResults(
+                    readable_output=tableToMarkdown(
+                f'mnemonic MDR Domain reputation for "{domain}"', domain_reputation
+                ),
+                    outputs=context,
+                    raw_response=domain_reputation
+                ))
+
+            else:
+                results.append(CommandResults(
+                        readable_output=tableToMarkdown(
+                    f'mnemonic MDR Domain reputation for "{domain}"', domain_reputation
+                    ),
+                        outputs=context,
+                        raw_response=domain_reputation
+                    ))
+        except Exception as e:
+            error_message = f"Error of type {type(e).__name__} occurred: {str(e)}"
+            return_results(f"Somethings up: {error_message}.")
+
+    return results
+
+def get_ip_command():
+    results = []
+    ips_list = argToList(demisto.args()['ip'])
+    for ip in ips_list:
+        contents = []
+        context = {}
+        headers = []  # type: ignore
+        try:
+            ip_reputation = get_ip_reputation(ip)
+            if ip_reputation:
+                ip_reputation = ip_reputation[0]
+                reputation_value = ip_reputation.get("value", None)
+                reputation_override = ip_reputation.get("override", False)
+                reputation_roles = ip_reputation.get("roles", [])
+                reputation_sourceIDs = ip_reputation.get("sourceIDs", [])
+                dbot_score = calculate_mnemonic_to_dbot_score(value=reputation_value,
+                                                            override=reputation_override)
+
+                context[outputPaths['ip']] = {
+                    'Address': ip,
+                    'mnemonic MDR': {
+                        'value': reputation_value,
+                        'roles': reputation_roles,
+                        'sourceIDs': reputation_sourceIDs
+                    }
+                }
+                # Add malicious if needed
+                if dbot_score == Common.DBotScore.BAD:
+                    build_malicious_dbot_entry
+                    context[outputPaths['ip']]['Malicious'] = {
+                        'Vendor': 'mnemonic MDR',
+                        'Description': 'Malicious ip found.'
+                    }
+
+
+                context[outputPaths['dbotscore']] = {
+                    'Indicator': ip,
+                    'Type': 'ip',
+                    'Vendor': 'mnemonic MDR',
+                    'Score': dbot_score,
+                    'Reliability': reliability
+                }
+                results.append(CommandResults(
+                    readable_output=tableToMarkdown(
+                f'mnemonic MDR IP reputation for "{ip}"', ip_reputation
+            ),
+                    outputs=context,
+                    raw_response=ip_reputation
+                ))
+            else:
+                results.append(CommandResults(
+                        readable_output=tableToMarkdown(
+                    f'mnemonic MDR IP reputation for "{ip}"', ip_reputation
+                    ),
+                        outputs=context,
+                        raw_response=ip_reputation
+                    ))
+        except Exception as e:
+            return_results(results)
+            #return_error(r.response.text)
+            error_message = f"Error of type {type(e).__name__} occurred: {str(e)}"
+            return_error(error_message)
+
+
+
+    return results
 
 
 """ MAIN FUNCTION """
@@ -1829,6 +2027,12 @@ def main() -> None:
 
         elif demisto.command() == "update-remote-system":
             return_results(update_remote_system_command(demisto.args()))
+        
+        elif demisto.command() == "domain":
+            return_results(get_domain_command())
+
+        elif demisto.command() == "ip":
+            return_results(get_ip_command())
 
         else:
             cmd_map = {
@@ -1878,9 +2082,11 @@ def main() -> None:
                 "argus-get-sample-metadata": get_sample_metadata_command,
                 "argus-upload-sample": add_sample_command,
                 "argus-download-sample": download_sample_command,
+                "argus-calculate-reputation-domain": calculate_reputation_for_domain_command,
+                "argus-calculate-reputation-ip": calculate_reputation_for_ip_command,
             }
             if demisto.command() not in cmd_map:
-                raise Exception("Unknown command")
+                raise NotImplementedError(f"Command {demisto.command()} is not implemented.")
 
             cmd = cmd_map[demisto.command()]
             return_results(cmd(demisto.args()))
