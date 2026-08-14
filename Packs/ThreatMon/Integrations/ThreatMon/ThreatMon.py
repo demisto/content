@@ -28,7 +28,7 @@ class Client(BaseClient):
     def set_status(self, data):
         """Updates incidents on Threatmon API using PATCH request."""
 
-        return self._http_request(method="PATCH", url_suffix="/incident/status", json_data=data)
+        return self._http_request(method="PATCH", url_suffix="/incident/status", json_data=data, resp_type="response")
 
     def request_takedown(self, finding_id: int, finding: str):
         """Submits a takedown request for a specific finding (alarm row)."""
@@ -206,11 +206,11 @@ def change_incident_status(client: Client, args: dict[str, Any]) -> CommandResul
     code = args.get("alarmId")
     status = args.get("status")
     data = {"status": status, "alarmIds": [code]}
-    changingStatus = client.set_status(data=data)
-    if changingStatus:
-        return CommandResults(readable_output=f"Incident {code} status changed to {changingStatus}")
+    response = client.set_status(data=data)
+    if response.ok:
+        return CommandResults(readable_output=f"Incident {code} status changed to {status}.")
     else:
-        return CommandResults(readable_output=f"Failed to change status for incident {code}.")
+        raise DemistoException(f"Failed to change status for incident {code}. API returned {response.status_code}: {response.text}")
 
 
 def request_takedown_command(client: Client, args: dict[str, Any]) -> CommandResults:
