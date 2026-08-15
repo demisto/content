@@ -63,6 +63,11 @@ configuration:
   type: 8
   section: Collect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -994,7 +999,7 @@ script:
     - contextPath: Covalence.Organization.org_name
       description: Org_name.
       type: String
-  dockerimage: demisto/xsoar-tools:1.0.0.8457987
+  dockerimage: demisto/xsoar-tools:1.0.0.11807991
   isfetch: true
   script: '-'
   subtype: python3
