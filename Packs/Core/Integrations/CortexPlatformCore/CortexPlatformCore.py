@@ -6470,10 +6470,9 @@ def main():  # pragma: no cover
 
         elif command == "core-delete-endpoint-policy":
             return_results(delete_endpoint_policy_command(client, args))
-
     except Exception as err:
         demisto.error(traceback.format_exc())
-        return_error(str(err))
+        return_error(str(err), error=err)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
