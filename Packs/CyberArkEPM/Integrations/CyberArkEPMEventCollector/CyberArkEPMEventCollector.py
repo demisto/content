@@ -52,6 +52,7 @@ class Config:
         "detailed_events": "CyberArkEPM.Event",
     }
 
+
 """ CLIENT CLASS """
 
 
@@ -93,7 +94,9 @@ class Client(BaseClient):
         # created before the parameter existed), fall back to the legacy behavior: SAML when both
         # SAML URLs are set, otherwise EPM. This keeps existing instances backward compatible.
         if not auth_method:
-            auth_method = Config.AUTH_METHOD_SAML if (self.authentication_url and self.application_url) else Config.AUTH_METHOD_EPM
+            auth_method = (
+                Config.AUTH_METHOD_SAML if (self.authentication_url and self.application_url) else Config.AUTH_METHOD_EPM
+            )
         self.auth_method = auth_method
 
         if self.auth_method == Config.AUTH_METHOD_OAUTH:
@@ -149,8 +152,8 @@ class Client(BaseClient):
                 auth=(self.username, self.password),
                 resp_type="json",
             )
-        except DemistoException as error:  
-            error_msg = str(error)  
+        except DemistoException as error:
+            error_msg = str(error)
             demisto.debug(f"[Token Request] Traceback: {traceback.format_exc()}")
             demisto.error(f"[Token Request] Failed: {error_msg}")
             raise DemistoException(f"Failed to obtain access token: {error_msg}")
@@ -169,7 +172,7 @@ class Client(BaseClient):
 
         return access_token
 
-    def oauth_auth_to_cyber_ark(self, force_refresh: bool = False) -> None:  
+    def oauth_auth_to_cyber_ark(self, force_refresh: bool = False) -> None:
         # Reference: CyberArk Identity (Idira ISPSS) OAuth2 client_credentials flow.
         # For the Idira OAuth method the EPM server address is provided directly via the
         # `server_url` parameter, so there is no need to discover the tenant URL at runtime.
@@ -229,7 +232,7 @@ class Client(BaseClient):
         if response is not None and getattr(response, "status_code", None) == 401:
             return True
         # Fallback for cases where the response object is not attached to the exception.
-        return "401" in str(error)
+        return re.search(r"\b401\b", str(error)) is not None
 
     def epm_auth_to_cyber_ark(self):  # pragma: no cover
         data = {
@@ -873,10 +876,10 @@ def main():  # pragma: no cover
             demisto.debug(f"[fetch-events] send_events_to_xsiam: {len(events)} events, {events=}")
             demisto.setLastRun(next_run)
 
-    except Exception as error:  
+    except Exception as error:
         error_msg = f"Failed to execute {command}. Error: {error!s}"
         demisto.error(f"{error_msg}\n{traceback.format_exc()}")
-        return_error(error_msg)  
+        return_error(error_msg)
 
     demisto.debug("CyberArkEPMEventCollector integration finished")
 
