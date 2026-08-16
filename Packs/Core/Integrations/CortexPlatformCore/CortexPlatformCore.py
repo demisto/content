@@ -2128,7 +2128,7 @@ def update_issue_command(client: Client, args: dict):
     """
     issue_id = get_issue_id(args)
     if not issue_id:
-        raise DemistoException("Issue ID is required for updating an issue.")
+        raise CortexMissingArgError("id", override_message="Issue ID is required for updating an issue.")
 
     status_map = {
         "New": "STATUS_010_NEW",
@@ -2150,7 +2150,19 @@ def update_issue_command(client: Client, args: dict):
         "critical": "SEV_050_CRITICAL",
     }
     severity_value = args.get("severity")
+    if severity_value and severity_value not in severity_map:
+        raise CortexInvalidArgError(
+            arg_name="severity",
+            value=severity_value,
+            allowed_values=list(severity_map.keys()),
+        )
     status = args.get("status")
+    if status and status not in status_map:
+        raise CortexInvalidArgError(
+            arg_name="status",
+            value=status,
+            allowed_values=list(status_map.keys()),
+        )
     link_cases = [int(case_id) for case_id in argToList(args.get("link_cases"))] if args.get("link_cases") else []
     unlink_cases = [int(case_id) for case_id in argToList(args.get("unlink_cases"))] if args.get("unlink_cases") else []
 
@@ -2169,7 +2181,12 @@ def update_issue_command(client: Client, args: dict):
     filtered_update_args = {k: v for k, v in update_args.items() if v is not None}
 
     if not filtered_update_args and not link_cases and not unlink_cases:
-        raise DemistoException("Please provide arguments to update the issue.")
+        raise CortexMissingArgError(
+            ["assigned_user_mail", "severity", "name", "occurred", "phase", "type",
+             "description", "status", "link_cases", "unlink_cases"],
+            require_one=True,
+            override_message="Please provide arguments to update the issue.",
+        )
 
     if link_cases:
         client.link_issue_to_cases(int(issue_id), link_cases)

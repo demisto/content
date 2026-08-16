@@ -1926,23 +1926,19 @@ def test_update_issue_command_invalid_severity_mapping(mocker):
     WHEN:
         The update_issue_command function is called.
     THEN:
-        Severity is not included in update_data when mapping returns None.
+        CortexInvalidArgError is raised with the invalid severity value.
     """
     from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import CortexInvalidArgError
 
     client = Client(base_url="", headers={})
-    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
-    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)
 
     args = {"id": "12345", "severity": "99", "name": "Test Issue"}
 
-    update_issue_command(client, args)
-
-    call_args = mock_update_issue.call_args[0][0]
-    update_data = call_args["update_data"]
-    assert "severity" not in update_data
-    assert update_data["name"] == "Test Issue"
+    with pytest.raises(CortexInvalidArgError, match="severity"):
+        update_issue_command(client, args)
 
 
 def test_update_issue_command_invalid_status_mapping(mocker):
@@ -1952,23 +1948,19 @@ def test_update_issue_command_invalid_status_mapping(mocker):
     WHEN:
         The update_issue_command function is called.
     THEN:
-        Status is not included in update_data when mapping returns None.
+        CortexInvalidArgError is raised with the invalid status value.
     """
     from CortexPlatformCore import update_issue_command, Client
+    from CommonServerPython import CortexInvalidArgError
 
     client = Client(base_url="", headers={})
-    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
-    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)
 
     args = {"id": "12345", "status": "FAKE", "name": "Test Issue"}
 
-    update_issue_command(client, args)
-
-    call_args = mock_update_issue.call_args[0][0]
-    update_data = call_args["update_data"]
-    assert "resolution_status" not in update_data
-    assert update_data["name"] == "Test Issue"
+    with pytest.raises(CortexInvalidArgError, match="status"):
+        update_issue_command(client, args)
 
 
 def test_update_issue_command_no_severity(mocker):
