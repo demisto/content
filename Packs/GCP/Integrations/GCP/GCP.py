@@ -1790,9 +1790,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
         "uniformBucketLevelAccess": response.get("iamConfiguration", {}).get("uniformBucketLevelAccess", {}).get("enabled"),
     }
     hr = tableToMarkdown(f"Metadata for bucket {bucket} was successfully updated.", data_res, removeNull=True)
-    return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.Storage.Bucket", outputs=response, outputs_key_field="name"
-    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Storage.Bucket", outputs=response, outputs_key_field="name")
 
 
 def iam_project_policy_binding_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
