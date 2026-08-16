@@ -32,5 +32,5 @@ This script executes the 'quarantine-file' command on a specified file via the a
 | QuarantineFile.FileHash | The hash of the quarantined file. | String |
 | QuarantineFile.Status | Whether the command execution was successful or not. | String |
 | QuarantineFile.Message | A success message if the command runs successfully, otherwise a message that contains the error. | String |
-| QuarantineFile.Brand | The integration that executed the command. On the Cortex platform, the Core action runs as a Builtin command and is reported as "Cortex Builtin". | String |
+| QuarantineFile.Brand | The integration that executed the command. On the Cortex Platform, the Cortex Core action runs as a Builtin command and is reported as "Cortex Builtin". | String |
 | QuarantineFile.EndpointID | The endpoint_id which the command was executed on. | String |
