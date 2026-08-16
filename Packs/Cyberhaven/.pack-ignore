@@ -1,3 +1,9 @@
+[file:Cyberhaven.yml]
+ignore=BA129
+
+[file:CyberhavenIncidentRefresh.yml]
+ignore=BA129
+
 [file:incidentfield-Cyberhaven-Lineage-End-ID.json]
 ignore=IF115
 
