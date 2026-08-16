@@ -1,0 +1,140 @@
+id: Doppel - Sync Alerts
+version: -1
+name: Doppel - Sync Alerts
+description: Keeps Doppel incidents/issues in sync with the Doppel platform on deployments without native mirroring, such as Cortex XSIAM. Runs DoppelSyncAlerts to apply Doppel-side changes (queue state, entity state, severity, notes, and audit logs) to the matching incidents/issues, then runs DoppelPushUpdates to archive Doppel alerts whose incidents/issues were closed by analysts. Intended to run on a schedule via the bundled "Doppel - Sync Alerts" job.
+fromversion: 6.10.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 7c1f2b9e-4a53-48d1-b0c6-1de2a9c47f11
+    type: start
+    task:
+      id: 7c1f2b9e-4a53-48d1-b0c6-1de2a9c47f11
+      version: -1
+      name: ''
+      description: ''
+      type: start
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: 3fa8d5c2-6b71-4e09-9a44-58c03b6d21e7
+    type: regular
+    task:
+      id: 3fa8d5c2-6b71-4e09-9a44-58c03b6d21e7
+      version: -1
+      name: Apply Doppel changes to incidents/issues
+      description: Runs DoppelSyncAlerts, which polls Doppel for alerts modified since the last sweep and updates the matching incidents/issues (queue state, entity state, severity, notes, and audit logs).
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: DoppelSyncAlerts
+    scriptarguments:
+      lookback:
+        simple: ${inputs.lookback}
+      close_archived:
+        simple: ${inputs.close_archived}
+      instance_name:
+        simple: ${inputs.instance_name}
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 290}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 91b4e6f0-2d38-47ac-8e15-c7a90f43d258
+    type: regular
+    task:
+      id: 91b4e6f0-2d38-47ac-8e15-c7a90f43d258
+      version: -1
+      name: Archive Doppel alerts for closed incidents/issues
+      description: Runs DoppelPushUpdates, which archives the Doppel alerts whose incidents/issues were closed since the last sweep, optionally sending the close notes as the alert comment. Closures with the Duplicate close reason are skipped.
+      type: regular
+      iscommand: false
+      brand: ''
+      scriptName: DoppelPushUpdates
+    scriptarguments:
+      lookback:
+        simple: ${inputs.lookback}
+      push_close_notes:
+        simple: ${inputs.push_close_notes}
+      instance_name:
+        simple: ${inputs.instance_name}
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 530}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: c5d20a83-9f16-4b7d-a6e2-04b1f78c39aa
+    type: title
+    task:
+      id: c5d20a83-9f16-4b7d-a6e2-04b1f78c39aa
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: '{"position": {"x": 50, "y": 770}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 785, "width": 380, "x": 50, "y": 50}}}'
+inputs:
+- key: lookback
+  value:
+    simple: 1 hour
+  required: false
+  description: How far back the sync and push sweeps look on their first run, before a cursor exists. Accepts durations such as '1 hour' or '2 days', or an ISO 8601 timestamp.
+  playbookInputQuery:
+- key: close_archived
+  value:
+    simple: 'false'
+  required: false
+  description: Whether to close the Cortex incident/issue when the corresponding Doppel alert has been archived in Doppel. Disabled by default, which matches the behavior of native mirroring.
+  playbookInputQuery:
+- key: push_close_notes
+  value:
+    simple: 'true'
+  required: false
+  description: Whether to send the incident close notes to Doppel as the alert comment when archiving.
+  playbookInputQuery:
+- key: instance_name
+  value: {}
+  required: false
+  description: The Doppel integration instance to use when more than one instance is configured.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests

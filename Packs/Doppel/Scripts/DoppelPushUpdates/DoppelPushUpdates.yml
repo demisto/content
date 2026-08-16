@@ -1,0 +1,68 @@
+args:
+- description: How far back to look for closed incidents/issues when no push cursor exists yet (first run). Accepts durations such as '1 hour' or '2 days', or an ISO 8601 timestamp.
+  name: lookback
+- description: Maximum number of closed incidents/issues to process per sweep. When the cap is reached, the cursor is not advanced and the remaining closures are processed by the next sweep.
+  name: max_incidents
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: Whether to send the incident close notes to Doppel as the alert comment when archiving.
+  name: push_close_notes
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Whether to only report what would be pushed without modifying anything. The push cursor is not advanced.
+  name: dry_run
+  predefined:
+  - "true"
+  - "false"
+- description: The Doppel integration instance to use when more than one instance is configured.
+  name: instance_name
+comment: Finds Doppel incidents/issues that were closed since the last sweep and archives the corresponding alerts in Doppel, optionally sending the close notes as the alert comment. Incidents closed with the Duplicate close reason are skipped, and alerts that are already archived in Doppel are left untouched, so the script is safe to re-run. Intended to run on a schedule via the bundled "Doppel - Sync Alerts" job on platforms without native mirroring, such as Cortex XSIAM.
+commonfields:
+  id: DoppelPushUpdates
+  version: -1
+dependson:
+  must:
+  - Doppel|||doppel-get-alert
+  - Doppel|||doppel-update-alert
+dockerimage: demisto/python3:3.12.13.10404775
+enabled: true
+engineinfo: {}
+name: DoppelPushUpdates
+outputs:
+- contextPath: Doppel.PushUpdates.ClosedIncidents
+  description: Number of closed incidents/issues found since the last sweep.
+  type: Number
+- contextPath: Doppel.PushUpdates.AlertsArchived
+  description: Number of Doppel alerts that were archived.
+  type: Number
+- contextPath: Doppel.PushUpdates.AlreadyArchived
+  description: Number of Doppel alerts that were already archived and left untouched.
+  type: Number
+- contextPath: Doppel.PushUpdates.Skipped
+  description: Number of closed incidents/issues that were skipped (no Doppel alert ID, closed as Duplicate, or already pushed in this sweep).
+  type: Number
+- contextPath: Doppel.PushUpdates.Errors
+  description: Number of per-alert push failures during the sweep.
+  type: Number
+- contextPath: Doppel.PushUpdates.CursorAdvanced
+  description: Whether the push cursor was advanced after the sweep.
+  type: Boolean
+- contextPath: Doppel.PushUpdates.Cursor
+  description: The push cursor after the sweep, in ISO 8601 format.
+  type: Date
+- contextPath: Doppel.PushUpdates.DryRun
+  description: Whether the sweep ran in dry-run mode.
+  type: Boolean
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

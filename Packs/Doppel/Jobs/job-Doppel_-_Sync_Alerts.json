@@ -1,0 +1,23 @@
+{
+    "id": "Doppel - Sync Alerts",
+    "name": "Doppel - Sync Alerts",
+    "details": "Scheduled trigger for the 'Doppel - Sync Alerts' playbook. Keeps Doppel incidents/issues in sync with the Doppel platform on deployments without native mirroring, such as Cortex XSIAM: applies Doppel-side changes to the matching incidents/issues and archives Doppel alerts whose incidents/issues were closed by analysts. On Cortex XSOAR, prefer the integration's native mirroring and leave this job disabled.",
+    "playbookId": "Doppel - Sync Alerts",
+    "scheduled": true,
+    "recurrent": true,
+    "cronView": false,
+    "humanCron": {
+        "timePeriodType": "minutes",
+        "timePeriod": 15
+    },
+    "shouldTriggerNew": true,
+    "closePrevRun": true,
+    "isFeed": false,
+    "selectedFeeds": [],
+    "isAllFeeds": false,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
+}

@@ -326,6 +326,8 @@ script:
       name: created_before
     - description: Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_after
+    - description: Filter alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
+      name: last_activity_timestamp
     - auto: PREDEFINED
       description: The field to sort the reports by.
       defaultValue: date_sourced
@@ -343,6 +345,8 @@ script:
     - description: Page number for pagination.
       defaultValue: '0'
       name: page
+    - description: Number of alerts to return per page. The maximum supported by the Doppel API is 200.
+      name: page_size
     - description: List of tags to filter alerts.
       isArray: true
       name: tags

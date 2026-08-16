@@ -478,6 +478,7 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     created_before = format_datetime(args.get("created_before"))
     created_after = format_datetime(args.get("created_after"))
+    last_activity_timestamp = format_datetime(args.get("last_activity_timestamp"))
 
     # Extract query parameters directly from arguments
     query_params = {
@@ -486,9 +487,11 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
         "product": args.get("product"),
         "created_before": created_before,
         "created_after": created_after,
+        "last_activity_timestamp": last_activity_timestamp,
         "sort_type": args.get("sort_type"),
         "sort_order": args.get("sort_order"),
         "page": args.get("page"),
+        "page_size": args.get("page_size"),
         "tags": argToList(args.get("tags"), separator=",", transform=None),
     }
 

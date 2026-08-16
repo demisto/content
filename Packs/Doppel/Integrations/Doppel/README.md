@@ -345,9 +345,11 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 | product | Product category the report belongs to. Possible values: domains, social_media, mobile_apps, ecommerce, crypto, emails, paid_adds. | Optional |  
 | created_before | Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | created_after | Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
+| last_activity_timestamp | Filter alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | sort_type | The field to sort the reports by. Defaults to date_sourced. Possible values: date_sourced, date_last_actioned. | Optional |  
 | sort_order | The order to sort the reports by. Defaults to desc. Possible values: asc, desc. | Optional |  
 | page | Page number for pagination; defaults to 0. | Optional |  
+| page_size | Number of alerts to return per page. The maximum supported by the Doppel API is 200. | Optional |  
 | tags | List of tags to filter alerts. | Optional |  
 
 #### Context Output

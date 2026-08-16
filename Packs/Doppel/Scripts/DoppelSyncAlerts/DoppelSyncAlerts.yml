@@ -1,0 +1,67 @@
+args:
+- description: How far back to look for modified Doppel alerts when no sync cursor exists yet (first run). Accepts durations such as '1 hour' or '2 days', or an ISO 8601 timestamp.
+  name: lookback
+- description: Maximum number of pages (200 alerts each) to retrieve from the Doppel API per sweep. When the cap is reached, the cursor is not advanced and the remaining updates are processed by the next sweep.
+  name: max_pages
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Whether to close the Cortex incident/issue when the corresponding Doppel alert has been archived in Doppel. Disabled by default, which matches the behavior of native mirroring.
+  name: close_archived
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Whether to only report what would be updated without modifying anything. The sync cursor is not advanced.
+  name: dry_run
+  predefined:
+  - "true"
+  - "false"
+- description: The Doppel integration instance to query when more than one instance is configured.
+  name: instance_name
+comment: Polls Doppel for alerts whose state changed since the last sweep and applies the changes (queue state, entity state, severity, notes, and audit logs) to the matching Cortex incidents or issues, matched by the Doppel alert ID. Intended to run on a schedule via the bundled "Doppel - Sync Alerts" job on platforms without native mirroring, such as Cortex XSIAM. Safe to re-run; every update is idempotent.
+commonfields:
+  id: DoppelSyncAlerts
+  version: -1
+dependson:
+  must:
+  - Doppel|||doppel-get-alerts
+dockerimage: demisto/python3:3.12.13.10404775
+enabled: true
+engineinfo: {}
+name: DoppelSyncAlerts
+outputs:
+- contextPath: Doppel.SyncAlerts.ModifiedAlerts
+  description: Number of Doppel alerts with activity since the last sweep.
+  type: Number
+- contextPath: Doppel.SyncAlerts.IncidentsUpdated
+  description: Number of incidents/issues that were updated.
+  type: Number
+- contextPath: Doppel.SyncAlerts.IncidentsClosed
+  description: Number of incidents/issues that were closed because the Doppel alert was archived.
+  type: Number
+- contextPath: Doppel.SyncAlerts.AlertsWithoutIncident
+  description: Number of modified Doppel alerts with no matching incident/issue in the tenant.
+  type: Number
+- contextPath: Doppel.SyncAlerts.Errors
+  description: Number of per-incident update failures during the sweep.
+  type: Number
+- contextPath: Doppel.SyncAlerts.CursorAdvanced
+  description: Whether the sync cursor was advanced after the sweep.
+  type: Boolean
+- contextPath: Doppel.SyncAlerts.Cursor
+  description: The sync cursor after the sweep, in ISO 8601 format.
+  type: Date
+- contextPath: Doppel.SyncAlerts.DryRun
+  description: Whether the sweep ran in dry-run mode.
+  type: Boolean
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
