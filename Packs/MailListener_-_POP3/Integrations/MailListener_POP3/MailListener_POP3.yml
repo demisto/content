@@ -57,6 +57,12 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+  section: Collect
 description: Listen to a mailbox, enable incident triggering via e-mail.
 display: MailListener - POP3
 name: MailListener - POP3
