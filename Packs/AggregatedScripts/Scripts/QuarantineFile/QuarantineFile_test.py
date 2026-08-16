@@ -885,7 +885,7 @@ class TestXDRHandlerBuiltinPath:
         args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
         handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
 
-        assert handler.display_brand == "Builtin"
+        assert handler.display_brand == "Cortex Builtin"
 
     def test_display_brand_is_real_brand_off_platform(self):
         """
@@ -993,7 +993,7 @@ class TestXDRHandlerBuiltinPath:
 
         assert len(final_results) == 1
         assert final_results[0].Status == QuarantineResult.Statuses.SUCCESS
-        assert final_results[0].Brand == "Builtin"
+        assert final_results[0].Brand == "Cortex Builtin"
 
 
 class TestMDEHandler:

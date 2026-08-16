@@ -471,8 +471,8 @@ class XDRHandler(BrandHandler):
     @property
     def display_brand(self) -> str:
         """Brand label shown to the user. On the platform the Core-IR action runs as a
-        Builtin command (no integration instance), so report it as "Builtin"."""
-        return "Builtin" if self.use_builtin else self.brand
+        Builtin command (no integration instance), so report it as "Cortex Builtin"."""
+        return "Cortex Builtin" if self.use_builtin else self.brand
 
     def validate_args(self, args: dict) -> None:
         """
