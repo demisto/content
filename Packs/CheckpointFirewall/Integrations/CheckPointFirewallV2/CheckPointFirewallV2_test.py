@@ -472,11 +472,24 @@ def test_checkpoint_list_access_rule_command(mocker):
     mock_response = util_load_json("test_data/list_access_rule.json")
     mocked_client = mocker.Mock()
     mocked_client.list_access_rule.return_value = mock_response
-    result = checkpoint_list_access_rule_command(mocked_client, "Networks", 1, 0).outputs
-    assert result[0].get("name") == "access_rule_1"
-    assert result[0].get("uid") == "1234"
-    assert result[0].get("type") == "access-rule"
-    assert len(result[0]) == 12
+    command_results = checkpoint_list_access_rule_command(mocked_client, "Networks", 1, 0)
+    # The full API response is now returned to context (wrapper with rulebase, pagination and objects-dictionary).
+    output = command_results.outputs
+    assert output.get("name") == "Network"
+    assert output.get("uid") == "a-1234"
+    assert output.get("from") == 1
+    assert output.get("to") == 1
+    assert output.get("total") == 16
+    assert output.get("objects-dictionary")
+    rule = output["rulebase"][0]
+    assert rule.get("name") == "access_rule_1"
+    assert rule.get("uid") == "1234"
+    assert rule.get("type") == "access-rule"
+    assert rule.get("rule-number") == 1
+    assert rule.get("enabled") is True
+    assert rule.get("source") == ["987654321"]
+    # readable_output is the master-style summary table over the top-level rulebase objects.
+    assert "access_rule_1" in command_results.readable_output
 
 
 def test_checkpoint_add_access_rule_command(mocker):
@@ -3682,3 +3695,375 @@ def test_list_application_site_without_new_args(mocker):
     call_args = mocked_client.list_application_site.call_args
     assert call_args[1]["details_level"] is None
     assert call_args[1]["domains_to_process"] is None
+
+
+# ---------------------------------------------------------------------------
+# checkpoint-access-rule-add: multi-object + tags + entry_id
+# ---------------------------------------------------------------------------
+def test_add_access_rule_multi_object_source(mocker):
+    """
+    Given
+        source/destination/service provided as comma-separated strings
+    When
+        calling checkpoint_add_access_rule_command
+    Then
+        each is converted to a JSON list before being sent to the client
+    """
+    from CheckPointFirewallV2 import checkpoint_add_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.add_rule.return_value = util_load_json("test_data/add_access_rule.json")
+
+    checkpoint_add_access_rule_command(
+        mocked_client,
+        layer="Network",
+        position="top",
+        source="Host_A,Host_B",
+        destination="Any",
+        service="http,https",
+        tags="tag1,tag2",
+    )
+
+    call_kwargs = mocked_client.add_rule.call_args[1]
+    assert call_kwargs["source"] == ["Host_A", "Host_B"]
+    assert call_kwargs["destination"] == ["Any"]
+    assert call_kwargs["service"] == ["http", "https"]
+    assert call_kwargs["tags"] == ["tag1", "tag2"]
+
+
+def test_add_access_rule_with_entry_id(mocker):
+    """
+    Given
+        an entry_id pointing to a file containing a full request body
+    When
+        calling checkpoint_add_access_rule_command
+    Then
+        the file content is sent as-is via request_body and other args are ignored
+    """
+    from CheckPointFirewallV2 import checkpoint_add_access_rule_command
+
+    body = {"layer": "Network", "position": "top", "name": "from-file", "action": "Drop"}
+    mocker.patch.object(CheckPointFirewallV2.demisto, "getFilePath", return_value={"path": "test_data/entry_body.json"})
+    with open("test_data/entry_body.json", "w") as f:
+        json.dump(body, f)
+
+    mocked_client = mocker.Mock()
+    mocked_client.add_rule.return_value = util_load_json("test_data/add_access_rule.json")
+
+    checkpoint_add_access_rule_command(mocked_client, entry_id="123@456")
+
+    call_kwargs = mocked_client.add_rule.call_args[1]
+    assert call_kwargs["request_body"] == body
+
+
+def test_add_access_rule_missing_required_without_entry_id(mocker):
+    """
+    Given
+        neither entry_id nor layer/position
+    When
+        calling checkpoint_add_access_rule_command
+    Then
+        a DemistoException is raised
+    """
+    from CheckPointFirewallV2 import checkpoint_add_access_rule_command
+
+    mocked_client = mocker.Mock()
+    with pytest.raises(CheckPointFirewallV2.DemistoException):
+        checkpoint_add_access_rule_command(mocked_client, name="no-layer")
+
+
+# ---------------------------------------------------------------------------
+# checkpoint-access-rule-list: full objects + new args
+# ---------------------------------------------------------------------------
+def test_list_access_rule_full_object_and_new_args(mocker):
+    """
+    Given
+        the new list arguments (filter, order_asc, hits settings, etc.)
+    When
+        calling checkpoint_list_access_rule_command
+    Then
+        the client receives the mapped arguments and the full rule object is returned
+    """
+    from CheckPointFirewallV2 import checkpoint_list_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.list_access_rule.return_value = util_load_json("test_data/list_access_rule.json")
+
+    result = checkpoint_list_access_rule_command(
+        mocked_client,
+        "Network",
+        10,
+        0,
+        filter="src:Host_A",
+        order="ASC:name",
+        package="Standard",
+        show_as_ranges="true",
+        hits_settings_from_date="2024-01-01",
+        hits_settings_target="gw1",
+        show_membership="true",
+    )
+
+    call_kwargs = mocked_client.list_access_rule.call_args[1]
+    assert call_kwargs["filter_str"] == "src:Host_A"
+    assert call_kwargs["order"] == [{"ASC": "name"}]
+    assert call_kwargs["package"] == "Standard"
+    assert call_kwargs["show_as_ranges"] is True
+    assert call_kwargs["hits_settings"] == {"from-date": "2024-01-01", "target": "gw1"}
+    assert call_kwargs["show_membership"] is True
+    # full API response returned to context
+    assert result.outputs["rulebase"][0]["rule-number"] == 1
+
+
+# ---------------------------------------------------------------------------
+# checkpoint-access-rule-get
+# ---------------------------------------------------------------------------
+def test_get_access_rule_command(mocker):
+    from CheckPointFirewallV2 import checkpoint_get_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.get_access_rule.return_value = util_load_json("test_data/show_access_rule.json")
+
+    result = checkpoint_get_access_rule_command(
+        mocked_client, identifier="Block malicious", layer="Network", show_hits="true"
+    )
+
+    assert result.outputs_prefix == "CheckPoint.AccessRule"
+    assert result.outputs["uid"] == "rule-uid-1234"
+    call_kwargs = mocked_client.get_access_rule.call_args[1]
+    assert call_kwargs["show_hits"] is True
+    assert "Block malicious" in result.readable_output
+
+
+def test_get_access_rule_by_rule_number(mocker):
+    """A numeric identifier is sent as rule-number."""
+    from CheckPointFirewallV2 import checkpoint_get_access_rule_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.get_access_rule.return_value = util_load_json("test_data/show_access_rule.json")
+
+    checkpoint_get_access_rule_command(mocked_client, identifier="3", layer="Network")
+    call_args = mocked_client.get_access_rule.call_args[0]
+    assert call_args == ("3", "Network")
+
+
+def test_get_access_rule_client_rule_number_body(mocker):
+    from CheckPointFirewallV2 import Client
+
+    client = Client(base_url="https://x/web_api/", use_ssl=False, use_proxy=False, sid="sid")
+    http_mock = mocker.patch.object(client, "_http_request", return_value={})
+    client.get_access_rule("5", "Network")
+    body = http_mock.call_args[1]["json_data"]
+    assert body["rule-number"] == "5"
+    assert "name" not in body
+
+
+# ---------------------------------------------------------------------------
+# checkpoint-session-discard
+# ---------------------------------------------------------------------------
+def test_session_discard_current(mocker):
+    from CheckPointFirewallV2 import checkpoint_session_discard_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.discard.return_value = {"number-of-discarded-changes": 2, "message": "OK"}
+
+    result = checkpoint_session_discard_command(mocked_client)
+    mocked_client.discard.assert_called_once_with(uid=None)
+    assert result.outputs_prefix == "CheckPoint.SessionDiscard"
+    assert "2 change(s)" in result.readable_output
+
+
+def test_session_discard_target(mocker):
+    from CheckPointFirewallV2 import checkpoint_session_discard_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.discard.return_value = {"number-of-discarded-changes": 0, "message": ""}
+
+    checkpoint_session_discard_command(mocked_client, target_session_id="sess-uid-1")
+    mocked_client.discard.assert_called_once_with(uid="sess-uid-1")
+
+
+# ---------------------------------------------------------------------------
+# checkpoint-dns-domain-*
+# ---------------------------------------------------------------------------
+def test_dns_domain_list(mocker):
+    from CheckPointFirewallV2 import checkpoint_dns_domain_list_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.list_dns_domains.return_value = util_load_json("test_data/list_dns_domains.json")
+
+    result = checkpoint_dns_domain_list_command(mocked_client, limit="50", offset="0", order="ASC:name")
+
+    call_kwargs = mocked_client.list_dns_domains.call_args[1]
+    assert call_kwargs["limit"] == 50
+    assert call_kwargs["order"] == [{"ASC": "name"}]
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["name"] == ".example.com"
+
+
+def test_dns_domain_get(mocker):
+    from CheckPointFirewallV2 import checkpoint_dns_domain_get_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.get_dns_domain.return_value = util_load_json("test_data/show_dns_domain.json")
+
+    result = checkpoint_dns_domain_get_command(mocked_client, identifier=".example.com")
+    assert result.outputs["uid"] == "dns-uid-1"
+    assert result.outputs_prefix == "CheckPoint.DNSDomain"
+
+
+def test_dns_domain_add(mocker):
+    from CheckPointFirewallV2 import checkpoint_dns_domain_add_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.add_dns_domain.return_value = util_load_json("test_data/show_dns_domain.json")
+
+    checkpoint_dns_domain_add_command(
+        mocked_client, name=".example.com", is_sub_domain="true", tags="t1,t2"
+    )
+    call_kwargs = mocked_client.add_dns_domain.call_args[1]
+    assert call_kwargs["is_sub_domain"] is True
+    assert call_kwargs["tags"] == ["t1", "t2"]
+
+
+def test_dns_domain_add_invalid_name(mocker):
+    """Name must start with a dot."""
+    from CheckPointFirewallV2 import checkpoint_dns_domain_add_command
+
+    mocked_client = mocker.Mock()
+    with pytest.raises(CheckPointFirewallV2.DemistoException):
+        checkpoint_dns_domain_add_command(mocked_client, name="example.com", is_sub_domain="true")
+
+
+def test_dns_domain_update(mocker):
+    from CheckPointFirewallV2 import checkpoint_dns_domain_update_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.update_dns_domain.return_value = util_load_json("test_data/show_dns_domain.json")
+
+    checkpoint_dns_domain_update_command(
+        mocked_client, identifier=".example.com", new_name=".example.org", is_sub_domain="false"
+    )
+    call_kwargs = mocked_client.update_dns_domain.call_args[1]
+    assert call_kwargs["new_name"] == ".example.org"
+    assert call_kwargs["is_sub_domain"] is False
+
+
+def test_dns_domain_delete(mocker):
+    from CheckPointFirewallV2 import checkpoint_dns_domain_delete_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.delete_dns_domain.return_value = {"message": "OK"}
+
+    result = checkpoint_dns_domain_delete_command(mocked_client, identifier=".example.com")
+    assert mocked_client.delete_dns_domain.call_count == 1
+    assert ".example.com" in result.readable_output
+
+
+# ---------------------------------------------------------------------------
+# checkpoint-show-task: details_level + failure fields
+# ---------------------------------------------------------------------------
+def test_show_task_with_details_level(mocker):
+    from CheckPointFirewallV2 import checkpoint_show_task_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.show_task.return_value = {
+        "tasks": [
+            {
+                "task-id": "t1",
+                "task-name": "Install policy",
+                "status": "succeeded",
+                "suppressed": False,
+                "progress-percentage": 100,
+            }
+        ]
+    }
+
+    result = checkpoint_show_task_command(mocked_client, "t1", details_level="full")
+    call_kwargs = mocked_client.show_task.call_args[1]
+    assert call_kwargs["details_level"] == "full"
+    # outputs hold the full task objects from result.get("tasks")
+    task = result.outputs[0]
+    assert task["task-id"] == "t1"
+    assert task["status"] == "succeeded"
+
+
+def test_show_task_failure_returns_error_fields(mocker):
+    """
+    Given a failure response body (HTTP 400-501) with message/warnings/errors/
+    blocking-errors/code, the command surfaces these fields into the context.
+    """
+    from CheckPointFirewallV2 import checkpoint_show_task_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.show_task.return_value = {
+        "message": "Requested object [t1] not found",
+        "warnings": [{"current-session": False, "message": "w1"}],
+        "errors": [{"current-session": False, "message": "e1"}],
+        "blocking-errors": [{"current-session": False, "message": "b1"}],
+        "code": "generic_err_object_not_found",
+    }
+
+    result = checkpoint_show_task_command(mocked_client, "t1")
+    output = result.outputs
+    assert output["message"] == "Requested object [t1] not found"
+    assert output["warnings"] == [{"current-session": False, "message": "w1"}]
+    assert output["errors"] == [{"current-session": False, "message": "e1"}]
+    assert output["blocking-errors"] == [{"current-session": False, "message": "b1"}]
+    assert output["code"] == "generic_err_object_not_found"
+    assert "generic_err_object_not_found" in result.readable_output
+
+
+# ---------------------------------------------------------------------------
+# tcp/udp service add/update: ignore_warnings/errors + use_default_session_timeout
+# ---------------------------------------------------------------------------
+def test_tcp_service_add_new_args(mocker):
+    from CheckPointFirewallV2 import checkpoint_tcp_service_add_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.add_service_tcp.return_value = util_load_json("test_data/show_service_tcp.json")
+
+    checkpoint_tcp_service_add_command(
+        mocked_client,
+        identifier="svc",
+        ignore_warnings="true",
+        ignore_errors="false",
+        use_default_session_timeout="true",
+    )
+    call_kwargs = mocked_client.add_service_tcp.call_args[1]
+    assert call_kwargs["ignore_warnings"] is True
+    assert call_kwargs["ignore_errors"] is False
+    assert call_kwargs["use_default_session_timeout"] is True
+
+
+def test_udp_service_update_new_args(mocker):
+    from CheckPointFirewallV2 import checkpoint_udp_service_update_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.update_service_udp.return_value = util_load_json("test_data/show_service_tcp.json")
+
+    checkpoint_udp_service_update_command(
+        mocked_client, identifier="svc", ignore_warnings="true", use_default_session_timeout="false"
+    )
+    call_kwargs = mocked_client.update_service_udp.call_args[1]
+    assert call_kwargs["ignore_warnings"] is True
+    assert call_kwargs["use_default_session_timeout"] is False
+
+
+# ---------------------------------------------------------------------------
+# nat-rule-update: install_on add/remove
+# ---------------------------------------------------------------------------
+def test_nat_rule_update_install_on(mocker):
+    from CheckPointFirewallV2 import checkpoint_nat_rule_update_command
+
+    mocked_client = mocker.Mock()
+    mocked_client.update_nat_rule.return_value = util_load_json("test_data/show_nat_rule.json")
+
+    checkpoint_nat_rule_update_command(
+        mocked_client,
+        identifier="test-nat-rule",
+        package="Standard",
+        install_on_add="gw1,gw2",
+        install_on_remove="gw3",
+    )
+    call_kwargs = mocked_client.update_nat_rule.call_args[1]
+    assert call_kwargs["install_on"] == {"add": ["gw1", "gw2"], "remove": ["gw3"]}
