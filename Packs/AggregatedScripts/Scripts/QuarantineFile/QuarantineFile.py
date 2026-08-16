@@ -447,6 +447,9 @@ class XDRHandler(BrandHandler):
     # Builtin command names (used on the Cortex platform for the Core brand).
     BUILTIN_QUARANTINE_COMMAND = "quarantineFile"
     BUILTIN_QUARANTINE_STATUS_COMMAND = "getFileQuarantineStatus"
+    # Identity marker args forwarded into the RBAC-enforced Builtin status command so the
+    # platform can restore the originating identity on scheduled poll re-runs.
+    POLL_IDENTITY_ARG_NAMES = ("user_id", "user_name", "is_manual_flow")
 
     def __init__(self, brand: str, orchestrator):
         """
@@ -490,10 +493,6 @@ class XDRHandler(BrandHandler):
             raise QuarantineException(
                 f"The '{QuarantineOrchestrator.FILE_PATH_ARG}' argument is required for brand {self.brand}."
             )
-
-    # Identity marker args forwarded into the RBAC-enforced Builtin status command so the
-    # platform can restore the originating identity on scheduled poll re-runs.
-    POLL_IDENTITY_ARG_NAMES = ("user_id", "user_name", "is_manual_flow")
 
     def _execute_quarantine_status_command(
         self, endpoint_id: str, file_hash: str, file_path: str, poll_args: dict | None = None
@@ -557,19 +556,7 @@ class XDRHandler(BrandHandler):
         Processes the final result for a single endpoint from a completed polling job.
 
         If the action-runner reported the quarantine action as successful, this method
-        makes a second, separate call to the brand's quarantine-status command to
-        confirm the file is *actually* in quarantine on the endpoint. This second check
-        is required (validated with the code owner) because the action-status API only
-        reports whether the action-runner *job* completed — it can report
-        `COMPLETED_SUCCESSFULLY` in edge cases where the file was never actually
-        quarantined (e.g. the file did not exist on disk, or the endpoint was offline),
-        which would otherwise be reported as a false positive.
-
-        On the platform the quarantine-status command is the RBAC-enforced Builtin
-        `getFileQuarantineStatus`. When finalize runs inside a scheduled poll re-run the
-        incoming identity is the automation principal, which 403s. The originating identity
-        persisted in the poll args (`user_id` / `user_name` / `is_manual_flow`) is forwarded
-        into the status call so the platform can restore it.
+        makes a second, separate call to the brand's quarantine-status to get the true final result.
 
         Args:
             endpoint_result (dict): The result object for a single endpoint from the polling command.
@@ -579,7 +566,7 @@ class XDRHandler(BrandHandler):
                                         {'ActionID': 123, 'EndpointID': 'EP_ID', 'Status': 'COMPLETED_SUCCESSFULLY',
                                          'ErrorDescription': '', 'ErrorReasons': {}}
             poll_args (dict | None): The completed job's polling args, used to forward the
-                originating identity into the Builtin status call (see above).
+                originating identity into the Builtin status call.
 
         Returns:
             QuarantineResult: A structured result object for the endpoint.
@@ -684,10 +671,7 @@ class XDRHandler(BrandHandler):
         metadata = raw_response[0].get("Metadata", {}) if raw_response else {}
         demisto.debug(f"[{self.brand} Handler] Received metadata for polling: {metadata}")
 
-        # Identity restoration on scheduled poll re-runs is handled by the platform: it
-        # persists the originating identity into the scheduled command's pollingArgs at
-        # initiate time and restores it on each re-run. The script just forwards the
-        # metadata's pollingArgs unchanged.
+        # Identity restoration on scheduled poll re-runs is handled by the platform
         polling_args = metadata.get("pollingArgs", {}) or {}
 
         job = {
@@ -1289,9 +1273,6 @@ class QuarantineOrchestrator:
             else:
                 demisto.debug(f"[Orchestrator] Polling complete for job brand '{job['brand']}'. Finalizing.")
                 handler = handler_factory(job["brand"], self)
-                # Forward the completed job's poll_args (which carry the persisted identity on
-                # the platform path) so finalize's RBAC-enforced status call runs as the
-                # original user.
                 final_results = handler.finalize(raw_response, job.get("poll_args", {}))
                 self.completed_results.extend(final_results)
 
