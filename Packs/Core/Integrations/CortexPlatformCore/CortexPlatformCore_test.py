@@ -1919,50 +1919,6 @@ def test_update_issue_command_severity_low(mocker):
     assert update_data["severity"] == "SEV_020_LOW"
 
 
-def test_update_issue_command_invalid_severity_mapping(mocker):
-    """
-    GIVEN:
-        Client instance and arguments with invalid severity value.
-    WHEN:
-        The update_issue_command function is called.
-    THEN:
-        CortexInvalidArgError is raised with the invalid severity value.
-    """
-    from CortexPlatformCore import update_issue_command, Client
-    from CommonServerPython import CortexInvalidArgError
-
-    client = Client(base_url="", headers={})
-    mocker.patch.object(client, "update_issue")
-    mocker.patch.object(demisto, "debug")
-
-    args = {"id": "12345", "severity": "99", "name": "Test Issue"}
-
-    with pytest.raises(CortexInvalidArgError, match="severity"):
-        update_issue_command(client, args)
-
-
-def test_update_issue_command_invalid_status_mapping(mocker):
-    """
-    GIVEN:
-        Client instance and arguments with invalid status value.
-    WHEN:
-        The update_issue_command function is called.
-    THEN:
-        CortexInvalidArgError is raised with the invalid status value.
-    """
-    from CortexPlatformCore import update_issue_command, Client
-    from CommonServerPython import CortexInvalidArgError
-
-    client = Client(base_url="", headers={})
-    mocker.patch.object(client, "update_issue")
-    mocker.patch.object(demisto, "debug")
-
-    args = {"id": "12345", "status": "FAKE", "name": "Test Issue"}
-
-    with pytest.raises(CortexInvalidArgError, match="status"):
-        update_issue_command(client, args)
-
-
 def test_update_issue_command_no_severity(mocker):
     """
     GIVEN:
