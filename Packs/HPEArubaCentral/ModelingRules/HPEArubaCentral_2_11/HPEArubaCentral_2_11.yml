@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: HPEArubaCentral_ModelingRule
-name: HPEArubaCentral Modeling Rule
+id: HPE_Aruba_Central_ModelingRule
+name: HPE Aruba Central Modeling Rule
 rules: ''
 schema: ''
 tags: ''
