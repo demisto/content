@@ -202,16 +202,31 @@ def get_events(
     demisto.debug(f"AWSGuardDutyEventCollector Starting get_events. {collect_from=}, {collect_from_default=}, {last_ids=}")
 
     # List all detectors
+    list_detectors_page = 0
     while next_token:
+        list_detectors_page += 1
         list_detectors_args: dict = {"MaxResults": detectors_num}
         if next_token != "starting_token":
             list_detectors_args.update({"NextToken": next_token})
 
         response = aws_client.list_detectors(**list_detectors_args)
-        detector_ids += response.get("DetectorIds", [])
-        next_token = response.get("NextToken", "")
+        page_detector_ids = response.get("DetectorIds", [])
+        raw_next_token = response.get("NextToken", "")
+        detector_ids += page_detector_ids
+        # Diagnostic: log per-page enumeration so a truncated/short-circuited pagination is visible.
+        demisto.debug(
+            f"AWSGuardDutyEventCollector - list_detectors page {list_detectors_page}: "
+            f"MaxResults={detectors_num}, returned={len(page_detector_ids)}, "
+            f"running_total={len(detector_ids)}, has_next_token={bool(raw_next_token)}, "
+            f"next_token_len={len(raw_next_token) if raw_next_token else 0}, "
+            f"page_detector_ids={page_detector_ids}"
+        )
+        next_token = raw_next_token
 
-    demisto.debug(f"AWSGuardDutyEventCollector - Found detector ids: {detector_ids}")
+    demisto.debug(
+        f"AWSGuardDutyEventCollector - Finished list_detectors after {list_detectors_page} page(s). "
+        f"Total detectors found: {len(detector_ids)}. Found detector ids: {detector_ids}"
+    )
 
     for detector_id in detector_ids:
         demisto.debug(
