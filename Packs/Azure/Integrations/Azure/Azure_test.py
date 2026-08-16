@@ -64,6 +64,11 @@ from requests.structures import CaseInsensitiveDict
 from COOCApiModule import CloudTypes
 
 
+INTEGRATION_DIR = Path(__file__).parent
+YML_PATH = INTEGRATION_DIR / "Azure.yml"
+PY_PATH = INTEGRATION_DIR / "Azure.py"
+
+
 @pytest.fixture
 def mock_params():
     return {
@@ -6239,10 +6244,6 @@ def test_main_auth_reset(mocker):
 # no network calls, read no environment variables and do not depend on the
 # clock, the OS or the execution order of other tests.
 # ---------------------------------------------------------------------------
-
-INTEGRATION_DIR = Path(__file__).parent
-YML_PATH = INTEGRATION_DIR / "Azure.yml"
-PY_PATH = INTEGRATION_DIR / "Azure.py"
 
 # The name of the dict inside main() that maps command name -> handler function.
 DISPATCH_DICT_NAME = "commands_with_params_and_args"
