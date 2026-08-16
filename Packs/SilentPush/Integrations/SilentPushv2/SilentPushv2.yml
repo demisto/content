@@ -179,7 +179,7 @@ script:
       description: The tags assigned to the indicator.
       type: String
   - deprecated: false
-    description: enriches IPs or Domains in a bulk
+    description: Enriches IPs or Domains in a bulk.
     name: silentpush-bulk-enrich
     arguments:
     - name: resource
