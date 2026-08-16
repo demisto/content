@@ -138,25 +138,32 @@ def test_date_latest_tag():
 # Tests for is_runnable_tag
 # ---------------------------------------------------------------------------
 
-@pytest.mark.parametrize("tag", [
-    "3.10.13.87159",
-    "latest",
-    "1.0.0.2876",
-    "2.1.2700",
-    "3.12.12.7090913",
-])
+
+@pytest.mark.parametrize(
+    "tag",
+    [
+        "3.10.13.87159",
+        "latest",
+        "1.0.0.2876",
+        "2.1.2700",
+        "3.12.12.7090913",
+    ],
+)
 def test_is_runnable_tag_valid(tag):
     """Runnable image tags must pass the filter."""
     assert is_runnable_tag(tag) is True
 
 
-@pytest.mark.parametrize("tag", [
-    "sha256-0535a854557dc43a03595eb7ef1625f79896e9d3e8da67b9ed17362546c80c0b.sig",
-    "sha256-abcdef1234567890.sig",
-    "sha256-abcdef1234567890.att",
-    "sha256-abcdef1234567890.sbom",
-    "3.10.13.87159.sig",
-])
+@pytest.mark.parametrize(
+    "tag",
+    [
+        "sha256-0535a854557dc43a03595eb7ef1625f79896e9d3e8da67b9ed17362546c80c0b.sig",
+        "sha256-abcdef1234567890.sig",
+        "sha256-abcdef1234567890.att",
+        "sha256-abcdef1234567890.sbom",
+        "3.10.13.87159.sig",
+    ],
+)
 def test_is_runnable_tag_artifact(tag):
     """OCI artifact tags (.sig, .att, .sbom) must be rejected."""
     assert is_runnable_tag(tag) is False
