@@ -3823,9 +3823,7 @@ def test_get_access_rule_command(mocker):
     mocked_client = mocker.Mock()
     mocked_client.get_access_rule.return_value = util_load_json("test_data/show_access_rule.json")
 
-    result = checkpoint_get_access_rule_command(
-        mocked_client, identifier="Block malicious", layer="Network", show_hits="true"
-    )
+    result = checkpoint_get_access_rule_command(mocked_client, identifier="Block malicious", layer="Network", show_hits="true")
 
     assert result.outputs_prefix == "CheckPoint.AccessRule"
     assert result.outputs["uid"] == "rule-uid-1234"
@@ -3917,9 +3915,7 @@ def test_dns_domain_add(mocker):
     mocked_client = mocker.Mock()
     mocked_client.add_dns_domain.return_value = util_load_json("test_data/show_dns_domain.json")
 
-    checkpoint_dns_domain_add_command(
-        mocked_client, name=".example.com", is_sub_domain="true", tags="t1,t2"
-    )
+    checkpoint_dns_domain_add_command(mocked_client, name=".example.com", is_sub_domain="true", tags="t1,t2")
     call_kwargs = mocked_client.add_dns_domain.call_args[1]
     assert call_kwargs["is_sub_domain"] is True
     assert call_kwargs["tags"] == ["t1", "t2"]
@@ -3940,9 +3936,7 @@ def test_dns_domain_update(mocker):
     mocked_client = mocker.Mock()
     mocked_client.update_dns_domain.return_value = util_load_json("test_data/show_dns_domain.json")
 
-    checkpoint_dns_domain_update_command(
-        mocked_client, identifier=".example.com", new_name=".example.org", is_sub_domain="false"
-    )
+    checkpoint_dns_domain_update_command(mocked_client, identifier=".example.com", new_name=".example.org", is_sub_domain="false")
     call_kwargs = mocked_client.update_dns_domain.call_args[1]
     assert call_kwargs["new_name"] == ".example.org"
     assert call_kwargs["is_sub_domain"] is False

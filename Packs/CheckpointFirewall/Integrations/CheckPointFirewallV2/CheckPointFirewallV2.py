@@ -655,9 +655,7 @@ class Client(BaseClient):
         # When a full request body is provided (e.g. from entry_id), send it and ignore the other arguments.
         if request_body is not None:
             demisto.debug(f"{demisto.command()}: endpoint='add-access-rule', using provided request_body={request_body}")
-            return self._http_request(
-                method="POST", url_suffix="add-access-rule", headers=self.headers, json_data=request_body
-            )
+            return self._http_request(method="POST", url_suffix="add-access-rule", headers=self.headers, json_data=request_body)
         body: dict = {
             "layer": layer,
             "position": position,
@@ -1609,7 +1607,6 @@ class Client(BaseClient):
         demisto.debug(f"delete-access-section request body: {body}")
         return self._http_request(method="POST", url_suffix="delete-access-section", headers=self.headers, json_data=body)
 
-
     def discard(self, uid: str | None = None) -> dict:
         body: dict = {}
         if uid:
@@ -1628,7 +1625,7 @@ class Client(BaseClient):
         domains_to_process: list | None = None,
         show_only_local_domain: bool | None = None,
     ) -> dict:
-        body: dict = {"limit": limit, "offset": offset }
+        body: dict = {"limit": limit, "offset": offset}
         if filter_str:
             body["filter"] = filter_str
         if order:
@@ -1650,7 +1647,6 @@ class Client(BaseClient):
             body["details-level"] = details_level
         demisto.debug(f"show-dns-domain request body: {body}")
         return self._http_request(method="POST", url_suffix="show-dns-domain", headers=self.headers, json_data=body)
-
 
     def add_dns_domain(
         self,
@@ -2874,6 +2870,7 @@ def checkpoint_delete_threat_indicator_command(client: Client, identifier) -> Co
     )
     return command_results
 
+
 def build_hits_settings(
     from_date: str | None = None,
     to_date: str | None = None,
@@ -3074,7 +3071,7 @@ def checkpoint_add_access_rule_command(
     track_type: str = None,
     track_accounting: str = None,
     track_per_session: str = None,
-    tags = None,
+    tags=None,
     entry_id: str = None,
 ) -> CommandResults:
     """
@@ -3353,6 +3350,7 @@ def checkpoint_update_access_rule_command(
     )
     return command_results
 
+
 def checkpoint_session_discard_command(client: Client, target_session_id: str = None) -> CommandResults:
     """
     Discard uncommitted session changes (inverse of publish).
@@ -3374,6 +3372,7 @@ def checkpoint_session_discard_command(client: Client, target_session_id: str = 
         raw_response=result,
     )
 
+
 def build_dns_domain_hr(result: dict) -> dict:
     """Build a human-readable summary row for a DNS domain object."""
     domain_name = (result.get("domain") or {}).get("name")
@@ -3383,12 +3382,13 @@ def build_dns_domain_hr(result: dict) -> dict:
         "Type": result.get("type"),
         "Domain Name": domain_name,
     }
-    
+
     is_sub_domain = result.get("is-sub-domain")
     if is_sub_domain is not None:
         hr["Is Sub Domain"] = is_sub_domain
 
     return hr
+
 
 def checkpoint_dns_domain_list_command(
     client: Client,
@@ -3454,6 +3454,7 @@ def checkpoint_dns_domain_list_command(
         raw_response=result,
     )
 
+
 def checkpoint_dns_domain_get_command(client: Client, identifier: str, details_level: str = None) -> CommandResults:
     """
     Show a single DNS domain object.
@@ -3478,6 +3479,7 @@ def checkpoint_dns_domain_get_command(client: Client, identifier: str, details_l
         outputs=result,
         raw_response=result,
     )
+
 
 def checkpoint_dns_domain_add_command(
     client: Client,
@@ -3505,9 +3507,7 @@ def checkpoint_dns_domain_add_command(
         ignore_errors (str): Default false.
     """
     if not name.startswith("."):
-        raise DemistoException(
-            f"The DNS domain name must begin with a dot (e.g. '.example.com'). Got: '{name}'."
-        )
+        raise DemistoException(f"The DNS domain name must begin with a dot (e.g. '.example.com'). Got: '{name}'.")
     tags_list = argToList(tags) if tags else None
     result = client.add_dns_domain(
         name=name,
@@ -3533,6 +3533,7 @@ def checkpoint_dns_domain_add_command(
         outputs=result,
         raw_response=result,
     )
+
 
 def checkpoint_dns_domain_update_command(
     client: Client,
@@ -4889,7 +4890,9 @@ def checkpoint_tcp_service_add_command(
         tags=tags or None,
         ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
         ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
-        use_default_session_timeout=argToBoolean(use_default_session_timeout) if use_default_session_timeout is not None else None
+        use_default_session_timeout=argToBoolean(use_default_session_timeout)
+        if use_default_session_timeout is not None
+        else None,
     )
 
     headers = [
@@ -4964,7 +4967,9 @@ def checkpoint_udp_service_add_command(
         tags=tags or None,
         ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
         ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
-        use_default_session_timeout=argToBoolean(use_default_session_timeout) if use_default_session_timeout is not None else None
+        use_default_session_timeout=argToBoolean(use_default_session_timeout)
+        if use_default_session_timeout is not None
+        else None,
     )
 
     headers = [
@@ -5103,7 +5108,9 @@ def checkpoint_tcp_service_update_command(
         tags=tags or None,
         ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
         ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
-        use_default_session_timeout=argToBoolean(use_default_session_timeout) if use_default_session_timeout is not None else None
+        use_default_session_timeout=argToBoolean(use_default_session_timeout)
+        if use_default_session_timeout is not None
+        else None,
     )
 
     headers = [
@@ -5181,7 +5188,9 @@ def checkpoint_udp_service_update_command(
         tags=tags or None,
         ignore_warnings=argToBoolean(ignore_warnings) if ignore_warnings is not None else None,
         ignore_errors=argToBoolean(ignore_errors) if ignore_errors is not None else None,
-        use_default_session_timeout=argToBoolean(use_default_session_timeout) if use_default_session_timeout is not None else None
+        use_default_session_timeout=argToBoolean(use_default_session_timeout)
+        if use_default_session_timeout is not None
+        else None,
     )
 
     headers = [
