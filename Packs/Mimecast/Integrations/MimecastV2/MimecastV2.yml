@@ -2699,63 +2699,63 @@ script:
     - contextPath: Mimecast.AddressAlterationPolicy.policy.lastUpdated
       description: Block emails to receiver type.
       type: string
-    - contextPath: Mimecast.BlockedSendersPolicy.option
-      description: 'The option for the blocked sender policy.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.id
+      description: 'The unique identifier of the blocked senders policy.'
       type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.id
-      description: 'The unique identifier for the blocked sender policy.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.description
+      description: 'A description of the blocked senders policy.'
       type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.description
-      description: 'A description of the blocked sender policy.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.from.type
+      description: 'The sender address type considered by the policy.'
       type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.fromPart
-      description: 'The part of the email address or domain from which the policy is applied.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.from.emailAddress
+      description: 'The sender email address considered by the policy.'
       type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.from.type
-      description: 'The type of sender address or domain for the policy.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.from.domain
+      description: 'The sender domain considered by the policy.'
       type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.to.type
-      description: 'The type of recipient address or domain for the policy.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.from.groupId
+      description: 'The sender profile group ID considered by the policy.'
       type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.fromType
-      description: 'The type of sender for the policy.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.to.type
+      description: 'The recipient address type considered by the policy.'
       type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.toType
-      description: 'The type of recipient for the policy.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.to.emailAddress
+      description: 'The recipient email address considered by the policy.'
       type: String
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.fromEternal
-      description: 'Indicates whether the policy applies indefinitely to the sender.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.to.domain
+      description: 'The recipient domain considered by the policy.'
+      type: String
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.to.groupId
+      description: 'The recipient profile group ID considered by the policy.'
+      type: String
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.bidirectional
+      description: 'Whether the policy also applies in reverse email flow.'
       type: Boolean
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.toEternal
-      description: 'Indicates whether the policy applies indefinitely to the recipient.'
-      type: Boolean
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.fromDate
-      description: 'The start date from which the policy is effective.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.fromDateTime
+      description: 'The date and time the policy starts to apply.'
       type: Date
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.toDate
-      description: 'The end date until which the policy is effective.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.toDateTime
+      description: 'The date and time the policy ceases to apply.'
       type: Date
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.override
-      description: 'Indicates whether the policy overrides other policies.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.fromEternal
+      description: 'Whether the policy applies regardless of the start date.'
       type: Boolean
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.bidirectional
-      description: 'Indicates whether the policy applies in both directions.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.toEternal
+      description: 'Whether the policy applies regardless of the end date.'
       type: Boolean
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.conditions
-      description: 'The conditions under which the policy is applied.'
-      type: Unknown
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.enabled
-      description: 'Indicates whether the policy is enabled.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.fromPart
+      description: 'Whether the sender address is considered based on the envelope, header, or either address.'
+      type: String
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.enabled
+      description: 'Whether the policy is enabled.'
       type: Boolean
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.enforced
-      description: 'Indicates whether the policy is enforced.'
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.enforced
+      description: 'Whether the policy is enforced.'
       type: Boolean
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.createTime
-      description: 'The date and time when the policy was created.'
-      type: Date
-    - contextPath: Mimecast.BlockedSendersPolicy.policy.lastUpdated
-      description: 'The date and time when the policy was last updated.'
-      type: Date
+    - contextPath: Mimecast.BlockedSendersPolicy.policies.override
+      description: 'Whether the policy is considered prior to other policies of the same type.'
+      type: Boolean
     - contextPath: Mimecast.AntispoofingBypassPolicy.option
       description: 'The option for the antispoofing bypass policy.'
       type: String
