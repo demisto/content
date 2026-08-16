@@ -1233,7 +1233,7 @@ def create_block_sender_policy_command(policy_args: dict) -> CommandResults:
     demisto.debug(f"Created blocked-senders policy {policy_id}")
 
     return CommandResults(
-        readable_output=f"Policy {policy_id} was created successfully!",
+        readable_output=f"Policy {policy_id} was created successfully.",
         outputs_prefix="Mimecast.BlockedSendersPolicy",
         outputs_key_field="id",
         outputs={"id": policy_id},
@@ -1489,7 +1489,7 @@ def update_block_sender_policy_command(policy_args: dict) -> CommandResults:
     # is_file=True returns the raw response without parsing JSON, as the endpoint returns 204 No Content
     http_request("PATCH", api_endpoint, payload=body, is_file=True)
 
-    return CommandResults(readable_output=f"Policy {policy_id} was updated successfully!")
+    return CommandResults(readable_output=f"Policy {policy_id} was updated successfully.")
 
 
 def create_or_update_policy_request(policy, option, policy_id=None, policy_type="blockedsenders"):
