@@ -55,6 +55,8 @@ def main():  # pragma: no cover
         core_alert_context = demisto.context().get("Core", {})
         if not core_alert_context.get("OriginalAlert"):
             original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
+            if isError(original_alert_data):
+                raise DemistoException(f"Failed to retrieve original alerts: {get_error(original_alert_data)}")
             if original_alert_data:
                 res = verify_list_type(original_alert_data)
                 demisto.executeCommand("SetByIncidentId", {"key": "Core", "value": res, "id": alert_context.get("id")})
