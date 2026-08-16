@@ -3,7 +3,7 @@ This integration was integrated and tested with version 7.21.0 of Bitbucket.
 
 ## Deprecation Notes
 
-According to the Bitbucket announcement from February 18, 2026, regarding the sunset of Bitbucket Issues, all XSOAR issue-related commands have been deprecated.
+According to the Bitbucket [announcement](https://community.atlassian.com/forums/Bitbucket-articles/Announcing-sunset-of-Bitbucket-Issues-and-Wikis/ba-p/3193882) from February 18, 2026, regarding the sunset of Bitbucket Issues, all XSOAR issue-related commands have been deprecated. It is recommended to use the **Atlassian Jira v3** integration instead.
 
 Bitbucket Cloud has deprecated app passwords (from **June 9, 2026**) in favor of scoped API tokens. For more information, see the [Bitbucket Cloud documentation](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords).
 
