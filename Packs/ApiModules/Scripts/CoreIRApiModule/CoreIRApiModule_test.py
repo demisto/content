@@ -1266,6 +1266,68 @@ def test_retrieve_files_command(requests_mock):
     assert res.raw_response == {"action_id": 1773}
 
 
+def test_retrieve_files_command_with_custom_paths_separator(requests_mock):
+    """
+    Given:
+        - endpoint_ids
+        - windows_file_paths containing a literal comma in the path
+        - paths_separator set to ";"
+    When:
+        - A user desires to retrieve a file whose path contains a comma.
+    Then:
+        - Assert the path is sent as a single entry (not split on the comma).
+    """
+    from CoreIRApiModule import CoreClient, retrieve_files_command
+
+    mock_request = requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/file_retrieval/",
+        json={"reply": {"action_id": 1773}},
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    retrieve_files_command(
+        client,
+        {
+            "endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916",
+            "windows_file_paths": "C:\\Users\\TrangLe\\Downloads\\test, test\\test.txt",
+            "paths_separator": ";",
+        },
+    )
+
+    sent_files = mock_request.last_request.json()["request_data"]["files"]
+    assert sent_files["windows"] == ["C:\\Users\\TrangLe\\Downloads\\test, test\\test.txt"]
+
+
+def test_retrieve_files_command_default_separator_splits_on_comma(requests_mock):
+    """
+    Given:
+        - endpoint_ids
+        - windows_file_paths with two comma-separated paths and no paths_separator
+    When:
+        - A user retrieves files using the default (comma) separator.
+    Then:
+        - Assert backward compatibility: the value is split into two paths on the comma.
+    """
+    from CoreIRApiModule import CoreClient, retrieve_files_command
+
+    mock_request = requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/file_retrieval/",
+        json={"reply": {"action_id": 1773}},
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    retrieve_files_command(
+        client,
+        {
+            "endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916",
+            "windows_file_paths": "C:\\path\\one.txt,C:\\path\\two.txt",
+        },
+    )
+
+    sent_files = mock_request.last_request.json()["request_data"]["files"]
+    assert sent_files["windows"] == ["C:\\path\\one.txt", "C:\\path\\two.txt"]
+
+
 def test_retrieve_files_command_using_general_file_path(requests_mock):
     """
     Given:

@@ -2630,10 +2630,11 @@ def unisolate_endpoint_command(client, args):
 
 def retrieve_files_command(client: CoreClient, args: Dict[str, str]) -> CommandResults:
     endpoint_id_list: list = argToList(args.get("endpoint_ids"))
-    windows: list = argToList(args.get("windows_file_paths"))
-    linux: list = argToList(args.get("linux_file_paths"))
-    macos: list = argToList(args.get("mac_file_paths"))
-    file_path_list: list = argToList(args.get("generic_file_path"))
+    paths_separator: str = args.get("paths_separator", ",")
+    windows: list = argToList(args.get("windows_file_paths"), separator=paths_separator)
+    linux: list = argToList(args.get("linux_file_paths"), separator=paths_separator)
+    macos: list = argToList(args.get("mac_file_paths"), separator=paths_separator)
+    file_path_list: list = argToList(args.get("generic_file_path"), separator=paths_separator)
     incident_id: Optional[int] = arg_to_number(args.get("incident_id"))
 
     reply = client.retrieve_file(
