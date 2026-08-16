@@ -3616,24 +3616,27 @@ def list_blocked_senders_policies_command(args: dict) -> CommandResults:
     """List Blocked Senders policies using the v2 GET API. The flat items are emitted verbatim.
 
     Args:
-        args: Command arguments. Supports ``page_token`` to fetch a specific page returned
-              by a previous call (value comes from ``Mimecast.BlockedSendersPolicy.nextPageToken``).
+        args: Command arguments. Supports ``next_token`` to fetch a specific page returned
+        by a previous call, and ``page_size`` to control the number of results per page.
     """
-    params: dict = {}
-    if page_token := args.get("page_token"):
-        params["pageToken"] = page_token
+    params = assign_params(
+        pageToken=args.get("next_token"),
+        pageSize=arg_to_number(args.get("page_size")),
+    )
 
     response = http_request("GET", BLOCKED_SENDERS_V2_ENDPOINT, params=params)
     policies = response.get("policies", [])
-    next_page_token = (response.get("meta") or {}).get("nextPage")
-    demisto.debug(f"Got {len(policies)} blocked-senders policies, nextPage={next_page_token!r}")
+    next_token = (response.get("meta") or {}).get("nextPage")
+    demisto.debug(f"Got {len(policies)} blocked-senders policies, nextPage={next_token!r}")
 
     title = "Mimecast list blockedsenders policies: \n These are the existing blockedsenders Policies:"
     contents = [build_blocked_senders_v2_hr_row(policy) for policy in policies]
 
+    context_outputs = assign_params(policies=policies, NextToken=next_token)
+
     return CommandResults(
         outputs_prefix="Mimecast.BlockedSendersPolicy",
-        outputs=response,
+        outputs=context_outputs,
         readable_output=tableToMarkdown(title, contents, BLOCKED_SENDERS_HR_HEADERS),
         outputs_key_field="id",
     )
