@@ -3753,7 +3753,7 @@ def test_add_access_rule_with_entry_id(mocker):
     mocked_client = mocker.Mock()
     mocked_client.add_rule.return_value = util_load_json("test_data/add_access_rule.json")
 
-    checkpoint_add_access_rule_command(mocked_client, entry_id="123@456")
+    checkpoint_add_access_rule_command(mocked_client, entry_id="123456")
 
     call_kwargs = mocked_client.add_rule.call_args[1]
     assert call_kwargs["request_body"] == body
