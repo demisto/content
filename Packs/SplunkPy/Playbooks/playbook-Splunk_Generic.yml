@@ -473,7 +473,7 @@ tasks:
           accessor: id
           root: incident
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ""
       description: |-
@@ -487,7 +487,6 @@ tasks:
       version: -1
     taskid: ff1b9850-ef10-4d42-80e3-39b72d8d01f8
     timertriggers: []
-    skipunavailable: true
     type: regular
     view: |-
       {
