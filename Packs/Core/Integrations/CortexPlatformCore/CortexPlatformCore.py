@@ -2170,8 +2170,18 @@ def update_issue_command(client: Client, args: dict):
 
     if not filtered_update_args and not link_cases and not unlink_cases:
         raise CortexMissingArgError(
-            ["assigned_user_mail", "severity", "name", "occurred", "phase", "type",
-             "description", "status", "link_cases", "unlink_cases"],
+            [
+                "assigned_user_mail",
+                "severity",
+                "name",
+                "occurred",
+                "phase",
+                "type",
+                "description",
+                "status",
+                "link_cases",
+                "unlink_cases",
+            ],
             require_one=True,
             override_message="Please provide arguments to update the issue.",
         )
