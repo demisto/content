@@ -2569,7 +2569,7 @@ script:
       default: false
     - name: net
       isArray: false
-      description: The find ptr4 or a records where ipv4 in or not in subnet defined by netmask. in (default) - find records in subnet, notin - find records not in subnet
+      description: The find ptr4 or a records where ipv4 in or not in subnet defined by netmask. in (default) - find records in subnet, notin - find records not in subnet.
       required: false
       secret: false
       default: false
@@ -2587,7 +2587,7 @@ script:
       default: false
     - name: asn
       isArray: false
-      description: Whether include asn diversity, 0 = do not include, 1 (default) = include asn diversity
+      description: Whether include asn diversity, 0 = do not include, 1 (default) = include asn diversity.
       required: false
       secret: false
       default: false
