@@ -199,30 +199,30 @@ Updates Google Cloud Storage (GCS) bucket metadata, including settings such as v
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.StorageBucket.Metadata | Unknown | Updated bucket metadata. |
-| GCP.StorageBucket.Metadata.name | String | The name of the GCP bucket. |
-| GCP.StorageBucket.Metadata.id | String | The ID of the GCP bucket. |
-| GCP.StorageBucket.Metadata.location | String | The location of the bucket. |
-| GCP.StorageBucket.Metadata.storageClass | String | The storage class of the bucket \(e.g., STANDARD, NEARLINE\). |
-| GCP.StorageBucket.Metadata.created | Date | The creation timestamp of the bucket. |
-| GCP.StorageBucket.Metadata.updated | Date | The last update timestamp of the bucket. |
-| GCP.StorageBucket.Metadata.metageneration | Number | The metadata generation of the bucket. |
-| GCP.StorageBucket.Metadata.labels | Unknown | The labels attached to the bucket. |
-| GCP.StorageBucket.Metadata.defaultEventBasedHold | Boolean | Whether a default event-based hold is enabled on the bucket. |
-| GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod | Number | The duration in seconds that objects in the bucket must be retained. |
-| GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime | Date | The time from which the retention policy is effective. |
-| GCP.StorageBucket.Metadata.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
-| GCP.StorageBucket.Metadata.versioning.enabled | Boolean | Whether object versioning is enabled. |
-| GCP.StorageBucket.Metadata.logging.logBucket | String | The destination bucket where access logs are stored. |
-| GCP.StorageBucket.Metadata.logging.logObjectPrefix | String | The object prefix used for logging. |
-| GCP.StorageBucket.Metadata.lifecycle.rule | Unknown | A list of lifecycle management rules for the bucket. |
-| GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess | Boolean | Whether uniform bucket-level access is enabled. |
-| GCP.StorageBucket.Metadata.cors | Unknown | CORS configuration for the bucket. |
-| GCP.StorageBucket.Metadata.customPlacementConfig | Unknown | Custom placement configuration for multi-region buckets. |
-| GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName | String | The default Cloud KMS key used to encrypt objects. |
-| GCP.StorageBucket.Metadata.billing.requesterPays | Boolean | Whether requester pays is enabled. |
-| GCP.StorageBucket.Metadata.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. |
-| GCP.StorageBucket.Metadata.website.notFoundPage | String | The path to the custom 404 page for the bucket website. |
+| GCP.Storage.Bucket | Unknown | Updated bucket metadata. |
+| GCP.Storage.Bucket.name | String | The name of the GCP bucket. |
+| GCP.Storage.Bucket.id | String | The ID of the GCP bucket. |
+| GCP.Storage.Bucket.location | String | The location of the bucket. |
+| GCP.Storage.Bucket.storageClass | String | The storage class of the bucket \(e.g., STANDARD, NEARLINE\). |
+| GCP.Storage.Bucket.created | Date | The creation timestamp of the bucket. |
+| GCP.Storage.Bucket.updated | Date | The last update timestamp of the bucket. |
+| GCP.Storage.Bucket.metageneration | Number | The metadata generation of the bucket. |
+| GCP.Storage.Bucket.labels | Unknown | The labels attached to the bucket. |
+| GCP.Storage.Bucket.defaultEventBasedHold | Boolean | Whether a default event-based hold is enabled on the bucket. |
+| GCP.Storage.Bucket.retentionPolicy.retentionPeriod | Number | The duration in seconds that objects in the bucket must be retained. |
+| GCP.Storage.Bucket.retentionPolicy.effectiveTime | Date | The time from which the retention policy is effective. |
+| GCP.Storage.Bucket.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
+| GCP.Storage.Bucket.versioning.enabled | Boolean | Whether object versioning is enabled. |
+| GCP.Storage.Bucket.logging.logBucket | String | The destination bucket where access logs are stored. |
+| GCP.Storage.Bucket.logging.logObjectPrefix | String | The object prefix used for logging. |
+| GCP.Storage.Bucket.lifecycle.rule | Unknown | A list of lifecycle management rules for the bucket. |
+| GCP.Storage.Bucket.iamConfiguration.uniformBucketLevelAccess | Boolean | Whether uniform bucket-level access is enabled. |
+| GCP.Storage.Bucket.cors | Unknown | CORS configuration for the bucket. |
+| GCP.Storage.Bucket.customPlacementConfig | Unknown | Custom placement configuration for multi-region buckets. |
+| GCP.Storage.Bucket.encryption.defaultKmsKeyName | String | The default Cloud KMS key used to encrypt objects. |
+| GCP.Storage.Bucket.billing.requesterPays | Boolean | Whether requester pays is enabled. |
+| GCP.Storage.Bucket.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. |
+| GCP.Storage.Bucket.website.notFoundPage | String | The path to the custom 404 page for the bucket website. |
 
 ### gcp-iam-project-policy-binding-remove
 

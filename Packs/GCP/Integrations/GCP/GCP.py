@@ -1791,7 +1791,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
     }
     hr = tableToMarkdown(f"Metadata for bucket {bucket} was successfully updated.", data_res, removeNull=True)
     return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.StorageBucket.Metadata", outputs=response, outputs_key_field="name"
+        readable_output=hr, outputs_prefix="GCP.Storage.Bucket", outputs=response, outputs_key_field="name"
     )
 
 

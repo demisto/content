@@ -1338,76 +1338,73 @@ script:
       - "false"
       description: Enable uniform bucket-level access.
     outputs:
-    - contextPath: GCP.StorageBucket.Metadata
-      description: Updated bucket metadata.
-      type: Unknown
-    - contextPath: GCP.StorageBucket.Metadata.name
+    - contextPath: GCP.Storage.Bucket.name
       description: The name of the GCP bucket.
       type: String
-    - contextPath: GCP.StorageBucket.Metadata.id
+    - contextPath: GCP.Storage.Bucket.id
       description: The ID of the GCP bucket.
       type: String
-    - contextPath: GCP.StorageBucket.Metadata.location
+    - contextPath: GCP.Storage.Bucket.location
       description: The location of the bucket.
       type: String
-    - contextPath: GCP.StorageBucket.Metadata.storageClass
+    - contextPath: GCP.Storage.Bucket.storageClass
       description: The storage class of the bucket (e.g., STANDARD, NEARLINE).
       type: String
-    - contextPath: GCP.StorageBucket.Metadata.created
+    - contextPath: GCP.Storage.Bucket.created
       description: The creation timestamp of the bucket.
       type: Date
-    - contextPath: GCP.StorageBucket.Metadata.updated
+    - contextPath: GCP.Storage.Bucket.updated
       description: The last update timestamp of the bucket.
       type: Date
-    - contextPath: GCP.StorageBucket.Metadata.metageneration
+    - contextPath: GCP.Storage.Bucket.metageneration
       description: The metadata generation of the bucket.
       type: Number
-    - contextPath: GCP.StorageBucket.Metadata.labels
+    - contextPath: GCP.Storage.Bucket.labels
       description: The labels attached to the bucket.
       type: Unknown
-    - contextPath: GCP.StorageBucket.Metadata.defaultEventBasedHold
+    - contextPath: GCP.Storage.Bucket.defaultEventBasedHold
       description: Whether a default event-based hold is enabled on the bucket.
       type: Boolean
-    - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod
+    - contextPath: GCP.Storage.Bucket.retentionPolicy.retentionPeriod
       description: The duration in seconds that objects in the bucket must be retained.
       type: Number
-    - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime
+    - contextPath: GCP.Storage.Bucket.retentionPolicy.effectiveTime
       description: The time from which the retention policy is effective.
       type: Date
-    - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.isLocked
+    - contextPath: GCP.Storage.Bucket.retentionPolicy.isLocked
       description: Whether the retention policy is locked.
       type: Boolean
-    - contextPath: GCP.StorageBucket.Metadata.versioning.enabled
+    - contextPath: GCP.Storage.Bucket.versioning.enabled
       description: Whether object versioning is enabled.
       type: Boolean
-    - contextPath: GCP.StorageBucket.Metadata.logging.logBucket
+    - contextPath: GCP.Storage.Bucket.logging.logBucket
       description: The destination bucket where access logs are stored.
       type: String
-    - contextPath: GCP.StorageBucket.Metadata.logging.logObjectPrefix
+    - contextPath: GCP.Storage.Bucket.logging.logObjectPrefix
       description: The object prefix used for logging.
       type: String
-    - contextPath: GCP.StorageBucket.Metadata.lifecycle.rule
+    - contextPath: GCP.Storage.Bucket.lifecycle.rule
       description: A list of lifecycle management rules for the bucket.
       type: Unknown
-    - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess
+    - contextPath: GCP.Storage.Bucket.iamConfiguration.uniformBucketLevelAccess
       description: Whether uniform bucket-level access is enabled.
       type: Boolean
-    - contextPath: GCP.StorageBucket.Metadata.cors
+    - contextPath: GCP.Storage.Bucket.cors
       description: CORS configuration for the bucket.
       type: Unknown
-    - contextPath: GCP.StorageBucket.Metadata.customPlacementConfig
+    - contextPath: GCP.Storage.Bucket.customPlacementConfig
       description: Custom placement configuration for multi-region buckets.
       type: Unknown
-    - contextPath: GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName
+    - contextPath: GCP.Storage.Bucket.encryption.defaultKmsKeyName
       description: The default Cloud KMS key used to encrypt objects.
       type: String
-    - contextPath: GCP.StorageBucket.Metadata.billing.requesterPays
+    - contextPath: GCP.Storage.Bucket.billing.requesterPays
       description: Whether requester pays is enabled.
       type: Boolean
-    - contextPath: GCP.StorageBucket.Metadata.website.mainPageSuffix
+    - contextPath: GCP.Storage.Bucket.website.mainPageSuffix
       description: Suffix appended to requests for the bucket's website configuration.
       type: String
-    - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
+    - contextPath: GCP.Storage.Bucket.website.notFoundPage
       description: The path to the custom 404 page for the bucket website.
       type: String
 
@@ -1441,76 +1438,76 @@ script:
         defaultValue: "true"
         description: Enable versioning.
     outputs:
-      - contextPath: GCP.StorageBucket.Metadata
+      - contextPath: GCP.Storage.Bucket
         description: Updated bucket metadata.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.name
+      - contextPath: GCP.Storage.Bucket.name
         description: The name of the GCP bucket.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.id
+      - contextPath: GCP.Storage.Bucket.id
         description: The ID of the GCP bucket.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.location
+      - contextPath: GCP.Storage.Bucket.location
         description: The location of the bucket.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.storageClass
+      - contextPath: GCP.Storage.Bucket.storageClass
         description: The storage class of the bucket (e.g., STANDARD, NEARLINE).
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.created
+      - contextPath: GCP.Storage.Bucket.created
         description: The creation timestamp of the bucket.
         type: Date
-      - contextPath: GCP.StorageBucket.Metadata.updated
+      - contextPath: GCP.Storage.Bucket.updated
         description: The last update timestamp of the bucket.
         type: Date
-      - contextPath: GCP.StorageBucket.Metadata.metageneration
+      - contextPath: GCP.Storage.Bucket.metageneration
         description: The metadata generation of the bucket.
         type: Number
-      - contextPath: GCP.StorageBucket.Metadata.labels
+      - contextPath: GCP.Storage.Bucket.labels
         description: The labels attached to the bucket.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.defaultEventBasedHold
+      - contextPath: GCP.Storage.Bucket.defaultEventBasedHold
         description: Whether a default event-based hold is enabled on the bucket.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod
+      - contextPath: GCP.Storage.Bucket.retentionPolicy.retentionPeriod
         description: The duration in seconds that objects in the bucket must be retained.
         type: Number
-      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime
+      - contextPath: GCP.Storage.Bucket.retentionPolicy.effectiveTime
         description: The time from which the retention policy is effective.
         type: Date
-      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.isLocked
+      - contextPath: GCP.Storage.Bucket.retentionPolicy.isLocked
         description: Whether the retention policy is locked.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.versioning.enabled
+      - contextPath: GCP.Storage.Bucket.versioning.enabled
         description: Whether object versioning is enabled.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.logging.logBucket
+      - contextPath: GCP.Storage.Bucket.logging.logBucket
         description: The destination bucket where access logs are stored.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.logging.logObjectPrefix
+      - contextPath: GCP.Storage.Bucket.logging.logObjectPrefix
         description: The object prefix used for logging.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.lifecycle.rule
+      - contextPath: GCP.Storage.Bucket.lifecycle.rule
         description: A list of lifecycle management rules for the bucket.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess
+      - contextPath: GCP.Storage.Bucket.iamConfiguration.uniformBucketLevelAccess
         description: Whether uniform bucket-level access is enabled.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.cors
+      - contextPath: GCP.Storage.Bucket.cors
         description: CORS configuration for the bucket.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.customPlacementConfig
+      - contextPath: GCP.Storage.Bucket.customPlacementConfig
         description: Custom placement configuration for multi-region buckets.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName
+      - contextPath: GCP.Storage.Bucket.encryption.defaultKmsKeyName
         description: The default Cloud KMS key used to encrypt objects.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.billing.requesterPays
+      - contextPath: GCP.Storage.Bucket.billing.requesterPays
         description: Whether requester pays is enabled.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.website.mainPageSuffix
+      - contextPath: GCP.Storage.Bucket.website.mainPageSuffix
         description: Suffix appended to requests for the bucket's website configuration.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
+      - contextPath: GCP.Storage.Bucket.website.notFoundPage
         description: The path to the custom 404 page for the bucket website.
         type: String
 
@@ -1540,76 +1537,76 @@ script:
         defaultValue: "true"
         description: Enable uniform bucket-level access.
     outputs:
-      - contextPath: GCP.StorageBucket.Metadata
+      - contextPath: GCP.Storage.Bucket
         description: Updated bucket metadata.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.name
+      - contextPath: GCP.Storage.Bucket.name
         description: The name of the GCP bucket.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.id
+      - contextPath: GCP.Storage.Bucket.id
         description: The ID of the GCP bucket.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.location
+      - contextPath: GCP.Storage.Bucket.location
         description: The location of the bucket.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.storageClass
+      - contextPath: GCP.Storage.Bucket.storageClass
         description: The storage class of the bucket (e.g., STANDARD, NEARLINE).
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.created
+      - contextPath: GCP.Storage.Bucket.created
         description: The creation timestamp of the bucket.
         type: Date
-      - contextPath: GCP.StorageBucket.Metadata.updated
+      - contextPath: GCP.Storage.Bucket.updated
         description: The last update timestamp of the bucket.
         type: Date
-      - contextPath: GCP.StorageBucket.Metadata.metageneration
+      - contextPath: GCP.Storage.Bucket.metageneration
         description: The metadata generation of the bucket.
         type: Number
-      - contextPath: GCP.StorageBucket.Metadata.labels
+      - contextPath: GCP.Storage.Bucket.labels
         description: The labels attached to the bucket.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.defaultEventBasedHold
+      - contextPath: GCP.Storage.Bucket.defaultEventBasedHold
         description: Whether a default event-based hold is enabled on the bucket.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod
+      - contextPath: GCP.Storage.Bucket.retentionPolicy.retentionPeriod
         description: The duration in seconds that objects in the bucket must be retained.
         type: Number
-      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime
+      - contextPath: GCP.Storage.Bucket.retentionPolicy.effectiveTime
         description: The time from which the retention policy is effective.
         type: Date
-      - contextPath: GCP.StorageBucket.Metadata.retentionPolicy.isLocked
+      - contextPath: GCP.Storage.Bucket.retentionPolicy.isLocked
         description: Whether the retention policy is locked.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.versioning.enabled
+      - contextPath: GCP.Storage.Bucket.versioning.enabled
         description: Whether object versioning is enabled.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.logging.logBucket
+      - contextPath: GCP.Storage.Bucket.logging.logBucket
         description: The destination bucket where access logs are stored.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.logging.logObjectPrefix
+      - contextPath: GCP.Storage.Bucket.logging.logObjectPrefix
         description: The object prefix used for logging.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.lifecycle.rule
+      - contextPath: GCP.Storage.Bucket.lifecycle.rule
         description: A list of lifecycle management rules for the bucket.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess
+      - contextPath: GCP.Storage.Bucket.iamConfiguration.uniformBucketLevelAccess
         description: Whether uniform bucket-level access is enabled.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.cors
+      - contextPath: GCP.Storage.Bucket.cors
         description: CORS configuration for the bucket.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.customPlacementConfig
+      - contextPath: GCP.Storage.Bucket.customPlacementConfig
         description: Custom placement configuration for multi-region buckets.
         type: Unknown
-      - contextPath: GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName
+      - contextPath: GCP.Storage.Bucket.encryption.defaultKmsKeyName
         description: The default Cloud KMS key used to encrypt objects.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.billing.requesterPays
+      - contextPath: GCP.Storage.Bucket.billing.requesterPays
         description: Whether requester pays is enabled.
         type: Boolean
-      - contextPath: GCP.StorageBucket.Metadata.website.mainPageSuffix
+      - contextPath: GCP.Storage.Bucket.website.mainPageSuffix
         description: Suffix appended to requests for the bucket's website configuration.
         type: String
-      - contextPath: GCP.StorageBucket.Metadata.website.notFoundPage
+      - contextPath: GCP.Storage.Bucket.website.notFoundPage
         description: The path to the custom 404 page for the bucket website.
         type: String
   - name: gcp-storage-bucket-list
