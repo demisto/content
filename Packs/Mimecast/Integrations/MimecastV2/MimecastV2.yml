@@ -2624,11 +2624,11 @@ script:
       - antispoofing-bypass
       - address-alteration
     - name: page
-      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Not supported when policyType is blockedsenders.
     - name: page_size
       description: Sets the result to start returning results. Default value is '50'.
     - name: limit
-      description: The maximum number of results to return.
+      description: The maximum number of results to return. Not supported when policyType is blockedsenders.
       defaultValue: 50
     - name: next_token
       description: Pagination token for requesting the next page. Only applicable when policyType is blockedsenders.
