@@ -11,6 +11,8 @@ from BlockDomain import (
     STATUS_FAILED,
     STATUS_SKIPPED,
     PanOs,
+    build_final_command_results,
+    build_verbose_human_readable,
     derive_object_name,
     is_valid_fqdn,
     is_wildcard,
@@ -245,3 +247,42 @@ def test_process_domains_failure_marks_row_failed(monkeypatch):
     assert rows[0]["Status"] == STATUS_FAILED
     assert rows[0]["Result"] == RESULT_FAILED
     assert "permission denied" in rows[0]["Message"]
+
+
+def test_build_verbose_human_readable_joins_with_blank_lines():
+    responses = [
+        [ok_entry(contents="c1")],  # no HumanReadable -> skipped
+        [{"Type": 1, "Contents": "c2", "HumanReadable": "HR-two", "EntryContext": {}}],
+        [{"Type": 1, "Contents": "c3", "HumanReadable": "HR-three", "EntryContext": {}}],
+    ]
+    verbose_hr = build_verbose_human_readable(responses)
+    # Leading blank line then each HR separated by a blank line.
+    assert verbose_hr == "\n\nHR-two\n\nHR-three"
+
+
+def test_build_verbose_human_readable_empty_when_no_hr():
+    assert build_verbose_human_readable([[ok_entry(contents="c1")]]) == ""
+    assert build_verbose_human_readable([]) == ""
+
+
+def test_build_final_command_results_non_verbose_is_table_only():
+    rows = [{"Domain": "a.com", "Brand": "Panorama", "Instance": "", "Status": STATUS_DONE,
+             "Result": RESULT_SUCCESS, "Action": ACTION_CREATED, "RuleName": "Cortex - Block Domain", "Message": "ok"}]
+    responses = [[{"Type": 1, "Contents": "c", "HumanReadable": "HR", "EntryContext": {}}]]
+
+    result = build_final_command_results(rows, verbose=False, responses=responses)
+    assert result.outputs_prefix == "BlockDomainResults"
+    assert result.outputs == rows
+    assert "a.com" in result.readable_output
+    assert "HR" not in result.readable_output  # verbose not appended
+
+
+def test_build_final_command_results_verbose_appends_command_hr():
+    rows = [{"Domain": "a.com", "Brand": "Panorama", "Instance": "", "Status": STATUS_DONE,
+             "Result": RESULT_SUCCESS, "Action": ACTION_CREATED, "RuleName": "Cortex - Block Domain", "Message": "ok"}]
+    responses = [[{"Type": 1, "Contents": "c", "HumanReadable": "HR-one", "EntryContext": {}}]]
+
+    result = build_final_command_results(rows, verbose=True, responses=responses)
+    assert result.outputs == rows
+    assert "a.com" in result.readable_output  # summary table present
+    assert result.readable_output.endswith("HR-one")  # verbose appended after the table

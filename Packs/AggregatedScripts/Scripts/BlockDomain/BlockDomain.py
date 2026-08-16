@@ -230,6 +230,58 @@ def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | l
     return {}
 
 
+""" HUMAN-READABLE / FINAL-RESULT AGGREGATION """
+
+
+def build_verbose_human_readable(responses: list) -> str:
+    """Concatenate the per-command human-readable outputs into a single, blank-line-separated string.
+
+    Args:
+        responses (list): The accumulated command responses (each a list of entries).
+    Returns:
+        A single markdown string with each command's human-readable output separated by a blank line,
+        or an empty string if no command produced human-readable output.
+    """
+    human_readables: list = []
+    for res in responses or []:
+        for entry in res or []:
+            command_hr = entry.get("HumanReadable")
+            if command_hr and command_hr != str(None):
+                human_readables.append(command_hr)
+    # A leading "" yields a blank line separating the summary table from the first verbose entry.
+    return "\n\n".join(["", *human_readables]) if human_readables else ""
+
+
+def build_final_command_results(rows: list, verbose: bool, responses: list) -> CommandResults:
+    """Build the single final CommandResults for the run.
+
+    The CommandResults carries the aggregated BlockDomainResults context and a markdown summary table.
+    When verbose is True, the per-command human-readable outputs are appended to the same readable
+    output (blank-line separated), mirroring the ExpirePassword aggregated script.
+
+    Args:
+        rows (list): The aggregated BlockDomainResults rows.
+        verbose (bool): Whether to append per-command human-readable output.
+        responses (list): The accumulated command responses (used only when verbose).
+    Returns:
+        A single CommandResults to return from the script.
+    """
+    readable_output = tableToMarkdown(
+        "Block Domain",
+        rows,
+        headers=["Domain", "Brand", "Instance", "Status", "Result", "Action", "RuleName", "Message"],
+        removeNull=False,
+    )
+    if verbose:
+        readable_output += build_verbose_human_readable(responses)
+    return CommandResults(
+        outputs_prefix="BlockDomainResults",
+        outputs_key_field=["Domain", "Brand", "Instance"],
+        outputs=rows,
+        readable_output=readable_output,
+    )
+
+
 """ PAN-OS FLOW """
 
 
@@ -617,10 +669,20 @@ class PanOs:
     def finish(self) -> list:  # pragma: no cover
         """Clean up polling context and return the final result rows.
 
+        The accumulated responses (restored from context across polling cycles) are kept on the
+        instance so the caller can build verbose output before they are cleared from context.
+
         Returns:
             The list of BlockDomainResults rows accumulated for the run.
         """
         rows_raw = demisto.context().get("block_domain_rows", "[]")
+        # Preserve responses on the instance for verbose output before clearing context.
+        stored = demisto.context().get("panorama_responses", "")
+        if stored:
+            try:
+                self.responses = ast.literal_eval(stored)
+            except (ValueError, SyntaxError):
+                pass
         demisto.setContext("commit_job_id", "")
         demisto.setContext("push_job_id", "")
         demisto.setContext("panorama_responses", "")
@@ -806,6 +868,7 @@ def main():  # pragma: no cover
             )
 
         results: list = list(failed_rows)
+        command_responses: list = []  # accumulated per-command responses, used for verbose output.
 
         for brand in brands_to_run:
             if brand not in SUPPORTED_BRANDS:
@@ -847,23 +910,13 @@ def main():  # pragma: no cover
                 )
                 pan_os_result = pan_os.manage_pan_os_flow()
                 if isinstance(pan_os_result, PollResult):
+                    # A commit/push job is in flight; let the platform re-invoke the script.
                     return_results(pan_os_result)
                     return
                 results.extend(pan_os_result)
+                command_responses.extend(pan_os.responses)
 
-        return_results(
-            CommandResults(
-                outputs_prefix="BlockDomainResults",
-                outputs_key_field=["Domain", "Brand", "Instance"],
-                outputs=results,
-                readable_output=tableToMarkdown(
-                    "Block Domain",
-                    results,
-                    headers=["Domain", "Brand", "Instance", "Status", "Result", "Action", "RuleName", "Message"],
-                    removeNull=False,
-                ),
-            )
-        )
+        return_results(build_final_command_results(results, verbose, command_responses))
 
     except Exception as ex:
         return_error(f"Failed to execute block-domain. Error: {ex!s}")
