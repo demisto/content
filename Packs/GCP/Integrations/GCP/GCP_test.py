@@ -6652,3 +6652,833 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# Cloud KMS - migrated from the legacy Google Key Management Service pack.
+# ---------------------------------------------------------------------------
+
+
+def _mock_kms_client(mocker):
+    """Builds a mocked Cloud KMS client and patches GCPServices.KMS.build to return it.
+
+    Returns:
+        tuple: (kms_client_mock, crypto_keys_mock, crypto_key_versions_mock, key_rings_mock)
+    """
+    from GCP import GCPServices
+
+    kms_client = mocker.MagicMock()
+    key_rings = kms_client.projects.return_value.locations.return_value.keyRings.return_value
+    crypto_keys = key_rings.cryptoKeys.return_value
+    crypto_key_versions = crypto_keys.cryptoKeyVersions.return_value
+    mocker.patch.object(GCPServices.KMS, "build", return_value=kms_client)
+    return kms_client, crypto_keys, crypto_key_versions, key_rings
+
+
+def test_kms_keyring_list_success(mocker):
+    """
+    Given: A project whose global location holds a single key ring.
+    When: kms_keyring_list is called.
+    Then: The key rings are listed for the requested location and returned under GCP.KMS.KeyRing.
+    """
+    from GCP import kms_keyring_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [
+            {
+                "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring",
+                "createTime": "2024-01-01T00:00:00Z",
+            }
+        ]
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keyring_list(creds, {"project_id": "mock_project_id", "location": "global"})
+
+    key_rings.list.assert_called_once_with(parent="projects/mock_project_id/locations/global", pageSize=50)
+    assert result.outputs_prefix == "GCP.KMS.KeyRing"
+    assert result.outputs[0]["name"] == "projects/mock_project_id/locations/global/keyRings/mock_key_ring"
+
+
+def test_kms_keyring_list_all_locations_sweeps_every_location(mocker):
+    """
+    Given: The all_locations flag is enabled.
+    When: kms_keyring_list is called.
+    Then: Every supported KMS location is queried instead of only the requested one.
+    """
+    from GCP import KMS_ALL_LOCATIONS, kms_keyring_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {"keyRings": []}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keyring_list(creds, {"project_id": "mock_project_id", "all_locations": "true"})
+
+    assert key_rings.list.call_count == len(KMS_ALL_LOCATIONS)
+    assert result.readable_output == "No KMS key rings found."
+
+
+def test_kms_keyring_list_no_results(mocker):
+    """
+    Given: A location that holds no key rings.
+    When: kms_keyring_list is called.
+    Then: A no-results message is returned instead of an empty table.
+    """
+    from GCP import kms_keyring_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keyring_list(creds, {"project_id": "mock_project_id"})
+
+    assert result.readable_output == "No KMS key rings found."
+
+
+def test_kms_key_list_success_with_filter_and_paging(mocker):
+    """
+    Given: A key ring holding one enabled crypto key and a next page token.
+    When: kms_key_list is called with a key_state filter and a page token.
+    Then: The filter and token reach the API and the next page token is exposed in the outputs.
+    """
+    from GCP import kms_key_list
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.list.return_value.execute.return_value = {
+        "cryptoKeys": [
+            {
+                "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key",
+                "purpose": "ENCRYPT_DECRYPT",
+                "createTime": "2024-01-01T00:00:00Z",
+            }
+        ],
+        "nextPageToken": "mock_next_page_token",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "key_state": "ENABLED",
+        "page_token": "mock_page_token",
+    }
+    result = kms_key_list(creds, args)
+
+    crypto_keys.list.assert_called_once_with(
+        parent="projects/mock_project_id/locations/global/keyRings/mock_key_ring",
+        pageSize=50,
+        filter="ENABLED",
+        pageToken="mock_page_token",
+    )
+    keys = result.outputs["GCP.KMS.CryptoKey(val.ResourceName && val.ResourceName == obj.ResourceName)"]
+    assert keys[0]["Name"] == "mock_crypto_key"
+    assert keys[0]["KeyRing"] == "mock_key_ring"
+    assert result.outputs["GCP.KMS(true)"]["CryptoKeysNextPageToken"] == "mock_next_page_token"
+
+
+def test_kms_key_list_no_results(mocker):
+    """
+    Given: A key ring that holds no crypto keys.
+    When: kms_key_list is called.
+    Then: A no-results message is returned.
+    """
+    from GCP import kms_key_list
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.list.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_list(creds, {"project_id": "mock_project_id", "key_ring": "mock_key_ring"})
+
+    assert result.readable_output == "No KMS crypto keys found."
+
+
+def test_kms_key_list_invalid_limit_raises(mocker):
+    """
+    Given: A limit above the accepted range.
+    When: kms_key_list is called.
+    Then: A DemistoException is raised by the shared limit validation.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import kms_key_list
+
+    _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+
+    with pytest.raises(DemistoException, match="acceptable values of the argument limit"):
+        kms_key_list(creds, {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "limit": "501"})
+
+
+def test_kms_key_list_all_walks_key_rings(mocker):
+    """
+    Given: A location holding one key ring with one crypto key.
+    When: kms_key_list_all is called.
+    Then: The key ring is enumerated and its crypto keys are attributed to that key ring.
+    """
+    from GCP import kms_key_list_all
+
+    _, crypto_keys, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}]
+    }
+    crypto_keys.list.return_value.execute.return_value = {
+        "cryptoKeys": [
+            {
+                "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key",
+                "purpose": "ENCRYPT_DECRYPT",
+            }
+        ]
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
+
+    assert result.outputs_prefix == "GCP.KMS.CryptoKey"
+    assert result.outputs[0]["KeyRing"] == "mock_key_ring"
+    assert result.outputs[0]["Name"] == "mock_crypto_key"
+
+
+def test_kms_key_list_all_no_results(mocker):
+    """
+    Given: A location that holds no key rings at all.
+    When: kms_key_list_all is called.
+    Then: A no-results message is returned.
+    """
+    from GCP import kms_key_list_all
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_list_all(creds, {"project_id": "mock_project_id"})
+
+    assert result.readable_output == "No KMS crypto keys found."
+
+
+def test_kms_key_get_success(mocker):
+    """
+    Given: A crypto key that has a primary crypto key version.
+    When: kms_key_get is called.
+    Then: The key is fetched by its full resource name and normalized into the KMS context.
+    """
+    from GCP import kms_key_get
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    key_name = "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key"
+    crypto_keys.get.return_value.execute.return_value = {
+        "name": key_name,
+        "purpose": "ENCRYPT_DECRYPT",
+        "createTime": "2024-01-01T00:00:00Z",
+        "versionTemplate": {"protectionLevel": "SOFTWARE", "algorithm": "GOOGLE_SYMMETRIC_ENCRYPTION"},
+        "primary": {"name": f"{key_name}/cryptoKeyVersions/1", "state": "ENABLED"},
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+    }
+    result = kms_key_get(creds, args)
+
+    crypto_keys.get.assert_called_once_with(name=key_name)
+    assert result.outputs_prefix == "GCP.KMS.CryptoKey"
+    assert result.outputs["Name"] == "mock_crypto_key"
+    assert result.outputs["PrimaryCryptoKeyVersion"]["State"] == "ENABLED"
+    assert result.outputs["VersionTemplate"]["Algorithm"] == "GOOGLE_SYMMETRIC_ENCRYPTION"
+
+
+def test_kms_key_get_asymmetric_key_without_primary_version(mocker):
+    """
+    Given: An asymmetric crypto key, which the API returns without a primary version.
+    When: kms_key_get is called.
+    Then: The context omits PrimaryCryptoKeyVersion instead of emitting an empty object.
+    """
+    from GCP import kms_key_get
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.get.return_value.execute.return_value = {
+        "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_asym_key",
+        "purpose": "ASYMMETRIC_DECRYPT",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_asym_key"}
+    result = kms_key_get(creds, args)
+
+    assert "PrimaryCryptoKeyVersion" not in result.outputs
+
+
+def test_kms_key_get_permission_error_is_handled(mocker):
+    """
+    Given: The API rejects the request with a 403 permission error.
+    When: The raised HttpError is routed through handle_permission_error, as main() does.
+    Then: The missing permission is reported through the structured permission error flow.
+    """
+    import GCP
+    from googleapiclient.errors import HttpError
+    from GCP import handle_permission_error, kms_key_get
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    resp = mocker.MagicMock()
+    resp.status = 403
+    resp.get.return_value = "application/json"
+    content = json.dumps(
+        {"error": {"message": "Permission 'cloudkms.cryptoKeys.get' denied on resource."}}
+    ).encode()
+    crypto_keys.get.return_value.execute.side_effect = HttpError(resp=resp, content=content)
+    mock_report = mocker.patch.object(GCP, "return_multiple_permissions_error")
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+
+    with pytest.raises(HttpError) as raised:
+        kms_key_get(creds, args)
+
+    handle_permission_error(raised.value, "mock_project_id", "gcp-kms-key-get")
+
+    reported = mock_report.call_args[0][0]
+    assert reported[0]["name"] == "cloudkms.cryptoKeys.get"
+    assert reported[0]["account_id"] == "mock_project_id"
+
+
+def test_kms_key_create_builds_request(mocker):
+    """
+    Given: Arguments describing a new symmetric crypto key.
+    When: kms_key_create is called.
+    Then: The create request carries the parent, key ID and a body without empty fields.
+    """
+    from GCP import kms_key_create
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.create.return_value.execute.return_value = {
+        "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_new_key",
+        "purpose": "ENCRYPT_DECRYPT",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_new_key",
+        "purpose": "ENCRYPT_DECRYPT",
+        "rotation_period": "7776000s",
+        "next_rotation_time": "2030-01-01T00:00:00Z",
+        "algorithm": "GOOGLE_SYMMETRIC_ENCRYPTION",
+        "protection_level": "SOFTWARE",
+    }
+    result = kms_key_create(creds, args)
+
+    call_kwargs = crypto_keys.create.call_args[1]
+    assert call_kwargs["parent"] == "projects/mock_project_id/locations/global/keyRings/mock_key_ring"
+    assert call_kwargs["cryptoKeyId"] == "mock_new_key"
+    assert call_kwargs["skipInitialVersionCreation"] is False
+    assert call_kwargs["body"]["purpose"] == "ENCRYPT_DECRYPT"
+    assert call_kwargs["body"]["rotationPeriod"] == "7776000s"
+    assert call_kwargs["body"]["versionTemplate"]["algorithm"] == "GOOGLE_SYMMETRIC_ENCRYPTION"
+    assert result.outputs_prefix == "GCP.KMS.CryptoKey"
+    assert "created successfully" in result.readable_output
+
+
+def test_kms_key_create_skip_initial_version(mocker):
+    """
+    Given: skip_initial_version_creation is enabled.
+    When: kms_key_create is called.
+    Then: The flag is forwarded to the API as a boolean.
+    """
+    from GCP import kms_key_create
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.create.return_value.execute.return_value = {"name": "mock_name", "purpose": "ASYMMETRIC_DECRYPT"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_new_key",
+        "purpose": "ASYMMETRIC_DECRYPT",
+        "skip_initial_version_creation": "true",
+    }
+    kms_key_create(creds, args)
+
+    assert crypto_keys.create.call_args[1]["skipInitialVersionCreation"] is True
+
+
+def test_kms_key_update_builds_update_mask(mocker):
+    """
+    Given: A subset of the mutable crypto key fields.
+    When: kms_key_update is called.
+    Then: Only the supplied fields are sent and the update mask lists exactly those fields.
+    """
+    from GCP import kms_key_update
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.patch.return_value.execute.return_value = {
+        "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key",
+        "purpose": "ENCRYPT_DECRYPT",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "labels": "key=env,value=test",
+        "rotation_period": "7776000s",
+    }
+    result = kms_key_update(creds, args)
+
+    call_kwargs = crypto_keys.patch.call_args[1]
+    assert call_kwargs["updateMask"] == "labels,rotationPeriod"
+    assert call_kwargs["body"]["labels"] == {"env": "test"}
+    assert call_kwargs["body"]["rotationPeriod"] == "7776000s"
+    assert "nextRotationTime" not in call_kwargs["body"]
+    assert result.outputs_prefix == "GCP.KMS.CryptoKey"
+
+
+def test_kms_key_update_without_updatable_field_raises(mocker):
+    """
+    Given: No updatable field is supplied.
+    When: kms_key_update is called.
+    Then: A DemistoException is raised before any API call is made.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import kms_key_update
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+
+    with pytest.raises(DemistoException, match="No updatable field was provided"):
+        kms_key_update(creds, args)
+
+    crypto_keys.patch.assert_not_called()
+
+
+def test_kms_key_version_disable_explicit_version(mocker):
+    """
+    Given: An explicit crypto key version.
+    When: kms_key_version_disable is called.
+    Then: The version is patched to DISABLED without resolving the primary version first.
+    """
+    from GCP import kms_key_version_disable
+
+    _, crypto_keys, crypto_key_versions, _ = _mock_kms_client(mocker)
+    version_name = (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key/cryptoKeyVersions/2"
+    )
+    crypto_key_versions.patch.return_value.execute.return_value = {"name": version_name, "state": "DISABLED"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "crypto_key_version": "2",
+    }
+    result = kms_key_version_disable(creds, args)
+
+    crypto_keys.get.assert_not_called()
+    crypto_key_versions.patch.assert_called_once_with(name=version_name, updateMask="state", body={"state": "DISABLED"})
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeyVersion"
+    assert "has been set to DISABLED" in result.readable_output
+
+
+def test_kms_key_version_enable_defaults_to_primary_version(mocker):
+    """
+    Given: The crypto key version is left as the default keyword.
+    When: kms_key_version_enable is called.
+    Then: The key's primary crypto key version is resolved and patched to ENABLED.
+    """
+    from GCP import kms_key_version_enable
+
+    _, crypto_keys, crypto_key_versions, _ = _mock_kms_client(mocker)
+    primary_name = (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key/cryptoKeyVersions/1"
+    )
+    crypto_keys.get.return_value.execute.return_value = {"primary": {"name": primary_name}}
+    crypto_key_versions.patch.return_value.execute.return_value = {"name": primary_name, "state": "ENABLED"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+    result = kms_key_version_enable(creds, args)
+
+    crypto_key_versions.patch.assert_called_once_with(name=primary_name, updateMask="state", body={"state": "ENABLED"})
+    assert "has been set to ENABLED" in result.readable_output
+
+
+def test_kms_key_version_enable_without_primary_version_raises(mocker):
+    """
+    Given: A crypto key that exposes no primary crypto key version.
+    When: kms_key_version_enable is called without an explicit version.
+    Then: A DemistoException asks for an explicit crypto_key_version.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import kms_key_version_enable
+
+    _, crypto_keys, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_keys.get.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_asym_key"}
+
+    with pytest.raises(DemistoException, match="has no primary CryptoKeyVersion"):
+        kms_key_version_enable(creds, args)
+
+    crypto_key_versions.patch.assert_not_called()
+
+
+def test_kms_key_version_destroy_success(mocker):
+    """
+    Given: An explicit crypto key version to destroy.
+    When: kms_key_version_destroy is called.
+    Then: The destroy endpoint is called and the 24h warning is surfaced to the user.
+    """
+    from GCP import kms_key_version_destroy
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    version_name = (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key/cryptoKeyVersions/1"
+    )
+    crypto_key_versions.destroy.return_value.execute.return_value = {
+        "name": version_name,
+        "state": "DESTROY_SCHEDULED",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "crypto_key_version": "1",
+    }
+    result = kms_key_version_destroy(creds, args)
+
+    crypto_key_versions.destroy.assert_called_once_with(name=version_name, body={})
+    assert "DESTROY_SCHEDULED" in result.readable_output
+    assert "destroyed in 24h" in result.readable_output
+
+
+def test_kms_key_version_restore_success(mocker):
+    """
+    Given: A crypto key version that is scheduled for destruction.
+    When: kms_key_version_restore is called.
+    Then: The restore endpoint is called and the key returns to the DISABLED state.
+    """
+    from GCP import kms_key_version_restore
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    version_name = (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key/cryptoKeyVersions/1"
+    )
+    crypto_key_versions.restore.return_value.execute.return_value = {"name": version_name, "state": "DISABLED"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "crypto_key_version": "1",
+    }
+    result = kms_key_version_restore(creds, args)
+
+    crypto_key_versions.restore.assert_called_once_with(name=version_name, body={})
+    assert "has been set to DISABLED" in result.readable_output
+
+
+def test_kms_public_key_get_success(mocker):
+    """
+    Given: An asymmetric crypto key version that exposes a public key.
+    When: kms_public_key_get is called.
+    Then: The PEM and algorithm are returned under GCP.KMS.PublicKey.
+    """
+    from GCP import kms_public_key_get
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    version_name = (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_asym_key/cryptoKeyVersions/1"
+    )
+    crypto_key_versions.getPublicKey.return_value.execute.return_value = {
+        "pem": "-----BEGIN PUBLIC KEY-----\nmock\n-----END PUBLIC KEY-----\n",
+        "algorithm": "RSA_DECRYPT_OAEP_2048_SHA256",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_asym_key",
+        "crypto_key_version": "1",
+    }
+    result = kms_public_key_get(creds, args)
+
+    crypto_key_versions.getPublicKey.assert_called_once_with(name=version_name)
+    assert result.outputs_prefix == "GCP.KMS.PublicKey"
+    assert result.outputs["Algorithm"] == "RSA_DECRYPT_OAEP_2048_SHA256"
+    assert result.outputs["CryptoKeyVersion"] == version_name
+
+
+def test_kms_symmetric_encrypt_plaintext(mocker):
+    """
+    Given: A raw plain text and additional authenticated data.
+    When: kms_symmetric_encrypt is called.
+    Then: The plain text is base64-encoded for the API and the cipher text is returned.
+    """
+    import base64
+
+    from GCP import kms_symmetric_encrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.encrypt.return_value.execute.return_value = {"ciphertext": "bW9ja19jaXBoZXI="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "plaintext": "mock secret",
+        "additional_authenticated_data": "bW9ja19hYWQ=",
+    }
+    result = kms_symmetric_encrypt(creds, args)
+
+    call_kwargs = crypto_keys.encrypt.call_args[1]
+    assert call_kwargs["name"] == "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key"
+    assert call_kwargs["body"]["plaintext"] == base64.b64encode(b"mock secret").decode()
+    assert call_kwargs["body"]["additionalAuthenticatedData"] == "bW9ja19hYWQ="
+    assert result.outputs_prefix == "GCP.KMS.SymmetricEncrypt"
+    assert result.outputs["Ciphertext"] == "bW9ja19jaXBoZXI="
+
+
+def test_kms_symmetric_encrypt_base64_plaintext_is_decoded_first(mocker):
+    """
+    Given: A base64-encoded plain text.
+    When: kms_symmetric_encrypt is called.
+    Then: The value is decoded and re-encoded so the API receives the original bytes.
+    """
+    from GCP import kms_symmetric_encrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.encrypt.return_value.execute.return_value = {"ciphertext": "bW9ja19jaXBoZXI="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "base64_plaintext": "bW9jayBzZWNyZXQ=",
+    }
+    kms_symmetric_encrypt(creds, args)
+
+    assert crypto_keys.encrypt.call_args[1]["body"]["plaintext"] == "bW9jayBzZWNyZXQ="
+
+
+def test_kms_symmetric_encrypt_without_input_raises(mocker):
+    """
+    Given: No plaintext, base64_plaintext or entry_id argument.
+    When: kms_symmetric_encrypt is called.
+    Then: A ValueError is raised before any API call is made.
+    """
+    from GCP import kms_symmetric_encrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+
+    with pytest.raises(ValueError, match="No object to encrypt"):
+        kms_symmetric_encrypt(creds, args)
+
+    crypto_keys.encrypt.assert_not_called()
+
+
+def test_kms_symmetric_decrypt_success(mocker):
+    """
+    Given: A base64-encoded cipher text.
+    When: kms_symmetric_decrypt is called.
+    Then: The API response is base64-decoded back into readable plain text.
+    """
+    from GCP import kms_symmetric_decrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.decrypt.return_value.execute.return_value = {"plaintext": "bW9jayBzZWNyZXQ="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+    }
+    result = kms_symmetric_decrypt(creds, args)
+
+    assert crypto_keys.decrypt.call_args[1]["body"]["ciphertext"] == "bW9ja19jaXBoZXI="
+    assert result.outputs_prefix == "GCP.KMS.SymmetricDecrypt"
+    assert result.outputs["Plaintext"] == "mock secret"
+
+
+def test_kms_symmetric_decrypt_without_input_raises(mocker):
+    """
+    Given: No ciphertext or entry_id argument.
+    When: kms_symmetric_decrypt is called.
+    Then: A ValueError is raised before any API call is made.
+    """
+    from GCP import kms_symmetric_decrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+
+    with pytest.raises(ValueError, match="No object to decrypt"):
+        kms_symmetric_decrypt(creds, args)
+
+    crypto_keys.decrypt.assert_not_called()
+
+
+def test_kms_asymmetric_encrypt_uses_public_key(mocker):
+    """
+    Given: An asymmetric decrypt key whose public key is returned by the API.
+    When: kms_asymmetric_encrypt is called.
+    Then: The plain text is encrypted locally with RSA-OAEP and returned as base64.
+    """
+    import base64
+
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from GCP import kms_asymmetric_encrypt
+
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    pem = (
+        private_key.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        .decode()
+    )
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.getPublicKey.return_value.execute.return_value = {
+        "pem": pem,
+        "algorithm": "RSA_DECRYPT_OAEP_2048_SHA256",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_asym_key",
+        "crypto_key_version": "1",
+        "plaintext": "mock secret",
+    }
+    result = kms_asymmetric_encrypt(creds, args)
+
+    assert result.outputs_prefix == "GCP.KMS.AsymmetricEncrypt"
+    # The cipher text must round-trip back to the original plain text through the private key.
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import padding
+
+    decrypted = private_key.decrypt(
+        base64.b64decode(result.outputs["Ciphertext"]),
+        padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None),
+    )
+    assert decrypted == b"mock secret"
+
+
+def test_kms_asymmetric_encrypt_rejects_non_decrypt_algorithm(mocker):
+    """
+    Given: A crypto key version whose algorithm is a signing algorithm.
+    When: kms_asymmetric_encrypt is called.
+    Then: A ValueError explains the key cannot be used for asymmetric encryption.
+    """
+    from GCP import kms_asymmetric_encrypt
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.getPublicKey.return_value.execute.return_value = {
+        "pem": "-----BEGIN PUBLIC KEY-----\nmock\n-----END PUBLIC KEY-----\n",
+        "algorithm": "RSA_SIGN_PSS_2048_SHA256",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_sign_key",
+        "plaintext": "mock secret",
+    }
+
+    with pytest.raises(ValueError, match="not a valid asymmetric encryption CryptoKeyVersion"):
+        kms_asymmetric_encrypt(creds, args)
+
+
+def test_kms_asymmetric_decrypt_success(mocker):
+    """
+    Given: A base64-encoded cipher text and an asymmetric crypto key version.
+    When: kms_asymmetric_decrypt is called.
+    Then: The asymmetricDecrypt endpoint is called and the plain text is decoded.
+    """
+    from GCP import kms_asymmetric_decrypt
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.asymmetricDecrypt.return_value.execute.return_value = {"plaintext": "bW9jayBzZWNyZXQ="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_asym_key",
+        "crypto_key_version": "1",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+    }
+    result = kms_asymmetric_decrypt(creds, args)
+
+    call_kwargs = crypto_key_versions.asymmetricDecrypt.call_args[1]
+    assert call_kwargs["name"] == (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_asym_key/cryptoKeyVersions/1"
+    )
+    assert call_kwargs["body"]["ciphertext"] == "bW9ja19jaXBoZXI="
+    assert result.outputs_prefix == "GCP.KMS.AsymmetricDecrypt"
+    assert result.outputs["Plaintext"] == "mock secret"
+
+
+def test_kms_asymmetric_decrypt_without_input_raises(mocker):
+    """
+    Given: No ciphertext or entry_id argument.
+    When: kms_asymmetric_decrypt is called.
+    Then: A ValueError is raised before any API call is made.
+    """
+    from GCP import kms_asymmetric_decrypt
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_asym_key"}
+
+    with pytest.raises(ValueError, match="No object to decrypt"):
+        kms_asymmetric_decrypt(creds, args)
+
+    crypto_key_versions.asymmetricDecrypt.assert_not_called()
+
+
+def test_kms_test_connectivity_uses_locations_list(mocker):
+    """
+    Given: The KMS service and a built API client.
+    When: test_connectivity is called.
+    Then: A project-scoped locations list is used as the connectivity probe.
+    """
+    from GCP import GCPServices
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.KMS, "build", return_value=mock_client)
+
+    GCPServices.KMS.test_connectivity(creds, "mock_project_id")
+
+    mock_client.projects.return_value.locations.return_value.list.assert_called_once_with(
+        name="projects/mock_project_id", pageSize=1
+    )
