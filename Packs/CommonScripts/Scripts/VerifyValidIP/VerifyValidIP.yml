@@ -18,7 +18,7 @@ args:
   defaultValue: ''
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.13.11753038
+dockerimage: demisto/python3:3.12.13.11879924
 runas: DBotWeakRole
 engineinfo: {}
 runonce: false
