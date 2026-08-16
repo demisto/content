@@ -464,6 +464,27 @@ class TestEventRelatedFunctions:
         assert client.compartment_id == "dummy_compartment_id"
         assert mocked_http_request.call_args[1]["params"] == expected_params
 
+    def test_audit_log_api_request_error_includes_context(self, mocker, dummy_client):
+        """
+        Given:
+            - The underlying _http_request raises a DemistoException.
+        When:
+            - Making an audit log API request.
+        Then:
+            - Make sure the raised exception message includes both the compartmentId and the base_url,
+              providing enough context to diagnose the failure.
+        """
+        from OracleCloudInfrastructureEventCollector import audit_log_api_request
+
+        mocker.patch.object(dummy_client, "_http_request", side_effect=DemistoException("underlying failure"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            audit_log_api_request(dummy_client, start_time="2023-01-01T10:10:10.000Z")
+
+        raised_text = str(exc_info.value)
+        assert dummy_client.compartment_id in raised_text
+        assert dummy_client.base_url in raised_text
+
     @pytest.mark.parametrize("events", ([{"dummy_data": "dummy_data"}], []))
     def test_handle_fetched_events(self, mocker, events):
         """
@@ -636,6 +657,75 @@ class TestEventRelatedFunctions:
         raised_text = str(exc_info.value)
         assert "404" in raised_text
         assert "NotAuthorizedOrNotFound" in raised_text
+
+    def test_get_events_pushes_collected_events_before_reraising(self, mocker, dummy_client, dummy_datetime=dummy_datetime):
+        """
+        Given:
+            - The first audit_log_api_request call succeeds and returns a page of events with an
+              opc-next-page header (so events are already collected).
+            - The second audit_log_api_request call (pagination) raises a DemistoException.
+            - push_events_on_error=True.
+        When:
+            - Fetching events from the audit log API.
+        Then:
+            - The already-collected events are handled (handle_fetched_events is called with them).
+            - The original exception still propagates out of get_events.
+        """
+        from OracleCloudInfrastructureEventCollector import get_events
+
+        first_page_response = MockResponse(content=[{"eventTime": "2023-01-01T11:10:10.000Z"}])
+        first_page_response.headers._store["opc-next-page"] = ("opc-next-page", "next_page_token")
+
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.audit_log_api_request",
+            side_effect=[first_page_response, DemistoException("pagination failure")],
+        )
+        mocked_handle_fetched_events = mocker.patch("OracleCloudInfrastructureEventCollector.handle_fetched_events")
+        if not isinstance(dummy_datetime, datetime.datetime):
+            raise ValueError("first_date_time is not a datetime object")
+
+        with pytest.raises(DemistoException) as exc_info:
+            get_events(client=dummy_client, first_fetch_time=dummy_datetime, max_fetch=5, push_events_on_error=True)
+
+        # The collected events were handled before re-raising.
+        assert mocked_handle_fetched_events.called
+        handled_events = mocked_handle_fetched_events.call_args.args[0]
+        assert handled_events == [{"eventTime": "2023-01-01T11:10:10.000Z", "_time": "2023-01-01T11:10:10.000Z"}]
+        # The original exception still propagates.
+        assert "pagination failure" in str(exc_info.value)
+
+    def test_get_events_pagination_with_none_event_time(self, mocker, dummy_client, dummy_datetime=dummy_datetime):
+        """
+        Given:
+            - The first audit_log_api_request call returns a page whose last event has no eventTime
+              (eventTime is None) and an opc-next-page header, triggering the pagination branch.
+            - push_events_on_error=True so collected events are handled before re-raising.
+        When:
+            - Fetching events from the audit log API.
+        Then:
+            - The pagination branch computes the next start time from a None eventTime, which raises,
+              exercising the '# type: ignore[arg-type]' line.
+            - The already-collected events are handled and the exception propagates.
+        """
+        from OracleCloudInfrastructureEventCollector import get_events
+
+        first_page_response = MockResponse(content=[{"id": "no-time-event"}])
+        first_page_response.headers._store["opc-next-page"] = ("opc-next-page", "next_page_token")
+
+        mocker.patch(
+            "OracleCloudInfrastructureEventCollector.audit_log_api_request",
+            return_value=first_page_response,
+        )
+        mocked_handle_fetched_events = mocker.patch("OracleCloudInfrastructureEventCollector.handle_fetched_events")
+        if not isinstance(dummy_datetime, datetime.datetime):
+            raise ValueError("first_date_time is not a datetime object")
+
+        with pytest.raises(DemistoException):
+            get_events(client=dummy_client, first_fetch_time=dummy_datetime, max_fetch=5, push_events_on_error=True)
+
+        assert mocked_handle_fetched_events.called
+        handled_events = mocked_handle_fetched_events.call_args.args[0]
+        assert handled_events == [{"id": "no-time-event"}]
 
 
 class TestFetchEventsFlows:
@@ -911,6 +1001,31 @@ class TestSearchlogsApiRequest:
 
         call_kwargs = mocked_http_request.call_args[1]
         assert call_kwargs["params"] == {"limit": 500}
+
+    def test_searchlogs_api_request_error_includes_url(self, mocker, dummy_client):
+        """
+        Given:
+            - The underlying _http_request raises a DemistoException.
+        When:
+            - Making a search logs API request.
+        Then:
+            - Make sure the raised exception message includes the search log url,
+              providing enough context to diagnose the failure.
+        """
+        from OracleCloudInfrastructureEventCollector import searchlogs_api_request
+
+        mocker.patch.object(dummy_client, "_http_request", side_effect=DemistoException("underlying failure"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            searchlogs_api_request(
+                client=dummy_client,
+                time_start="2023-01-01T10:10:10.000Z",
+                time_end="2023-01-15T10:10:10.000Z",
+                search_query="search query",
+            )
+
+        raised_text = str(exc_info.value)
+        assert dummy_client.searchlog_url in raised_text
 
 
 class TestDeduplicateEvents:
@@ -1486,3 +1601,30 @@ class TestTestModule:
         raised_text = str(exc_info.value)
         assert "404" in raised_text
         assert "NotAuthorizedOrNotFound" in raised_text
+
+    def test_test_module_audit_and_search_logs_success(self, dummy_client, mocker):
+        """
+        Given:
+            - event_types_to_fetch contains both 'Audit' and 'Search Logs' with a valid search_log_query.
+        When:
+            - test_module is called and both the audit API and the Search Logs API succeed.
+        Then:
+            - Both APIs are exercised and 'ok' is returned.
+        """
+        from OracleCloudInfrastructureEventCollector import test_module
+
+        mocked_http_request = mocker.patch.object(dummy_client, "_http_request", return_value={"data": "dummy_data"})
+        mocked_searchlogs = mocker.patch(
+            "OracleCloudInfrastructureEventCollector.searchlogs_api_request",
+            return_value=MockResponse(content={}),
+        )
+
+        result = test_module(
+            client=dummy_client,
+            search_log_query="search query",
+            event_types_to_fetch=["Audit", "Search Logs"],
+        )
+
+        assert result == "ok"
+        assert mocked_http_request.called
+        assert mocked_searchlogs.called

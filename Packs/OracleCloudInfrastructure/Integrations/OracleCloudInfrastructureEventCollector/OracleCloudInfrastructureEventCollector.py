@@ -474,7 +474,6 @@ def get_events(
             last_event_time = get_last_event_time(events, first_fetch_time)
             events = add_time_key_to_events(events)
             handle_fetched_events(events, last_event_time)
-        # Always re-raise so the original OCI error (status code, error code and message) propagates.
         raise DemistoException(f"Error while fetching events: {e}") from e
 
     demisto.info(f"OCI: {len(events)} Events fetched from start time: {first_fetch_time}.")
