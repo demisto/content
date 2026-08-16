@@ -7,22 +7,29 @@ urllib3.disable_warnings()
 VENDOR = "slack"
 PRODUCT = "slack"
 
-# Recommended page size by Slack for the Audit Logs API.
-API_PAGE_SIZE = 200
-# The maximum time range (in seconds) to fetch in a single run to avoid
-# timeouts / out-of-memory when a very large backlog needs to be collected.
-DEFAULT_MAX_FETCH_WINDOW = 24 * 60 * 60  # 1 day
-# Maximum number of forward windows a single fetch run may walk. This bounds the run's
-# duration / number of API calls when a large backlog needs to be backfilled; the remaining
-# windows are covered by subsequent runs.
-MAX_WINDOWS_PER_RUN = 10
-# Sentinel used to mark the first pagination iteration (no cursor yet).
-FIRST_PAGE = "__first_page__"
+
+class Config:
+    """Global static configuration."""
+
+    # Recommended page size by Slack for the Audit Logs API.
+    API_PAGE_SIZE = 200
+    # The maximum time range (in seconds) to fetch in a single run to avoid
+    # timeouts / out-of-memory when a very large backlog needs to be collected.
+    DEFAULT_MAX_FETCH_WINDOW = 24 * 60 * 60  # 1 day
+    # Maximum number of forward windows a single fetch run may walk. This bounds the run's
+    # duration / number of API calls when a large backlog needs to be backfilled; the remaining
+    # windows are covered by subsequent runs.
+    MAX_WINDOWS_PER_RUN = 10
+    # Sentinel used to mark the first pagination iteration (no cursor yet).
+    FIRST_PAGE = "__first_page__"
+    # Default lookback for the FIRST fetch when no `oldest` is configured. Mirrors the
+    # `oldest` parameter's default value in the integration YAML.
+    DEFAULT_FIRST_FETCH = "10 minutes ago"
 
 
 def get_now_timestamp() -> int:
     """Returns the current time as a unix timestamp (seconds). Wrapped for testability."""
-    return int(datetime.utcnow().timestamp())
+    return int(time.time())
 
 
 def arg_to_timestamp(value: Any) -> Optional[int]:
@@ -33,21 +40,13 @@ def arg_to_timestamp(value: Any) -> Optional[int]:
     return None
 
 
-def prepare_query_params(params: dict) -> dict:
-    """
-    Parses the given inputs into Slack Audit Logs API expected format.
-    """
-    query_params = {
-        "limit": arg_to_number(params.get("limit") or 1000),
-        "oldest": arg_to_timestamp(params.get("oldest")),
-        "latest": arg_to_timestamp(params.get("latest")),
-        "action": params.get("action"),
-        "actor": params.get("actor"),
-        "entity": params.get("entity"),
-        "cursor": params.get("cursor"),
-    }
-    demisto.debug(f"Prepared query params: {query_params}")
-    return query_params
+def add_time_to_events(events: list[dict]) -> None:
+    """Adds `_time` to each event, derived from `date_create` (epoch seconds, UTC)."""
+    for event in events:
+        if (date_create := event.get("date_create")) is not None:
+            event["_time"] = timestamp_to_datestring(int(date_create) * 1000, is_utc=True)
+        else:
+            demisto.debug(f"Event {event.get('id')} has no date_create; '_time' not set.")
 
 
 class Client(BaseClient):
@@ -57,7 +56,9 @@ class Client(BaseClient):
             method="GET",
             url_suffix="logs",
             params=query_params,
-            retries=2,
+            retries=3,
+            status_list_to_retry=[429, 500, 502, 503, 504],
+            backoff_factor=2,
         )
         demisto.debug(f"{raw_response=}")
         events = raw_response.get("entries", [])
@@ -83,7 +84,7 @@ class Client(BaseClient):
             All events in the window (as returned by the API, i.e. newest-first).
         """
         base_params: dict = {k: v for k, v in extra_params.items() if v is not None}
-        base_params["limit"] = API_PAGE_SIZE
+        base_params["limit"] = Config.API_PAGE_SIZE
         if oldest is not None:
             base_params["oldest"] = oldest
         if latest is not None:
@@ -91,22 +92,23 @@ class Client(BaseClient):
 
         aggregated: list[dict] = []
         # `cursor` drives the loop: FIRST_PAGE means "no cursor yet", None means "no more pages".
-        cursor: str | None = FIRST_PAGE
+        cursor: str | None = Config.FIRST_PAGE
         while cursor:
             query_params = dict(base_params)
-            if cursor != FIRST_PAGE:
+            if cursor != Config.FIRST_PAGE:
                 query_params["cursor"] = cursor
             try:
                 _, events, cursor = self.get_logs(query_params)
-            except Exception as e:
+            except DemistoException as e:
                 # If the very first page fails we have nothing to keep -> re-raise so the caller
                 # does NOT advance lastRun and the same window is retried next run (no data loss).
                 if not aggregated:
                     raise
-                # A later page failed: keep what we already collected and stop paginating. The
-                # caller persists progress up to the newest collected event and resumes next run.
-                # This is a recoverable, expected condition, so it is logged at debug level.
-                demisto.debug(
+                # A later page failed after retries were exhausted (e.g. persistent 429): keep what
+                # we already collected and stop paginating. The caller persists progress up to the
+                # newest collected event and resumes next run. This is a partial-collection failure,
+                # so it is logged at ERROR level to stay visible to operators.
+                demisto.error(
                     f"Failed to fetch a later page in window [{oldest}, {latest}]; "
                     f"keeping {len(aggregated)} events collected so far. Error: {e}"
                 )
@@ -121,10 +123,17 @@ def compute_window_start(params: dict, last_run: dict, now: int) -> int:
     Computes the lower bound of the first window to fetch in this run: the oldest point we
     have not fully collected yet (`last_fetched_time`, or the configured first-fetch `oldest`
     on the first run). The run then walks forward in DEFAULT_MAX_FETCH_WINDOW-sized windows.
+
+    On the very first fetch, if no `oldest` is configured, the start falls back to
+    Config.DEFAULT_FIRST_FETCH ("10 minutes ago", matching the YAML default) rather than
+    exactly 'now', so events recorded around startup are not missed. An explicitly configured
+    `oldest` always takes precedence.
     """
     window_start = last_run.get("last_fetched_time")
     if window_start is None:
-        window_start = arg_to_timestamp(params.get("oldest")) or now
+        # DEFAULT_FIRST_FETCH is a fixed, always-parseable string, so this default is never None.
+        default_first_fetch = cast(int, arg_to_timestamp(Config.DEFAULT_FIRST_FETCH))
+        window_start = arg_to_timestamp(params.get("oldest")) or default_first_fetch
         demisto.debug(f"No last_fetched_time in last run; computed window start from first-fetch config: {window_start}")
     else:
         demisto.debug(f"Resuming from last_fetched_time; window start: {window_start}")
@@ -171,8 +180,10 @@ def update_last_run(last_run: dict, sent_events: list[dict], window_end: int, re
       the inclusive boundary next run.
     - drained the window while still backfilling (window_end below 'now'): mark advances to
       `window_end`. This is provably safe (the API returned all events up to window_end),
-      speeds up the backfill, and avoids re-querying the trailing gap of the window. No dedup
-      ids are needed because there are no events exactly at window_end.
+      speeds up the backfill, and avoids re-querying the trailing gap of the window.
+      `last_fetched_ids` is set to the ids of any SENT events recorded exactly at `window_end`
+      (Slack's `oldest`/`latest` bounds are inclusive), so those boundary events are deduped and
+      not re-ingested when the next run re-queries starting at `window_end`.
     - drained the window and caught up (window_end reached 'now'): mark = the newest SENT
       event (we cannot safely advance past 'now'); `last_fetched_ids` dedups the boundary.
     - empty window while still backfilling: mark advances to `window_end` so the next run
@@ -197,9 +208,16 @@ def update_last_run(last_run: dict, sent_events: list[dict], window_end: int, re
         demisto.debug(f"Advanced last_fetched_time to newest sent event: {newest_time}")
     elif not caught_up and window_end > (last_run.get("last_fetched_time") or 0):
         # Drained (or empty) window still below 'now' -> jump straight to the window end.
+        # `latest` is inclusive, so events recorded exactly at window_end were already sent in
+        # this window; remember their ids so the next run (which re-queries from window_end,
+        # inclusive) dedups them instead of re-ingesting duplicates.
+        ids_at_window_end = [e.get("id") for e in sent_events if e.get("date_create") == window_end]
         last_run["last_fetched_time"] = window_end
-        last_run["last_fetched_ids"] = []
-        demisto.debug(f"Drained window below 'now'; advanced last_fetched_time to window_end: {window_end}")
+        last_run["last_fetched_ids"] = ids_at_window_end
+        demisto.debug(
+            f"Drained window below 'now'; advanced last_fetched_time to window_end: {window_end} "
+            f"(boundary ids kept for dedup: {ids_at_window_end})"
+        )
 
 
 def test_module_command(client: Client, params: dict) -> str:
@@ -267,7 +285,7 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
     keep_walking = True
     windows_walked = 0
     while keep_walking:
-        window_end = min(window_start + DEFAULT_MAX_FETCH_WINDOW, now)
+        window_end = min(window_start + Config.DEFAULT_MAX_FETCH_WINDOW, now)
         caught_up = window_end >= now
         demisto.debug(f"Fetch window: [{window_start}, {window_end}] (now={now}, limit={limit})")
 
@@ -285,20 +303,26 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
         have_enough = len(collected) >= limit
         events_to_send = collected[:limit]
 
+        # The API returned zero events for this window: there is nothing more to collect right
+        # now, so stop walking and let the next scheduled run resume from the advanced mark.
+        window_returned_no_events = len(all_events) == 0
+
         # When caught up (window reached 'now') and there is nothing new, keep the state as-is
         # so no event recorded at the boundary can be skipped. Otherwise update normally.
         if not (caught_up and not events_to_send):
             update_last_run(last_run, events_to_send, window_end, reached_limit=have_enough, caught_up=caught_up)
 
-        # Stop once we caught up to 'now', have a full batch, or reached the per-run window cap;
-        # otherwise walk to the next window. Any remaining windows are covered by the next run.
-        hit_window_cap = windows_walked >= MAX_WINDOWS_PER_RUN
-        if hit_window_cap and not (have_enough or caught_up):
-            demisto.debug(f"Reached the per-run window cap ({MAX_WINDOWS_PER_RUN}); resuming next run.")
-        keep_walking = not (have_enough or caught_up or hit_window_cap)
+        # Stop once we caught up to 'now', have a full batch, the window returned no events, or
+        # reached the per-run window cap (hard upper bound); otherwise walk to the next window.
+        # Any remaining windows are covered by the next run.
+        hit_window_cap = windows_walked >= Config.MAX_WINDOWS_PER_RUN
+        if hit_window_cap and not (have_enough or caught_up or window_returned_no_events):
+            demisto.debug(f"Reached the per-run window cap ({Config.MAX_WINDOWS_PER_RUN}); resuming next run.")
+        keep_walking = not (have_enough or caught_up or window_returned_no_events or hit_window_cap)
         window_start = window_end
 
     events_to_send = sort_events_oldest_first(collected)[:limit]
+    add_time_to_events(events_to_send)
     demisto.debug(f"Collected {len(events_to_send)} events across the run.")
     return events_to_send
 
@@ -332,6 +356,9 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
             events,
             date_fields=["date_create"],
         ),
+        outputs_prefix="Slack.AuditLogs",
+        outputs_key_field="id",
+        outputs=events,
         raw_response={"entries": events},
     )
     return events, results
@@ -394,8 +421,10 @@ def main() -> None:  # pragma: no cover
             demisto.setLastRun(last_run)
             demisto.debug(f"Last run set to: {last_run}")
 
-    except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e}")
+    except Exception as error:
+        error_msg = f"Failed to execute {command}. Error: {error!s}"
+        demisto.error(f"{error_msg}\n{traceback.format_exc()}")
+        return_error(error_msg)
 
 
 """ ENTRY POINT """
