@@ -530,45 +530,78 @@ class PanOs:
             )
         return reduced
 
+    def restore_responses(self) -> None:
+        """Restore the accumulated responses that were serialized to context in a previous cycle."""
+        self.responses = ast.literal_eval(demisto.context().get("panorama_responses", "[]") or "[]")
+
+    def save_responses(self) -> None:
+        """Serialize the accumulated responses to context for the next polling cycle."""
+        demisto.setContext("panorama_responses", str(self.reduce_responses()))
+
     def manage_pan_os_flow(self) -> Any:  # pragma: no cover
-        """Manage the PAN-OS flow across polling cycles.
+        """Dispatch the PAN-OS flow to the correct state.
 
         On re-entry (a push or commit job is in flight) the flow jumps straight to the relevant
-        status poller. Otherwise it runs the object/group/rule flow and starts the commit.
+        status poller. Otherwise it starts the object/group/rule flow.
 
         Returns:
             A PollResult when a job is in flight, or the list of result rows when finished.
         """
         incident_context = demisto.context()
         commit_job_id = self.args.get("commit_job_id") or demisto.get(incident_context, "commit_job_id")
+        push_job_id = demisto.get(incident_context, "push_job_id")
 
-        # State: a push job is in flight -> poll its status.
-        if push_job_id := demisto.get(incident_context, "push_job_id"):
-            self.responses = ast.literal_eval(incident_context.get("panorama_responses", "[]") or "[]")
-            self.args["push_job_id"] = push_job_id
-            res_push_status = pan_os_push_status(self.args, self.responses)
-            if not POLLING:
-                return self.finish()
-            demisto.setContext("panorama_responses", str(self.reduce_responses()))
-            return res_push_status
-
-        # State: a commit job is in flight -> poll its status, then maybe push.
+        if push_job_id:
+            return self.handle_push_in_flight(push_job_id)
         if commit_job_id:
-            self.args["commit_job_id"] = commit_job_id
-            self.responses = ast.literal_eval(incident_context.get("panorama_responses", "[]") or "[]")
-            poll_commit_status = pan_os_commit_status(self.args, self.responses)
-            if not POLLING:
-                if self.pan_os_is_panorama():
-                    poll_push = pan_os_push_to_device(self.args, self.responses)
-                    if not POLLING:
-                        return self.finish()
-                    demisto.setContext("panorama_responses", str(self.reduce_responses()))
-                    return poll_push
-                return self.finish()
-            demisto.setContext("panorama_responses", str(self.reduce_responses()))
-            return poll_commit_status
+            return self.handle_commit_in_flight(commit_job_id)
+        return self.start_flow()
 
-        # State: beginning of the flow.
+    def handle_push_in_flight(self, push_job_id: str) -> Any:  # pragma: no cover
+        """Poll the status of an in-flight push-to-device-group job.
+
+        Args:
+            push_job_id (str): The push job ID to poll.
+        Returns:
+            A PollResult while the push is running, or the final result rows when it finishes.
+        """
+        self.restore_responses()
+        self.args["push_job_id"] = push_job_id
+        res_push_status = pan_os_push_status(self.args, self.responses)
+        if not POLLING:
+            return self.finish()
+        self.save_responses()
+        return res_push_status
+
+    def handle_commit_in_flight(self, commit_job_id: str) -> Any:  # pragma: no cover
+        """Poll the status of an in-flight commit job, then start the push if needed.
+
+        Args:
+            commit_job_id (str): The commit job ID to poll.
+        Returns:
+            A PollResult while commit/push is running, or the final result rows when finished.
+        """
+        self.args["commit_job_id"] = commit_job_id
+        self.restore_responses()
+        poll_commit_status = pan_os_commit_status(self.args, self.responses)
+        if POLLING:
+            self.save_responses()
+            return poll_commit_status
+        # Commit finished - push to the device group if this is a Panorama instance.
+        if self.pan_os_is_panorama():
+            poll_push = pan_os_push_to_device(self.args, self.responses)
+            if not POLLING:
+                return self.finish()
+            self.save_responses()
+            return poll_push
+        return self.finish()
+
+    def start_flow(self) -> Any:  # pragma: no cover
+        """Run the object/group/rule flow, then start the commit if there were changes.
+
+        Returns:
+            A PollResult while the commit is running, or the final result rows when finished.
+        """
         rows = self.process_domains()
         demisto.setContext("block_domain_rows", str(rows))
         made_changes = any(row["Status"] == STATUS_DONE for row in rows)
@@ -577,7 +610,7 @@ class PanOs:
             poll_commit = pan_os_commit(self.args, self.responses)
             if not POLLING:
                 return self.finish()
-            demisto.setContext("panorama_responses", str(self.reduce_responses()))
+            self.save_responses()
             return poll_commit
         return rows
 
@@ -821,7 +854,7 @@ def main():  # pragma: no cover
         return_results(
             CommandResults(
                 outputs_prefix="BlockDomainResults",
-                outputs_key_field=["Domain", "Brand"],
+                outputs_key_field=["Domain", "Brand", "Instance"],
                 outputs=results,
                 readable_output=tableToMarkdown(
                     "Block Domain",
