@@ -600,7 +600,7 @@ class XDRHandler(BrandHandler):
                 self.orchestrator.args.get(QuarantineOrchestrator.FILE_PATH_ARG),
                 poll_args,
             )
-            # Builtin `getFileQuarantineStatus` returns `status` (CamelCase shape);
+            # Builtin `getFileQuarantineStatus` returns `Status` (CamelCase shape);
             # legacy `*-get-quarantine-status` returns `status` (lowercase). Try both.
             quarantine_status = quarantine_status_data.get("status")
             if quarantine_status is None:
