@@ -1670,6 +1670,48 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Search expression to filter the rulebase.
+      name: filter
+    - description: 'The list of comma-separated "direction:field" pairs by which to sort results. Valid directions are ASC and DESC. For example, "ASC:type,DESC:uid". Default is "ASC:name".'
+      name: order
+    - description: Policy package name or uid.
+      name: package
+    - auto: PREDEFINED
+      description: When "true", the source, destination and services & applications parameters are displayed as ranges of IP addresses and port numbers rather than network objects.
+      name: show_as_ranges
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Indicates whether to calculate and show the "expiration date settings" field in reply.
+      name: show_expiration_settings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Indicates whether to use an object dictionary in the reply.
+      name: use_object_dictionary
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'Hits from-date. Format: YYYY-MM-DD or YYYY-mm-ddThh:mm:ss.'
+      name: hits_settings_from_date
+    - description: Hits target gateway name or UID.
+      name: hits_settings_target
+    - description: 'Hits to-date. Format: YYYY-MM-DD or YYYY-mm-ddThh:mm:ss.'
+      name: hits_settings_to_date
+    - auto: PREDEFINED
+      description: Indicates whether to dereference "members" field by details level for every object in reply.
+      name: dereference_group_members
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Indicates whether to calculate and show a "groups" field for every object in reply.
+      name: show_membership
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns the entire Access Rules layer.
     name: checkpoint-access-rule-list
     outputs:
@@ -1681,12 +1723,6 @@ script:
       type: String
     - contextPath: CheckPoint.AccessRule.type
       description: Object type.
-      type: String
-    - contextPath: CheckPoint.AccessRule.ipv4-address
-      description: IPv4 address of the specified object.
-      type: String
-    - contextPath: CheckPoint.AccessRule.ipv6-address
-      description: IPv6 address of the specified object.
       type: String
     - contextPath: CheckPoint.AccessRule.domain-name
       description: Domain name.
@@ -1700,19 +1736,80 @@ script:
     - contextPath: CheckPoint.AccessRule.last-modifier
       description: The user that last modified the object.
       type: String
-    - contextPath: CheckPoint.AccessRule.read-only
-      description: Indicates if the object is read-only.
-      type: Boolean
-    - contextPath: CheckPoint.AccessRule.groups
-      description: Collection of group identifiers.
-      type: Unknown
   - arguments:
-    - description: Layer to which to assign the rule, identified by the name or UID.
+    - description: The rule name or rule number.
+      name: identifier
+      required: true
+    - description: Layer to which the rule belongs, identified by the name or UID.
       name: layer
       required: true
-    - description: 'Position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the position_rule argument is required.'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - description: Policy package name or uid.
+      name: package
+    - auto: PREDEFINED
+      description: When "true", the source, destination and services & applications parameters are displayed as ranges of IP addresses and port numbers rather than network objects.
+      name: show_as_ranges
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Indicates whether to calculate and show "expiration date settings" field in reply.
+      name: show_expiration_settings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Show hitcount data.
+      name: show_hits
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'Hits from-date. Format: YYYY-MM-DD or YYYY-mm-ddThh:mm:ss.'
+      name: hits_settings_from_date
+    - description: Hits target gateway name or UID.
+      name: hits_settings_target
+    - description: 'Hits to-date. Format: YYYY-MM-DD or YYYY-mm-ddThh:mm:ss.'
+      name: hits_settings_to_date
+    description: Returns a single access rule by name, UID, or rule number.
+    name: checkpoint-access-rule-get
+    outputs:
+    - contextPath: CheckPoint.AccessRule.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AccessRule.rule-number
+      description: The rule number in the rulebase.
+      type: Number
+    - contextPath: CheckPoint.AccessRule.action.name
+      description: The action applied by the rule.
+      type: String
+    - contextPath: CheckPoint.AccessRule.source
+      description: Collection of source network objects.
+      type: Unknown
+    - contextPath: CheckPoint.AccessRule.destination
+      description: Collection of destination network objects.
+      type: Unknown
+    - contextPath: CheckPoint.AccessRule.service
+      description: Collection of service objects.
+      type: Unknown
+    - contextPath: CheckPoint.AccessRule.enabled
+      description: Indicates if the rule is enabled or disabled.
+      type: Boolean
+    - contextPath: CheckPoint.AccessRule.layer
+      description: Layer to which the rule belongs.
+      type: String
+  - arguments:
+    - description: Layer to which to assign the rule, identified by the name or UID. Required unless entry_id is provided.
+      name: layer
+    - description: 'Position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the position_rule argument is required. Required unless entry_id is provided.'
       name: position
-      required: true
     - description: The name of the rule or section to use as a reference point. The new rule is positioned relative to this rule or section. Required when position is "above" or "below". Optional when position is "top" or "bottom".
       name: position_rule
     - description: Rule name.
@@ -1733,12 +1830,20 @@ script:
       predefined:
       - Any
       - All_GwToGw
-    - description: Collection of network objects identified by the name or UID.
+    - description: A comma-separated list of destination network objects identified by the name or UID.
+      isArray: true
       name: destination
-    - description: Collection of network objects identified by the name or UID.
+    - description: A comma-separated list of service objects identified by the name or UID.
+      isArray: true
       name: service
-    - description: Collection of network objects identified by the name or UID.
+    - description: A comma-separated list of source network objects identified by the name or UID.
+      isArray: true
       name: source
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    - description: Entry ID of a file containing the request JSON. If provided, all other arguments (except session_id) are ignored and the file content is sent as-is to the API.
+      name: entry_id
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
@@ -2307,6 +2412,13 @@ script:
     - description: Unique identifier of one or more tasks.
       name: task_id
       required: true
+    - auto: PREDEFINED
+      description: The level of detail for some of the fields in the response.
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
     - defaultValue: None
       description: Executes the command with the specified session ID.
       name: session_id
@@ -2328,6 +2440,21 @@ script:
     - contextPath: CheckPoint.ShowTask.suppressed
       description: Indicates if the task is suppressed.
       type: Boolean
+    - contextPath: CheckPoint.ShowTask.message
+      description: Operation status message returned on failure.
+      type: String
+    - contextPath: CheckPoint.ShowTask.warnings
+      description: Validation warnings returned on failure.
+      type: Unknown
+    - contextPath: CheckPoint.ShowTask.errors
+      description: Validation errors returned on failure.
+      type: Unknown
+    - contextPath: CheckPoint.ShowTask.blocking-errors
+      description: Blocking validation errors returned on failure.
+      type: Unknown
+    - contextPath: CheckPoint.ShowTask.code
+      description: Error code returned on failure.
+      type: String
   - arguments:
     - defaultValue: '600'
       description: Session expiration timeout in seconds. Default is 600 seconds. Session timeout range is between 600 to 3600 seconds.
@@ -4148,6 +4275,24 @@ script:
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
+    - auto: PREDEFINED
+      description: Whether to ignore warnings when applying the updates. Default is "False".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Whether to ignore errors when applying the updates. Default is "False".
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Use the default virtual session timeout.
+      name: use_default_session_timeout
+      predefined:
+      - 'true'
+      - 'false'
     description: Creates a new TCP service object.
     name: checkpoint-tcp-service-add
     outputs:
@@ -4240,6 +4385,24 @@ script:
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
+    - auto: PREDEFINED
+      description: Whether to ignore warnings when applying the updates. Default is "False".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Whether to ignore errors when applying the updates. Default is "False".
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Use the default virtual session timeout.
+      name: use_default_session_timeout
+      predefined:
+      - 'true'
+      - 'false'
     description: Creates a new UDP service object.
     name: checkpoint-udp-service-add
     outputs:
@@ -4427,6 +4590,24 @@ script:
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
+    - auto: PREDEFINED
+      description: Whether to ignore warnings when applying the updates. Default is "False".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Whether to ignore errors when applying the updates. Default is "False".
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Use the default virtual session timeout.
+      name: use_default_session_timeout
+      predefined:
+      - 'true'
+      - 'false'
     description: Updates an existing TCP service object.
     name: checkpoint-tcp-service-update
     outputs:
@@ -4524,7 +4705,25 @@ script:
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
-    description: Update an existing UDP service object.
+    - auto: PREDEFINED
+      description: Whether to ignore warnings when applying the updates. Default is "False".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Whether to ignore errors when applying the updates. Default is "False".
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Use the default virtual session timeout.
+      name: use_default_session_timeout
+      predefined:
+      - 'true'
+      - 'false'
+    description: Updates an existing UDP service object.
     name: checkpoint-udp-service-update
     outputs:
     - contextPath: CheckPoint.UDPService.name
@@ -4905,6 +5104,12 @@ script:
     - description: A comma-separated list of tag identifiers.
       isArray: true
       name: tags
+    - description: A comma-separated list of gateways (name or UID) to add to the install-on collection.
+      isArray: true
+      name: install_on_add
+    - description: A comma-separated list of gateways (name or UID) to remove from the install-on collection.
+      isArray: true
+      name: install_on_remove
     - defaultValue: None
       description: The session ID to use when executing the command.
       name: session_id
@@ -4968,6 +5173,342 @@ script:
       name: session_id
     description: Deletes a NAT rule.
     name: checkpoint-nat-rule-delete
+    outputs: []
+  - arguments:
+    - description: The session UID to discard (sent as "uid"). If omitted, discards the current session.
+      name: target_session_id
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Discards uncommitted session changes (inverse of publish).
+    name: checkpoint-session-discard
+    outputs:
+    - contextPath: CheckPoint.SessionDiscard.message
+      description: The result message.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return (range 1-500). Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    - description: Search expression to filter objects by.
+      name: filter
+    - description: 'The list of comma-separated "direction:field" pairs by which to sort results. Valid directions are ASC and DESC. For example, "ASC:type,DESC:uid". Default is "ASC:name".'
+      name: order
+    - auto: PREDEFINED
+      description: Indicates whether to calculate and show a "groups" field for every object in reply.
+      name: show_membership
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: The level of detail for results.
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - auto: PREDEFINED
+      description: Indicates which domains to process the commands on. Cannot be used with details_level set to 'full'. Must be run from the System Domain.
+      name: domains_to_process
+      predefined:
+      - CURRENT_DOMAIN
+      - ALL_DOMAINS_ON_THIS_SERVER
+    - auto: PREDEFINED
+      description: Indicates whether the query should return only objects from the current local domain.
+      name: show_only_local_domain
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Lists DNS domain objects.
+    name: checkpoint-dns-domain-list
+    outputs:
+    - contextPath: CheckPoint.DNSDomain.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.domain.name
+      description: The domain name.
+      type: String
+  - arguments:
+    - description: Object name or UID.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      description: The level of detail for results.
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Shows a single DNS domain object.
+    name: checkpoint-dns-domain-get
+    outputs:
+    - contextPath: CheckPoint.DNSDomain.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.is-sub-domain
+      description: Indicates whether the object matches sub-domains.
+      type: Boolean
+    - contextPath: CheckPoint.DNSDomain.domain.name
+      description: The domain name.
+      type: String
+  - arguments:
+    - description: Object name. Must begin with a dot, e.g. ".example.com".
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Indicates whether to match sub-domains too.
+      name: is_sub_domain
+      required: true
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: The level of detail for results.
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: black
+      description: 'Object color. Default: black.'
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore warnings. Default is "False".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore errors. Default is "False".
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Creates a DNS domain object.
+    name: checkpoint-dns-domain-add
+    outputs:
+    - contextPath: CheckPoint.DNSDomain.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.is-sub-domain
+      description: Indicates whether the object matches sub-domains.
+      type: Boolean
+    - contextPath: CheckPoint.DNSDomain.domain.name
+      description: The domain name.
+      type: String
+  - arguments:
+    - description: Object name or UID.
+      name: identifier
+      required: true
+    - description: New name of the object.
+      name: new_name
+    - auto: PREDEFINED
+      description: Indicates whether to match sub-domains too.
+      name: is_sub_domain
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: The level of detail for results.
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - auto: PREDEFINED
+      description: 'The action to perform on the tags list. When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action.'
+      name: tags_action
+      predefined:
+      - add
+      - remove
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      description: 'Object color. Default: black.'
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore warnings. Default is "False".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore errors. Default is "False".
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Modifies a DNS domain object.
+    name: checkpoint-dns-domain-update
+    outputs:
+    - contextPath: CheckPoint.DNSDomain.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.DNSDomain.is-sub-domain
+      description: Indicates whether the object matches sub-domains.
+      type: Boolean
+    - contextPath: CheckPoint.DNSDomain.domain.name
+      description: The domain name.
+      type: String
+  - arguments:
+    - description: Object name or UID (mapped to API name).
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore warnings. Default is "False".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore errors. Default is "False".
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: The level of detail for results.
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Deletes a DNS domain object.
+    name: checkpoint-dns-domain-delete
     outputs: []
   dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
