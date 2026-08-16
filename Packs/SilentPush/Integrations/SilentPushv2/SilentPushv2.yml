@@ -42,7 +42,7 @@ configuration:
 script:
   commands:
   - deprecated: false
-    description: add the new feed
+    description: Add the new feed.
     name: silentpush-add-feed
     arguments:
     - name: name
@@ -101,7 +101,7 @@ script:
       description: Tags associated with the feed.
       type: Unknown
   - deprecated: false
-    description: add indicators to the feed
+    description: Add indicators to the feed.
     name: silentpush-add-feed-tags
     arguments:
     - name: feed_uuid
@@ -124,7 +124,7 @@ script:
       description: List of indicators that were considered invalid and not added to the feed.
       type: Unknown
   - deprecated: false
-    description: add indicators to the feed
+    description: Add indicators to the feed.
     name: silentpush-add-indicators
     arguments:
     - name: feed_uuid
@@ -147,7 +147,7 @@ script:
       description: List of indicators that were considered invalid and not added to the feed.
       type: Unknown
   - deprecated: false
-    description: updates tags to the indicators
+    description: Updates tags to the indicators.
     name: silentpush-add-indicator-tags
     arguments:
     - name: feed_uuid
@@ -673,7 +673,7 @@ script:
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
-    description: queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.
+    description: Queries granular DNS/IP parameters (e.g., NS servers, MX servers, IPaddresses, ASNs) for density information.
     name: silentpush-density-lookup
     arguments:
     - name: qtype
@@ -708,7 +708,7 @@ script:
       description: The name server (NS) for the query result.
       type: String
   - deprecated: false
-    description: Scores a list of Domain addresses
+    description: Scores a list of Domain addresses.
     name: silentpush-domain-risk-score
     arguments:
     - name: domains
@@ -728,7 +728,7 @@ script:
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
-    description: performs a forward PADNS lookup using various filtering parameters.
+    description: Performs a forward PADNS lookup using various filtering parameters.
     name: silentpush-forward-padns-lookup
     arguments:
     - name: first_seen_after
@@ -965,7 +965,7 @@ script:
       description: The maximum age (in hours) of the listings, indicating how recent the flagged IPs/domains are.
       type: Number
   - deprecated: false
-    description: retrieves Autonomous System Numbers (ASNs) associated with a domain.
+    description: Retrieves Autonomous System Numbers (ASNs) associated with a domain.
     name: silentpush-get-asns-for-domain
     arguments:
     - name: domain
@@ -988,7 +988,7 @@ script:
       description: Dictionary of Autonomous System Numbers (ASNs) associated with the domain.
       type: Unknown
   - deprecated: false
-    description: 'runs the threat check on the specified '
+    description: Runs the threat check on the specified export type.
     name: silentpush-get-data-exports
     arguments:
     - name: export_type
@@ -1029,7 +1029,7 @@ script:
       description: The type of the report file.
       type: String
   - deprecated: false
-    description: get certificate data collected from domain scanning.
+    description: Get certificate data collected from domain scanning.
     name: silentpush-get-domain-certificates
     arguments:
     - name: prefer
@@ -1169,7 +1169,7 @@ script:
       description: Status of the job.
       type: String
   - deprecated: false
-    description: retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
+    description: Retrieves comprehensive enrichment information for a given resource (domain, IPv4, or IPv6).
     name: silentpush-get-enrichment-data
     arguments:
     - name: resource
@@ -1663,7 +1663,7 @@ script:
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
-    description: retrieves the reputation information for an IPv4.
+    description: Retrieves the reputation information for an IPv4.
     name: silentpush-get-ipv4-reputation
     arguments:
     - name: ipv4
@@ -1701,7 +1701,7 @@ script:
       description: The number of domain names linked to this IP that are flagged or listed in security threat databases.
       type: Number
   - deprecated: false
-    description: retrieves historical reputation data for a specified nameserver,including reputation scores and optional detailed calculation information.
+    description: Retrieves historical reputation data for a specified nameserver, including reputation scores and optional detailed calculation information.
     name: silentpush-get-nameserver-reputation
     arguments:
     - name: nameserver
@@ -1742,7 +1742,7 @@ script:
       description: Number of domains listed in reputation databases.
       type: Number
   - deprecated: false
-    description: retrieves the reputation history for a specific subnet.
+    description: Retrieves the reputation history for a specific subnet.
     name: silentpush-get-subnet-reputation
     arguments:
     - name: subnet
@@ -2090,7 +2090,7 @@ script:
       description: timeline of {ip, first_seen, last_seen}.
       type: Unknown
   - deprecated: false
-    description: Scores a list of IPv4 addresses
+    description: Scores a list of IPv4 addresses.
     name: silentpush-ipv4-risk-score
     arguments:
     - name: ips
@@ -2110,7 +2110,7 @@ script:
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
-    description: Scores a list of IPv6 addresses
+    description: Scores a list of IPv6 addresses.
     name: silentpush-ipv6-risk-score
     arguments:
     - name: ips
@@ -2130,7 +2130,7 @@ script:
       description: The age of the domain in days.
       type: Unknown
   - deprecated: false
-    description: scan a URL to retrieve hosting metadata.
+    description: Scan a URL to retrieve hosting metadata.
     name: silentpush-live-url-scan
     arguments:
     - name: url
@@ -2444,7 +2444,7 @@ script:
       description: List of ssdeep fuzzy hashes of JavaScript files.
       type: Unknown
   - deprecated: false
-    description: searches passive DNS data for records matching both query and answer.
+    description: Searches passive DNS data for records matching both query and answer.
     name: silentpush-multi-conditional-padns-lookup
     arguments:
     - name: first_seen_after
@@ -2629,7 +2629,7 @@ script:
       description: The type of the DNS record (e.g., NS).
       type: String
   - deprecated: false
-    description: retry another command which returned a Job ID
+    description: Retry another command which returned a Job ID.
     name: silentpush-retry-job
     arguments:
     - name: job_id
@@ -2640,7 +2640,7 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: retrieve reverse Passive DNS data for specific DNS record types.
+    description: Retrieve reverse Passive DNS data for specific DNS record types.
     name: silentpush-reverse-padns-lookup
     arguments:
     - name: first_seen_after
@@ -2783,7 +2783,7 @@ script:
       description: The type of the DNS record (e.g., NS).
       type: String
   - deprecated: false
-    description: 'runs the threat check on the specified '
+    description: Runs the threat check on the specified resource.
     name: silentpush-run-threat-check
     arguments:
     - name: data
@@ -2815,7 +2815,7 @@ script:
       description: The original value that was checked.
       type: String
   - deprecated: false
-    description: search for domains with optional filters.
+    description: Search for domains with optional filters.
     name: silentpush-search-domains
     arguments:
     - name: first_seen_after
@@ -3057,7 +3057,7 @@ script:
       description: timeline of {ip, first_seen, last_seen}.
       type: Unknown
   - deprecated: false
-    description: search Silent Push scan data repositories using SPQL queries.
+    description: Search Silent Push scan data repositories using SPQL queries.
     name: silentpush-search-scan-data
     arguments:
     - name: query
@@ -3290,7 +3290,7 @@ script:
       description: The URL scanned.
       type: String
   - deprecated: false
-    description: List all the TLP Reports
+    description: List all the TLP Reports.
     name: silentpush-tlp-reports
     arguments:
     - name: order
@@ -3313,7 +3313,7 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: get Whois information
+    description: Get Whois information.
     name: silentpush-whois
     arguments:
     - name: domain
