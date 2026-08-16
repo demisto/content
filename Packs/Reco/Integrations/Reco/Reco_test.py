@@ -224,6 +224,54 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
     assert len(incidents) == 0
 
 
+def test_fetch_incidents_paginates_a_burst_without_skipping(requests_mock, reco_client: RecoClient) -> None:
+    """A page as large as max_fetch must not advance lastRun; the next cycle resumes via
+    startIndex instead, so a burst larger than max_fetch is drained over multiple cycles
+    rather than the excess being permanently skipped."""
+    created_at = datetime.datetime.now().strftime(TIME_FORMAT)
+    page_1_ids = [str(uuid.uuid4()), str(uuid.uuid4())]
+    page_2_ids = [str(uuid.uuid4())]
+
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list",
+        [
+            {"json": build_alerts_list_response(page_1_ids)},
+            {"json": build_alerts_list_response(page_2_ids)},
+        ],
+    )
+    for alert_id in page_1_ids + page_2_ids:
+        requests_mock.get(
+            f"{DUMMY_RECO_API_DNS_NAME}/external-api/alert-details/{alert_id}",
+            json=build_alert_detail(alert_id, INCIDENT_DESCRIPTION, 30, created_at),
+        )
+
+    last_run, incidents = fetch_incidents(reco_client=reco_client, last_run={}, max_fetch=2)
+
+    assert len(incidents) == 2
+    assert last_run["startIndex"] == 2
+    assert last_run["lastRun"] is None
+
+    last_run, incidents = fetch_incidents(reco_client=reco_client, last_run=last_run, max_fetch=2)
+
+    assert len(incidents) == 1
+    assert last_run["startIndex"] == 0
+    assert last_run["lastRun"] is not None
+
+
+def test_get_alerts_sorts_ascending_and_forwards_pagination(requests_mock, reco_client: RecoClient) -> None:
+    """get_alerts must request ascending createdAt order and forward start_index/count, so
+    resuming a burst mid-window never skips or re-jumps past unfetched alerts."""
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list", json=build_alerts_list_response([]))
+
+    reco_client.get_alerts(limit=50, start_index=100)
+
+    sent_qs = requests_mock.last_request.qs
+    assert sent_qs["sortby"] == ["createdat"]
+    assert sent_qs["sortorder"] == ["ascending"]
+    assert sent_qs["startindex"] == ["100"]
+    assert sent_qs["count"] == ["50"]
+
+
 def test_fetch_incidents_without_assets_info(requests_mock, reco_client: RecoClient) -> None:
     created_at = datetime.datetime.now().strftime(TIME_FORMAT)
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list", json=build_alerts_list_response([ALERT_ID]))

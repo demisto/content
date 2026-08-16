@@ -137,11 +137,17 @@ class RecoClient(BaseClient):
         filters: str = "",
         count: int = PAGE_SIZE,
         start_index: int = 0,
+        sort_by: str = "",
+        sort_order: str = "",
     ) -> dict[str, Any]:
-        """GET /external-api/{endpoint} with SCIM filter and pagination params."""
+        """GET /external-api/{endpoint} with SCIM filter, sort, and pagination params."""
         params: dict[str, Any] = {"count": count, "startIndex": start_index}
         if filters:
             params["filters"] = filters
+        if sort_by:
+            params["sortBy"] = sort_by
+        if sort_order:
+            params["sortOrder"] = sort_order
         return self._rate_limited_request(
             method="GET",
             url_suffix=f"{EXTERNAL_API_BASE}/{endpoint}",
@@ -213,11 +219,16 @@ class RecoClient(BaseClient):
         before: datetime | None = None,
         after: datetime | None = None,
         limit: int = PAGE_SIZE,
+        start_index: int = 0,
     ) -> list[dict[str, Any]]:
-        """List threat alerts via the external API.
+        """List threat alerts via the external API, oldest first.
 
         risk_levels: list of severity names, e.g. ["HIGH", "CRITICAL"].  Multiple
         values are combined with OR so a single call fetches all matching severities.
+
+        Sorted ascending by createdAt (rather than the API's default descending order) so
+        that fetch_incidents can page through a burst via `start_index` without ever
+        skipping alerts, regardless of how many share the same fetch window.
         """
         filter_parts: list[str] = []
 
@@ -240,7 +251,14 @@ class RecoClient(BaseClient):
         demisto.debug(f"get_alerts SCIM filter: {scim_filter!r}")
 
         try:
-            response = self._external_api_list("alerts/list", filters=scim_filter, count=limit)
+            response = self._external_api_list(
+                "alerts/list",
+                filters=scim_filter,
+                count=limit,
+                start_index=start_index,
+                sort_by="createdAt",
+                sort_order="ascending",
+            )
             alerts = response.get("alerts", [])
             demisto.info(f"get_alerts: fetched {len(alerts)} alerts (total={response.get('totalResults', '?')})")
             return alerts
@@ -893,12 +911,14 @@ def get_alerts(
     before: datetime | None = None,
     after: datetime | None = None,
     limit: int = PAGE_SIZE,
-) -> list[Any]:
+    start_index: int = 0,
+) -> tuple[list[Any], int]:
     """Fetch alert summaries then enrich each with full detail (policy violations).
 
-    Returns a list of ThreatAlertDetail dicts from the external API.
+    Returns the enriched ThreatAlertDetail dicts alongside the raw page size, so callers
+    can tell whether the page was truncated by `limit` (more alerts may remain).
     """
-    raw_alerts = reco_client.get_alerts(risk_levels, source, before, after, limit)
+    raw_alerts = reco_client.get_alerts(risk_levels, source, before, after, limit, start_index)
     alerts_data: list[Any] = []
 
     for raw in raw_alerts:
@@ -925,7 +945,7 @@ def get_alerts(
             demisto.error(f"Failed to enrich alert {alert_id}: {str(e)}")
 
     demisto.info(f"get_alerts: enriched {len(alerts_data)}/{len(raw_alerts)} alerts")
-    return alerts_data
+    return alerts_data, len(raw_alerts)
 
 
 # --- Score mapping ---
@@ -1017,8 +1037,9 @@ def fetch_incidents(
     last_run_time = last_run.get("lastRun", None)
     if last_run_time is not None:
         after = dateutil.parser.parse(last_run_time)
+    start_index = last_run.get("startIndex", 0)
 
-    alerts = get_alerts(reco_client, risk_levels, source, before, after, max_fetch)
+    alerts, raw_page_size = get_alerts(reco_client, risk_levels, source, before, after, max_fetch, start_index)
     incidents = parse_alerts_to_incidents(alerts)
 
     existing_incidents = last_run.get("incident_ids", [])
@@ -1029,12 +1050,22 @@ def fetch_incidents(
         and (incident.get("dbotMirrorId", None) not in existing_incidents)
     ]
 
-    incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
-    if incidents_sorted:
-        last_occurred_dt = dateutil.parser.parse(incidents_sorted[-1]["occurred"])
-        next_run["lastRun"] = (last_occurred_dt + timedelta(seconds=1)).strftime(DEMISTO_OCCURRED_FORMAT)
+    if raw_page_size < max_fetch:
+        # The window is fully drained - safe to advance the timestamp cursor.
+        incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
+        if incidents_sorted:
+            last_occurred_dt = dateutil.parser.parse(incidents_sorted[-1]["occurred"])
+            next_run["lastRun"] = (last_occurred_dt + timedelta(seconds=1)).strftime(DEMISTO_OCCURRED_FORMAT)
+        else:
+            next_run["lastRun"] = last_run_time
+        next_run["startIndex"] = 0
     else:
+        # The page was full - more alerts may remain in this window. Keep lastRun in place
+        # and resume from start_index next cycle, so a burst larger than max_fetch is
+        # drained over multiple cycles instead of the excess being permanently skipped.
         next_run["lastRun"] = last_run_time
+        next_run["startIndex"] = start_index + raw_page_size
+
     next_run["incident_ids"] = existing_incidents + [inc["dbotMirrorId"] for inc in incidents]
 
     return next_run, incidents
