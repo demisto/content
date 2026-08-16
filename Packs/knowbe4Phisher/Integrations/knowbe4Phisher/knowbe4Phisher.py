@@ -277,6 +277,7 @@ FETCH_WITHOUT_EVENTS = """query {{
       }}
       pipelineStatus
       rawUrl
+      reportedAt
       reportedBy
       rules {{
         createdAt
@@ -403,10 +404,7 @@ def test_module(client: Client) -> str:
             client=client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time, max_fetch=fetch_limit, look_back=0
         )
 
-        if incidents:
-            return "ok"
-        else:
-            return "no data in the system, but connection looks ok"
+        return "ok"
     except Exception as e:
         if "Unauthorized" in str(e):
             return "Authorization Error: make sure API Key was set correctly"
@@ -681,8 +679,11 @@ def fetch_incidents(
     for message in messages:
         events = message.get("events", {})
         creation_time = get_created_time(events)
-        # cursor field must stay in DATE_FORMAT for the SDK lookback helpers
-        message["created_at_cursor"] = creation_time if creation_time else start_fetch_time
+        # cursor uses reportedAt so it stays coherent with the reported_at Lucene query field —
+        # using createdAt (set after ingestion) caused a gap where reported_at < createdAt
+        # meant some messages fell behind the cursor start and were permanently missed
+        reported_at = message.get("reportedAt") or creation_time or start_fetch_time
+        message["created_at_cursor"] = reported_at
         message["created at"] = arg_to_datetime(creation_time).isoformat() if creation_time else start_fetch_time  # type: ignore
         message.pop("events", None)
 
