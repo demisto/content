@@ -841,7 +841,9 @@ script:
         Note: Supported for content type page only. To retrieve the ancestor_id, execute the confluence-cloud-content-search command using the query="type=page" argument.
       name: ancestor_id
     name: confluence-cloud-content-create
+    deprecated: true
     description: |-
+      Deprecated. Use confluence-cloud-page-create or confluence-cloud-blogpost-create instead.
       Creates a page or blogpost for a given space.
       Note: To view the expansion of content properties, execute the confluence-cloud-content-list and confluence-cloud-content-search commands.
     outputs:
@@ -1128,7 +1130,9 @@ script:
       - page
       - blogpost
     name: confluence-cloud-comment-create
+    deprecated: true
     description: |-
+      Deprecated. Use confluence-cloud-footer-comment-create instead.
       Creates a comment for the given content.
       Note: To view the expansion of the content properties, execute the confluence-cloud-content-list and confluence-cloud-content-search commands.
     outputs:
@@ -1415,7 +1419,8 @@ script:
       isArray: true
       name: expand
     name: confluence-cloud-space-list
-    description: Returns a list of all Confluence spaces.
+    deprecated: true
+    description: Deprecated. Use confluence-cloud-space-listv2 instead. Returns a list of all Confluence spaces.
     outputs:
     - contextPath: ConfluenceCloud.Space.id
       description: ID of the space.
@@ -1617,8 +1622,9 @@ script:
         Note: To separate multiple values, use commas. Expanded properties will be populated in context data only.
       isArray: true
       name: expand
-    description: Returns the list of content of Confluence.
+    description: Deprecated. Use confluence-cloud-page-list or confluence-cloud-blogpost-list instead. Returns the list of content of Confluence.
     name: confluence-cloud-content-list
+    deprecated: true
     outputs:
     - contextPath: ConfluenceCloud.Content.id
       description: The ID of the content.
@@ -1841,11 +1847,13 @@ script:
       - permanent delete
       - permanent delete draft
     description: |-
+      Deprecated. Use confluence-cloud-page-delete or confluence-cloud-blogpost-delete instead.
       Delete the content depending on the content's type and status.
 
       Note: If the content's type is page or blogpost, it should be moved to trash before deleting permanently.
     execution: true
     name: confluence-cloud-content-delete
+    deprecated: true
   - arguments:
     - description: The ID of the content to be updated.
       name: content_id
@@ -1908,9 +1916,11 @@ script:
       - editor2
       - anonymous_export_view
     description: |-
+      Deprecated. Use confluence-cloud-page-update or confluence-cloud-blogpost-update instead.
       Update the existing content with new content.
       Note: Updating draft content is currently not supported.
     name: confluence-cloud-content-update
+    deprecated: true
     outputs:
     - contextPath: ConfluenceCloud.Content.id
       description: The ID of the content.
@@ -2576,8 +2586,9 @@ script:
     - description: The ID of the Content that should be retrieved.
       name: content_id
       required: true
-    description: Retrieves a Content Item by its Content ID.
+    description: Deprecated. Use confluence-cloud-page-list or confluence-cloud-blogpost-list instead. Retrieves a Content Item by its Content ID.
     name: confluence-cloud-content-get
+    deprecated: true
     outputs:
     - contextPath: ConfluenceCloud.Content.id
       description: The content ID.
