@@ -6307,9 +6307,8 @@ def is_command_in_scope(command_name: str) -> bool:
 def load_raw_yml_commands() -> list[dict]:
     """Load Azure.yml and return its command list exactly as declared.
 
-    Args:
-        None. The yml path is derived from this test file's own location, so the
-        result does not depend on the current working directory.
+    Use the ``raw_yml_commands`` fixture rather than calling this directly, so Azure.yml
+    is read and parsed only once for the whole module.
 
     Returns:
         list[dict]: Every command definition in the yml, with no filtering applied.
@@ -6320,29 +6319,28 @@ def load_raw_yml_commands() -> list[dict]:
     return yml_content.get("script", {}).get("commands") or []
 
 
-def load_deprecated_command_names() -> set[str]:
-    """Return the names of the commands marked ``deprecated: true`` in Azure.yml.
+def select_deprecated_command_names(raw_commands: list[dict]) -> set[str]:
+    """Return the names of the commands marked ``deprecated: true``.
 
     Deprecated commands are excluded from the wiring tests, but they are still routed
     in main(), so the names are needed to keep test_dispatch_commands_exist_in_yml from
     reporting them as undocumented.
 
     Args:
-        None.
+        raw_commands (list[dict]): The unfiltered yml command list.
 
     Returns:
         set[str]: The names of every command whose yml definition sets
             ``deprecated: true`` at the command level.
     """
-    return {command["name"] for command in load_raw_yml_commands() if command.get("deprecated") is True}
+    return {command["name"] for command in raw_commands if command.get("deprecated") is True}
 
 
-def load_yml_commands() -> dict[str, dict]:
-    """Load Azure.yml and return the in-scope commands keyed by command name.
+def select_in_scope_commands(raw_commands: list[dict]) -> dict[str, dict]:
+    """Return the in-scope commands keyed by command name.
 
     Args:
-        None. The yml path is derived from this test file's own location, so the
-        result does not depend on the current working directory.
+        raw_commands (list[dict]): The unfiltered yml command list.
 
     Returns:
         dict[str, dict]: Mapping of command name to the raw yml command definition
@@ -6353,7 +6351,7 @@ def load_yml_commands() -> dict[str, dict]:
     """
     return {
         command["name"]: command
-        for command in load_raw_yml_commands()
+        for command in raw_commands
         if is_command_in_scope(command.get("name", "")) and command.get("deprecated") is not True
     }
 
@@ -6665,15 +6663,25 @@ def extract_fallback_prefix(handler_name: str, symbol_index: dict[str, ast.Funct
 
 
 @pytest.fixture(scope="module")
-def yml_commands() -> dict[str, dict]:
-    """The in-scope, non-deprecated commands declared in Azure.yml, keyed by command name."""
-    return load_yml_commands()
+def raw_yml_commands() -> list[dict]:
+    """Every command declared in Azure.yml, unfiltered.
+
+    Azure.yml is read and parsed here once per module, and every other yml-derived
+    fixture is built from this one rather than re-reading the file.
+    """
+    return load_raw_yml_commands()
 
 
 @pytest.fixture(scope="module")
-def deprecated_commands() -> set[str]:
+def yml_commands(raw_yml_commands: list[dict]) -> dict[str, dict]:
+    """The in-scope, non-deprecated commands declared in Azure.yml, keyed by command name."""
+    return select_in_scope_commands(raw_yml_commands)
+
+
+@pytest.fixture(scope="module")
+def deprecated_commands(raw_yml_commands: list[dict]) -> set[str]:
     """The names of the commands marked deprecated in Azure.yml."""
-    return load_deprecated_command_names()
+    return select_deprecated_command_names(raw_yml_commands)
 
 
 @pytest.fixture(scope="module")
@@ -6700,10 +6708,12 @@ def symbol_index(py_tree: ast.Module) -> dict[str, ast.FunctionDef]:
 # ---------------------------------------------------------------------------
 
 
-def test_py_read_arguments_are_declared_in_yml(yml_commands, dispatch_map, symbol_index):
+def test_py_read_arguments_are_declared_in_yml(yml_commands, raw_yml_commands, dispatch_map, symbol_index):
     """
     Given:
         - yml_commands (dict[str, dict]): The arguments declared for each in-scope command in Azure.yml.
+        - raw_yml_commands (list[dict]): Every command in the yml, used to resolve arguments
+          declared only by a deprecated sibling that shares a handler.
         - dispatch_map (dict[str, str]): The handler each command is routed to.
         - symbol_index (dict[str, ast.FunctionDef]): Used to resolve the handler and its direct callees.
     When:
@@ -6732,7 +6742,7 @@ def test_py_read_arguments_are_declared_in_yml(yml_commands, dispatch_map, symbo
     # This spans the raw yml rather than the filtered map, so an argument kept only for
     # a deprecated sibling still counts as declared for the handler they share.
     declared_per_handler: dict[str, set[str]] = {}
-    for command in load_raw_yml_commands():
+    for command in raw_yml_commands:
         handler_name = dispatch_map.get(command.get("name", ""))
         if handler_name is None:
             continue
@@ -6912,11 +6922,13 @@ def test_command_output_prefixes_are_wired(yml_commands, dispatch_map, symbol_in
 # ---------------------------------------------------------------------------
 
 
-def test_load_yml_commands_is_not_vacuous(yml_commands):
+def test_select_in_scope_commands_is_not_vacuous(yml_commands, raw_yml_commands, deprecated_commands):
     """
     Given:
-        - yml_commands (dict[str, dict]): The result of load_yml_commands(), which reads
-          the real Azure.yml and filters out both out-of-scope and deprecated commands.
+        - yml_commands (dict[str, dict]): The result of select_in_scope_commands() over the
+          real Azure.yml, which filters out both out-of-scope and deprecated commands.
+        - raw_yml_commands (list[dict]): The same yml before any filtering.
+        - deprecated_commands (set[str]): The names the yml marks deprecated.
     When:
         - The loaded map is compared against the raw command list in Azure.yml.
     Then:
@@ -6928,24 +6940,22 @@ def test_load_yml_commands_is_not_vacuous(yml_commands):
           the wiring tests inspect are present rather than skipped over.
     """
     # Given: the raw, unfiltered command list straight from the yml
-    raw_commands = load_raw_yml_commands()
-    raw_names = {command["name"] for command in raw_commands}
+    raw_names = {command["name"] for command in raw_yml_commands}
     out_of_scope_names = {name for name in raw_names if not is_command_in_scope(name)}
-    deprecated_names = load_deprecated_command_names()
 
-    # When / Then: the loader returned something for the other tests to work on
-    assert yml_commands, f"load_yml_commands() returned no commands - is {YML_PATH.name} readable and non-empty?"
+    # When / Then: the selector returned something for the other tests to work on
+    assert yml_commands, f"select_in_scope_commands() returned no commands - is {YML_PATH.name} readable and non-empty?"
 
     # Then: both filters kept the right commands and dropped the wrong ones
     assert out_of_scope_names, (
         "Azure.yml no longer declares any out-of-scope commands, so this test can no "
         "longer prove that is_command_in_scope filtering is applied."
     )
-    assert deprecated_names, (
+    assert deprecated_commands, (
         "Azure.yml no longer declares any deprecated commands, so this test can no "
         "longer prove that deprecated commands are filtered out."
     )
-    assert set(yml_commands) == raw_names - out_of_scope_names - deprecated_names
+    assert set(yml_commands) == raw_names - out_of_scope_names - deprecated_commands
 
     # Then: the definitions kept their arguments and outputs, which the wiring tests
     # below silently skip when absent
