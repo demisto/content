@@ -1724,6 +1724,12 @@ script:
     - contextPath: CheckPoint.AccessRule.type
       description: Object type.
       type: String
+    - contextPath: CheckPoint.AccessRule.ipv4-address
+      description: IPv4 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.ipv6-address
+      description: IPv6 address of the specified object.
+      type: String
     - contextPath: CheckPoint.AccessRule.domain-name
       description: Domain name.
       type: String
@@ -1736,6 +1742,12 @@ script:
     - contextPath: CheckPoint.AccessRule.last-modifier
       description: The user that last modified the object.
       type: String
+    - contextPath: CheckPoint.AccessRule.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.AccessRule.groups
+      description: Collection of group identifiers.
+      type: Unknown
   - arguments:
     - description: The rule name or rule number.
       name: identifier
