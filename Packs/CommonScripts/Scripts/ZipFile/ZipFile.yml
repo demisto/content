@@ -7,7 +7,7 @@ args:
   name: zipName
 - description: 'Used to create a password protected zip file. Example: password="abcd".'
   name: password
-comment: Zip a file and upload to war room.
+comment: Zip a file and upload it to the War Room.
 commonfields:
   id: ZipFile
   version: -1
