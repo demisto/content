@@ -287,6 +287,9 @@ script:
         - contextPath: Vega.AlertEvents.Cached
           description: Whether the response was served from cached incident data.
           type: Boolean
+        - contextPath: Vega.AlertEvents.Events
+          description: The alert events returned in the current page.
+          type: Unknown
         - contextPath: Vega.AlertEvents.CustomFields
           description: Incident custom fields to persist for the Alert Events layout section.
           type: Unknown
