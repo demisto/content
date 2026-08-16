@@ -3623,9 +3623,11 @@ def list_blocked_senders_policies_command(args: dict) -> CommandResults:
         pageToken=args.get("next_token"),
         pageSize=arg_to_number(args.get("page_size")),
     )
+    limit = arg_to_number(args.get("limit")) or 50
 
     response = http_request("GET", BLOCKED_SENDERS_V2_ENDPOINT, params=params)
     policies = response.get("policies", [])
+    policies = policies[:limit]
     next_token = (response.get("meta") or {}).get("nextPage")
     demisto.debug(f"Got {len(policies)} blocked-senders policies, nextPage={next_token!r}")
 

@@ -2625,7 +2625,7 @@ script:
     - name: page_size
       description: Sets the result to start returning results. Default value is '50'.
     - name: limit
-      description: The maximum number of results to return. Not supported when policyType is blockedsenders.
+      description: The maximum number of results to return.
       defaultValue: 50
     - name: next_token
       description: Pagination token for requesting the next page. Only applicable when policyType is blockedsenders.
