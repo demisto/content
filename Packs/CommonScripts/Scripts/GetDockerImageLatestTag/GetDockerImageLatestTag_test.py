@@ -208,3 +208,41 @@ def test_find_latest_tag_by_date_filters_att_and_sbom_tags():
     tags = [att_tag, sbom_tag] + MOCK_TAG_LIST
     tag = find_latest_tag_by_date(tags)
     assert tag == "1.0.0.2876"
+
+
+def test_lexical_find_latest_tag_all_tags_filtered():
+    """When every tag is a non-runnable artifact, an empty string is returned (no IndexError)."""
+    tag_list = [
+        "sha256-0535a854557dc43a03595eb7ef1625f79896e9d3e8da67b9ed17362546c80c0b.sig",
+        "sha256-abcdef1234567890.att",
+        "sha256-abcdef1234567890.sbom",
+    ]
+    assert lexical_find_latest_tag(tag_list) == ""
+
+
+def test_lexical_find_latest_tag_empty_list():
+    """An empty tag list must return an empty string rather than raising IndexError."""
+    assert lexical_find_latest_tag([]) == ""
+
+
+def test_lexical_find_latest_tag_keeps_tag_containing_suffix():
+    """A non-numeric tag that only contains an artifact suffix must still be returned."""
+    assert lexical_find_latest_tag(["my.sig.image"]) == "my.sig.image"
+
+
+def test_find_latest_tag_by_date_handles_missing_name():
+    """Tags with a missing or non-string name must be skipped without raising."""
+    tags = [{"last_updated": "2026-08-05T17:49:28.179522Z"}, {"name": None, "last_updated": "2026-08-05T17:49:28.179522Z"}]
+    tags = tags + MOCK_TAG_LIST
+    assert find_latest_tag_by_date(tags) == "1.0.0.2876"
+
+
+def test_find_latest_tag_by_date_handles_bad_last_updated():
+    """Tags with a missing or unparsable last_updated must be skipped without raising."""
+    tags = [
+        {"name": "9.9.9.9999", "last_updated": None},
+        {"name": "8.8.8.8888", "last_updated": "not-a-date"},
+        {"name": "7.7.7.7777"},
+    ]
+    tags = tags + MOCK_TAG_LIST
+    assert find_latest_tag_by_date(tags) == "1.0.0.2876"
