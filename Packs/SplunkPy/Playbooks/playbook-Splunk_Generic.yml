@@ -487,6 +487,7 @@ tasks:
       version: -1
     taskid: ff1b9850-ef10-4d42-80e3-39b72d8d01f8
     timertriggers: []
+    skipunavailable: true
     type: regular
     view: |-
       {
