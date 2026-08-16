@@ -31,6 +31,7 @@ from AnthropicClaude import (
     resolve_org_uuid,
     ensure_compliance_key,
     ensure_api_key,
+    main,
 )
 
 BASE_URL = "https://api.anthropic.com/"
@@ -355,6 +356,42 @@ def test_test_module_compliance_other_error_raises(mocker):
         module_test_compliance(client)
 
 
+def test_test_module_builds_compliance_client_under_ucp_without_param(mocker):
+    """Regression: under UCP the Compliance Access Key is brokered by the platform, so it is absent
+    from demisto.params(). test-module must still build and test the ComplianceClient — gating on the
+    legacy param alone would report 'No credentials configured' on a correct UCP setup."""
+    import AnthropicClaude
+
+    mocker.patch.object(AnthropicClaude.demisto, "command", return_value="test-module")
+    mocker.patch.object(AnthropicClaude.demisto, "params", return_value={"url": BASE_URL})
+    mocker.patch.object(AnthropicClaude.demisto, "args", return_value={})
+    mocker.patch.object(AnthropicClaude, "should_use_ucp_auth", return_value=True)
+    mocker.patch.object(AnthropicClaude, "module_test_compliance", return_value="ok")
+    return_results = mocker.patch.object(AnthropicClaude, "return_results")
+    return_error = mocker.patch.object(AnthropicClaude, "return_error")
+
+    main()
+
+    return_error.assert_not_called()
+    return_results.assert_called_once_with("ok")
+
+
+def test_test_module_no_credentials_without_ucp_and_no_keys(mocker):
+    """Without UCP and with neither key configured, test-module still reports 'No credentials configured'."""
+    import AnthropicClaude
+
+    mocker.patch.object(AnthropicClaude.demisto, "command", return_value="test-module")
+    mocker.patch.object(AnthropicClaude.demisto, "params", return_value={"url": BASE_URL})
+    mocker.patch.object(AnthropicClaude.demisto, "args", return_value={})
+    mocker.patch.object(AnthropicClaude, "should_use_ucp_auth", return_value=False)
+    return_error = mocker.patch.object(AnthropicClaude, "return_error")
+
+    main()
+
+    return_error.assert_called_once()
+    assert "No credentials configured" in return_error.call_args[0][0]
+
+
 """ ADDITIONAL EVENT COLLECTOR TESTS """
 
 
@@ -497,6 +534,48 @@ def make_response(status_code: int, body: dict | None = None):
     response.status_code = status_code
     response._content = json.dumps(body).encode() if body is not None else b""
     return response
+
+
+class _FakeUcpContext:
+    """Minimal stand-in for UcpRequestContext: the hook only mutates ``headers``."""
+
+    def __init__(self):
+        self.headers: dict = {}
+
+
+def test_apply_ucp_api_key_sets_x_api_key_header():
+    """The UCP hook places the brokered key in the x-api-key header (not Authorization)."""
+    client = build_client()
+    ctx = _FakeUcpContext()
+
+    client._apply_ucp_api_key({"api_key": {"key": "sk-ant-api01-ucp"}}, ctx)
+
+    assert ctx.headers["x-api-key"] == "sk-ant-api01-ucp"
+    assert "Authorization" not in ctx.headers
+
+
+def test_apply_ucp_api_key_empty_key_raises():
+    """An empty UCP credential surfaces a clear error rather than a silent unauthenticated call."""
+    client = build_client()
+    with pytest.raises(DemistoException):
+        client._apply_ucp_api_key({"api_key": {"key": ""}}, _FakeUcpContext())
+
+
+def test_init_skips_legacy_header_under_ucp(mocker):
+    """Under UCP the legacy x-api-key header is not built at construction (key is brokered)."""
+    mocker.patch("AnthropicClaude.should_use_ucp_auth", return_value=True)
+    client = ComplianceClient(url=BASE_URL, api_key="sk-ant-api01-legacy", proxy=False, verify=False)
+
+    assert "x-api-key" not in client.headers
+    assert client.headers["accept"] == "application/json"
+
+
+def test_init_builds_legacy_header_without_ucp(mocker):
+    """Without UCP the legacy x-api-key header is built from the configured param."""
+    mocker.patch("AnthropicClaude.should_use_ucp_auth", return_value=False)
+    client = ComplianceClient(url=BASE_URL, api_key="sk-ant-api01-legacy", proxy=False, verify=False)
+
+    assert client.headers["x-api-key"] == "sk-ant-api01-legacy"
 
 
 def test_http_delete_retries_on_rate_limit(mocker):
