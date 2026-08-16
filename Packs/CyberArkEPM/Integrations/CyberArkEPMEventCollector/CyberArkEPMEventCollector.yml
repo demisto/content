@@ -26,19 +26,19 @@ configuration:
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'The CyberArk Identity FQDN, e.g. https://&lt;sub-domain&gt;.id.cyberark.cloud. Required for Idira OAuth authentication only. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'
+- additionalinfo: 'The CyberArk Identity FQDN, e.g. https://<sub-domain>.id.cyberark.cloud. Required for Idira OAuth authentication only. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'  
   display: Identity URL
   name: identity_url
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'The registered OAuth2 web-app identifier in CyberArk Identity Administration, used as a URL path segment on the token endpoint (/oauth2/token/&lt;web_app_id&gt;). Required for Idira OAuth authentication only.'
+- additionalinfo: 'The registered OAuth2 web-app identifier in CyberArk Identity Administration, used as a URL path segment on the token endpoint (/oauth2/token/<web_app_id>). Required for Idira OAuth authentication only.'  
   display: Web App ID
   name: web_app_id
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'The server URL. Required for OAuth 2.0 only. For example: https://example.epm.cyberark.com/.'
+- additionalinfo: 'The Server URL. Required for OAuth 2.0 only. For example: https://example.epm.cyberark.com/.'  
   display: Server URL (only for Idira Oauth)
   name: server_url
   required: false

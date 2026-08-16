@@ -335,7 +335,7 @@ def test_get_events_command(requests_mock, event_type):
     Then:
         - Validates that the function works as expected.
     """
-    from CyberArkEPMEventCollector import OUTPUTS_PREFIX, create_last_run, get_events_command
+    from CyberArkEPMEventCollector import Config, create_last_run, get_events_command
 
     from CommonServerPython import string_to_table_header
 
@@ -347,7 +347,7 @@ def test_get_events_command(requests_mock, event_type):
     assert len(events) == 6
     assert string_to_table_header(event_type) in command_results.readable_output
     assert command_results.outputs == events
-    assert command_results.outputs_prefix == OUTPUTS_PREFIX[event_type]
+    assert command_results.outputs_prefix == Config.OUTPUTS_PREFIX[event_type]
 
 
 def test_fetch_events(requests_mock):
@@ -620,7 +620,7 @@ def test_oauth_token_expires_in_as_string_is_handled(mocker, requests_mock):
         - No TypeError is raised when computing `valid_until`.
         - The cached `valid_until` is a numeric string derived from the integer TTL.
     """
-    from CyberArkEPMEventCollector import Client, CACHE_BUFFER_SECONDS
+    from CyberArkEPMEventCollector import Client, Config
 
     saved_context: dict = {}
     mocker.patch("CyberArkEPMEventCollector.get_integration_context", side_effect=lambda: dict(saved_context))
@@ -645,5 +645,5 @@ def test_oauth_token_expires_in_as_string_is_handled(mocker, requests_mock):
     )
 
     assert client._headers["Authorization"] == "Bearer TOKEN123"
-    # valid_until = current_time (1000) + 900 - CACHE_BUFFER_SECONDS.
-    assert saved_context["valid_until"] == str(1000 + 900 - CACHE_BUFFER_SECONDS)
+    # valid_until = current_time (1000) + 900 - Config.CACHE_BUFFER_SECONDS.
+    assert saved_context["valid_until"] == str(1000 + 900 - Config.CACHE_BUFFER_SECONDS)
