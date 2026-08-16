@@ -2548,6 +2548,10 @@ script:
       name: from_date
     - description: The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       name: to_date
+    outputs:
+    - contextPath: Mimecast.BlockedSendersPolicy.id
+      description: The ID of the newly created Blocked Senders policy.
+      type: String
   - name: mimecast-update-block-sender-policy
     description: 'Updates an existing Blocked Senders policy. Only the fields you explicitly provide are sent to the API and updated, while fields you omit are left unchanged on the server. Note: this command does not set context outputs - use mimecast-get-policy to retrieve the updated policy.'
     execution: true

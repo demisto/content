@@ -1232,7 +1232,12 @@ def create_block_sender_policy_command(policy_args: dict) -> CommandResults:
     policy_id = response.get("id")
     demisto.debug(f"Created blocked-senders policy {policy_id}")
 
-    return CommandResults(readable_output=f"Policy {policy_id} was created successfully!")
+    return CommandResults(
+        readable_output=f"Policy {policy_id} was created successfully!",
+        outputs_prefix="Mimecast.BlockedSendersPolicy",
+        outputs_key_field="id",
+        outputs={"id": policy_id},
+    )
 
 
 def create_policy_command():
