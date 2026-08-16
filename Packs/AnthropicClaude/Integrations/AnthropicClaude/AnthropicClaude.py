@@ -219,7 +219,22 @@ class ComplianceClient(BaseClient):
     def __init__(self, url: str, api_key: str, proxy: bool, verify: bool):
         super().__init__(base_url=url, proxy=proxy, verify=verify)
         self.api_key = api_key
-        self.headers = {"accept": "application/json", "x-api-key": self.api_key}
+        self.headers = {"accept": "application/json"}
+        if not should_use_ucp_auth():
+            self.headers["x-api-key"] = self.api_key
+
+    def _apply_ucp_api_key(self, credentials, ctx):
+        """Place the UCP-brokered Compliance Access Key in the ``x-api-key`` header.
+
+        Overrides the BaseClient default (``Authorization: Bearer {key}``) because the Anthropic
+        Compliance API authenticates via ``x-api-key``. The key arrives under the envelope's
+        ``api_key.key`` entry (the ``api_key`` -> ``key`` alias of the UCP dispatcher).
+        """
+        api_key_data = credentials.get("api_key", credentials)
+        key = api_key_data.get("key", "")
+        if not key:
+            raise DemistoException("UCP Compliance Access Key is empty.")
+        ctx.headers["x-api-key"] = key
 
     def http_get(self, url_suffix: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
         """Performs an authenticated GET request against a Compliance API endpoint.
@@ -1179,7 +1194,9 @@ def main() -> None:  # pragma: no cover
                     results.append(test_module(client=llm_client, params=params))
                 except Exception as e:
                     raise DemistoException(f"API Key (LLM) validation failed: {e}") from e
-            if compliance_api_key:
+            # Under UCP the Compliance Access Key is brokered by the platform, not read from params,
+            # so build and test the client whenever UCP is active even though compliance_api_key is empty.
+            if should_use_ucp_auth() or compliance_api_key:
                 try:
                     compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
                     results.append(module_test_compliance(client=compliance_client))
@@ -1209,12 +1226,16 @@ def main() -> None:  # pragma: no cover
             return_results(results_obj)
 
         elif command in org_scoped_commands:
-            ensure_compliance_key(compliance_api_key)
+            # Under UCP the Compliance Access Key is brokered by the platform, not read from params.
+            if not should_use_ucp_auth():
+                ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             return_results(org_scoped_commands[command](compliance_client, args, params))
 
         elif command in compliance_commands:
-            ensure_compliance_key(compliance_api_key)
+            # Under UCP the Compliance Access Key is brokered by the platform, not read from params.
+            if not should_use_ucp_auth():
+                ensure_compliance_key(compliance_api_key)
             compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
             return_results(compliance_commands[command](compliance_client, args))
 
