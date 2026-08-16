@@ -147,11 +147,27 @@ def test_date_latest_tag():
         "1.0.0.2876",
         "2.1.2700",
         "3.12.12.7090913",
+        # Tags containing an artifact suffix that is NOT at the end must be kept.
+        "my.sig.image",
+        "my.att.image",
+        "my.sbom.image",
+        "1.0.sig.2876",
+        ".sig-build",
     ],
 )
 def test_is_runnable_tag_valid(tag):
-    """Runnable image tags must pass the filter."""
+    """Runnable image tags must pass the filter.
+
+    Includes tags that merely *contain* an artifact suffix (e.g. ``my.sig.image``)
+    to verify that ``endswith`` matching does not filter valid tags.
+    """
     assert is_runnable_tag(tag) is True
+
+
+@pytest.mark.parametrize("tag", [None, 123, "", [], {}])
+def test_is_runnable_tag_non_string(tag):
+    """Non-string or empty tag values must be rejected without raising."""
+    assert is_runnable_tag(tag) is False
 
 
 @pytest.mark.parametrize(
