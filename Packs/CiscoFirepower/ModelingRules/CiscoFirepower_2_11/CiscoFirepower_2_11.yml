@@ -1,5 +1,5 @@
 fromversion: 8.15.0
-id: CiscoFirepower_ModelingRule
+id: CiscoFirepower_modeling_rule
 name: CiscoFirepower Modeling Rule
 rules: ''
 schema: ''

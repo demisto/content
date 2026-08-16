@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: UbiquitiUnifi_ModelingRule
-name: UbiquitiUnifi Modeling Rule
+id: Ubiquiti_Unifi_ModelingRule
+name: Ubiquiti Unifi Modeling Rule
 rules: ''
 schema: ''
 tags: ''

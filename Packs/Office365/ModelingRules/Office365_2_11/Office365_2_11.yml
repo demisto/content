@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: Office365_ModelingRule
-name: Office365 Modeling Rule
+id: Office_365_ModelingRule
+name: Office 365 Modeling Rule
 rules: ''
 schema: ''
 tags: ''
