@@ -108,7 +108,6 @@ tasks:
         simple: ${inputs.ReportType}
     reputationcalc: 1
     separatecontext: false
-    skipunavailable: true
     view: |-
       {
         "position": {

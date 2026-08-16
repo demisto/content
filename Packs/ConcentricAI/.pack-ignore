@@ -1,5 +1,5 @@
 [file:ConcentricAI_Demo.yml]
-ignore=BA110,RM109,RM116
+ignore=BA110
 
 [file:ConcentricAI.yml]
 ignore=DS107

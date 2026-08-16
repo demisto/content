@@ -915,7 +915,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     continueonerrortype: ""
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1102,7 +1102,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     continueonerrortype: ""
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false

@@ -19,8 +19,5 @@
  "autorun": true,
  "disabled": false,
  "reputationCalc": 0,
- "fromVersion": "6.0.0",
- "marketplaces": [
-  "xsoar"
- ]
+ "fromVersion": "6.0.0"
 }
