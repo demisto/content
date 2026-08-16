@@ -87,6 +87,11 @@ def encode_sharing_url(share_url: str) -> str:
     """Encode a sharing URL into the token accepted by GET /shares/{token}.
 
     Per the shares API: base64url-encode, strip the '=' padding, prefix 'u!'.
+
+    The Microsoft sample spells this out as base64 followed by two explicit replacements
+    ('/' -> '_' and '+' -> '-'). urlsafe_b64encode already emits that alphabet, so the
+    replacements are performed here, not missing. See "Encoding sharing URLs":
+    https://learn.microsoft.com/en-us/graph/api/shares-get
     """
     encoded = base64.urlsafe_b64encode(share_url.encode("utf-8")).decode("utf-8")
     return f"u!{encoded.rstrip('=')}"
@@ -754,16 +759,22 @@ class MsGraphClient:
             return f"{object_type}/{object_type_id}/drive/items/{item_id}"
         raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: drives, groups, sites, users.")
 
-    def get_sharepoint_ids(self, site_id: str, item_id: str) -> dict:
+    def get_sharepoint_ids(self, site_id: str, item_id: str, drive_id: str = "") -> dict:
         """Retrieve the SharePoint identifiers of a driveItem, or {} if it exposes none.
 
         sharepointIds is not returned by a regular driveItem request, so it has to be asked
         for on its own. It carries listId and listItemUniqueId, the join keys between the
         drive world and the SharePoint list world.
+
+        Addressing is by drive whenever the drive ID is known, because
+        sites/{site-id}/drive resolves only the site's *default* document library - an item
+        in any other library, or in a user's OneDrive (what a sharing URL usually points at),
+        is not reachable that way. The site route is kept for callers that have no drive ID.
         """
+        url_suffix = f"drives/{drive_id}/items/{item_id}" if drive_id else f"sites/{site_id}/drive/items/{item_id}"
         response = self.ms_client.http_request(
             method="GET",
-            url_suffix=f"sites/{site_id}/drive/items/{item_id}",
+            url_suffix=url_suffix,
             params={"$select": "sharepointIds"},
         )
         return response.get("sharepointIds") or {}
@@ -853,12 +864,15 @@ class MsGraphClient:
         response = self.ms_client.http_request(method="GET", url_suffix=url_suffix, params=params)
 
         if include_sharepoint_ids:
-            # The lookup is site-scoped, and for the share_url and path modes the caller may
-            # not know the site ID, so take it from the response.
-            site_id = (response.get("parentReference") or {}).get("siteId")
+            # For the share_url and path modes the caller may not know where the item lives,
+            # so take both identifiers from the response. driveId is what makes the lookup
+            # work for items outside the site's default document library.
+            parent_reference = response.get("parentReference") or {}
+            site_id = parent_reference.get("siteId")
+            drive_id = parent_reference.get("driveId")
             resolved_item_id = response.get("id")
-            if site_id and resolved_item_id:
-                response["sharepointIds"] = self.get_sharepoint_ids(site_id, resolved_item_id)
+            if resolved_item_id and (drive_id or site_id):
+                response["sharepointIds"] = self.get_sharepoint_ids(site_id or "", resolved_item_id, drive_id or "")
 
         return response
 
@@ -1833,12 +1847,14 @@ def _driveitem_metadata_readable(context_entry: dict) -> str:
 
     ListItemUniqueId is surfaced alongside the plain metadata because it is the identifier
     the activities and analytics commands need, and is otherwise buried in sharepointIds.
+    DriveId is shown because the ID above it is only meaningful within that drive.
     """
     sharepoint_ids = context_entry.get("SharepointIds") or {}
     human_readable_content = {
         "ID": context_entry.get("ID"),
         "Name": context_entry.get("Name"),
         "Size": context_entry.get("Size"),
+        "DriveId": context_entry.get("DriveId"),
         "CreatedDateTime": context_entry.get("CreatedDateTime"),
         "LastModifiedDateTime": context_entry.get("LastModifiedDateTime"),
         "CreatedBy": (context_entry.get("CreatedBy") or {}).get("User", {}).get("DisplayName"),
@@ -1861,6 +1877,10 @@ def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) 
     Maps to GET /v1.0/{drive-prefix}/items/{item-id}, /root:/{item-path} or
     /shares/{encoded-sharing-url}/driveItem, depending on the addressing argument supplied.
     Exactly one is required; YAML cannot express that rule, so it is enforced here.
+
+    The returned ItemID is scoped to the drive that hosts the item, which is why DriveId is
+    surfaced next to it: a sharing URL to a personal file resolves against that user's
+    OneDrive, so its ItemID differs from the one the same file has under a site library.
     """
     addressing = resolve_item_addressing(args, allow_path=True, allow_share_url=True)
     include_sharepoint_ids = argToBoolean(args.get("include_sharepoint_ids", "false"))
@@ -1875,10 +1895,12 @@ def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) 
     )
 
     context_entry = parse_key_to_context(raw_response)
-    # SiteID is surfaced at the top level because callers need it for follow-up commands,
-    # and it is otherwise buried inside parentReference.
+    # SiteID and DriveId are surfaced at the top level because callers need them for follow-up
+    # commands, and they are otherwise buried inside parentReference. DriveId also states which
+    # drive ItemID belongs to - the two are only meaningful together.
     parent_reference = context_entry.get("ParentReference") or {}
     context_entry["SiteID"] = parent_reference.get("SiteId")
+    context_entry["DriveId"] = parent_reference.get("DriveId")
     context_entry["ItemID"] = context_entry.get("ID")
     remove_nulls_from_dictionary(context_entry)
 
@@ -1961,17 +1983,20 @@ def list_driveitem_activities_command(client: MsGraphClient, args: dict[str, str
 def _driveitem_analytics_readable(parsed_stats: dict, item_id: str, time_range: str) -> str:
     """Render the analytics table, or a plain message when no data was returned.
 
-    Only the four documented itemActivityStat facets are surfaced, and only when present,
-    so an absent facet does not become an empty row.
+    Every action facet present in the response is surfaced, so a facet Microsoft adds later
+    appears without a code change - the same approach _summarize_activity_actions takes.
+    An absent facet simply produces no row. The itemActivityStat scalars are skipped: they
+    describe the window the statistics cover, not an action.
     """
+    non_action_fields = {"StartDateTime", "EndDateTime", "IsTrending", "Incomplete"}
     readable_rows = [
         {
             "Action": action,
-            "ActionCount": (parsed_stats.get(action) or {}).get("ActionCount"),
-            "ActorCount": (parsed_stats.get(action) or {}).get("ActorCount"),
+            "ActionCount": details.get("ActionCount"),
+            "ActorCount": details.get("ActorCount"),
         }
-        for action in ("Access", "Create", "Edit", "Delete")
-        if isinstance(parsed_stats.get(action), dict)
+        for action, details in sorted(parsed_stats.items())
+        if action not in non_action_fields and isinstance(details, dict)
     ]
     if not readable_rows:
         return (

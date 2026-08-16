@@ -2056,9 +2056,11 @@ def test_assign_sensitivity_label_propagates_http_errors(mocker: MockerFixture, 
             "u!aHR0cHM6Ly9vbmVkcml2ZS5saXZlLmNvbS9yZWRpcj9yZXNpZD0xMjMxMjQ0MTkzOTEyITEyJmF1dGhLZXk9MTIwMTkxOSExMjkyMSEx",
         ),
         # A typical SharePoint sharing URL, whose base64 needs '=' padding stripped.
+        # The expected value is the base64url of the fake URL above it - derived data, not a
+        # credential. Keep a path whose encoding actually pads, or this case proves nothing.
         (
-            "https://paanalyticstestlab-my.sharepoint.com/:w:/r/personal/scohenkadosh/Documents/test.docx",
-            "u!aHR0cHM6Ly9wYWFuYWx5dGljc3Rlc3RsYWItbXkuc2hhcmVwb2ludC5jb20vOnc6L3IvcGVyc29uYWwvc2NvaGVua2Fkb3NoL0RvY3VtZW50cy90ZXN0LmRvY3g",
+            "https://contoso.sharepoint.com/:w:/r/personal/fake_user/Documents/report.docx",
+            "u!aHR0cHM6Ly9jb250b3NvLnNoYXJlcG9pbnQuY29tLzp3Oi9yL3BlcnNvbmFsL2Zha2VfdXNlci9Eb2N1bWVudHMvcmVwb3J0LmRvY3g",
         ),
         # Chosen because its raw base64 contains BOTH '+' and '/', which is what actually
         # exercises the base64url translation. Most sharing URLs never produce those
@@ -2237,12 +2239,12 @@ DRIVEITEM_METADATA_RESPONSE = {
     "id": "a9670e1f-67b8-43e1-85f6-b395c4119acf",
     "name": "test.docx",
     "size": 12345,
-    "webUrl": "https://paanalyticstestlab-my.sharepoint.com/personal/scohenkadosh/Documents/test.docx",
+    "webUrl": "https://contoso.sharepoint.com/personal/fake_user/Documents/test.docx",
     "createdDateTime": "2025-11-24T14:19:11Z",
     "lastModifiedDateTime": "2025-11-24T14:19:40Z",
-    "createdBy": {"user": {"email": "s@example.com", "id": "826411a3", "displayName": "Shai Cohen Kadosh"}},
-    "lastModifiedBy": {"user": {"email": "s@example.com", "id": "826411a3", "displayName": "Shai Cohen Kadosh"}},
-    "parentReference": {"id": "0622f447", "siteId": "7878e691-3e74-4a11-899d-c69622de1254"},
+    "createdBy": {"user": {"email": "fake.user@example.com", "id": "826411a3", "displayName": "Fake User"}},
+    "lastModifiedBy": {"user": {"email": "fake.user@example.com", "id": "826411a3", "displayName": "Fake User"}},
+    "parentReference": {"id": "0622f447", "siteId": "7878e691-3e74-4a11-899d-c69622de1254", "driveId": "drive-abc"},
     "sharepointIds": {"listItemUniqueId": "a9670e1f-67b8-43e1-85f6-b395c4119acf", "siteId": "7878e691"},
 }
 
@@ -2266,9 +2268,13 @@ def test_get_driveitem_metadata_command_by_item_id(mocker: MockerFixture):
     assert result.outputs_prefix == "MsGraphFiles.Files"
     assert result.outputs["ID"] == "a9670e1f-67b8-43e1-85f6-b395c4119acf"
     assert result.outputs["ItemID"] == "a9670e1f-67b8-43e1-85f6-b395c4119acf"
-    # SiteID is lifted out of parentReference so callers do not have to dig for it.
+    # SiteID and DriveId are lifted out of parentReference so callers do not have to dig for them.
     assert result.outputs["SiteID"] == "7878e691-3e74-4a11-899d-c69622de1254"
+    # DriveId states which drive ItemID belongs to - without it the ID cannot be used in a
+    # follow-up command, which matters most for share_url lookups that land in a personal drive.
+    assert result.outputs["DriveId"] == "drive-abc"
     assert "test.docx" in result.readable_output
+    assert "drive-abc" in result.readable_output
 
 
 def test_get_driveitem_metadata_command_by_item_path(mocker: MockerFixture):
@@ -2299,7 +2305,7 @@ def test_get_driveitem_metadata_command_by_share_url(mocker: MockerFixture):
     Then: The /shares/{token}/driveItem route is called with the encoded token.
     """
     http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_METADATA_RESPONSE)
-    share_url = "https://paanalyticstestlab-my.sharepoint.com/:w:/r/personal/scohenkadosh/Documents/test.docx"
+    share_url = "https://contoso.sharepoint.com/:w:/r/personal/fake_user/Documents/test.docx"
 
     get_driveitem_metadata_command(CLIENT_MOCKER, {"share_url": share_url, "include_sharepoint_ids": "false"})
 
@@ -2308,11 +2314,12 @@ def test_get_driveitem_metadata_command_by_share_url(mocker: MockerFixture):
 
 def test_get_driveitem_metadata_command_merges_sharepoint_ids(mocker: MockerFixture):
     """
-    Given: include_sharepoint_ids is on, which is the default.
+    Given: include_sharepoint_ids is on, and the item's parentReference carries a driveId.
     When: Running msgraph-driveitem-metadata-get.
-    Then: A second request asks for sharepointIds on its own and the result is merged into the
-          same output. Microsoft Graph does not return sharepointIds as part of the driveItem,
-          not even when it is named in $select, so a dedicated request is the only way to get it.
+    Then: A second request asks for sharepointIds on its own, addressed by drive, and the result
+          is merged into the same output. Microsoft Graph does not return sharepointIds as part
+          of the driveItem, not even when it is named in $select, so a dedicated request is the
+          only way to get it.
     """
     metadata_without_ids = {k: v for k, v in DRIVEITEM_METADATA_RESPONSE.items() if k != "sharepointIds"}
     sharepoint_ids = {
@@ -2331,16 +2338,68 @@ def test_get_driveitem_metadata_command_merges_sharepoint_ids(mocker: MockerFixt
     )
 
     assert http_request.call_count == 2
-    # The second call is site-scoped and uses the IDs taken from the first response, so it also
-    # works for the path and share_url modes where the caller never supplied a site ID.
+    # The second call is addressed by drive, using the IDs taken from the first response, so it
+    # also works for the path and share_url modes where the caller never supplied a site ID.
+    # sites/{id}/drive would resolve only the site's default document library.
     second_call = http_request.call_args_list[1].kwargs
-    assert (
-        second_call["url_suffix"] == "sites/7878e691-3e74-4a11-899d-c69622de1254/drive/items/a9670e1f-67b8-43e1-85f6-b395c4119acf"
-    )
+    assert second_call["url_suffix"] == "drives/drive-abc/items/a9670e1f-67b8-43e1-85f6-b395c4119acf"
     assert second_call["params"] == {"$select": "sharepointIds"}
     assert result.outputs["SharepointIds"]["ListId"] == "b1f2c3d4-1111-2222-3333-444455556666"
     assert result.outputs["SharepointIds"]["ListItemUniqueId"] == "a9670e1f-67b8-43e1-85f6-b395c4119acf"
     assert "a9670e1f-67b8-43e1-85f6-b395c4119acf" in result.readable_output
+
+
+def test_get_driveitem_metadata_command_sharepoint_ids_falls_back_to_site_route(mocker: MockerFixture):
+    """
+    Given: A response whose parentReference carries a siteId but no driveId.
+    When: Running msgraph-driveitem-metadata-get with include_sharepoint_ids=true.
+    Then: The lookup falls back to the site route rather than building a 'drives//items/...'
+          URL or skipping the lookup altogether.
+    """
+    metadata = {k: v for k, v in DRIVEITEM_METADATA_RESPONSE.items() if k != "sharepointIds"}
+    metadata["parentReference"] = {"id": "0622f447", "siteId": "7878e691-3e74-4a11-899d-c69622de1254"}
+    http_request = mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        side_effect=[metadata, {"sharepointIds": {"listId": "list-1", "listItemUniqueId": "item-unique-1"}}],
+    )
+
+    result = get_driveitem_metadata_command(
+        CLIENT_MOCKER, {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1", "include_sharepoint_ids": "true"}
+    )
+
+    assert http_request.call_count == 2
+    assert (
+        http_request.call_args_list[1].kwargs["url_suffix"]
+        == "sites/7878e691-3e74-4a11-899d-c69622de1254/drive/items/a9670e1f-67b8-43e1-85f6-b395c4119acf"
+    )
+    assert result.outputs["SharepointIds"]["ListId"] == "list-1"
+
+
+def test_get_driveitem_metadata_command_sharepoint_ids_by_share_url(mocker: MockerFixture):
+    """
+    Given: An item addressed by share_url, which resolves to a personal OneDrive rather than to
+           the site's default document library.
+    When: Running msgraph-driveitem-metadata-get with include_sharepoint_ids=true.
+    Then: The lookup is addressed by drive. Addressing it through sites/{id}/drive - the previous
+          behaviour - reached the wrong library and returned no identifiers.
+    """
+    metadata_without_ids = {k: v for k, v in DRIVEITEM_METADATA_RESPONSE.items() if k != "sharepointIds"}
+    http_request = mocker.patch.object(
+        CLIENT_MOCKER.ms_client,
+        "http_request",
+        side_effect=[metadata_without_ids, {"sharepointIds": {"listId": "list-1", "listItemUniqueId": "item-unique-1"}}],
+    )
+
+    get_driveitem_metadata_command(
+        CLIENT_MOCKER,
+        {
+            "share_url": "https://contoso.sharepoint.com/:w:/r/personal/fake_user/Documents/test.docx",
+            "include_sharepoint_ids": "true",
+        },
+    )
+
+    assert http_request.call_args_list[1].kwargs["url_suffix"] == "drives/drive-abc/items/a9670e1f-67b8-43e1-85f6-b395c4119acf"
 
 
 def test_get_driveitem_metadata_command_skips_sharepoint_ids_when_disabled(mocker: MockerFixture):
@@ -2384,7 +2443,7 @@ DRIVEITEM_ACTIVITIES_RESPONSE = {
             "id": "wDv99w9U3khuO0MPAAAAAA==",
             "action": {"share": {}},
             "times": {"recordedDateTime": "2026-01-15T08:27:49Z"},
-            "actor": {"user": {"displayName": "Shai Cohen Kadosh", "email": "s@example.com"}},
+            "actor": {"user": {"displayName": "Fake User", "email": "fake.user@example.com"}},
         },
         {
             "id": "8DvNr6FL3kgZ9D8PAAAAAA==",
@@ -2435,7 +2494,7 @@ def test_list_driveitem_activities_command_uses_list_item_route(mocker: MockerFi
     assert result.outputs["Value"][0]["ID"] == "wDv99w9U3khuO0MPAAAAAA=="
     # The v1.0 schema carries the timestamp at times.recordedDateTime.
     assert result.outputs["Value"][0]["Times"]["RecordedDateTime"] == "2026-01-15T08:27:49Z"
-    assert "Shai Cohen Kadosh" in result.readable_output or "s@example.com" in result.readable_output
+    assert "Fake User" in result.readable_output or "fake.user@example.com" in result.readable_output
     # The table must show the real facet name and the timestamp - a regression here previously
     # rendered the literal word "Action" and dropped the date column entirely.
     # Facet names arrive title-cased because parse_key_to_context normalizes every key.
@@ -2550,6 +2609,46 @@ def test_get_driveitem_analytics_command_uses_list_item_route(mocker: MockerFixt
     # The stats are lifted out of the time-range wrapper into a single Stats object.
     assert result.outputs["Stats"]["Access"]["ActionCount"] == 24
     assert "24" in result.readable_output
+
+
+def test_get_driveitem_analytics_command_surfaces_undocumented_facets(mocker: MockerFixture):
+    """
+    Given: An analytics payload containing a facet beyond the four the table used to hard-code.
+    When: Running msgraph-driveitem-analytics-get.
+    Then: The extra facet reaches the table. The previous implementation iterated a fixed
+          ("Access", "Create", "Edit", "Delete") tuple and silently dropped anything else.
+    """
+    response = {
+        "allTime": {
+            "startDateTime": "2024-01-01T00:00:00Z",
+            "endDateTime": "2026-01-15T00:00:00Z",
+            "access": {"actionCount": 24, "actorCount": 5},
+            "move": {"actionCount": 7, "actorCount": 1},
+        }
+    }
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", side_effect=[SHAREPOINT_IDS_RESPONSE, response])
+
+    result = get_driveitem_analytics_command(CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1"})
+
+    assert "Move" in result.readable_output
+    assert "Access" in result.readable_output
+    # The window scalars describe the period, not an action, so they must not become rows.
+    assert "StartDateTime" not in result.readable_output
+    assert "Start Date Time" not in result.readable_output
+
+
+def test_get_driveitem_analytics_command_no_rows_when_only_window_scalars(mocker: MockerFixture):
+    """
+    Given: A payload carrying only the start/end window and no action facet.
+    When: Running msgraph-driveitem-analytics-get.
+    Then: The "no analytics data" message is produced rather than a table of empty rows.
+    """
+    response = {"allTime": {"startDateTime": "2024-01-01T00:00:00Z", "endDateTime": "2026-01-15T00:00:00Z"}}
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", side_effect=[SHAREPOINT_IDS_RESPONSE, response])
+
+    result = get_driveitem_analytics_command(CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1"})
+
+    assert "No analytics data was returned for item item-1" in result.readable_output
 
 
 def test_get_driveitem_analytics_command_raises_when_item_is_not_a_list_item(mocker: MockerFixture):

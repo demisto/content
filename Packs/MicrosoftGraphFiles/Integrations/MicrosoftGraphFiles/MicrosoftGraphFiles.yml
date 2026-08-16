@@ -1065,20 +1065,20 @@ script:
       type: String
   - description: |-
       Retrieves the metadata of a file or folder (driveItem). The item can be addressed by ID, by path relative to the drive root, or by a sharing URL. Exactly one of item_id, item_path, or share_url must be provided.
+      The returned ItemID is scoped to the drive that stores the item, which is returned as DriveId. A sharing URL that points to a personal file resolves against that user's OneDrive, so the ItemID it returns differs from the ID the same file has under a SharePoint site library.
       Note: addressing the item by share_url requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
     name: msgraph-driveitem-metadata-get
     arguments:
     - auto: PREDEFINED
-      description: The MS Graph resource. Required unless `share_url` is used.
+      description: The MS Graph resource. Required together with `object_type_id`, unless `share_url` is used.
       name: object_type
       predefined:
       - drives
       - groups
       - sites
       - users
-      defaultValue: sites
     - description: |-
-        MS Graph resource ID. Required unless `share_url` is used.
+        MS Graph resource ID. Required together with `object_type`, unless `share_url` is used.
         For resource type 'drives': use the **msgraph-list-drives-in-site** command to retrieve drive IDs.
         For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': use the **msgraph-list-sharepoint-sites** command.
@@ -1114,6 +1114,9 @@ script:
       type: String
     - contextPath: MsGraphFiles.Files.SiteID
       description: The ID of the SharePoint site containing the item, lifted from the parent reference.
+      type: String
+    - contextPath: MsGraphFiles.Files.DriveId
+      description: The ID of the drive that stores the item, lifted from the parent reference. ItemID is only meaningful within this drive.
       type: String
     - contextPath: MsGraphFiles.Files.Name
       description: The name of the file or folder.
@@ -1166,7 +1169,7 @@ script:
   - description: |-
       Retrieves the recent activities that took place on a file or folder (driveItem), such as who accessed it and when.
       Activities are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the activities from the list item. This resolution is internal - only site_id and item_id are needed.
-      Note: This command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error. Activities are not available for personal Microsoft accounts.
+      Note: Activity data is not available in all national deployments and is not supported for personal Microsoft accounts. When no activity has been recorded for the item, Microsoft Graph returns an empty result rather than an error.
     name: msgraph-driveitem-activities-list
     arguments:
     - description: |-
@@ -1243,7 +1246,7 @@ script:
     description: |-
       Retrieves activity statistics for a file or folder (driveItem), such as how many times it was viewed and by how many people.
       Analytics are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the analytics from the list item. This resolution is internal - only site_id and item_id are needed.
-      Note: This command requires a SharePoint/OneDrive plan that surfaces analytics data. Without it, Microsoft Graph returns an empty result rather than an error.
+      Note: Analytics data is not available in all national deployments and is not supported for personal Microsoft accounts. When no analytics data has been collected for the item, Microsoft Graph returns an empty result rather than an error.
     name: msgraph-driveitem-analytics-get
     outputs:
     - contextPath: MsGraphFiles.ItemAnalytics.ItemId
@@ -1272,6 +1275,18 @@ script:
       type: Number
     - contextPath: MsGraphFiles.ItemAnalytics.Stats.Edit.ActorCount
       description: The number of distinct users who edited the item.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Create.ActionCount
+      description: The number of times the item was created. Present only when Microsoft Graph returns this facet.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Create.ActorCount
+      description: The number of distinct users who created the item. Present only when Microsoft Graph returns this facet.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Delete.ActionCount
+      description: The number of times the item was deleted. Present only when Microsoft Graph returns this facet.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Delete.ActorCount
+      description: The number of distinct users who deleted the item. Present only when Microsoft Graph returns this facet.
       type: Number
   - arguments: []
     description: Tests connectivity to Microsoft.
