@@ -5,7 +5,7 @@ This integration was integrated and tested with version 7.21.0 of Bitbucket.
 
 According to the Bitbucket announcement from February 18, 2026, regarding the sunset of Bitbucket Issues, all XSOAR issue-related commands have been deprecated.
 
-Bitbucket Cloud has deprecated app passwords (which will cease to work entirely on **June 9, 2026**) in favor of **Scoped API tokens**. [https://developer.atlassian.com/cloud/bitbucket/rest/intro/\#app-passwords](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords)
+Bitbucket Cloud has deprecated app passwords (from **June 9, 2026**) in favor of scoped API tokens. For more information, see the [Bitbucket Cloud documentation](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords).
 
 ### Authenticate with an API Token
 
