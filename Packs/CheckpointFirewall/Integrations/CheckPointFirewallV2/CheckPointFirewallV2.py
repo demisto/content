@@ -3104,9 +3104,12 @@ def checkpoint_add_access_rule_command(
 
     # If an entry_id is provided, load the request body from the file and ignore other args.
     if entry_id:
-        file_path = demisto.getFilePath(entry_id).get("path")
-        with open(file_path) as f:
-            request_body = json.load(f)
+        try:
+            file_path = demisto.getFilePath(entry_id).get("path")
+            with open(file_path) as f:
+                request_body = json.load(f)
+        except Exception as e:
+            raise DemistoException(f"Failed to load request body from entry ID {entry_id}: {str(e)}")
         result = client.add_rule(request_body=request_body)
         printable_result = build_printable_result(headers, result)
         readable_output = tableToMarkdown(
@@ -3366,7 +3369,6 @@ def checkpoint_session_discard_command(client: Client, target_session_id: str = 
     readable_output = f"Session discarded {number_of_discarded_changes} change(s). {message}".strip()
     return CommandResults(
         outputs_prefix="CheckPoint.SessionDiscard",
-        outputs_key_field="message",
         readable_output=readable_output,
         outputs=result,
         raw_response=result,
@@ -4187,7 +4189,6 @@ def checkpoint_show_task_command(client: Client, task_id: str, details_level: st
         )
         return CommandResults(
             outputs_prefix="CheckPoint.ShowTask",
-            outputs_key_field="uid",
             readable_output=readable_output,
             outputs=error_output or result,
             raw_response=result,
@@ -4201,13 +4202,14 @@ def checkpoint_show_task_command(client: Client, task_id: str, details_level: st
             "status": task.get("status"),
             "suppressed": task.get("suppressed"),
             "progress-percentage": task.get("progress-percentage"),
+            "uid": task.get("uid"),
         }
         printable_result.append(current_object_data)
 
     readable_output = tableToMarkdown(
         "CheckPoint data for tasks:",
         printable_result,
-        ["task-name", "task-id", "status", "suppressed", "progress-percentage"],
+        ["task-name", "task-id", "status", "suppressed", "progress-percentage", "uid"],
         removeNull=True,
     )
     command_results = CommandResults(

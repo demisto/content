@@ -1674,6 +1674,7 @@ script:
       name: filter
     - description: 'The list of comma-separated "direction:field" pairs by which to sort results. Valid directions are ASC and DESC. For example, "ASC:type,DESC:uid". Default is "ASC:name".'
       name: order
+      isArray: true
     - description: Policy package name or uid.
       name: package
     - auto: PREDEFINED
@@ -3139,6 +3140,7 @@ script:
       name: offset
     - description: 'The list of comma-separated "direction:field" pairs by which to sort results. Valid directions are ASC and DESC. For example, "ASC:type,DESC:uid". Default is "ASC:name".'
       name: order
+      isArray: true
     - auto: PREDEFINED
       defaultValue: 'false'
       description: 'Whether to display matched content as port ranges instead of service objects. If "true", replaces the members parameter with the ranges parameter in the response.'
@@ -5209,6 +5211,7 @@ script:
       name: filter
     - description: 'The list of comma-separated "direction:field" pairs by which to sort results. Valid directions are ASC and DESC. For example, "ASC:type,DESC:uid". Default is "ASC:name".'
       name: order
+      isArray: true
     - auto: PREDEFINED
       description: Indicates whether to calculate and show a "groups" field for every object in reply.
       name: show_membership

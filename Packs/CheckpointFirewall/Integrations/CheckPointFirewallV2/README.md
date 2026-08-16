@@ -1785,6 +1785,56 @@ Returns a single access rule by name, UID, or rule number.
 | CheckPoint.AccessRule.enabled | Boolean | Indicates if the rule is enabled or disabled. |
 | CheckPoint.AccessRule.layer | String | Layer to which the rule belongs. |
 
+#### Command Example
+
+```!checkpoint-access-rule-get identifier=test_access_rule layer=Network session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+
+```
+{
+    "CheckPoint": {
+        "AccessRule": {
+            "name": "test_access_rule",
+            "uid": "e5bc5918-7155-493e-89ce-5562586d3acc",
+            "type": "access-rule",
+            "rule-number": 3,
+            "action": {
+                "name": "Accept"
+            },
+            "source": [
+                {
+                    "name": "Any",
+                    "uid": "97aeb369-9aea-11d5-bd16-0090272ccb30"
+                }
+            ],
+            "destination": [
+                {
+                    "name": "Any",
+                    "uid": "97aeb369-9aea-11d5-bd16-0090272ccb30"
+                }
+            ],
+            "service": [
+                {
+                    "name": "Any",
+                    "uid": "97aeb369-9aea-11d5-bd16-0090272ccb30"
+                }
+            ],
+            "enabled": true,
+            "layer": "c0264a80-1832-4fce-8a90-d0849dc4ba33"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for access rule "test_access_rule"
+>
+>|name|uid|type|rule-number|action|enabled|
+>|---|---|---|---|---|---|
+>| test_access_rule | e5bc5918-7155-493e-89ce-5562586d3acc | access-rule | 3 | Accept | true |
+
 ### checkpoint-access-rule-add
 
 ***
@@ -2580,6 +2630,27 @@ Discards uncommitted session changes (inverse of publish).
 | --- | --- | --- |
 | CheckPoint.SessionDiscard.message | String | The result message. |
 
+#### Command Example
+
+```!checkpoint-session-discard session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+
+```
+{
+    "CheckPoint": {
+        "SessionDiscard": {
+            "message": "OK",
+            "number-of-discarded-changes": 3
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Session discarded 3 change(s). OK
+
 ### checkpoint-dns-domain-list
 
 ***
@@ -2612,6 +2683,46 @@ Lists DNS domain objects.
 | CheckPoint.DNSDomain.type | String | Object type. |
 | CheckPoint.DNSDomain.domain.name | String | The domain name. |
 
+#### Command Example
+
+```!checkpoint-dns-domain-list limit=5 session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+
+```
+{
+    "CheckPoint": {
+        "DNSDomain": [
+            {
+                "name": ".example.com",
+                "uid": "d4a9a5b1-1234-4abc-9876-1a2b3c4d5e6f",
+                "type": "dns-domain",
+                "domain": {
+                    "name": "SMC User"
+                }
+            },
+            {
+                "name": ".test.local",
+                "uid": "1c8d2f5b-98a7-4321-bfed-9876543210ab",
+                "type": "dns-domain",
+                "domain": {
+                    "name": "SMC User"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for all DNS domains
+>
+>|name|uid|type|
+>|---|---|---|
+>| .example.com | d4a9a5b1-1234-4abc-9876-1a2b3c4d5e6f | dns-domain |
+>| .test.local | 1c8d2f5b-98a7-4321-bfed-9876543210ab | dns-domain |
+
 ### checkpoint-dns-domain-get
 
 ***
@@ -2638,6 +2749,36 @@ Shows a single DNS domain object.
 | CheckPoint.DNSDomain.type | String | Object type. |
 | CheckPoint.DNSDomain.is-sub-domain | Boolean | Indicates whether the object matches sub-domains. |
 | CheckPoint.DNSDomain.domain.name | String | The domain name. |
+
+#### Command Example
+
+```!checkpoint-dns-domain-get identifier=.example.com session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+
+```
+{
+    "CheckPoint": {
+        "DNSDomain": {
+            "name": ".example.com",
+            "uid": "d4a9a5b1-1234-4abc-9876-1a2b3c4d5e6f",
+            "type": "dns-domain",
+            "is-sub-domain": true,
+            "domain": {
+                "name": "SMC User"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for DNS domain ".example.com"
+>
+>|name|uid|type|is-sub-domain|
+>|---|---|---|---|
+>| .example.com | d4a9a5b1-1234-4abc-9876-1a2b3c4d5e6f | dns-domain | true |
 
 ### checkpoint-dns-domain-add
 
@@ -2671,6 +2812,36 @@ Creates a DNS domain object.
 | CheckPoint.DNSDomain.type | String | Object type. |
 | CheckPoint.DNSDomain.is-sub-domain | Boolean | Indicates whether the object matches sub-domains. |
 | CheckPoint.DNSDomain.domain.name | String | The domain name. |
+
+#### Command Example
+
+```!checkpoint-dns-domain-add name=.example.com is_sub_domain=true comments="Created via XSOAR" color=blue session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+
+```
+{
+    "CheckPoint": {
+        "DNSDomain": {
+            "name": ".example.com",
+            "uid": "d4a9a5b1-1234-4abc-9876-1a2b3c4d5e6f",
+            "type": "dns-domain",
+            "is-sub-domain": true,
+            "domain": {
+                "name": "SMC User"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for new DNS domain ".example.com"
+>
+>|name|uid|type|is-sub-domain|
+>|---|---|---|---|
+>| .example.com | d4a9a5b1-1234-4abc-9876-1a2b3c4d5e6f | dns-domain | true |
 
 ### checkpoint-dns-domain-update
 
@@ -2707,6 +2878,36 @@ Modifies a DNS domain object.
 | CheckPoint.DNSDomain.is-sub-domain | Boolean | Indicates whether the object matches sub-domains. |
 | CheckPoint.DNSDomain.domain.name | String | The domain name. |
 
+#### Command Example
+
+```!checkpoint-dns-domain-update identifier=.example.com is_sub_domain=true comments="Updated via XSOAR" color=blue session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+
+```
+{
+    "CheckPoint": {
+        "DNSDomain": {
+            "name": ".example.com",
+            "uid": "d4a9a5b1-1234-4abc-9876-1a2b3c4d5e6f",
+            "type": "dns-domain",
+            "is-sub-domain": true,
+            "domain": {
+                "name": "SMC User"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for updated DNS domain ".example.com"
+>
+>|name|uid|type|is-sub-domain|
+>|---|---|---|---|
+>| .example.com | d4a9a5b1-1234-4abc-9876-1a2b3c4d5e6f | dns-domain | true |
+
 ### checkpoint-dns-domain-delete
 
 ***
@@ -2729,6 +2930,20 @@ Deletes a DNS domain object.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!checkpoint-dns-domain-delete identifier=.example.com session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+#### Context Example
+
+```
+{}
+```
+
+#### Human Readable Output
+
+>DNS domain ".example.com" was deleted successfully.
 
 ### checkpoint-logout
 
