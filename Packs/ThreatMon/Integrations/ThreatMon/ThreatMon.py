@@ -210,7 +210,9 @@ def change_incident_status(client: Client, args: dict[str, Any]) -> CommandResul
     if response.ok:
         return CommandResults(readable_output=f"Incident {code} status changed to {status}.")
     else:
-        raise DemistoException(f"Failed to change status for incident {code}. API returned {response.status_code}: {response.text}")
+        raise DemistoException(
+            f"Failed to change status for incident {code}. API returned {response.status_code}: {response.text}"
+        )
 
 
 def request_takedown_command(client: Client, args: dict[str, Any]) -> CommandResults:
