@@ -447,6 +447,7 @@ class XDRHandler(BrandHandler):
     # Builtin command names (used on the Cortex platform for the Core brand).
     BUILTIN_QUARANTINE_COMMAND = "quarantineFile"
     BUILTIN_QUARANTINE_STATUS_COMMAND = "getFileQuarantineStatus"
+
     def __init__(self, brand: str, orchestrator):
         """
         Initializes the XDRHandler.
@@ -609,8 +610,7 @@ class XDRHandler(BrandHandler):
                 QuarantineResult.Messages.SUCCESS
                 if quarantine_status
                 else QuarantineResult.Messages.FAILED_WITH_REASON.format(
-                    reason=quarantine_status_data.get("error_description")
-                    or quarantine_status_data.get("ErrorDescription", "")
+                    reason=quarantine_status_data.get("error_description") or quarantine_status_data.get("ErrorDescription", "")
                 )
             )
             status = QuarantineResult.Statuses.SUCCESS if quarantine_status else QuarantineResult.Statuses.FAILED
