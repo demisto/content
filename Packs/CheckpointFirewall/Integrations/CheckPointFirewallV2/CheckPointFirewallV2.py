@@ -638,7 +638,7 @@ class Client(BaseClient):
     def add_rule(
         self,
         layer: str | None = None,
-        position: str | None = None,
+        position: str | int | dict | None = None,
         action: str | None = None,
         name: Optional[str] = None,
         vpn: Optional[str] = None,
@@ -1616,8 +1616,8 @@ class Client(BaseClient):
 
     def list_dns_domains(
         self,
-        limit: int,
-        offset: int,
+        limit: int | None,
+        offset: int | None,
         filter_str: str | None = None,
         order: list | None = None,
         show_membership: bool | None = None,
@@ -1681,7 +1681,7 @@ class Client(BaseClient):
         new_name: str | None = None,
         is_sub_domain: bool | None = None,
         details_level: str | None = None,
-        tags: list | None = None,
+        tags: list | dict | None = None,
         color: str | None = None,
         comments: str | None = None,
         ignore_warnings: bool | None = None,

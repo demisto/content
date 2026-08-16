@@ -1757,6 +1757,9 @@ def test_checkpoint_tcp_service_add_command(mocker):
         session_timeout=None,
         aggressive_aging=None,
         tags=None,
+        ignore_warnings=None,
+        ignore_errors=None,
+        use_default_session_timeout=None,
     )
 
 
@@ -3847,7 +3850,7 @@ def test_get_access_rule_by_rule_number(mocker):
 def test_get_access_rule_client_rule_number_body(mocker):
     from CheckPointFirewallV2 import Client
 
-    client = Client(base_url="https://x/web_api/", use_ssl=False, use_proxy=False, sid="sid")
+    client = Client(base_url=HTTPS_WWW_BASE_URL, use_ssl=False, use_proxy=False, sid="sid")
     http_mock = mocker.patch.object(client, "_http_request", return_value={})
     client.get_access_rule("5", "Network")
     body = http_mock.call_args[1]["json_data"]
