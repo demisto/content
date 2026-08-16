@@ -2061,12 +2061,15 @@ script:
     - name: organization_name
       description: A comma-separated list of organization IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.
       required: false
+      isArray: true
     - name: billing_account_name
       description: A comma-separated list of billing account IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.
       required: false
+      isArray: true
     - name: folder_name
       description: A comma-separated list of folder IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.
       required: false
+      isArray: true
     - name: filter
       description: 'The filter to limit results to log entries that match. The maximum length of a filter is 20,000 characters. For example: "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name".'
       required: false
@@ -2081,10 +2084,10 @@ script:
     - name: limit
       description: The maximum number of results to return. Valid range is 1-1000.
       required: false
-    - name: page_size
-      description: The maximum number of results to return per page. Default is 50. If the value is negative or exceeds 1000, the request is rejected.
-      required: false
       defaultValue: '50'
+    - name: page_size
+      description: The maximum number of results to return per page. If not set, results are fetched in pages of up to 1000 (the API maximum). If the value is negative or exceeds 1000, the request is rejected.
+      required: false
     - name: page_token
       description: The token used to retrieve the next batch of results. Must be the value of LogEntryNextToken from the previous response.
       required: false
@@ -2099,10 +2102,10 @@ script:
         description: The values for all labels listed in the associated monitored resource descriptor.
         type: Unknown
       - contextPath: GCP.Logging.LogEntry.timestamp
-        description: The time the event described by the log entry occurred.
+        description: 'The time the event described by the log entry occurred, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z".'
         type: String
       - contextPath: GCP.Logging.LogEntry.receiveTimestamp
-        description: The time the log entry was received by Logging.
+        description: 'The time the log entry was received by Logging, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z".'
         type: String
       - contextPath: GCP.Logging.LogEntry.severity
         description: The severity of the log entry. The default value is LogSeverity.DEFAULT.

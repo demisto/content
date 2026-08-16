@@ -204,6 +204,9 @@ class GCPServices(Enum):
         return results
 
 
+# The maximum number of log entries the Cloud Logging entries.list API returns per page.
+MAX_LOGGING_PAGE_SIZE = 1000
+
 # Command requirements mapping: (GCP_Service_Enum, [Required_Permissions])
 COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-firewall-patch": (
@@ -2443,23 +2446,34 @@ def logging_log_entries_list(creds: Credentials, args: dict[str, Any]) -> Comman
     resource_names += [f"billingAccounts/{billing_account}" for billing_account in resource_billing_accounts]
     resource_names += [f"folders/{folder}" for folder in resource_folders]
 
-    limit = arg_to_number(args.get("limit"))
-    page_size = arg_to_number(args.get("page_size")) or 50
+    limit = arg_to_number(args.get("limit")) or 50
+    # The Cloud Logging API caps pageSize at 1000. Default the per-page size to that cap so a large
+    # limit is fetched in as few calls as possible; honor an explicit page_size only when provided.
+    page_size = arg_to_number(args.get("page_size")) or MAX_LOGGING_PAGE_SIZE
     page_token = args.get("page_token")
 
-    request_body: dict[str, Any] = {
-        "resourceNames": resource_names,
-        "filter": args.get("filter"),
-        "orderBy": args.get("order_by"),
-        "pageSize": limit or page_size,
-        "pageToken": page_token,
-    }
-    remove_nulls_from_dictionary(request_body)
-
     logging_service = GCPServices.LOGGING.build(creds)
-    response = logging_service.entries().list(body=request_body).execute()  # pylint: disable=E1101
-    entries = response.get("entries", [])
-    next_token = response.get("nextPageToken")
+
+    entries: list[dict[str, Any]] = []
+    next_token = page_token
+    # Accumulate pages internally until the requested limit is reached or there are no more results.
+    while len(entries) < limit:
+        request_body: dict[str, Any] = {
+            "resourceNames": resource_names,
+            "filter": args.get("filter"),
+            "orderBy": args.get("order_by"),
+            "pageSize": min(limit - len(entries), page_size),
+            "pageToken": next_token,
+        }
+        remove_nulls_from_dictionary(request_body)
+
+        response = logging_service.entries().list(body=request_body).execute()  # pylint: disable=E1101
+        current_entries = response.get("entries", [])
+        entries.extend(current_entries)
+
+        next_token = response.get("nextPageToken")
+        if not next_token or not current_entries:
+            break
 
     headers = ["timestamp", "logName", "insertId", "resource", "severity", "operation"]
     metadata = (
@@ -2484,11 +2498,9 @@ def logging_log_entries_list(creds: Credentials, args: dict[str, Any]) -> Comman
     if not next_token:
         outputs.pop("GCP.Logging(true)")
     return CommandResults(
-        outputs_prefix="GCP.Logging.LogEntry",
-        outputs_key_field="insertId",
         outputs=outputs,
         readable_output=readable_output,
-        raw_response=response,
+        raw_response=entries,
     )
 
 

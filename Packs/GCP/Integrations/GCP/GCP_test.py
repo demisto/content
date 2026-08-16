@@ -6663,15 +6663,16 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
 def test_logging_log_entries_list_success(mocker):
     """
     Given: Valid credentials and snake_case args scoping the request to a project.
-    When: logging_log_entries_list is called.
+    When: logging_log_entries_list is called and a single page satisfies the limit.
     Then: It POSTs the expected request body to entries().list and returns CommandResults
-          with the GCP.Logging.LogEntry prefix and the nextPageToken.
+          with the GCP.Logging.LogEntry context path and the LogEntryNextToken.
     """
     from GCP import logging_log_entries_list
 
     mock_response = util_load_json("test_data/logging_log_entries_list_response.json")
     mock_creds = mocker.MagicMock()
     mock_logging = mocker.MagicMock()
+    # limit=3 is satisfied by the single fixture page (3 entries), so the loop stops after one call.
     mock_logging.entries.return_value.list.return_value.execute.return_value = mock_response
     mocker.patch("GCP.build", return_value=mock_logging)
 
@@ -6679,17 +6680,47 @@ def test_logging_log_entries_list_success(mocker):
         "project_id": "mock_project_id",
         "filter": None,
         "order_by": None,
-        "limit": 2,
+        "limit": 3,
     }
     result = logging_log_entries_list(mock_creds, args)
 
     request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
     assert request_body["resourceNames"] == ["projects/mock_project_id"]
-    assert request_body["pageSize"] == 2
-    assert result.outputs_prefix == "GCP.Logging.LogEntry"
-    assert result.outputs_key_field == "insertId"
+    assert request_body["pageSize"] == 3
     assert result.outputs["GCP.Logging.LogEntry(val.insertId && val.insertId == obj.insertId)"] == mock_response.get("entries")
     assert result.outputs["GCP.Logging(true)"]["LogEntryNextToken"] == "xxxxxx-xxxxxx"
+    # A full-context-path outputs dict must not also carry outputs_prefix/outputs_key_field.
+    assert result.outputs_prefix is None
+    assert result.outputs_key_field is None
+
+
+def test_logging_log_entries_list_accumulates_pages(mocker):
+    """
+    Given: A limit larger than a single API page and multiple pages available.
+    When: logging_log_entries_list is called.
+    Then: It iterates internally using nextPageToken, honoring the per-page pageSize cap,
+          and accumulates entries up to (but not beyond) the requested limit.
+    """
+    from GCP import logging_log_entries_list
+
+    page_one = {"entries": [{"insertId": f"a{i}"} for i in range(1000)], "nextPageToken": "tok-2"}
+    page_two = {"entries": [{"insertId": f"b{i}"} for i in range(500)], "nextPageToken": "tok-3"}
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.side_effect = [page_one, page_two]
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {"project_id": "mock_project_id", "limit": 1500}
+    result = logging_log_entries_list(mock_creds, args)
+
+    calls = mock_logging.entries.return_value.list.call_args_list
+    # First page requests the full 1000 cap; second requests only the remaining 500.
+    assert calls[0][1]["body"]["pageSize"] == 1000
+    assert calls[1][1]["body"]["pageSize"] == 500
+    assert calls[1][1]["body"]["pageToken"] == "tok-2"
+    entries = result.outputs["GCP.Logging.LogEntry(val.insertId && val.insertId == obj.insertId)"]
+    assert len(entries) == 1500
+    assert result.outputs["GCP.Logging(true)"]["LogEntryNextToken"] == "tok-3"
 
 
 def test_logging_log_entries_list_multiple_resources(mocker):
@@ -6700,10 +6731,10 @@ def test_logging_log_entries_list_multiple_resources(mocker):
     """
     from GCP import logging_log_entries_list
 
-    mock_response = util_load_json("test_data/logging_log_entries_list_response.json")
+    single_page = {"entries": [{"insertId": "a1"}]}  # no nextPageToken -> single iteration
     mock_creds = mocker.MagicMock()
     mock_logging = mocker.MagicMock()
-    mock_logging.entries.return_value.list.return_value.execute.return_value = mock_response
+    mock_logging.entries.return_value.list.return_value.execute.return_value = single_page
     mocker.patch("GCP.build", return_value=mock_logging)
 
     args = {
@@ -6728,14 +6759,14 @@ def test_logging_log_entries_list_next_token(mocker):
     """
     Given: Args providing a page_token and page_size but no limit.
     When: logging_log_entries_list is called.
-    Then: The request body carries the pageToken and pageSize for the next page.
+    Then: The first request carries the supplied pageToken and honors page_size for the pageSize.
     """
     from GCP import logging_log_entries_list
 
-    mock_response = util_load_json("test_data/logging_log_entries_list_response.json")
+    single_page = {"entries": [{"insertId": "a1"}]}  # no nextPageToken -> single iteration
     mock_creds = mocker.MagicMock()
     mock_logging = mocker.MagicMock()
-    mock_logging.entries.return_value.list.return_value.execute.return_value = mock_response
+    mock_logging.entries.return_value.list.return_value.execute.return_value = single_page
     mocker.patch("GCP.build", return_value=mock_logging)
 
     args = {
@@ -6771,7 +6802,7 @@ def test_logging_log_entries_list_empty_results(mocker):
     """
     Given: A mocked Logging client returning no entries.
     When: logging_log_entries_list is called.
-    Then: It returns CommandResults with empty outputs and no nextPageToken.
+    Then: It returns CommandResults with an empty entries list and no LogEntryNextToken.
     """
     from GCP import logging_log_entries_list
 
@@ -6783,5 +6814,4 @@ def test_logging_log_entries_list_empty_results(mocker):
     result = logging_log_entries_list(mock_creds, {"project_id": "mock_project_id"})
 
     assert result.outputs["GCP.Logging.LogEntry(val.insertId && val.insertId == obj.insertId)"] == []
-    assert "LogEntryNextToken" not in result.outputs.get("GCP.Logging(true)", {})
-    assert result.outputs_prefix == "GCP.Logging.LogEntry"
+    assert "GCP.Logging(true)" not in result.outputs
