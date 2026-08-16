@@ -64,6 +64,27 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY, gateway_
         return None
 
 
+# OCI artifact tag suffixes that are not runnable Docker images.
+# These are produced by tools like cosign (.sig), OCI referrers (.att, .sbom), etc.
+NON_RUNNABLE_TAG_SUFFIXES = (".sig", ".att", ".sbom")
+
+
+def is_runnable_tag(tag: str) -> bool:
+    """Return True if *tag* represents a runnable Docker image tag.
+
+    Filters out OCI artifact tags such as cosign signature tags (``*.sig``),
+    attestation tags (``*.att``), and SBOM tags (``*.sbom``) which are not
+    valid Docker image tags and cannot be used to run a container.
+
+    Args:
+        tag: A Docker image tag name string.
+
+    Returns:
+        True when the tag is a runnable image tag, False otherwise.
+    """
+    return not tag.endswith(NON_RUNNABLE_TAG_SUFFIXES)
+
+
 def clear_non_numbered_tags(tags):
     """Clears a given tags list to only keep numbered tags
 
@@ -92,9 +113,13 @@ def lexical_find_latest_tag(tags):
 
     for example for the tag list: [2.0.2000, 2.1.2700 2.1.373, latest], will return 2.1.2700
 
+    Non-runnable OCI artifact tags (e.g. ``*.sig``, ``*.att``, ``*.sbom``) are
+    excluded before any comparison.
+
     Args:
         tags(list): list of docker image tag names - ordered in lexical order
     """
+    tags = [t for t in tags if is_runnable_tag(t)]
 
     only_numbered_tags = clear_non_numbered_tags(tags)
 
@@ -113,6 +138,10 @@ def lexical_find_latest_tag(tags):
 def find_latest_tag_by_date(tags):
     """Get the latest tags by datetime comparison.
 
+    Non-runnable OCI artifact tags (e.g. ``*.sig``, ``*.att``, ``*.sbom``) are
+    excluded before comparison so that cosign signature artifacts are never
+    returned as the "latest" image tag.
+
     Args:
         tags(list): List of dictionaries representing the docker image tags
 
@@ -122,10 +151,14 @@ def find_latest_tag_by_date(tags):
     latest_tag_name = "latest"
     latest_tag_date = datetime.now() - timedelta(days=400000)
     for tag in tags:
+        tag_name = tag.get("name", "")
+        if not is_runnable_tag(tag_name):
+            demisto.debug(f"Skipping non-runnable artifact tag: {tag_name}")
+            continue
         tag_date = datetime.strptime(tag.get("last_updated"), "%Y-%m-%dT%H:%M:%S.%fZ")
         if tag_date >= latest_tag_date:
             latest_tag_date = tag_date
-            latest_tag_name = tag.get("name")
+            latest_tag_name = tag_name
 
     return latest_tag_name
 

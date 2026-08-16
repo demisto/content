@@ -1,7 +1,7 @@
 import demistomock as demisto
 import pytest
 import requests_mock
-from GetDockerImageLatestTag import find_latest_tag_by_date, lexical_find_latest_tag, main
+from GetDockerImageLatestTag import find_latest_tag_by_date, is_runnable_tag, lexical_find_latest_tag, main
 
 RETURN_ERROR_TARGET = "GetDockerImageLatestTag.return_error"
 
@@ -131,4 +131,73 @@ def test_lexical_latest_tag():
 
 def test_date_latest_tag():
     tag = find_latest_tag_by_date(MOCK_TAG_LIST)
+    assert tag == "1.0.0.2876"
+
+
+# ---------------------------------------------------------------------------
+# Tests for is_runnable_tag
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("tag", [
+    "3.10.13.87159",
+    "latest",
+    "1.0.0.2876",
+    "2.1.2700",
+    "3.12.12.7090913",
+])
+def test_is_runnable_tag_valid(tag):
+    """Runnable image tags must pass the filter."""
+    assert is_runnable_tag(tag) is True
+
+
+@pytest.mark.parametrize("tag", [
+    "sha256-0535a854557dc43a03595eb7ef1625f79896e9d3e8da67b9ed17362546c80c0b.sig",
+    "sha256-abcdef1234567890.sig",
+    "sha256-abcdef1234567890.att",
+    "sha256-abcdef1234567890.sbom",
+    "3.10.13.87159.sig",
+])
+def test_is_runnable_tag_artifact(tag):
+    """OCI artifact tags (.sig, .att, .sbom) must be rejected."""
+    assert is_runnable_tag(tag) is False
+
+
+def test_lexical_find_latest_tag_filters_sig_tags():
+    """lexical_find_latest_tag must ignore .sig/.att/.sbom artifact tags."""
+    tag_list = [
+        "2.0.2000",
+        "sha256-0535a854557dc43a03595eb7ef1625f79896e9d3e8da67b9ed17362546c80c0b.sig",
+        "2.1.2700",
+        "sha256-abcdef.att",
+        "2.1.373",
+        "latest",
+    ]
+    tag = lexical_find_latest_tag(tag_list)
+    assert tag == "2.1.2700"
+
+
+def test_find_latest_tag_by_date_filters_sig_tags():
+    """find_latest_tag_by_date must ignore .sig/.att/.sbom artifact tags even when they are the most recent."""
+    sig_tag = {
+        "last_updated": "2026-08-05T17:49:28.179522Z",  # newer than all real tags
+        "name": "sha256-0535a854557dc43a03595eb7ef1625f79896e9d3e8da67b9ed17362546c80c0b.sig",
+    }
+    tags_with_sig = [sig_tag] + MOCK_TAG_LIST
+    tag = find_latest_tag_by_date(tags_with_sig)
+    # The .sig tag is the most recent but must be skipped; 1.0.0.2876 is the latest real tag.
+    assert tag == "1.0.0.2876"
+
+
+def test_find_latest_tag_by_date_filters_att_and_sbom_tags():
+    """find_latest_tag_by_date must ignore .att and .sbom artifact tags."""
+    att_tag = {
+        "last_updated": "2026-08-05T17:49:28.179522Z",
+        "name": "sha256-abcdef1234567890.att",
+    }
+    sbom_tag = {
+        "last_updated": "2026-08-05T17:49:29.000000Z",
+        "name": "sha256-abcdef1234567890.sbom",
+    }
+    tags = [att_tag, sbom_tag] + MOCK_TAG_LIST
+    tag = find_latest_tag_by_date(tags)
     assert tag == "1.0.0.2876"
