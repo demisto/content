@@ -8,19 +8,19 @@ display: Bitbucket
 fromversion: 6.5.0
 description: Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira.
 configuration:
-- name: workspace
-  display: Workspace
-  required: true
-  defaultvalue:
-  type: 0
-  additionalinfo: The Bitbucket workspace slug or UUID to connect to.
-  section: Connect
 - name: server_url
   display: Server URL
   required: true
   defaultvalue: https://api.bitbucket.org/2.0
   type: 0
   additionalinfo: The base URL of the Bitbucket API.
+  section: Connect
+- name: workspace
+  display: Workspace
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: The Bitbucket workspace slug or UUID to connect to.
   section: Connect
 - display: User Name
   name: credentials
