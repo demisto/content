@@ -2938,13 +2938,13 @@ metadata_collector = YMLMetadataCollector(
             name="credentials",
             display="API Key",
             required=False,
-            key_type=ParameterTypes.ENCRYPTED,
+            key_type=ParameterTypes.AUTH,
         ),
         ConfKey(
             name="threat-check-key",
             display="Threat Check Access Key",
             required=False,
-            key_type=ParameterTypes.ENCRYPTED,
+            key_type=ParameterTypes.AUTH,
         ),
         ConfKey(
             name="proxy",
