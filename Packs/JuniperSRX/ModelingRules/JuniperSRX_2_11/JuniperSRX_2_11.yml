@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: JuniperSRX_ModelingRule
-name: JuniperSRX Modeling Rule
+id: JuniperSRX
+name: Juniper SRX
 rules: ''
 schema: ''
 tags: JuniperSRX

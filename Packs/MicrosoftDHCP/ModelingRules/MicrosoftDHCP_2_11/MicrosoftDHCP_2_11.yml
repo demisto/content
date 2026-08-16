@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: MicrosoftDHCP_ModelingRule
-name: MicrosoftDHCP Modeling Rule
+id: Microsoft_DHCP_ModelingRule
+name: Microsoft DHCP Modeling Rule
 rules: ''
 schema: ''
 tags: ''

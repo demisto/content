@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: SynopsysCoverity_ModelingRule
-name: SynopsysCoverity Modeling Rule
+id: Synopsys_Coverity_ModelingRule
+name: Synopsys Coverity Modeling Rule
 rules: ''
 schema: ''
 tags: synopsys

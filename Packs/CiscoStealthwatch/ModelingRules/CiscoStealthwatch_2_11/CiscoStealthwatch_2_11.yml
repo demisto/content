@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CiscoStealthwatch_ModelingRule
-name: CiscoStealthwatch Modeling Rule
+id: Cisco_Stealthwatch_ModelingRule
+name: Cisco Stealthwatch Modeling Rule
 rules: ''
 schema: ''
 tags: ''

@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-name: AvayaAuraCommunicationManager Modeling Rule
-id: AvayaAuraCommunicationManager_ModelingRule
+name: Avaya Aura Communication Manager Modeling Rule
+id: Avaya_Aura_Communication_Manager_ModelingRule
 tags:
 rules: ''
 schema: ''
