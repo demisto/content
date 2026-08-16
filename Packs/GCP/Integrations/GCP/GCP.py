@@ -2545,6 +2545,29 @@ def _kms_resolve_version_name(kms_client, project_id: str, location: str, key_ri
     return primary_name
 
 
+def _kms_key_ring_to_context(key_ring: dict[str, Any], project_id: str, location: str) -> dict[str, Any]:
+    """Normalizes a KeyRing API response into the integration's context format.
+
+    Args:
+        key_ring (dict[str, Any]): The KeyRing resource returned by the Cloud KMS API.
+        project_id (str): The GCP project ID.
+        location (str): The KMS location.
+
+    Returns:
+        dict[str, Any]: The normalized KeyRing context entry.
+    """
+    full_name = key_ring.get("name", "")
+    context = {
+        "Name": full_name.rsplit("/", 1)[-1] if full_name else "",
+        "ResourceName": full_name,
+        "Project": project_id,
+        "Location": location,
+        "CreationTime": _format_gcp_datetime(key_ring.get("createTime")),
+    }
+
+    return remove_empty_elements(context)  # type: ignore[return-value]
+
+
 def _kms_key_to_context(key: dict[str, Any], project_id: str, location: str, key_ring: str) -> dict[str, Any]:
     """Normalizes a CryptoKey API response into the integration's context format.
 
@@ -2646,44 +2669,58 @@ def kms_keyring_list(creds: Credentials, args: dict[str, Any]) -> CommandResults
 
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Command arguments including project_id, location and all_locations.
+        args (dict[str, Any]): Command arguments including project_id, location, all_locations,
+            limit and page_token.
 
     Returns:
         CommandResults: The KeyRings found.
     """
-    project_id = args.get("project_id")
+    project_id = args.get("project_id", "")
+    page_token = args.get("page_token")
     limit = arg_to_number(args.get("limit")) or 50
     validate_limit(limit)
 
-    locations = KMS_ALL_LOCATIONS if argToBoolean(args.get("all_locations", False)) else [args.get("location", "global")]
+    all_locations = argToBoolean(args.get("all_locations", False))
+    locations = KMS_ALL_LOCATIONS if all_locations else [args.get("location", "global")]
 
     kms_client = GCPServices.KMS.build(creds)
     key_rings: list[dict[str, Any]] = []
+    next_page_token = None
 
     for location in locations:
-        request_params = {"parent": f"projects/{project_id}/locations/{location}", "pageSize": limit}
+        request_params = {
+            "parent": f"projects/{project_id}/locations/{location}",
+            "pageSize": limit,
+            # A page token is bound to the location that issued it, so it is only
+            # forwarded for a single-location request.
+            "pageToken": None if all_locations else page_token,
+        }
+        remove_nulls_from_dictionary(request_params)
         demisto.debug(f"[GCP: kms_keyring_list] Request params: {request_params}")
         response = kms_client.projects().locations().keyRings().list(**request_params).execute()  # pylint: disable=E1101
-        key_rings.extend(response.get("keyRings", []))
+        key_rings.extend(_kms_key_ring_to_context(key_ring, project_id, location) for key_ring in response.get("keyRings", []))
+        if not all_locations:
+            next_page_token = response.get("nextPageToken")
 
     demisto.debug(f"[GCP: kms_keyring_list] KeyRings returned: {len(key_rings)}")
 
     if not key_rings:
         return CommandResults(readable_output="No KMS key rings found.")
 
-    hr_data = [
-        {"Name": key_ring.get("name"), "CreationTime": _format_gcp_datetime(key_ring.get("createTime"))}
-        for key_ring in key_rings
-    ]
-    hr = tableToMarkdown("GCP KMS Key Rings", hr_data, removeNull=True, headerTransform=pascalToSpace)
-
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="GCP.KMS.KeyRing",
-        outputs_key_field="name",
-        outputs=key_rings,
-        raw_response=key_rings,
+    hr = tableToMarkdown(
+        "GCP KMS Key Rings",
+        key_rings,
+        headers=["Name", "Location", "CreationTime"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
     )
+
+    outputs = {
+        "GCP.KMS.KeyRing(val.ResourceName && val.ResourceName == obj.ResourceName)": key_rings,
+        "GCP.KMS(true)": {"KeyRingsNextPageToken": next_page_token},
+    }
+
+    return CommandResults(readable_output=hr, outputs=remove_empty_elements(outputs), raw_response=key_rings)
 
 
 def kms_key_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -2737,7 +2774,8 @@ def kms_key_list_all(creds: Credentials, args: dict[str, Any]) -> CommandResults
 
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Command arguments including project_id, location, all_locations and key_state.
+        args (dict[str, Any]): Command arguments including project_id, location, all_locations,
+            key_state and limit.
 
     Returns:
         CommandResults: The CryptoKeys found.
@@ -2751,6 +2789,7 @@ def kms_key_list_all(creds: Credentials, args: dict[str, Any]) -> CommandResults
 
     kms_client = GCPServices.KMS.build(creds)
     keys: list[dict[str, Any]] = []
+    truncated = False
 
     for location in locations:
         key_rings_response = (
@@ -2760,6 +2799,7 @@ def kms_key_list_all(creds: Credentials, args: dict[str, Any]) -> CommandResults
             .list(parent=f"projects/{project_id}/locations/{location}", pageSize=limit)
             .execute()
         )
+        truncated = truncated or bool(key_rings_response.get("nextPageToken"))
 
         for key_ring in key_rings_response.get("keyRings", []):
             key_ring_name = key_ring.get("name", "")
@@ -2774,16 +2814,33 @@ def kms_key_list_all(creds: Credentials, args: dict[str, Any]) -> CommandResults
                 .list(**request_params)
                 .execute()
             )
+            truncated = truncated or bool(keys_response.get("nextPageToken"))
             keys.extend(
                 _kms_key_to_context(key, project_id, location, key_ring_id) for key in keys_response.get("cryptoKeys", [])
             )
 
-    demisto.debug(f"[GCP: kms_key_list_all] CryptoKeys returned: {len(keys)}")
+    demisto.debug(f"[GCP: kms_key_list_all] CryptoKeys returned: {len(keys)}, truncated: {truncated}")
 
     if not keys:
         return CommandResults(readable_output="No KMS crypto keys found.")
 
-    hr = tableToMarkdown("GCP KMS Crypto Keys", keys, headers=KMS_KEY_TABLE, removeNull=True, headerTransform=pascalToSpace)
+    # This command aggregates across key rings (and optionally locations), so a single page
+    # token cannot represent the combined position. Surface truncation instead, and point the
+    # user at gcp-kms-key-list, which paginates a single key ring properly.
+    metadata = (
+        "Some results were omitted because at least one key ring or location returned more than "
+        f"{limit} results. Increase 'limit', or use gcp-kms-key-list to page through a single key ring."
+        if truncated
+        else ""
+    )
+    hr = tableToMarkdown(
+        "GCP KMS Crypto Keys",
+        keys,
+        headers=KMS_KEY_TABLE,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+        metadata=metadata,
+    )
 
     return CommandResults(
         readable_output=hr,

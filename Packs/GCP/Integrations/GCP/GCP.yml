@@ -2074,13 +2074,28 @@ script:
       description: The maximum number of key rings to return per location. Valid range 1-500.
       required: false
       defaultValue: '50'
+    - name: page_token
+      description: The token for the next page of results, used for pagination. Ignored when all_locations is set to true, because a page token is bound to a single location.
+      required: false
     outputs:
-      - contextPath: GCP.KMS.KeyRing.name
-        description: The resource name of the key ring.
+      - contextPath: GCP.KMS.KeyRing.Name
+        description: The ID of the key ring.
         type: String
-      - contextPath: GCP.KMS.KeyRing.createTime
+      - contextPath: GCP.KMS.KeyRing.ResourceName
+        description: The full resource name of the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRing.Project
+        description: The project that holds the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRing.Location
+        description: The location of the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRing.CreationTime
         description: The time at which the key ring was created.
         type: Date
+      - contextPath: GCP.KMS.KeyRingsNextPageToken
+        description: The token to pass as the page_token argument to retrieve the next page of key rings.
+        type: String
   - name: gcp-kms-key-list
     description: "Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloudkms.cryptoKeys.list."
     arguments:
@@ -2186,7 +2201,7 @@ script:
       - PENDING_IMPORT
       - IMPORT_FAILED
     - name: limit
-      description: The maximum number of crypto keys to return per key ring. Valid range 1-500.
+      description: The maximum number of crypto keys to return per key ring. Valid range 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-key-list to page through a single key ring.
       required: false
       defaultValue: '50'
     outputs:
