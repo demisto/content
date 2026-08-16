@@ -2150,19 +2150,7 @@ def update_issue_command(client: Client, args: dict):
         "critical": "SEV_050_CRITICAL",
     }
     severity_value = args.get("severity")
-    if severity_value and severity_value not in severity_map:
-        raise CortexInvalidArgError(
-            arg_name="severity",
-            value=severity_value,
-            allowed_values=list(severity_map.keys()),
-        )
     status = args.get("status")
-    if status and status not in status_map:
-        raise CortexInvalidArgError(
-            arg_name="status",
-            value=status,
-            allowed_values=list(status_map.keys()),
-        )
     link_cases = [int(case_id) for case_id in argToList(args.get("link_cases"))] if args.get("link_cases") else []
     unlink_cases = [int(case_id) for case_id in argToList(args.get("unlink_cases"))] if args.get("unlink_cases") else []
 
