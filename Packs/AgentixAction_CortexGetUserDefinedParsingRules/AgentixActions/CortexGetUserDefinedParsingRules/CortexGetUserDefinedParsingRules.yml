@@ -1,0 +1,31 @@
+commonfields:
+  id: CortexGetUserDefinedParsingRules
+  version: -1
+display: Cortex - Get User Defined Parsing Rules
+name: CortexGetUserDefinedParsingRules
+description: >
+  Retrieves the full user-defined XQL parsing rules file configured under Dataset Management, returning its content hash, the complete rules text, and the last modification time. Takes no inputs. Trigger when the user needs the current user-defined parsing rules, for example: (a) the user reports they are not receiving expected data or a dataset looks empty or malformed and the parsing logic must be inspected, or (b) the user asks to validate or correct XQL parsing rule syntax and the existing rules are needed as the source of truth. If no user-defined parsing rules are configured, the action returns the message "No user-defined parsing rules are defined." and does not populate Core.ParsingRule.
+args: []
+outputs:
+  - underlyingoutputcontextpath: Core.ParsingRule.hash
+    description: The content hash of the user-defined parsing rules file.
+    type: string
+    name: Core.ParsingRule.hash
+  - underlyingoutputcontextpath: Core.ParsingRule.text
+    description: The complete user-defined XQL parsing rules text.
+    type: string
+    name: Core.ParsingRule.text
+  - underlyingoutputcontextpath: Core.ParsingRule.last_update
+    description: The last modification time of the user-defined parsing rules, in epoch milliseconds.
+    type: number
+    name: Core.ParsingRule.last_update
+underlyingcontentitem:
+  id: _builtin_
+  name: _builtin_
+  type: command
+  version: -1
+  command: getUserDefinedParsingRules
+requiresuserapproval: false
+fromversion: 8.16.0
+marketplaces:
+  - platform

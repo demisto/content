@@ -1,0 +1,22 @@
+{
+    "author": "Cortex XSOAR",
+    "categories": [
+        "Utilities"
+    ],
+    "currentVersion": "1.0.0",
+    "description": "Retrieves the full user-defined XQL parsing rules file configured under Dataset Management, returning its content hash, the complete rules text, and the last modification time.",
+    "email": "",
+    "internal": true,
+    "keywords": [],
+    "managed": true,
+    "marketplaces": [
+        "platform"
+    ],
+    "name": "Cortex - Get User Defined Parsing Rules",
+    "serverMinVersion": "8.16.0",
+    "source": "agentix",
+    "support": "xsoar",
+    "tags": [],
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "useCases": []
+}
