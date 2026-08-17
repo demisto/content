@@ -1,0 +1,1024 @@
+{
+	"cacheVersn": 0,
+	"close": null,
+	"definitionId": "",
+	"description": "DomainToolsFeed IP Indicator Layout",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "DomainToolsFeed IP",
+		"tabs": [
+			{
+				"id": "default-main",
+				"name": "DomainTools",
+				"sections": [
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "default-main-expirationStatus",
+						"maxW": 3,
+						"moved": false,
+						"name": "Expiration Status",
+						"static": false,
+						"type": "expirationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "default-main-reputationStatus",
+						"maxW": 3,
+						"moved": false,
+						"name": "Verdict Status",
+						"static": false,
+						"type": "reputationStatus",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "domaintools-ip-geo",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipasn",
+								"height": 22,
+								"id": "dt-asn",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeediporganization",
+								"height": 22,
+								"id": "dt-organization",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipcity",
+								"height": 22,
+								"id": "dt-city",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipcountry",
+								"height": 22,
+								"id": "dt-country",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeediplatitude",
+								"height": 22,
+								"id": "dt-latitude",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeediplongitude",
+								"height": 22,
+								"id": "dt-longitude",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipfeedtimestamp",
+								"height": 22,
+								"id": "dt-feed-timestamp",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "IP Geolocation",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"i": "domaintools-ip-dns",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedippdnsresolutions",
+								"height": 22,
+								"id": "dt-pdns",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipbadpdnsresolutions",
+								"height": 22,
+								"id": "dt-bad-pdns",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeediptotaldomains",
+								"height": 22,
+								"id": "dt-total-domains",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipzerolistdomains",
+								"height": 22,
+								"id": "dt-zerolist-domains",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipzerolistip",
+								"height": 22,
+								"id": "dt-zerolist-ip",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipthirdpartythreats",
+								"height": 22,
+								"id": "dt-third-party",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "DNS \u0026 Domain Stats",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"i": "domaintools-ip-threats",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipallthreatscombinedcount",
+								"height": 22,
+								"id": "dt-all-threats-count",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipallthreatscombinedpercent",
+								"height": 22,
+								"id": "dt-all-threats-combined-pct",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipallthreatsperecent",
+								"height": 22,
+								"id": "dt-all-threats-pct",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipcombinedphishingpercent",
+								"height": 22,
+								"id": "dt-combined-phishing",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipcombinedmalwarepercent",
+								"height": 22,
+								"id": "dt-combined-malware",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipcombinedspampercent",
+								"height": 22,
+								"id": "dt-combined-spam",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipmaliciousphishing",
+								"height": 22,
+								"id": "dt-mal-phishing",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipmaliciousmalware",
+								"height": 22,
+								"id": "dt-mal-malware",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipmaliciousspam",
+								"height": 22,
+								"id": "dt-mal-spam",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedippercentphishing",
+								"height": 22,
+								"id": "dt-pct-phishing",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedippercentmalware",
+								"height": 22,
+								"id": "dt-pct-malware",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedippercentspam",
+								"height": 22,
+								"id": "dt-pct-spam",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipcompromisedphishing",
+								"height": 22,
+								"id": "dt-comp-phishing",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipcompromisedmalware",
+								"height": 22,
+								"id": "dt-comp-malware",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedipcompromisedspam",
+								"height": 22,
+								"id": "dt-comp-spam",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedippredictedphishing",
+								"height": 22,
+								"id": "dt-pred-phishing",
+								"index": 15,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedippredictedmalware",
+								"height": 22,
+								"id": "dt-pred-malware",
+								"index": 16,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "domaintoolsfeedippredictedspam",
+								"height": 22,
+								"id": "dt-pred-spam",
+								"index": 17,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"moved": false,
+						"name": "Threat Intelligence",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"h": 2,
+						"i": "default-main-relationshipsTable",
+						"maxW": 3,
+						"moved": false,
+						"name": "Relationships",
+						"static": false,
+						"type": "relationshipsTable",
+						"w": 2,
+						"x": 0,
+						"y": 8
+					},
+					{
+						"h": 2,
+						"i": "default-main-relatedIncidents",
+						"maxW": 3,
+						"moved": false,
+						"name": "Related Incidents",
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 10
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "indicator_value",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_indicatortype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_score",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_expiration",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_comment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_investigationids",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "basicInformationSection"
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "indicator_domaintoolsfeedipasn",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeediplatitude",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeediplongitude",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipcountry",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipcity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeediporganization",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "IP Geolocation",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "indicator_domaintoolsfeedippdnsresolutions",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipbadpdnsresolutions",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeediptotaldomains",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipzerolistdomains",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipzerolistip",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "DNS \u0026 Domain Stats",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "indicator_domaintoolsfeedipallthreatscombinedcount",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipallthreatscombinedpercent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipallthreatsperecent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipcombinedmalwarepercent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipcombinedphishingpercent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipcombinedspampercent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipcompromisedmalware",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipcompromisedphishing",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipcompromisedspam",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipmaliciousmalware",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipmaliciousphishing",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipmaliciousspam",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedippercentmalware",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedippercentphishing",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedippercentspam",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedippredictedmalware",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedippredictedphishing",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedippredictedspam",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_domaintoolsfeedipthirdpartythreats",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Threat Intelligence",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "indicator_blocked",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_communitynotes",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_description",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_firstseenbysource",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_stixid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_tags",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_targets",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_trafficlightprotocol",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_updateddate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_userid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_vendor",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_version",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_vtenginedetectionnames",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_vtenginedetections",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_vtenginevendors",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_vulnerabilities",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_vulnerableproducts",
+						"isVisible": true
+					},
+					{
+						"fieldId": "indicator_whoisrecords",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"fromServerVersion": "0.0.0",
+	"group": "indicator",
+	"id": "DomainToolsFeed IP Indicator",
+	"indicatorsDetails": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "default-main",
+				"name": "Info",
+				"sections": [
+					{
+						"h": 2,
+						"i": "default-main-relationshipsTable",
+						"maxW": 3,
+						"name": "Relationships",
+						"type": "relationshipsTable",
+						"w": 2,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"h": 2,
+						"i": "default-main-relatedIncidents",
+						"maxW": 3,
+						"name": "Related Incidents",
+						"type": "relatedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "indicatortype",
+								"height": 26,
+								"id": "indicator-type",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "modified",
+								"height": 26,
+								"id": "indicator-modified",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "expiration",
+								"height": 26,
+								"id": "indicator-expiration",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "timestamp",
+								"height": 26,
+								"id": "indicator-timestamp",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"name": "Basic Information",
+						"w": 1,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": false,
+						"i": "default-main-actions",
+						"items": [
+							{
+								"args": {},
+								"endCol": 1,
+								"height": 44,
+								"index": 0,
+								"name": "Enrich indicator",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"height": 44,
+								"index": 1,
+								"name": "Expire indicator",
+								"scriptId": "Builtin|||expireIndicators",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"name": "Actions",
+						"type": "actions",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "default-main-tagsAndTLP",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 53,
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"field": {
+										"simple": "tags"
+									}
+								},
+								"dropEffect": "move",
+								"endCol": 1,
+								"height": 53,
+								"index": 1,
+								"name": "Add tags",
+								"scriptId": "Builtin|||appendIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "trafficlightprotocol",
+								"height": 53,
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"field": {
+										"simple": "tags"
+									}
+								},
+								"endCol": 2,
+								"height": 53,
+								"index": 1,
+								"name": "Remove tags",
+								"scriptId": "Builtin|||removeIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"name": "Tags and TLP",
+						"type": "tagsAndTLP",
+						"w": 1,
+						"x": 2,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"i": "default-main-indicatorTimeline",
+						"maxW": 3,
+						"name": "Timeline",
+						"type": "indicatorTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 3
+					},
+					{
+						"h": 3,
+						"i": "default-main-comments",
+						"maxW": 3,
+						"name": "Comments",
+						"type": "comments",
+						"w": 1,
+						"x": 2,
+						"y": 5
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "default-main-reputationStatus",
+						"maxW": 3,
+						"name": "Verdict Status",
+						"type": "reputationStatus",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "default-main-expirationStatus",
+						"maxW": 3,
+						"name": "Expiration Status",
+						"type": "expirationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "default-main-reputationSources",
+						"maxW": 3,
+						"name": "Verdict",
+						"type": "reputationSources",
+						"w": 1,
+						"x": 1,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "default-main-publications",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "communitynotes",
+								"height": 106,
+								"id": "indicator-communitynotes-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 4,
+								"fieldId": "publications",
+								"height": 106,
+								"id": "indicator-publications-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"name": "Publications",
+						"type": "publications",
+						"w": 2,
+						"x": 0,
+						"y": 9
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"indicatorsQuickView": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "indicator-quick-view-info",
+				"name": "Info",
+				"sections": [
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "indicator-quick-view-info-expirationStatus",
+						"maxW": 3,
+						"name": "Expiration Status",
+						"type": "expirationStatus",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-reputationSources",
+						"maxW": 3,
+						"name": "Verdict",
+						"type": "reputationSources",
+						"w": 1,
+						"x": 0,
+						"y": 1
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"i": "indicator-quick-view-info-tags-section",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 22,
+								"id": "indicator-quick-view-info-tags-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"name": "Tags",
+						"w": 1,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-relatedIncidents",
+						"maxW": 3,
+						"name": "Related Incidents",
+						"type": "relatedIncidents",
+						"w": 1,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-comments",
+						"maxW": 3,
+						"name": "Comments",
+						"type": "comments",
+						"w": 1,
+						"x": 0,
+						"y": 7
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"isOverridable": false,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "DomainToolsFeed IP Indicator",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "99.99.99",
+	"version": -1
+}

@@ -1,0 +1,28 @@
+{
+    "id": "indicator_domaintoolsfeediporganization",
+    "version": -1,
+    "name": "DomainToolsFeed IP Organization",
+    "ownerOnly": false,
+    "cliName": "domaintoolsfeediporganization",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "DomainToolsFeed IP"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

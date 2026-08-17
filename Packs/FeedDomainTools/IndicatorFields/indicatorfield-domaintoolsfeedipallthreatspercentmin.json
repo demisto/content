@@ -1,0 +1,28 @@
+{
+    "id": "indicator_domaintoolsfeedipallthreatsperecent",
+    "version": -1,
+    "name": "DomainToolsFeed IP All Threats Percent",
+    "ownerOnly": false,
+    "cliName": "domaintoolsfeedipallthreatsperecent",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "DomainToolsFeed IP"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}
