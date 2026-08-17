@@ -1,5 +1,4 @@
 fromversion: 8.4.0  # Will be updated with XSIAM version updates
-toversion: 8.14.0
 id: Citrix_Cloud_ModelingRule
 name: Citrix Cloud Modeling Rule
 rules: ''
