@@ -4,6 +4,3 @@ ignore=IN136
 
 [file:Halcyon.py]
 ignore=IN136
-
-[file:pack_metadata.json]
-ignore=PA134

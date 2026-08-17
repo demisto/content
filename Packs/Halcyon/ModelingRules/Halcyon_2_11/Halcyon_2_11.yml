@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: Halcyon_Halcyon_ModelingRule
-name: Halcyon Halcyon Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
