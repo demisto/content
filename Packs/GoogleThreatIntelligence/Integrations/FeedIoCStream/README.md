@@ -1,6 +1,6 @@
 Use the Google Threat Intelligence IoC Stream Feed integration to fetch indicators from IoC Stream rules or rulesets.
 
-## Configure Google Threat Intelligence IoC Stream Feed on Cortex XSOAR
+## Configure Google Threat Intelligence IoC Stream Feed in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Google Threat Intelligence IoC Stream Feed.
@@ -10,6 +10,8 @@ Use the Google Threat Intelligence IoC Stream Feed integration to fetch indicato
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
 | credentials | API Key. | True |
+| Use system proxy settings | Whether to use the system proxy settings. | False |
+| Trust any certificate (not secure) | Whether to trust any certificate (not secure). | False |
 | limit | The maximum number of indicators to fetch from IoC Stream. The default value is 200. | False |
 | filter | Exact name of the rule or ruleset you want to filter on. Leave empty to receive all. | False |
 | feedReputation | The indicator reputation. | False |
@@ -19,8 +21,6 @@ Use the Google Threat Intelligence IoC Stream Feed integration to fetch indicato
 | feedFetchInterval | The feed fetch interval. | False |
 | feedMinimumGTIScore | The minimum GTI score to import as part of the feed. | True |
 | feedBypassExclusionList | Whether to bypass exclusion list. | False |
-| proxy | Whether to use the system proxy settings. | False |
-| insecure | Whether to trust any certificate (not secure). | False |
 
 4. Click **Test** to validate the Google Threat Intelligence API Key, and connection.
 

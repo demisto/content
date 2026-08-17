@@ -288,33 +288,42 @@ def test_main_test_command(mocker):
 
 
 @pytest.mark.parametrize(
-    "raised_error, expected_error",
+    "raised_exception, expected_error",
     [
         (
-            "Proxy Error - if the 'Use system proxy' checkbox in the integration configuration is selected,"
-            " try clearing the checkbox.",
+            DemistoException(
+                "Proxy Error - if the 'Use system proxy' checkbox in the integration configuration is selected,"
+                " try clearing the checkbox."
+            ),
             "Proxy Error - if the 'Use system proxy' checkbox in the integration configuration is selected,"
             " try clearing the checkbox.",
         ),
         (
-            "SSL Certificate Verification Failed - try selecting 'Trust any certificate' checkbox in"
-            " the integration configuration.",
+            DemistoException(
+                "SSL Certificate Verification Failed - try selecting 'Trust any certificate' checkbox in"
+                " the integration configuration."
+            ),
             "SSL Certificate Verification Failed - try selecting 'Trust any certificate' checkbox in"
             " the integration configuration.",
         ),
         (
-            "Error in API call [401] - Unauthorized",
+            DemistoException("Error in API call [401] - Unauthorized"),
+            "Could not fetch Google Threat Intelligence IoC Stream Feed\n"
+            "\nCheck your API key and your connection to Google Threat Intelligence.",
+        ),
+        (
+            Exception("Unexpected failure"),
             "Could not fetch Google Threat Intelligence IoC Stream Feed\n"
             "\nCheck your API key and your connection to Google Threat Intelligence.",
         ),
     ],
 )
-def test_test_module_error(mocker, raised_error, expected_error):
+def test_test_module_error(mocker, raised_exception, expected_error):
+    """Tests test module errors, proxy and SSL errors are kept as they are."""
     from FeedIoCStream import test_module
 
-    """Tests test module errors, proxy and SSL errors are kept as they are."""
     client = Client("https://fake")
-    mocker.patch.object(client, "get_api_indicators", side_effect=DemistoException(raised_error))
+    mocker.patch.object(client, "get_api_indicators", side_effect=raised_exception)
 
     with pytest.raises(Exception) as exc:
         test_module(client, {})

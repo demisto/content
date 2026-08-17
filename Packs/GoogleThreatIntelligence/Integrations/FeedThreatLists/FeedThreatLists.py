@@ -94,7 +94,7 @@ def test_module(client: Client, args: dict) -> str:
         raise Exception(
             "Could not fetch Google Threat Intelligence IoC Threat Lists\n"
             "\nCheck your API key and your connection to Google Threat Intelligence."
-        )
+        ) from exc
     return "ok"
 
 
