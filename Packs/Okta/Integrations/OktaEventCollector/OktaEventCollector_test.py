@@ -374,7 +374,7 @@ def test_parse_time_argument_invalid_raises(value, capfd):
                 {"published": "2022-04-17T12:33:36.667", "uuid": "ccc"},
             ],
             "2022-04-17T11:30:00.000",
-            {"after": "2022-04-17T12:33:36.667000", "ids": ["ccc"], "next_link": ""},
+            {"after": "2022-04-17T12:33:36.667000", "ids": ["ccc"]},
             id="distinct_timestamps",
         ),
         pytest.param(
@@ -384,7 +384,7 @@ def test_parse_time_argument_invalid_raises(value, capfd):
                 {"published": "2022-04-17T12:32:36.667", "uuid": "ccc"},
             ],
             "2022-04-17T11:30:00.000",
-            {"after": "2022-04-17T12:32:36.667000", "ids": ["ccc", "bbb"], "next_link": ""},
+            {"after": "2022-04-17T12:32:36.667000", "ids": ["ccc", "bbb"]},
             id="shared_latest_timestamp",
         ),
         pytest.param(
@@ -393,13 +393,13 @@ def test_parse_time_argument_invalid_raises(value, capfd):
                 {"published": "2022-04-17T12:32:36.667", "uuid": "bbb"},
             ],
             "2022-04-17T11:30:00.000",
-            {"after": "2022-04-17T12:32:36.667000", "ids": ["bbb", "aaa"], "next_link": ""},
+            {"after": "2022-04-17T12:32:36.667000", "ids": ["bbb", "aaa"]},
             id="all_same_timestamp",
         ),
         pytest.param(
             [],
             "2022-04-17T12:31:36.667",
-            {"after": "2022-04-17T12:31:36.667000", "ids": [], "next_link": ""},
+            {"after": "2022-04-17T12:31:36.667000", "ids": []},
             id="no_events_cursor_preserved",
         ),
     ],
@@ -410,7 +410,7 @@ def test_get_last_run(events, last_run_after, result):
     When: Building the last run object.
     Then: The cursor advances to the latest timestamp and its UUIDs are stored.
     """
-    assert get_last_run(events, last_run_after, next_link="") == result
+    assert get_last_run(events, last_run_after) == result
 
 
 def test_get_last_run_with_different_format():
@@ -423,19 +423,8 @@ def test_get_last_run_with_different_format():
         {"published": "2022-04-17T12:31:36", "uuid": "aaa"},
         {"published": "2022-04-17T12:33:36", "uuid": "ccc"},
     ]
-    expected = {"after": "2022-04-17T12:33:36", "ids": ["ccc"], "next_link": ""}
-    assert get_last_run(events, "2022-04-17T11:30:00", next_link="") == expected
-
-
-@pytest.mark.parametrize("next_link", [NEXT_URL, ""], ids=["with_cursor", "without_cursor"])
-def test_get_last_run_preserves_next_link(next_link):
-    """
-    Given: A pagination cursor that must survive into the next fetch cycle.
-    When: Building the last run object.
-    Then: The next_link is stored alongside the timestamp cursor.
-    """
-    events = [{"published": "2022-04-17T12:31:36.667", "uuid": "aaa"}]
-    assert get_last_run(events, "2022-04-17T11:30:00.000", next_link=next_link)["next_link"] == next_link
+    expected = {"after": "2022-04-17T12:33:36", "ids": ["ccc"]}
+    assert get_last_run(events, "2022-04-17T11:30:00") == expected
 
 
 def test_get_last_run_invalid_date_format():
@@ -449,7 +438,23 @@ def test_get_last_run_invalid_date_format():
         {"published": "xxxyyyzzz", "uuid": "ccc"},
     ]
     with pytest.raises(dateutil.parser._parser.ParserError):
-        get_last_run(events, "2022-04-17T11:30:00", next_link="")
+        get_last_run(events, "2022-04-17T11:30:00")
+
+
+def test_get_last_run_does_not_persist_next_link_across_cycles():
+    """
+    Given: A cycle that returned a pagination cursor.
+    When: Building the last run object for the next cycle.
+    Then: next_link is not carried over into the stored last run.
+
+    A next_link encodes an absolute pagination position, so it is only valid within a
+    single cycle. Each new cycle resumes from the time-based ``after`` cursor.
+    """
+    events = [{"published": "2022-04-17T12:31:36.667", "uuid": "aaa"}]
+
+    result = get_last_run(events, "2022-04-17T11:30:00.000")
+
+    assert "next_link" not in result
 
 
 def test_get_last_run_returns_empty_on_unexpected_error(mocker, capfd):
@@ -462,7 +467,7 @@ def test_get_last_run_returns_empty_on_unexpected_error(mocker, capfd):
     mocker.patch("OktaEventCollector.parse", side_effect=TypeError("boom"))
 
     with capfd.disabled():
-        assert get_last_run([{"published": "2022-04-17T12:31:36.667", "uuid": "aaa"}], "x", next_link="") == {}
+        assert get_last_run([{"published": "2022-04-17T12:31:36.667", "uuid": "aaa"}], "x") == {}
 
 
 # endregion
@@ -754,27 +759,28 @@ def test_fetch_events(dummy_client, mocker):
     """
     Given: A fetch cycle with a configured limit.
     When: Collecting events.
-    Then: The events and the pagination cursor are returned.
+    Then: The collected events are returned.
     """
     mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
 
-    events, next_link = fetch_events(dummy_client, 10, "2022-04-17T11:30:00.000")
+    events = fetch_events(dummy_client, 10, "2022-04-17T11:30:00.000")
 
     assert events == id1_pub
-    assert next_link == ""
 
 
-def test_fetch_events_resumes_from_next_link(dummy_client, mocker):
+def test_fetch_events_starts_from_time_cursor(dummy_client, mocker):
     """
-    Given: A stored pagination cursor from a previous cycle.
-    When: Starting a new fetch.
-    Then: The stored cursor is passed through to the API call.
+    Given: A new fetch cycle.
+    When: Starting the fetch.
+    Then: The first request uses the time-based cursor, not a carried-over pagination
+          link, so a cycle always resumes from the committed ``after`` timestamp.
     """
     get_events_mock = mocker.patch.object(dummy_client, "get_events", side_effect=[MockResponse(data=id1_pub)])
 
-    fetch_events(dummy_client, 10, "2022-04-17T11:30:00.000", next_link=NEXT_URL)
+    fetch_events(dummy_client, 10, "2022-04-17T11:30:00.000")
 
-    assert get_events_mock.call_args.kwargs["next_link_url"] == NEXT_URL
+    assert get_events_mock.call_args.kwargs["since"] == "2022-04-17T11:30:00.000"
+    assert not get_events_mock.call_args.kwargs.get("next_link_url")
 
 
 def test_fetch_events_applies_dedup_ids(dummy_client, mocker):
@@ -1344,7 +1350,7 @@ def test_get_last_run_cursor_round_trips(published):
     Then: The stored cursor parses back to the same instant, so the next cycle queries
           the window it was told to and does not skip or replay events.
     """
-    stored = get_last_run([{"published": published, "uuid": "aaa"}], "2022-04-17T11:30:00.000", next_link="")
+    stored = get_last_run([{"published": published, "uuid": "aaa"}], "2022-04-17T11:30:00.000")
 
     parsed = dateutil.parser.parse(stored["after"])
     assert (parsed.year, parsed.month, parsed.day) == (2022, 4, 17)

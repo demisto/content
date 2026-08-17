@@ -173,20 +173,21 @@ def remove_duplicates(events: list, ids: list) -> list:
     return new_events
 
 
-def get_last_run(events: List[dict], last_run_after, next_link) -> dict:
+def get_last_run(events: List[dict], last_run_after) -> dict:
     """Build the last_run dictionary for the next fetch cycle.
 
     Args:
         events: The events collected during this cycle, in chronological order.
         last_run_after: The timestamp this cycle started from, used when no events
             were collected so the cursor does not regress.
-        next_link: The pagination link to resume from, or an empty string.
 
     Returns:
-        Dictionary with three keys:
+        Dictionary with two keys:
             - after: the timestamp to query from on the next cycle.
             - ids: UUIDs of events sharing the latest timestamp, used for deduplication.
-            - next_link: the pagination link to resume from, if any.
+        The pagination cursor is intentionally not persisted between cycles: it encodes
+        an absolute position and is only valid within the cycle that produced it. Each
+        new cycle resumes from the time-based ``after`` cursor instead.
         Returns an empty dict if parsing failed unexpectedly, so the caller leaves the
         stored cursor untouched rather than regressing it.
 
@@ -214,8 +215,8 @@ def get_last_run(events: List[dict], last_run_after, next_link) -> dict:
         demisto.error(f"[Last Run] Unexpected error parsing published date from event: {e}")
         return {}
 
-    demisto.debug(f"[Last Run] Next cursor: {last_time.isoformat()} | Dedup IDs: {len(ids)} | Next link set: {bool(next_link)}")
-    return {"after": last_time.isoformat(), "ids": ids, "next_link": next_link}
+    demisto.debug(f"[Last Run] Next cursor: {last_time.isoformat()} | Dedup IDs: {len(ids)}")
+    return {"after": last_time.isoformat(), "ids": ids}
 
 
 # endregion
@@ -418,8 +419,7 @@ def fetch_events(
     events_limit: int,
     last_run_after,
     last_object_ids: list[str] | None = None,
-    next_link: str = "",
-) -> tuple[list[dict], str]:
+) -> list[dict]:
     """Collect events for a single fetch cycle.
 
     Args:
@@ -427,23 +427,22 @@ def fetch_events(
         events_limit: Total number of events to collect this cycle.
         last_run_after: Timestamp to start collecting from.
         last_object_ids: UUIDs of previously collected events, used for deduplication.
-        next_link: Pagination link to resume from, if any.
 
     Returns:
-        Tuple of the collected events and the pagination link for the next cycle.
+        The collected events. Pagination is handled within the cycle; the cursor is not
+        carried over, so the next cycle resumes from the time-based ``after`` cursor.
     """
     demisto.debug(f"[Fetch] Start | Limit: {events_limit} | Since: {last_run_after}")
 
-    events, next_link = get_events_command(
+    events, _ = get_events_command(
         client=client,
         total_events_to_fetch=events_limit,
         since=last_run_after,
         last_object_ids=last_object_ids,
-        next_link=next_link,
     )
 
     demisto.debug(f"[Fetch Result] Returning {len(events)} events")
-    return events, next_link
+    return events
 
 
 def test_module(client: Client) -> str:
@@ -593,19 +592,15 @@ def main():  # pragma: no cover
             last_run = demisto.getLastRun()
             # Logged as a summary rather than the raw dict: ids can hold up to PAGE_SIZE
             # UUIDs, which would bloat the log without adding diagnostic value.
-            demisto.debug(
-                f"[Fetch] Last run | After: {last_run.get('after')} | "
-                f"Dedup IDs: {len(last_run.get('ids') or [])} | Next link set: {bool(last_run.get('next_link'))}"
-            )
+            demisto.debug(f"[Fetch] Last run | After: {last_run.get('after')} | " f"Dedup IDs: {len(last_run.get('ids') or [])}")
 
             last_run_after = last_run.get("after") or after.isoformat()
 
-            events, next_link = fetch_events(
+            events = fetch_events(
                 client,
                 events_limit,
                 last_run_after=last_run_after,
                 last_object_ids=last_run.get("ids"),
-                next_link=last_run.get("next_link"),
             )
 
             # get_events_command is already bounded by events_limit, so the batch that
@@ -613,12 +608,11 @@ def main():  # pragma: no cover
             # list. Slicing here would risk the two diverging and silently losing events.
             client.send_events(events)
 
-            if new_last_run := get_last_run(events, last_run_after, next_link):
+            if new_last_run := get_last_run(events, last_run_after):
                 demisto.setLastRun(new_last_run)
                 demisto.debug(
                     f"[Fetch] Last run updated | After: {new_last_run.get('after')} | "
-                    f"Dedup IDs: {len(new_last_run.get('ids') or [])} | "
-                    f"Next link set: {bool(new_last_run.get('next_link'))}"
+                    f"Dedup IDs: {len(new_last_run.get('ids') or [])}"
                 )
 
         else:
