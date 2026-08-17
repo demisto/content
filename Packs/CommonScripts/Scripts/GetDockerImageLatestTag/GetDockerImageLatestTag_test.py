@@ -1,7 +1,13 @@
 import demistomock as demisto
 import pytest
 import requests_mock
-from GetDockerImageLatestTag import find_latest_tag_by_date, is_runnable_tag, lexical_find_latest_tag, main
+from GetDockerImageLatestTag import (
+    find_latest_tag_by_date,
+    is_runnable_tag,
+    lexical_find_latest_tag,
+    main,
+    parse_www_auth,
+)
 
 RETURN_ERROR_TARGET = "GetDockerImageLatestTag.return_error"
 
@@ -61,16 +67,15 @@ MOCK_TAG_LIST = [
 
 
 @pytest.mark.parametrize("image", ["python", "python-deb", "python3", "python3-deb"])
-def test_valid_docker_image(mocker, image):
+def test_valid_docker_image(mocker, monkeypatch, image):
+    """The latest tag by date from the Docker Hub response is returned."""
     import urllib3
 
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    import os
 
-    os.environ["HTTP_PROXY"] = ""
-    os.environ["HTTPS_PROXY"] = ""
-    os.environ["http_proxy"] = ""
-    os.environ["https_proxy"] = ""
+    # monkeypatch restores these after the test instead of leaking into other tests.
+    for proxy_var in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
+        monkeypatch.setenv(proxy_var, "")
     demisto_image = "demisto/" + image
     args = {"docker_image": demisto_image, "trust_any_certificate": "yes", "use_system_proxy": "no"}
     mocker.patch.object(demisto, "args", return_value=args)
@@ -94,8 +99,8 @@ def test_valid_docker_image(mocker, image):
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    # current latest tag is 2.7.16.2728 or 3.7.2.2728 disable-secrets-detection
-    assert int(results[0].split(".")[3]) >= 2728
+    # 1.0.0.2876 is the most recently updated tag in MOCK_TAG_LIST.
+    assert results[0] == "1.0.0.2876"
 
 
 def test_invalid_docker_image(mocker):
@@ -121,6 +126,66 @@ def test_invalid_docker_image(mocker):
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
     assert err_msg is not None
+
+
+def test_registry_api_fallback_when_hub_request_fails(mocker):
+    """When the Docker Hub endpoint fails, tags are taken from the registry API and compared lexically."""
+    image_name = "demisto/python3"
+    mocker.patch.object(demisto, "args", return_value={"docker_image": image_name, "trust_any_certificate": "yes"})
+    mocker.patch.object(demisto, "results")
+    with requests_mock.Mocker() as m:
+        m.get(
+            "https://registry-1.docker.io/v2/",
+            status_code=401,
+            headers={"www-authenticate": 'Bearer realm="https://auth.docker.io/token",service="registry.docker.io"'},
+        )
+        m.get(
+            f"https://auth.docker.io/token?scope=repository:{image_name}:pull&service=registry.docker.io",
+            status_code=200,
+            json={"token": "a-token"},
+        )
+        m.get(f"https://hub.docker.com/v2/repositories/{image_name}/tags", status_code=500)
+        m.get(
+            f"https://registry-1.docker.io/v2/{image_name}/tags/list",
+            status_code=200,
+            json={"tags": ["1.0.0.2689", "sha256-abcdef.sig", "1.0.0.2876"]},
+        )
+        main()
+    # The .sig artifact must not be selected even via the registry API fallback path.
+    assert demisto.results.call_args[0][0] == "1.0.0.2876"
+
+
+def test_no_tags_returns_empty_string(mocker):
+    """An empty Docker Hub result set yields an empty string rather than an error."""
+    image_name = "demisto/python3"
+    mocker.patch.object(demisto, "args", return_value={"docker_image": image_name, "trust_any_certificate": "yes"})
+    mocker.patch.object(demisto, "results")
+    with requests_mock.Mocker() as m:
+        m.get(
+            "https://registry-1.docker.io/v2/",
+            status_code=401,
+            headers={"www-authenticate": 'Bearer realm="https://auth.docker.io/token",service="registry.docker.io"'},
+        )
+        m.get(
+            f"https://auth.docker.io/token?scope=repository:{image_name}:pull&service=registry.docker.io",
+            status_code=200,
+            json={"token": "a-token"},
+        )
+        m.get(f"https://hub.docker.com/v2/repositories/{image_name}/tags", status_code=200, json={"results": []})
+        main()
+    assert demisto.results.call_args[0][0] == ""
+
+
+def test_parse_www_auth_valid():
+    """realm and service are extracted from a well-formed www-authenticate header."""
+    header = 'Bearer realm="https://auth.docker.io/token",service="registry.docker.io"'
+    assert parse_www_auth(header) == ("https://auth.docker.io/token", "registry.docker.io")
+
+
+@pytest.mark.parametrize("header", ["", "Bearer something-else", 'Bearer realm="https://auth.docker.io/token"'])
+def test_parse_www_auth_invalid(header):
+    """A malformed www-authenticate header returns None so the caller falls back to defaults."""
+    assert parse_www_auth(header) is None
 
 
 def test_lexical_latest_tag():

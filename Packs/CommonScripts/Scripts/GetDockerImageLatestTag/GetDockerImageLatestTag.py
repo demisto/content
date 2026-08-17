@@ -17,6 +17,10 @@ ACCEPT_HEADER = {
 TIMEOUT = 10
 DEFAULT_REGISTRY = "registry-1.docker.io"
 
+# OCI artifact tag suffixes that are not runnable Docker images.
+# These are produced by tools like cosign (.sig), OCI referrers (.att, .sbom), etc.
+NON_RUNNABLE_TAG_SUFFIXES = (".sig", ".att", ".sbom")
+
 
 def parse_www_auth(www_auth):
     """Parse realm and service from www-authenticate string of the form:
@@ -62,11 +66,6 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY, gateway_
     else:
         res.raise_for_status()
         return None
-
-
-# OCI artifact tag suffixes that are not runnable Docker images.
-# These are produced by tools like cosign (.sig), OCI referrers (.att, .sbom), etc.
-NON_RUNNABLE_TAG_SUFFIXES = (".sig", ".att", ".sbom")
 
 
 def is_runnable_tag(tag: Any) -> bool:
@@ -164,9 +163,9 @@ def find_latest_tag_by_date(tags):
     latest_tag_name = "latest"
     latest_tag_date = datetime.now() - timedelta(days=400000)
     for tag in tags:
+        tag_name = tag.get("name")
         # is_runnable_tag() also rejects non-string / empty values, so past this
         # guard tag_name is guaranteed to be a usable string.
-        tag_name = tag.get("name")
         if not is_runnable_tag(tag_name):
             demisto.debug(f"Skipping non-runnable or invalid tag: {tag_name!r}")
             continue
@@ -206,6 +205,7 @@ def main():
         # first try to get the docker image tags using normal http request
         res = requests.get(
             url=f"https://hub.docker.com/v2/repositories/{image_name}/tags",
+            timeout=TIMEOUT,
             verify=verify_ssl,
         )
         if res.status_code == 200:
