@@ -1,4 +1,4 @@
-CyberArk EPM Event Collector fetches events.
+Collects policy audits, admin audits, and detailed (raw) events from CyberArk Endpoint Privilege Manager (EPM).
 This integration was integrated and tested with version 23.12.0 of CyberArk EPM.
 
 ## Configure CyberArk EPM Event Collector in Cortex
