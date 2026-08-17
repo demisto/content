@@ -302,7 +302,7 @@ Delete a policy by ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Mimecast.Policy.ID | string | Policy ID. |
-| Mimecast.Blockedsenders.ID | string | Policy ID. |
+| Mimecast.BlockedSendersPolicy.ID | string | Policy ID. |
 | Mimecast.AntispoofingBypassPolicy.ID | string | Policy ID. |
 | Mimecast.AddressAlterationPolicy.ID | string | Policy ID. |
 

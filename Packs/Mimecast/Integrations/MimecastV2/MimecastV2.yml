@@ -546,7 +546,7 @@ script:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID.
       type: string
-    - contextPath: Mimecast.Blockedsenders.ID
+    - contextPath: Mimecast.BlockedSendersPolicy.ID
       description: Policy ID.
       type: string
     - contextPath: Mimecast.AntispoofingBypassPolicy.ID
