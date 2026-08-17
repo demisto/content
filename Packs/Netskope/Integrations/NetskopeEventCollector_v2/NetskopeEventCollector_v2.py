@@ -32,7 +32,15 @@ EVENT_TYPE_CONFIGS = {
         "endpoint": "/events/datasearch/incident",
         "time_params": {"start_time": "starttime", "end_time": "endtime"},
         "count_field": "event_count:count(_id)",
-    }
+    },
+    # Audit events (endpoint /events/data/audit) do NOT include an `id` field - only `_id`.
+    # Using the default `count(id)` therefore returns 0, which makes the collector skip fetching
+    # audit events entirely (XSUP-74841). Count on `_id` instead, which every audit event has.
+    "audit": {
+        "endpoint": "/events/data/{type}",
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+        "count_field": "event_count:count(_id)",
+    },
 }
 
 # Default configuration for all other event types
@@ -688,6 +696,9 @@ async def main() -> None:  # pragma: no cover
 
         command_name = demisto.command()
         demisto.debug(f"Command being called is {command_name}")
+        # TEMPORARY BUILD MARKER (XSUP-74841) - remove before merge.
+        # Lets us confirm from the tenant logs that the audit count(_id) fix build is deployed.
+        demisto.info("XSUP-74841 BUILD MARKER: audit count(_id) fix deployed")
 
         event_types_to_fetch = handle_event_types_to_fetch(params.get("event_types_to_fetch"))
         demisto.debug(f"Event types that will be fetched in this instance: {event_types_to_fetch}")
