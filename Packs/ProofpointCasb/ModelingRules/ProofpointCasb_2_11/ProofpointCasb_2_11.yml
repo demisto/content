@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: ProofpointCasb_ModelingRule
-name: ProofpointCasb Modeling Rule
+id: ProofpointCASB_ModelingRule
+name: ProofpointCASB Modeling Rule
 rules: ''
 schema: ''
 supportedModules:

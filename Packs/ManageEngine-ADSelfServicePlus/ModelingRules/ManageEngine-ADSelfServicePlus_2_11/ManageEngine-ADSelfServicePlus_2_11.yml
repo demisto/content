@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: ManageEngine-ADSelfServicePlus_ModelingRule
-name: ManageEngine-ADSelfServicePlus Modeling Rule
+id: ManageEngine_ADSelfService_Plus_ModelingRule
+name: ManageEngine ADSelfService Plus Modeling Rule
 rules: ''
 schema: ''
 tags: ManageEngine

@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: DelineaSS_ModelingRule
-name: DelineaSS Modeling Rule
+id: Delinea Secret Server
+name: Delinea Secret Server
 rules: ''
 schema: ''
 tags: Delinea Secret Server

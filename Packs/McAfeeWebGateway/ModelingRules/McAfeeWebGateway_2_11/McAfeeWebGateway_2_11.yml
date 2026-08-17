@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: McAfeeWebGateway_ModelingRule
-name: McAfeeWebGateway Modeling Rule
+id: Mcafee_Web_Gateway_ModelingRule
+name: Macfee Web Gateway Modeling Rule
 rules: ''
 schema: ''
 tags: ''
