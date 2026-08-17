@@ -146,26 +146,25 @@ Get a policy by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.Policy.ID | string | Policy ID. |
-| Mimecast.Policy.Sender.Address | string | Block Sender by email address. |
-| Mimecast.Policy.Sender.Domain | string | Block Sender by domain. |
-| Mimecast.Policy.Sender.Group | string | Block Sender by group. |
-| Mimecast.Policy.Bidirectional | boolean | Blocked policy is bidirectional or not. |
-| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address. |
-| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain. |
-| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. |
-| Mimecast.Policy.Fromdate | date | Policy validation start date. |
-| Mimecast.Policy.Todate | date | Policy expiration date. |
-| Mimecast.Blockedsenders.ID | string | Policy ID. |
-| Mimecast.Blockedsenders.Sender.Address | string | Block Sender by email address. |
-| Mimecast.Blockedsenders.Sender.Domain | string | Block Sender by domain. |
-| Mimecast.Blockedsenders.Sender.Group | string | Block Sender by group. |
-| Mimecast.Blockedsenders.Bidirectional | boolean | Blocked policy is bidirectional or not. |
-| Mimecast.Blockedsenders.Receiver.Address | string | Block emails to receiver type address. |
-| Mimecast.Blockedsenders.Receiver.Domain | string | Block emails to receiver type domain. |
-| Mimecast.Blockedsenders.Receiver.Group | string | Block emails to receiver type group. |
-| Mimecast.Blockedsenders.Fromdate | date | Policy validation start date. |
-| Mimecast.Blockedsenders.Todate | date | Policy expiration date. |
+| Mimecast.BlockedSendersPolicy.id | String | The unique identifier of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.description | String | A description of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.from.type | String | The sender address type considered by the policy. |
+| Mimecast.BlockedSendersPolicy.from.emailAddress | String | The sender email address considered by the policy. |
+| Mimecast.BlockedSendersPolicy.from.domain | String | The sender domain considered by the policy. |
+| Mimecast.BlockedSendersPolicy.from.groupId | String | The sender profile group ID considered by the policy. |
+| Mimecast.BlockedSendersPolicy.to.type | String | The recipient address type considered by the policy. |
+| Mimecast.BlockedSendersPolicy.to.emailAddress | String | The recipient email address considered by the policy. |
+| Mimecast.BlockedSendersPolicy.to.domain | String | The recipient domain considered by the policy. |
+| Mimecast.BlockedSendersPolicy.to.groupId | String | The recipient profile group ID considered by the policy. |
+| Mimecast.BlockedSendersPolicy.bidirectional | Boolean | Whether the policy also applies in reverse email flow. |
+| Mimecast.BlockedSendersPolicy.fromDateTime | Date | The date and time the policy starts to apply. |
+| Mimecast.BlockedSendersPolicy.toDateTime | Date | The date and time the policy ceases to apply. |
+| Mimecast.BlockedSendersPolicy.fromEternal | Boolean | Whether the policy applies regardless of the start date. |
+| Mimecast.BlockedSendersPolicy.toEternal | Boolean | Whether the policy applies regardless of the end date. |
+| Mimecast.BlockedSendersPolicy.fromPart | String | Whether the sender address is considered based on the envelope, header, or either address. |
+| Mimecast.BlockedSendersPolicy.enabled | Boolean | Whether the policy is enabled. |
+| Mimecast.BlockedSendersPolicy.enforced | Boolean | Whether the policy is enforced. |
+| Mimecast.BlockedSendersPolicy.override | Boolean | Whether the policy is considered prior to other policies of the same type. |
 | Mimecast.AntispoofingBypassPolicy.ID | string | Policy ID. |
 | Mimecast.AntispoofingBypassPolicy.Sender.Address | string | Block Sender by email address. |
 | Mimecast.AntispoofingBypassPolicy.Sender.Domain | string | Block Sender by domain. |
@@ -186,63 +185,6 @@ Get a policy by ID.
 | Mimecast.AddressAlterationPolicy.Receiver.Group | string | Block emails to receiver type group. |
 | Mimecast.AddressAlterationPolicy.Fromdate | date | Policy validation start date. |
 | Mimecast.AddressAlterationPolicy.Todate | date | Policy expiration date. |
-
-#### Command example
-
-```!mimecast-get-policy policyType=blockedsenders policyID=eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg```
-
-#### Context Example
-
-```json
-{
-    "Mimecast": {
-        "Blockedsenders": {
-            "Bidirectional": false,
-            "FromDate": "1900-01-01T00:00:00+0000",
-            "ID": "eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg",
-            "Reciever": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Sender": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "ToDate": "2100-01-01T23:59:59+0000"
-        },
-        "Policy": {
-            "Bidirectional": false,
-            "FromDate": "1900-01-01T00:00:00+0000",
-            "ID": "eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg",
-            "Reciever": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Sender": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "ToDate": "2100-01-01T23:59:59+0000"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Mimecast Get blockedsenders Policy
->
->|Policy ID|Sender|Reciever|Bidirectional|Start|End|
->|---|---|---|---|---|---|
->| eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
 
 #### Command example
 
@@ -342,7 +284,7 @@ Deprecated. Please use mimecast-create-block-sender-policy
 ### mimecast-delete-policy
 
 ***
-Delete a Blocked Sender Policy.
+Delete a policy by ID.
 
 #### Base Command
 
@@ -1936,14 +1878,17 @@ List all existing Mimecast blocked sender policies.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policyType | According to this argument an endpoint is selected. Possible values are: blockedsenders, antispoofing-bypass, address-alteration. Default is blockedsenders. | Optional |
-| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional |
+| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Not supported when policyType is blockedsenders. | Optional |
 | page_size | Sets the result to start returning results. Default value is '50'. | Optional |
 | limit | The maximum number of results to return. Default is 50. | Optional |
+| next_token | Pagination token for requesting the next page. Only applicable when policyType is blockedsenders. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Mimecast.BlockedSendersPolicy.policies | Unknown | List of blocked-senders policies returned for the current page. |
+| Mimecast.BlockedSendersPolicy.NextToken | String | Pagination token for the next page of blocked-senders policies. |
 | Mimecast.AddressAlterationPolicy.ID | string | Policy ID. |
 | Mimecast.AddressAlterationPolicy.meta.status | Number | The status of the Address Alteration policy. |
 | Mimecast.AddressAlterationPolicy.addressAlterationSetId | String | The Mimecast secure ID of the Address Alteration Set \(folder\) that will be applied by this policy. |
@@ -1965,25 +1910,25 @@ List all existing Mimecast blocked sender policies.
 | Mimecast.AddressAlterationPolicy.policy.enforced | Boolean | Is the policy enforced. |
 | Mimecast.AddressAlterationPolicy.policy.createTime | String | The creation timestamp of the policy. |
 | Mimecast.AddressAlterationPolicy.policy.lastUpdated | string | Block emails to receiver type. |
-| Mimecast.BlockedSendersPolicy.option | String | The option for the blocked sender policy. |
-| Mimecast.BlockedSendersPolicy.id | String | The unique identifier for the blocked sender policy. |
-| Mimecast.BlockedSendersPolicy.policy.description | String | A description of the blocked sender policy. |
-| Mimecast.BlockedSendersPolicy.policy.fromPart | String | The part of the email address or domain from which the policy is applied. |
-| Mimecast.BlockedSendersPolicy.policy.from.type | String | The type of sender address or domain for the policy. |
-| Mimecast.BlockedSendersPolicy.policy.to.type | String | The type of recipient address or domain for the policy. |
-| Mimecast.BlockedSendersPolicy.policy.fromType | String | The type of sender for the policy. |
-| Mimecast.BlockedSendersPolicy.policy.toType | String | The type of recipient for the policy. |
-| Mimecast.BlockedSendersPolicy.policy.fromEternal | Boolean | Indicates whether the policy applies indefinitely to the sender. |
-| Mimecast.BlockedSendersPolicy.policy.toEternal | Boolean | Indicates whether the policy applies indefinitely to the recipient. |
-| Mimecast.BlockedSendersPolicy.policy.fromDate | Date | The start date from which the policy is effective. |
-| Mimecast.BlockedSendersPolicy.policy.toDate | Date | The end date until which the policy is effective. |
-| Mimecast.BlockedSendersPolicy.policy.override | Boolean | Indicates whether the policy overrides other policies. |
-| Mimecast.BlockedSendersPolicy.policy.bidirectional | Boolean | Indicates whether the policy applies in both directions. |
-| Mimecast.BlockedSendersPolicy.policy.conditions | Unknown | The conditions under which the policy is applied. |
-| Mimecast.BlockedSendersPolicy.policy.enabled | Boolean | Indicates whether the policy is enabled. |
-| Mimecast.BlockedSendersPolicy.policy.enforced | Boolean | Indicates whether the policy is enforced. |
-| Mimecast.BlockedSendersPolicy.policy.createTime | Date | The date and time when the policy was created. |
-| Mimecast.BlockedSendersPolicy.policy.lastUpdated | Date | The date and time when the policy was last updated. |
+| Mimecast.BlockedSendersPolicy.policies.id | String | The unique identifier of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.policies.description | String | A description of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.policies.from.type | String | The sender address type considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.from.emailAddress | String | The sender email address considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.from.domain | String | The sender domain considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.from.groupId | String | The sender profile group ID considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.to.type | String | The recipient address type considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.to.emailAddress | String | The recipient email address considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.to.domain | String | The recipient domain considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.to.groupId | String | The recipient profile group ID considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.bidirectional | Boolean | Whether the policy also applies in reverse email flow. |
+| Mimecast.BlockedSendersPolicy.policies.fromDateTime | Date | The date and time the policy starts to apply. |
+| Mimecast.BlockedSendersPolicy.policies.toDateTime | Date | The date and time the policy ceases to apply. |
+| Mimecast.BlockedSendersPolicy.policies.fromEternal | Boolean | Whether the policy applies regardless of the start date. |
+| Mimecast.BlockedSendersPolicy.policies.toEternal | Boolean | Whether the policy applies regardless of the end date. |
+| Mimecast.BlockedSendersPolicy.policies.fromPart | String | Whether the sender address is considered based on the envelope, header, or either address. |
+| Mimecast.BlockedSendersPolicy.policies.enabled | Boolean | Whether the policy is enabled. |
+| Mimecast.BlockedSendersPolicy.policies.enforced | Boolean | Whether the policy is enforced. |
+| Mimecast.BlockedSendersPolicy.policies.override | Boolean | Whether the policy is considered prior to other policies of the same type. |
 | Mimecast.AntispoofingBypassPolicy.option | String | The option for the antispoofing bypass policy. |
 | Mimecast.AntispoofingBypassPolicy.id | String | The unique identifier for the antispoofing bypass policy. |
 | Mimecast.AntispoofingBypassPolicy.policy.description | String | A description of the antispoofing bypass policy. |
@@ -2007,58 +1952,6 @@ List all existing Mimecast blocked sender policies.
 | Mimecast.AntispoofingBypassPolicy.policy.enforced | Boolean | Indicates whether the policy is enforced. |
 | Mimecast.AntispoofingBypassPolicy.policy.createTime | Date | The date and time when the policy was created. |
 | Mimecast.AntispoofingBypassPolicy.policy.lastUpdated | Date | The date and time when the policy was last updated. |
-
-#### Command example
-
-```!mimecast-list-policies policyType=blockedsenders limit=1```
-
-#### Context Example
-
-```json
-{
-    "Mimecast": {
-        "Policies": [
-            {
-                "addressAlterationSetId": "eNoVjr0OgjA111111",
-                "id": "eNo1jsESgU121111",
-                "policy": {
-                    "bidirectional": false,
-                    "conditions": {},
-                    "createTime": "2024-05-07T14:24:06+0000",
-                    "description": "שש",
-                    "enabled": true,
-                    "enforced": false,
-                    "from": {
-                        "type": "everyone"
-                    },
-                    "fromDate": "1900-01-01T00:00:00+0000",
-                    "fromEternal": true,
-                    "fromPart": "envelope_from",
-                    "fromType": "everyone",
-                    "lastUpdated": "2024-05-07T14:24:06+0000",
-                    "override": false,
-                    "to": {
-                        "type": "everyone"
-                    },
-                    "toDate": "2100-01-01T23:59:59+0000",
-                    "toEternal": true,
-                    "toType": "everyone"
-                }
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Mimecast list antispoofing-bypass policies
->
-> These are the existing antispoofing-bypass Policies:
->
->|Policy ID|Sender|Reciever|Bidirectional|Start|End|
->|---|---|---|---|---|---|
->| eNo1jksOgjAUAO_SNYmFFn-JCyN-iEJERNS4wfKEIlAsIEHj3cWF-5nMvFEJrJbAQzRGR4OAHvEmcy89C-w4SZzn5uQ7PjP1ZNB4FdlK3SgZ3nrGwZ-bVxF56zygQ01NZRafSXCKYP8QK92vuBMUzWhJ8oRaD0pvO1Lbhzs_zl_hbrGR1gQpqBApZ-0vrVKCiYJYXVYiA8lECN3PzHOnKtamGul39BNkyUXewX9z3xZg_myMsfr5AuuvQdE | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: amazon.com<br/>Type: email_domain | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
 
 #### Command example
 
@@ -2121,7 +2014,7 @@ List all existing Mimecast blocked sender policies.
 ### mimecast-create-block-sender-policy
 
 ***
-Create a Blocked Sender Policy, which can be used to manage a combination of sender and recipient restrictions.
+Create a Blocked Sender Policy. Note: this command does not set context outputs - use mimecast-get-policy to retrieve the full policy.
 
 #### Prerequisite
 
@@ -2140,83 +2033,29 @@ Gateway | Policies | Edit
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | description | Policy description. | Required |
-| fromPart | Addresses based on. Possible values are: envelope_from, header_from, both. Default is envelope_from. | Optional |
-| fromType | Blocked sender type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address. | Required |
-| fromValue | Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. | Optional |
-| toType | Receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name. | Required |
-| toValue | Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. | Optional |
+| fromPart | Addresses based on. Possible values are: envelope_from, header_from, both. Default is envelope_from. | Required |
+| fromType | Blocked sender type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required |
+| fromValue | Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. For address_attribute_value, use the from_attribute_id and from_attribute_value arguments instead. | Optional |
+| from_attribute_id | The secure ID of the address attribute. Required if fromType is address_attribute_value. | Optional |
+| from_attribute_value | The value to which the address attribute is equal. Required if fromType is address_attribute_value. | Optional |
+| toType | Receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required |
+| toValue | Required if toType is one of email_domain, profile_group, individual_email_address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. For address_attribute_value, use the to_attribute_id and to_attribute_value arguments instead. | Optional |
+| to_attribute_id | The secure ID of the address attribute. Required if toType is address_attribute_value. | Optional |
+| to_attribute_value | The value to which the address attribute is equal. Required if toType is address_attribute_value. | Optional |
 | option | The block option. Possible values are: no_action, block_sender. | Required |
+| from_date | The policy start date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| to_date | The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.BlockedSendersPolicy.ID | string | Policy ID. |
-| Mimecast.BlockedSendersPolicy.Sender.Address | string | Block sender by email address. |
-| Mimecast.BlockedSendersPolicy.Sender.Domain | string | Block sender by domain. |
-| Mimecast.BlockedSendersPolicy.Sender.Group | string | Block sender by group. |
-| Mimecast.BlockedSendersPolicy.Bidirectional | boolean | Blocked policy is bidirectional or not. |
-| Mimecast.BlockedSendersPolicy.Receiver.Address | string | Block emails to receiver type address. |
-| Mimecast.BlockedSendersPolicy.Receiver.Domain | string | Block emails to receiver type domain. |
-| Mimecast.BlockedSendersPolicy.Receiver.Group | string | Block emails to receiver type group. |
-| Mimecast.BlockedSendersPolicy.Fromdate | date | Policy validation start date. |
-| Mimecast.BlockedSendersPolicy.Todate | date | Policy expiration date. |
-| Mimecast.BlockedSendersPolicy.Sender.Type | String | The sender type. |
-| Mimecast.BlockedSendersPolicy.Receiver.Type | String | The receiver type. |
-
-#### Command example
-
-```!mimecast-create-block-sender-policy description=test fromType=everyone option=block_sender toType=everyone```
-
-#### Context Example
-
-```json
-{
-    "Mimecast": {
-        "BlockedSendersPolicy": {
-            "Bidirectional": false,
-            "Description": "test",
-            "FromDate": "1900-01-01T00:00:00+0000",
-            "ID": "eNo1jrsOgjAAAP1234",
-            "Receiver": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Reciever": {
-                "Domain": null,
-                "Email Address": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Sender": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "ToDate": "2100-01-01T23:59:59+0000"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Mimecast Create block sender Policy
->
-> Policy Was Created Successfully!
->
->|Policy ID|Description|Sender|Receiver|Bidirectional|Start|End|
->|---|---|---|---|---|---|---|
->| eNo1jrsOgjAAAP-l1234 | test | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+| Mimecast.BlockedSendersPolicy.id | String | The ID of the newly created Blocked Senders policy. |
 
 ### mimecast-update-block-sender-policy
 
 ***
-Updates an existing Blocked Senders policy. This command performs a full policy replacement at the API level. Arguments that are explicitly provided will overwrite the current policy values. Arguments that are left blank will be automatically preserved from the existing policy. To modify only specific fields, provide the `policy_id` and the fields to be changed — all other fields will remain unchanged.
-**Note**: Each policy supports a single sender value (`fromValue`). To block additional senders, separate policies should be created using the `mimecast-create-block-sender-policy` command.
+Updates an existing Blocked Senders policy. Only the fields you explicitly provide are sent to the API and updated, while fields you omit are left unchanged on the server. Note: this command does not set context outputs - use mimecast-get-policy to retrieve the updated policy.
 
 #### Required Permissions
 
@@ -2232,13 +2071,16 @@ Gateway | Policies | Edit
 | --- | --- | --- |
 | policy_id | The ID of the policy to update. | Required |
 | description | A new description for the policy. | Optional |
-| fromType | The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email_domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
-| toType | The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email_domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address. | Optional |
+| fromType | The sender type by which to block senders in the policy. For email_domain, profile_group, and individual_email_address, supply the value in the fromValue argument. For address_attribute_value, supply the value in the from_attribute_id and from_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
+| toType | The blocked receiver type by which to block receivers in the policy. For email_domain, profile_group, and individual_email_address, supply the value in the toValue argument. For address_attribute_value, supply the value in the to_attribute_id and to_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
 | option | The block action. Possible values are: no_action, block_sender. | Optional |
-| fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email_domain. | Optional |
-| toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email_domain. | Optional |
+| fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email_domain. For address_attribute_value, use the from_attribute_id and from_attribute_value arguments instead. | Optional |
+| toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email_domain. For address_attribute_value, use the to_attribute_id and to_attribute_value arguments instead. | Optional |
+| from_attribute_id | The secure ID of the address attribute. Required if fromType is address_attribute_value. | Optional |
+| from_attribute_value | The value to which the address attribute is equal. Required if fromType is address_attribute_value. | Optional |
+| to_attribute_id | The secure ID of the address attribute. Required if toType is address_attribute_value. | Optional |
+| to_attribute_value | The value to which the address attribute is equal. Required if toType is address_attribute_value. | Optional |
 | fromPart | The part from where addresses are pulled. Possible values are: envelope_from, header_from, both. | Optional |
-| confirm_block_all | Whether to confirm blocking all senders. Must be 'true' when fromType is 'everyone' to prevent accidental blocking of all senders. Possible values are: true, false. | Optional |
 | from_date | The policy start date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 | to_date | The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
 
