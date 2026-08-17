@@ -12,8 +12,13 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Alerts",
+        "Scam"
+    ],
+    "useCases": [
+        "Phishing"
+    ],
     "keywords": [
         "Doppel"
     ],

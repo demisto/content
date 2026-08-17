@@ -514,6 +514,21 @@ def test_normalize_entity_content_for_grid_passthrough_list():
     assert _normalize_entity_content_for_grid(None) == []
 
 
+def test_normalize_entity_content_for_grid_single_nested_dict():
+    """Non-domain archetypes ({archetype_key: {fields}}) unwrap the single nested dict."""
+    entity_content = {"social_media_post": {"full_text": "spam", "num_upvotes": 3}}
+    assert _normalize_entity_content_for_grid(entity_content) == [{"full_text": "spam", "num_upvotes": 3}]
+
+
+def test_normalize_entity_content_for_grid_flat_dict_fallback():
+    """A flat dict with no nested objects is used as the grid row so no data is dropped."""
+    entity_content = {"domain": "flat.com", "registrar": "R"}
+    assert _normalize_entity_content_for_grid(entity_content) == [{"domain": "flat.com", "registrar": "R"}]
+    # Ambiguous shapes with multiple nested dicts still return no rows.
+    ambiguous = {"a": {"x": 1}, "b": {"y": 2}}
+    assert _normalize_entity_content_for_grid(ambiguous) == []
+
+
 def test_alert_to_incident_normalizes_entity_content():
     """Fetched incidents put grid-shaped entity_content into rawJSON for the mapper."""
     alert = {
