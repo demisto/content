@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 import json
 import traceback
 from datetime import datetime, UTC
-import dateparser
 
 """Doppel for Cortex XSOAR (aka Demisto)
 
@@ -260,7 +259,10 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     # previous strict strptime call could not parse, so the first sync never completed.
     # The timestamp is only informational here (the server already filtered this incident as
     # modified via get-modified-remote-data), so a parse failure must not block the sync.
-    last_update = dateparser.parse(last_update_str, settings={"TIMEZONE": "UTC"})
+    try:
+        last_update = arg_to_datetime(last_update_str, required=False)
+    except ValueError:
+        last_update = None
     if not last_update:
         demisto.debug(f"Doppel - Could not parse lastUpdate timestamp {last_update_str!r}; syncing anyway.")
 
@@ -313,8 +315,10 @@ def _get_last_fetch_datetime(last_run):
     else:
         # If no last run is found
         first_fetch_time = demisto.params().get("first_fetch", "3 days").strip()
-        last_fetch_datetime = dateparser.parse(first_fetch_time) or datetime.now()
-        assert last_fetch_datetime is not None, f"could not parse {first_fetch_time}"
+        try:
+            last_fetch_datetime = arg_to_datetime(first_fetch_time, required=False) or datetime.now()
+        except ValueError:
+            last_fetch_datetime = datetime.now()
         demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch_datetime}")
 
     return last_fetch_datetime
@@ -401,6 +405,7 @@ def doppel_get_alert_command(client: Client, args: dict[str, Any]) -> CommandRes
         outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
+        raw_response=result,
     )
 
 
@@ -439,6 +444,7 @@ def doppel_update_alert_command(client: Client, args: dict[str, Any]) -> Command
         outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
+        raw_response=result,
     )
 
 
@@ -510,6 +516,7 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
         outputs_key_field="id",
         outputs=results,
         readable_output=human_readable,
+        raw_response=results,
     )
 
 
@@ -538,6 +545,7 @@ def doppel_create_alert_command(client: Client, args: dict[str, Any]) -> Command
         outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
+        raw_response=result,
     )
 
 
@@ -567,6 +575,7 @@ def doppel_create_abuse_alert_command(client: Client, args: dict[str, Any]) -> C
         outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
+        raw_response=result,
     )
 
 
@@ -737,7 +746,10 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     """
 
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update_datetime = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"})
+    try:
+        last_update_datetime = arg_to_datetime(remote_args.last_update, required=False)
+    except ValueError:
+        last_update_datetime = None
     if not last_update_datetime:
         raise DemistoException(f"Doppel - Could not parse the lastUpdate timestamp: {remote_args.last_update!r}")
     last_update = last_update_datetime.strftime(DOPPEL_API_DATE_FORMAT)
@@ -859,8 +871,10 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
             comment=comment,
             alert_id=remote_incident_id,
         )
+        # Log only whether close notes were sent, not their content (analyst-authored text).
         demisto.debug(
-            f"Doppel - Archived remote alert [{remote_incident_id}] " f"with entity_state={entity_state!r} comment={comment!r}."
+            f"Doppel - Archived remote alert [{remote_incident_id}] "
+            f"with entity_state={entity_state!r} comment_sent={bool(comment)}."
         )
     except Exception as e:
         demisto.error(

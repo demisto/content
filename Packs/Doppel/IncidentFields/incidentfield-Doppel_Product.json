@@ -27,15 +27,15 @@
     "required": false,
     "selectValues": [
         "",
-        "domains",
-        "social_media",
-        "mobile_apps",
-        "ecommerce",
         "crypto",
+        "darkweb",
+        "domains",
+        "ecommerce",
         "email",
+        "mobile_apps",
         "paid_ads",
-        "telco",
-        "darkweb"
+        "social_media",
+        "telco"
     ],
     "sla": 0,
     "system": false,
