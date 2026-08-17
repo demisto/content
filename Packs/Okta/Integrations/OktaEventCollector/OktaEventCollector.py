@@ -1,5 +1,6 @@
 import re
 from typing import cast
+from urllib.parse import urlsplit, urlunsplit, parse_qsl
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -286,7 +287,14 @@ class Client(ContentClient):
         """
         if next_link_url:
             demisto.debug("[API Fetch] Requesting events using the pagination next_link")
-            return self._http_request(method="GET", full_url=next_link_url, resp_type="response")
+            # The pagination link carries the cursor in its query string. Pass the query
+            # parameters explicitly rather than relying on the raw URL alone, so the
+            # underlying HTTP client cannot drop them while resolving the request. Losing
+            # these parameters would reset the cursor and cause the API to restart paging.
+            split_url = urlsplit(next_link_url)
+            base_url = urlunsplit((split_url.scheme, split_url.netloc, split_url.path, "", ""))
+            link_params = dict(parse_qsl(split_url.query))
+            return self._http_request(method="GET", full_url=base_url, params=link_params, resp_type="response")
 
         params = {
             "sortOrder": Config.SORT_ORDER,
