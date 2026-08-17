@@ -47,7 +47,8 @@ configuration:
   required: false
   type: 0
   section: Connect
-- defaultvalue: 'false'
+- display: Fetch Events
+  defaultvalue: 'false'
   name: isFetchEvents
   type: 8
   required: false
