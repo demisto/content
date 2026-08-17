@@ -1,6 +1,5 @@
-fromversion: 8.2.0
-toversion: 8.14.0
-id: forcepoint_dlp
+fromversion: 8.15.0
+id: ForcepointDLP_ModelingRule
 name: Forcepoint DLP Modeling Rule
 rules: ''
 schema: ''
