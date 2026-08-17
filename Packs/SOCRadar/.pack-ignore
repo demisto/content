@@ -43,3 +43,6 @@ ignore=IF115
 
 [file:incidentfield-SOCRadar_Response.json]
 ignore=IF115
+
+[file:playbook-SOCRadar_Incident.yml]
+ignore=PB119
