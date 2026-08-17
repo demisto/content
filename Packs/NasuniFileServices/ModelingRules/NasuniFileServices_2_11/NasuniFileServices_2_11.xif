@@ -31,5 +31,4 @@
             xdm.target.resource.name = parsed_fields -> resource,
             xdm.target.user.identifier = to_string(parsed_fields -> to_uid),
             xdm.target.identity.identifier = to_string(parsed_fields -> to_uid),
-            xdm.observer.name = arrayindex(regextract(_raw_log,"\s+(\w+)\s+nasuni"), 0),
-            xdm.observer.vendor = "nasuni";
+            xdm.observer.name = arrayindex(regextract(_raw_log,"\s+(\w+)\s+nasuni"), 0);

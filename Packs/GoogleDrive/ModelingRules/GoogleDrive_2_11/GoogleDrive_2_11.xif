@@ -22,6 +22,4 @@ alter type = json_extract_scalar(events, "$.0.type"),
     xdm.target.identity.username = owner,
     xdm.source.user.identifier = actor_profileId,
     xdm.source.identity.identifier = actor_profileId,
-    xdm.target.resource.type = kind,
-    xdm.observer.vendor = _vendor,
-    xdm.observer.product = _product;
+    xdm.target.resource.type = kind;
