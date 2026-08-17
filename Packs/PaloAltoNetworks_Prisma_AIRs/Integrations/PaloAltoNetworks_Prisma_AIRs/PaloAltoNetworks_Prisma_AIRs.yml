@@ -216,11 +216,11 @@ script:
       required: false
       description: The deployment profile name (optional).
     - name: cust_env
-      required: false
-      description: The customer environment (optional).
+      required: true
+      description: The customer environment (e.g., production, staging). The underlying customer app record mandates an environment value; omitting it causes the API to return "Error inserting/updating customer app record", so this argument is required.
     - name: cust_cloud_provider
-      required: false
-      description: The customer cloud provider (optional).
+      required: true
+      description: The customer cloud provider (e.g., aws, gcp, azure). The underlying customer app record mandates a cloud provider value; omitting it causes the API to return "Error inserting/updating customer app record", so this argument is required.
     - name: cust_ai_agent_framework
       required: false
       description: The customer AI agent framework (optional).
@@ -6028,6 +6028,7 @@ tests:
 - PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test
 - PaloAltoNetworks_Prisma_AIRs_Runtime_Profiles_Test
 - PaloAltoNetworks_Prisma_AIRs_DLP_Patterns_Test
+- PaloAltoNetworks_Prisma_AIRs_Runtime_Scan_Test
 marketplaces:
 - xsoar
 - marketplacev2

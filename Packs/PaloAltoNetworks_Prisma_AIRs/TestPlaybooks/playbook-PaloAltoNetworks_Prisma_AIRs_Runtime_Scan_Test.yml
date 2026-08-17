@@ -19,6 +19,18 @@ inputs:
   required: false
   description: Email used as created_by/updated_by for API key and customer app operations
   playbookInputQuery:
+- key: CustEnv
+  value:
+    simple: production
+  required: false
+  description: Customer app environment. Required in practice - the customer app record mandates an environment, so api-keys-create fails without it.
+  playbookInputQuery:
+- key: CustCloudProvider
+  value:
+    simple: aws
+  required: false
+  description: Customer app cloud provider. Required in practice - the customer app record mandates a cloud provider, so api-keys-create fails without it.
+  playbookInputQuery:
 - key: RotationInterval
   value:
     simple: "30"
@@ -170,7 +182,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "25"
     scriptarguments:
       limit:
         simple: "50"
@@ -230,7 +242,10 @@ tasks:
       id: f5555555-5555-4555-8555-555555555555
       version: -1
       name: prisma-airs-runtime-api-keys-create
-      description: Create a Runtime API key using the auth code from the first deployment profile.
+      description: |-
+        Create a Runtime API key using the auth code from the deployment profile. FirstArrayElement
+        makes this work whether one profile (XSOAR flattens it to a bare object) or many (a real
+        array) were returned; task 25 already guarantees at least one exists.
       script: '|||prisma-airs-runtime-api-keys-create'
       type: regular
       iscommand: true
@@ -243,10 +258,20 @@ tasks:
         complex:
           root: inputs.ApiKeyName
       auth_code:
-        simple: ${PrismaAIRs.DeploymentProfile.auth_code}
+        complex:
+          root: PrismaAIRs.DeploymentProfile
+          accessor: auth_code
+          transformers:
+          - operator: FirstArrayElement
       cust_app:
         complex:
           root: inputs.CustAppName
+      cust_env:
+        complex:
+          root: inputs.CustEnv
+      cust_cloud_provider:
+        complex:
+          root: inputs.CustCloudProvider
       rotation_time_interval:
         complex:
           root: inputs.RotationInterval
@@ -262,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 895
+          "y": 1000
         }
       }
     note: false
@@ -1049,6 +1074,51 @@ tasks:
         "position": {
           "x": 660,
           "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: f2500000-0000-4000-8000-000000000000
+    type: condition
+    task:
+      id: f2500000-0000-4000-8000-000000000000
+      version: -1
+      name: Validate Deployment Profile Exists
+      description: Fail cleanly if no deployment profile (with an auth code) was returned; the API key create step depends on it.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.DeploymentProfile
+                accessor: auth_code
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 632
         }
       }
     note: false

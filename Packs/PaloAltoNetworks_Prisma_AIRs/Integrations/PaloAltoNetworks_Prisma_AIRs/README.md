@@ -219,8 +219,8 @@ Create a new Runtime API Key. WARNING - The full API key secret is only shown on
 | rotation_time_unit | The rotation time unit. Possible values are: hours, days, months. | Required |
 | created_by | The email of the user creating the API key. | Required |
 | dp_name | The deployment profile name (optional). | Optional |
-| cust_env | The customer environment (optional). | Optional |
-| cust_cloud_provider | The customer cloud provider (optional). | Optional |
+| cust_env | The customer environment (e.g., production, staging). The underlying customer app record mandates an environment value; omitting it causes the API to return "Error inserting/updating customer app record", so this argument is required. | Required |
+| cust_cloud_provider | The customer cloud provider (e.g., aws, gcp, azure). The underlying customer app record mandates a cloud provider value; omitting it causes the API to return "Error inserting/updating customer app record", so this argument is required. | Required |
 | cust_ai_agent_framework | The customer AI agent framework (optional). | Optional |
 
 #### Context Output

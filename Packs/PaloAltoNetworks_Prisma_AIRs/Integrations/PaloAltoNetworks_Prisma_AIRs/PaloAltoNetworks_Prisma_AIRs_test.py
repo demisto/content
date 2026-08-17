@@ -2617,6 +2617,8 @@ class TestCommands:
             "api_key_name": "prod-key",
             "auth_code": "ac-1",
             "cust_app": "app-1",
+            "cust_env": "production",
+            "cust_cloud_provider": "aws",
             "rotation_time_interval": "90",
             "rotation_time_unit": "days",
             "created_by": "user@example.com",
@@ -2624,10 +2626,43 @@ class TestCommands:
 
         result = runtime_api_keys_create_command(mock_client, args)
 
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        assert kwargs["url_suffix"] == "/v1/mgmt/apikey"
+        # cust_env/cust_cloud_provider are required in practice - the customer app record mandates them.
+        assert kwargs["json_data"]["cust_env"] == "production"
+        assert kwargs["json_data"]["cust_cloud_provider"] == "aws"
         assert result.outputs_prefix == "PrismaAIRs.ApiKeyCreate"
         assert result.outputs_key_field == "id"
         assert result.outputs["id"] == "k-1"
         assert "|" in result.readable_output
+
+    @pytest.mark.parametrize("missing", ["cust_env", "cust_cloud_provider"])
+    def test_runtime_api_keys_create_requires_customer_app_fields(self, mock_client: Client, missing: str) -> None:
+        """create must reject a missing cust_env/cust_cloud_provider before calling the API.
+
+        These are optional in the API schema but the customer app record mandates them; guarding
+        here turns the opaque upstream 400 ("Error inserting/updating customer app record") into a
+        clear, actionable error.
+
+        Args:
+            mock_client: Mock client fixture.
+            missing: The required customer-app argument to omit.
+        """
+        args = {
+            "api_key_name": "prod-key",
+            "auth_code": "ac-1",
+            "cust_app": "app-1",
+            "cust_env": "production",
+            "cust_cloud_provider": "aws",
+            "rotation_time_interval": "90",
+            "rotation_time_unit": "days",
+            "created_by": "user@example.com",
+        }
+        del args[missing]
+
+        with pytest.raises(ValueError, match=f"{missing} is required"):
+            runtime_api_keys_create_command(mock_client, args)
 
     @patch.object(Client, "http_request")
     def test_runtime_api_keys_regenerate_command(self, mock_http: Mock, mock_client: Client) -> None:
@@ -2648,6 +2683,9 @@ class TestCommands:
 
         result = runtime_api_keys_regenerate_command(mock_client, args)
 
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        assert kwargs["url_suffix"] == "/v1/mgmt/apikey/regenerate/k-1"
         assert result.outputs_prefix == "PrismaAIRs.ApiKeyRegenerate"
         assert result.outputs_key_field == "id"
         assert result.outputs["id"] == "k-2"

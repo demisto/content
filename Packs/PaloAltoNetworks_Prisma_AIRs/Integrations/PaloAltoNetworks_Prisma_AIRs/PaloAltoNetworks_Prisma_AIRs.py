@@ -528,6 +528,11 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
     rotation_time_interval = arg_to_number(args.get("rotation_time_interval"))
     rotation_time_unit = args.get("rotation_time_unit")
     created_by = args.get("created_by")
+    # cust_env and cust_cloud_provider are optional in the APIKeyCreationObject schema, but the
+    # customer app record created as a side effect REQUIRES environment and cloud_provider. Omitting
+    # them yields an opaque HTTP 400 "Error inserting/updating customer app record", so require them here.
+    cust_env = args.get("cust_env")
+    cust_cloud_provider = args.get("cust_cloud_provider")
 
     if not api_key_name:
         raise ValueError("api_key_name is required")
@@ -541,6 +546,10 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
         raise ValueError("rotation_time_unit is required (hours, days, or months)")
     if not created_by:
         raise ValueError("created_by is required")
+    if not cust_env:
+        raise ValueError("cust_env is required (the customer app record mandates an environment value)")
+    if not cust_cloud_provider:
+        raise ValueError("cust_cloud_provider is required (the customer app record mandates a cloud provider value)")
 
     # Validate rotation_time_unit
     valid_units = ["hours", "days", "months"]
@@ -549,9 +558,10 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
 
     # Build request body according to ApiKeyCreateRequestSchema
     # Reference: ./knowledge/prisma-airs-sdk-main/src/models/mgmt-api-key.ts
-    # Required: auth_code, cust_app, revoked, created_by, api_key_name,
+    # Required by API schema: auth_code, cust_app, revoked, created_by, api_key_name,
     #           rotation_time_interval, rotation_time_unit
-    # Optional: dp_name, cust_env, cust_cloud_provider, cust_ai_agent_framework
+    # Required in practice (customer app record mandates them): cust_env, cust_cloud_provider
+    # Optional: dp_name, cust_ai_agent_framework
     request_body = {
         "api_key_name": api_key_name,
         "auth_code": auth_code,
@@ -560,13 +570,13 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
         "revoked": False,  # Always create as not revoked
         "rotation_time_interval": rotation_time_interval,
         "rotation_time_unit": rotation_time_unit,
+        "cust_env": cust_env,
+        "cust_cloud_provider": cust_cloud_provider,
     }
 
     # Add optional fields if provided
     optional_fields = {
         "dp_name": args.get("dp_name"),
-        "cust_env": args.get("cust_env"),
-        "cust_cloud_provider": args.get("cust_cloud_provider"),
         "cust_ai_agent_framework": args.get("cust_ai_agent_framework"),
     }
     for field, value in optional_fields.items():
@@ -575,9 +585,9 @@ def runtime_api_keys_create_command(client: Client, args: dict[str, Any]) -> Com
 
     # Call Management API to create API key
     # SDK: ./knowledge/prisma-airs-sdk-main/src/management/api-keys.ts (create method)
-    # Endpoint: POST /v1/mgmt/apikeys
+    # Endpoint: POST /v1/mgmt/apikey (singular; matches OpenAPI operationId CreateNewAPIKey and SDK MGMT_API_KEY_PATH)
     # Response: ApiKeySchema with full secret (only time it's shown)
-    url_suffix = f"{MGMT_API_V1_PREFIX}/apikeys"
+    url_suffix = f"{MGMT_API_V1_PREFIX}/apikey"
 
     response = client.http_request(method="POST", url_suffix=url_suffix, json_data=request_body, use_mgmt_base=True)
 
@@ -675,11 +685,11 @@ def runtime_api_keys_regenerate_command(client: Client, args: dict[str, Any]) ->
 
     # Call Management API to regenerate API key
     # SDK: ./knowledge/prisma-airs-sdk-main/src/management/api-keys.ts (regenerate method)
-    # Endpoint: PUT /v1/mgmt/apikeys/regenerate/{apiKeyId}
+    # Endpoint: POST /v1/mgmt/apikey/regenerate/{apiKeyId} (singular path + POST; matches OpenAPI RegenerateAPIKeyById and SDK)
     # Response: ApiKeySchema with NEW UUID and NEW full secret
-    url_suffix = f"{MGMT_API_V1_PREFIX}/apikeys/regenerate/{api_key_id}"
+    url_suffix = f"{MGMT_API_V1_PREFIX}/apikey/regenerate/{api_key_id}"
 
-    response = client.http_request(method="PUT", url_suffix=url_suffix, json_data=request_body, use_mgmt_base=True)
+    response = client.http_request(method="POST", url_suffix=url_suffix, json_data=request_body, use_mgmt_base=True)
 
     # Parse response according to ApiKeySchema
     # IMPORTANT: Returns NEW api_key_id and NEW api_key (full secret)
