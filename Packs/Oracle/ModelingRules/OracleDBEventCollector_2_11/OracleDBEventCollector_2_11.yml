@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: Oracle_ModelingRule
-name: Oracle Modeling Rule
+id: OracleDBEventCollector
+name: OracleDBEventCollector
 rules: ''
 schema: ''
 supportedModules:

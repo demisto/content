@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: Armis_ModelingRule
-name: Armis Modeling Rule
+id: armis_security_ModelingRule
+name: Armis Security Modeling Rule
 rules: ''
 schema: ''
 tags: security

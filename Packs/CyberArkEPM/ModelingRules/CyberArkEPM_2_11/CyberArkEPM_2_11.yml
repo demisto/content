@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CyberArkEPM_ModelingRule
-name: CyberArkEPM Modeling Rule
+id: CyberArk_EPM_ModelingRule
+name: CyberArk EPM Modeling Rule
 rules: ''
 schema: ''
 tags: CyberArk
