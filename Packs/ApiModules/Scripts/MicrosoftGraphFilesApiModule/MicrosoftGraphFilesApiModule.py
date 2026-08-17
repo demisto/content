@@ -1499,7 +1499,7 @@ def update_driveitem_command(client: MsGraphClient, args: dict[str, str]) -> Com
 
     if not body:
         raise DemistoException(
-            "Provide at least one update field " "(new_parent_id, new_parent_drive_id, new_name, description, conflict_behavior)."
+            "Provide at least one update field (new_parent_id, new_parent_drive_id, new_name, description, conflict_behavior)."
         )
 
     raw_response = client.update_driveitem(object_type, object_type_id, item_id, body)
