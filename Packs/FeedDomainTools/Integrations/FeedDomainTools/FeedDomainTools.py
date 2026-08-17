@@ -240,7 +240,7 @@ class DomainToolsClient:
 
                 if feed_type in (self.IPHOTLIST, self.IPRISK):
                     indicator = json_feed.get("ip")
-                    indicator_type = FeedIndicatorType.IP
+                    indicator_type = "DomainToolsFeed IP"
                 else:
                     indicator = json_feed.get("domain")
                     indicator_type = FeedIndicatorType.Domain
@@ -287,8 +287,27 @@ class DomainToolsClient:
                         "pdns_resolutions": json_feed.get("pdns_resolutions"),
                         "bad_pdns_resolutions": json_feed.get("bad_pdns_resolutions"),
                         "total_domains": json_feed.get("total_domains"),
-                        "all_threats_combined_count": json_feed.get("all_threats_combined_count"),
+                        "zerolist_domains": json_feed.get("zerolist_domains"),
+                        "zerolist_ip": json_feed.get("zerolist_ip"),
                         "third_party_threats": json_feed.get("third_party_threats"),
+                        "all_threats_combined_count": json_feed.get("all_threats_combined_count"),
+                        "all_threats_combined_percent": json_feed.get("all_threats_combined_percent"),
+                        "all_threats_percent": json_feed.get("all_threats_percent"),
+                        "combined_phishing_percent": json_feed.get("combined_phishing_percent"),
+                        "combined_malware_percent": json_feed.get("combined_malware_percent"),
+                        "combined_spam_percent": json_feed.get("combined_spam_percent"),
+                        "malicious_phishing": json_feed.get("malicious_phishing"),
+                        "malicious_malware": json_feed.get("malicious_malware"),
+                        "malicious_spam": json_feed.get("malicious_spam"),
+                        "percent_phishing": json_feed.get("percent_phishing"),
+                        "percent_malware": json_feed.get("percent_malware"),
+                        "percent_spam": json_feed.get("percent_spam"),
+                        "compromised_phishing": json_feed.get("compromised_phishing"),
+                        "compromised_malware": json_feed.get("compromised_malware"),
+                        "compromised_spam": json_feed.get("compromised_spam"),
+                        "predicted_phishing": json_feed.get("predicted_phishing"),
+                        "predicted_malware": json_feed.get("predicted_malware"),
+                        "predicted_spam": json_feed.get("predicted_spam"),
                     }
                     dt_feed_data["ip_threat_data"] = ip_threat_data
 
@@ -399,8 +418,44 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
                 "rawJSON": raw_data,
             }
 
+            if timestamp_:
+                if type_ == "DomainToolsFeed IP":
+                    indicator_obj["fields"]["domaintoolsfeedipfeedtimestamp"] = timestamp_
+
             if tlp_color_:
                 indicator_obj["fields"]["trafficlightprotocol"] = tlp_color_
+
+            if ip_threat_data_:
+                indicator_obj["fields"]["domaintoolsfeedipasn"] = ip_threat_data_.get("asn")
+                indicator_obj["fields"]["domaintoolsfeediporganization"] = ip_threat_data_.get("organization")
+                indicator_obj["fields"]["domaintoolsfeedipcity"] = ip_threat_data_.get("city")
+                indicator_obj["fields"]["domaintoolsfeedipcountry"] = ip_threat_data_.get("country")
+                indicator_obj["fields"]["domaintoolsfeediplatitude"] = ip_threat_data_.get("latitude")
+                indicator_obj["fields"]["domaintoolsfeediplongitude"] = ip_threat_data_.get("longitude")
+                indicator_obj["fields"]["domaintoolsfeedippdnsresolutions"] = ip_threat_data_.get("pdns_resolutions")
+                indicator_obj["fields"]["domaintoolsfeedipbadpdnsresolutions"] = ip_threat_data_.get("bad_pdns_resolutions")
+                indicator_obj["fields"]["domaintoolsfeediptotaldomains"] = ip_threat_data_.get("total_domains")
+                indicator_obj["fields"]["domaintoolsfeedipzerolistdomains"] = ip_threat_data_.get("zerolist_domains")
+                indicator_obj["fields"]["domaintoolsfeedipzerolistip"] = ip_threat_data_.get("zerolist_ip")
+                indicator_obj["fields"]["domaintoolsfeedipthirdpartythreats"] = ip_threat_data_.get("third_party_threats")
+                indicator_obj["fields"]["domaintoolsfeedipallthreatscombinedcount"] = ip_threat_data_.get("all_threats_combined_count")
+                indicator_obj["fields"]["domaintoolsfeedipallthreatscombinedpercent"] = ip_threat_data_.get("all_threats_combined_percent")
+                indicator_obj["fields"]["domaintoolsfeedipallthreatsperecent"] = ip_threat_data_.get("all_threats_percent")
+                indicator_obj["fields"]["domaintoolsfeedipcombinedphishingpercent"] = ip_threat_data_.get("combined_phishing_percent")
+                indicator_obj["fields"]["domaintoolsfeedipcombinedmalwarepercent"] = ip_threat_data_.get("combined_malware_percent")
+                indicator_obj["fields"]["domaintoolsfeedipcombinedspampercent"] = ip_threat_data_.get("combined_spam_percent")
+                indicator_obj["fields"]["domaintoolsfeedipmaliciousphishing"] = ip_threat_data_.get("malicious_phishing")
+                indicator_obj["fields"]["domaintoolsfeedipmaliciousmalware"] = ip_threat_data_.get("malicious_malware")
+                indicator_obj["fields"]["domaintoolsfeedipmaliciousspam"] = ip_threat_data_.get("malicious_spam")
+                indicator_obj["fields"]["domaintoolsfeedippercentphishing"] = ip_threat_data_.get("percent_phishing")
+                indicator_obj["fields"]["domaintoolsfeedippercentmalware"] = ip_threat_data_.get("percent_malware")
+                indicator_obj["fields"]["domaintoolsfeedippercentspam"] = ip_threat_data_.get("percent_spam")
+                indicator_obj["fields"]["domaintoolsfeedipcompromisedphishing"] = ip_threat_data_.get("compromised_phishing")
+                indicator_obj["fields"]["domaintoolsfeedipcompromisedmalware"] = ip_threat_data_.get("compromised_malware")
+                indicator_obj["fields"]["domaintoolsfeedipcompromisedspam"] = ip_threat_data_.get("compromised_spam")
+                indicator_obj["fields"]["domaintoolsfeedippredictedphishing"] = ip_threat_data_.get("predicted_phishing")
+                indicator_obj["fields"]["domaintoolsfeedippredictedmalware"] = ip_threat_data_.get("predicted_malware")
+                indicator_obj["fields"]["domaintoolsfeedippredictedspam"] = ip_threat_data_.get("predicted_spam")
 
             if overall_risk_score_:
                 indicator_obj["score"] = get_dbot_score(overall_risk_score=overall_risk_score_)
