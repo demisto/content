@@ -15,7 +15,7 @@ class Config:
     """Global static configuration."""
 
     # Bump on every hotfix so the running build can be confirmed from the `[Version]` debug log.
-    VERSION_TAG = "o365-message-trace/2.0.2-fetch-lookback"
+    VERSION_TAG = "o365-message-trace/2.0.3-fetch-lookback"
 
     VENDOR = "microsoft"
     PRODUCT = "o365_message_trace"
@@ -464,11 +464,15 @@ def fetch_events_sequential(
         previous_link = next_link
 
     # Sort all collected events ascending by receivedDateTime (parsed as datetime) so the
-    # earliest event is first.
+    # earliest event is first. Use ``parse_datetime`` (flexible, via ``arg_to_datetime``) rather
+    # than a rigid ``strptime`` format: the Graph API returns MIXED fractional-second precision -
+    # whole seconds (``...:23Z``), milliseconds (``...:23.704Z``) and microseconds - and a fixed
+    # ``%f`` format silently fails on the whole-second values, sorting them as ``datetime.min`` and
+    # corrupting the truncation order.
     collected.sort(
-        key=lambda event: safe_strptime(event["receivedDateTime"], Config.DATE_FORMAT_EVENT)
+        key=lambda event: parse_datetime(event["receivedDateTime"], default=datetime.min.replace(tzinfo=UTC))
         if event.get("receivedDateTime")
-        else datetime.min
+        else datetime.min.replace(tzinfo=UTC)
     )
 
     if len(collected) > max_events:
@@ -599,19 +603,37 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
         start_dt = now - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES)
         demisto.debug(f"[Fetch] First run - looking back {Config.DEFAULT_FIRST_FETCH_MINUTES} minutes from now")
 
+    # ``drained_until`` is the end of the last window we FULLY fetched. It is the guaranteed
+    # forward cursor: the next run resumes from here, so no window is ever partially consumed and
+    # then skipped. Advancing on this boundary (rather than on ``max(event _time)``) is what breaks
+    # the infinite-loop / stuck-cursor bug when a saturated backlog window is all-duplicates.
+    drained_until: datetime | None = None
+
     if now < start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES):
         window_end_dt = now
         demisto.debug(f"[Fetch] Window {start_dt.isoformat()} -> {window_end_dt.isoformat()} (now={now.isoformat()})")
         events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
+        drained_until = window_end_dt
 
     else:
         window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
         all_events: list[dict] = []
 
-        # Walk fixed-size windows until we either catch up to ``now``, collect enough
-        # events, or hit the safety cap on how many times ``fetch_events_sequential``
-        # may be called in a single run.
-        while start_dt < now and len(all_events) < max_events:
+        # The previous high-water mark. The look-back re-scans the region ``[last_fetch - lookback,
+        # last_fetch]``; those events are (almost) all duplicates. If the ``max_events`` cap is
+        # allowed to trip INSIDE that overlap region, the walk can stop exactly at ``last_fetch``
+        # and the cursor never advances - the stuck-cursor / infinite-loop bug. So the cap is only
+        # honored once we have drained PAST ``last_fetch`` (i.e. past the overlap into new ground).
+        # This guarantees every cycle advances at least to ``last_fetch + one window``.
+        prev_high_water = parse_datetime(last_fetch_str) if last_fetch_str else start_dt
+
+        # Walk fixed-size windows oldest->newest until we catch up to ``now``, or we have both
+        # advanced past the previous high-water mark AND collected enough events. Each window is
+        # fetched COMPLETELY (all pages) and kept intact - we never truncate a window's events away,
+        # which would drop events the advancing cursor then skips forever.
+        while start_dt < now:
+            if len(all_events) >= max_events and start_dt > prev_high_water:
+                break
             window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
             try:
                 events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
@@ -623,12 +645,12 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
             if window_end_dt <= start_dt:
                 demisto.error(f"[Fetch] Window did not advance ({start_dt} -> {window_end_dt}); stopping.")
                 break
+            # This window was fully drained - it is now safe to resume the NEXT run from its end.
+            drained_until = window_end_dt
             start_dt = window_end_dt
             window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
 
         events = all_events
-        if len(events) > max_events:
-            events = events[:max_events]
 
     add_unique_id_field(events)
     add_time_field(events)
@@ -656,6 +678,15 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
     timed_events = [event for event in events if event.get("_time") and event.get("_dedup_key")]
     if timed_events:
         new_last_fetch = max(event["_time"] for event in timed_events)
+
+    # Floor the cursor at the last FULLY-drained window end. This guarantees forward progress even
+    # when every event in a saturated backlog window was a duplicate (``max(_time)`` would then
+    # resolve back to the current boundary and the run would re-scan the same window forever). We
+    # take the later of the event-derived mark and the drained boundary so we never move backwards.
+    if drained_until is not None:
+        drained_str = format_datetime_for_filter(drained_until)
+        if parse_datetime(drained_str) > parse_datetime(new_last_fetch):
+            new_last_fetch = drained_str
 
     # Persist EVERY _dedup_key whose _time falls inside the trailing look-back window that the
     # NEXT run will re-scan (``[new_last_fetch - lookback, new_last_fetch]``). The next run
