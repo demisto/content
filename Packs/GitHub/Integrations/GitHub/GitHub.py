@@ -2504,8 +2504,9 @@ def main():
     try:
         if cmd in COMMANDS:
             COMMANDS[cmd]()
-    except Exception as e:
-        return_error(str(e))
+    except Exception as err:
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {cmd} command.\nError:\n{str(err)}")
 
 
 # python2 uses __builtin__ python3 uses builtins
