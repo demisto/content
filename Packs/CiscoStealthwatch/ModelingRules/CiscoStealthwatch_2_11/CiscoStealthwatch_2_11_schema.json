@@ -1,0 +1,56 @@
+{
+    "lancope_stealthwatch_raw": {
+      "src": {
+        "type": "string",
+        "is_array": false
+      },
+      "dst": {
+        "type": "string",
+        "is_array": false
+      },
+      "dstPort": {
+        "type": "string",
+        "is_array": false
+      },
+      "eventName": {
+        "type": "string",
+        "is_array": false
+      },
+      "msg": {
+        "type": "string",
+        "is_array": false
+      },
+      "fullmessage": {
+        "type": "string",
+        "is_array": false
+      },
+      "alarmID": {
+        "type": "string",
+        "is_array": false
+      },
+      "alarmSev": {
+        "type": "string",
+        "is_array": false
+      },
+      "sourceUser": {
+        "type": "string",
+        "is_array": false
+      },
+      "targetUser": {
+        "type": "string",
+        "is_array": false
+      },
+      "targetHostname": {
+        "type": "string",
+        "is_array": false
+      },
+      "domain": {
+        "type": "string",
+        "is_array": false
+      },
+      "proto": {
+        "type": "int",
+        "is_array": false
+      }
+    }
+  }
