@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
+import traceback
 from datetime import datetime, UTC
 import dateparser
 
@@ -228,13 +229,13 @@ def _normalize_entity_content_for_grid(entity_content: Any) -> list[dict[str, An
     root_domain = entity_content.get("root_domain")
     if isinstance(root_domain, dict):
         return [root_domain]
-    # Already a flat row matching grid columns
-    if "domain" in entity_content:
-        return [entity_content]
     # Other product shapes: unwrap a single nested dict when present
     nested_dicts = [value for value in entity_content.values() if isinstance(value, dict)]
     if len(nested_dicts) == 1:
         return [nested_dicts[0]]
+    # Already a flat row (no nested objects): use it as-is so no data is dropped
+    if not nested_dicts:
+        return [entity_content]
     return []
 
 
@@ -862,7 +863,10 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
             f"Doppel - Archived remote alert [{remote_incident_id}] " f"with entity_state={entity_state!r} comment={comment!r}."
         )
     except Exception as e:
-        demisto.error(f"Doppel - Error in outgoing mirror for incident {remote_incident_id} \nError message: {str(e)}")
+        demisto.error(
+            f"Doppel - Error in outgoing mirror for incident {remote_incident_id} "
+            f"\nError message: {str(e)}\n{traceback.format_exc()}"
+        )
 
     return remote_incident_id
 

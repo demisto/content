@@ -33,7 +33,9 @@
         "ecommerce",
         "crypto",
         "email",
-        "paid_ads"
+        "paid_ads",
+        "telco",
+        "darkweb"
     ],
     "sla": 0,
     "system": false,
