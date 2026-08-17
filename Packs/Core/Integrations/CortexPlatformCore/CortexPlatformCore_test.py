@@ -1819,10 +1819,10 @@ def test_update_issue_command_missing_issue_id_no_context(mocker):
     WHEN:
         The update_issue_command function is called.
     THEN:
-        CortexMissingArgError is raised and update_issue is not called.
+        DemistoException is raised and update_issue is not called.
     """
     from CortexPlatformCore import update_issue_command, Client
-    from CommonServerPython import CortexMissingArgError
+    from CommonServerPython import DemistoException
     import pytest
 
     client = Client(base_url="", headers={})
@@ -1832,7 +1832,7 @@ def test_update_issue_command_missing_issue_id_no_context(mocker):
 
     args = {"name": "Test Issue"}
 
-    with pytest.raises(CortexMissingArgError, match="Issue ID is required for updating an issue."):
+    with pytest.raises(DemistoException, match="Issue ID is required for updating an issue."):
         update_issue_command(client, args)
 
     mock_update_issue.assert_not_called()
@@ -1845,10 +1845,10 @@ def test_update_issue_command_empty_issue_id_no_context(mocker):
     WHEN:
         The update_issue_command function is called.
     THEN:
-        CortexMissingArgError is raised and update_issue is not called.
+        DemistoException is raised and update_issue is not called.
     """
     from CortexPlatformCore import update_issue_command, Client
-    from CommonServerPython import CortexMissingArgError
+    from CommonServerPython import DemistoException
     import pytest
 
     client = Client(base_url="", headers={})
@@ -1858,7 +1858,7 @@ def test_update_issue_command_empty_issue_id_no_context(mocker):
 
     args = {"id": "", "name": "Test Issue"}
 
-    with pytest.raises(CortexMissingArgError, match="Issue ID is required for updating an issue."):
+    with pytest.raises(DemistoException, match="Issue ID is required for updating an issue."):
         update_issue_command(client, args)
 
     mock_update_issue.assert_not_called()
@@ -1917,6 +1917,58 @@ def test_update_issue_command_severity_low(mocker):
     call_args = mock_update_issue.call_args[0][0]
     update_data = call_args["update_data"]
     assert update_data["severity"] == "SEV_020_LOW"
+
+
+def test_update_issue_command_invalid_severity_mapping(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with invalid severity value.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Severity is not included in update_data when mapping returns None.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)
+
+    args = {"id": "12345", "severity": "99", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert "severity" not in update_data
+    assert update_data["name"] == "Test Issue"
+
+
+def test_update_issue_command_invalid_status_mapping(mocker):
+    """
+    GIVEN:
+        Client instance and arguments with invalid status value.
+    WHEN:
+        The update_issue_command function is called.
+    THEN:
+        Status is not included in update_data when mapping returns None.
+    """
+    from CortexPlatformCore import update_issue_command, Client
+
+    client = Client(base_url="", headers={})
+    mock_update_issue = mocker.patch.object(client, "update_issue")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("CortexPlatformCore.arg_to_number", return_value=99)
+
+    args = {"id": "12345", "status": "FAKE", "name": "Test Issue"}
+
+    update_issue_command(client, args)
+
+    call_args = mock_update_issue.call_args[0][0]
+    update_data = call_args["update_data"]
+    assert "resolution_status" not in update_data
+    assert update_data["name"] == "Test Issue"
 
 
 def test_update_issue_command_no_severity(mocker):
@@ -2033,14 +2085,14 @@ def test_update_issue_command_only_issue_id(mocker):
         update_issue is called with empty update_data.
     """
     from CortexPlatformCore import update_issue_command, Client
-    from CommonServerPython import CortexMissingArgError
+    from CommonServerPython import DemistoException
 
     client = Client(base_url="", headers={})
     mock_update_issue = mocker.patch.object(client, "update_issue")
     mocker.patch.object(demisto, "debug")
 
     args = {"id": "12345"}
-    with pytest.raises(CortexMissingArgError, match="Please provide arguments to update the issue."):
+    with pytest.raises(DemistoException, match="Please provide arguments to update the issue."):
         update_issue_command(client, args)
 
     mock_update_issue.assert_not_called()
@@ -4905,7 +4957,7 @@ def test_update_issue_command_link_cases_empty_list_no_other_updates(mocker: Moc
         DemistoException is raised because no updates are provided.
     """
     from CortexPlatformCore import update_issue_command, Client
-    from CommonServerPython import CortexMissingArgError
+    from CommonServerPython import DemistoException
     import pytest
 
     client = Client(base_url="", headers={})
@@ -4916,7 +4968,7 @@ def test_update_issue_command_link_cases_empty_list_no_other_updates(mocker: Moc
 
     args = {"id": "12345", "link_cases": "", "unlink_cases": None}
 
-    with pytest.raises(CortexMissingArgError, match="Please provide arguments to update the issue."):
+    with pytest.raises(DemistoException, match="Please provide arguments to update the issue."):
         update_issue_command(client, args)
 
     mock_link_issue_to_cases.assert_not_called()
