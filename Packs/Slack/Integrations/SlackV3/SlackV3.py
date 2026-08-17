@@ -374,9 +374,10 @@ class SlackAssistantHandler(AssistantMessagingHandler):
                 return {"ts": response.get("ts")}
             return {}
         except SlackApiError as e:
-            # If blocks/attachments are invalid, send as plain text
-            if "invalid_blocks" in str(e):
-                demisto.error(f"Invalid blocks format, sending as plain text: {e}")
+            # If blocks or attachments are invalid, send as plain text so the message isn't lost.
+            error_str = str(e)
+            if "invalid_blocks" in error_str or "invalid_attachments" in error_str:
+                demisto.error(f"Invalid blocks/attachments format, sending as plain text: {e}")
                 if fallback_text:
                     response = send_message_to_destinations(
                         [channel_id], fallback_text, thread_id, bot_name=AssistantMessages.BOT_DISPLAY_NAME
@@ -541,6 +542,23 @@ def send_agent_response():
     raw_messages = args.get("messages", [])
     if isinstance(raw_messages, str):
         raw_messages = json.loads(raw_messages)
+
+    messages_metadata = [
+        {
+            "response_type": message.get("response_type"),
+            "is_final": message.get("is_final"),
+            "message_id": message.get("message_id"),
+            "content_length": len(message.get("content") or ""),
+        }
+        for message in raw_messages
+        if isinstance(message, dict)
+    ]
+    demisto.debug(
+        "send_agent_response called with "
+        f"channel_id={channel_id}, thread_id={thread_id}, agent_name={agent_name}, "
+        f"user_id={user_id}, messages_count={len(raw_messages)}, "
+        f"messages_metadata={messages_metadata}"
+    )
 
     # Call the handler's send_agent_response method
     slack_assistant_handler.send_agent_response(
