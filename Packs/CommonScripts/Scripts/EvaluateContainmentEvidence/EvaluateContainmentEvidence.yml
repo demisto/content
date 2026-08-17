@@ -1,0 +1,60 @@
+args:
+- auto: PREDEFINED
+  description: An authoritative detection basis supplied by the calling analytic or playbook. Unknown and ML-only evidence require user verification.
+  name: detection_basis
+  predefined:
+  - ml_only
+  - signature
+  - corroborated
+  - unknown
+- description: The analytic type, such as Learning, ML, Rule, or Signature.
+  name: analytic_type
+- description: The generator ID associated with the detection. Generator ID 411 is treated as explicit ML-only evidence.
+  name: generator_id
+- description: The identifier of an independently matched signature or rule.
+  name: signature_id
+- description: The detection classification text.
+  name: classification
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether independent ML and signature evidence was explicitly corroborated.
+  name: is_corroborated
+  predefined:
+  - 'True'
+  - 'False'
+- description: Additional incident text used for conservative evidence inference.
+  name: incident_context
+comment: Evaluates the evidence basis for a containment decision. ML-only, unknown, contradictory, and incomplete evidence require user verification. The script does not perform containment.
+commonfields:
+  id: EvaluateContainmentEvidence
+  version: -1
+enabled: true
+name: EvaluateContainmentEvidence
+outputs:
+- contextPath: ContainmentEvidence.disposition
+  description: The normalized evidence disposition. Possible values are ml_only, signature, corroborated, and unknown.
+  type: String
+- contextPath: ContainmentEvidence.allow_auto_contain
+  description: Whether the supplied evidence is sufficient for a caller to consider automatic containment.
+  type: Boolean
+- contextPath: ContainmentEvidence.require_user_verification
+  description: Whether the caller must require user verification before containment.
+  type: Boolean
+- contextPath: ContainmentEvidence.reason_codes
+  description: Deterministic reason codes supporting the decision.
+  type: String
+- contextPath: ContainmentEvidence.evidence_summary
+  description: A concise, deterministic decision summary suitable for an investigation record.
+  type: String
+script: '-'
+subtype: python3
+tags:
+- evaluation
+- containment
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.13.10404775
+runas: DBotWeakRole
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
