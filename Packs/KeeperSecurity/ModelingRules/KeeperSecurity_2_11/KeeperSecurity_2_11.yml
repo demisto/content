@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: KeeperSecurity_ModelingRule
-name: KeeperSecurity Modeling Rule
+id: Keeper_Security_ModelingRule
+name: Keeper Security Modeling Rule
 rules: ''
 schema: ''
 tags: ''

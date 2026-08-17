@@ -1,6 +1,6 @@
 fromversion: 8.15.0
 id: AnthropicClaude_ModelingRule
-name: AnthropicClaude Modeling Rule
+name: Anthropic Claude Modeling Rule
 rules: ''
 schema: ''
 tags: ''

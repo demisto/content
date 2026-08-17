@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CiscoISR_ModelingRule
-name: CiscoISR Modeling Rule
+id: Cisco_ISR_ModelingRule
+name: Cisco ISR Modeling Rule
 rules: ''
 schema: ''
 tags: ''

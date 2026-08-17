@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CarbonBlackDefense_ModelingRule
-name: CarbonBlackDefense Modeling Rule
+id: VMWare_Carbon_Black_Cloud_ModelingRule
+name: VMWare Carbon Black Cloud Modeling Rule
 rules: ''
 schema: ''
 tags: ''
