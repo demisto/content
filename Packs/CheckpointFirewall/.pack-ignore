@@ -21,3 +21,6 @@ ignore=MR108
 
 [file:CheckPointFirewallV2.yml]
 ignore=BA129
+
+[file:CheckpointFirewall_2_11.yml]
+ignore=MR108
