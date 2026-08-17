@@ -153,7 +153,7 @@ class TestIPFeedsBuildIterator:
 
         assert "203.0.113.5" in ips
         assert len(indicators) == 3
-        assert indicators[0].get("type") == FeedIndicatorType.IP
+        assert indicators[0].get("type") == "DomainToolsFeed IP"
         assert indicators[0].get("ip_threat_data", {}).get("asn") == 12345
 
     def test_iprisk_build_iterator(self, mocker, dt_feeds_client):
@@ -175,7 +175,7 @@ class TestIPFeedsBuildIterator:
 
         assert "203.0.113.10" in ips
         assert len(indicators) == 2
-        assert indicators[0].get("type") == FeedIndicatorType.IP
+        assert indicators[0].get("type") == "DomainToolsFeed IP"
         assert indicators[0].get("ip_threat_data", {}).get("asn") == 22222
 
 
