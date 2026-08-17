@@ -73,15 +73,13 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: Number of results to return, maximum is 9999. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
+    - description: The maximum number of audit log events to return. The command collects events oldest-first and keeps fetching until this limit is reached.
       name: limit
       defaultValue: 10
-    - description: A string pointing at the next page of results. The cursor can be found within the response_metadata field, as part of the raw response of the Audit Logs API call. For further information, visit Slack documentation - https://api.slack.com/docs/pagination#cursors
-      name: cursor
-    - description: Occurrence time of the least recent audit event to include (inclusive). Data is not available prior to March 2018.
+    - description: The occurrence time of the least recent audit event to include (inclusive), i.e. the date to fetch events from. Data is not available prior to March 2018.
       name: oldest
       defaultValue: 3 days
-    - description: Occurrence time of the most recent audit event to include (inclusive).
+    - description: The occurrence time of the most recent audit event to include (inclusive), i.e. the date to fetch events until. Defaults to the current time.
       name: latest
     - description: Name of the action.
       name: action

@@ -245,7 +245,11 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
     forward-moving time window, sort them oldest-first, and return the oldest events
     up to the user-defined limit. Any surplus (beyond the limit) is collected in the
     following runs, which resume from where we stopped and keep walking forward until
-    the present time is reached (steady state).
+    the upper time bound is reached (steady state).
+
+    The upper time bound of the walk is the `latest` value in `params` when supplied (used by the
+    manual `slack-get-events` command to collect a fixed [oldest, latest] range), and the current
+    time otherwise (used by the automated `fetch-events` collector).
 
     The window is capped at DEFAULT_MAX_FETCH_WINDOW seconds to avoid timeouts / out-of-memory
     when a large backlog needs to be collected.
@@ -264,8 +268,8 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
     if last_run is None:
         last_run = {}
     limit = arg_to_number(params.get("limit")) or 1000
-    now = get_now_timestamp()
-    demisto.debug(f"Starting Slack event collection cycle. limit={limit}, now={now}, last_run={last_run}")
+    upper_bound = arg_to_timestamp(params.get("latest")) or get_now_timestamp()
+    demisto.debug(f"Starting Slack event collection cycle. limit={limit}, upper_bound={upper_bound}, last_run={last_run}")
     extra_params = {
         "action": params.get("action"),
         "actor": params.get("actor"),
@@ -274,20 +278,20 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
 
     # Walk forward through bounded windows within this single run, so a sparse backlog is
     # drained quickly instead of advancing only one window per fetch interval. We stop as
-    # soon as we either reach 'now' (caught up), fill the limit, or hit the per-run window cap
-    # (which bounds the run's duration / number of API calls on very large backfills).
-    window_start = compute_window_start(params, last_run, now)
+    # soon as we either reach the upper bound (caught up), fill the limit, or hit the per-run
+    # window cap (which bounds the run's duration / number of API calls on very large backfills).
+    window_start = compute_window_start(params, last_run, upper_bound)
     collected: list[dict] = []
 
     # `keep_walking` drives the loop: we always fetch at least the boundary window (even when
-    # window_start == now, so events at the current second are collected), then keep walking
-    # forward window-by-window until we catch up to 'now', fill the limit, or hit the cap.
+    # window_start == upper_bound, so events at that second are collected), then keep walking
+    # forward window-by-window until we reach the upper bound, fill the limit, or hit the cap.
     keep_walking = True
     windows_walked = 0
     while keep_walking:
-        window_end = min(window_start + Config.DEFAULT_MAX_FETCH_WINDOW, now)
-        caught_up = window_end >= now
-        demisto.debug(f"Fetch window: [{window_start}, {window_end}] (now={now}, limit={limit})")
+        window_end = min(window_start + Config.DEFAULT_MAX_FETCH_WINDOW, upper_bound)
+        caught_up = window_end >= upper_bound
+        demisto.debug(f"Fetch window: [{window_start}, {window_end}] (upper_bound={upper_bound}, limit={limit})")
 
         all_events = client.get_all_logs_in_window(window_start, window_end, extra_params)
         # Dedup BEFORE slicing to the limit so the limit is filled with new events only.
@@ -307,12 +311,12 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
         # now, so stop walking and let the next scheduled run resume from the advanced mark.
         window_returned_no_events = len(all_events) == 0
 
-        # When caught up (window reached 'now') and there is nothing new, keep the state as-is
-        # so no event recorded at the boundary can be skipped. Otherwise update normally.
+        # When caught up (window reached the upper bound) and there is nothing new, keep the state
+        # as-is so no event recorded at the boundary can be skipped. Otherwise update normally.
         if not (caught_up and not events_to_send):
             update_last_run(last_run, events_to_send, window_end, reached_limit=have_enough, caught_up=caught_up)
 
-        # Stop once we caught up to 'now', have a full batch, the window returned no events, or
+        # Stop once we reached the upper bound, have a full batch, the window returned no events, or
         # reached the per-run window cap (hard upper bound); otherwise walk to the next window.
         # Any remaining windows are covered by the next run.
         hit_window_cap = windows_walked >= Config.MAX_WINDOWS_PER_RUN
@@ -331,11 +335,11 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     """
     Manual `slack-get-events` command.
 
-    Runs the exact same collection cycle as the automated `fetch-events` collector
-    (forward-moving window, oldest-first, deduped, limited) so the customer can preview
-    precisely what a fetch would deliver - BUT it does NOT change the persisted lastRun.
-    A copy of the current lastRun is used, so running this command has no side effects on
-    the collector's state.
+    Runs the same collection cycle as the automated `fetch-events` collector (forward-moving
+    window, oldest-first, deduped, limited to the `limit` argument), driven purely by the
+    command arguments: `oldest` sets the window start and `latest` sets the upper bound of the
+    range to collect. It uses a fresh, empty run state, so the command is independent of the
+    collector's persisted state and has no side effects on it.
 
     Args:
         client (Client): the client implementing the API to Slack.
@@ -345,10 +349,11 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
         (list) the events retrieved (oldest-first, up to the limit).
         (CommandResults) the CommandResults object holding the collected logs information.
     """
-    # Use a copy of the last run so the manual command never mutates the collector state.
-    last_run_copy = dict(demisto.getLastRun() or {})
-    demisto.debug(f"slack-get-events invoked (no state mutation). Using last run copy: {last_run_copy}")
-    events = fetch_slack_events(client, args, last_run_copy)
+    # Drive the cycle purely from the command arguments with a fresh run state, keeping the
+    # command independent of the collector's persisted state and free of side effects on it.
+    run_state: dict = {}
+    demisto.debug("slack-get-events invoked; running an argument-driven collection cycle with a fresh run state.")
+    events = fetch_slack_events(client, args, run_state)
     demisto.debug(f"slack-get-events retrieved {len(events)} events.")
     results = CommandResults(
         readable_output=tableToMarkdown(
