@@ -2611,6 +2611,31 @@ def _kms_key_to_context(key: dict[str, Any], project_id: str, location: str, key
     return remove_empty_elements(context)  # type: ignore[return-value]
 
 
+def _kms_parse_rotation_time(next_rotation_time: str | None) -> str | None:
+    """Parses the next rotation time argument into the RFC 3339 format the API expects.
+
+    Accepts both absolute timestamps and relative expressions such as "in 30 days".
+
+    Args:
+        next_rotation_time (str | None): The raw argument value.
+
+    Returns:
+        str | None: The parsed timestamp in RFC 3339 format, or None when no value was supplied.
+
+    Raises:
+        ValueError: If the supplied value cannot be parsed into a date.
+    """
+    if not next_rotation_time:
+        return None
+
+    parsed = arg_to_datetime(next_rotation_time, arg_name="next_rotation_time", required=True)
+    if not parsed:
+        raise ValueError(f"Could not parse the next_rotation_time value {next_rotation_time!r}.")
+
+    # Cloud KMS expects an RFC 3339 UTC timestamp, e.g. 2024-01-15T12:34:56Z.
+    return parsed.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def _kms_read_entry_file(entry_id: str) -> bytes:
     """Reads the raw bytes of a war room file entry.
 
@@ -2666,7 +2691,8 @@ def _kms_resolve_ciphertext(ciphertext: str | None, entry_id: str | None) -> byt
 
     Args:
         ciphertext (str | None): The base64-encoded cipher text to decrypt.
-        entry_id (str | None): The war room entry ID of the file to decrypt.
+        entry_id (str | None): The war room entry ID of the file to decrypt. The file is
+            expected to hold the raw encrypted bytes.
 
     Returns:
         bytes: The raw ciphertext bytes to send to the API.
@@ -2678,9 +2704,28 @@ def _kms_resolve_ciphertext(ciphertext: str | None, entry_id: str | None) -> byt
         return base64.b64decode(ciphertext)
 
     if entry_id:
-        return base64.b64decode(_kms_read_entry_file(entry_id))
+        # A ciphertext file holds the raw encrypted bytes (as written by, for example,
+        # `gcloud kms encrypt --ciphertext-file`), so it must not be base64-decoded.
+        return _kms_read_entry_file(entry_id)
 
     raise ValueError("No object to decrypt. Provide one of 'ciphertext' or 'entry_id'.")
+
+
+def _kms_decode_plaintext(raw_plaintext: bytes) -> str | None:
+    """Decodes decrypted bytes to text, detecting binary payloads.
+
+    Args:
+        raw_plaintext (bytes): The raw decrypted bytes returned by the API.
+
+    Returns:
+        str | None: The decoded text, or None when the payload is binary and therefore
+            cannot be represented as text without corrupting it.
+    """
+    try:
+        return raw_plaintext.decode("utf-8")
+    except UnicodeDecodeError:
+        demisto.debug("[GCP: KMS] Decrypted payload is not valid UTF-8; returning it as a file.")
+        return None
 
 
 def kms_keyring_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -2705,6 +2750,7 @@ def kms_keyring_list(creds: Credentials, args: dict[str, Any]) -> CommandResults
     kms_client = GCPServices.KMS.build(creds)
     key_rings: list[dict[str, Any]] = []
     next_page_token = None
+    truncated = False
 
     for location in locations:
         request_params = {
@@ -2718,20 +2764,33 @@ def kms_keyring_list(creds: Credentials, args: dict[str, Any]) -> CommandResults
         demisto.debug(f"[GCP: kms_keyring_list] Request params: {request_params}")
         response = kms_client.projects().locations().keyRings().list(**request_params).execute()  # pylint: disable=E1101
         key_rings.extend(_kms_key_ring_to_context(key_ring, project_id, location) for key_ring in response.get("keyRings", []))
-        if not all_locations:
+        if all_locations:
+            # Each location is capped at `limit` and its page token cannot be forwarded
+            # across the sweep, so record that results were omitted.
+            truncated = truncated or bool(response.get("nextPageToken"))
+        else:
             next_page_token = response.get("nextPageToken")
 
-    demisto.debug(f"[GCP: kms_keyring_list] KeyRings returned: {len(key_rings)}")
+    demisto.debug(f"[GCP: kms_keyring_list] KeyRings returned: {len(key_rings)}, truncated: {truncated}")
 
     if not key_rings:
         return CommandResults(readable_output="No KMS key rings found.")
 
+    # In all-locations mode a single page token cannot represent the combined position,
+    # so surface truncation and point the user at the single-location form, which pages properly.
+    metadata = (
+        f"Some results were omitted because at least one location returned more than {limit} key rings. "
+        "Increase 'limit', or run the command with a specific 'location' to page through it."
+        if truncated
+        else ""
+    )
     hr = tableToMarkdown(
         "GCP KMS Key Rings",
         key_rings,
         headers=["Name", "Location", "CreationTime"],
         removeNull=True,
         headerTransform=pascalToSpace,
+        metadata=metadata,
     )
 
     outputs = {
@@ -2924,7 +2983,7 @@ def kms_key_create(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     body = remove_empty_elements(
         {
             "purpose": purpose,
-            "nextRotationTime": args.get("next_rotation_time"),
+            "nextRotationTime": _kms_parse_rotation_time(args.get("next_rotation_time")),
             "rotationPeriod": args.get("rotation_period"),
             "labels": parse_labels(args.get("labels", "")) or None,
             "versionTemplate": {
@@ -2991,7 +3050,7 @@ def kms_key_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     if labels := args.get("labels"):
         body["labels"] = parse_labels(labels)
         update_mask.append("labels")
-    if next_rotation_time := args.get("next_rotation_time"):
+    if next_rotation_time := _kms_parse_rotation_time(args.get("next_rotation_time")):
         body["nextRotationTime"] = next_rotation_time
         update_mask.append("nextRotationTime")
     if rotation_period := args.get("rotation_period"):
@@ -3319,7 +3378,7 @@ def kms_symmetric_encrypt(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
 
 
-def kms_symmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def kms_symmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandResults | list:
     """Decrypts data that was encrypted with a symmetric CryptoKey.
 
     Args:
@@ -3328,7 +3387,8 @@ def kms_symmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandRe
             and one of ciphertext / entry_id.
 
     Returns:
-        CommandResults: The decrypted plaintext.
+        CommandResults | list: The decrypted plaintext, or the command results together with a
+            file entry when the decrypted payload is binary.
     """
     project_id = args.get("project_id", "")
     location = args.get("location", "global")
@@ -3356,12 +3416,27 @@ def kms_symmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandRe
         .execute()
     )
 
-    plaintext = base64.b64decode(response.get("plaintext", "")).decode("utf-8", errors="replace")
+    raw_plaintext = base64.b64decode(response.get("plaintext", ""))
+    plaintext = _kms_decode_plaintext(raw_plaintext)
     decrypt_context = {
         "CryptoKey": crypto_key,
         "ResourceName": key_name,
         "Plaintext": plaintext,
     }
+
+    if plaintext is None:
+        # The payload is binary, so it is returned as a file to keep the bytes intact.
+        file_name = f"{crypto_key}_decrypted.bin"
+        return [
+            CommandResults(
+                readable_output=f"The data has been decrypted and returned as the file {file_name}.",
+                outputs_prefix="GCP.KMS.SymmetricDecrypt",
+                outputs_key_field="ResourceName",
+                outputs=remove_empty_elements(decrypt_context),
+                raw_response=response,
+            ),
+            fileResult(file_name, raw_plaintext),
+        ]
 
     return CommandResults(
         readable_output=f"The text has been decrypted.\nPlaintext: {plaintext}",
@@ -3433,7 +3508,7 @@ def kms_asymmetric_encrypt(creds: Credentials, args: dict[str, Any]) -> CommandR
     )
 
 
-def kms_asymmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def kms_asymmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandResults | list:
     """Decrypts data using an asymmetric CryptoKeyVersion.
 
     Args:
@@ -3442,7 +3517,8 @@ def kms_asymmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandR
             crypto_key_version and one of ciphertext / entry_id.
 
     Returns:
-        CommandResults: The decrypted plaintext.
+        CommandResults | list: The decrypted plaintext, or the command results together with a
+            file entry when the decrypted payload is binary.
     """
     project_id = args.get("project_id", "")
     location = args.get("location", "global")
@@ -3465,12 +3541,27 @@ def kms_asymmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandR
         .execute()
     )
 
-    plaintext = base64.b64decode(response.get("plaintext", "")).decode("utf-8", errors="replace")
+    raw_plaintext = base64.b64decode(response.get("plaintext", ""))
+    plaintext = _kms_decode_plaintext(raw_plaintext)
     decrypt_context = {
         "CryptoKey": crypto_key,
         "CryptoKeyVersion": version_name,
         "Plaintext": plaintext,
     }
+
+    if plaintext is None:
+        # The payload is binary, so it is returned as a file to keep the bytes intact.
+        file_name = f"{crypto_key}_decrypted.bin"
+        return [
+            CommandResults(
+                readable_output=f"The data has been decrypted and returned as the file {file_name}.",
+                outputs_prefix="GCP.KMS.AsymmetricDecrypt",
+                outputs_key_field="CryptoKeyVersion",
+                outputs=remove_empty_elements(decrypt_context),
+                raw_response=response,
+            ),
+            fileResult(file_name, raw_plaintext),
+        ]
 
     return CommandResults(
         readable_output=f"The text has been decrypted.\nPlaintext: {plaintext}",

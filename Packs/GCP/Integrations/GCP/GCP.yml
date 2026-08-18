@@ -2091,7 +2091,7 @@ script:
         description: The location of the key ring.
         type: String
       - contextPath: GCP.KMS.KeyRing.CreationTime
-        description: The time at which the key ring was created.
+        description: The time at which the key ring was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.KeyRingsNextPageToken
         description: The token to pass as the page_token argument to retrieve the next page of key rings.
@@ -2149,10 +2149,10 @@ script:
         description: The immutable purpose of the crypto key.
         type: String
       - contextPath: GCP.KMS.CryptoKey.CreationTime
-        description: The time at which the crypto key was created.
+        description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.NextRotationTime
-        description: The time at which the next scheduled rotation is due to run.
+        description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.RotationPeriod
         description: The period between automatic key rotations.
@@ -2224,10 +2224,10 @@ script:
         description: The immutable purpose of the crypto key.
         type: String
       - contextPath: GCP.KMS.CryptoKey.CreationTime
-        description: The time at which the crypto key was created.
+        description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.NextRotationTime
-        description: The time at which the next scheduled rotation is due to run.
+        description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.RotationPeriod
         description: The period between automatic key rotations.
@@ -2278,10 +2278,10 @@ script:
         description: The immutable purpose of the crypto key.
         type: String
       - contextPath: GCP.KMS.CryptoKey.CreationTime
-        description: The time at which the crypto key was created.
+        description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.NextRotationTime
-        description: The time at which the next scheduled rotation is due to run.
+        description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.RotationPeriod
         description: The period between automatic key rotations.
@@ -2354,7 +2354,7 @@ script:
       description: The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. Supported only for keys whose purpose is ENCRYPT_DECRYPT.
       required: false
     - name: next_rotation_time
-      description: The time of the next scheduled rotation, in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z). Supported only for keys whose purpose is ENCRYPT_DECRYPT.
+      description: The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). Supported only for keys whose purpose is ENCRYPT_DECRYPT.
       required: false
     - name: labels
       description: The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456.
@@ -2387,10 +2387,10 @@ script:
         description: The immutable purpose of the crypto key.
         type: String
       - contextPath: GCP.KMS.CryptoKey.CreationTime
-        description: The time at which the crypto key was created.
+        description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.NextRotationTime
-        description: The time at which the next scheduled rotation is due to run.
+        description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.RotationPeriod
         description: The period between automatic key rotations.
@@ -2425,7 +2425,7 @@ script:
       description: The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456.
       required: false
     - name: next_rotation_time
-      description: The time of the next scheduled rotation, in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z).
+      description: The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days").
       required: false
     - name: rotation_period
       description: The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours.
@@ -2477,10 +2477,10 @@ script:
         description: The immutable purpose of the crypto key.
         type: String
       - contextPath: GCP.KMS.CryptoKey.CreationTime
-        description: The time at which the crypto key was created.
+        description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.NextRotationTime
-        description: The time at which the next scheduled rotation is due to run.
+        description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
       - contextPath: GCP.KMS.CryptoKey.RotationPeriod
         description: The period between automatic key rotations.
@@ -2529,7 +2529,7 @@ script:
         description: The algorithm that the crypto key version supports.
         type: String
       - contextPath: GCP.KMS.CryptoKeyVersion.createTime
-        description: The time at which the crypto key version was created.
+        description: The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
         type: Date
   - name: gcp-kms-key-version-disable
     description: "Disables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get."
@@ -2566,7 +2566,7 @@ script:
         description: The algorithm that the crypto key version supports.
         type: String
       - contextPath: GCP.KMS.CryptoKeyVersion.createTime
-        description: The time at which the crypto key version was created.
+        description: The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
         type: Date
   - name: gcp-kms-key-version-destroy
     description: "Schedules a crypto key version for destruction. The key material is destroyed 24 hours later. Required Permissions: cloudkms.cryptoKeyVersions.destroy, cloudkms.cryptoKeys.get."
@@ -2598,7 +2598,7 @@ script:
         description: The current state of the crypto key version.
         type: String
       - contextPath: GCP.KMS.CryptoKeyVersion.destroyTime
-        description: The time at which the crypto key version material is scheduled to be destroyed.
+        description: The time at which the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
         type: Date
   - name: gcp-kms-key-version-restore
     description: "Restores a crypto key version that is scheduled for destruction. Required Permissions: cloudkms.cryptoKeyVersions.restore, cloudkms.cryptoKeys.get."
@@ -2731,7 +2731,7 @@ script:
       required: false
       secret: true
     - name: entry_id
-      description: The war room entry ID of the file holding the base64-encoded cipher text to decrypt. Mutually exclusive with ciphertext.
+      description: The war room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
       required: false
     - name: additional_authenticated_data
       description: The base64-encoded additional authenticated data (AAD) that was supplied during encryption.
@@ -2744,7 +2744,7 @@ script:
         description: The full resource name of the crypto key used for the decryption.
         type: String
       - contextPath: GCP.KMS.SymmetricDecrypt.Plaintext
-        description: The decrypted plain text.
+        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
         type: String
   - name: gcp-kms-asymmetric-encrypt
     description: "Encrypts data with the public key of an asymmetric crypto key version. The encryption is performed locally using the retrieved public key. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey."
@@ -2814,7 +2814,7 @@ script:
       required: false
       secret: true
     - name: entry_id
-      description: The war room entry ID of the file holding the base64-encoded cipher text to decrypt. Mutually exclusive with ciphertext.
+      description: The war room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
       required: false
     outputs:
       - contextPath: GCP.KMS.AsymmetricDecrypt.CryptoKey
@@ -2824,7 +2824,7 @@ script:
         description: The resource name of the crypto key version used for the decryption.
         type: String
       - contextPath: GCP.KMS.AsymmetricDecrypt.Plaintext
-        description: The decrypted plain text.
+        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
         type: String
 
 # The command is currently unsupported.

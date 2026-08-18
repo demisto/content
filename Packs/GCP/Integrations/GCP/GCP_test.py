@@ -6753,6 +6753,45 @@ def test_kms_keyring_list_all_locations_ignores_page_token(mocker):
     assert "GCP.KMS(true)" not in result.outputs
 
 
+def test_kms_keyring_list_all_locations_reports_truncation(mocker):
+    """
+    Given: An all-locations sweep where a location returns more key rings than the limit.
+    When: kms_keyring_list is called.
+    Then: The omission is surfaced in the output, since the page token cannot be forwarded.
+    """
+    from GCP import kms_keyring_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}],
+        "nextPageToken": "next_token",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keyring_list(creds, {"project_id": "mock_project_id", "all_locations": "true", "limit": "1"})
+
+    assert "Some results were omitted" in result.readable_output
+
+
+def test_kms_keyring_list_all_locations_no_truncation_notice_when_complete(mocker):
+    """
+    Given: An all-locations sweep where no location returns a next page token.
+    When: kms_keyring_list is called.
+    Then: No truncation notice is shown.
+    """
+    from GCP import kms_keyring_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}],
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keyring_list(creds, {"project_id": "mock_project_id", "all_locations": "true"})
+
+    assert "Some results were omitted" not in result.readable_output
+
+
 def test_kms_keyring_list_all_locations_sweeps_every_location(mocker):
     """
     Given: The all_locations flag is enabled.
@@ -7103,6 +7142,118 @@ def test_kms_key_create_skip_initial_version(mocker):
     kms_key_create(creds, args)
 
     assert crypto_keys.create.call_args[1]["skipInitialVersionCreation"] is True
+
+
+@pytest.mark.parametrize(
+    "supplied, expected",
+    [
+        ("2024-10-02T15:01:23Z", "2024-10-02T15:01:23Z"),
+        # A non-UTC offset must be normalized to UTC before being sent.
+        ("2024-10-02T17:01:23+02:00", "2024-10-02T15:01:23Z"),
+    ],
+)
+def test_kms_parse_rotation_time_normalizes_to_rfc3339_utc(supplied, expected):
+    """
+    Given: An absolute rotation timestamp, with or without a UTC offset.
+    When: _kms_parse_rotation_time is called.
+    Then: The value is returned as an RFC 3339 UTC timestamp.
+    """
+    from GCP import _kms_parse_rotation_time
+
+    assert _kms_parse_rotation_time(supplied) == expected
+
+
+def test_kms_parse_rotation_time_accepts_relative_expression():
+    """
+    Given: A relative rotation time such as "in 30 days".
+    When: _kms_parse_rotation_time is called.
+    Then: It is resolved into an absolute RFC 3339 UTC timestamp.
+    """
+    import re
+
+    from GCP import _kms_parse_rotation_time
+
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", _kms_parse_rotation_time("in 30 days") or "")
+
+
+def test_kms_parse_rotation_time_without_value_returns_none():
+    """
+    Given: No rotation time.
+    When: _kms_parse_rotation_time is called.
+    Then: None is returned so the field is omitted from the request.
+    """
+    from GCP import _kms_parse_rotation_time
+
+    assert _kms_parse_rotation_time(None) is None
+
+
+def test_kms_parse_rotation_time_invalid_value_raises():
+    """
+    Given: A value that cannot be parsed as a date.
+    When: _kms_parse_rotation_time is called.
+    Then: A ValueError is raised instead of forwarding the bad value to the API.
+    """
+    from GCP import _kms_parse_rotation_time
+
+    with pytest.raises(ValueError):
+        _kms_parse_rotation_time("not a date")
+
+
+def test_kms_key_create_parses_relative_rotation_time(mocker):
+    """
+    Given: A relative next_rotation_time.
+    When: kms_key_create is called.
+    Then: An absolute RFC 3339 timestamp is sent to the API rather than the raw expression.
+    """
+    import re
+
+    from GCP import kms_key_create
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.create.return_value.execute.return_value = {"name": "mock_name"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    kms_key_create(
+        creds,
+        {
+            "project_id": "mock_project_id",
+            "key_ring": "mock_key_ring",
+            "crypto_key": "mock_new_key",
+            "next_rotation_time": "in 30 days",
+        },
+    )
+
+    sent = crypto_keys.create.call_args[1]["body"]["nextRotationTime"]
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", sent)
+
+
+def test_kms_key_update_parses_relative_rotation_time(mocker):
+    """
+    Given: A relative next_rotation_time.
+    When: kms_key_update is called.
+    Then: An absolute RFC 3339 timestamp is sent and the update mask includes the field.
+    """
+    import re
+
+    from GCP import kms_key_update
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.patch.return_value.execute.return_value = {"name": "mock_name"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    kms_key_update(
+        creds,
+        {
+            "project_id": "mock_project_id",
+            "key_ring": "mock_key_ring",
+            "crypto_key": "mock_crypto_key",
+            "next_rotation_time": "in 30 days",
+        },
+    )
+
+    call_kwargs = crypto_keys.patch.call_args[1]
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", call_kwargs["body"]["nextRotationTime"])
+    assert "nextRotationTime" in call_kwargs["updateMask"]
 
 
 def test_kms_key_update_builds_update_mask(mocker):
@@ -7491,6 +7642,37 @@ def test_kms_symmetric_decrypt_success(mocker):
     assert result.outputs["Plaintext"] == "mock secret"
 
 
+def test_kms_symmetric_decrypt_binary_payload_returned_as_file(mocker):
+    """
+    Given: A cipher text whose decrypted payload is binary rather than UTF-8 text.
+    When: kms_symmetric_decrypt is called.
+    Then: The bytes are returned verbatim as a file entry instead of being lossily decoded.
+    """
+    from GCP import kms_symmetric_decrypt
+
+    # 0x80 is not a valid UTF-8 start byte, so a lossy decode would replace it with U+FFFD.
+    binary_payload = b"\x89PNG\r\n\x1a\n\x80\x81\x82"
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.decrypt.return_value.execute.return_value = {"plaintext": base64.b64encode(binary_payload).decode()}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+    }
+    results = kms_symmetric_decrypt(creds, args)
+
+    assert isinstance(results, list)
+    command_results, file_entry = results
+    assert command_results.outputs_prefix == "GCP.KMS.SymmetricDecrypt"
+    # The corrupted placeholder must never reach the context.
+    assert "Plaintext" not in command_results.outputs
+    assert file_entry["File"] == "mock_crypto_key_decrypted.bin"
+
+
 def test_kms_symmetric_decrypt_without_input_raises(mocker):
     """
     Given: No ciphertext or entry_id argument.
@@ -7507,6 +7689,53 @@ def test_kms_symmetric_decrypt_without_input_raises(mocker):
         kms_symmetric_decrypt(creds, args)
 
     crypto_keys.decrypt.assert_not_called()
+
+
+def test_kms_asymmetric_decrypt_binary_payload_returned_as_file(mocker):
+    """
+    Given: A cipher text whose decrypted payload is binary rather than UTF-8 text.
+    When: kms_asymmetric_decrypt is called.
+    Then: The bytes are returned verbatim as a file entry instead of being lossily decoded.
+    """
+    from GCP import kms_asymmetric_decrypt
+
+    binary_payload = b"\x00\x01\x02\xff\xfe"
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.asymmetricDecrypt.return_value.execute.return_value = {
+        "plaintext": base64.b64encode(binary_payload).decode()
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+    }
+    results = kms_asymmetric_decrypt(creds, args)
+
+    assert isinstance(results, list)
+    command_results, file_entry = results
+    assert command_results.outputs_prefix == "GCP.KMS.AsymmetricDecrypt"
+    assert "Plaintext" not in command_results.outputs
+    assert file_entry["File"] == "mock_crypto_key_decrypted.bin"
+
+
+def test_kms_resolve_ciphertext_entry_id_is_not_base64_decoded(mocker, tmp_path):
+    """
+    Given: An entry ID pointing to a file holding raw (non-base64) encrypted bytes.
+    When: _kms_resolve_ciphertext is called.
+    Then: The raw bytes are returned unchanged rather than being base64-decoded.
+    """
+    from GCP import _kms_resolve_ciphertext
+
+    raw_ciphertext = b"\x9d\x1f\xa3rawciphertext\x00\xff"
+    path = tmp_path / "cipher.bin"
+    path.write_bytes(raw_ciphertext)
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": str(path), "name": "cipher.bin"})
+
+    assert _kms_resolve_ciphertext(None, "42@abc") == raw_ciphertext
 
 
 def test_kms_asymmetric_encrypt_uses_public_key(mocker):

@@ -1703,7 +1703,7 @@ Lists the Cloud KMS key rings in a given location, or across all locations. Requ
 | GCP.KMS.KeyRing.ResourceName | String | The full resource name of the key ring. |
 | GCP.KMS.KeyRing.Project | String | The project that holds the key ring. |
 | GCP.KMS.KeyRing.Location | String | The location of the key ring. |
-| GCP.KMS.KeyRing.CreationTime | Date | The time at which the key ring was created. |
+| GCP.KMS.KeyRing.CreationTime | Date | The time at which the key ring was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
 | GCP.KMS.KeyRingsNextPageToken | String | The token to pass as the page_token argument to retrieve the next page of key rings. |
 
 ### gcp-kms-key-list
@@ -1736,8 +1736,8 @@ Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloud
 | GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
 | GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
 | GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
 | GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
 | GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
 | GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
@@ -1773,8 +1773,8 @@ Lists every crypto key across all key rings in a location, or across all locatio
 | GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
 | GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
 | GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
 | GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
 | GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
 | GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
@@ -1808,8 +1808,8 @@ Returns the metadata of a given crypto key and its primary crypto key version. R
 | GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
 | GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
 | GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
 | GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
 | GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
 | GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
@@ -1836,7 +1836,7 @@ Creates a new crypto key within a given key ring. Required Permissions: cloudkms
 | algorithm | The algorithm to use when creating a crypto key version based on this template. Possible values are: GOOGLE_SYMMETRIC_ENCRYPTION, RSA_SIGN_PSS_2048_SHA256, RSA_SIGN_PSS_3072_SHA256, RSA_SIGN_PSS_4096_SHA256, RSA_SIGN_PSS_4096_SHA512, RSA_SIGN_PKCS1_2048_SHA256, RSA_SIGN_PKCS1_3072_SHA256, RSA_SIGN_PKCS1_4096_SHA256, RSA_SIGN_PKCS1_4096_SHA512, RSA_DECRYPT_OAEP_2048_SHA256, RSA_DECRYPT_OAEP_3072_SHA256, RSA_DECRYPT_OAEP_4096_SHA256, RSA_DECRYPT_OAEP_4096_SHA512, EC_SIGN_P256_SHA256, EC_SIGN_P384_SHA384. Default is GOOGLE_SYMMETRIC_ENCRYPTION. | Optional |
 | protection_level | The protection level to use when creating a crypto key version based on this template. Possible values are: SOFTWARE, HSM. Default is SOFTWARE. | Optional |
 | rotation_period | The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. Supported only for keys whose purpose is ENCRYPT_DECRYPT. | Optional |
-| next_rotation_time | The time of the next scheduled rotation, in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z). Supported only for keys whose purpose is ENCRYPT_DECRYPT. | Optional |
+| next_rotation_time | The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). Supported only for keys whose purpose is ENCRYPT_DECRYPT. | Optional |
 | labels | The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456. | Optional |
 | skip_initial_version_creation | Whether to create the crypto key without an initial crypto key version. When set to true, a crypto key version must be created before the key can be used. Possible values are: true, false. Default is false. | Optional |
 
@@ -1850,8 +1850,8 @@ Creates a new crypto key within a given key ring. Required Permissions: cloudkms
 | GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
 | GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
 | GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
 | GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
 | GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
 | GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
@@ -1875,7 +1875,7 @@ Updates the mutable fields of a given crypto key. Only the supplied fields are u
 | key_ring | The ID of the key ring that holds the crypto key. | Required |
 | crypto_key | The ID of the crypto key to update. | Required |
 | labels | The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456. | Optional |
-| next_rotation_time | The time of the next scheduled rotation, in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z). | Optional |
+| next_rotation_time | The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). | Optional |
 | rotation_period | The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. | Optional |
 | algorithm | The algorithm to use when creating a crypto key version based on this template. Possible values are: GOOGLE_SYMMETRIC_ENCRYPTION, RSA_SIGN_PSS_2048_SHA256, RSA_SIGN_PSS_3072_SHA256, RSA_SIGN_PSS_4096_SHA256, RSA_SIGN_PSS_4096_SHA512, RSA_SIGN_PKCS1_2048_SHA256, RSA_SIGN_PKCS1_3072_SHA256, RSA_SIGN_PKCS1_4096_SHA256, RSA_SIGN_PKCS1_4096_SHA512, RSA_DECRYPT_OAEP_2048_SHA256, RSA_DECRYPT_OAEP_3072_SHA256, RSA_DECRYPT_OAEP_4096_SHA256, RSA_DECRYPT_OAEP_4096_SHA512, EC_SIGN_P256_SHA256, EC_SIGN_P384_SHA384. | Optional |
 | protection_level | The protection level to use when creating a crypto key version based on this template. Possible values are: SOFTWARE, HSM. | Optional |
@@ -1890,8 +1890,8 @@ Updates the mutable fields of a given crypto key. Only the supplied fields are u
 | GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
 | GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
 | GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
 | GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
 | GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
 | GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
@@ -1924,7 +1924,7 @@ Enables a crypto key version of a given crypto key. Required Permissions: cloudk
 | GCP.KMS.CryptoKeyVersion.state | String | The current state of the crypto key version. |
 | GCP.KMS.CryptoKeyVersion.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
 | GCP.KMS.CryptoKeyVersion.algorithm | String | The algorithm that the crypto key version supports. |
-| GCP.KMS.CryptoKeyVersion.createTime | Date | The time at which the crypto key version was created. |
+| GCP.KMS.CryptoKeyVersion.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
 
 ### gcp-kms-key-version-disable
 
@@ -1953,7 +1953,7 @@ Disables a crypto key version of a given crypto key. Required Permissions: cloud
 | GCP.KMS.CryptoKeyVersion.state | String | The current state of the crypto key version. |
 | GCP.KMS.CryptoKeyVersion.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
 | GCP.KMS.CryptoKeyVersion.algorithm | String | The algorithm that the crypto key version supports. |
-| GCP.KMS.CryptoKeyVersion.createTime | Date | The time at which the crypto key version was created. |
+| GCP.KMS.CryptoKeyVersion.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
 
 ### gcp-kms-key-version-destroy
 
@@ -1980,7 +1980,7 @@ Schedules a crypto key version for destruction. The key material is destroyed 24
 | --- | --- | --- |
 | GCP.KMS.CryptoKeyVersion.name | String | The resource name of the crypto key version. |
 | GCP.KMS.CryptoKeyVersion.state | String | The current state of the crypto key version. |
-| GCP.KMS.CryptoKeyVersion.destroyTime | Date | The time at which the crypto key version material is scheduled to be destroyed. |
+| GCP.KMS.CryptoKeyVersion.destroyTime | Date | The time at which the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
 
 ### gcp-kms-key-version-restore
 
@@ -2086,7 +2086,7 @@ Decrypts data that was encrypted with a symmetric crypto key. Required Permissio
 | key_ring | The ID of the key ring that holds the crypto key. | Required |
 | crypto_key | The ID of the crypto key to decrypt with. | Required |
 | ciphertext | The base64-encoded cipher text to decrypt. Mutually exclusive with entry_id. | Optional |
-| entry_id | The war room entry ID of the file holding the base64-encoded cipher text to decrypt. Mutually exclusive with ciphertext. | Optional |
+| entry_id | The war room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
 | additional_authenticated_data | The base64-encoded additional authenticated data (AAD) that was supplied during encryption. | Optional |
 
 #### Context Output
@@ -2095,7 +2095,7 @@ Decrypts data that was encrypted with a symmetric crypto key. Required Permissio
 | --- | --- | --- |
 | GCP.KMS.SymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
 | GCP.KMS.SymmetricDecrypt.ResourceName | String | The full resource name of the crypto key used for the decryption. |
-| GCP.KMS.SymmetricDecrypt.Plaintext | String | The decrypted plain text. |
+| GCP.KMS.SymmetricDecrypt.Plaintext | String | The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
 
 ### gcp-kms-asymmetric-encrypt
 
@@ -2146,7 +2146,7 @@ Decrypts data using an asymmetric crypto key version. Required Permissions: clou
 | crypto_key | The ID of the asymmetric crypto key to decrypt with. | Required |
 | crypto_key_version | The ID of the crypto key version to decrypt with. Default is 1. | Optional |
 | ciphertext | The base64-encoded cipher text to decrypt. Mutually exclusive with entry_id. | Optional |
-| entry_id | The war room entry ID of the file holding the base64-encoded cipher text to decrypt. Mutually exclusive with ciphertext. | Optional |
+| entry_id | The war room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
 
 #### Context Output
 
@@ -2154,4 +2154,4 @@ Decrypts data using an asymmetric crypto key version. Required Permissions: clou
 | --- | --- | --- |
 | GCP.KMS.AsymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
 | GCP.KMS.AsymmetricDecrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the decryption. |
-| GCP.KMS.AsymmetricDecrypt.Plaintext | String | The decrypted plain text. |
+| GCP.KMS.AsymmetricDecrypt.Plaintext | String | The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
