@@ -334,22 +334,22 @@ endpoint at 2 credits per IP address.
 #### Command Example
 
 ```
-!ip ip=2.56.188.34
+!ip ip=192.0.2.34
 ```
 
 #### Human Readable Output
 
-### IPGeolocation.io IP Geolocation for 2.56.188.34
+### IPGeolocation.io IP Geolocation for 192.0.2.34
 
 |IP Address|Hostname|City|State / Province|Country|Country Code|Continent|Postal Code|Latitude|Longitude|Time Zone|Local Time|ASN|AS Organization|AS Type|Company|Route|Anycast|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2.56.188.34 | 2.56.188.34 | Dallas | Texas | United States | US | North America | 75201 | 32.77822 | -96.79512 | America/Chicago | 2026-03-07 03:37:38.996-0600 | AS62240 | Clouvider Limited | HOSTING | Packethub S.A. | 2.56.188.0/22 | no |
+| 192.0.2.34 | 192.0.2.34 | Dallas | Texas | United States | US | North America | 75201 | 32.77822 | -96.79512 | America/Chicago | 2026-03-07 03:37:38.996-0600 | AS64500 | Example Hosting Ltd | HOSTING | Example Networks Inc. | 192.0.2.0/24 | no |
 
-### IPGeolocation.io IP Security for 2.56.188.34
+### IPGeolocation.io IP Security for 192.0.2.34
 
 |IP Address|Threat Score|Anonymous|Known Attacker|Tor Exit Node|VPN|VPN Providers|VPN Confidence|VPN Last Seen|Proxy|Proxy Providers|Proxy Confidence|Proxy Last Seen|Residential Proxy|Relay|Bot|Spam|Cloud Provider|Cloud Provider Name|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2.56.188.34 | 80 | yes | yes | no | yes | Nord VPN | 80 | 2026-01-19 | yes | Zyte Proxy | 80 | 2025-12-12 | yes | no | no | no | yes | Packethub S.A. |
+| 192.0.2.34 | 80 | yes | yes | no | yes | Example VPN | 80 | 2026-01-19 | yes | Example Proxy | 80 | 2025-12-12 | yes | no | no | no | yes | Example Networks Inc. |
 
 **Reputation:** Assessed as malicious because threat score 80 is at or above the malicious threshold 70; the IP address is flagged as a known attacker.
 
@@ -358,25 +358,25 @@ endpoint at 2 credits per IP address.
 ```json
 {
   "DBotScore": {
-    "Indicator": "2.56.188.34",
+    "Indicator": "192.0.2.34",
     "Type": "ip",
     "Vendor": "IPGeolocation.io",
     "Score": 3,
     "Reliability": "B - Usually reliable"
   },
   "IP": {
-    "Address": "2.56.188.34",
-    "ASN": "AS62240",
-    "ASOwner": "Clouvider Limited",
+    "Address": "192.0.2.34",
+    "ASN": "AS64500",
+    "ASOwner": "Example Hosting Ltd",
     "Region": "Texas",
-    "Hostname": "2.56.188.34",
+    "Hostname": "192.0.2.34",
     "Geo": {
       "Location": "32.77822:-96.79512",
       "Country": "US",
       "Description": "Dallas, Texas, United States"
     },
     "Organization": {
-      "Name": "Packethub S.A.",
+      "Name": "Example Networks Inc.",
       "Type": "BUSINESS"
     },
     "Tags": [
@@ -393,8 +393,8 @@ endpoint at 2 credits per IP address.
   },
   "IPGeolocation": {
     "IP": {
-      "IP": "2.56.188.34",
-      "Hostname": "2.56.188.34",
+      "IP": "192.0.2.34",
+      "Hostname": "192.0.2.34",
       "Location": {
         "ContinentCode": "NA",
         "ContinentName": "North America",
@@ -431,22 +431,22 @@ endpoint at 2 credits per IP address.
         "Symbol": "$"
       },
       "Network": {
-        "Route": "2.56.188.0/22",
+        "Route": "192.0.2.0/24",
         "IsAnycast": false
       },
       "ASN": {
-        "ASNumber": "AS62240",
-        "Organization": "Clouvider Limited",
+        "ASNumber": "AS64500",
+        "Organization": "Example Hosting Ltd",
         "Country": "GB",
         "Type": "HOSTING",
-        "Domain": "clouvider.net",
+        "Domain": "example.net",
         "DateAllocated": "2013-12-12",
         "RIR": "RIPE"
       },
       "Company": {
-        "Name": "Packethub S.A.",
+        "Name": "Example Networks Inc.",
         "Type": "BUSINESS",
-        "Domain": "packethub.com"
+        "Domain": "example.com"
       },
       "TimeZone": {
         "Name": "America/Chicago",
@@ -485,14 +485,14 @@ endpoint at 2 credits per IP address.
         "IsTor": false,
         "IsProxy": true,
         "ProxyProviderNames": [
-          "Zyte Proxy"
+          "Example Proxy"
         ],
         "ProxyConfidenceScore": 80,
         "ProxyLastSeen": "2025-12-12",
         "IsResidentialProxy": true,
         "IsVPN": true,
         "VPNProviderNames": [
-          "Nord VPN"
+          "Example VPN"
         ],
         "VPNConfidenceScore": 80,
         "VPNLastSeen": "2026-01-19",
@@ -502,7 +502,7 @@ endpoint at 2 credits per IP address.
         "IsBot": false,
         "IsSpam": false,
         "IsCloudProvider": true,
-        "CloudProviderName": "Packethub S.A."
+        "CloudProviderName": "Example Networks Inc."
       }
     }
   }
@@ -783,16 +783,16 @@ that must not influence indicator verdicts.
 #### Command Example
 
 ```
-!ipgeolocation-ip-security ip=2.56.188.34
+!ipgeolocation-ip-security ip=192.0.2.34
 ```
 
 #### Human Readable Output
 
-### IPGeolocation.io IP Security for 2.56.188.34
+### IPGeolocation.io IP Security for 192.0.2.34
 
 |IP Address|Threat Score|Anonymous|Known Attacker|Tor Exit Node|VPN|VPN Providers|VPN Confidence|VPN Last Seen|Proxy|Proxy Providers|Proxy Confidence|Proxy Last Seen|Residential Proxy|Relay|Bot|Spam|Cloud Provider|Cloud Provider Name|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 2.56.188.34 | 80 | yes | yes | no | yes | Nord VPN | 80 | 2026-01-19 | yes | Zyte Proxy | 80 | 2025-12-12 | yes | no | no | no | yes | Packethub S.A. |
+| 192.0.2.34 | 80 | yes | yes | no | yes | Example VPN | 80 | 2026-01-19 | yes | Example Proxy | 80 | 2025-12-12 | yes | no | no | no | yes | Example Networks Inc. |
 
 #### Context Example
 
@@ -800,20 +800,20 @@ that must not influence indicator verdicts.
 {
   "IPGeolocation": {
     "IP": {
-      "IP": "2.56.188.34",
+      "IP": "192.0.2.34",
       "Security": {
         "ThreatScore": 80,
         "IsTor": false,
         "IsProxy": true,
         "ProxyProviderNames": [
-          "Zyte Proxy"
+          "Example Proxy"
         ],
         "ProxyConfidenceScore": 80,
         "ProxyLastSeen": "2025-12-12",
         "IsResidentialProxy": true,
         "IsVPN": true,
         "VPNProviderNames": [
-          "Nord VPN"
+          "Example VPN"
         ],
         "VPNConfidenceScore": 80,
         "VPNLastSeen": "2026-01-19",
@@ -823,7 +823,7 @@ that must not influence indicator verdicts.
         "IsBot": false,
         "IsSpam": false,
         "IsCloudProvider": true,
-        "CloudProviderName": "Packethub S.A."
+        "CloudProviderName": "Example Networks Inc."
       }
     }
   }
@@ -875,48 +875,48 @@ Each lookup consumes 1 credit.
 #### Command Example
 
 ```
-!ipgeolocation-abuse-contact ip=1.0.0.0
+!ipgeolocation-abuse-contact ip=203.0.113.0
 ```
 
 #### Human Readable Output
 
-### IPGeolocation.io Abuse Contact for 1.0.0.0
+### IPGeolocation.io Abuse Contact for 203.0.113.0
 
 |IP Address|Abuse Contact Name|Contact Type|Emails|Phone Numbers|Route|Country|Registered Address|
 |---|---|---|---|---|---|---|---|
-| 1.0.0.0 | IRT-APNICRANDNET-AU | group | helpdesk@apnic.net | +61 7 3858 3100 | 1.0.0.0/24 | AU | PO Box 3646, South Brisbane, QLD 4101, Australia |
+| 203.0.113.0 | IRT-EXAMPLE-AU | group | abuse@example.net | +1 555 0100 | 203.0.113.0/24 | AU | PO Box 100 / Example City / Example Country |
 
 #### Context Example
 
 ```json
 {
   "IP": {
-    "Address": "1.0.0.0",
+    "Address": "203.0.113.0",
     "Registrar": {
       "Abuse": {
-        "Name": "IRT-APNICRANDNET-AU",
-        "Address": "PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia",
+        "Name": "IRT-EXAMPLE-AU",
+        "Address": "PO Box 100\nExample City, EX 00000\nExample Country",
         "Country": "AU",
-        "Network": "1.0.0.0/24",
-        "Phone": "+61 7 3858 3100",
-        "Email": "helpdesk@apnic.net"
+        "Network": "203.0.113.0/24",
+        "Phone": "+1 555 0100",
+        "Email": "abuse@example.net"
       }
     }
   },
   "IPGeolocation": {
     "IP": {
-      "IP": "1.0.0.0",
+      "IP": "203.0.113.0",
       "Abuse": {
-        "Route": "1.0.0.0/24",
+        "Route": "203.0.113.0/24",
         "Country": "AU",
-        "Name": "IRT-APNICRANDNET-AU",
+        "Name": "IRT-EXAMPLE-AU",
         "Kind": "group",
-        "Address": "PO Box 3646\nSouth Brisbane, QLD 4101\nAustralia",
+        "Address": "PO Box 100\nExample City, EX 00000\nExample Country",
         "Emails": [
-          "helpdesk@apnic.net"
+          "abuse@example.net"
         ],
         "PhoneNumbers": [
-          "+61 7 3858 3100"
+          "+1 555 0100"
         ]
       }
     }
@@ -940,7 +940,7 @@ Each lookup consumes 1 credit.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asn | Comma separated list of Autonomous System Numbers to look up. Both 24940 and AS24940 are accepted. Mutually exclusive with the ip argument. Accepts a comma separated list. | Optional |
+| asn | Comma separated list of Autonomous System Numbers to look up. Both 24940 and AS64496 are accepted. Mutually exclusive with the ip argument. Accepts a comma separated list. | Optional |
 | ip | Comma separated list of IPv4 or IPv6 addresses to resolve to their Autonomous System. Mutually exclusive with the asn argument. Accepts a comma separated list. | Optional |
 | include | Comma separated list of additional routing objects to add to the response. Possible values are: peers, downstreams, upstreams, routes, whois_response. Accepts a comma separated list. | Optional |
 | fields | Comma separated list of response fields to return, using the documented dot notation, for example location.city. Reduces the response size without changing the credit cost. Accepts a comma separated list. | Optional |
@@ -971,16 +971,16 @@ Each lookup consumes 1 credit.
 #### Command Example
 
 ```
-!ipgeolocation-asn asn=AS24940
+!ipgeolocation-asn asn=AS64496
 ```
 
 #### Human Readable Output
 
-### IPGeolocation.io ASN Details for AS24940
+### IPGeolocation.io ASN Details for AS64496
 
 |ASN|AS Name|Organization|Type|Domain|Country|RIR|Date Allocated|Allocation Status|IPv4 Routes|IPv6 Routes|
 |---|---|---|---|---|---|---|---|---|---|---|
-| AS24940 | HETZNER-AS | Hetzner Online GmbH | HOSTING | hetzner.com | DE | RIPE | 2002-06-03 | ASSIGNED | 84 | 6 |
+| AS64496 | EXAMPLE-AS | Example Cloud | HOSTING | example.com | DE | RIPE | 2002-06-03 | ASSIGNED | 84 | 6 |
 
 #### Context Example
 
@@ -988,14 +988,14 @@ Each lookup consumes 1 credit.
 {
   "IPGeolocation": {
     "ASN": {
-      "ASNumber": "AS24940",
-      "Organization": "Hetzner Online GmbH",
+      "ASNumber": "AS64496",
+      "Organization": "Example Cloud",
       "Country": "DE",
       "Type": "HOSTING",
-      "Domain": "hetzner.com",
+      "Domain": "example.com",
       "DateAllocated": "2002-06-03",
       "RIR": "RIPE",
-      "ASNName": "HETZNER-AS",
+      "ASNName": "EXAMPLE-AS",
       "AllocationStatus": "ASSIGNED",
       "NumOfIPv4Routes": "84",
       "NumOfIPv6Routes": "6"
@@ -1132,7 +1132,7 @@ Yes, with `ipgeolocation-ip-lookup` on a paid plan. The response returns the res
 submitted domain in `Domain`. The Security and Abuse Contact endpoints do not accept domain names.
 
 **Can I look up an ASN directly, without an IP address?**
-Yes. `ipgeolocation-asn` accepts either `asn` or `ip`, and the `asn` argument takes both `24940` and `AS24940`.
+Yes. `ipgeolocation-asn` accepts either `asn` or `ip`, and the `asn` argument takes both `24940` and `AS64496`.
 
 **Does the integration send my API key anywhere else?**
 No. The key is sent only to the configured server URL, as the `apiKey` query parameter documented by

@@ -1,6 +1,6 @@
 {
-  "ip": "2.56.188.34",
-  "hostname": "2.56.188.34",
+  "ip": "192.0.2.34",
+  "hostname": "192.0.2.34",
   "location": {
     "continent_code": "NA",
     "continent_name": "North America",
@@ -28,7 +28,7 @@
   },
   "network": {
     "connection_type": "",
-    "route": "2.56.188.0/22",
+    "route": "192.0.2.0/24",
     "is_anycast": false
   },
   "currency": {
@@ -37,29 +37,29 @@
     "symbol": "$"
   },
   "asn": {
-    "as_number": "AS62240",
-    "organization": "Clouvider Limited",
+    "as_number": "AS64500",
+    "organization": "Example Hosting Ltd",
     "country": "GB",
     "type": "HOSTING",
-    "domain": "clouvider.net",
+    "domain": "example.net",
     "date_allocated": "2013-12-12",
     "rir": "RIPE"
   },
   "company": {
-    "name": "Packethub S.A.",
+    "name": "Example Networks Inc.",
     "type": "BUSINESS",
-    "domain": "packethub.com"
+    "domain": "example.com"
   },
   "security": {
     "threat_score": 80,
     "is_tor": false,
     "is_proxy": true,
-    "proxy_provider_names": ["Zyte Proxy"],
+    "proxy_provider_names": ["Example Proxy"],
     "proxy_confidence_score": 80,
     "proxy_last_seen": "2025-12-12",
     "is_residential_proxy": true,
     "is_vpn": true,
-    "vpn_provider_names": ["Nord VPN"],
+    "vpn_provider_names": ["Example VPN"],
     "vpn_confidence_score": 80,
     "vpn_last_seen": "2026-01-19",
     "is_relay": false,
@@ -69,7 +69,7 @@
     "is_bot": false,
     "is_spam": false,
     "is_cloud_provider": true,
-    "cloud_provider_name": "Packethub S.A."
+    "cloud_provider_name": "Example Networks Inc."
   },
   "time_zone": {
     "name": "America/Chicago",

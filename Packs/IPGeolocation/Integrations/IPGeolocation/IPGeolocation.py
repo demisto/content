@@ -471,7 +471,7 @@ def is_private_ip(ip: str) -> bool:
 def normalize_asn(asn: str) -> str:
     """Normalize an ASN argument to the digits expected by GET /v3/asn.
 
-    Both ``AS24940`` and ``24940`` are accepted from the analyst.
+    Both ``AS64496`` and ``64496`` are accepted from the analyst.
 
     :param asn: Raw argument value.
     :return: ASN as a numeric string.
@@ -480,7 +480,7 @@ def normalize_asn(asn: str) -> str:
     candidate = (asn or "").strip()
     match = ASN_ARGUMENT_PATTERN.match(candidate)
     if not match:
-        raise DemistoException(f'"{candidate}" is not a valid ASN. Supply a number such as 24940 or AS24940.')
+        raise DemistoException(f'"{candidate}" is not a valid ASN. Supply a number such as 64496 or AS64496.')
     return match.group(1)
 
 

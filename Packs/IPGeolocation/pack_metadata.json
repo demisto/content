@@ -47,7 +47,10 @@
     ],
     "created": "2026-07-29T00:00:00Z",
     "certification": "",
-    "githubUser": ["IPGeolocation", "mateen993"],
+    "githubUser": [
+        "IPGeolocation",
+        "mateen993"
+    ],
     "devEmail": [
         "support@ipgeolocation.io"
     ],

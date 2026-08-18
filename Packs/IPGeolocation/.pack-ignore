@@ -1,5 +1,1 @@
-[file:IPGeolocation.yml]
-ignore=IN126
 
-[file:playbook-IPGeolocation_io_-_IP_Enrichment.yml]
-ignore=PB105

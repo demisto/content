@@ -1,28 +1,28 @@
 {
-  "ip": "49.12.0.0",
+  "ip": "198.51.100.0",
   "asn": {
-    "as_number": "AS12",
-    "organization": "New York University",
+    "as_number": "AS64499",
+    "organization": "Example University",
     "country": "US",
     "type": "EDUCATION",
-    "domain": "nyu.edu",
+    "domain": "example.edu",
     "date_allocated": "1984-07-05",
-    "asn_name": "NYU-DOMAIN",
+    "asn_name": "EXAMPLE-DOMAIN",
     "allocation_status": "",
     "num_of_ipv4_routes": "11",
     "num_of_ipv6_routes": "1",
     "rir": "ARIN",
-    "routes": ["192.76.177.0/24", "216.165.96.0/20", "2607:f600::/32"],
+    "routes": ["198.51.100.0/24", "203.0.113.0/24", "2001:db8::/32"],
     "downstreams": [
-      {"as_number": "AS394666", "description": "NYU Langone Health", "country": "US"},
-      {"as_number": "AS54965", "description": "Polytechnic Institute of NYU", "country": "US"}
+      {"as_number": "AS64510", "description": "Example Health", "country": "US"},
+      {"as_number": "AS64511", "description": "Example Institute", "country": "US"}
     ],
     "upstreams": [
-      {"as_number": "AS3269", "description": "Telecom Italia S.p.A.", "country": "IT"}
+      {"as_number": "AS64502", "description": "Example Telecom S.p.A.", "country": "IT"}
     ],
     "peers": [
-      {"as_number": "AS3356", "description": "Level 3 Parent, LLC", "country": "US"}
+      {"as_number": "AS64503", "description": "Example Transit, LLC", "country": "US"}
     ],
-    "whois_response": "ASNumber:       12\nASName:         NYU-DOMAIN\nOrgAbuseEmail:  abuse@nyu.edu\n"
+    "whois_response": "ASNumber:       64499\nASName:         EXAMPLE-DOMAIN\nOrgAbuseEmail:  abuse@example.edu\n"
   }
 }

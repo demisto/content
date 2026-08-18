@@ -1,15 +1,15 @@
 {
-  "ip": "2.56.188.34",
+  "ip": "192.0.2.34",
   "security": {
     "threat_score": 80,
     "is_tor": false,
     "is_proxy": true,
-    "proxy_provider_names": ["Zyte Proxy"],
+    "proxy_provider_names": ["Example Proxy"],
     "proxy_confidence_score": 80,
     "proxy_last_seen": "2025-12-12",
     "is_residential_proxy": true,
     "is_vpn": true,
-    "vpn_provider_names": ["Nord VPN"],
+    "vpn_provider_names": ["Example VPN"],
     "vpn_confidence_score": 80,
     "vpn_last_seen": "2026-01-19",
     "is_relay": false,
@@ -19,6 +19,6 @@
     "is_bot": false,
     "is_spam": false,
     "is_cloud_provider": true,
-    "cloud_provider_name": "Packethub S.A."
+    "cloud_provider_name": "Example Networks Inc."
   }
 }

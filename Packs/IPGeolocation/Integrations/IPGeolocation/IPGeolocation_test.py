@@ -85,13 +85,13 @@ def test_validate_ip_or_domain_rejects_invalid_inputs(value):
         validate_ip_or_domain(value)
 
 
-@pytest.mark.parametrize(("value", "expected"), [("24940", "24940"), ("AS24940", "24940"), ("as12", "12")])
+@pytest.mark.parametrize(("value", "expected"), [("64496", "64496"), ("AS64496", "64496"), ("as12", "12")])
 def test_normalize_asn_accepts_both_notations(value, expected):
     """ASN arguments are accepted with and without the AS prefix."""
     assert normalize_asn(value) == expected
 
 
-@pytest.mark.parametrize("value", ["", "ASN24940", "AS", "12abc", "-1"])
+@pytest.mark.parametrize("value", ["", "ASN64496", "AS", "12abc", "-1"])
 def test_normalize_asn_rejects_invalid_values(value):
     """Malformed ASN arguments are rejected before a request is made."""
     with pytest.raises(DemistoException):
@@ -115,7 +115,7 @@ def test_asn_command_requires_one_identifier(client):
     with pytest.raises(DemistoException):
         asn_command(client, {})
     with pytest.raises(DemistoException):
-        asn_command(client, {"ip": "8.8.8.8", "asn": "24940"})
+        asn_command(client, {"ip": "8.8.8.8", "asn": "64496"})
 
 
 def test_build_client_requires_api_key():
@@ -153,8 +153,8 @@ def test_remap_keys_maps_nested_documented_objects():
     """Nested objects and arrays are remapped to PascalCase context keys."""
     remapped = remap_keys(load_test_data("ipgeo_full"), IPGEO_MAPPING)
     assert remapped["Location"]["CountryCode2"] == "US"
-    assert remapped["ASN"]["ASNumber"] == "AS62240"
-    assert remapped["Security"]["VPNProviderNames"] == ["Nord VPN"]
+    assert remapped["ASN"]["ASNumber"] == "AS64500"
+    assert remapped["Security"]["VPNProviderNames"] == ["Example VPN"]
     assert remapped["TimeZone"]["DSTStart"]["Duration"] == "+1.00H"
 
 
@@ -215,7 +215,7 @@ def test_error_handler_tolerates_non_json_error_body(requests_mock, client):
     """An HTML or plain text error body still yields a usable error."""
     requests_mock.get(f"{BASE_URL}/v3/abuse", status_code=502, text="<html>Bad Gateway</html>")
     with pytest.raises(DemistoException) as error:
-        client.get_abuse_contact(ip="1.0.0.0")
+        client.get_abuse_contact(ip="203.0.113.0")
     assert "HTTP 502" in str(error.value)
 
 
@@ -239,7 +239,7 @@ def test_non_object_json_is_rejected(requests_mock, client):
     """A JSON array where an object is documented is reported clearly."""
     requests_mock.get(f"{BASE_URL}/v3/asn", status_code=200, json=[{"asn": {}}])
     with pytest.raises(DemistoException) as error:
-        client.get_asn(asn="24940")
+        client.get_asn(asn="64496")
     assert "unexpected JSON structure" in str(error.value)
 
 
@@ -275,18 +275,18 @@ def test_ip_lookup_success(requests_mock, client):
     """A successful lookup populates context, readable output and raw response."""
     raw = load_test_data("ipgeo_full")
     requests_mock.get(f"{BASE_URL}/v3/ipgeo", json=raw)
-    results = ip_lookup_command(client, {"ip": "2.56.188.34", "include": "security"})
+    results = ip_lookup_command(client, {"ip": "192.0.2.34", "include": "security"})
 
     assert len(results) == 1
     result = results[0]
     assert result.outputs_prefix == "IPGeolocation.IP"
     assert result.outputs_key_field == "IP"
-    assert result.outputs["IP"] == "2.56.188.34"
+    assert result.outputs["IP"] == "192.0.2.34"
     assert result.outputs["Location"]["City"] == "Dallas"
     assert result.outputs["Security"]["ThreatScore"] == 80
     assert result.raw_response == raw
-    assert "IPGeolocation.io IP Geolocation for 2.56.188.34" in result.readable_output
-    assert "IPGeolocation.io IP Security for 2.56.188.34" in result.readable_output
+    assert "IPGeolocation.io IP Geolocation for 192.0.2.34" in result.readable_output
+    assert "IPGeolocation.io IP Security for 192.0.2.34" in result.readable_output
 
 
 def test_ip_lookup_free_plan_response(requests_mock, client):
@@ -303,7 +303,7 @@ def test_ip_lookup_forwards_documented_parameters(requests_mock, client):
     matcher = requests_mock.get(f"{BASE_URL}/v3/ipgeo", json=load_test_data("ipgeo_full"))
     ip_lookup_command(
         client,
-        {"ip": "2.56.188.34", "include": "security,abuse", "fields": "location.city", "excludes": "currency", "lang": "de"},
+        {"ip": "192.0.2.34", "include": "security,abuse", "fields": "location.city", "excludes": "currency", "lang": "de"},
     )
     query = matcher.last_request.qs
     assert query["include"] == ["security,abuse"]
@@ -342,7 +342,7 @@ def test_ip_lookup_continues_after_a_single_failure(requests_mock, client):
 def test_ip_security_success(requests_mock, client):
     """Security signals are mapped and rendered without losing false flags."""
     requests_mock.get(f"{BASE_URL}/v3/security", json=load_test_data("security_malicious"))
-    result = ip_security_command(client, {"ip": "2.56.188.34"})[0]
+    result = ip_security_command(client, {"ip": "192.0.2.34"})[0]
     assert result.outputs["Security"]["IsVPN"] is True
     assert result.outputs["Security"]["IsTor"] is False
     assert result.outputs["Security"]["ProxyConfidenceScore"] == 80
@@ -352,7 +352,7 @@ def test_ip_security_success(requests_mock, client):
 def test_ip_security_clean_ip_keeps_zero_scores(requests_mock, client):
     """A clean IP keeps its zero threat score in context."""
     requests_mock.get(f"{BASE_URL}/v3/security", json=load_test_data("security_clean"))
-    result = ip_security_command(client, {"ip": "91.128.103.196"})[0]
+    result = ip_security_command(client, {"ip": "198.51.100.196"})[0]
     assert result.outputs["Security"]["ThreatScore"] == 0
     assert result.outputs["Security"]["IsAnonymous"] is False
     assert "RelayProviderName" not in result.outputs["Security"]
@@ -366,16 +366,16 @@ def test_ip_security_clean_ip_keeps_zero_scores(requests_mock, client):
 def test_abuse_contact_success(requests_mock, client, mocker):
     """Abuse contacts populate both the branded context and the IP indicator."""
     requests_mock.get(f"{BASE_URL}/v3/abuse", json=load_test_data("abuse"))
-    result = abuse_contact_command(client, {"ip": "1.0.0.0"}, {})[0]
+    result = abuse_contact_command(client, {"ip": "203.0.113.0"}, {})[0]
 
-    assert result.outputs["Abuse"]["Emails"] == ["helpdesk@apnic.net"]
-    assert result.outputs["Abuse"]["Route"] == "1.0.0.0/24"
+    assert result.outputs["Abuse"]["Emails"] == ["abuse@example.net"]
+    assert result.outputs["Abuse"]["Route"] == "203.0.113.0/24"
     assert "Organization" not in result.outputs["Abuse"]
 
     indicator_context = result.indicator.to_context()
     ip_context = indicator_context[Common.IP.CONTEXT_PATH]
-    assert ip_context["Address"] == "1.0.0.0"
-    assert ip_context["Registrar"]["Abuse"]["Email"] == "helpdesk@apnic.net"
+    assert ip_context["Address"] == "203.0.113.0"
+    assert ip_context["Registrar"]["Abuse"]["Email"] == "abuse@example.net"
     assert result.indicator.dbot_score.score == Common.DBotScore.NONE
 
 
@@ -387,26 +387,26 @@ def test_abuse_contact_success(requests_mock, client, mocker):
 def test_asn_lookup_by_asn(requests_mock, client):
     """A lookup by ASN sends the normalized ASN and omits the ip parameter."""
     matcher = requests_mock.get(f"{BASE_URL}/v3/asn", json=load_test_data("asn_basic"))
-    result = asn_command(client, {"asn": "AS24940"})[0]
+    result = asn_command(client, {"asn": "AS64496"})[0]
 
-    assert matcher.last_request.qs["asn"] == ["24940"]
+    assert matcher.last_request.qs["asn"] == ["64496"]
     assert "ip" not in matcher.last_request.qs
     assert result.outputs_prefix == "IPGeolocation.ASN"
     assert result.outputs_key_field == "ASNumber"
-    assert result.outputs["ASNumber"] == "AS24940"
+    assert result.outputs["ASNumber"] == "AS64496"
     assert result.outputs["NumOfIPv4Routes"] == "84"
-    assert "IPGeolocation.io ASN Details for AS24940" in result.readable_output
+    assert "IPGeolocation.io ASN Details for AS64496" in result.readable_output
 
 
 def test_asn_lookup_by_ip_with_relations(requests_mock, client):
     """Routing relations and the WHOIS record are mapped and rendered."""
     matcher = requests_mock.get(f"{BASE_URL}/v3/asn", json=load_test_data("asn_full"))
-    result = asn_command(client, {"ip": "49.12.0.0", "include": "peers,upstreams,downstreams,routes,whois_response"})[0]
+    result = asn_command(client, {"ip": "198.51.100.0", "include": "peers,upstreams,downstreams,routes,whois_response"})[0]
 
-    assert matcher.last_request.qs["ip"] == ["49.12.0.0"]
-    assert result.outputs["IP"] == "49.12.0.0"
-    assert result.outputs["Peers"] == [{"ASNumber": "AS3356", "Description": "Level 3 Parent, LLC", "Country": "US"}]
-    assert result.outputs["Routes"] == ["192.76.177.0/24", "216.165.96.0/20", "2607:f600::/32"]
+    assert matcher.last_request.qs["ip"] == ["198.51.100.0"]
+    assert result.outputs["IP"] == "198.51.100.0"
+    assert result.outputs["Peers"] == [{"ASNumber": "AS64503", "Description": "Example Transit, LLC", "Country": "US"}]
+    assert result.outputs["Routes"] == ["198.51.100.0/24", "203.0.113.0/24", "2001:db8::/32"]
     assert "AllocationStatus" not in result.outputs
     for section in ("Peers", "Upstreams", "Downstreams", "Announced Routes", "WHOIS Record"):
         assert section in result.readable_output
@@ -504,7 +504,7 @@ def test_reputation_config_rejects_out_of_range_thresholds(value):
 def test_ip_reputation_with_geolocation(requests_mock, client):
     """The default mode enriches with geolocation and sets a DBotScore."""
     matcher = requests_mock.get(f"{BASE_URL}/v3/ipgeo", json=load_test_data("ipgeo_full"))
-    result = ip_reputation_command(client, {"ip": "2.56.188.34"}, {"integrationReliability": DBotScoreReliability.B})[0]
+    result = ip_reputation_command(client, {"ip": "8.8.8.8"}, {"integrationReliability": DBotScoreReliability.B})[0]
 
     assert matcher.last_request.qs["include"] == ["security"]
     assert result.indicator.dbot_score.score == Common.DBotScore.BAD
@@ -519,7 +519,7 @@ def test_ip_reputation_security_only_mode(requests_mock, client):
     matcher = requests_mock.get(f"{BASE_URL}/v3/security", json=load_test_data("security_clean"))
     result = ip_reputation_command(
         client,
-        {"ip": "91.128.103.196"},
+        {"ip": "8.8.8.8"},
         {"reputation_with_geolocation": False, "integrationReliability": DBotScoreReliability.C},
     )[0]
 
@@ -532,7 +532,7 @@ def test_ip_reputation_security_only_mode(requests_mock, client):
 def test_ip_reputation_indicator_tags_reflect_signals(requests_mock, client):
     """Detected anonymizer and hosting signals become indicator tags."""
     requests_mock.get(f"{BASE_URL}/v3/ipgeo", json=load_test_data("ipgeo_full"))
-    result = ip_reputation_command(client, {"ip": "2.56.188.34"}, {})[0]
+    result = ip_reputation_command(client, {"ip": "8.8.8.8"}, {})[0]
     assert set(result.indicator.tags) == {
         "proxy",
         "residential-proxy",
@@ -554,7 +554,7 @@ def test_ip_reputation_skips_private_addresses_without_a_request(requests_mock, 
 def test_ip_reputation_handles_multiple_addresses(requests_mock, client):
     """The command accepts a list and returns one result per address."""
     requests_mock.get(f"{BASE_URL}/v3/ipgeo", json=load_test_data("ipgeo_full"))
-    results = ip_reputation_command(client, {"ip": "2.56.188.34,2.56.188.35"}, {})
+    results = ip_reputation_command(client, {"ip": "8.8.8.8,1.1.1.1"}, {})
     assert len(results) == 2
 
 

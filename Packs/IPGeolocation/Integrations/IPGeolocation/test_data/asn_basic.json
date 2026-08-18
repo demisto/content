@@ -1,12 +1,12 @@
 {
   "asn": {
-    "as_number": "AS24940",
-    "organization": "Hetzner Online GmbH",
+    "as_number": "AS64496",
+    "organization": "Example Cloud GmbH",
     "country": "DE",
     "type": "HOSTING",
-    "domain": "hetzner.com",
+    "domain": "example.net",
     "date_allocated": "2002-06-03",
-    "asn_name": "HETZNER-AS",
+    "asn_name": "EXAMPLE-AS",
     "allocation_status": "ASSIGNED",
     "num_of_ipv4_routes": "84",
     "num_of_ipv6_routes": "6",

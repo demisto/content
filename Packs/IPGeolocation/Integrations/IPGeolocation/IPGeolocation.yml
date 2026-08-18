@@ -1038,7 +1038,7 @@ script:
     description: Gets Autonomous System details from the ASN API (/v3/asn), looked up either by ASN or by IP address. Beyond the organization, type, registry and allocation data it can return the announced routes, peers, upstream and downstream Autonomous Systems and the raw WHOIS record.
     arguments:
     - name: asn
-      description: A comma-separated list of Autonomous System Numbers to look up. Both 24940 and AS24940 are accepted. Mutually exclusive with the ip argument.
+      description: A comma-separated list of Autonomous System Numbers to look up. Both 64496 and AS64496 are accepted. Mutually exclusive with the ip argument.
       isArray: true
     - name: ip
       description: A comma-separated list of IPv4 or IPv6 addresses to resolve to their Autonomous System. Mutually exclusive with the asn argument.
