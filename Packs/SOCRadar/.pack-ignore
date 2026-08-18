@@ -20,7 +20,7 @@ ignore=BA125,BA129
 [file:SOCRadarThreatFusion.yml]
 ignore=BA125
 
-[file:FeedSOCRadarThreatFeed.yml]
+[file:FeedSOCRadarThreatFeedV2.yml]
 ignore:BA125
 
 [file:SOCRadarIncidents.yml]
