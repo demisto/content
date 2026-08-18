@@ -16,7 +16,7 @@ class Config:
     """Global static configuration."""
 
     # Bump on every hotfix so the running build can be confirmed from the `[Version]` debug log.
-    VERSION_TAG = "o365-message-trace/2.0.4-fetch-lookback"
+    VERSION_TAG = "o365-message-trace/2.0.5-fetch-lookback"
 
     VENDOR = "microsoft"
     PRODUCT = "o365_message_trace"
@@ -50,13 +50,17 @@ class Config:
     # API responds with HTTP 429 (Too Many Requests).
     RATE_LIMIT_BACKOFFS = (30, 60, 90)
 
-    # Wall-clock budget (seconds) for a single fetch invocation. The platform hard-kills a
-    # fetch-events run at 5 minutes (300s); if that happens BEFORE ``setLastRun`` the cursor
-    # never persists and the collector re-scans the same window forever (the stuck-cursor
-    # timeout bug). The window walk therefore stops itself once this budget is spent, sends
-    # what it has, persists the advanced cursor, and re-fires via ``nextTrigger``. 240s leaves
-    # ~60s of headroom for the final send + setLastRun under the 300s ceiling.
-    EXECUTION_TIME_BUDGET_SECONDS = 240
+    # Wall-clock budget (seconds) for the WINDOW WALK portion of a single fetch invocation. The
+    # platform hard-kills a fetch-events run at 5 minutes (300s); if that happens BEFORE
+    # ``setLastRun`` the cursor never persists and the collector re-scans the same window forever
+    # (the stuck-cursor timeout bug). The walk stops itself once this budget is spent, then the
+    # run still has to do the TAIL work - dedup + build seen_ids + ``send_events_to_xsiam`` +
+    # ``setLastRun`` - on everything collected. That tail scales with the number of events and,
+    # at ``max_fetch=10000`` (~5000 events/run), was observed to take ~60s. 240s left too little
+    # headroom: walk(240s) + tail(60s+) exceeded the 300s ceiling and the run was killed before
+    # ``setLastRun`` (cursor stayed frozen). 180s gives the tail a full ~120s of headroom under
+    # the 300s ceiling, so the cursor is always persisted regardless of batch size / max_fetch.
+    EXECUTION_TIME_BUDGET_SECONDS = 180
 
     # Value written to ``last_run["nextTrigger"]`` to ask the platform to re-invoke fetch
     # immediately (rather than waiting for the next scheduled cycle) so a backlog drains across
