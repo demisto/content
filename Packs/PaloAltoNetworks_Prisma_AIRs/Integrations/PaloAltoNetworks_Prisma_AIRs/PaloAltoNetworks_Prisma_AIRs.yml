@@ -4253,6 +4253,131 @@ script:
     - contextPath: PrismaAIRs.RedTeamInstanceDelete.is_success
       description: Whether the instance was deleted successfully.
       type: Boolean
+  - name: prisma-airs-redteam-devices-create
+    description: Create one or more devices on a Red Team tenant instance. Provide a single device with serial_number, or a batch with the devices JSON array (maximum 5).
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the parent instance.
+    - name: serial_number
+      required: false
+      description: The device serial number. Use this for a single device.
+    - name: device_name
+      required: false
+      description: The device name. Applies to the single-device form.
+    - name: model
+      required: false
+      description: The device model. Applies to the single-device form.
+    - name: sku
+      required: false
+      description: The device SKU. Applies to the single-device form.
+    - name: device_type
+      required: false
+      description: The device type. Applies to the single-device form.
+    - name: asset_type
+      required: false
+      description: The device asset type. Applies to the single-device form.
+    - name: support_account_id
+      required: false
+      description: The support account ID. Applies to the single-device form.
+    - name: devices
+      required: false
+      description: 'The devices as a JSON array for batch operations (maximum 5). Example: [{"serial_number": "SN-0001", "device_name": "gw-1"}].'
+    - name: created_by
+      required: false
+      description: The identity creating the devices.
+    - name: app_id
+      required: false
+      description: The parent instance application ID. Resolved from the instance when omitted.
+    - name: region
+      required: false
+      description: The parent instance region. Resolved from the instance when omitted.
+    - name: tsg_id
+      required: false
+      description: The parent instance Tenant Service Group ID. Resolved from the instance when omitted.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamDeviceCreate.serial_number
+      description: The device serial number.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceCreate.status
+      description: The per-device operation status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceCreate.error
+      description: The per-device error message, if any.
+      type: String
+  - name: prisma-airs-redteam-devices-update
+    description: Update one or more devices on a Red Team tenant instance. Provide a single device with serial_number, or a batch with the devices JSON array (maximum 5).
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the parent instance.
+    - name: serial_number
+      required: false
+      description: The device serial number. Use this for a single device.
+    - name: device_name
+      required: false
+      description: The new device name. Applies to the single-device form.
+    - name: model
+      required: false
+      description: The device model. Applies to the single-device form.
+    - name: sku
+      required: false
+      description: The device SKU. Applies to the single-device form.
+    - name: device_type
+      required: false
+      description: The device type. Applies to the single-device form.
+    - name: asset_type
+      required: false
+      description: The device asset type. Applies to the single-device form.
+    - name: support_account_id
+      required: false
+      description: The support account ID. Applies to the single-device form.
+    - name: devices
+      required: false
+      description: 'The devices as a JSON array for batch operations (maximum 5). Example: [{"serial_number": "SN-0001", "device_name": "renamed"}].'
+    - name: created_by
+      required: false
+      description: The identity updating the devices.
+    - name: app_id
+      required: false
+      description: The parent instance application ID. Resolved from the instance when omitted.
+    - name: region
+      required: false
+      description: The parent instance region. Resolved from the instance when omitted.
+    - name: tsg_id
+      required: false
+      description: The parent instance Tenant Service Group ID. Resolved from the instance when omitted.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamDeviceUpdate.serial_number
+      description: The device serial number.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceUpdate.status
+      description: The per-device operation status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceUpdate.error
+      description: The per-device error message, if any.
+      type: String
+  - name: prisma-airs-redteam-devices-delete
+    execution: true
+    description: Delete one or more devices from a Red Team tenant instance by serial number. This permanently removes the devices and cannot be undone.
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the parent instance.
+    - name: serial_numbers
+      required: true
+      isArray: true
+      description: A comma-separated list of device serial numbers to delete (maximum 5).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamDeviceDelete.serial_number
+      description: The deleted device serial number.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceDelete.status
+      description: The per-device deletion status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceDelete.error
+      description: The per-device error message, if any.
+      type: String
   - name: prisma-airs-redteam-scan-create
     description: Create a new Red Team scan job. This command submits the scan and returns immediately without polling. Use prisma-airs-redteam-scan-get to check status.
     arguments:

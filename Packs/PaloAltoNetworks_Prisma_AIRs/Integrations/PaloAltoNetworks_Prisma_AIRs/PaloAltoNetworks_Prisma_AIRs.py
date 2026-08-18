@@ -4898,6 +4898,201 @@ def redteam_instances_delete_command(client: Client, args: dict[str, Any]) -> Co
     )
 
 
+def _resolve_device_instance(client: Client, tenant_id: str, args: dict[str, Any]) -> dict[str, Any]:
+    """Build the required ``instance`` object for a device request.
+
+    The device create/update body requires an ``instance`` block with all four of
+    tsg_id/app_id/region/tenant_id. Callers may pass these explicitly; any that are
+    omitted are resolved from the parent instance via a GET so the analyst only needs
+    the tenant_id in the common case.
+
+    Args:
+        client: Prisma AIRs API client.
+        tenant_id: The tenant ID of the parent instance.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        dict[str, Any]: The instance block (app_id, region, tenant_id, tsg_id).
+    """
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (DeviceInstanceSchema)
+    app_id = args.get("app_id")
+    region = args.get("region")
+    tsg_id = args.get("tsg_id")
+
+    # Only fetch the parent instance when a required field is missing.
+    if not (app_id and region and tsg_id):
+        current = client.http_request(
+            method="GET", url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}", use_redteam_mgmt=True
+        )
+        app_id = app_id or current.get("app_id")
+        region = region or current.get("region")
+        tsg_id = tsg_id or current.get("tsg_id")
+
+    return {"app_id": app_id, "region": region, "tenant_id": tenant_id, "tsg_id": tsg_id}
+
+
+def _build_device_list(args: dict[str, Any]) -> list[dict[str, Any]]:
+    """Build the ``devices`` array for a device create/update request.
+
+    Supports either a single device (via ``serial_number`` plus optional attributes)
+    or a batch of devices supplied as a JSON array string via ``devices``.
+
+    Args:
+        args: Command arguments from XSOAR.
+
+    Returns:
+        list[dict[str, Any]]: The devices list to send in the request body.
+    """
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (DeviceSchema)
+    devices_json = args.get("devices")
+    if devices_json:
+        devices = json.loads(devices_json)
+        if not isinstance(devices, list):
+            raise ValueError("devices must be a JSON array of device objects")
+    else:
+        serial_number = args.get("serial_number")
+        if not serial_number:
+            raise ValueError("Either serial_number or devices (JSON array) is required")
+        device: dict[str, Any] = {"serial_number": serial_number}
+        for field in ("device_name", "model", "sku", "device_type", "asset_type", "support_account_id"):
+            if args.get(field):
+                device[field] = args.get(field)
+        devices = [device]
+
+    # SDK caps batch operations at 5 items.
+    if len(devices) > 5:
+        raise ValueError("A maximum of 5 devices can be submitted per request")
+    return devices
+
+
+def _device_response_results(response: dict[str, Any], title: str, prefix: str) -> CommandResults:
+    """Render a DeviceResponse into standard CommandResults.
+
+    Args:
+        response: The raw DeviceResponse from the API.
+        title: The human-readable table title.
+        prefix: The context output suffix (e.g. RedTeamDeviceCreate).
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    devices = response.get("devices") or []
+
+    readable_output = tableToMarkdown(
+        title,
+        devices,
+        headers=["serial_number", "status", "error"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}{prefix}",
+        outputs_key_field="serial_number",
+        outputs=devices,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_devices_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create one or more devices on a Red Team tenant instance.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    tenant_id = args.get("tenant_id")
+    if not tenant_id:
+        raise ValueError("tenant_id is required")
+
+    request_body: dict[str, Any] = {
+        "instance": _resolve_device_instance(client, tenant_id, args),
+        "devices": _build_device_list(args),
+    }
+    if args.get("created_by"):
+        request_body["created_by"] = args.get("created_by")
+
+    # Call Red Team device create endpoint (management plane)
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/instances-client.ts (createDevices)
+    response = client.http_request(
+        method="POST",
+        url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}/devices",
+        json_data=request_body,
+        use_redteam_mgmt=True,
+    )
+
+    return _device_response_results(response, f"Red Team Devices Created: {tenant_id}", "RedTeamDeviceCreate")
+
+
+def redteam_devices_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update one or more devices on a Red Team tenant instance.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    tenant_id = args.get("tenant_id")
+    if not tenant_id:
+        raise ValueError("tenant_id is required")
+
+    request_body: dict[str, Any] = {
+        "instance": _resolve_device_instance(client, tenant_id, args),
+        "devices": _build_device_list(args),
+    }
+    if args.get("created_by"):
+        request_body["created_by"] = args.get("created_by")
+
+    # Call Red Team device update endpoint (management plane)
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/instances-client.ts (updateDevices)
+    response = client.http_request(
+        method="PATCH",
+        url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}/devices",
+        json_data=request_body,
+        use_redteam_mgmt=True,
+    )
+
+    return _device_response_results(response, f"Red Team Devices Updated: {tenant_id}", "RedTeamDeviceUpdate")
+
+
+def redteam_devices_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete one or more devices from a Red Team tenant instance.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    tenant_id = args.get("tenant_id")
+    if not tenant_id:
+        raise ValueError("tenant_id is required")
+
+    serial_numbers = argToList(args.get("serial_numbers"))
+    if not serial_numbers:
+        raise ValueError("serial_numbers is required")
+    if len(serial_numbers) > 5:
+        raise ValueError("A maximum of 5 devices can be deleted per request")
+
+    # deleteDevices takes a comma-separated serial_numbers query param.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/instances-client.ts (deleteDevices)
+    response = client.http_request(
+        method="DELETE",
+        url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}/devices",
+        params={"serial_numbers": ",".join(serial_numbers)},
+        use_redteam_mgmt=True,
+    )
+
+    return _device_response_results(response, f"Red Team Devices Deleted: {tenant_id}", "RedTeamDeviceDelete")
+
+
 def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Probe a Red Team target to validate connectivity and profiling.
 
@@ -11036,6 +11231,15 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-instances-delete":
             return_results(redteam_instances_delete_command(client, args))
+
+        elif command == "prisma-airs-redteam-devices-create":
+            return_results(redteam_devices_create_command(client, args))
+
+        elif command == "prisma-airs-redteam-devices-update":
+            return_results(redteam_devices_update_command(client, args))
+
+        elif command == "prisma-airs-redteam-devices-delete":
+            return_results(redteam_devices_delete_command(client, args))
 
         elif command == "prisma-airs-redteam-scan-create":
             return_results(redteam_scan_create_command(client, args))

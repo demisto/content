@@ -107,6 +107,9 @@ from PaloAltoNetworks_Prisma_AIRs import (
     redteam_instances_get_command,
     redteam_instances_update_command,
     redteam_instances_delete_command,
+    redteam_devices_create_command,
+    redteam_devices_update_command,
+    redteam_devices_delete_command,
     model_security_scans_list_command,
     model_security_models_list_command,
     model_security_models_get_command,
@@ -2539,6 +2542,185 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="tenant_id is required"):
             redteam_instances_delete_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_devices_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """devices-create resolves the instance block via GET then POSTs a single device.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.side_effect = [
+            # GET parent instance to resolve app_id/region/tsg_id
+            {"tsg_id": "tsg-1", "tenant_id": "tn-1", "app_id": "app-1", "region": "us"},
+            # POST devices response
+            {"devices": [{"serial_number": "SN-0001", "status": "CREATED"}]},
+        ]
+
+        result = redteam_devices_create_command(mock_client, {"tenant_id": "tn-1", "serial_number": "SN-0001"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamDeviceCreate"
+        assert result.outputs_key_field == "serial_number"
+        assert result.outputs[0]["serial_number"] == "SN-0001"
+        # Second call is the POST to the devices sub-resource with the resolved instance block
+        _, post_kwargs = mock_http.call_args_list[1]
+        assert post_kwargs["method"] == "POST"
+        assert post_kwargs["url_suffix"] == "/v1/instances/tn-1/devices"
+        assert post_kwargs["use_redteam_mgmt"] is True
+        assert post_kwargs["json_data"]["instance"] == {
+            "app_id": "app-1",
+            "region": "us",
+            "tenant_id": "tn-1",
+            "tsg_id": "tsg-1",
+        }
+        assert post_kwargs["json_data"]["devices"] == [{"serial_number": "SN-0001"}]
+
+    @patch.object(Client, "http_request")
+    def test_redteam_devices_create_explicit_instance_skips_get(self, mock_http: Mock, mock_client: Client) -> None:
+        """devices-create does not GET the parent when all instance fields are provided.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"devices": [{"serial_number": "SN-0001", "status": "CREATED"}]}
+
+        redteam_devices_create_command(
+            mock_client,
+            {"tenant_id": "tn-1", "serial_number": "SN-0001", "app_id": "app-1", "region": "us", "tsg_id": "tsg-1"},
+        )
+
+        # Only the POST should fire — no resolving GET.
+        assert mock_http.call_count == 1
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_devices_create_batch_json(self, mock_http: Mock, mock_client: Client) -> None:
+        """devices-create accepts a JSON batch and passes it through.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"devices": [{"serial_number": "SN-1", "status": "CREATED"}]}
+
+        redteam_devices_create_command(
+            mock_client,
+            {
+                "tenant_id": "tn-1",
+                "app_id": "app-1",
+                "region": "us",
+                "tsg_id": "tsg-1",
+                "devices": '[{"serial_number": "SN-1"}, {"serial_number": "SN-2"}]',
+            },
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["json_data"]["devices"] == [{"serial_number": "SN-1"}, {"serial_number": "SN-2"}]
+
+    def test_redteam_devices_create_requires_tenant_id(self, mock_client: Client) -> None:
+        """devices-create raises when tenant_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="tenant_id is required"):
+            redteam_devices_create_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_devices_create_requires_a_device(self, mock_http: Mock, mock_client: Client) -> None:
+        """devices-create raises when neither serial_number nor devices is provided.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"tsg_id": "tsg-1", "tenant_id": "tn-1", "app_id": "app-1", "region": "us"}
+
+        with pytest.raises(ValueError, match="Either serial_number or devices"):
+            redteam_devices_create_command(mock_client, {"tenant_id": "tn-1"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_devices_create_batch_limit(self, mock_http: Mock, mock_client: Client) -> None:
+        """devices-create raises when the batch exceeds 5 devices.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        six = json.dumps([{"serial_number": f"SN-{i}"} for i in range(6)])
+        with pytest.raises(ValueError, match="maximum of 5 devices"):
+            redteam_devices_create_command(
+                mock_client, {"tenant_id": "tn-1", "app_id": "a", "region": "r", "tsg_id": "t", "devices": six}
+            )
+
+    @patch.object(Client, "http_request")
+    def test_redteam_devices_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """devices-update PATCHes the devices sub-resource.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"devices": [{"serial_number": "SN-0001", "status": "UPDATED"}]}
+
+        result = redteam_devices_update_command(
+            mock_client,
+            {"tenant_id": "tn-1", "serial_number": "SN-0001", "device_name": "renamed", "app_id": "a", "region": "r", "tsg_id": "t"},
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamDeviceUpdate"
+        assert result.outputs_key_field == "serial_number"
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "PATCH"
+        assert kwargs["url_suffix"] == "/v1/instances/tn-1/devices"
+        assert kwargs["json_data"]["devices"][0]["device_name"] == "renamed"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_devices_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """devices-delete sends serial_numbers as a comma-separated query param.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "devices": [
+                {"serial_number": "SN-1", "status": "DELETED"},
+                {"serial_number": "SN-2", "status": "DELETED"},
+            ]
+        }
+
+        result = redteam_devices_delete_command(mock_client, {"tenant_id": "tn-1", "serial_numbers": "SN-1,SN-2"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamDeviceDelete"
+        assert result.outputs_key_field == "serial_number"
+        assert "|" in result.readable_output
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "DELETE"
+        assert kwargs["url_suffix"] == "/v1/instances/tn-1/devices"
+        assert kwargs["params"] == {"serial_numbers": "SN-1,SN-2"}
+        assert kwargs["use_redteam_mgmt"] is True
+
+    def test_redteam_devices_delete_requires_tenant_id(self, mock_client: Client) -> None:
+        """devices-delete raises when tenant_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="tenant_id is required"):
+            redteam_devices_delete_command(mock_client, {"serial_numbers": "SN-1"})
+
+    def test_redteam_devices_delete_requires_serial_numbers(self, mock_client: Client) -> None:
+        """devices-delete raises when serial_numbers is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="serial_numbers is required"):
+            redteam_devices_delete_command(mock_client, {"tenant_id": "tn-1"})
 
     @patch.object(Client, "http_request")
     def test_redteam_network_channels_list_command(self, mock_http: Mock, mock_client: Client) -> None:

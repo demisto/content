@@ -4465,6 +4465,143 @@ Delete a Red Team tenant instance. This permanently removes the instance and can
 >|---|---|---|---|
 >| tn-67890 | tsg-12345 | app-abcde | true |
 
+### prisma-airs-redteam-devices-create
+
+***
+Create one or more devices on a Red Team tenant instance. Provide a single device with serial_number, or a batch with the devices JSON array (maximum 5). The parent instance's app_id/region/tsg_id are resolved automatically from the tenant_id when not supplied.
+
+#### Base Command
+
+`prisma-airs-redteam-devices-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_id | The tenant ID of the parent instance. | Required |
+| serial_number | The device serial number. Use this for a single device. | Optional |
+| device_name | The device name. Applies to the single-device form. | Optional |
+| model | The device model. Applies to the single-device form. | Optional |
+| sku | The device SKU. Applies to the single-device form. | Optional |
+| device_type | The device type. Applies to the single-device form. | Optional |
+| asset_type | The device asset type. Applies to the single-device form. | Optional |
+| support_account_id | The support account ID. Applies to the single-device form. | Optional |
+| devices | The devices as a JSON array for batch operations (maximum 5). Example: [{"serial_number": "SN-0001", "device_name": "gw-1"}]. | Optional |
+| created_by | The identity creating the devices. | Optional |
+| app_id | The parent instance application ID. Resolved from the instance when omitted. | Optional |
+| region | The parent instance region. Resolved from the instance when omitted. | Optional |
+| tsg_id | The parent instance Tenant Service Group ID. Resolved from the instance when omitted. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamDeviceCreate.serial_number | String | The device serial number. |
+| PrismaAIRs.RedTeamDeviceCreate.status | String | The per-device operation status. |
+| PrismaAIRs.RedTeamDeviceCreate.error | String | The per-device error message, if any. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-devices-create tenant_id=tn-67890 serial_number=SN-0001 device_name="Edge GW 1"
+```
+
+#### Human Readable Output
+
+>### Red Team Devices Created: tn-67890
+>
+>|Serial Number|Status|
+>|---|---|
+>| SN-0001 | CREATED |
+
+### prisma-airs-redteam-devices-update
+
+***
+Update one or more devices on a Red Team tenant instance. Provide a single device with serial_number, or a batch with the devices JSON array (maximum 5).
+
+#### Base Command
+
+`prisma-airs-redteam-devices-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_id | The tenant ID of the parent instance. | Required |
+| serial_number | The device serial number. Use this for a single device. | Optional |
+| device_name | The new device name. Applies to the single-device form. | Optional |
+| model | The device model. Applies to the single-device form. | Optional |
+| sku | The device SKU. Applies to the single-device form. | Optional |
+| device_type | The device type. Applies to the single-device form. | Optional |
+| asset_type | The device asset type. Applies to the single-device form. | Optional |
+| support_account_id | The support account ID. Applies to the single-device form. | Optional |
+| devices | The devices as a JSON array for batch operations (maximum 5). Example: [{"serial_number": "SN-0001", "device_name": "renamed"}]. | Optional |
+| created_by | The identity updating the devices. | Optional |
+| app_id | The parent instance application ID. Resolved from the instance when omitted. | Optional |
+| region | The parent instance region. Resolved from the instance when omitted. | Optional |
+| tsg_id | The parent instance Tenant Service Group ID. Resolved from the instance when omitted. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamDeviceUpdate.serial_number | String | The device serial number. |
+| PrismaAIRs.RedTeamDeviceUpdate.status | String | The per-device operation status. |
+| PrismaAIRs.RedTeamDeviceUpdate.error | String | The per-device error message, if any. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-devices-update tenant_id=tn-67890 serial_number=SN-0001 device_name="Edge GW 1 (renamed)"
+```
+
+#### Human Readable Output
+
+>### Red Team Devices Updated: tn-67890
+>
+>|Serial Number|Status|
+>|---|---|
+>| SN-0001 | UPDATED |
+
+### prisma-airs-redteam-devices-delete
+
+***
+Delete one or more devices from a Red Team tenant instance by serial number. This permanently removes the devices and cannot be undone.
+
+#### Base Command
+
+`prisma-airs-redteam-devices-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_id | The tenant ID of the parent instance. | Required |
+| serial_numbers | A comma-separated list of device serial numbers to delete (maximum 5). | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamDeviceDelete.serial_number | String | The deleted device serial number. |
+| PrismaAIRs.RedTeamDeviceDelete.status | String | The per-device deletion status. |
+| PrismaAIRs.RedTeamDeviceDelete.error | String | The per-device error message, if any. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-devices-delete tenant_id=tn-67890 serial_numbers=SN-0001,SN-0002
+```
+
+#### Human Readable Output
+
+>### Red Team Devices Deleted: tn-67890
+>
+>|Serial Number|Status|
+>|---|---|
+>| SN-0001 | DELETED |
+>| SN-0002 | DELETED |
+
 ### prisma-airs-redteam-scan-create
 
 ***
