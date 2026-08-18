@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+import base64
 import urllib3
 from typing import Any
 
@@ -33,6 +34,9 @@ RED_TEAM_EULA_ENDPOINT = "/v1/eula"
 RED_TEAM_REGISTRY_CREDENTIALS_ENDPOINT = "/v1/registry-credentials"
 # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_INSTANCES_PATH)
 RED_TEAM_INSTANCES_ENDPOINT = "/v1/instances"
+# Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_ADAPTER_PATH)
+RED_TEAM_ADAPTERS_ENDPOINT = "/v1/adapters"
+RED_TEAM_ADAPTERS_VALIDATE_ENDPOINT = "/v1/adapters/validate"
 RED_TEAM_TEMPLATE_ENDPOINT = "/v1/template"
 # Supported languages endpoint - identical path served on both the data plane and the mgmt plane.
 # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_LANGUAGES_PATH)
@@ -5091,6 +5095,471 @@ def redteam_devices_delete_command(client: Client, args: dict[str, Any]) -> Comm
     )
 
     return _device_response_results(response, f"Red Team Devices Deleted: {tenant_id}", "RedTeamDeviceDelete")
+
+
+def _parse_adapter(adapter: dict[str, Any]) -> dict[str, Any]:
+    """Normalize a single Red Team custom target adapter record for context output.
+
+    Full records (get/create/update) carry every field; list rows are a subset. ``assign_params``
+    drops absent/empty keys so list outputs are not padded with nulls.
+
+    Schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (AdapterResponseSchema)
+
+    Args:
+        adapter: A single adapter object from the API response.
+
+    Returns:
+        dict: Normalized adapter fields (empty values removed).
+    """
+    return assign_params(
+        uuid=adapter.get("uuid"),
+        name=adapter.get("name"),
+        status=adapter.get("status"),
+        description=adapter.get("description"),
+        tsg_id=adapter.get("tsg_id"),
+        network_broker_channel_uuid=adapter.get("network_broker_channel_uuid"),
+        script_b64=adapter.get("script_b64"),
+        variables=adapter.get("variables"),
+        target_count=adapter.get("target_count"),
+        created_at=adapter.get("created_at"),
+        updated_at=adapter.get("updated_at"),
+        created_by_user_id=adapter.get("created_by_user_id"),
+        updated_by_user_id=adapter.get("updated_by_user_id"),
+    )
+
+
+def _resolve_adapter_script_b64(args: dict[str, Any]) -> str:
+    """Resolve the adapter script as base64. Accepts pre-encoded ``script_b64`` or plain ``script``.
+
+    Args:
+        args: Command arguments from XSOAR.
+
+    Returns:
+        str: The base64-encoded adapter script.
+
+    Raises:
+        ValueError: If neither ``script_b64`` nor ``script`` is provided.
+    """
+    script_b64 = args.get("script_b64")
+    if script_b64:
+        return script_b64
+    script = args.get("script")
+    if script:
+        return base64.b64encode(script.encode("utf-8")).decode("ascii")
+    raise ValueError("Either 'script' (plain text) or 'script_b64' (base64-encoded) is required")
+
+
+def _build_adapter_variables(raw: Any) -> list[dict[str, Any]] | None:
+    """Parse and validate the adapter ``variables`` argument (JSON array of {key,value,type}).
+
+    Args:
+        raw: The ``variables`` argument value (JSON string or already-parsed list).
+
+    Returns:
+        list | None: The validated variables list, or None when not provided.
+
+    Raises:
+        ValueError: If the value is not a valid list of {key, type} objects.
+    """
+    if not raw:
+        return None
+    variables = raw if isinstance(raw, list) else json.loads(raw)
+    if not isinstance(variables, list):
+        raise ValueError("variables must be a JSON array of {key, value, type} objects")
+    for var in variables:
+        if not isinstance(var, dict) or not var.get("key") or not var.get("type"):
+            raise ValueError("each variable requires a non-empty 'key' and 'type' (VAR or SECRET)")
+        if var["type"] not in ("VAR", "SECRET"):
+            raise ValueError("variable 'type' must be 'VAR' or 'SECRET'")
+    return variables
+
+
+def _assert_channel_online(client: Client, channel_uuid: str) -> None:
+    """Advisory preflight: activation/validation needs an ONLINE network broker channel.
+
+    Raises a clear error when the channel is reachable but not ONLINE; stays silent when the
+    channel status cannot be looked up so the API remains the source of truth. Mirrors the CLI's
+    broker-online check.
+
+    Args:
+        client: Prisma AIRs API client.
+        channel_uuid: Network broker channel UUID.
+
+    Raises:
+        ValueError: If the channel is reachable but its status is not ONLINE.
+    """
+    try:
+        channel = client.http_request(
+            method="GET", url_suffix=f"{RED_TEAM_NETWORK_CHANNELS_ENDPOINT}/{channel_uuid}", use_redteam_data=True
+        )
+    except Exception as exc:  # noqa: BLE001 - preflight is advisory; defer to the API on any lookup failure
+        demisto.debug(f"Adapter channel preflight skipped for {channel_uuid}: {exc}")
+        return
+    status = channel.get("status")
+    if status and status != "ONLINE":
+        raise ValueError(
+            f"Network broker channel {channel_uuid} is '{status}', not ONLINE. Start the network broker "
+            "client and wait until the channel is ONLINE before validating or activating the adapter."
+        )
+
+
+def redteam_adapters_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List Red Team custom target adapters.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    skip = arg_to_number(args.get("skip"))
+    search = args.get("search")
+
+    params: dict[str, Any] = {"limit": limit}
+    if skip is not None:
+        params["skip"] = skip
+    if search:
+        params["search"] = search
+    if args.get("include_target_count") is not None:
+        params["include_target_count"] = str(argToBoolean(args.get("include_target_count"))).lower()
+
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (list)
+    response = client.http_request(
+        method="GET", url_suffix=RED_TEAM_ADAPTERS_ENDPOINT, params=params, use_redteam_mgmt=True
+    )
+
+    adapters = [_parse_adapter(adapter) for adapter in response.get("data", [])]
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Red Team Adapters",
+        adapters,
+        headers=["uuid", "name", "status", "target_count", "created_at", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamAdapter",
+        outputs_key_field="uuid",
+        outputs=adapters,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_adapters_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single Red Team custom target adapter by UUID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (get)
+    response = client.http_request(
+        method="GET", url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}", use_redteam_mgmt=True
+    )
+
+    adapter_info = _parse_adapter(response)
+
+    readable_output = tableToMarkdown(
+        f"Red Team Adapter: {adapter_info.get('name') or uuid}",
+        [adapter_info],
+        headers=["uuid", "name", "status", "description", "network_broker_channel_uuid", "target_count", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamAdapter",
+        outputs_key_field="uuid",
+        outputs=adapter_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_adapters_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new Red Team custom target adapter.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    name = args.get("name")
+    if not name:
+        raise ValueError("name is required")
+    prompt = args.get("prompt")
+    if not prompt:
+        raise ValueError("prompt is required")
+
+    # validate defaults to true: run the script end-to-end and save ACTIVE on success, DRAFT on failure.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (create)
+    validate = argToBoolean(args.get("validate")) if args.get("validate") is not None else True
+    channel_uuid = args.get("network_broker_channel_uuid")
+    if validate and channel_uuid:
+        _assert_channel_online(client, channel_uuid)
+
+    # Build request body per AdapterCreateRequestSchema.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (AdapterCreateRequestSchema)
+    request_body: dict[str, Any] = {
+        "name": name,
+        "script_b64": _resolve_adapter_script_b64(args),
+        "prompt": prompt,
+    }
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+    if channel_uuid:
+        request_body["network_broker_channel_uuid"] = channel_uuid
+    variables = _build_adapter_variables(args.get("variables"))
+    if variables is not None:
+        request_body["variables"] = variables
+
+    response = client.http_request(
+        method="POST",
+        url_suffix=RED_TEAM_ADAPTERS_ENDPOINT,
+        json_data=request_body,
+        params={"validate": str(validate).lower()},
+        use_redteam_mgmt=True,
+    )
+
+    adapter_info = _parse_adapter(response)
+
+    readable_output = tableToMarkdown(
+        f"Red Team Adapter Created: {name}",
+        [adapter_info],
+        headers=["uuid", "name", "status", "network_broker_channel_uuid", "target_count", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamAdapter",
+        outputs_key_field="uuid",
+        outputs=adapter_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_adapters_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update a Red Team custom target adapter (full-replacement PUT).
+
+    The upstream update is a full replacement: name, script, and prompt are required, and the
+    variables list defines the complete desired key set (an omitted key is deleted; a null value
+    keeps a stored secret). Missing name/script are backfilled from the current record so callers
+    can change one field without wiping the rest.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+    prompt = args.get("prompt")
+    if not prompt:
+        # prompt is never stored upstream, so it must be supplied on every update.
+        raise ValueError("prompt is required on every update (it is not stored server-side)")
+
+    # Fetch the current adapter to preserve required fields the caller does not override.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (update)
+    current = client.http_request(
+        method="GET", url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}", use_redteam_mgmt=True
+    )
+
+    name = args.get("name") or current.get("name")
+    script_b64 = args.get("script_b64")
+    if not script_b64 and args.get("script"):
+        script_b64 = base64.b64encode(args["script"].encode("utf-8")).decode("ascii")
+    if not script_b64:
+        script_b64 = current.get("script_b64")
+
+    validate = argToBoolean(args.get("validate")) if args.get("validate") is not None else True
+    channel_uuid = args.get("network_broker_channel_uuid")
+    if channel_uuid is None:
+        channel_uuid = current.get("network_broker_channel_uuid")
+    if validate and channel_uuid:
+        _assert_channel_online(client, channel_uuid)
+
+    # Build request body per AdapterUpdateRequestSchema (full replacement).
+    request_body: dict[str, Any] = {
+        "name": name,
+        "script_b64": script_b64,
+        "prompt": prompt,
+    }
+    if channel_uuid:
+        request_body["network_broker_channel_uuid"] = channel_uuid
+    description = args.get("description")
+    if description is None:
+        description = current.get("description")
+    if description is not None:
+        request_body["description"] = description
+
+    # variables: explicit arg replaces the whole set; otherwise resend the stored set so nothing is
+    # deleted, with secrets passed back as value=null to keep their stored values.
+    variables = _build_adapter_variables(args.get("variables"))
+    if variables is None:
+        stored = current.get("variables") or []
+        variables = [
+            {
+                "key": var.get("key"),
+                "value": None if var.get("is_redacted") else var.get("value"),
+                "type": var.get("type"),
+            }
+            for var in stored
+            if var.get("key") and var.get("type")
+        ]
+    if variables:
+        request_body["variables"] = variables
+
+    response = client.http_request(
+        method="PUT",
+        url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}",
+        json_data=request_body,
+        params={"validate": str(validate).lower()},
+        use_redteam_mgmt=True,
+    )
+
+    adapter_info = _parse_adapter(response)
+
+    readable_output = tableToMarkdown(
+        f"Red Team Adapter Updated: {adapter_info.get('name') or uuid}",
+        [adapter_info],
+        headers=["uuid", "name", "status", "network_broker_channel_uuid", "target_count", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamAdapter",
+        outputs_key_field="uuid",
+        outputs=adapter_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_adapters_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a Red Team custom target adapter.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args.get("uuid")
+    if not uuid:
+        raise ValueError("uuid is required")
+
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (delete)
+    response = client.http_request(
+        method="DELETE", url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}", use_redteam_mgmt=True
+    )
+
+    delete_info = {
+        "uuid": uuid,
+        "is_success": (response or {}).get("is_success", True) if isinstance(response, dict) else True,
+    }
+
+    readable_output = tableToMarkdown(
+        f"Red Team Adapter Deleted: {uuid}",
+        [delete_info],
+        headers=["uuid", "is_success"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamAdapterDelete",
+        outputs_key_field="uuid",
+        outputs=delete_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_adapters_validate_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Validate a Red Team custom target adapter script without saving it.
+
+    Runs the script end-to-end through the network broker channel using the sample prompt and
+    returns the execution outcome (validated + stdout/stderr/traceback), not an adapter record.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    channel_uuid = args.get("network_broker_channel_uuid")
+    if not channel_uuid:
+        raise ValueError("network_broker_channel_uuid is required")
+    prompt = args.get("prompt")
+    if not prompt:
+        raise ValueError("prompt is required")
+
+    # Advisory broker-online preflight (mirrors the CLI) before the non-persistent validation run.
+    _assert_channel_online(client, channel_uuid)
+
+    # Build request body per AdapterValidateRequestSchema (distinct from create: no name).
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (AdapterValidateRequestSchema)
+    request_body: dict[str, Any] = {
+        "script_b64": _resolve_adapter_script_b64(args),
+        "network_broker_channel_uuid": channel_uuid,
+        "prompt": prompt,
+    }
+    variables = _build_adapter_variables(args.get("variables"))
+    if variables is not None:
+        request_body["variables"] = variables
+    if args.get("adapter_uuid"):
+        # References an existing adapter so null/redacted variable values resolve from its secrets.
+        request_body["adapter_uuid"] = args.get("adapter_uuid")
+
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (validate)
+    response = client.http_request(
+        method="POST", url_suffix=RED_TEAM_ADAPTERS_VALIDATE_ENDPOINT, json_data=request_body, use_redteam_mgmt=True
+    )
+
+    validation_info = assign_params(
+        validated=response.get("validated"),
+        stdout=response.get("stdout"),
+        stderr=response.get("stderr"),
+        traceback=response.get("traceback"),
+    )
+    # assign_params drops False; keep the explicit validated flag so context always carries it.
+    validation_info["validated"] = response.get("validated")
+
+    readable_output = tableToMarkdown(
+        "Red Team Adapter Validation",
+        [validation_info],
+        headers=["validated", "stdout", "stderr", "traceback"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamAdapterValidation",
+        outputs=validation_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
 
 
 def redteam_targets_probe_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -11240,6 +11709,24 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-devices-delete":
             return_results(redteam_devices_delete_command(client, args))
+
+        elif command == "prisma-airs-redteam-adapters-list":
+            return_results(redteam_adapters_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-adapters-get":
+            return_results(redteam_adapters_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-adapters-create":
+            return_results(redteam_adapters_create_command(client, args))
+
+        elif command == "prisma-airs-redteam-adapters-update":
+            return_results(redteam_adapters_update_command(client, args))
+
+        elif command == "prisma-airs-redteam-adapters-delete":
+            return_results(redteam_adapters_delete_command(client, args))
+
+        elif command == "prisma-airs-redteam-adapters-validate":
+            return_results(redteam_adapters_validate_command(client, args))
 
         elif command == "prisma-airs-redteam-scan-create":
             return_results(redteam_scan_create_command(client, args))

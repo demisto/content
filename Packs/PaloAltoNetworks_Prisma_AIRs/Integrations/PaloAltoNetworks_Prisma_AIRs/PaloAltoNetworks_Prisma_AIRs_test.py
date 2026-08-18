@@ -110,6 +110,12 @@ from PaloAltoNetworks_Prisma_AIRs import (
     redteam_devices_create_command,
     redteam_devices_update_command,
     redteam_devices_delete_command,
+    redteam_adapters_list_command,
+    redteam_adapters_get_command,
+    redteam_adapters_create_command,
+    redteam_adapters_update_command,
+    redteam_adapters_delete_command,
+    redteam_adapters_validate_command,
     model_security_scans_list_command,
     model_security_models_list_command,
     model_security_models_get_command,
@@ -2721,6 +2727,341 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="serial_numbers is required"):
             redteam_devices_delete_command(mock_client, {"tenant_id": "tn-1"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-list parses the data envelope and hits the mgmt plane, keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "pagination": {"limit": 50, "skip": 0},
+            "data": [
+                {"uuid": "ad-1", "name": "keycloak", "status": "ACTIVE", "target_count": 2},
+                {"uuid": "ad-2", "name": "draft-agent", "status": "DRAFT"},
+            ],
+        }
+
+        result = redteam_adapters_list_command(mock_client, {"limit": "10", "skip": "5", "search": "agent"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamAdapter"
+        assert result.outputs_key_field == "uuid"
+        assert [a["uuid"] for a in result.outputs] == ["ad-1", "ad-2"]
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/adapters"
+        assert kwargs["use_redteam_mgmt"] is True
+        assert kwargs["params"] == {"limit": 10, "skip": 5, "search": "agent"}
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-get reads a single adapter by uuid from the mgmt plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "uuid": "ad-1",
+            "name": "keycloak",
+            "status": "ACTIVE",
+            "script_b64": "cHJpbnQoJ2hpJyk=",
+            "variables": [{"key": "endpoint", "value": "http://svc", "type": "VAR"}],
+        }
+
+        result = redteam_adapters_get_command(mock_client, {"uuid": "ad-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamAdapter"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ad-1"
+        assert result.outputs["script_b64"] == "cHJpbnQoJ2hpJyk="
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/adapters/ad-1"
+        assert kwargs["use_redteam_mgmt"] is True
+
+    def test_redteam_adapters_get_requires_uuid(self, mock_client: Client) -> None:
+        """adapters-get raises when uuid is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="uuid is required"):
+            redteam_adapters_get_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_create_encodes_plain_script(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-create base64-encodes a plain script, passes validate param, and posts to mgmt plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        # Only the create POST is called: validate=false skips the channel preflight.
+        mock_http.return_value = {"uuid": "ad-9", "name": "new", "status": "DRAFT"}
+
+        result = redteam_adapters_create_command(
+            mock_client,
+            {
+                "name": "new",
+                "prompt": "Hello",
+                "script": "print('hi')",
+                "variables": '[{"key":"endpoint","value":"http://svc","type":"VAR"}]',
+                "validate": "false",
+            },
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamAdapter"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ad-9"
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        assert kwargs["url_suffix"] == "/v1/adapters"
+        assert kwargs["use_redteam_mgmt"] is True
+        assert kwargs["params"] == {"validate": "false"}
+        # Plain script is base64-encoded for us.
+        assert kwargs["json_data"]["script_b64"] == "cHJpbnQoJ2hpJyk="
+        assert kwargs["json_data"]["variables"][0]["key"] == "endpoint"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_create_validate_runs_channel_preflight(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-create with validate=true runs the ONLINE channel preflight before creating.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.side_effect = [
+            # channel preflight GET (data plane)
+            {"uuid": "ch-1", "status": "ONLINE"},
+            # create POST
+            {"uuid": "ad-1", "name": "new", "status": "ACTIVE"},
+        ]
+
+        result = redteam_adapters_create_command(
+            mock_client,
+            {"name": "new", "prompt": "Hello", "script_b64": "abc", "network_broker_channel_uuid": "ch-1"},
+        )
+
+        assert result.outputs["status"] == "ACTIVE"
+        # First call is the data-plane channel preflight; second is the mgmt-plane create.
+        first, second = mock_http.call_args_list
+        assert first.kwargs["url_suffix"] == "/network-broker/v1/channels/ch-1"
+        assert first.kwargs["use_redteam_data"] is True
+        assert second.kwargs["method"] == "POST"
+        assert second.kwargs["params"] == {"validate": "true"}
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_create_offline_channel_raises(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-create raises a clear error when the broker channel is not ONLINE.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "ch-1", "status": "OFFLINE"}
+
+        with pytest.raises(ValueError, match="not ONLINE"):
+            redteam_adapters_create_command(
+                mock_client,
+                {"name": "new", "prompt": "Hello", "script_b64": "abc", "network_broker_channel_uuid": "ch-1"},
+            )
+
+    def test_redteam_adapters_create_requires_script(self, mock_client: Client) -> None:
+        """adapters-create raises when neither script nor script_b64 is provided.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="script"):
+            redteam_adapters_create_command(mock_client, {"name": "new", "prompt": "Hello", "validate": "false"})
+
+    def test_redteam_adapters_create_rejects_bad_variable(self, mock_client: Client) -> None:
+        """adapters-create rejects a variable missing its type.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="key.*type|type"):
+            redteam_adapters_create_command(
+                mock_client,
+                {
+                    "name": "new",
+                    "prompt": "Hello",
+                    "script_b64": "abc",
+                    "validate": "false",
+                    "variables": '[{"key":"endpoint","value":"x"}]',
+                },
+            )
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_update_merges_and_preserves_secrets(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-update GETs the current record, preserves fields, and resends stored secrets as null.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.side_effect = [
+            # GET current adapter
+            {
+                "uuid": "ad-1",
+                "name": "keycloak",
+                "status": "ACTIVE",
+                "script_b64": "b3JpZw==",
+                "network_broker_channel_uuid": "ch-1",
+                "variables": [
+                    {"key": "endpoint", "value": "http://svc", "type": "VAR"},
+                    {"key": "api_key", "value": "**********", "type": "SECRET", "is_redacted": True},
+                ],
+            },
+            # channel preflight GET
+            {"uuid": "ch-1", "status": "ONLINE"},
+            # PUT response
+            {"uuid": "ad-1", "name": "keycloak", "status": "ACTIVE"},
+        ]
+
+        result = redteam_adapters_update_command(
+            mock_client, {"uuid": "ad-1", "prompt": "Hello", "description": "staging"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamAdapter"
+        put_call = mock_http.call_args_list[-1]
+        assert put_call.kwargs["method"] == "PUT"
+        assert put_call.kwargs["url_suffix"] == "/v1/adapters/ad-1"
+        body = put_call.kwargs["json_data"]
+        # Required fields backfilled from the current record.
+        assert body["name"] == "keycloak"
+        assert body["script_b64"] == "b3JpZw=="
+        assert body["prompt"] == "Hello"
+        # Stored variables resent; the redacted secret is sent back as null to keep its value.
+        secret = next(v for v in body["variables"] if v["key"] == "api_key")
+        assert secret["value"] is None
+        endpoint = next(v for v in body["variables"] if v["key"] == "endpoint")
+        assert endpoint["value"] == "http://svc"
+
+    def test_redteam_adapters_update_requires_prompt(self, mock_client: Client) -> None:
+        """adapters-update raises when prompt is missing (never stored server-side).
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="prompt is required"):
+            redteam_adapters_update_command(mock_client, {"uuid": "ad-1"})
+
+    def test_redteam_adapters_update_requires_uuid(self, mock_client: Client) -> None:
+        """adapters-update raises when uuid is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="uuid is required"):
+            redteam_adapters_update_command(mock_client, {"prompt": "Hello"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-delete issues a DELETE to the mgmt plane, keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"is_success": True}
+
+        result = redteam_adapters_delete_command(mock_client, {"uuid": "ad-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamAdapterDelete"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs == {"uuid": "ad-1", "is_success": True}
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "DELETE"
+        assert kwargs["url_suffix"] == "/v1/adapters/ad-1"
+        assert kwargs["use_redteam_mgmt"] is True
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_delete_empty_body(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-delete defaults is_success to True when the API returns an empty body.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = None
+
+        result = redteam_adapters_delete_command(mock_client, {"uuid": "ad-1"})
+
+        assert result.outputs == {"uuid": "ad-1", "is_success": True}
+
+    def test_redteam_adapters_delete_requires_uuid(self, mock_client: Client) -> None:
+        """adapters-delete raises when uuid is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="uuid is required"):
+            redteam_adapters_delete_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_validate_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-validate runs the preflight then POSTs to the validate endpoint (no name field).
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.side_effect = [
+            # channel preflight GET
+            {"uuid": "ch-1", "status": "ONLINE"},
+            # validate POST
+            {"validated": True, "stdout": "ok", "stderr": None},
+        ]
+
+        result = redteam_adapters_validate_command(
+            mock_client,
+            {"network_broker_channel_uuid": "ch-1", "prompt": "Hello", "script_b64": "abc", "adapter_uuid": "ad-1"},
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamAdapterValidation"
+        assert result.outputs["validated"] is True
+        validate_call = mock_http.call_args_list[-1]
+        assert validate_call.kwargs["method"] == "POST"
+        assert validate_call.kwargs["url_suffix"] == "/v1/adapters/validate"
+        assert validate_call.kwargs["use_redteam_mgmt"] is True
+        body = validate_call.kwargs["json_data"]
+        assert "name" not in body
+        assert body["adapter_uuid"] == "ad-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_adapters_validate_reports_failure(self, mock_http: Mock, mock_client: Client) -> None:
+        """adapters-validate surfaces validated=False and the stderr/traceback outcome.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.side_effect = [
+            {"uuid": "ch-1", "status": "ONLINE"},
+            {"validated": False, "stderr": "boom", "traceback": "Traceback..."},
+        ]
+
+        result = redteam_adapters_validate_command(
+            mock_client, {"network_broker_channel_uuid": "ch-1", "prompt": "Hello", "script_b64": "abc"}
+        )
+
+        assert result.outputs["validated"] is False
+        assert result.outputs["stderr"] == "boom"
+        assert result.outputs["traceback"] == "Traceback..."
+
+    def test_redteam_adapters_validate_requires_channel(self, mock_client: Client) -> None:
+        """adapters-validate raises when network_broker_channel_uuid is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="network_broker_channel_uuid is required"):
+            redteam_adapters_validate_command(mock_client, {"prompt": "Hello", "script_b64": "abc"})
 
     @patch.object(Client, "http_request")
     def test_redteam_network_channels_list_command(self, mock_http: Mock, mock_client: Client) -> None:

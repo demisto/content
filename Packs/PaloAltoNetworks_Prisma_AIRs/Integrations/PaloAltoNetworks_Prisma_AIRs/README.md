@@ -4602,6 +4602,268 @@ Delete one or more devices from a Red Team tenant instance by serial number. Thi
 >| SN-0001 | DELETED |
 >| SN-0002 | DELETED |
 
+### prisma-airs-redteam-adapters-list
+
+***
+List Red Team custom target adapters. List rows carry no script, description, or variables - use prisma-airs-redteam-adapters-get for the full record.
+
+#### Base Command
+
+`prisma-airs-redteam-adapters-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of adapters to return. Default is 50. | Optional |
+| skip | The number of adapters to skip from the start (for pagination). | Optional |
+| search | A free-text search filter applied to adapter names. | Optional |
+| include_target_count | Whether to include the number of targets referencing each adapter. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamAdapter.uuid | String | The adapter UUID. |
+| PrismaAIRs.RedTeamAdapter.name | String | The adapter name. |
+| PrismaAIRs.RedTeamAdapter.status | String | The adapter status (DRAFT or ACTIVE). |
+| PrismaAIRs.RedTeamAdapter.target_count | Number | The number of targets currently referencing this adapter. |
+| PrismaAIRs.RedTeamAdapter.created_at | String | The adapter creation timestamp. |
+| PrismaAIRs.RedTeamAdapter.updated_at | String | The adapter last-update timestamp. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-adapters-list search=keycloak
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Red Team Adapters
+>
+>|Uuid|Name|Status|Target Count|Created At|Updated At|
+>|---|---|---|---|---|---|
+>| 3073d369-12e2-46c9-a45a-5697041fcbbf | keycloak-agent | ACTIVE | 2 | 2026-08-10T12:00:00Z | 2026-08-12T09:30:00Z |
+
+### prisma-airs-redteam-adapters-get
+
+***
+Get a single Red Team custom target adapter by UUID, including its script, variables, and configuration.
+
+#### Base Command
+
+`prisma-airs-redteam-adapters-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | The UUID of the adapter to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamAdapter.uuid | String | The adapter UUID. |
+| PrismaAIRs.RedTeamAdapter.name | String | The adapter name. |
+| PrismaAIRs.RedTeamAdapter.status | String | The adapter status (DRAFT or ACTIVE). |
+| PrismaAIRs.RedTeamAdapter.description | String | The adapter description. |
+| PrismaAIRs.RedTeamAdapter.tsg_id | String | The tenant service group ID that owns the adapter. |
+| PrismaAIRs.RedTeamAdapter.network_broker_channel_uuid | String | The network broker channel UUID used to reach the target. |
+| PrismaAIRs.RedTeamAdapter.script_b64 | String | The base64-encoded adapter script. |
+| PrismaAIRs.RedTeamAdapter.variables | Unknown | The adapter configuration variables (secrets are redacted). |
+| PrismaAIRs.RedTeamAdapter.target_count | Number | The number of targets currently referencing this adapter. |
+| PrismaAIRs.RedTeamAdapter.created_at | String | The adapter creation timestamp. |
+| PrismaAIRs.RedTeamAdapter.updated_at | String | The adapter last-update timestamp. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-adapters-get uuid=3073d369-12e2-46c9-a45a-5697041fcbbf
+```
+
+#### Human Readable Output
+
+>### Red Team Adapter: keycloak-agent
+>
+>|Uuid|Name|Status|Description|Network Broker Channel Uuid|Target Count|Created At|
+>|---|---|---|---|---|---|---|
+>| 3073d369-12e2-46c9-a45a-5697041fcbbf | keycloak-agent | ACTIVE | Keycloak-fronted agent | 550e8400-e29b-41d4-a716-446655440000 | 2 | 2026-08-10T12:00:00Z |
+
+### prisma-airs-redteam-adapters-create
+
+***
+Create a new Red Team custom target adapter. By default the script is run end-to-end during save (validate=true) and the adapter is saved as ACTIVE on success or DRAFT on failure. Provide the script via either the script or script_b64 argument.
+
+#### Base Command
+
+`prisma-airs-redteam-adapters-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The adapter name. | Required |
+| prompt | A sample prompt used to exercise the adapter during validation. Not stored. | Required |
+| script | The adapter Python script as plain text. It will be base64-encoded automatically. Use this or script_b64. | Optional |
+| script_b64 | The adapter Python script, already base64-encoded. Use this or script. | Optional |
+| description | An optional description for the adapter. | Optional |
+| network_broker_channel_uuid | The network broker channel UUID. Optional while the adapter is a DRAFT, required to activate it (validate=true). | Optional |
+| variables | A JSON array of adapter configuration variables. Each entry is an object with keys: key, value, and type (VAR or SECRET). | Optional |
+| validate | Whether to run the script end-to-end during save. When true (default) the adapter is saved ACTIVE on success or DRAFT on failure. Set to false to save as DRAFT without running the script. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamAdapter.uuid | String | The created adapter UUID. |
+| PrismaAIRs.RedTeamAdapter.name | String | The adapter name. |
+| PrismaAIRs.RedTeamAdapter.status | String | The adapter status (DRAFT or ACTIVE). |
+| PrismaAIRs.RedTeamAdapter.network_broker_channel_uuid | String | The network broker channel UUID used to reach the target. |
+| PrismaAIRs.RedTeamAdapter.target_count | Number | The number of targets currently referencing this adapter. |
+| PrismaAIRs.RedTeamAdapter.created_at | String | The adapter creation timestamp. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-adapters-create name="keycloak-agent" prompt="What is the capital of France?" script="print('hi')" network_broker_channel_uuid=550e8400-e29b-41d4-a716-446655440000 variables=`[{"key":"endpoint","value":"http://agent.svc:8080","type":"VAR"},{"key":"api_key","value":"s3cret","type":"SECRET"}]`
+```
+
+#### Human Readable Output
+
+>### Red Team Adapter Created: keycloak-agent
+>
+>|Uuid|Name|Status|Network Broker Channel Uuid|Target Count|Created At|
+>|---|---|---|---|---|---|
+>| 3073d369-12e2-46c9-a45a-5697041fcbbf | keycloak-agent | ACTIVE | 550e8400-e29b-41d4-a716-446655440000 | 0 | 2026-08-17T12:00:00Z |
+
+### prisma-airs-redteam-adapters-update
+
+***
+Update a Red Team custom target adapter. The upstream update is a full replacement, so the prompt argument is always required, and the variables argument (when provided) defines the complete desired variable set (omitted keys are deleted). Fields not provided are preserved from the current record; stored secrets are kept when their variables are resent unchanged.
+
+#### Base Command
+
+`prisma-airs-redteam-adapters-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | The UUID of the adapter to update. | Required |
+| prompt | A sample prompt used to exercise the adapter during validation. Required on every update because it is not stored server-side. | Required |
+| name | A new adapter name. Preserved from the current record when omitted. | Optional |
+| script | A new adapter Python script as plain text (base64-encoded automatically). Preserved from the current record when omitted. | Optional |
+| script_b64 | A new adapter Python script, already base64-encoded. Preserved from the current record when omitted. | Optional |
+| description | A new adapter description. | Optional |
+| network_broker_channel_uuid | A new network broker channel UUID. Preserved from the current record when omitted. | Optional |
+| variables | A JSON array of adapter configuration variables that replaces the entire variable set. Each entry is an object with keys: key, value, and type (VAR or SECRET). Use value=null to keep a stored secret unchanged. When omitted, the stored variable set is preserved. | Optional |
+| validate | Whether to re-run the script end-to-end during save. When true (default) the adapter is saved ACTIVE on success or DRAFT on failure. Set to false to save as DRAFT without running the script. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamAdapter.uuid | String | The adapter UUID. |
+| PrismaAIRs.RedTeamAdapter.name | String | The adapter name. |
+| PrismaAIRs.RedTeamAdapter.status | String | The adapter status (DRAFT or ACTIVE). |
+| PrismaAIRs.RedTeamAdapter.network_broker_channel_uuid | String | The network broker channel UUID used to reach the target. |
+| PrismaAIRs.RedTeamAdapter.target_count | Number | The number of targets currently referencing this adapter. |
+| PrismaAIRs.RedTeamAdapter.updated_at | String | The adapter last-update timestamp. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-adapters-update uuid=3073d369-12e2-46c9-a45a-5697041fcbbf prompt="What is the capital of France?" description="points at staging now"
+```
+
+#### Human Readable Output
+
+>### Red Team Adapter Updated: keycloak-agent
+>
+>|Uuid|Name|Status|Network Broker Channel Uuid|Target Count|Updated At|
+>|---|---|---|---|---|---|
+>| 3073d369-12e2-46c9-a45a-5697041fcbbf | keycloak-agent | ACTIVE | 550e8400-e29b-41d4-a716-446655440000 | 2 | 2026-08-17T13:00:00Z |
+
+### prisma-airs-redteam-adapters-delete
+
+***
+Delete a Red Team custom target adapter by UUID. This permanently removes the adapter and cannot be undone.
+
+#### Base Command
+
+`prisma-airs-redteam-adapters-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | The UUID of the adapter to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamAdapterDelete.uuid | String | The deleted adapter UUID. |
+| PrismaAIRs.RedTeamAdapterDelete.is_success | Boolean | Whether the deletion succeeded. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-adapters-delete uuid=3073d369-12e2-46c9-a45a-5697041fcbbf
+```
+
+#### Human Readable Output
+
+>### Red Team Adapter Deleted: 3073d369-12e2-46c9-a45a-5697041fcbbf
+>
+>|Uuid|Is Success|
+>|---|---|
+>| 3073d369-12e2-46c9-a45a-5697041fcbbf | true |
+
+### prisma-airs-redteam-adapters-validate
+
+***
+Validate a Red Team custom target adapter script end-to-end through a network broker channel without saving anything. Returns the execution outcome (validated plus stdout/stderr/traceback), not an adapter record. The channel must be ONLINE.
+
+#### Base Command
+
+`prisma-airs-redteam-adapters-validate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| network_broker_channel_uuid | The network broker channel UUID to run the script through. Must be ONLINE. | Required |
+| prompt | A sample prompt used to exercise the adapter script. | Required |
+| script | The adapter Python script as plain text (base64-encoded automatically). Use this or script_b64. | Optional |
+| script_b64 | The adapter Python script, already base64-encoded. Use this or script. | Optional |
+| variables | A JSON array of adapter configuration variables. Each entry is an object with keys: key, value, and type (VAR or SECRET). When adapter_uuid is provided, null/redacted values resolve from that adapter's stored secrets. | Optional |
+| adapter_uuid | An optional existing adapter UUID whose stored secrets resolve null/redacted variable values during the run. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamAdapterValidation.validated | Boolean | Whether the adapter script executed successfully. |
+| PrismaAIRs.RedTeamAdapterValidation.stdout | String | The standard output captured from the script run. |
+| PrismaAIRs.RedTeamAdapterValidation.stderr | String | The standard error captured from the script run. |
+| PrismaAIRs.RedTeamAdapterValidation.traceback | String | The Python traceback captured when the script failed. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-adapters-validate network_broker_channel_uuid=550e8400-e29b-41d4-a716-446655440000 prompt="Hello" script="print('hi')"
+```
+
+#### Human Readable Output
+
+>### Red Team Adapter Validation
+>
+>|Validated|Stdout|
+>|---|---|
+>| true | ok |
+
 ### prisma-airs-redteam-scan-create
 
 ***

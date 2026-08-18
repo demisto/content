@@ -4378,6 +4378,217 @@ script:
     - contextPath: PrismaAIRs.RedTeamDeviceDelete.error
       description: The per-device error message, if any.
       type: String
+  - name: prisma-airs-redteam-adapters-list
+    description: List Red Team custom target adapters. List rows carry no script, description, or variables - use prisma-airs-redteam-adapters-get for the full record.
+    arguments:
+    - name: limit
+      description: The maximum number of adapters to return.
+      defaultValue: '50'
+    - name: skip
+      description: The number of adapters to skip from the start (for pagination).
+    - name: search
+      description: A free-text search filter applied to adapter names.
+    - name: include_target_count
+      description: Whether to include the number of targets referencing each adapter.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapter.uuid
+      description: The adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.name
+      description: The adapter name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.status
+      description: The adapter status (DRAFT or ACTIVE).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.target_count
+      description: The number of targets currently referencing this adapter.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAdapter.created_at
+      description: The adapter creation timestamp.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.updated_at
+      description: The adapter last-update timestamp.
+      type: String
+  - name: prisma-airs-redteam-adapters-get
+    description: Get a single Red Team custom target adapter by UUID, including its script, variables, and configuration.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the adapter to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapter.uuid
+      description: The adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.name
+      description: The adapter name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.status
+      description: The adapter status (DRAFT or ACTIVE).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.description
+      description: The adapter description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.tsg_id
+      description: The tenant service group ID that owns the adapter.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.network_broker_channel_uuid
+      description: The network broker channel UUID used to reach the target.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.script_b64
+      description: The base64-encoded adapter script.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.variables
+      description: The adapter configuration variables (secrets are redacted).
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamAdapter.target_count
+      description: The number of targets currently referencing this adapter.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAdapter.created_at
+      description: The adapter creation timestamp.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.updated_at
+      description: The adapter last-update timestamp.
+      type: String
+  - name: prisma-airs-redteam-adapters-create
+    description: Create a new Red Team custom target adapter. By default the script is run end-to-end during save (validate=true) and the adapter is saved as ACTIVE on success or DRAFT on failure. Provide the script via either the script or script_b64 argument.
+    arguments:
+    - name: name
+      required: true
+      description: The adapter name.
+    - name: prompt
+      required: true
+      description: A sample prompt used to exercise the adapter during validation. Not stored.
+    - name: script
+      description: The adapter Python script as plain text. It will be base64-encoded automatically. Use this or script_b64.
+    - name: script_b64
+      description: The adapter Python script, already base64-encoded. Use this or script.
+    - name: description
+      description: An optional description for the adapter.
+    - name: network_broker_channel_uuid
+      description: The network broker channel UUID. Optional while the adapter is a DRAFT, required to activate it (validate=true).
+    - name: variables
+      description: 'A JSON array of adapter configuration variables. Each entry is an object with keys: key, value, and type (VAR or SECRET). Example: [{"key":"endpoint","value":"http://agent.svc:8080","type":"VAR"},{"key":"api_key","value":"s3cret","type":"SECRET"}].'
+    - name: validate
+      description: Whether to run the script end-to-end during save. When true (default) the adapter is saved ACTIVE on success or DRAFT on failure. Set to false to save as DRAFT without running the script.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapter.uuid
+      description: The created adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.name
+      description: The adapter name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.status
+      description: The adapter status (DRAFT or ACTIVE).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.network_broker_channel_uuid
+      description: The network broker channel UUID used to reach the target.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.target_count
+      description: The number of targets currently referencing this adapter.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAdapter.created_at
+      description: The adapter creation timestamp.
+      type: String
+  - name: prisma-airs-redteam-adapters-update
+    description: Update a Red Team custom target adapter. The upstream update is a full replacement, so the prompt argument is always required, and the variables argument (when provided) defines the complete desired variable set (omitted keys are deleted). Fields not provided are preserved from the current record; stored secrets are kept when their variables are resent unchanged.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the adapter to update.
+    - name: prompt
+      required: true
+      description: A sample prompt used to exercise the adapter during validation. Required on every update because it is not stored server-side.
+    - name: name
+      description: A new adapter name. Preserved from the current record when omitted.
+    - name: script
+      description: A new adapter Python script as plain text (base64-encoded automatically). Preserved from the current record when omitted.
+    - name: script_b64
+      description: A new adapter Python script, already base64-encoded. Preserved from the current record when omitted.
+    - name: description
+      description: A new adapter description.
+    - name: network_broker_channel_uuid
+      description: A new network broker channel UUID. Preserved from the current record when omitted.
+    - name: variables
+      description: 'A JSON array of adapter configuration variables that replaces the entire variable set. Each entry is an object with keys: key, value, and type (VAR or SECRET). Use value=null to keep a stored secret unchanged. When omitted, the stored variable set is preserved.'
+    - name: validate
+      description: Whether to re-run the script end-to-end during save. When true (default) the adapter is saved ACTIVE on success or DRAFT on failure. Set to false to save as DRAFT without running the script.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapter.uuid
+      description: The adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.name
+      description: The adapter name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.status
+      description: The adapter status (DRAFT or ACTIVE).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.network_broker_channel_uuid
+      description: The network broker channel UUID used to reach the target.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.target_count
+      description: The number of targets currently referencing this adapter.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAdapter.updated_at
+      description: The adapter last-update timestamp.
+      type: String
+  - name: prisma-airs-redteam-adapters-delete
+    execution: true
+    description: Delete a Red Team custom target adapter by UUID. This permanently removes the adapter and cannot be undone.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the adapter to delete.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapterDelete.uuid
+      description: The deleted adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapterDelete.is_success
+      description: Whether the deletion succeeded.
+      type: Boolean
+  - name: prisma-airs-redteam-adapters-validate
+    description: Validate a Red Team custom target adapter script end-to-end through a network broker channel without saving anything. Returns the execution outcome (validated plus stdout/stderr/traceback), not an adapter record. The channel must be ONLINE.
+    arguments:
+    - name: network_broker_channel_uuid
+      required: true
+      description: The network broker channel UUID to run the script through. Must be ONLINE.
+    - name: prompt
+      required: true
+      description: A sample prompt used to exercise the adapter script.
+    - name: script
+      description: The adapter Python script as plain text (base64-encoded automatically). Use this or script_b64.
+    - name: script_b64
+      description: The adapter Python script, already base64-encoded. Use this or script.
+    - name: variables
+      description: 'A JSON array of adapter configuration variables. Each entry is an object with keys: key, value, and type (VAR or SECRET). When adapter_uuid is provided, null/redacted values resolve from that adapter''s stored secrets.'
+    - name: adapter_uuid
+      description: An optional existing adapter UUID whose stored secrets resolve null/redacted variable values during the run.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapterValidation.validated
+      description: Whether the adapter script executed successfully.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAdapterValidation.stdout
+      description: The standard output captured from the script run.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapterValidation.stderr
+      description: The standard error captured from the script run.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapterValidation.traceback
+      description: The Python traceback captured when the script failed.
+      type: String
   - name: prisma-airs-redteam-scan-create
     description: Create a new Red Team scan job. This command submits the scan and returns immediately without polling. Use prisma-airs-redteam-scan-get to check status.
     arguments:
