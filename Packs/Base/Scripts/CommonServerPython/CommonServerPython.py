@@ -10178,6 +10178,8 @@ if 'requests' in sys.modules:
             :rtype: ``None``
             """
             cred_type = credentials.get('type')
+            
+            # Temp change
 
             # Bug on UCP side where they return different types for the same credential type. To be fixed in July'26 version
             if cred_type == 'oauth2_client_credentials' or cred_type == 'oauth2_authorization_code' or cred_type == 'oauth2':
