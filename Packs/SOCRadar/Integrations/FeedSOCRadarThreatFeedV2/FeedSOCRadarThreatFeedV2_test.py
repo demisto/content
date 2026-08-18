@@ -14,7 +14,7 @@ def util_load_json(path):
 
 def test_test_module(requests_mock):
     """Tests the test_module validation command."""
-    from FeedSOCRadarThreatFeed import Client, test_module
+    from FeedSOCRadarThreatFeedV2 import Client, test_module
 
     mock_socradar_api_key = "APIKey"
 
@@ -44,7 +44,7 @@ def test_test_module(requests_mock):
 
 def test_test_module_handles_authorization_error(requests_mock):
     """Tests the test_module validation command authorization error."""
-    from FeedSOCRadarThreatFeed import MESSAGES, Client, test_module
+    from FeedSOCRadarThreatFeedV2 import MESSAGES, Client, test_module
 
     mock_socradar_api_key = "WrongAPIKey"
     suffix = f"threat/intelligence/check/auth?key={mock_socradar_api_key}"
@@ -65,7 +65,7 @@ def test_test_module_handles_authorization_error(requests_mock):
 
 def test_fetch_indicators(requests_mock):
     """Tests the fetch_indicators function with the new UUID-based API."""
-    from FeedSOCRadarThreatFeed import Client, fetch_indicators
+    from FeedSOCRadarThreatFeedV2 import Client, fetch_indicators
 
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json("test_data/feed_list_response.json")
@@ -91,7 +91,7 @@ def test_fetch_indicators(requests_mock):
 
 def test_fetch_indicators_handles_error(requests_mock):
     """Tests the fetch_indicators function when API returns an error."""
-    from FeedSOCRadarThreatFeed import Client, fetch_indicators
+    from FeedSOCRadarThreatFeedV2 import Client, fetch_indicators
 
     mock_socradar_api_key = "APIKey"
     feed_suffix = f"threat/intelligence/feed_list/{MOCK_COLLECTION_UUID}.json?key={mock_socradar_api_key}&v=2"
@@ -116,7 +116,7 @@ def test_fetch_indicators_handles_error(requests_mock):
 
 def test_fetch_indicators_multiple_uuids(requests_mock):
     """Tests fetching indicators from multiple collection UUIDs."""
-    from FeedSOCRadarThreatFeed import Client, fetch_indicators
+    from FeedSOCRadarThreatFeedV2 import Client, fetch_indicators
 
     mock_socradar_api_key = "APIKey"
     uuid1 = "uuid-1111-1111-1111-111111111111"
@@ -145,7 +145,7 @@ def test_fetch_indicators_multiple_uuids(requests_mock):
 
 def test_fetch_indicators_multiple_uuids_with_limit(requests_mock):
     """Tests fetching indicators from multiple UUIDs respects global limit."""
-    from FeedSOCRadarThreatFeed import Client, fetch_indicators
+    from FeedSOCRadarThreatFeedV2 import Client, fetch_indicators
 
     mock_socradar_api_key = "APIKey"
     uuid1 = "uuid-1111-1111-1111-111111111111"
@@ -173,7 +173,7 @@ def test_fetch_indicators_multiple_uuids_with_limit(requests_mock):
 
 def test_get_indicators_command(requests_mock):
     """Tests the get_indicators_command function."""
-    from FeedSOCRadarThreatFeed import Client, get_indicators_command
+    from FeedSOCRadarThreatFeedV2 import Client, get_indicators_command
 
     mock_socradar_api_key = "APIKey"
     mock_response = util_load_json("test_data/feed_list_response.json")
@@ -202,7 +202,7 @@ def test_get_indicators_command(requests_mock):
 
 def test_get_indicators_command_handles_error(requests_mock):
     """Tests the get_indicators_command function when API returns an error."""
-    from FeedSOCRadarThreatFeed import Client, get_indicators_command
+    from FeedSOCRadarThreatFeedV2 import Client, get_indicators_command
 
     mock_socradar_api_key = "APIKey"
     feed_suffix = f"threat/intelligence/feed_list/{MOCK_COLLECTION_UUID}.json?key={mock_socradar_api_key}&v=2"
@@ -228,7 +228,7 @@ def test_get_indicators_command_handles_error(requests_mock):
 
 def test_date_string_to_iso_format_parsing():
     """Tests the date_string_to_iso_format_parsing function."""
-    from FeedSOCRadarThreatFeed import date_string_to_iso_format_parsing
+    from FeedSOCRadarThreatFeedV2 import date_string_to_iso_format_parsing
 
     mock_date_str = "2025-04-10 19:52:57"
     formatted_date = date_string_to_iso_format_parsing(mock_date_str)
@@ -238,7 +238,7 @@ def test_date_string_to_iso_format_parsing():
 
 def test_build_entry_context():
     """Tests the build_entry_context function."""
-    from FeedSOCRadarThreatFeed import build_entry_context
+    from FeedSOCRadarThreatFeedV2 import build_entry_context
 
     mock_indicators = util_load_json("test_data/build_entry_context_input.json")
     context_entry = build_entry_context(mock_indicators)
@@ -249,7 +249,7 @@ def test_build_entry_context():
 
 def test_reset_last_fetch_dict():
     """Tests the reset_last_fetch_dict function."""
-    from FeedSOCRadarThreatFeed import reset_last_fetch_dict
+    from FeedSOCRadarThreatFeedV2 import reset_last_fetch_dict
 
     result = reset_last_fetch_dict()
 
@@ -271,14 +271,14 @@ CONVERT_DEMISTO_INDICATOR_TYPE_INPUTS = [
     CONVERT_DEMISTO_INDICATOR_TYPE_INPUTS,
 )
 def test_convert_to_demisto_indicator_type(socradar_indicator_type, demisto_indicator_type):
-    from FeedSOCRadarThreatFeed import convert_to_demisto_indicator_type
+    from FeedSOCRadarThreatFeedV2 import convert_to_demisto_indicator_type
 
     assert convert_to_demisto_indicator_type(socradar_indicator_type) == demisto_indicator_type
 
 
 def test_parse_raw_indicators():
     """Tests the parse_raw_indicators method of the Client class."""
-    from FeedSOCRadarThreatFeed import Client
+    from FeedSOCRadarThreatFeedV2 import Client
 
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
@@ -306,7 +306,7 @@ def test_parse_raw_indicators():
 
 def test_parse_raw_indicators_empty():
     """Tests parse_raw_indicators with empty input."""
-    from FeedSOCRadarThreatFeed import Client
+    from FeedSOCRadarThreatFeedV2 import Client
 
     client = Client(
         base_url=SOCRADAR_API_ENDPOINT,
