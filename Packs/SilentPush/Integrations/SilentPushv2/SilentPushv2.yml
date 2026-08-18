@@ -13,14 +13,16 @@ configuration:
   name: url
   type: 0
   required: true
-  defaultvalue: https://api.silentpush.com
   section: Connect
-- display: API Key
+  defaultvalue: https://api.silentpush.com
+- displaypassword: API Key
+  hiddenusername: true
   name: credentials
   type: 9
   required: false
   section: Connect
-- display: The Threat Check key
+- displaypassword: Threat Check Access Key
+  hiddenusername: true
   name: threat-check-key
   type: 9
   required: false
@@ -29,14 +31,14 @@ configuration:
   name: proxy
   type: 8
   required: false
-  section: Connect
   advanced: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-  section: Connect
   advanced: true
+  section: Connect
 script:
   commands:
   - deprecated: false
@@ -3372,7 +3374,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/xsoar-tools:1.0.0.8457987
+  dockerimage: demisto/xsoar-tools:1.0.0.11807991
   feed: false
   isfetch: false
   runonce: false
