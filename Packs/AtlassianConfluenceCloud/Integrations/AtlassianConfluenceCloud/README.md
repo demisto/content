@@ -4265,8 +4265,39 @@ Creates a new blog post in Confluence Cloud (REST API v2).
 | ConfluenceCloud.Blogpost.title | String | The title of the blog post. | 
 | ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. | 
 | ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. | 
-| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created \(e.g., 2024-01-15T12:34:56Z\). | 
-| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. | 
+| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created \(e.g., 2024-01-15T12:34:56Z\). |
+| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. |
+
+#### Command example
+
+```!confluence-cloud-blogpost-create space_id=98765 title="XSOAR Blogpost" body_value="Blog content" body_representation=storage```
+
+#### Context Example
+
+```json
+{
+    "ConfluenceCloud": {
+        "Blogpost": {
+            "id": "12345",
+            "status": "current",
+            "title": "XSOAR Blogpost",
+            "spaceId": "98765",
+            "authorId": "5ff2e30b4d2179006ea18449",
+            "createdAt": "2024-01-01T10:00:00.000Z",
+            "version": {
+                "number": 1
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Blogpost
+>|ID|Title|Status|Space Id|Author Id|Created At|Version|
+>|---|---|---|---|---|---|---|
+>| 12345 | XSOAR Blogpost | current | 98765 | 5ff2e30b4d2179006ea18449 | 2024-01-01T10:00:00.000Z | 1 |
 
 ### confluence-cloud-blogpost-update
 
@@ -4297,7 +4328,36 @@ Updates an existing blog post in Confluence Cloud (REST API v2).
 | ConfluenceCloud.Blogpost.status | String | The status of the blog post. | 
 | ConfluenceCloud.Blogpost.title | String | The title of the blog post. | 
 | ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. | 
-| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. | 
+| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. |
+
+#### Command example
+
+```!confluence-cloud-blogpost-update blogpost_id=12345 version_number=2 title="XSOAR Blogpost Updated" body_value="Updated blog"```
+
+#### Context Example
+
+```json
+{
+    "ConfluenceCloud": {
+        "Blogpost": {
+            "id": "12345",
+            "status": "current",
+            "title": "XSOAR Blogpost Updated",
+            "spaceId": "98765",
+            "version": {
+                "number": 2
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Blogpost
+>|ID|Title|Status|Space Id|Version|
+>|---|---|---|---|---|
+>| 12345 | XSOAR Blogpost Updated | current | 98765 | 2 |
 
 ### confluence-cloud-footer-comment-create
 
@@ -4329,7 +4389,35 @@ Creates a footer comment in Confluence Cloud (REST API v2).
 | ConfluenceCloud.Comment.pageId | String | The ID of the page the comment belongs to. | 
 | ConfluenceCloud.Comment.blogPostId | String | The ID of the blog post the comment belongs to. | 
 | ConfluenceCloud.Comment.parentCommentId | String | The ID of the parent comment. | 
-| ConfluenceCloud.Comment.version.number | Number | The version number of the comment. | 
+| ConfluenceCloud.Comment.version.number | Number | The version number of the comment. |
+
+#### Command example
+
+```!confluence-cloud-footer-comment-create page_id=12345 body_value="A footer comment"```
+
+#### Context Example
+
+```json
+{
+    "ConfluenceCloud": {
+        "Comment": {
+            "id": "98765",
+            "status": "current",
+            "pageId": "12345",
+            "version": {
+                "number": 1
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Footer Comment
+>|ID|Status|Page Id|Version|
+>|---|---|---|---|
+>| 98765 | current | 12345 | 1 |
 
 ### confluence-cloud-page-update
 
@@ -4361,7 +4449,36 @@ Updates an existing page in Confluence Cloud (REST API v2).
 | ConfluenceCloud.Page.status | String | The status of the page. | 
 | ConfluenceCloud.Page.title | String | The title of the page. | 
 | ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. | 
-| ConfluenceCloud.Page.version.number | Number | The version number of the page. | 
+| ConfluenceCloud.Page.version.number | Number | The version number of the page. |
+
+#### Command example
+
+```!confluence-cloud-page-update page_id=12345 version_number=2 title="XSOAR Page Updated" body_value="Updated content"```
+
+#### Context Example
+
+```json
+{
+    "ConfluenceCloud": {
+        "Page": {
+            "id": "12345",
+            "status": "current",
+            "title": "XSOAR Page Updated",
+            "spaceId": "98765",
+            "version": {
+                "number": 2
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Page
+>|ID|Title|Status|Space Id|Version|
+>|---|---|---|---|---|
+>| 12345 | XSOAR Page Updated | current | 98765 | 2 |
 
 ### confluence-cloud-space-createv2
 
@@ -4386,11 +4503,38 @@ Creates a new space in Confluence Cloud (REST API v2).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Space.id | String | The ID of the space. | 
-| ConfluenceCloud.Space.key | String | The key of the space. | 
-| ConfluenceCloud.Space.name | String | The name of the space. | 
-| ConfluenceCloud.Space.type | String | The type of the space. | 
-| ConfluenceCloud.Space.status | String | The status of the space. | 
+| ConfluenceCloud.Space.id | String | The ID of the space. |
+| ConfluenceCloud.Space.key | String | The key of the space. |
+| ConfluenceCloud.Space.name | String | The name of the space. |
+| ConfluenceCloud.Space.type | String | The type of the space. |
+| ConfluenceCloud.Space.status | String | The status of the space. |
+
+#### Command example
+
+```!confluence-cloud-space-createv2 name="Engineering" key="ENG"```
+
+#### Context Example
+
+```json
+{
+    "ConfluenceCloud": {
+        "Space": {
+            "id": "98765",
+            "key": "ENG",
+            "name": "Engineering",
+            "status": "current",
+            "type": "global"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Space
+>|Id|Key|Name|Type|Status|
+>|---|---|---|---|---|
+>| 98765 | ENG | Engineering | global | current |
 
 ### confluence-cloud-page-create
 
@@ -4416,14 +4560,45 @@ Creates a new page in Confluence Cloud (REST API v2).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Page.id | String | The ID of the page. | 
-| ConfluenceCloud.Page.status | String | The status of the page. | 
-| ConfluenceCloud.Page.title | String | The title of the page. | 
-| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. | 
-| ConfluenceCloud.Page.parentId | String | The ID of the parent page. | 
-| ConfluenceCloud.Page.authorId | String | The account ID of the page author. | 
-| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created \(e.g., 2024-01-15T12:34:56Z\). | 
-| ConfluenceCloud.Page.version.number | Number | The version number of the page. | 
+| ConfluenceCloud.Page.id | String | The ID of the page. |
+| ConfluenceCloud.Page.status | String | The status of the page. |
+| ConfluenceCloud.Page.title | String | The title of the page. |
+| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. |
+| ConfluenceCloud.Page.parentId | String | The ID of the parent page. |
+| ConfluenceCloud.Page.authorId | String | The account ID of the page author. |
+| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created \(e.g., 2024-01-15T12:34:56Z\). |
+| ConfluenceCloud.Page.version.number | Number | The version number of the page. |
+
+#### Command example
+
+```!confluence-cloud-page-create space_id=98765 title="Getting Started" body_value="Welcome to the team"```
+
+#### Context Example
+
+```json
+{
+    "ConfluenceCloud": {
+        "Page": {
+            "authorId": "5ff2e30b4d2179006ea18449",
+            "createdAt": "2024-01-15T12:34:56Z",
+            "id": "12345",
+            "spaceId": "98765",
+            "status": "current",
+            "title": "Getting Started",
+            "version": {
+                "number": 1
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Page
+>|Id|Title|Status|Space Id|Author Id|Created At|Version|
+>|---|---|---|---|---|---|---|
+>| 12345 | Getting Started | current | 98765 | 5ff2e30b4d2179006ea18449 | 2024-01-15T12:34:56Z | 1 |
 
 ### confluence-cloud-space-listv2
 
@@ -4450,13 +4625,50 @@ Returns a list of spaces from Confluence Cloud (REST API v2).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Space.id | String | The ID of the space. | 
-| ConfluenceCloud.Space.key | String | The key of the space. | 
-| ConfluenceCloud.Space.name | String | The name of the space. | 
-| ConfluenceCloud.Space.type | String | The type of the space. | 
-| ConfluenceCloud.Space.status | String | The status of the space. | 
-| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. | 
-| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. | 
+| ConfluenceCloud.Space.id | String | The ID of the space. |
+| ConfluenceCloud.Space.key | String | The key of the space. |
+| ConfluenceCloud.Space.name | String | The name of the space. |
+| ConfluenceCloud.Space.type | String | The type of the space. |
+| ConfluenceCloud.Space.status | String | The status of the space. |
+| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. |
+| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. |
+
+#### Command example
+
+```!confluence-cloud-space-listv2 limit=2```
+
+#### Context Example
+
+```json
+{
+    "ConfluenceCloud": {
+        "Space": [
+            {
+                "id": "98765",
+                "key": "ENG",
+                "name": "Engineering",
+                "status": "current",
+                "type": "global"
+            },
+            {
+                "id": "98766",
+                "key": "MKT",
+                "name": "Marketing",
+                "status": "current",
+                "type": "global"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Space(s)
+>|Id|Key|Name|Type|Status|
+>|---|---|---|---|---|
+>| 98765 | ENG | Engineering | global | current |
+>| 98766 | MKT | Marketing | global | current |
 
 ### confluence-cloud-blogpost-delete
 
@@ -4471,12 +4683,21 @@ Deletes a blog post in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| blogpost_id | The ID of the blog post to delete. | Required | 
-| purge | Whether to permanently purge the blog post from the trash. Requires the blog post to already be in the trash. Possible values are: true, false. Default is false. | Optional | 
+| blogpost_id | The ID of the blog post to delete. | Required |
+| purge | Whether to permanently purge the blog post from the trash. Requires the blog post to already be in the trash. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!confluence-cloud-blogpost-delete blogpost_id=12345```
+
+#### Human Readable Output
+
+>Blogpost with ID "12345" was deleted successfully.
+
 ### confluence-cloud-page-list
 
 ***
@@ -4503,14 +4724,53 @@ Returns a list of pages from Confluence Cloud (REST API v2).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Page.id | String | The ID of the page. | 
-| ConfluenceCloud.Page.status | String | The status of the page. | 
-| ConfluenceCloud.Page.title | String | The title of the page. | 
-| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. | 
-| ConfluenceCloud.Page.authorId | String | The account ID of the page author. | 
-| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created \(e.g., 2024-01-15T12:34:56Z\). | 
-| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. | 
-| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. | 
+| ConfluenceCloud.Page.id | String | The ID of the page. |
+| ConfluenceCloud.Page.status | String | The status of the page. |
+| ConfluenceCloud.Page.title | String | The title of the page. |
+| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. |
+| ConfluenceCloud.Page.authorId | String | The account ID of the page author. |
+| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created \(e.g., 2024-01-15T12:34:56Z\). |
+| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. |
+| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. |
+
+#### Command example
+
+```!confluence-cloud-page-list limit=2```
+
+#### Context Example
+
+```json
+{
+    "ConfluenceCloud": {
+        "Page": [
+            {
+                "authorId": "5ff2e30b4d2179006ea18449",
+                "createdAt": "2024-01-15T12:34:56Z",
+                "id": "12345",
+                "spaceId": "98765",
+                "status": "current",
+                "title": "Getting Started"
+            },
+            {
+                "authorId": "5ff2e30b4d2179006ea18449",
+                "createdAt": "2024-01-14T09:10:11Z",
+                "id": "12346",
+                "spaceId": "98765",
+                "status": "current",
+                "title": "Onboarding Guide"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Page(s)
+>|Id|Title|Status|Space Id|Author Id|Created At|
+>|---|---|---|---|---|---|
+>| 12345 | Getting Started | current | 98765 | 5ff2e30b4d2179006ea18449 | 2024-01-15T12:34:56Z |
+>| 12346 | Onboarding Guide | current | 98765 | 5ff2e30b4d2179006ea18449 | 2024-01-14T09:10:11Z |
 
 ### confluence-cloud-blogpost-list
 
@@ -4537,14 +4797,53 @@ Returns a list of blog posts from Confluence Cloud (REST API v2).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. | 
-| ConfluenceCloud.Blogpost.status | String | The status of the blog post. | 
-| ConfluenceCloud.Blogpost.title | String | The title of the blog post. | 
-| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. | 
-| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. | 
-| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created \(e.g., 2024-01-15T12:34:56Z\). | 
-| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. | 
-| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. | 
+| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. |
+| ConfluenceCloud.Blogpost.status | String | The status of the blog post. |
+| ConfluenceCloud.Blogpost.title | String | The title of the blog post. |
+| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. |
+| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. |
+| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created \(e.g., 2024-01-15T12:34:56Z\). |
+| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. |
+| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. |
+
+#### Command example
+
+```!confluence-cloud-blogpost-list limit=2```
+
+#### Context Example
+
+```json
+{
+    "ConfluenceCloud": {
+        "Blogpost": [
+            {
+                "authorId": "5ff2e30b4d2179006ea18449",
+                "createdAt": "2024-01-15T12:34:56Z",
+                "id": "12345",
+                "spaceId": "98765",
+                "status": "current",
+                "title": "Quarterly Update"
+            },
+            {
+                "authorId": "5ff2e30b4d2179006ea18449",
+                "createdAt": "2024-01-14T09:10:11Z",
+                "id": "12346",
+                "spaceId": "98765",
+                "status": "current",
+                "title": "Release Announcement"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Blogpost(s)
+>|Id|Title|Status|Space Id|Author Id|Created At|
+>|---|---|---|---|---|---|
+>| 12345 | Quarterly Update | current | 98765 | 5ff2e30b4d2179006ea18449 | 2024-01-15T12:34:56Z |
+>| 12346 | Release Announcement | current | 98765 | 5ff2e30b4d2179006ea18449 | 2024-01-14T09:10:11Z |
 
 ### confluence-cloud-page-delete
 
@@ -4559,9 +4858,17 @@ Deletes a page in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_id | The ID of the page to delete. | Required | 
-| purge | Whether to permanently purge the page from the trash. Requires the page to already be in the trash. Possible values are: true, false. Default is false. | Optional | 
+| page_id | The ID of the page to delete. | Required |
+| purge | Whether to permanently purge the page from the trash. Requires the page to already be in the trash. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!confluence-cloud-page-delete page_id=12345```
+
+#### Human Readable Output
+
+>Page with ID "12345" was deleted successfully.
