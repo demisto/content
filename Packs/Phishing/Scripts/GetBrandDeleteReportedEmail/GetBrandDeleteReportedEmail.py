@@ -9,6 +9,7 @@ EMAIL_INTEGRATIONS = [
     "MicrosoftGraphMail",
     "SecurityAndCompliance",
     "SecurityAndComplianceV2",
+    "MicrosoftGraphSecurity",
 ]
 
 

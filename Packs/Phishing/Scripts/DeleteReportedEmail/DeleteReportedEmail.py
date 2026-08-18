@@ -15,7 +15,10 @@ EMAIL_INTEGRATIONS = [
     "MicrosoftGraphMail",
     "SecurityAndCompliance",
     "SecurityAndComplianceV2",
+    "MicrosoftGraphSecurity",
 ]
+# Stable display name used for the reusable eDiscovery case in Microsoft Graph Security.
+MSG_EDISCOVERY_CASE_NAME = "XSOAR Delete Reported Email"
 # RFC 5322 msg-id is <id-left@id-right> with a constrained charset
 MESSAGE_ID_REGEX = re.compile(r"<[^\s<>]+@[^\s<>]+>")
 seconds = time.time()
@@ -252,6 +255,141 @@ def security_and_compliance_delete_mail(
     return "Success", None
 
 
+# Terminal success statuses for Microsoft Graph Security eDiscovery operations.
+MSG_SUCCESS_STATUSES = {"succeeded", "partiallysucceeded"}
+# Map the script's delete type to the Microsoft Graph Security purge type.
+MSG_PURGE_TYPE_MAP = {"hard": "permanentlyDelete", "soft": "recoverable"}
+
+
+def msg_resolve_ediscovery_case(case_name: str, using_brand: str) -> str:
+    """
+    Resolve the eDiscovery case by display name, creating it if it does not exist.
+    Args:
+        case_name: The stable display name of the eDiscovery case.
+        using_brand: The brand used for this operation.
+    Returns:
+        The resolved (or newly created) case ID.
+    """
+    cases = execute_command("msg-list-ediscovery-cases", {"all_results": "true", "using-brand": using_brand})
+    case_list = cases if isinstance(cases, list) else [cases]
+    for case in case_list:
+        if isinstance(case, dict) and case.get("DisplayName") == case_name:
+            demisto.debug(f"msg_resolve_ediscovery_case: found existing case '{case_name}' with id '{case.get('CaseId')}'")
+            return case.get("CaseId")
+
+    demisto.debug(f"msg_resolve_ediscovery_case: case '{case_name}' not found, creating it")
+    created = execute_command("msg-create-ediscovery-case", {"display_name": case_name, "using-brand": using_brand})
+    created_dict = created[0] if isinstance(created, list) else created
+    return created_dict.get("CaseId")
+
+
+def microsoft_graph_security_delete_mail(
+    args: dict,
+    to_user_id: str,
+    user_id: str,
+    content_query: str,
+    case_name: str,
+    using_brand: str,
+    delete_type: str,
+    message_id: str,
+    **kwargs,
+):
+    """
+    Search and delete the email using the Microsoft Graph Security eDiscovery command chain, via the polling flow.
+    Args:
+        args: script args (used to persist polling state across runs).
+        to_user_id: the mailbox to scope the search and purge to.
+        user_id: the mailbox owner (alias of to_user_id).
+        content_query: the KQL query filtering by the RFC Message-ID (Identifier).
+        case_name: stable display name for the reusable eDiscovery case.
+        using_brand: the brand used for this operation.
+        delete_type: the delete type, soft or hard.
+        message_id: the message id of the email.
+    Returns:
+        The command status (In Progress or Success) and the scheduledCommand object for the next command, if needed.
+    """
+    check_demisto_version()
+
+    if was_email_already_deleted({"message_id": message_id}, "")[0] == "Success":
+        # Since the polling flow mutates the context, we conduct this check first,
+        # instead of only if the email is not found.
+        return "Success", None
+
+    case_id = args.get("case_id", "")
+    search_id = args.get("search_id", "")
+    purge_operation_id = args.get("purge_operation_id", "")
+
+    if not case_id:
+        # First run: resolve (or create) the eDiscovery case and create the search.
+        case_id = msg_resolve_ediscovery_case(case_name, using_brand)
+        search_args = {
+            "case_id": case_id,
+            "display_name": f"search_for_delete_{seconds}",
+            "content_query": content_query,
+            "using-brand": using_brand,
+        }
+        if to_user_id:
+            search_args["data_source_scopes"] = "allTenantMailboxes"
+        search = execute_command("msg-create-ediscovery-search", search_args)
+        search_dict = search[0] if isinstance(search, list) else search
+        search_id = search_dict.get("SearchId")
+        execute_command(
+            "msg-run-estimate-statistics",
+            {"case_id": case_id, "search_id": search_id, "using-brand": using_brand},
+        )
+        args["case_id"] = case_id
+        args["search_id"] = search_id
+
+    if not purge_operation_id:
+        # Poll the estimate statistics operation until it reaches a terminal state.
+        estimate = execute_command(
+            "msg-get-last-estimate-statistics-operation",
+            {"case_id": case_id, "search_id": search_id, "using-brand": using_brand},
+        )
+        estimate_dict = estimate[0] if isinstance(estimate, list) else estimate
+        status = str(estimate_dict.get("Status", "")).lower()
+        demisto.debug(f"microsoft_graph_security_delete_mail: estimate statistics status is '{status}'")
+        if status not in MSG_SUCCESS_STATUSES:
+            return "In Progress", schedule_next_command(args)
+
+        indexed_items = arg_to_number(estimate_dict.get("IndexedItemsCount")) or 0
+        total_items = arg_to_number(estimate_dict.get("TotalItemsCount")) or 0
+        if indexed_items == 0 and total_items == 0:
+            raise MissingEmailException
+
+        # The email was found, start the purge.
+        purge_type = MSG_PURGE_TYPE_MAP.get(delete_type, "recoverable")
+        purge = execute_command(
+            "msg-purge-ediscovery-data",
+            {
+                "case_id": case_id,
+                "search_id": search_id,
+                "purge_type": purge_type,
+                "purge_areas": "mailboxes",
+                "using-brand": using_brand,
+            },
+        )
+        purge_dict = purge[0] if isinstance(purge, list) else purge
+        purge_operation_id = purge_dict.get("Purge", {}).get("OperationID") or purge_dict.get("OperationID")
+        args["purge_operation_id"] = purge_operation_id
+
+    # Poll the purge operation until it completes.
+    operation = execute_command(
+        "msg-list-case-operation",
+        {"case_id": case_id, "operation_id": purge_operation_id, "using-brand": using_brand},
+    )
+    operation_dict = operation[0] if isinstance(operation, list) else operation
+    purge_status = str(operation_dict.get("Status", "")).lower()
+    demisto.debug(f"microsoft_graph_security_delete_mail: purge operation status is '{purge_status}'")
+    if purge_status not in MSG_SUCCESS_STATUSES:
+        return "In Progress", schedule_next_command(args)
+
+    # The email was purged, clean up the search.
+    execute_command("msg-delete-ediscovery-search", {"case_id": case_id, "search_id": search_id, "using-brand": using_brand})
+
+    return "Success", None
+
+
 def extract_message_id(search_result: list, search_function: str) -> str | None:
     """Extract the RFC Message-ID from a search result based on the integration's response structure.
 
@@ -424,6 +562,12 @@ def get_search_args(args: dict):
         },
         "SecurityAndCompliance": {"to_user_id": user_id, "from_user_id": from_user_id},
         "SecurityAndComplianceV2": {"to_user_id": user_id, "from_user_id": from_user_id},
+        "MicrosoftGraphSecurity": {
+            "to_user_id": user_id,
+            "user_id": user_id,
+            "content_query": f'Identifier:"{message_id}"',
+            "case_name": MSG_EDISCOVERY_CASE_NAME,
+        },
     }
 
     search_args.update(additional_args.get(delete_from_brand, {}))
@@ -466,6 +610,10 @@ def main():
         if delete_from_brand in ["SecurityAndCompliance", "SecurityAndComplianceV2"]:
             security_and_compliance_args = {k.replace("-", "_"): v for k, v in search_args.items()}
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
+
+        elif delete_from_brand == "MicrosoftGraphSecurity":
+            microsoft_graph_security_args = {k.replace("-", "_"): v for k, v in search_args.items()}
+            result, scheduled_command = microsoft_graph_security_delete_mail(args, **microsoft_graph_security_args)
 
         else:
             integrations_dict = {
