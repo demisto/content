@@ -425,15 +425,12 @@ class BrandHandler(ABC):
         """
 
     @abstractmethod
-    def finalize(self, last_poll_response: list, poll_args: dict | None = None) -> list[QuarantineResult]:
+    def finalize(self, last_poll_response: list) -> list[QuarantineResult]:
         """
         Processes the final results of a completed polling job for the brand.
 
         Args:
             last_poll_response (list): The raw response from the final polling command.
-            poll_args (dict | None): The completed job's polling args. On the platform these
-                carry the originating identity (user_id / user_name / is_manual_flow) forwarded
-                to any follow-up RBAC-enforced command (e.g. getFileQuarantineStatus).
         """
 
 
@@ -447,9 +444,6 @@ class XDRHandler(BrandHandler):
     # Builtin command names (used on the Cortex platform for the Core brand).
     BUILTIN_QUARANTINE_COMMAND = "quarantineFile"
     BUILTIN_QUARANTINE_STATUS_COMMAND = "getFileQuarantineStatus"
-    # Identity marker args forwarded into the RBAC-enforced Builtin status command so the
-    # platform can restore the originating identity on scheduled poll re-runs.
-    POLL_IDENTITY_ARG_NAMES = ("user_id", "user_name", "is_manual_flow")
 
     def __init__(self, brand: str, orchestrator):
         """
@@ -494,9 +488,7 @@ class XDRHandler(BrandHandler):
                 f"The '{QuarantineOrchestrator.FILE_PATH_ARG}' argument is required for brand {self.brand}."
             )
 
-    def _execute_quarantine_status_command(
-        self, endpoint_id: str, file_hash: str, file_path: str, poll_args: dict | None = None
-    ) -> dict:
+    def _execute_quarantine_status_command(self, endpoint_id: str, file_hash: str, file_path: str) -> dict:
         """
         Checks if a file is already quarantined on a specific endpoint.
 
@@ -504,43 +496,16 @@ class XDRHandler(BrandHandler):
             endpoint_id (str): The ID of the endpoint to check.
             file_hash (str): The SHA256 hash of the file.
             file_path (str): The path of the file on the endpoint.
-            poll_args (dict | None): The completed job's polling args. On the platform these
-                carry the originating identity (user_id / user_name / is_manual_flow) forwarded
-                into the RBAC-enforced getFileQuarantineStatus call so it authenticates as the
-                original user on scheduled poll re-runs.
 
         Returns:
-            dict: The response from the 'get-quarantine-status' command.
-                  Example:
-                      {
-                          'endpointId': 'EP_ID',
-                          'fileHash': 'sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256',
-                          'filePath': '/PATH/TO/FILE/ON/ENDPOINT/TO/QUARANTINE',
-                          'status': False if not quarantined, True if quarantined
-                      }
+            dict: The response from the '<prefix>-get-quarantine-status' command, e.g.
+                  {'endpointId': 'EP_ID', 'fileHash': '...', 'filePath': '...', 'status': True/False}
         """
-        poll_args = poll_args or {}
         demisto.debug(f"[{self.brand} Handler] Checking quarantine status for endpoint {endpoint_id}.")
-        # On the platform the Core-IR status command is the Builtin "getFileQuarantineStatus".
-        # Off-platform, use the legacy integration command.
-        if self.use_builtin:
-            status_command_name = XDRHandler.BUILTIN_QUARANTINE_STATUS_COMMAND
-        else:
-            status_command_name = f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}"
-
+        status_command_name = f"{self.command_prefix}-{XDRHandler.QUARANTINE_STATUS_COMMAND}"
         status_args = {"endpoint_id": endpoint_id, "file_hash": file_hash, "file_path": file_path}
-        # Forward the persisted identity so the RBAC-enforced Builtin status call runs as the
-        # original user. Only relevant on the platform Builtin path.
-        if self.use_builtin and poll_args:
-            for identity_arg in XDRHandler.POLL_IDENTITY_ARG_NAMES:
-                if poll_args.get(identity_arg):
-                    status_args[identity_arg] = poll_args[identity_arg]
 
-        status_cmd = Command(
-            name=status_command_name,
-            args=status_args,
-            brand=self.brand,
-        )
+        status_cmd = Command(name=status_command_name, args=status_args, brand=self.brand)
         raw_response, verbose_res = status_cmd.execute()
         if self.orchestrator.verbose:
             self.orchestrator.verbose_results.extend(verbose_res)
@@ -551,12 +516,53 @@ class XDRHandler(BrandHandler):
 
         return list(status_context[0].values())[0]
 
-    def _process_final_endpoint_status(self, endpoint_result: dict, poll_args: dict | None = None) -> QuarantineResult:
+    def _collect_builtin_confirmations(self, last_poll_response: list) -> dict:
+        """
+        Collects the per-endpoint quarantine confirmation produced by the Builtin
+        quarantineFile command (platform path only).
+
+        The Builtin command surfaces the confirmation under the `Core.QuarantineFiles.status`
+        context path as a list of items shaped like
+        {'status': True/False, 'endpointId': 'EP_ID', 'filePath': '...'}.
+
+        Args:
+            last_poll_response (list): The raw response from the final polling command.
+
+        Returns:
+            dict: A map of endpoint_id -> confirmation item. Empty when no confirmation
+                  is present (e.g. verification was not requested).
+        """
+        confirmations = Command.get_entry_context_object_containing_key(last_poll_response, "QuarantineFiles")
+        if not confirmations:
+            return {}
+        # Normalize a single dict to a list for uniform handling.
+        if isinstance(confirmations, dict):
+            confirmations = [confirmations]
+
+        confirmation_by_endpoint: dict = {}
+        for item in confirmations:
+            if not isinstance(item, dict):
+                continue
+            endpoint_id = str(item.get("endpointId") or item.get("endpoint_id") or item.get("EndpointID") or "")
+            if endpoint_id:
+                confirmation_by_endpoint[endpoint_id] = item
+        demisto.debug(
+            f"[{self.brand} Handler] Collected {len(confirmation_by_endpoint)} Builtin quarantine confirmation(s)."
+        )
+        return confirmation_by_endpoint
+
+    def _process_final_endpoint_status(
+        self, endpoint_result: dict, confirmation_by_endpoint: dict | None = None
+    ) -> QuarantineResult:
         """
         Processes the final result for a single endpoint from a completed polling job.
 
-        If the action-runner reported the quarantine action as successful, this method
-        makes a second, separate call to the brand's quarantine-status to get the true final result.
+        When the action-runner reports success, the file is additionally confirmed to be
+        actually quarantined (guards against action-status false positives such as
+        file-not-found / endpoint-offline):
+          - On the platform, the confirmation was produced by the Builtin quarantineFile
+            command itself and is passed in via `confirmation_by_endpoint`.
+          - Off-platform, it is fetched here via the legacy quarantine-status command.
 
         Args:
             endpoint_result (dict): The result object for a single endpoint from the polling command.
@@ -564,14 +570,13 @@ class XDRHandler(BrandHandler):
                                         {'action_id': 123, 'endpoint_id': 'EP_ID', 'status': 'COMPLETED_SUCCESSFULLY'}
                                     Builtin `Core.GetActionStatus` shape:
                                         {'ActionID': 123, 'EndpointID': 'EP_ID', 'Status': 'COMPLETED_SUCCESSFULLY',
-                                         'ErrorDescription': '', 'ErrorReasons': {}}
-            poll_args (dict | None): The completed job's polling args, used to forward the
-                originating identity into the Builtin status call.
+                                            'ErrorDescription': '', 'ErrorReasons': {}}
+            confirmation_by_endpoint (dict | None): Platform-only map of endpoint_id to the
+                Builtin quarantine-status item ({'status': True/False, ...}).
 
         Returns:
             QuarantineResult: A structured result object for the endpoint.
         """
-        poll_args = poll_args or {}
         # Accept both legacy snake_case and Builtin CamelCase key shapes.
         endpoint_id = str(endpoint_result.get("endpoint_id") or endpoint_result.get("EndpointID"))
         action_status = endpoint_result.get("status") or endpoint_result.get("Status")
@@ -579,16 +584,16 @@ class XDRHandler(BrandHandler):
         demisto.debug(f"[{self.brand} Handler] Processing final status for endpoint {endpoint_id}.")
 
         if action_status == XDRHandler.QUARANTINE_STATUS_SUCCESS:
-            # Confirm the file is actually quarantined (guards against action-status false
-            # positives such as file-not-found / endpoint-offline).
-            quarantine_status_data = self._execute_quarantine_status_command(
-                endpoint_id,
-                self.orchestrator.args.get(QuarantineOrchestrator.FILE_HASH_ARG),
-                self.orchestrator.args.get(QuarantineOrchestrator.FILE_PATH_ARG),
-                poll_args,
-            )
-            # Builtin `getFileQuarantineStatus` returns `Status` (CamelCase shape);
-            # legacy `*-get-quarantine-status` returns `status` (lowercase). Try both.
+            if self.use_builtin:
+                # Confirmation comes from the Builtin quarantineFile result (trusted context).
+                quarantine_status_data = (confirmation_by_endpoint or {}).get(endpoint_id, {})
+            else:
+                quarantine_status_data = self._execute_quarantine_status_command(
+                    endpoint_id,
+                    self.orchestrator.args.get(QuarantineOrchestrator.FILE_HASH_ARG),
+                    self.orchestrator.args.get(QuarantineOrchestrator.FILE_PATH_ARG),
+                )
+            # Builtin shape uses `status`; legacy `*-get-quarantine-status` also returns `status`.
             quarantine_status = quarantine_status_data.get("status")
             if quarantine_status is None:
                 quarantine_status = quarantine_status_data.get("Status")
@@ -663,6 +668,9 @@ class XDRHandler(BrandHandler):
             "file_path": args.get(QuarantineOrchestrator.FILE_PATH_ARG),
             "timeout_in_seconds": args.get("timeout", DEFAULT_TIMEOUT),
         }
+        if self.use_builtin:
+            # Mark builtin command to run the verification call for quarantine action
+            quarantine_args["verify_quarantine"] = "true"
         cmd = Command(name=self.quarantine_command, args=quarantine_args, brand=self.brand)
         raw_response, verbose_res = cmd.execute()
         if self.orchestrator.verbose:
@@ -685,7 +693,7 @@ class XDRHandler(BrandHandler):
         }
         return job
 
-    def finalize(self, last_poll_response: list, poll_args: dict | None = None) -> list[QuarantineResult]:
+    def finalize(self, last_poll_response: list) -> list[QuarantineResult]:
         """
         Finalizes a completed quarantine job for the XDR brand.
 
@@ -695,15 +703,10 @@ class XDRHandler(BrandHandler):
 
         Args:
             last_poll_response (list): The raw response from the final polling command.
-            poll_args (dict | None): The completed job's polling args. On the platform these
-                carry the originating identity (user_id / user_name / is_manual_flow) forwarded
-                to the RBAC-enforced getFileQuarantineStatus confirmation call so it
-                authenticates as the original user on scheduled poll re-runs.
 
         Returns:
             list[QuarantineResult]: A list of final QuarantineResult objects.
         """
-        poll_args = poll_args or {}
         final_results = []
 
         quarantine_endpoints_final_results: list = Command.get_entry_context_object_containing_key(
@@ -712,10 +715,18 @@ class XDRHandler(BrandHandler):
         # May return None when the key is absent; guard against NoneType iteration.
         quarantine_endpoints_final_results = quarantine_endpoints_final_results or []
 
+        # On the platform, the Builtin quarantineFile already confirmed each file's quarantine
+        # status inside its own trusted polling context. Collect it here keyed by endpoint ID.
+        confirmation_by_endpoint: dict | None = None
+        if self.use_builtin:
+            confirmation_by_endpoint = self._collect_builtin_confirmations(last_poll_response)
+
         demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
         for quarantine_endpoint_result in quarantine_endpoints_final_results:
             try:
-                final_results.append(self._process_final_endpoint_status(quarantine_endpoint_result, poll_args))
+                final_results.append(
+                    self._process_final_endpoint_status(quarantine_endpoint_result, confirmation_by_endpoint)
+                )
             except Exception as e:
                 demisto.error(
                     f"[{self.brand} Handler] Failed to get status of quarantine for endpoint:"
@@ -837,13 +848,9 @@ class MDEHandler(BrandHandler):
         demisto.debug(f"[{self.brand} Handler] Created new polling job object: {job}")
         return job
 
-    def finalize(self, last_poll_response: list, poll_args: dict | None = None):
+    def finalize(self, last_poll_response: list):
         """
         Finalizes a completed quarantine job for the MDE brand.
-
-        Note: `poll_args` is accepted for interface parity with the abstract
-        BrandHandler.finalize signature (used by the XDR handler for identity
-        forwarding). MDE does not use it.
 
         It parses the results from the last polling response and calls
 
@@ -1273,7 +1280,7 @@ class QuarantineOrchestrator:
             else:
                 demisto.debug(f"[Orchestrator] Polling complete for job brand '{job['brand']}'. Finalizing.")
                 handler = handler_factory(job["brand"], self)
-                final_results = handler.finalize(raw_response, job.get("poll_args", {}))
+                final_results = handler.finalize(raw_response)
                 self.completed_results.extend(final_results)
 
         self.pending_jobs = remaining_jobs
