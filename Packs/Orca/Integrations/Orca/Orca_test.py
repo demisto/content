@@ -936,3 +936,183 @@ def test_fetch_incidents_with_timeout_preserves_state(requests_mock, orca_client
     assert last_run["lastRun"] == "2025-10-24T10:00:00Z"  # Time preserved
     assert last_run["step"] == STEP_INIT  # Step preserved
     assert len(incidents) == 0  # No incidents on timeout
+
+
+def _make_alert(alert_id: str, last_sync: str | None, risk_level: str = "high") -> dict:
+    alert = {"AlertId": alert_id, "LastSeen": "2025-10-24T13:37:01+00:00", "RiskLevel": risk_level}
+    if last_sync:
+        alert["Last_sync"] = last_sync
+    return alert
+
+
+def test_fetch_incidents_watermark_from_alerts_not_clock(requests_mock, orca_client: OrcaClient) -> None:
+    """
+    The next watermark must be the max last_sync of the returned alerts,
+    not the current clock time (which loses alerts made visible late,
+    e.g. by replication delay).
+    """
+    mock_response = {
+        "status": "success",
+        "total_items": 2,
+        "data": [
+            _make_alert("orca-1", "2025-11-06T09:35:40+00:00"),
+            _make_alert("orca-2", "2025-11-06T10:12:03+00:00"),
+        ],
+    }
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
+
+    last_run, incidents = fetch_incidents(
+        orca_client,
+        last_run={"step": STEP_FETCH, "lastRun": "2025-11-01T00:00:00Z"},
+        max_fetch=20,
+        pull_existing_alerts=True,
+        first_fetch_time=None,
+    )
+
+    assert len(incidents) == 2
+    assert last_run["fetch_page"] == 1
+    # Watermark comes from the data, not from datetime.now()
+    assert last_run["lastRun"] == "2025-11-06T10:12:03+00:00"
+    # Only the alert sitting exactly on the watermark is remembered for dedup
+    assert last_run["boundary_alert_ids"] == {"orca-2": "2025-11-06T10:12:03+00:00"}
+
+
+def test_fetch_incidents_empty_cycle_keeps_watermark(requests_mock, orca_client: OrcaClient) -> None:
+    """When a cycle returns nothing, the watermark must not move."""
+    requests_mock.post(
+        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json={"status": "success", "total_items": 0, "data": []}
+    )
+
+    previous_watermark = "2025-11-06T09:35:40+00:00"
+    boundary = {"orca-1": previous_watermark}
+    last_run, incidents = fetch_incidents(
+        orca_client,
+        last_run={"step": STEP_FETCH, "lastRun": previous_watermark, "boundary_alert_ids": boundary},
+        max_fetch=20,
+        pull_existing_alerts=True,
+        first_fetch_time=None,
+    )
+
+    assert incidents == []
+    assert last_run["lastRun"] == previous_watermark
+    assert last_run["boundary_alert_ids"] == boundary
+    assert last_run["fetch_page"] == 1
+
+
+def test_fetch_incidents_boundary_alert_not_duplicated(requests_mock, orca_client: OrcaClient) -> None:
+    """
+    The API filter is last_sync >= from_date, so the alert on the watermark is
+    returned again on the next cycle; it must be dropped if unchanged.
+    """
+    sync_time = "2025-11-06T09:35:40+00:00"
+    mock_response = {
+        "status": "success",
+        "total_items": 2,
+        "data": [_make_alert("orca-1", sync_time), _make_alert("orca-2", sync_time)],
+    }
+
+    # Cycle 1: both alerts delivered, both sit on the watermark
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
+    last_run, incidents = fetch_incidents(
+        orca_client,
+        last_run={"step": STEP_FETCH, "lastRun": "2025-11-01T00:00:00Z"},
+        max_fetch=20,
+        pull_existing_alerts=True,
+        first_fetch_time=None,
+    )
+    assert len(incidents) == 2
+    assert last_run["lastRun"] == sync_time
+    assert set(last_run["boundary_alert_ids"]) == {"orca-1", "orca-2"}
+
+    # Cycle 2: the same alerts are returned again (last_sync unchanged) -> deduplicated
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=mock_response)
+    last_run2, incidents2 = fetch_incidents(
+        orca_client, last_run=last_run, max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
+    )
+    assert incidents2 == []
+    assert last_run2["lastRun"] == sync_time
+    assert set(last_run2["boundary_alert_ids"]) == {"orca-1", "orca-2"}
+
+
+def test_fetch_incidents_updated_boundary_alert_is_redelivered(requests_mock, orca_client: OrcaClient) -> None:
+    """A boundary alert whose last_sync changed was re-updated and must be delivered again."""
+    old_sync = "2025-11-06T09:35:40+00:00"
+    new_sync = "2025-11-06T11:00:00+00:00"
+
+    requests_mock.post(
+        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}",
+        json={"status": "success", "total_items": 1, "data": [_make_alert("orca-1", new_sync)]},
+    )
+    last_run, incidents = fetch_incidents(
+        orca_client,
+        last_run={"step": STEP_FETCH, "lastRun": old_sync, "boundary_alert_ids": {"orca-1": old_sync}},
+        max_fetch=20,
+        pull_existing_alerts=True,
+        first_fetch_time=None,
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "orca-1"
+    assert last_run["lastRun"] == new_sync
+    assert last_run["boundary_alert_ids"] == {"orca-1": new_sync}
+
+
+def test_fetch_incidents_multipage_cycle_watermark(requests_mock, orca_client: OrcaClient) -> None:
+    """The cycle watermark is carried across pages and applied on the last page."""
+    page1 = {
+        "status": "success",
+        "total_items": 4,
+        "data": [_make_alert("orca-1", "2025-11-06T09:00:00+00:00"), _make_alert("orca-2", "2025-11-06T09:30:00+00:00")],
+    }
+    page2 = {
+        "status": "success",
+        "total_items": 4,
+        "data": [_make_alert("orca-3", "2025-11-06T09:45:00+00:00"), _make_alert("orca-4", None)],
+    }
+    time_from = "2025-11-01T00:00:00Z"
+
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=page1)
+    last_run, incidents = fetch_incidents(
+        orca_client,
+        last_run={"step": STEP_FETCH, "lastRun": time_from},
+        max_fetch=2,
+        pull_existing_alerts=True,
+        first_fetch_time=None,
+    )
+    # Mid-cycle: page advances, watermark stays, max sync carried in state
+    assert len(incidents) == 2
+    assert last_run["fetch_page"] == 2
+    assert last_run["lastRun"] == time_from
+    assert last_run["cycle_max_sync"] == "2025-11-06T09:30:00+00:00"
+
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json=page2)
+    last_run2, incidents2 = fetch_incidents(
+        orca_client, last_run=last_run, max_fetch=2, pull_existing_alerts=True, first_fetch_time=None
+    )
+    # Last page: watermark becomes the max last_sync across the whole cycle;
+    # the alert without last_sync is delivered but ignored for the watermark
+    assert len(incidents2) == 2
+    assert last_run2["fetch_page"] == 1
+    assert last_run2["lastRun"] == "2025-11-06T09:45:00+00:00"
+    assert last_run2["boundary_alert_ids"] == {"orca-3": "2025-11-06T09:45:00+00:00"}
+
+
+def test_fetch_incidents_error_preserves_cycle_state(requests_mock, orca_client: OrcaClient) -> None:
+    """An API error mid-cycle must preserve the watermark and dedup state for retry."""
+    state = {
+        "step": STEP_FETCH,
+        "lastRun": "2025-11-01T00:00:00Z",
+        "fetch_page": 3,
+        "boundary_alert_ids": {"orca-1": "2025-11-01T00:00:00+00:00"},
+        "cycle_max_sync": "2025-11-06T09:30:00+00:00",
+        "cycle_boundary_ids": {"orca-2": "2025-11-06T09:30:00+00:00"},
+    }
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}", json={"status": "failure", "error": "API Error"})
+
+    last_run, incidents = fetch_incidents(
+        orca_client, last_run=dict(state), max_fetch=20, pull_existing_alerts=True, first_fetch_time=None
+    )
+
+    assert incidents == []
+    for key, value in state.items():
+        assert last_run[key] == value

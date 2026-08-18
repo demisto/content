@@ -1,3 +1,4 @@
+from datetime import UTC
 from typing import Any, cast
 from urllib.parse import urlparse
 
@@ -269,6 +270,81 @@ def get_incidents_from_alerts(alerts: List[dict[str, Any]]) -> List[dict[str, An
     return incidents
 
 
+def get_alert_last_sync(alert: dict[str, Any]) -> str | None:
+    # The API has returned this field both as "Last_sync" and "last_sync"
+    for field in ("Last_sync", "last_sync"):
+        value = alert.get(field)
+        if value and isinstance(value, str):
+            return value
+    return None
+
+
+def parse_last_sync(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        parsed = dateutil.parser.parse(value)
+    except (ValueError, OverflowError):
+        demisto.info(f"Failed to parse last_sync value: {value}")
+        return None
+    if parsed.tzinfo is None:
+        # Naive timestamps from the API are UTC
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed
+
+
+def filter_boundary_duplicates(alerts: List[dict[str, Any]], boundary_alert_ids: dict[str, str]) -> List[dict[str, Any]]:
+    """Drop alerts that were already delivered at the previous watermark.
+
+    The API filters by last_sync >= from_date, so alerts sitting exactly on the
+    watermark are returned again on the next cycle. An alert is dropped only if
+    both its id and its last_sync are unchanged — if it was updated since, its
+    last_sync differs and it must be delivered again.
+    """
+    if not boundary_alert_ids:
+        return alerts
+
+    filtered = []
+    for alert in alerts:
+        alert_id = alert.get("AlertId")
+        if alert_id and boundary_alert_ids.get(alert_id) == get_alert_last_sync(alert):
+            demisto.info(f"Skipping boundary alert {alert_id}, already delivered in the previous cycle")
+            continue
+        filtered.append(alert)
+    return filtered
+
+
+def advance_cycle_sync_state(
+    alerts: List[dict[str, Any]],
+    cycle_max_sync: str | None,
+    cycle_boundary_ids: dict[str, str],
+) -> tuple[str | None, dict[str, str]]:
+    """Fold this page's alerts into the cycle watermark.
+
+    Returns the max last_sync seen so far in the current fetch cycle and the
+    ids of the alerts sitting exactly on that value (the next boundary set).
+    Alerts without a parsable last_sync are ignored for the watermark.
+    """
+    max_dt = parse_last_sync(cycle_max_sync)
+    max_raw = cycle_max_sync
+    boundary = dict(cycle_boundary_ids)
+
+    for alert in alerts:
+        raw = get_alert_last_sync(alert)
+        parsed = parse_last_sync(raw)
+        if parsed is None:
+            continue
+        alert_id = alert.get("AlertId")
+        if max_dt is None or parsed > max_dt:
+            max_dt = parsed
+            max_raw = raw
+            boundary = {alert_id: raw} if alert_id else {}
+        elif parsed == max_dt and alert_id:
+            boundary[alert_id] = raw
+
+    return max_raw, boundary
+
+
 def fetch_incidents(
     orca_client: OrcaClient,
     last_run: dict[str, Any],
@@ -285,7 +361,12 @@ def fetch_incidents(
 
     last_run_time = last_run.get("lastRun")
     step = last_run.get("step", STEP_INIT)
-    next_run = {
+    # Alerts delivered at the previous watermark: {AlertId: last_sync}
+    boundary_alert_ids: dict[str, str] = last_run.get("boundary_alert_ids") or {}
+    # Watermark accumulated across the pages of the current fetch cycle
+    cycle_max_sync: str | None = last_run.get("cycle_max_sync")
+    cycle_boundary_ids: dict[str, str] = last_run.get("cycle_boundary_ids") or {}
+    next_run: dict[str, Any] = {
         "step": step,
     }
 
@@ -323,16 +404,33 @@ def fetch_incidents(
         next_run["fetch_page"] = fetch_page
         next_run["lastRun"] = last_run_time
         next_run["step"] = step
+        next_run["boundary_alert_ids"] = boundary_alert_ids
+        next_run["cycle_max_sync"] = cycle_max_sync
+        next_run["cycle_boundary_ids"] = cycle_boundary_ids
         demisto.info("API error occurred, preserving current fetch state for retry")
-    elif is_last_page:
-        # Success: reset page count and update last run time
-        next_run["fetch_page"] = 1
-        next_run["lastRun"] = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
     else:
-        # Success: increment page count
-        # Keep the lastRun datetime as is
-        next_run["fetch_page"] = fetch_page + 1
-        next_run["lastRun"] = time_from
+        alerts = filter_boundary_duplicates(alerts, boundary_alert_ids)
+        cycle_max_sync, cycle_boundary_ids = advance_cycle_sync_state(alerts, cycle_max_sync, cycle_boundary_ids)
+        if is_last_page:
+            # Success: cycle finished. Advance the watermark to the latest
+            # last_sync actually received — never the clock, which would skip
+            # alerts that became visible after the data was read (e.g. due to
+            # replication delay). An empty cycle keeps the watermark in place.
+            next_run["fetch_page"] = 1
+            if cycle_max_sync:
+                next_run["lastRun"] = cycle_max_sync
+                next_run["boundary_alert_ids"] = cycle_boundary_ids
+            else:
+                next_run["lastRun"] = time_from
+                next_run["boundary_alert_ids"] = boundary_alert_ids
+        else:
+            # Success: increment page count
+            # Keep the lastRun datetime as is, carry the cycle watermark
+            next_run["fetch_page"] = fetch_page + 1
+            next_run["lastRun"] = time_from
+            next_run["boundary_alert_ids"] = boundary_alert_ids
+            next_run["cycle_max_sync"] = cycle_max_sync
+            next_run["cycle_boundary_ids"] = cycle_boundary_ids
 
     # Prepare incidents
     incidents = get_incidents_from_alerts(alerts)
