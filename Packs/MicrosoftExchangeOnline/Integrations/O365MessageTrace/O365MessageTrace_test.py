@@ -17,6 +17,7 @@ from O365MessageTrace import (
     fetch_events_sequential,
     format_datetime_for_filter,
     get_events_command,
+    is_execution_time_exceeded,
     parse_datetime,
     parse_integration_params,
 )
@@ -1554,6 +1555,142 @@ class TestFetchEventsInRunLoop:
         message = window_error_calls[0]
         assert window_bounds in message
         assert "429" in message
+
+
+class TestExecutionTimeBudgetAndNextTrigger:
+    """The fetch run must stop before the platform's 5-minute hard kill (execution-time
+    budget) and, whenever a backlog is still pending, set ``last_run['nextTrigger']`` so the
+    platform re-invokes fetch immediately to keep draining. When caught up, ``nextTrigger``
+    must be absent so the collector returns to its normal schedule.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _no_lookback(self, mocker):
+        # Disable trailing look-back so window math in these tests stays exact.
+        mocker.patch.object(O365MessageTrace.Config, "DEFAULT_LOOKBACK_MINUTES", 0)
+
+    @staticmethod
+    def _frozen_now(now: datetime):
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
+        return FrozenDatetime
+
+    def test_is_execution_time_exceeded_false_within_budget(self, mocker):
+        """Helper returns False while elapsed wall-clock is under the budget."""
+        mocker.patch.object(O365MessageTrace.Config, "EXECUTION_TIME_BUDGET_SECONDS", 240)
+        # start captured "now"; monotonic advances only 10s -> under budget.
+        mocker.patch.object(O365MessageTrace.time, "monotonic", return_value=1010.0)
+        assert is_execution_time_exceeded(1000.0) is False
+
+    def test_is_execution_time_exceeded_true_when_budget_spent(self, mocker):
+        """Helper returns True once elapsed wall-clock reaches the budget."""
+        mocker.patch.object(O365MessageTrace.Config, "EXECUTION_TIME_BUDGET_SECONDS", 240)
+        # 300s elapsed >= 240s budget.
+        mocker.patch.object(O365MessageTrace.time, "monotonic", return_value=1300.0)
+        assert is_execution_time_exceeded(1000.0) is True
+
+    def test_time_budget_stops_walk_sets_next_trigger_and_advances_cursor(self, mock_client, mocker):
+        """When the execution-time budget trips mid-backlog, the walk must stop after the
+        current window, persist the advanced cursor, and set ``nextTrigger`` to re-dispatch.
+        """
+        # last_fetch=09:00, now=09:30 -> 6 windows are available, but the budget trips early.
+        now = datetime(2025, 1, 1, 9, 30, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        # The budget reports "exceeded" as soon as the guard is consulted (which only happens
+        # once ``start_dt`` is past the previous high-water mark, guaranteeing forward progress).
+        # The walk therefore stops after draining at least one - but far from all six - windows.
+        mocker.patch.object(O365MessageTrace, "is_execution_time_exceeded", return_value=True)
+
+        fetch_events(mock_client, max_events=100)
+
+        set_last_run.assert_called_once()
+        new_state = set_last_run.call_args.args[0]
+        # The walk stopped early: it did NOT drain the whole backlog (would be 6 windows to 09:30).
+        assert mock_client.ms_client.http_request.call_count < 6
+        # Cursor advanced past the previous high-water mark (forward progress) but not to ``now``.
+        advanced = parse_datetime(new_state["last_fetch"])
+        assert parse_datetime("2025-01-01T09:00:00Z") < advanced < parse_datetime("2025-01-01T09:30:00Z")
+        # Backlog remains -> re-dispatch immediately.
+        assert new_state["nextTrigger"] == Config.NEXT_TRIGGER_VALUE
+
+    def test_next_trigger_set_when_max_events_backlog_remains(self, mock_client, mocker):
+        """When the walk stops on the ``max_events`` cap with a backlog still pending,
+        ``nextTrigger`` must be set so the platform re-dispatches.
+        """
+        now = datetime(2025, 1, 1, 9, 30, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        # First window already returns >= max_events events (past the high-water mark).
+        window1 = {
+            "value": [
+                {"id": "a", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"},
+                {"id": "b", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:02:00Z"},
+            ]
+        }
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        # Budget never trips; the cap is what stops the walk.
+        mocker.patch.object(O365MessageTrace, "is_execution_time_exceeded", return_value=False)
+        mock_client.ms_client.http_request.return_value = window1
+
+        fetch_events(mock_client, max_events=2, lookback_minutes=0)
+
+        new_state = set_last_run.call_args.args[0]
+        assert new_state["nextTrigger"] == Config.NEXT_TRIGGER_VALUE
+
+    def test_no_next_trigger_when_caught_up(self, mock_client, mocker):
+        """When the walk reaches ``now`` (no backlog), ``nextTrigger`` must NOT be set so the
+        collector returns to its normal schedule.
+        """
+        now = datetime(2025, 1, 1, 9, 15, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mocker.patch.object(O365MessageTrace, "is_execution_time_exceeded", return_value=False)
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        fetch_events(mock_client, max_events=100)
+
+        new_state = set_last_run.call_args.args[0]
+        assert "nextTrigger" not in new_state
+        assert new_state["last_fetch"] == "2025-01-01T09:15:00.000000Z"
+
+    def test_time_budget_never_trips_before_passing_high_water_mark(self, mock_client, mocker):
+        """Forward-progress guarantee: even if the budget is already exceeded on entry, the
+        guard must NOT fire while still inside the look-back overlap (``start_dt`` at/behind the
+        previous high-water mark). The run must drain at least one fresh window so the cursor
+        always advances - otherwise it could stop AT ``last_fetch`` and re-stall forever.
+        """
+        # last_fetch=09:00, now=09:10 -> overlap boundary window then one fresh window.
+        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
+        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
+        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        # Budget reports "exceeded" for every call; the guard must still be gated behind the
+        # high-water-mark check, so at least one window is drained and the cursor advances.
+        mocker.patch.object(O365MessageTrace, "is_execution_time_exceeded", return_value=True)
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        fetch_events(mock_client, max_events=100)
+
+        set_last_run.assert_called_once()
+        new_state = set_last_run.call_args.args[0]
+        # Cursor advanced past the previous high-water mark (did not stall at 09:00).
+        assert parse_datetime(new_state["last_fetch"]) > parse_datetime("2025-01-01T09:00:00Z")
 
 
 # ============================================================================

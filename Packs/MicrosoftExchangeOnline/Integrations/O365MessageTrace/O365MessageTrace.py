@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 
+import time
 import traceback
 from datetime import datetime, timedelta, UTC
 from typing import Any
@@ -15,7 +16,7 @@ class Config:
     """Global static configuration."""
 
     # Bump on every hotfix so the running build can be confirmed from the `[Version]` debug log.
-    VERSION_TAG = "o365-message-trace/2.0.3-fetch-lookback"
+    VERSION_TAG = "o365-message-trace/2.0.4-fetch-lookback"
 
     VENDOR = "microsoft"
     PRODUCT = "o365_message_trace"
@@ -48,6 +49,19 @@ class Config:
     # Fixed backoff schedule (in seconds) applied between retries when the Graph
     # API responds with HTTP 429 (Too Many Requests).
     RATE_LIMIT_BACKOFFS = (30, 60, 90)
+
+    # Wall-clock budget (seconds) for a single fetch invocation. The platform hard-kills a
+    # fetch-events run at 5 minutes (300s); if that happens BEFORE ``setLastRun`` the cursor
+    # never persists and the collector re-scans the same window forever (the stuck-cursor
+    # timeout bug). The window walk therefore stops itself once this budget is spent, sends
+    # what it has, persists the advanced cursor, and re-fires via ``nextTrigger``. 240s leaves
+    # ~60s of headroom for the final send + setLastRun under the 300s ceiling.
+    EXECUTION_TIME_BUDGET_SECONDS = 240
+
+    # Value written to ``last_run["nextTrigger"]`` to ask the platform to re-invoke fetch
+    # immediately (rather than waiting for the next scheduled cycle) so a backlog drains across
+    # many bounded invocations. "0" == re-dispatch now.
+    NEXT_TRIGGER_VALUE = "0"
 
 
 # ============================================================================
@@ -246,6 +260,17 @@ def parse_datetime(value: str | None, default: datetime | None = None) -> dateti
 def format_datetime_for_filter(dt: datetime) -> str:
     """Format a datetime in the form expected by the Graph $filter clause."""
     return dt.strftime(Config.DATE_FORMAT_FILTER)
+
+
+def is_execution_time_exceeded(start_time: float) -> bool:
+    """Return True once the fetch run has spent its wall-clock budget.
+
+    ``start_time`` is a ``time.monotonic()`` reading captured at the start of the run. The
+    window walk calls this each iteration and stops cleanly once the budget is spent, so the
+    run always reaches ``setLastRun`` before the platform's 5-minute hard kill.
+    """
+    elapsed = time.monotonic() - start_time
+    return elapsed >= Config.EXECUTION_TIME_BUDGET_SECONDS
 
 
 def deduplicate_events(events: list[dict], seen_ids: set[str]) -> list[dict]:
@@ -609,6 +634,15 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
     # the infinite-loop / stuck-cursor bug when a saturated backlog window is all-duplicates.
     drained_until: datetime | None = None
 
+    # When the run stops before catching up to ``now`` (max_events cap or time budget), there is
+    # still a backlog. We then ask the platform to re-invoke fetch immediately via ``nextTrigger``
+    # so the backlog drains across many bounded invocations instead of waiting a full cycle.
+    backlog_remaining = False
+
+    # Wall-clock anchor for the execution-time budget. The platform hard-kills a fetch run at
+    # 5 minutes; the window walk stops itself before that so the advanced cursor always persists.
+    execution_start = time.monotonic()
+
     if now < start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES):
         window_end_dt = now
         demisto.debug(f"[Fetch] Window {start_dt.isoformat()} -> {window_end_dt.isoformat()} (now={now.isoformat()})")
@@ -633,6 +667,18 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
         # which would drop events the advancing cursor then skips forever.
         while start_dt < now:
             if len(all_events) >= max_events and start_dt > prev_high_water:
+                backlog_remaining = True
+                break
+            # Time-budget guard: stop cleanly before the platform's 5-minute hard kill so the
+            # advanced cursor is always persisted below. Only trip once we are past the previous
+            # high-water mark, so a run always makes at least one window of forward progress
+            # (otherwise a slow overlap re-scan could stop AT last_fetch and never advance).
+            if start_dt > prev_high_water and is_execution_time_exceeded(execution_start):
+                demisto.debug(
+                    f"[Fetch] Execution time budget ({Config.EXECUTION_TIME_BUDGET_SECONDS}s) reached at "
+                    f"start={start_dt.isoformat()}; stopping walk and re-dispatching via nextTrigger."
+                )
+                backlog_remaining = True
                 break
             window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
             try:
@@ -649,6 +695,13 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
             drained_until = window_end_dt
             start_dt = window_end_dt
             window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
+            # Elapsed-time visibility: makes it easy to see from the logs how close each run gets to
+            # the execution-time budget, and whether a single dense window alone is the bottleneck.
+            demisto.debug(
+                f"[Fetch] Drained window up to {drained_until.isoformat()} | "
+                f"cumulative events={len(all_events)} | "
+                f"elapsed={time.monotonic() - execution_start:.1f}s / budget={Config.EXECUTION_TIME_BUDGET_SECONDS}s"
+            )
 
         events = all_events
 
@@ -725,6 +778,25 @@ def fetch_events(client: Client, max_events: int, lookback_minutes: int | None =
         "last_fetch": new_last_fetch,
         "seen_ids": new_seen_ids,
     }
+
+    # Re-dispatch immediately when a backlog is still pending (the walk stopped on the max_events
+    # cap or the execution-time budget before reaching ``now``). ``nextTrigger`` tells the platform
+    # to re-invoke fetch right away so the backlog drains across many bounded runs. When caught up,
+    # the key is omitted so the collector returns to its normal schedule.
+    #
+    # This is safe because forward progress is guaranteed upstream: both break paths require
+    # ``start_dt > prev_high_water``, so the run always drains at least one window past the previous
+    # ``last_fetch`` and the cursor advances. Each immediate re-dispatch therefore resumes from new
+    # ground and eventually reaches ``now`` - it is a fast drain, not a spin.
+    if backlog_remaining:
+        new_last_run["nextTrigger"] = Config.NEXT_TRIGGER_VALUE
+        demisto.debug(
+            f"[Fetch] Backlog remaining (cursor {last_fetch_str} -> {new_last_fetch}) - "
+            f"set nextTrigger={Config.NEXT_TRIGGER_VALUE} to re-dispatch immediately."
+        )
+    else:
+        demisto.debug("[Fetch] Caught up to now - no backlog, nextTrigger not set (normal schedule).")
+
     demisto.setLastRun(new_last_run)
     demisto.debug(f"[Fetch] Updated last_run={new_last_run}")
 
