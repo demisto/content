@@ -1,5 +1,6 @@
 category: Utilities
 provider: Atlassian
+supportlevelheader: xsoar
 sectionorder:
 - Connect
 - Collect

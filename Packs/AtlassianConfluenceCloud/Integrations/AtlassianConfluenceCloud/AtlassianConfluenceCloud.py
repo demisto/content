@@ -636,7 +636,7 @@ def prepare_hr_for_content_search(contents: list, url_prefix: str) -> str:
             "Space Name": content.get("space", {}).get("name", ""),
             "Created By": content.get("history", {}).get("createdBy", {}).get("displayName", ""),
             "Created At": content.get("history", {}).get("createdDate", ""),
-            "Version": (content.get("version") or {}).get("number", ""),
+            "Version": content.get("version", {}).get("number", ""),
         }
 
         hr_list.append(hr_record)
