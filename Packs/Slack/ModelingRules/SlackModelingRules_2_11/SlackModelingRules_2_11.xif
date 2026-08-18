@@ -51,6 +51,12 @@ filter action IN("user_login", "user_login*", "user_logout_compromised", "user_l
     xdm.source.user.identifier = get_actor_user_id,
     xdm.source.identity.identifier = get_actor_user_id,
     xdm.source.user.identity_type = if(
+        get_actor_user_id IN("*USLACKBOT*","*USLACKSECURITY*"), XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        arrayindex(array_actor_user_email, 1) CONTAINS "slack-bots.com", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        get_actor_user_id ~= "^A", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        get_actor_user_id CONTAINS "USLACKUSER", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
+        XDM_CONST.IDENTITY_TYPE_USER
+    ),
     xdm.source.identity.identity_type = if(
         get_actor_user_id IN("*USLACKBOT*","*USLACKSECURITY*"), XDM_CONST.IDENTITY_TYPE_APPLICATION,
         arrayindex(array_actor_user_email, 1) CONTAINS "slack-bots.com", XDM_CONST.IDENTITY_TYPE_APPLICATION,
@@ -64,12 +70,20 @@ filter action IN("user_login", "user_login*", "user_logout_compromised", "user_l
     xdm.source.user.domain = arrayindex(array_actor_user_email, 1),
     xdm.source.identity.domain = arrayindex(array_actor_user_email, 1),
     xdm.source.user.first_name = if(
+        get_actor_user_name IN("*slack*","*Slack*"), NULL,
+        get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
+        arrayindex(regextract(get_actor_user_name, "(^\w+)\s+"),0)
+    ),
     xdm.source.identity.first_name = if(
         get_actor_user_name IN("*slack*","*Slack*"), NULL,
         get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
         arrayindex(regextract(get_actor_user_name, "(^\w+)\s+"),0)
     ),
     xdm.source.user.last_name = if(
+        get_actor_user_name IN("*@*","*slack*","*Slack*"), NULL,
+        get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
+        arrayindex(regextract(get_actor_user_name, "\s+(\S+)$"),0)
+    ),
     xdm.source.identity.last_name = if(
         get_actor_user_name IN("*@*","*slack*","*Slack*"), NULL,
         get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
@@ -154,6 +168,12 @@ filter action NOT IN("user_login", "user_login*", "user_logout_compromised", "us
     xdm.source.user.identifier = get_actor_user_id,
     xdm.source.identity.identifier = get_actor_user_id,
     xdm.source.user.identity_type = if(
+        get_actor_user_id IN("*USLACKBOT*","*USLACKSECURITY*"), XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        arrayindex(array_actor_user_email, 1) CONTAINS "slack-bots.com", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        get_actor_user_id ~= "^A", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        get_actor_user_id CONTAINS "USLACKUSER", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
+        XDM_CONST.IDENTITY_TYPE_USER
+    ),
     xdm.source.identity.identity_type = if(
         get_actor_user_id IN("*USLACKBOT*","*USLACKSECURITY*"), XDM_CONST.IDENTITY_TYPE_APPLICATION,
         arrayindex(array_actor_user_email, 1) CONTAINS "slack-bots.com", XDM_CONST.IDENTITY_TYPE_APPLICATION,
@@ -217,12 +237,20 @@ filter action NOT IN("user_login", "user_login*", "user_logout_compromised", "us
     xdm.source.user.domain = arrayindex(array_actor_user_email, 1),
     xdm.source.identity.domain = arrayindex(array_actor_user_email, 1),
     xdm.source.user.first_name = if(
+        get_actor_user_name IN("*slack*","*Slack*"), NULL,
+        get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
+        arrayindex(regextract(get_actor_user_name, "(^\w+)\s+"),0)
+    ),
     xdm.source.identity.first_name = if(
         get_actor_user_name IN("*slack*","*Slack*"), NULL,
         get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
         arrayindex(regextract(get_actor_user_name, "(^\w+)\s+"),0)
     ),
     xdm.source.user.last_name = if(
+        get_actor_user_name IN("*@*","*slack*","*Slack*"), NULL,
+        get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
+        arrayindex(regextract(get_actor_user_name, "\s+(\S+)$"),0)
+    ),
     xdm.source.identity.last_name = if(
         get_actor_user_name IN("*@*","*slack*","*Slack*"), NULL,
         get_actor_user_name = arrayindex(array_actor_user_email, 0), NULL,
@@ -234,6 +262,10 @@ filter action NOT IN("user_login", "user_login*", "user_logout_compromised", "us
     xdm.intermediate.user.scope = if(get_context_app_id != NULL, XDM_CONST.SCOPE_TYPE_SAAS),
     xdm.intermediate.identity.scope = if(get_context_app_id != NULL, XDM_CONST.SCOPE_TYPE_SAAS),
     xdm.intermediate.user.roles = if(
+        get_context_app_scopes != NULL and get_context_app_scopes_bot != NULL, arrayconcat(get_context_app_scopes, get_context_app_scopes_bot),
+        get_context_app_scopes != NULL, get_context_app_scopes,
+        get_context_app_scopes_bot
+    ),
     xdm.intermediate.identity.roles = if(
         get_context_app_scopes != NULL and get_context_app_scopes_bot != NULL, arrayconcat(get_context_app_scopes, get_context_app_scopes_bot),
         get_context_app_scopes != NULL, get_context_app_scopes,
@@ -245,6 +277,9 @@ filter action NOT IN("user_login", "user_login*", "user_logout_compromised", "us
     xdm.target.application.name = json_extract_scalar(entity, "$['app']['name']"),
     xdm.target.application.bundle_id = json_extract_scalar(entity, "$['app']['id']"),
     xdm.target.user.identifier = coalesce(
+        json_extract_scalar(entity, "$['app']['id']"),
+        json_extract_scalar(entity, "$['user']['id']")
+    ),
     xdm.target.identity.identifier = coalesce(
         json_extract_scalar(entity, "$['app']['id']"),
         json_extract_scalar(entity, "$['user']['id']")
@@ -252,6 +287,19 @@ filter action NOT IN("user_login", "user_login*", "user_logout_compromised", "us
     xdm.target.user.upn = json_extract_scalar(entity, "$['user']['email']"),
     xdm.target.identity.upn = json_extract_scalar(entity, "$['user']['email']"),
     xdm.target.user.username = coalesce(
+        json_extract_scalar(entity, "$['app']['name']"),
+        json_extract_scalar(entity, "$['enterprise']['name']"),
+        json_extract_scalar(entity, "$['role']['name']"),
+        json_extract_scalar(entity, "$['workflow']['name']"),
+        json_extract_scalar(entity, "$['channel']['name']"),
+        json_extract_scalar(entity, "$['file']['name']"),
+        json_extract_scalar(entity, "$['workspace']['name']"),
+        json_extract_scalar(entity, "$['user']['name']"),
+        json_extract_scalar(entity, "$['account_type_role']['name']"),
+        json_extract_scalar(entity, "$['message']['name']"),
+        json_extract_scalar(entity, "$['usergroups']['name']"),
+        json_extract_scalar(entity, "$['huddles']['name']")
+    ),
     xdm.target.identity.username = coalesce(
         json_extract_scalar(entity, "$['app']['name']"),
         json_extract_scalar(entity, "$['enterprise']['name']"),
@@ -271,6 +319,10 @@ filter action NOT IN("user_login", "user_login*", "user_logout_compromised", "us
     xdm.target.user.roles = get_entity_app_scopes,
     xdm.target.identity.roles = get_entity_app_scopes,
     xdm.target.user.identity_type = if(
+        get_entity_type = "user", XDM_CONST.IDENTITY_TYPE_USER,
+        get_entity_type = "app", XDM_CONST.IDENTITY_TYPE_APPLICATION,
+        XDM_CONST.IDENTITY_TYPE_VIRTUAL
+    ),
     xdm.target.identity.identity_type = if(
         get_entity_type = "user", XDM_CONST.IDENTITY_TYPE_USER,
         get_entity_type = "app", XDM_CONST.IDENTITY_TYPE_APPLICATION,
