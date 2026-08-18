@@ -418,9 +418,8 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
                 "rawJSON": raw_data,
             }
 
-            if timestamp_:
-                if type_ == "DomainToolsFeed IP":
-                    indicator_obj["fields"]["domaintoolsfeedipfeedtimestamp"] = timestamp_
+            if timestamp_ and type_ == "DomainToolsFeed IP":
+                indicator_obj["fields"]["domaintoolsfeedipfeedtimestamp"] = timestamp_
 
             if tlp_color_:
                 indicator_obj["fields"]["trafficlightprotocol"] = tlp_color_
@@ -438,11 +437,19 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
                 indicator_obj["fields"]["domaintoolsfeedipzerolistdomains"] = ip_threat_data_.get("zerolist_domains")
                 indicator_obj["fields"]["domaintoolsfeedipzerolistip"] = ip_threat_data_.get("zerolist_ip")
                 indicator_obj["fields"]["domaintoolsfeedipthirdpartythreats"] = ip_threat_data_.get("third_party_threats")
-                indicator_obj["fields"]["domaintoolsfeedipallthreatscombinedcount"] = ip_threat_data_.get("all_threats_combined_count")
-                indicator_obj["fields"]["domaintoolsfeedipallthreatscombinedpercent"] = ip_threat_data_.get("all_threats_combined_percent")
+                indicator_obj["fields"]["domaintoolsfeedipallthreatscombinedcount"] = ip_threat_data_.get(
+                    "all_threats_combined_count"
+                )
+                indicator_obj["fields"]["domaintoolsfeedipallthreatscombinedpercent"] = ip_threat_data_.get(
+                    "all_threats_combined_percent"
+                )
                 indicator_obj["fields"]["domaintoolsfeedipallthreatsperecent"] = ip_threat_data_.get("all_threats_percent")
-                indicator_obj["fields"]["domaintoolsfeedipcombinedphishingpercent"] = ip_threat_data_.get("combined_phishing_percent")
-                indicator_obj["fields"]["domaintoolsfeedipcombinedmalwarepercent"] = ip_threat_data_.get("combined_malware_percent")
+                indicator_obj["fields"]["domaintoolsfeedipcombinedphishingpercent"] = ip_threat_data_.get(
+                    "combined_phishing_percent"
+                )
+                indicator_obj["fields"]["domaintoolsfeedipcombinedmalwarepercent"] = ip_threat_data_.get(
+                    "combined_malware_percent"
+                )
                 indicator_obj["fields"]["domaintoolsfeedipcombinedspampercent"] = ip_threat_data_.get("combined_spam_percent")
                 indicator_obj["fields"]["domaintoolsfeedipmaliciousphishing"] = ip_threat_data_.get("malicious_phishing")
                 indicator_obj["fields"]["domaintoolsfeedipmaliciousmalware"] = ip_threat_data_.get("malicious_malware")
