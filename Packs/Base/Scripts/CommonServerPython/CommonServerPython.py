@@ -10178,7 +10178,7 @@ if 'requests' in sys.modules:
             :rtype: ``None``
             """
             cred_type = credentials.get('type')
-            demisto.debug('[UCP][CommonServerPython.py] _apply_ucp_credentials: Applying credentials of type: {}'.format(cred_type))
+
             # Bug on UCP side where they return different types for the same credential type. To be fixed in July'26 version
             if cred_type == 'oauth2_client_credentials' or cred_type == 'oauth2_authorization_code' or cred_type == 'oauth2':
                 self._apply_ucp_oauth2(credentials, ctx)
@@ -10288,7 +10288,6 @@ if 'requests' in sys.modules:
                 for cache invalidation on auth failure retry).
             :rtype: ``str``
             """
-            demisto.debug('[UCP][CommonServerPython.py] _inject_ucp_credentials: Resolving UCP credentials for command: {}'.format(demisto.command()))
             capability, sub_capability = self._resolve_ucp_capability()
             method_unique_id = get_ucp_method_unique_id(capability, sub_capability)
             ucp_creds = get_ucp_credentials(method_unique_id)
@@ -10507,8 +10506,6 @@ if 'requests' in sys.modules:
             request_timeout = timeout
             request_retries = retries
             remaining_time = None
-            
-            demisto.debug("[CommonServerPython.py]In _http_request")
 
             # Time-Sensitive command mode
             if self._time_sensitive_deadline:

@@ -217,15 +217,11 @@ class ComplianceClient(BaseClient):
     """
 
     def __init__(self, url: str, api_key: str, proxy: bool, verify: bool):
-        demisto.debug(f"anthropic-claude ComplianceClient init {url=}, {api_key=}, {proxy=}, {verify=}")
         super().__init__(base_url=url, proxy=proxy, verify=verify)
         self.api_key = api_key
         self.headers = {"accept": "application/json"}
         if not should_use_ucp_auth():
-            demisto.debug("anthropic-claude ComplianceClient init using direct API key auth")
             self.headers["x-api-key"] = self.api_key
-        else:
-            demisto.debug("anthropic-claude ComplianceClient init using UCP auth")
 
     def _apply_ucp_api_key(self, credentials, ctx):
         """Place the UCP-brokered Compliance Access Key in the ``x-api-key`` header.
@@ -234,14 +230,10 @@ class ComplianceClient(BaseClient):
         Compliance API authenticates via ``x-api-key``. The key arrives under the envelope's
         ``api_key.key`` entry (the ``api_key`` -> ``key`` alias of the UCP dispatcher).
         """
-        demisto.debug(f"[UCP]Applying UCP-brokered Compliance Access Key to request headers:")
         api_key_data = credentials.get("api_key", credentials)
         key = api_key_data.get("key", "")
-        # only log few first chars of key for security reasons
-        demisto.debug(f"[UCP]Compliance Access Key: {key[:5]}...")
         if not key:
             raise DemistoException("UCP Compliance Access Key is empty.")
-        demisto.debug(f"[UCP]Compliance Access Key applied to request headers: {key[:5]}...")
         ctx.headers["x-api-key"] = key
 
     def http_get(self, url_suffix: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -250,7 +242,6 @@ class ComplianceClient(BaseClient):
         Retries on rate-limit (429) and transient 5xx responses using exponential back-off; the
         underlying urllib3 Retry honors the server's ``Retry-After`` header when present.
         """
-        demisto.debug(f"anthropic-claude http_get {url_suffix=}, {params=}, {self.headers=}")
         return self._http_request(
             method="GET",
             url_suffix=url_suffix,
@@ -271,7 +262,6 @@ class ComplianceClient(BaseClient):
         Retries on rate-limit (429) and transient 5xx responses using exponential back-off; the
         underlying urllib3 Retry honors the server's ``Retry-After`` header when present.
         """
-        demisto.debug(f"anthropic-claude http_delete {url_suffix=}")
         return self._http_request(
             method="DELETE",
             url_suffix=url_suffix,
@@ -1211,10 +1201,8 @@ def main() -> None:  # pragma: no cover
                     compliance_client = ComplianceClient(url=url, api_key=compliance_api_key, verify=verify, proxy=proxy)
                     results.append(module_test_compliance(client=compliance_client))
                 except Exception as e:
-                    demisto.debug(f"Compliance Access Key validation failed: {e}")
                     raise DemistoException(f"Compliance Access Key validation failed: {e}") from e
             if not results:
-                demisto.debug("No credentials configured.")
                 raise DemistoException(
                     "No credentials configured. Set the 'API Key' for LLM commands and/or the "
                     "'Compliance Access Key' for event collection and compliance commands."
