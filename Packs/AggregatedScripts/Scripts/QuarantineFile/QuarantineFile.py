@@ -546,9 +546,7 @@ class XDRHandler(BrandHandler):
             endpoint_id = str(item.get("endpointId") or item.get("endpoint_id") or item.get("EndpointID") or "")
             if endpoint_id:
                 confirmation_by_endpoint[endpoint_id] = item
-        demisto.debug(
-            f"[{self.brand} Handler] Collected {len(confirmation_by_endpoint)} Builtin quarantine confirmation(s)."
-        )
+        demisto.debug(f"[{self.brand} Handler] Collected {len(confirmation_by_endpoint)} Builtin quarantine confirmation(s).")
         return confirmation_by_endpoint
 
     def _process_final_endpoint_status(
@@ -724,9 +722,7 @@ class XDRHandler(BrandHandler):
         demisto.debug(f"[{self.brand} Handler] Finalizing endpoint results from job.")
         for quarantine_endpoint_result in quarantine_endpoints_final_results:
             try:
-                final_results.append(
-                    self._process_final_endpoint_status(quarantine_endpoint_result, confirmation_by_endpoint)
-                )
+                final_results.append(self._process_final_endpoint_status(quarantine_endpoint_result, confirmation_by_endpoint))
             except Exception as e:
                 demisto.error(
                     f"[{self.brand} Handler] Failed to get status of quarantine for endpoint:"
