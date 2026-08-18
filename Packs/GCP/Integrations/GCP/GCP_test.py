@@ -1,4 +1,5 @@
 import ast
+import base64
 import json
 import pytest
 from google.oauth2.credentials import Credentials
@@ -7389,6 +7390,80 @@ def test_kms_symmetric_encrypt_without_input_raises(mocker):
         kms_symmetric_encrypt(creds, args)
 
     crypto_keys.encrypt.assert_not_called()
+
+
+def test_kms_read_entry_file_success(mocker, tmp_path):
+    """
+    Given: An entry ID that resolves to a readable file holding binary content.
+    When: _kms_read_entry_file is called.
+    Then: The raw bytes are returned unchanged, without any decoding.
+    """
+    from GCP import _kms_read_entry_file
+
+    file_path = tmp_path / "payload.bin"
+    file_path.write_bytes(b"\x00\x01\x02binary\xff")
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": str(file_path), "name": "payload.bin"})
+
+    assert _kms_read_entry_file("entry-1") == b"\x00\x01\x02binary\xff"
+
+
+@pytest.mark.parametrize("resolved", [None, {}, {"name": "no_path.bin"}])
+def test_kms_read_entry_file_unresolvable_entry_raises(mocker, resolved):
+    """
+    Given: An entry ID that resolves to nothing, or to a record without a path.
+    When: _kms_read_entry_file is called.
+    Then: A ValueError naming the entry ID is raised.
+    """
+    from GCP import _kms_read_entry_file
+
+    mocker.patch("GCP.demisto.getFilePath", return_value=resolved)
+
+    with pytest.raises(ValueError, match="Could not find a file for entry ID entry-404."):
+        _kms_read_entry_file("entry-404")
+
+
+def test_kms_read_entry_file_wraps_unexpected_failure(mocker):
+    """
+    Given: An entry ID whose resolution raises an unexpected error.
+    When: _kms_read_entry_file is called.
+    Then: The failure is wrapped in a ValueError that names the entry ID and keeps the cause.
+    """
+    from GCP import _kms_read_entry_file
+
+    mocker.patch("GCP.demisto.getFilePath", side_effect=RuntimeError("entry store is unavailable"))
+
+    with pytest.raises(ValueError, match="Failed to read the file of entry ID entry-boom: entry store is unavailable"):
+        _kms_read_entry_file("entry-boom")
+
+
+def test_kms_symmetric_encrypt_entry_id_reads_raw_bytes(mocker, tmp_path):
+    """
+    Given: An entry ID pointing at a binary file.
+    When: kms_symmetric_encrypt is called.
+    Then: The file bytes are base64-encoded for the API without being decoded first.
+    """
+    from GCP import kms_symmetric_encrypt
+
+    file_path = tmp_path / "payload.bin"
+    file_path.write_bytes(b"\x00\x01\x02binary\xff")
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": str(file_path), "name": "payload.bin"})
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.encrypt.return_value.execute.return_value = {"ciphertext": "Y2lwaGVy"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    kms_symmetric_encrypt(
+        creds,
+        {
+            "project_id": "mock_project_id",
+            "key_ring": "mock_key_ring",
+            "crypto_key": "mock_crypto_key",
+            "entry_id": "entry-1",
+        },
+    )
+
+    sent_plaintext = crypto_keys.encrypt.call_args[1]["body"]["plaintext"]
+    assert base64.b64decode(sent_plaintext) == b"\x00\x01\x02binary\xff"
 
 
 def test_kms_symmetric_decrypt_success(mocker):

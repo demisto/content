@@ -2570,6 +2570,7 @@ script:
         type: Date
   - name: gcp-kms-key-version-destroy
     description: "Schedules a crypto key version for destruction. The key material is destroyed 24 hours later. Required Permissions: cloudkms.cryptoKeyVersions.destroy, cloudkms.cryptoKeys.get."
+    execution: true
     arguments:
     - name: project_id
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -2687,9 +2688,11 @@ script:
     - name: plaintext
       description: The plain text to encrypt. Must be no larger than 64KiB. Mutually exclusive with base64_plaintext and entry_id.
       required: false
+      secret: true
     - name: base64_plaintext
       description: The base64-encoded plain text to encrypt. Mutually exclusive with plaintext and entry_id.
       required: false
+      secret: true
     - name: entry_id
       description: The war room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
       required: false
@@ -2726,6 +2729,7 @@ script:
     - name: ciphertext
       description: The base64-encoded cipher text to decrypt. Mutually exclusive with entry_id.
       required: false
+      secret: true
     - name: entry_id
       description: The war room entry ID of the file holding the base64-encoded cipher text to decrypt. Mutually exclusive with ciphertext.
       required: false
@@ -2766,9 +2770,11 @@ script:
     - name: plaintext
       description: The plain text to encrypt. Mutually exclusive with base64_plaintext and entry_id.
       required: false
+      secret: true
     - name: base64_plaintext
       description: The base64-encoded plain text to encrypt. Mutually exclusive with plaintext and entry_id.
       required: false
+      secret: true
     - name: entry_id
       description: The war room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
       required: false
@@ -2806,6 +2812,7 @@ script:
     - name: ciphertext
       description: The base64-encoded cipher text to decrypt. Mutually exclusive with entry_id.
       required: false
+      secret: true
     - name: entry_id
       description: The war room entry ID of the file holding the base64-encoded cipher text to decrypt. Mutually exclusive with ciphertext.
       required: false

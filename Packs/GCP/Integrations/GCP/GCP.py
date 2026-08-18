@@ -377,6 +377,48 @@ OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "s
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
 
+KMS_KEY_TABLE = [
+    "Name",
+    "Project",
+    "Location",
+    "KeyRing",
+    "Purpose",
+    "CreationTime",
+    "NextRotationTime",
+    "RotationPeriod",
+    "Labels",
+]
+
+# The KMS locations the "all locations" listing commands sweep when `all_locations` is set.
+KMS_ALL_LOCATIONS = [
+    "global",
+    "asia-east1",
+    "asia-east2",
+    "asia-northeast1",
+    "asia-northeast2",
+    "asia-south1",
+    "asia-southeast1",
+    "australia-southeast1",
+    "europe-north1",
+    "europe-west1",
+    "europe-west2",
+    "europe-west3",
+    "europe-west4",
+    "europe-west6",
+    "northamerica-northeast1",
+    "us-central1",
+    "us-east1",
+    "us-east4",
+    "us-west1",
+    "us-west2",
+    "southamerica-east1",
+    "eur4",
+    "nam4",
+    "asia",
+    "europe",
+    "us",
+]
+
 
 def parse_firewall_rule(rule_str: str) -> list[dict[str, list[str] | str]]:
     """
@@ -2423,49 +2465,6 @@ def bq_dataset_policy_remove_command(creds: Credentials, args: dict[str, Any]) -
     )
 
 
-KMS_KEY_TABLE = [
-    "Name",
-    "Project",
-    "Location",
-    "KeyRing",
-    "Purpose",
-    "CreationTime",
-    "NextRotationTime",
-    "RotationPeriod",
-    "Labels",
-]
-
-# The KMS locations the "all locations" listing commands sweep when `all_locations` is set.
-KMS_ALL_LOCATIONS = [
-    "global",
-    "asia-east1",
-    "asia-east2",
-    "asia-northeast1",
-    "asia-northeast2",
-    "asia-south1",
-    "asia-southeast1",
-    "australia-southeast1",
-    "europe-north1",
-    "europe-west1",
-    "europe-west2",
-    "europe-west3",
-    "europe-west4",
-    "europe-west6",
-    "northamerica-northeast1",
-    "us-central1",
-    "us-east1",
-    "us-east4",
-    "us-west1",
-    "us-west2",
-    "southamerica-east1",
-    "eur4",
-    "nam4",
-    "asia",
-    "europe",
-    "us",
-]
-
-
 def _kms_key_ring_path(project_id: str, location: str, key_ring: str) -> str:
     """Builds the fully qualified resource name of a KeyRing.
 
@@ -2612,6 +2611,30 @@ def _kms_key_to_context(key: dict[str, Any], project_id: str, location: str, key
     return remove_empty_elements(context)  # type: ignore[return-value]
 
 
+def _kms_read_entry_file(entry_id: str) -> bytes:
+    """Reads the raw bytes of a war room file entry.
+
+    Args:
+        entry_id (str): The war room entry ID of the file to read.
+
+    Returns:
+        bytes: The raw content of the file.
+
+    Raises:
+        ValueError: If the entry ID cannot be resolved to a readable file.
+    """
+    try:
+        file_info = demisto.getFilePath(entry_id)
+        if not file_info or not file_info.get("path"):
+            raise ValueError(f"Could not find a file for entry ID {entry_id}.")
+        with open(file_info["path"], "rb") as file_handle:
+            return file_handle.read()
+    except ValueError:
+        raise
+    except Exception as exception:
+        raise ValueError(f"Failed to read the file of entry ID {entry_id}: {exception}") from exception
+
+
 def _kms_resolve_plaintext(plaintext: str | None, base64_plaintext: str | None, entry_id: str | None) -> bytes:
     """Resolves the plaintext to encrypt from the mutually exclusive input values.
 
@@ -2633,9 +2656,7 @@ def _kms_resolve_plaintext(plaintext: str | None, base64_plaintext: str | None, 
         return base64.b64decode(base64_plaintext)
 
     if entry_id:
-        file_path = demisto.getFilePath(entry_id)["path"]
-        with open(file_path, "rb") as file_handle:
-            return file_handle.read()
+        return _kms_read_entry_file(entry_id)
 
     raise ValueError("No object to encrypt. Provide one of 'plaintext', 'base64_plaintext' or 'entry_id'.")
 
@@ -2657,9 +2678,7 @@ def _kms_resolve_ciphertext(ciphertext: str | None, entry_id: str | None) -> byt
         return base64.b64decode(ciphertext)
 
     if entry_id:
-        file_path = demisto.getFilePath(entry_id)["path"]
-        with open(file_path, "rb") as file_handle:
-            return base64.b64decode(file_handle.read())
+        return base64.b64decode(_kms_read_entry_file(entry_id))
 
     raise ValueError("No object to decrypt. Provide one of 'ciphertext' or 'entry_id'.")
 
