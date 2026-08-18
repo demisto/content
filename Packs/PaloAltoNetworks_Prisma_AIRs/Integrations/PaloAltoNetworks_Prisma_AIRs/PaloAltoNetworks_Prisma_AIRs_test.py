@@ -103,6 +103,10 @@ from PaloAltoNetworks_Prisma_AIRs import (
     redteam_targets_delete_command,
     redteam_targets_update_command,
     redteam_targets_probe_command,
+    redteam_instances_create_command,
+    redteam_instances_get_command,
+    redteam_instances_update_command,
+    redteam_instances_delete_command,
     model_security_scans_list_command,
     model_security_models_list_command,
     model_security_models_get_command,
@@ -2393,6 +2397,148 @@ class TestCommands:
         assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetProbe"
         assert result.outputs_key_field == "uuid"
         assert result.outputs["uuid"] == "t-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_instances_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """instances-create posts required fields to the mgmt plane, keyed by tenant_id.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"tsg_id": "tsg-1", "tenant_id": "tn-1", "app_id": "app-1", "is_success": True}
+
+        result = redteam_instances_create_command(
+            mock_client, {"tsg_id": "tsg-1", "tenant_id": "tn-1", "app_id": "app-1", "region": "us"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamInstanceCreate"
+        assert result.outputs_key_field == "tenant_id"
+        assert result.outputs["tenant_id"] == "tn-1"
+        # Verify it targets the mgmt plane instances endpoint via POST
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        assert kwargs["url_suffix"] == "/v1/instances"
+        assert kwargs["use_redteam_mgmt"] is True
+        assert kwargs["json_data"]["region"] == "us"
+
+    def test_redteam_instances_create_requires_fields(self, mock_client: Client) -> None:
+        """instances-create raises when a required field is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="tsg_id is required"):
+            redteam_instances_create_command(mock_client, {})
+        with pytest.raises(ValueError, match="tenant_id is required"):
+            redteam_instances_create_command(mock_client, {"tsg_id": "tsg-1"})
+        with pytest.raises(ValueError, match="app_id is required"):
+            redteam_instances_create_command(mock_client, {"tsg_id": "tsg-1", "tenant_id": "tn-1"})
+        with pytest.raises(ValueError, match="region is required"):
+            redteam_instances_create_command(mock_client, {"tsg_id": "tsg-1", "tenant_id": "tn-1", "app_id": "app-1"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_instances_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """instances-get reads a single instance from the mgmt plane by tenant_id.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "tsg_id": "tsg-1",
+            "tenant_id": "tn-1",
+            "app_id": "app-1",
+            "region": "us",
+            "tenant_instance_name": "inst-1",
+        }
+
+        result = redteam_instances_get_command(mock_client, {"tenant_id": "tn-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamInstanceGet"
+        assert result.outputs_key_field == "tenant_id"
+        assert result.outputs["tenant_id"] == "tn-1"
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/instances/tn-1"
+        assert kwargs["use_redteam_mgmt"] is True
+
+    def test_redteam_instances_get_requires_tenant_id(self, mock_client: Client) -> None:
+        """instances-get raises when tenant_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="tenant_id is required"):
+            redteam_instances_get_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_instances_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """instances-update fetches the current instance then PUTs a merged body preserving required fields.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.side_effect = [
+            # GET current instance
+            {"tsg_id": "tsg-1", "tenant_id": "tn-1", "app_id": "app-1", "region": "us"},
+            # PUT response
+            {"tsg_id": "tsg-1", "tenant_id": "tn-1", "app_id": "app-1", "is_success": True},
+        ]
+
+        result = redteam_instances_update_command(mock_client, {"tenant_id": "tn-1", "tenant_instance_name": "renamed"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamInstanceUpdate"
+        assert result.outputs_key_field == "tenant_id"
+        assert result.outputs["tenant_id"] == "tn-1"
+        # Second call is the PUT; it must preserve schema-required fields from GET
+        put_args, put_kwargs = mock_http.call_args_list[1]
+        assert put_kwargs["method"] == "PUT"
+        assert put_kwargs["url_suffix"] == "/v1/instances/tn-1"
+        assert put_kwargs["json_data"]["tsg_id"] == "tsg-1"
+        assert put_kwargs["json_data"]["app_id"] == "app-1"
+        assert put_kwargs["json_data"]["region"] == "us"
+        assert put_kwargs["json_data"]["tenant_instance_name"] == "renamed"
+
+    def test_redteam_instances_update_requires_tenant_id(self, mock_client: Client) -> None:
+        """instances-update raises when tenant_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="tenant_id is required"):
+            redteam_instances_update_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_instances_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """instances-delete removes an instance from the mgmt plane and renders a table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"tsg_id": "tsg-1", "tenant_id": "tn-1", "app_id": "app-1", "is_success": True}
+
+        result = redteam_instances_delete_command(mock_client, {"tenant_id": "tn-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamInstanceDelete"
+        assert result.outputs_key_field == "tenant_id"
+        assert result.outputs["tenant_id"] == "tn-1"
+        assert "|" in result.readable_output
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "DELETE"
+        assert kwargs["url_suffix"] == "/v1/instances/tn-1"
+        assert kwargs["use_redteam_mgmt"] is True
+
+    def test_redteam_instances_delete_requires_tenant_id(self, mock_client: Client) -> None:
+        """instances-delete raises when tenant_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="tenant_id is required"):
+            redteam_instances_delete_command(mock_client, {})
 
     @patch.object(Client, "http_request")
     def test_redteam_network_channels_list_command(self, mock_http: Mock, mock_client: Client) -> None:

@@ -4283,6 +4283,188 @@ There are no input arguments for this command.
 >| MS_COPILOT_STUDIO | id, name, is_custom |
 >| CUSTOM_TARGET_ADAPTER | id, name, is_custom |
 
+### prisma-airs-redteam-instances-create
+
+***
+Create a new Red Team tenant instance.
+
+#### Base Command
+
+`prisma-airs-redteam-instances-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tsg_id | The Tenant Service Group ID. | Required |
+| tenant_id | The tenant ID. | Required |
+| app_id | The application ID. | Required |
+| region | The instance region. | Required |
+| tenant_instance_name | The tenant instance name. | Optional |
+| support_account_id | The support account ID. | Optional |
+| support_account_name | The support account name. | Optional |
+| created_by | The identity that created the instance. | Optional |
+| internal | Whether the instance is internal. Possible values are: true, false. | Optional |
+| iam_controlled | Whether the instance is IAM controlled. Possible values are: true, false. | Optional |
+| platform_region | The platform region. | Optional |
+| csp_tenant_id | The cloud service provider tenant ID. | Optional |
+| extra | The additional instance attributes as a JSON string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamInstanceCreate.tenant_id | String | The tenant ID. |
+| PrismaAIRs.RedTeamInstanceCreate.tsg_id | String | The Tenant Service Group ID. |
+| PrismaAIRs.RedTeamInstanceCreate.app_id | String | The application ID. |
+| PrismaAIRs.RedTeamInstanceCreate.is_success | Boolean | Whether the instance was created successfully. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-instances-create tsg_id=tsg-12345 tenant_id=tn-67890 app_id=app-abcde region=us tenant_instance_name="Production Instance"
+```
+
+#### Human Readable Output
+
+>### Red Team Instance Created: tn-67890
+>
+>|Tenant Id|Tsg Id|App Id|Is Success|
+>|---|---|---|---|
+>| tn-67890 | tsg-12345 | app-abcde | true |
+
+### prisma-airs-redteam-instances-get
+
+***
+Get a Red Team tenant instance by tenant ID.
+
+#### Base Command
+
+`prisma-airs-redteam-instances-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_id | The tenant ID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamInstanceGet.tenant_id | String | The tenant ID. |
+| PrismaAIRs.RedTeamInstanceGet.tsg_id | String | The Tenant Service Group ID. |
+| PrismaAIRs.RedTeamInstanceGet.app_id | String | The application ID. |
+| PrismaAIRs.RedTeamInstanceGet.region | String | The instance region. |
+| PrismaAIRs.RedTeamInstanceGet.tenant_instance_name | String | The tenant instance name. |
+| PrismaAIRs.RedTeamInstanceGet.support_account_id | String | The support account ID. |
+| PrismaAIRs.RedTeamInstanceGet.support_account_name | String | The support account name. |
+| PrismaAIRs.RedTeamInstanceGet.created_by | String | The identity that created the instance. |
+| PrismaAIRs.RedTeamInstanceGet.internal | Boolean | Whether the instance is internal. |
+| PrismaAIRs.RedTeamInstanceGet.deployment_profiles | Unknown | The deployment profiles associated with the instance. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-instances-get tenant_id=tn-67890
+```
+
+#### Human Readable Output
+
+>### Red Team Instance: Production Instance
+>
+>|Tenant Id|Tsg Id|App Id|Region|Tenant Instance Name|Created By|
+>|---|---|---|---|---|---|
+>| tn-67890 | tsg-12345 | app-abcde | us | Production Instance | admin@example.com |
+
+### prisma-airs-redteam-instances-update
+
+***
+Update an existing Red Team tenant instance.
+
+#### Base Command
+
+`prisma-airs-redteam-instances-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_id | The tenant ID of the instance to update. | Required |
+| tsg_id | The new Tenant Service Group ID. | Optional |
+| app_id | The new application ID. | Optional |
+| region | The new instance region. | Optional |
+| tenant_instance_name | The new tenant instance name. | Optional |
+| support_account_id | The new support account ID. | Optional |
+| support_account_name | The new support account name. | Optional |
+| created_by | The identity that created the instance. | Optional |
+| internal | Whether the instance is internal. Possible values are: true, false. | Optional |
+| iam_controlled | Whether the instance is IAM controlled. Possible values are: true, false. | Optional |
+| platform_region | The new platform region. | Optional |
+| csp_tenant_id | The new cloud service provider tenant ID. | Optional |
+| extra | The additional instance attributes as a JSON string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamInstanceUpdate.tenant_id | String | The tenant ID. |
+| PrismaAIRs.RedTeamInstanceUpdate.tsg_id | String | The Tenant Service Group ID. |
+| PrismaAIRs.RedTeamInstanceUpdate.app_id | String | The application ID. |
+| PrismaAIRs.RedTeamInstanceUpdate.is_success | Boolean | Whether the instance was updated successfully. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-instances-update tenant_id=tn-67890 tenant_instance_name="Renamed Instance"
+```
+
+#### Human Readable Output
+
+>### Red Team Instance Updated: tn-67890
+>
+>|Tenant Id|Tsg Id|App Id|Is Success|
+>|---|---|---|---|
+>| tn-67890 | tsg-12345 | app-abcde | true |
+
+### prisma-airs-redteam-instances-delete
+
+***
+Delete a Red Team tenant instance. This permanently removes the instance and cannot be undone.
+
+#### Base Command
+
+`prisma-airs-redteam-instances-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tenant_id | The tenant ID of the instance to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamInstanceDelete.tenant_id | String | The deleted tenant ID. |
+| PrismaAIRs.RedTeamInstanceDelete.tsg_id | String | The Tenant Service Group ID. |
+| PrismaAIRs.RedTeamInstanceDelete.app_id | String | The application ID. |
+| PrismaAIRs.RedTeamInstanceDelete.is_success | Boolean | Whether the instance was deleted successfully. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-instances-delete tenant_id=tn-67890
+```
+
+#### Human Readable Output
+
+>### Red Team Instance Deleted: tn-67890
+>
+>|Tenant Id|Tsg Id|App Id|Is Success|
+>|---|---|---|---|
+>| tn-67890 | tsg-12345 | app-abcde | true |
+
 ### prisma-airs-redteam-scan-create
 
 ***

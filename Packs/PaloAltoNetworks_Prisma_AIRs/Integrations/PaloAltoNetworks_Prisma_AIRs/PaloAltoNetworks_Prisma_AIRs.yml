@@ -4070,6 +4070,189 @@ script:
     - contextPath: PrismaAIRs.RedTeamTargetTemplate
       description: The provider-keyed dictionary of target configuration templates.
       type: Unknown
+  - name: prisma-airs-redteam-instances-create
+    description: Create a new Red Team tenant instance.
+    arguments:
+    - name: tsg_id
+      required: true
+      description: The Tenant Service Group ID.
+    - name: tenant_id
+      required: true
+      description: The tenant ID.
+    - name: app_id
+      required: true
+      description: The application ID.
+    - name: region
+      required: true
+      description: The instance region.
+    - name: tenant_instance_name
+      required: false
+      description: The tenant instance name.
+    - name: support_account_id
+      required: false
+      description: The support account ID.
+    - name: support_account_name
+      required: false
+      description: The support account name.
+    - name: created_by
+      required: false
+      description: The identity that created the instance.
+    - name: internal
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether the instance is internal.
+    - name: iam_controlled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether the instance is IAM controlled.
+    - name: platform_region
+      required: false
+      description: The platform region.
+    - name: csp_tenant_id
+      required: false
+      description: The cloud service provider tenant ID.
+    - name: extra
+      required: false
+      description: The additional instance attributes as a JSON string.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamInstanceCreate.tenant_id
+      description: The tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceCreate.tsg_id
+      description: The Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceCreate.app_id
+      description: The application ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceCreate.is_success
+      description: Whether the instance was created successfully.
+      type: Boolean
+  - name: prisma-airs-redteam-instances-get
+    description: Get a Red Team tenant instance by tenant ID.
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.tenant_id
+      description: The tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.tsg_id
+      description: The Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.app_id
+      description: The application ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.region
+      description: The instance region.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.tenant_instance_name
+      description: The tenant instance name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.support_account_id
+      description: The support account ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.support_account_name
+      description: The support account name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.created_by
+      description: The identity that created the instance.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.internal
+      description: Whether the instance is internal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.deployment_profiles
+      description: The deployment profiles associated with the instance.
+      type: Unknown
+  - name: prisma-airs-redteam-instances-update
+    description: Update an existing Red Team tenant instance.
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the instance to update.
+    - name: tsg_id
+      required: false
+      description: The new Tenant Service Group ID.
+    - name: app_id
+      required: false
+      description: The new application ID.
+    - name: region
+      required: false
+      description: The new instance region.
+    - name: tenant_instance_name
+      required: false
+      description: The new tenant instance name.
+    - name: support_account_id
+      required: false
+      description: The new support account ID.
+    - name: support_account_name
+      required: false
+      description: The new support account name.
+    - name: created_by
+      required: false
+      description: The identity that created the instance.
+    - name: internal
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether the instance is internal.
+    - name: iam_controlled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether the instance is IAM controlled.
+    - name: platform_region
+      required: false
+      description: The new platform region.
+    - name: csp_tenant_id
+      required: false
+      description: The new cloud service provider tenant ID.
+    - name: extra
+      required: false
+      description: The additional instance attributes as a JSON string.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamInstanceUpdate.tenant_id
+      description: The tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceUpdate.tsg_id
+      description: The Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceUpdate.app_id
+      description: The application ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceUpdate.is_success
+      description: Whether the instance was updated successfully.
+      type: Boolean
+  - name: prisma-airs-redteam-instances-delete
+    execution: true
+    description: Delete a Red Team tenant instance. This permanently removes the instance and cannot be undone.
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the instance to delete.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamInstanceDelete.tenant_id
+      description: The deleted tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceDelete.tsg_id
+      description: The Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceDelete.app_id
+      description: The application ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceDelete.is_success
+      description: Whether the instance was deleted successfully.
+      type: Boolean
   - name: prisma-airs-redteam-scan-create
     description: Create a new Red Team scan job. This command submits the scan and returns immediately without polling. Use prisma-airs-redteam-scan-get to check status.
     arguments:

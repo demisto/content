@@ -31,6 +31,8 @@ RED_TEAM_CUSTOM_ATTACKS_ENDPOINT = "/v1/custom-attacks"
 RED_TEAM_CUSTOM_ATTACK_ENDPOINT = "/v1/custom-attack"  # For prompts within prompt sets
 RED_TEAM_EULA_ENDPOINT = "/v1/eula"
 RED_TEAM_REGISTRY_CREDENTIALS_ENDPOINT = "/v1/registry-credentials"
+# Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_INSTANCES_PATH)
+RED_TEAM_INSTANCES_ENDPOINT = "/v1/instances"
 RED_TEAM_TEMPLATE_ENDPOINT = "/v1/template"
 # Supported languages endpoint - identical path served on both the data plane and the mgmt plane.
 # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_LANGUAGES_PATH)
@@ -4624,6 +4626,272 @@ def redteam_targets_delete_command(client: Client, args: dict[str, Any]) -> Comm
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetDelete",
         outputs_key_field="uuid",
+        outputs=delete_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_instances_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new Red Team tenant instance.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Required fields per InstanceRequestSchema
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (InstanceRequestSchema)
+    tsg_id = args.get("tsg_id")
+    tenant_id = args.get("tenant_id")
+    app_id = args.get("app_id")
+    region = args.get("region")
+    if not tsg_id:
+        raise ValueError("tsg_id is required")
+    if not tenant_id:
+        raise ValueError("tenant_id is required")
+    if not app_id:
+        raise ValueError("app_id is required")
+    if not region:
+        raise ValueError("region is required")
+
+    request_body: dict[str, Any] = {
+        "tsg_id": tsg_id,
+        "tenant_id": tenant_id,
+        "app_id": app_id,
+        "region": region,
+    }
+
+    # Optional fields
+    if args.get("support_account_id"):
+        request_body["support_account_id"] = args.get("support_account_id")
+    if args.get("support_account_name"):
+        request_body["support_account_name"] = args.get("support_account_name")
+    if args.get("created_by"):
+        request_body["created_by"] = args.get("created_by")
+    if args.get("internal") is not None:
+        request_body["internal"] = argToBoolean(args.get("internal"))
+    if args.get("tenant_instance_name"):
+        request_body["tenant_instance_name"] = args.get("tenant_instance_name")
+    if args.get("iam_controlled") is not None:
+        request_body["iam_controlled"] = argToBoolean(args.get("iam_controlled"))
+    if args.get("platform_region"):
+        request_body["platform_region"] = args.get("platform_region")
+    if args.get("csp_tenant_id"):
+        request_body["csp_tenant_id"] = args.get("csp_tenant_id")
+    if args.get("extra"):
+        request_body["extra"] = json.loads(args.get("extra", ""))
+
+    # Call Red Team instance create endpoint (management plane)
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/instances-client.ts (createInstance)
+    # SDK schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (InstanceResponseSchema)
+    response = client.http_request(
+        method="POST", url_suffix=RED_TEAM_INSTANCES_ENDPOINT, json_data=request_body, use_redteam_mgmt=True
+    )
+
+    instance_info = {
+        "tsg_id": response.get("tsg_id"),
+        "tenant_id": response.get("tenant_id", tenant_id),
+        "app_id": response.get("app_id"),
+        "is_success": response.get("is_success"),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Red Team Instance Created: {tenant_id}",
+        [instance_info],
+        headers=["tenant_id", "tsg_id", "app_id", "is_success"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamInstanceCreate",
+        outputs_key_field="tenant_id",
+        outputs=instance_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_instances_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a Red Team tenant instance by tenant ID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    tenant_id = args.get("tenant_id")
+    if not tenant_id:
+        raise ValueError("tenant_id is required")
+
+    # Call Red Team instance get endpoint (management plane)
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/instances-client.ts (getInstance)
+    # SDK schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (InstanceGetResponseSchema)
+    response = client.http_request(
+        method="GET", url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}", use_redteam_mgmt=True
+    )
+
+    instance_info = {
+        "tsg_id": response.get("tsg_id"),
+        "tenant_id": response.get("tenant_id"),
+        "app_id": response.get("app_id"),
+        "region": response.get("region"),
+        "support_account_id": response.get("support_account_id"),
+        "support_account_name": response.get("support_account_name"),
+        "created_by": response.get("created_by"),
+        "internal": response.get("internal"),
+        "tenant_instance_name": response.get("tenant_instance_name"),
+    }
+
+    # Include nested deployment profiles if present
+    deployment_profiles = response.get("deployment_profiles")
+    if deployment_profiles:
+        instance_info["deployment_profiles"] = deployment_profiles
+
+    readable_output = tableToMarkdown(
+        f"Red Team Instance: {instance_info.get('tenant_instance_name') or tenant_id}",
+        [instance_info],
+        headers=["tenant_id", "tsg_id", "app_id", "region", "tenant_instance_name", "created_by"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamInstanceGet",
+        outputs_key_field="tenant_id",
+        outputs=instance_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_instances_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update an existing Red Team tenant instance.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    tenant_id = args.get("tenant_id")
+    if not tenant_id:
+        raise ValueError("tenant_id is required")
+
+    # InstanceRequestSchema requires tsg_id/tenant_id/app_id/region, so fetch the current
+    # instance to preserve any required fields the caller does not override.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/instances-client.ts (updateInstance)
+    current = client.http_request(
+        method="GET", url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}", use_redteam_mgmt=True
+    )
+
+    request_body: dict[str, Any] = {
+        "tsg_id": args.get("tsg_id") or current.get("tsg_id"),
+        "tenant_id": tenant_id,
+        "app_id": args.get("app_id") or current.get("app_id"),
+        "region": args.get("region") or current.get("region"),
+    }
+
+    # Preserve existing optional fields returned by GET unless overridden below
+    for field in ("support_account_id", "support_account_name", "created_by", "internal", "tenant_instance_name"):
+        if current.get(field) is not None:
+            request_body[field] = current.get(field)
+
+    # Optional overrides
+    if args.get("support_account_id"):
+        request_body["support_account_id"] = args.get("support_account_id")
+    if args.get("support_account_name"):
+        request_body["support_account_name"] = args.get("support_account_name")
+    if args.get("created_by"):
+        request_body["created_by"] = args.get("created_by")
+    if args.get("internal") is not None:
+        request_body["internal"] = argToBoolean(args.get("internal"))
+    if args.get("tenant_instance_name"):
+        request_body["tenant_instance_name"] = args.get("tenant_instance_name")
+    if args.get("iam_controlled") is not None:
+        request_body["iam_controlled"] = argToBoolean(args.get("iam_controlled"))
+    if args.get("platform_region"):
+        request_body["platform_region"] = args.get("platform_region")
+    if args.get("csp_tenant_id"):
+        request_body["csp_tenant_id"] = args.get("csp_tenant_id")
+    if args.get("extra"):
+        request_body["extra"] = json.loads(args.get("extra", ""))
+
+    # Call Red Team instance update endpoint (management plane)
+    # SDK schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (InstanceResponseSchema)
+    response = client.http_request(
+        method="PUT", url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}", json_data=request_body, use_redteam_mgmt=True
+    )
+
+    instance_info = {
+        "tsg_id": response.get("tsg_id"),
+        "tenant_id": response.get("tenant_id", tenant_id),
+        "app_id": response.get("app_id"),
+        "is_success": response.get("is_success"),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Red Team Instance Updated: {tenant_id}",
+        [instance_info],
+        headers=["tenant_id", "tsg_id", "app_id", "is_success"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamInstanceUpdate",
+        outputs_key_field="tenant_id",
+        outputs=instance_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_instances_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a Red Team tenant instance.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    tenant_id = args.get("tenant_id")
+    if not tenant_id:
+        raise ValueError("tenant_id is required")
+
+    # Call Red Team instance delete endpoint (management plane)
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/instances-client.ts (deleteInstance)
+    # SDK schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (InstanceResponseSchema)
+    response = client.http_request(
+        method="DELETE", url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}", use_redteam_mgmt=True
+    )
+
+    delete_info = {
+        "tenant_id": response.get("tenant_id", tenant_id),
+        "tsg_id": response.get("tsg_id"),
+        "app_id": response.get("app_id"),
+        "is_success": response.get("is_success", True),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Red Team Instance Deleted: {tenant_id}",
+        [delete_info],
+        headers=["tenant_id", "tsg_id", "app_id", "is_success"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamInstanceDelete",
+        outputs_key_field="tenant_id",
         outputs=delete_info,
         readable_output=readable_output,
         raw_response=response,
@@ -10756,6 +11024,18 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-targets-templates":
             return_results(redteam_targets_templates_command(client, args))
+
+        elif command == "prisma-airs-redteam-instances-create":
+            return_results(redteam_instances_create_command(client, args))
+
+        elif command == "prisma-airs-redteam-instances-get":
+            return_results(redteam_instances_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-instances-update":
+            return_results(redteam_instances_update_command(client, args))
+
+        elif command == "prisma-airs-redteam-instances-delete":
+            return_results(redteam_instances_delete_command(client, args))
 
         elif command == "prisma-airs-redteam-scan-create":
             return_results(redteam_scan_create_command(client, args))
