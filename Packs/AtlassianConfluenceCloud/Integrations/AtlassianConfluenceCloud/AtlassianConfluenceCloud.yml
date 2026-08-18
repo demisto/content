@@ -68,6 +68,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - defaultvalue: 10000
   section: Collect
   display: Max number of events per fetch
@@ -76,6 +78,8 @@ configuration:
   type: 0
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 - display: Fetch Events
   defaultvalue: 'false'
   name: isFetchEvents
@@ -84,6 +88,8 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
 description: Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users, and groups. Users can also manage the space permissions.
 display: Atlassian Confluence Cloud
 name: Atlassian Confluence Cloud
@@ -143,7 +149,7 @@ script:
       description: The account ID of the page author.
       type: String
     - contextPath: ConfluenceCloud.Page.createdAt
-      description: Date and time, in ISO 8601 format, when the page was created.
+      description: Date and time, in ISO 8601 format, when the page was created (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Page.version.number
       description: The version number of the page.
@@ -203,7 +209,7 @@ script:
       description: The account ID of the page author.
       type: String
     - contextPath: ConfluenceCloud.Page.createdAt
-      description: Date and time, in ISO 8601 format, when the page was created.
+      description: Date and time, in ISO 8601 format, when the page was created (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.PageToken.Content.next_page_token
       description: The cursor to use for fetching the next page of results.
@@ -332,7 +338,7 @@ script:
       description: The account ID of the blog post author.
       type: String
     - contextPath: ConfluenceCloud.Blogpost.createdAt
-      description: Date and time, in ISO 8601 format, when the blog post was created.
+      description: Date and time, in ISO 8601 format, when the blog post was created (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Blogpost.version.number
       description: The version number of the blog post.
@@ -381,7 +387,7 @@ script:
       description: The account ID of the blog post author.
       type: String
     - contextPath: ConfluenceCloud.Blogpost.createdAt
-      description: Date and time, in ISO 8601 format, when the blog post was created.
+      description: Date and time, in ISO 8601 format, when the blog post was created (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.PageToken.Content.next_page_token
       description: The cursor to use for fetching the next page of results.
@@ -938,7 +944,7 @@ script:
       description: Link to the creator of the content.
       type: String
     - contextPath: ConfluenceCloud.Content.history.createdDate
-      description: Date and time, in ISO 8601 format, when the content was created.
+      description: Date and time, in ISO 8601 format, when the content was created (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Content.history._links.self
       description: Link to the history of the content.
@@ -980,7 +986,7 @@ script:
       description: Link to the user who last updated the content.
       type: String
     - contextPath: ConfluenceCloud.Content.version.when
-      description: Date and time, in ISO 8601 format, when the content was updated.
+      description: Date and time, in ISO 8601 format, when the content was updated (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Content.version.friendlyWhen
       description: Displays when the content was created.
@@ -1227,7 +1233,7 @@ script:
       description: Link to the creator of the comment.
       type: String
     - contextPath: ConfluenceCloud.Comment.history.createdDate
-      description: Date and time, in ISO 8601 format, when the comment was created.
+      description: Date and time, in ISO 8601 format, when the comment was created (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Comment.history._links.self
       description: Link to the history of the comment.
@@ -1269,7 +1275,7 @@ script:
       description: Link to the user who last updated the comment.
       type: String
     - contextPath: ConfluenceCloud.Comment.version.when
-      description: Date and time, in ISO 8601 format, when the comment was updated.
+      description: Date and time, in ISO 8601 format, when the comment was updated (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Comment.version.friendlyWhen
       description: Displays when the content was created.
@@ -1717,7 +1723,7 @@ script:
       description: Link to the creator of the content.
       type: String
     - contextPath: ConfluenceCloud.Content.history.createdDate
-      description: Date and time, in ISO 8601 format, when the content was created.
+      description: Date and time, in ISO 8601 format, when the content was created (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Content.history._links.self
       description: Link to the history of the content.
@@ -1759,7 +1765,7 @@ script:
       description: Link to the user who last updated the content.
       type: String
     - contextPath: ConfluenceCloud.Content.version.when
-      description: Date and time, in ISO 8601 format, when the content was updated.
+      description: Date and time, in ISO 8601 format, when the content was updated (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Content.version.friendlyWhen
       description: Displays when the content was created.
@@ -2013,7 +2019,7 @@ script:
       description: Link to the creator of the content.
       type: String
     - contextPath: ConfluenceCloud.Content.history.createdDate
-      description: Date and time, in ISO 8601 format, when the content was created.
+      description: Date and time, in ISO 8601 format, when the content was created (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Content.history._links.self
       description: Link to the history of the content.
@@ -2055,7 +2061,7 @@ script:
       description: Link to the user who last updated the content.
       type: String
     - contextPath: ConfluenceCloud.Content.version.when
-      description: Date and time, in ISO 8601 format, when the content was updated.
+      description: Date and time, in ISO 8601 format, when the content was updated (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Content.version.friendlyWhen
       description: Display the information of when the content was created.
@@ -2281,7 +2287,7 @@ script:
       description: Link to the creator of the content.
       type: String
     - contextPath: ConfluenceCloud.Content.history.createdDate
-      description: Date and time, in ISO 8601 format, when the content was created.
+      description: Date and time, in ISO 8601 format, when the content was created (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Content.history._links.self
       description: Link to the history of the content.
@@ -2323,7 +2329,7 @@ script:
       description: Link to the user who last updated the content.
       type: String
     - contextPath: ConfluenceCloud.Content.version.when
-      description: Date and time, in ISO 8601 format, when the content was updated.
+      description: Date and time, in ISO 8601 format, when the content was updated (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: ConfluenceCloud.Content.version.friendlyWhen
       description: Displays when the content was created.
@@ -2502,7 +2508,7 @@ script:
     - name: limit
       description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
     name: confluence-cloud-get-events
-    description: Retrieves a list of events from the Atlassian Confluence Cloud instance.
+    description: Retrieves a list of events from the Atlassian Confluence Cloud instance. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     outputs:
     - contextPath: ConfluenceCloud.Event.author.type
       description: The type of author who created this event.

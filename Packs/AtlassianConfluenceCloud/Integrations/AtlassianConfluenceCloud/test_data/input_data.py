@@ -43,7 +43,7 @@ MESSAGES = {
     "INVALID_SPACE_TYPE_V2": "Invalid value for type. Type must be one of 'global' or 'personal'.",
     "INVALID_DESCRIPTION_FORMAT_V2": "Invalid value for description_format. Description format must be one of "
     "'plain' or 'view'.",
-    "INVALID_LIMIT_V2": "{} is an invalid value for limit. Limit must be between 1 and 250.",
+    "INVALID_LIMIT_V2": "{} is an invalid value for limit. Limit must be a positive integer (greater than 0).",
 }
 
 exception_handler_params = [
@@ -220,13 +220,16 @@ content_update_invalid_arg_value = [
 # --- REST API v2 invalid argument test data ---
 content_create_v2_invalid_args = [
     ({"space_id": "", "title": "abc"}, MESSAGES["REQUIRED_ARGUMENT"].format("space_id")),
-    ({"space_id": "123", "title": "abc", "status": "invalid"}, MESSAGES["INVALID_STATUS_CREATE_V2"]),
-    ({"space_id": "123", "title": "abc", "body_representation": "invalid"}, MESSAGES["INVALID_BODY_REPRESENTATION_V2"]),
+    ({"space_id": "123", "title": "abc", "status": "invalid"}, f"{MESSAGES['INVALID_STATUS_CREATE_V2']} Received: 'invalid'."),
+    (
+        {"space_id": "123", "title": "abc", "body_representation": "invalid"},
+        f"{MESSAGES['INVALID_BODY_REPRESENTATION_V2']} Received: 'invalid'.",
+    ),
 ]
 
 content_list_v2_invalid_args = [
     ({"limit": 0}, MESSAGES["INVALID_LIMIT_V2"].format(0)),
-    ({"limit": 251}, MESSAGES["INVALID_LIMIT_V2"].format(251)),
+    ({"limit": -5}, MESSAGES["INVALID_LIMIT_V2"].format(-5)),
     ({"status": "invalid"}, MESSAGES["INVALID_PAGE_STATUS_LIST_V2"]),
     ({"subtype": "invalid"}, MESSAGES["INVALID_SUBTYPE_FILTER_V2"]),
 ]

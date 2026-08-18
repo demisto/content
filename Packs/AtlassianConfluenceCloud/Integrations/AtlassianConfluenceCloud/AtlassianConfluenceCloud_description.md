@@ -21,9 +21,9 @@ OAuth 2.0 provides a more secure authentication method using the Atlassian Devel
 
 #### Create an OAuth 2.0 App
 1. Go to the [Atlassian Developer Console](https://developer.atlassian.com/console/myapps/)
-2. Click "Create" and select "OAuth 2.0 integration"
-3. Enter a name for your app and click "Create"
-4. Navigate to "Permissions" and add the required Confluence API scopes. The integration uses the Confluence REST API v2 and requires the following granular scopes:
+2. Click **Create** and select **OAuth 2.0 integration**
+3. Enter a name for your app and click **Create**
+4. Navigate to **Permissions** and add the required Confluence API scopes. The integration uses the Confluence REST API v2 and requires the following granular scopes:
    - `read:audit-log:confluence` — **Required for event fetching** (audit log access)
    - `read:content:confluence`, `write:content:confluence`, `delete:content:confluence` — Read, write, and delete content
    - `read:content-details:confluence` — Read content details
@@ -36,8 +36,8 @@ OAuth 2.0 provides a more secure authentication method using the Atlassian Devel
    - `read:space-details:confluence` — Read space details
    - `read:group:confluence` — Read group information
    - `offline_access` — Enables refresh token for unattended access
-5. Navigate to "Authorization" and configure the callback URL
-6. Navigate to "Settings" to find your Client ID and Client Secret
+5. Navigate to **Authorization** and configure the callback URL
+6. Navigate to **Settings** to find your Client ID and Client Secret
 
 #### Find Your Cloud ID
 Your Cloud ID can be found by:
@@ -46,9 +46,9 @@ Your Cloud ID can be found by:
 3. The `cloudId` field contains your Cloud ID
 
 #### Configure the Integration
-1. Select "oauth" as the Authentication Type
+1. Select **oauth** as the **Authentication Type**
 2. Enter your Client ID
 3. Enter your Client Secret
 4. Enter your Cloud ID
 
-> **Note:** If you are upgrading from a previous version, the new Confluence REST API v2 commands (pages, blog posts, footer comments, and spaces) require additional granular OAuth scopes. After adding the scopes listed above to your OAuth 2.0 app in the Atlassian Developer Console, you must re-authenticate by running `!confluence-cloud-oauth-start` and `!confluence-cloud-oauth-complete` again so the access token is reissued with the new permissions.
+> **Note:** Upgrading from a previous version? The new REST API v2 commands (pages, blog posts, footer comments, and spaces) need additional granular OAuth scopes. Add the scopes listed above to your OAuth 2.0 app, then re-authenticate by running `!confluence-cloud-oauth-start` and `!confluence-cloud-oauth-complete`. This reissues the access token with the new permissions.

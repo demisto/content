@@ -69,6 +69,7 @@ MESSAGES = {
     "PERMISSION_FORMAT": "Please provide the permission in the valid JSON format. "
     "Format accepted - 'operation1:targetType1,operation2:targetType2'",
     "ADVANCE_PERMISSION_FORMAT": "Please provide the 'advanced_permissions' in the valid JSON format. ",
+    "INVALID_ROLE_ASSIGNMENTS_V2": "Please provide the 'role_assignments' argument in valid JSON format.",
     "INVALID_SPACE_STATUS": "Invalid value for status. Status must be one of 'current' or 'archived'.",
     "INVALID_CONTENT_TYPE_UPDATE_CONTENT": "Invalid value for content type. Content type parameter can be 'page', "
     "'blogpost', 'comment' or 'attachment'.",
@@ -88,6 +89,7 @@ MESSAGES = {
     "INVALID_BODY_FORMAT_V2": "Invalid value for body_format. Body format must be one of 'storage', "
     "'atlas_doc_format' or 'view'.",
     "INVALID_STATUS_CREATE_V2": "Invalid value for status. Status must be one of 'current' or 'draft'.",
+    "INVALID_STATUS_UPDATE_V2": "Invalid value for status. Status must be one of 'current' or 'draft'.",
     "INVALID_PAGE_STATUS_LIST_V2": "Invalid value for status. Status must be one of 'current', 'archived', "
     "'deleted' or 'trashed'.",
     "INVALID_PAGE_STATUS_SINGLE_V2": "Invalid value for status. Status must be one of 'current', 'archived', "
@@ -103,7 +105,7 @@ MESSAGES = {
     "INVALID_SPACE_STATUS_V2": "Invalid value for status. Status must be one of 'current' or 'archived'.",
     "INVALID_DESCRIPTION_FORMAT_V2": "Invalid value for description_format. Description format must be one of "
     "'plain' or 'view'.",
-    "INVALID_LIMIT_V2": "{} is an invalid value for limit. Limit must be between 1 and 250.",
+    "INVALID_LIMIT_V2": "{} is an invalid value for limit. Limit must be a positive integer (greater than 0).",
     "HR_PAGE_CREATE": "Page with ID {} was created successfully.",
     "HR_PAGE_UPDATE": "Page with ID {} was updated successfully.",
     "HR_PAGE_DELETE": "Page with ID {} was deleted successfully.",
@@ -634,7 +636,7 @@ def prepare_hr_for_content_search(contents: list, url_prefix: str) -> str:
             "Space Name": content.get("space", {}).get("name", ""),
             "Created By": content.get("history", {}).get("createdBy", {}).get("displayName", ""),
             "Created At": content.get("history", {}).get("createdDate", ""),
-            "Version": content.get("version", {}).get("number", ""),
+            "Version": (content.get("version") or {}).get("number", ""),
         }
 
         hr_list.append(hr_record)
@@ -1108,6 +1110,48 @@ def prepare_cursor_from_link_header(response: requests.Response) -> str:
     return ""
 
 
+def paginate_v2_results(
+    client: "Client", url_suffix: str, params: dict[str, Any], limit: int
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """
+    Retrieve v2 list results, automatically following the ``Link: rel="next"`` cursor
+    until ``limit`` records are accumulated or there are no more pages.
+
+    The Confluence REST API v2 caps a single page at ``MAX_LIMIT_V2`` (250) results, so this
+    helper transparently issues additional requests to satisfy larger ``limit`` values.
+
+    :type client: ``Client``
+    :param client: Client object used to issue the HTTP requests.
+    :type url_suffix: ``str``
+    :param url_suffix: The v2 endpoint URL suffix to query.
+    :type params: ``Dict[str, Any]``
+    :param params: The base query parameters (the per-request ``limit`` is managed internally).
+    :type limit: ``int``
+    :param limit: The total number of records the caller wants to accumulate.
+
+    :return: A tuple of (accumulated results, last page's raw JSON response).
+    :rtype: ``Tuple[List[Dict[str, Any]], Dict[str, Any]]``
+    """
+    accumulated: list[dict[str, Any]] = []
+    request_params = dict(params)
+    response_json: dict[str, Any] = {}
+
+    while len(accumulated) < limit:
+        request_params["limit"] = min(MAX_LIMIT_V2, limit - len(accumulated))
+
+        response = client.http_request(method="GET", url_suffix=url_suffix, params=request_params)
+        response_json = response.json()
+        page_results = response_json.get("results", [])
+        accumulated.extend(page_results)
+
+        next_cursor = prepare_cursor_from_link_header(response)
+        if not next_cursor or not page_results:
+            break
+        request_params["cursor"] = next_cursor
+
+    return accumulated[:limit], response_json
+
+
 def validate_limit_v2(args: dict[str, str]) -> Optional[int]:
     """
     Validate and normalize the ``limit`` argument for v2 list commands.
@@ -1121,7 +1165,7 @@ def validate_limit_v2(args: dict[str, str]) -> Optional[int]:
     limit = arg_to_number(args.get("limit"), arg_name="limit")
     if limit is None:
         return None
-    if limit < MIN_LIMIT_V2 or limit > MAX_LIMIT_V2:
+    if limit < MIN_LIMIT_V2:
         raise ValueError(MESSAGES["INVALID_LIMIT_V2"].format(limit))
     return limit
 
@@ -1149,7 +1193,7 @@ def prepare_content_body_v2(args: dict[str, str], legal_representations: list[st
 
     representation = args.get("body_representation", "storage").lower()
     if representation not in legal_representations:
-        raise ValueError(MESSAGES[message_key])
+        raise ValueError(f"{MESSAGES[message_key]} Received: '{representation}'.")
 
     return {"representation": representation, "value": body_value}
 
@@ -1168,11 +1212,11 @@ def validate_content_create_args_v2(args: dict[str, str]) -> None:
 
     status = args.get("status", "current").lower()
     if status not in LEGAL_STATUS_CREATE_V2:
-        raise ValueError(MESSAGES["INVALID_STATUS_CREATE_V2"])
+        raise ValueError(f"{MESSAGES['INVALID_STATUS_CREATE_V2']} Received: '{status}'.")
 
     representation = args.get("body_representation", "storage").lower()
     if representation not in LEGAL_BODY_REPRESENTATION_V2:
-        raise ValueError(MESSAGES["INVALID_BODY_REPRESENTATION_V2"])
+        raise ValueError(f"{MESSAGES['INVALID_BODY_REPRESENTATION_V2']} Received: '{representation}'.")
 
 
 def prepare_content_create_params_v2(args: dict[str, str]) -> dict[str, Any]:
@@ -1222,11 +1266,11 @@ def validate_content_update_args_v2(args: dict[str, str], config: dict[str, Any]
 
     status = args.get("status", "current").lower()
     if status not in LEGAL_STATUS_UPDATE_V2:
-        raise ValueError(MESSAGES["INVALID_STATUS_CREATE_V2"])
+        raise ValueError(f"{MESSAGES['INVALID_STATUS_UPDATE_V2']} Received: '{status}'.")
 
     representation = args.get("body_representation", "storage").lower()
     if representation not in LEGAL_BODY_REPRESENTATION_V2:
-        raise ValueError(MESSAGES["INVALID_BODY_REPRESENTATION_V2"])
+        raise ValueError(f"{MESSAGES['INVALID_BODY_REPRESENTATION_V2']} Received: '{representation}'.")
 
 
 def prepare_content_update_params_v2(args: dict[str, str], config: dict[str, Any]) -> dict[str, Any]:
@@ -1299,16 +1343,16 @@ def prepare_content_list_params_v2(args: dict[str, str], config: dict[str, Any])
     :rtype: ``Dict[str, Any]``
     """
     validate_content_list_args_v2(args, config)
-    limit = validate_limit_v2(args) or DEFAULT_LIMIT_V2
+    # The per-page ``limit`` is managed by ``paginate_v2_results`` so that the user-supplied
+    # ``limit`` represents the total number of records accumulated across all pages.
+    validate_limit_v2(args)
 
     params: dict[str, Any] = {
-        "limit": limit,
         "id": argToList(args.get("id")),
         "space-id": argToList(args.get("space_id")),
         "status": argToList(args.get("status")),
         "title": args.get("title"),
         "sort": args.get("sort"),
-        "cursor": args.get("cursor"),
     }
 
     if config["supports_subtype_filter"] and args.get("subtype"):
@@ -1336,7 +1380,7 @@ def prepare_hr_for_content_v2(content: dict[str, Any], label: str) -> str:
         "Space ID": content.get("spaceId", ""),
         "Author ID": content.get("authorId", ""),
         "Created At": content.get("createdAt", ""),
-        "Version": content.get("version", {}).get("number", ""),
+        "Version": (content.get("version") or {}).get("number", ""),
     }
     return tableToMarkdown(
         label, hr_record, ["ID", "Title", "Status", "Space ID", "Author ID", "Created At", "Version"], removeNull=True
@@ -1436,7 +1480,7 @@ def prepare_hr_for_comment_v2(comment: dict[str, Any], label: str) -> str:
         "Page ID": comment.get("pageId", ""),
         "Blog Post ID": comment.get("blogPostId", ""),
         "Parent Comment ID": comment.get("parentCommentId", ""),
-        "Version": comment.get("version", {}).get("number", ""),
+        "Version": (comment.get("version") or {}).get("number", ""),
     }
     return tableToMarkdown(
         label, hr_record, ["ID", "Status", "Page ID", "Blog Post ID", "Parent Comment ID", "Version"], removeNull=True
@@ -1474,16 +1518,16 @@ def prepare_space_list_params_v2(args: dict[str, str]) -> dict[str, Any]:
     :rtype: ``Dict[str, Any]``
     """
     validate_space_list_args_v2(args)
-    limit = validate_limit_v2(args) or DEFAULT_LIMIT_V2
+    # The per-page ``limit`` is managed by ``paginate_v2_results`` so that the user-supplied
+    # ``limit`` represents the total number of records accumulated across all pages.
+    validate_limit_v2(args)
 
     params = {
-        "limit": limit,
         "ids": argToList(args.get("ids")),
         "keys": argToList(args.get("keys")),
         "type": args.get("type"),
         "status": args.get("status"),
         "sort": args.get("sort"),
-        "cursor": args.get("cursor"),
     }
     return assign_params(**params)
 
@@ -1531,7 +1575,7 @@ def prepare_space_create_params_v2(args: dict[str, str]) -> dict[str, Any]:
         try:
             params["roleAssignments"] = json.loads(role_assignments)
         except (json.JSONDecodeError, TypeError):
-            raise ValueError(MESSAGES["ADVANCE_PERMISSION_FORMAT"])
+            raise ValueError(MESSAGES["INVALID_ROLE_ASSIGNMENTS_V2"])
 
     return assign_params(**params)
 
@@ -2065,25 +2109,18 @@ def confluence_cloud_content_list_command_v2(client: Client, args: dict[str, str
     """
     config = CONTENT_V2_CONFIG[content_type]
     params = prepare_content_list_params_v2(args, config)
+    # ``limit`` is the total number of records to return across all pages.
+    limit = validate_limit_v2(args) or DEFAULT_LIMIT_V2
 
-    response = client.http_request(method="GET", url_suffix=config["url_suffix"], params=params)
-    response_json = response.json()
-    total_records = response_json.get("results", [])
+    total_records, response_json = paginate_v2_results(client, config["url_suffix"], params, limit)
 
     if not total_records:
         return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format(f"{config['label'].lower()}(s)"))
 
     context = remove_empty_elements_for_context(total_records)
-    next_cursor = prepare_cursor_from_link_header(response)
-
     outputs: dict[str, Any] = {f"{config['output_prefix']}(val.id == obj.id)": context}
-    if next_cursor:
-        next_page_context = {"next_page_token": next_cursor, "name": f"confluence-cloud-{content_type}-list"}
-        outputs[f"{OUTPUT_PREFIX['PAGETOKEN']}(val.name == obj.name)"] = next_page_context
 
     readable_hr = prepare_hr_for_content_list_v2(total_records, config["label"])
-    if next_cursor:
-        readable_hr += f"\nRun the command with argument cursor={next_cursor} to see the next set of records.\n"
 
     return CommandResults(outputs=outputs, readable_output=readable_hr, raw_response=response_json)
 
@@ -2232,25 +2269,18 @@ def confluence_cloud_space_list_command_v2(client: Client, args: dict[str, str])
     :rtype: ``CommandResults``
     """
     params = prepare_space_list_params_v2(args)
+    # ``limit`` is the total number of records to return across all pages.
+    limit = validate_limit_v2(args) or DEFAULT_LIMIT_V2
 
-    response = client.http_request(method="GET", url_suffix=URL_SUFFIX_V2["SPACES"], params=params)
-    response_json = response.json()
-    total_records = response_json.get("results", [])
+    total_records, response_json = paginate_v2_results(client, URL_SUFFIX_V2["SPACES"], params, limit)
 
     if not total_records:
         return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("space(s)"))
 
     context = remove_empty_elements_for_context(total_records)
-    next_cursor = prepare_cursor_from_link_header(response)
-
     outputs: dict[str, Any] = {f"{OUTPUT_PREFIX['SPACE']}(val.id == obj.id)": context}
-    if next_cursor:
-        next_page_context = {"next_page_token": next_cursor, "name": "confluence-cloud-space-listv2"}
-        outputs[f"{OUTPUT_PREFIX['PAGETOKEN']}(val.name == obj.name)"] = next_page_context
 
     readable_hr = prepare_hr_for_space_list_v2(total_records)
-    if next_cursor:
-        readable_hr += f"\nRun the command with argument cursor={next_cursor} to see the next set of records.\n"
 
     return CommandResults(outputs=outputs, readable_output=readable_hr, raw_response=response_json)
 
