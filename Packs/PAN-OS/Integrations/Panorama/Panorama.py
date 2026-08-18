@@ -9082,7 +9082,7 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         raise DemistoException("Set a port for the instance")
 
     URL = params.get("server", "").rstrip("/:") + ":" + params.get("port", "") + "/api/"
-    API_KEY = ((params.get("credentials") or {}).get("password") or params.get("key") or "")  # type: ignore
+    API_KEY = (params.get("credentials") or {}).get("password") or params.get("key") or ""  # type: ignore
     if not API_KEY:
         raise Exception("API Key must be provided.")
     USE_SSL = not params.get("insecure")
@@ -13085,7 +13085,7 @@ def get_topology() -> Topology:
     port = arg_to_number(arg=params.get("port", "443"))
     parsed_url = urlparse(server_url)
     hostname = parsed_url.hostname
-    api_key = ((params.get("credentials") or {}).get("password") or params.get("key") or "")  # type: ignore
+    api_key = (params.get("credentials") or {}).get("password") or params.get("key") or ""  # type: ignore
 
     return Topology.build_from_string(hostname, username="", password="", api_key=api_key, port=port)
 
@@ -16303,7 +16303,7 @@ def log_types_queries_to_dict(params: dict[str, str]) -> QueryMap:
     # Code default: if no Log Types were selected (empty/None), treat as "All".
     # This handles existing/ConnectUs instances that never persisted a log_types value,
     # where a YML defaultvalue would not apply.
-    if log_types := (params.get("log_types") or ["All"]):
+    if log_types := (argToList(params.get("log_types")) or ["All"]):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if "All" in log_types else log_types
         queries_dict |= {  # type: ignore[assignment, typeddict-item]
@@ -16439,7 +16439,7 @@ def test_fetch_incidents_parameters(fetch_params):
     # Code default: if no Log Types were selected (empty/None), treat as "All".
     # This keeps existing/ConnectUs instances that never persisted a log_types value
     # from failing the test module, where a YML defaultvalue would not apply.
-    if log_types := (fetch_params.get("log_types") or ["All"]):
+    if log_types := (argToList(fetch_params.get("log_types")) or ["All"]):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if "All" in log_types else log_types
         if "match_time" in fetch_params.get("correlation_query", ""):
@@ -17256,4 +17256,3 @@ def main():  # pragma: no cover
 
 if __name__ in ["__builtin__", "builtins", "__main__"]:
     main()
-
