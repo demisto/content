@@ -1,5 +1,11 @@
 from CommonServerPython import *  # noqa: F401
 
+""" CONSTANTS """
+
+# The `getRawAlerts` command is only available from this server version onwards.
+# On older servers we fall back to the legacy `core-get-cloud-original-alerts` command.
+MIN_SERVER_VERSION_FOR_RAW_ALERTS = "8.16.0"
+
 """ COMMAND FUNCTION """
 
 
@@ -37,13 +43,23 @@ def get_additonal_info() -> List[Dict]:
 
 
 def verify_list_type(original_alert_data):
-    if isinstance(original_alert_data, list):
-        res = original_alert_data[0].get("EntryContext")
-        res["OriginalAlert"] = res.pop("Core.OriginalAlert(val.internal_id && val.internal_id == obj.internal_id)")
-        if isinstance(res["OriginalAlert"], list):
-            res["OriginalAlert"] = res["OriginalAlert"][0]
-        return res
-    return None
+    if not isinstance(original_alert_data, list) or not original_alert_data:
+        return None
+    entry_context = original_alert_data[0].get("EntryContext") or {}
+    # Both `getRawAlerts` (PCI) and the legacy `core-get-cloud-original-alerts` command
+    # write the alert under a DT-suffixed key under the `Core.OriginalAlert` root, e.g.
+    # "Core.OriginalAlert(val.InternalID && val.InternalID == obj.InternalID)".
+    # Match the prefix so we are resilient to the exact selector form (InternalID vs internal_id).
+    original_alert_key = next(
+        (key for key in entry_context if key.startswith("Core.OriginalAlert")),
+        None,
+    )
+    if not original_alert_key:
+        return None
+    res = {"OriginalAlert": entry_context.pop(original_alert_key)}
+    if isinstance(res["OriginalAlert"], list):
+        res["OriginalAlert"] = res["OriginalAlert"][0]
+    return res
 
 
 """ MAIN FUNCTION """
@@ -54,7 +70,12 @@ def main():  # pragma: no cover
         alert_context = demisto.investigation()
         core_alert_context = demisto.context().get("Core", {})
         if not core_alert_context.get("OriginalAlert"):
-            original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
+            if is_demisto_version_ge(MIN_SERVER_VERSION_FOR_RAW_ALERTS):
+                original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
+            else:
+                original_alert_data = demisto.executeCommand(
+                    "core-get-cloud-original-alerts", {"alert_ids": alert_context.get("id")}
+                )
             if isError(original_alert_data):
                 raise DemistoException(f"Failed to retrieve original alerts: {get_error(original_alert_data)}")
             if original_alert_data:
