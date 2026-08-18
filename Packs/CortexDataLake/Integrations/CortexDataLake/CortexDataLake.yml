@@ -32,8 +32,8 @@ configuration:
   required: false
   display: ""
   section: Connect
-- displaypassword: Authentication Token
-  additionalinfo: The API Key to use for connection
+- displaypassword: Authentication Token (DEPRECATED)
+  additionalinfo: Deprecated, Use Client Secret instead.
   name: credentials_refresh_token
   hiddenusername: true
   type: 9
