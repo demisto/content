@@ -451,7 +451,6 @@ script:
       description: The cloud Service Provider ID.
       type: String
   - name: prisma-airs-runtime-profiles-update
-    execution: true
     description: Update an existing security profile. WARNING - Modifying profile configuration can break scanning if misconfigured.
     arguments:
     - name: profile_id
@@ -2257,7 +2256,6 @@ script:
       description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-runtime-topics-update
-    execution: true
     description: Update an existing custom topic. WARNING - Modifying topic definition can break detection if misconfigured.
     arguments:
     - name: topic_id
@@ -2783,6 +2781,7 @@ script:
       description: Whether the operation succeeded.
       type: Boolean
   - name: prisma-airs-model-security-labels-delete
+    execution: true
     description: Delete labels from a model security scan by key. Removes specific labels while preserving others.
     arguments:
     - name: scan_uuid
@@ -3429,6 +3428,7 @@ script:
       description: The tenant Service Group ID.
       type: String
   - name: prisma-airs-model-security-groups-delete
+    execution: true
     description: Delete a security group. Removes a security group that is no longer needed.
     arguments:
     - name: uuid
@@ -3897,6 +3897,7 @@ script:
       description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-redteam-targets-delete
+    execution: true
     description: Delete a Red Team target.
     arguments:
     - name: uuid
@@ -4263,6 +4264,7 @@ script:
       description: The completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: prisma-airs-redteam-scan-abort
+    execution: true
     description: Abort a running Red Team scan.
     arguments:
     - name: job_id
@@ -5254,6 +5256,7 @@ script:
       description: The optional additional properties for the prompt.
       type: Unknown
   - name: prisma-airs-redteam-prompts-delete
+    execution: true
     description: Delete a prompt from a Red Team prompt set.
     arguments:
     - name: prompt_set_uuid
@@ -5499,6 +5502,7 @@ script:
       description: The user ID who last updated the prompt set.
       type: Unknown
   - name: prisma-airs-redteam-prompt-sets-archive
+    execution: true
     description: Archive or unarchive a Red Team prompt set.
     arguments:
     - name: uuid
