@@ -656,7 +656,7 @@ tasks:
                 value:
                   simple: Unusual allocation of multiple cloud compute resources
               ignorecase: true
-          accessor: alert_id
+          accessor: issue_id
       autoAccessKeyRemediation:
         simple: "False"
       autoBlockIndicators:
@@ -1543,7 +1543,7 @@ tasks:
                 value:
                   simple: Suspicious usage of EC2 token, Suspicious usage of VM Service Account token, Suspicious usage of AWS Lambda’s token, Suspicious usage of AWS Lambda’s role, Remote usage of an AWS service token, Remote usage of an AWS EKS token, Suspicious usage of an AWS EKS token, Suspicious usage of an AWS ECS token, Remote usage of an AWS ECS token, Suspicious usage of AWS service token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token, Remote usage of VM Service Account token, Suspicious usage of VM Service Account token, Remote usage of an App engine Service Account token, Suspicious usage of App engine Service Account token
               ignorecase: true
-          accessor: alert_id
+          accessor: issue_id
       autoAccessKeyRemediation:
         simple: "False"
       autoBlockIndicators:
@@ -1604,7 +1604,7 @@ tasks:
               right:
                 value:
                   simple: An identity performed a suspicious download of multiple cloud storage objects
-          accessor: alert_id
+          accessor: issue_id
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1849,7 +1849,7 @@ tasks:
                 value:
                   simple: Large Upload
               ignorecase: true
-          accessor: alert_id
+          accessor: issue_id
           transformers:
           - operator: uniq
       AutoBlockIndicators:
@@ -1998,7 +1998,7 @@ tasks:
                 value:
                   simple: Cryptominers Protection
               ignorecase: true
-          accessor: alert_id
+          accessor: issue_id
       ClusterName:
         complex:
           root: PaloAltoNetworksXDR.Case.Issues
@@ -2076,7 +2076,7 @@ inputs:
   value:
     complex:
       root: PaloAltoNetworksXDR.Case.Issues
-      accessor: alert_id
+      accessor: issue_id
   required: false
   description: Alert ID.
   playbookInputQuery:

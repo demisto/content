@@ -198,7 +198,7 @@ tasks:
       incident_id:
         complex:
           root: PaloAltoNetworksXDR
-          accessor: Incident.incident_id
+          accessor: Case.case_id
       status:
         simple: RESOLVED_TRUE_POSITIVE
     separatecontext: false
@@ -1616,7 +1616,7 @@ tasks:
       alert_id:
         complex:
           root: PaloAltoNetworksXDR.Case.Issues
-          accessor: alert_id
+          accessor: issue_id
       incident_id:
         complex:
           root: PaloAltoNetworksXDR
