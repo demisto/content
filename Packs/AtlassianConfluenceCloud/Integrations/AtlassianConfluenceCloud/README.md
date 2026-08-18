@@ -6,13 +6,8 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Site Name (e.g., https://${site-name}.atlassian.net) | Site name of the Confluence cloud the user wants to connect to. | True |
-| Authentication Method | Select the authentication method to use. Basic authentication requires username and API token. OAuth 2.0 requires Client ID and Client Secret. | False |
-| Email | The Atlassian account email. Required for Basic authentication. | False |
-| API Token |  | False |
-| Cloud ID | Required for Confluence Cloud instances using OAuth 2.0. You can find your Cloud ID by navigating to https://admin.atlassian.com and selecting your site. | False |
-| Callback URL | The redirect URL to use for OAuth 2.0 \(e.g., https://localhost/myapp\) | False |
-| Client ID | OAuth 2.0 credentials. Required when using OAuth 2.0 authentication. | False |
-| Client Secret |  | False |
+| Email | The Atlassian account email. | True |
+| API Token |  | True |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 | Events Fetch Interval |  | False |
@@ -3692,7 +3687,9 @@ Note: Updating draft content is currently not supported.
 ### confluence-cloud-content-search
 
 ***
-Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>For more information on CQL, see: https://developer.atlassian.com/cloud/confluence/advanced-searching-using-cql/.
+Retrieves a list of content using the Confluence Query Language (CQL).
+
+For more information on CQL, see: https://developer.atlassian.com/cloud/confluence/advanced-searching-using-cql/.
 
 #### Base Command
 
@@ -3702,431 +3699,87 @@ Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The CQL (Confluence Query Language) string that is used to find the requested content. | Required |
-| limit | Number of records to retrieve in the response. <br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional |
-| content_status | Filter the result based on the content status.<br/>Possible values: current, draft, archived.<br/><br/>Note: Supports multiple comma-separated values. | Optional |
-| next_page_token | Retrieves the next page records for the given query (next_page_token retrieved in previous content response). | Optional |
-| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional |
+| query | The CQL (Confluence Query Language) string that is used to find the requested content. | Required | 
+| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. Default is 50. | Optional | 
+| content_status | Filter the result based on the content status.<br/>Possible values: current, draft, archived.<br/><br/>Note: Supports multiple comma-separated values. Possible values are: . | Optional | 
+| next_page_token | Retrieves the next page records for the given query (next_page_token retrieved in previous content response). | Optional | 
+| expand | Indicates which properties to expand.<br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Content.id | String | The ID of the content. |
-| ConfluenceCloud.Content.type | String | Type of the content. |
-| ConfluenceCloud.Content.status | String | Status of the content. |
-| ConfluenceCloud.Content.title | String | Title of the content. |
-| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. |
-| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. |
-| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. |
-| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. |
-| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. |
-| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with given content. |
-| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. |
-| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. |
-| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. |
-| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. |
-| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. |
-| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. |
-| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. |
-| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. |
-| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. |
-| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. |
-| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. |
-| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
-| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. |
-| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
-| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. |
-| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. |
-| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. |
-| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
-| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user  who last updated the content. |
-| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
-| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. |
-| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. |
-| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. |
-| ConfluenceCloud.Content.version.message | String | Message of the updated content. |
-| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. |
-| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. |
-| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. |
-| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\) |
-| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. |
-| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. |
-| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. |
-| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. |
-| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. |
-| ConfluenceCloud.Content.container.key | String | Key of the container of the content. |
-| ConfluenceCloud.Content.container.name | String | Name of the container of the content. |
-| ConfluenceCloud.Content.container.type | String | Type of the container of the content. |
-| ConfluenceCloud.Content.container.status | String | Status of the container of the content. |
-| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. |
-| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. |
-| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. |
-| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. |
-| ConfluenceCloud.Content.extensions.position | Number | The content extension position. |
-| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. |
-| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. |
-| ConfluenceCloud.Content._links.self | String | Link to the content. |
-| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. |
-| ConfluenceCloud.PageToken.name | String | The command name. |
-| ConfluenceCloud.PageToken.next_token | String | The next page token. |
-
-#### Command Example
-
-```!confluence-cloud-content-search query="type=page" limit=2```
-
-#### Context Example
-
-```json
-{
-    "ConfluenceCloud": {
-        "Content": [
-            {
-                "_expandable": {
-                    "children": "/rest/api/content/8912897/child",
-                    "descendants": "/rest/api/content/8912897/descendant",
-                    "restrictions": "/rest/api/content/8912897/restriction/byOperation"
-                },
-                "_links": {
-                    "editui": "/pages/resumedraft.action?draftId=8912897",
-                    "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897",
-                    "tinyui": "/x/AQCI",
-                    "webui": "/spaces/TRIAL/pages/8912897/Trial_1"
-                },
-                "ancestors": [
-                    {
-                        "_expandable": {
-                            "children": "/rest/api/content/7798799/child",
-                            "container": "/rest/api/space/TRIAL",
-                            "descendants": "/rest/api/content/7798799/descendant",
-                            "history": "/rest/api/content/7798799/history",
-                            "restrictions": "/rest/api/content/7798799/restriction/byOperation",
-                            "space": "/rest/api/space/TRIAL"
-                        },
-                        "_links": {
-                            "editui": "/pages/resumedraft.action?draftId=7798799",
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/7798799",
-                            "tinyui": "/x/DwB3",
-                            "webui": "/spaces/TRIAL/pages/7798799/Trial1212"
-                        },
-                        "extensions": {
-                            "position": 4059
-                        },
-                        "id": "7798799",
-                        "status": "current",
-                        "title": "Trial1212",
-                        "type": "page"
-                    }
-                ],
-                "childTypes": {
-                    "attachment": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/child/attachment"
-                        },
-                        "value": false
-                    },
-                    "comment": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/child/comment"
-                        },
-                        "value": false
-                    },
-                    "page": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/child/page"
-                        },
-                        "value": false
-                    }
-                },
-                "container": {
-                    "_expandable": {
-                        "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
-                        "settings": "/rest/api/space/TRIAL/settings",
-                        "theme": "/rest/api/space/TRIAL/theme"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL",
-                        "webui": "/spaces/TRIAL"
-                    },
-                    "id": 33012,
-                    "key": "TRIAL",
-                    "name": "Trial",
-                    "status": "current",
-                    "type": "global"
-                },
-                "extensions": {
-                    "position": 96200139
-                },
-                "history": {
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/history"
-                    },
-                    "createdBy": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
-                        },
-                        "accountId": "5ff2e30b4d2179006ea18449",
-                        "accountType": "atlassian",
-                        "displayName": "John Doe",
-                        "email": "dummy.dummy@dummy.com",
-                        "isExternalCollaborator": false,
-                        "profilePicture": {
-                            "height": 48,
-                            "isDefault": false,
-                            "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
-                            "width": 48
-                        },
-                        "publicName": "John Doe",
-                        "type": "known"
-                    },
-                    "createdDate": "2021-08-19T09:11:19.755Z",
-                    "latest": true
-                },
-                "id": "8912897",
-                "space": {
-                    "_expandable": {
-                        "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
-                        "settings": "/rest/api/space/TRIAL/settings",
-                        "theme": "/rest/api/space/TRIAL/theme"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL",
-                        "webui": "/spaces/TRIAL"
-                    },
-                    "id": 33012,
-                    "key": "TRIAL",
-                    "name": "Trial",
-                    "status": "current",
-                    "type": "global"
-                },
-                "status": "current",
-                "title": "Trial_1",
-                "type": "page",
-                "version": {
-                    "_expandable": {
-                        "content": "/rest/api/content/8912897"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/version/1"
-                    },
-                    "by": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
-                        },
-                        "accountId": "5ff2e30b4d2179006ea18449",
-                        "accountType": "atlassian",
-                        "displayName": "John Doe",
-                        "email": "dummy.dummy@dummy.com",
-                        "isExternalCollaborator": false,
-                        "profilePicture": {
-                            "height": 48,
-                            "isDefault": false,
-                            "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
-                            "width": 48
-                        },
-                        "publicName": "John Doe",
-                        "type": "known"
-                    },
-                    "confRev": "confluence$content$8912897.4",
-                    "contentTypeModified": false,
-                    "friendlyWhen": "Aug 19, 2021",
-                    "minorEdit": false,
-                    "number": 1,
-                    "syncRev": "0.confluence$content$8912897.2",
-                    "syncRevSource": "synchrony-ack",
-                    "when": "2021-08-19T09:11:19.755Z"
-                }
-            },
-            {
-                "_expandable": {
-                    "children": "/rest/api/content/8847372/child",
-                    "descendants": "/rest/api/content/8847372/descendant",
-                    "restrictions": "/rest/api/content/8847372/restriction/byOperation"
-                },
-                "_links": {
-                    "editui": "/pages/resumedraft.action?draftId=8847372",
-                    "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372",
-                    "tinyui": "/x/DACH",
-                    "webui": "/spaces/TRIAL/pages/8847372/Testing_XSOAR"
-                },
-                "ancestors": [
-                    {
-                        "_expandable": {
-                            "children": "/rest/api/content/7798799/child",
-                            "container": "/rest/api/space/TRIAL",
-                            "descendants": "/rest/api/content/7798799/descendant",
-                            "history": "/rest/api/content/7798799/history",
-                            "restrictions": "/rest/api/content/7798799/restriction/byOperation",
-                            "space": "/rest/api/space/TRIAL"
-                        },
-                        "_links": {
-                            "editui": "/pages/resumedraft.action?draftId=7798799",
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/7798799",
-                            "tinyui": "/x/DwB3",
-                            "webui": "/spaces/TRIAL/pages/7798799/Trial1212"
-                        },
-                        "extensions": {
-                            "position": 4059
-                        },
-                        "id": "7798799",
-                        "status": "current",
-                        "title": "Trial1212",
-                        "type": "page"
-                    }
-                ],
-                "childTypes": {
-                    "attachment": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/child/attachment"
-                        },
-                        "value": false
-                    },
-                    "comment": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/child/comment"
-                        },
-                        "value": false
-                    },
-                    "page": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/child/page"
-                        },
-                        "value": false
-                    }
-                },
-                "container": {
-                    "_expandable": {
-                        "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
-                        "settings": "/rest/api/space/TRIAL/settings",
-                        "theme": "/rest/api/space/TRIAL/theme"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL",
-                        "webui": "/spaces/TRIAL"
-                    },
-                    "id": 33012,
-                    "key": "TRIAL",
-                    "name": "Trial",
-                    "status": "current",
-                    "type": "global"
-                },
-                "extensions": {
-                    "position": 633071049
-                },
-                "history": {
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/history"
-                    },
-                    "createdBy": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
-                        },
-                        "accountId": "5ff2e30b4d2179006ea18449",
-                        "accountType": "atlassian",
-                        "displayName": "John Doe",
-                        "email": "dummy.dummy@dummy.com",
-                        "isExternalCollaborator": false,
-                        "profilePicture": {
-                            "height": 48,
-                            "isDefault": false,
-                            "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
-                            "width": 48
-                        },
-                        "publicName": "John Doe",
-                        "type": "known"
-                    },
-                    "createdDate": "2021-08-19T10:09:37.066Z",
-                    "latest": true
-                },
-                "id": "8847372",
-                "space": {
-                    "_expandable": {
-                        "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
-                        "settings": "/rest/api/space/TRIAL/settings",
-                        "theme": "/rest/api/space/TRIAL/theme"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL",
-                        "webui": "/spaces/TRIAL"
-                    },
-                    "id": 33012,
-                    "key": "TRIAL",
-                    "name": "Trial",
-                    "status": "current",
-                    "type": "global"
-                },
-                "status": "current",
-                "title": "Testing_XSOAR",
-                "type": "page",
-                "version": {
-                    "_expandable": {
-                        "content": "/rest/api/content/8847372"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/version/1"
-                    },
-                    "by": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
-                        },
-                        "accountId": "5ff2e30b4d2179006ea18449",
-                        "accountType": "atlassian",
-                        "displayName": "John Doe",
-                        "email": "dummy.dummy@dummy.com",
-                        "isExternalCollaborator": false,
-                        "profilePicture": {
-                            "height": 48,
-                            "isDefault": false,
-                            "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
-                            "width": 48
-                        },
-                        "publicName": "John Doe",
-                        "type": "known"
-                    },
-                    "confRev": "confluence$content$8847372.4",
-                    "contentTypeModified": false,
-                    "friendlyWhen": "Aug 19, 2021",
-                    "minorEdit": false,
-                    "number": 1,
-                    "syncRev": "0.confluence$content$8847372.2",
-                    "syncRevSource": "synchrony-ack",
-                    "when": "2021-08-19T10:09:37.066Z"
-                }
-            }
-        ],
-        "PageToken": {
-            "Content": {
-                "name": "confluence-cloud-content-search",
-                "next_token": "_sa_WyJcdDg4NDczNzIgUU5aRTlIVzxbclZnSitSZXBSTU4gY3AiXQ=="
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Content(s)
->
->|ID|Title|Type|Status|Space Name|Created By|Created At|Version|
->|---|---|---|---|---|---|---|---|
->| 8912897 | [Trial_1](https://xsoar-bd.atlassian.net/wiki/spaces/TRIAL/pages/8912897/Trial_1) | page | current | Trial | John Doe | 2021-08-19T09:11:19.755Z | 3 |
->| 8847372 | [Testing_XSOAR](https://xsoar-bd.atlassian.net/wiki/spaces/TRIAL/pages/8847372/Testing_XSOAR) | page | current | Trial | John Doe | 2021-08-19T10:09:37.066Z | 3 |
->
-Run the command with argument next_page_token=_sa_WyJcdDg4NDczNzIgUU5aRTlIVzxbclZnSitSZXBSTU4gY3AiXQ== to see the next set of contents.
+| ConfluenceCloud.Content.id | String | The ID of the content. | 
+| ConfluenceCloud.Content.type | String | Type of the content. | 
+| ConfluenceCloud.Content.status | String | Status of the content. | 
+| ConfluenceCloud.Content.title | String | Title of the content. | 
+| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. | 
+| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. | 
+| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. | 
+| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. | 
+| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. | 
+| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with the given content. | 
+| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. | 
+| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. | 
+| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. | 
+| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. | 
+| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. | 
+| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. | 
+| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
+| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. | 
+| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
+| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. | 
+| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created \(e.g., 2024-01-15T12:34:56Z\). | 
+| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. | 
+| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
+| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user  who last updated the content. | 
+| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
+| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. | 
+| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated \(e.g., 2024-01-15T12:34:56Z\). | 
+| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. | 
+| ConfluenceCloud.Content.version.message | String | Message of the updated content. | 
+| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. | 
+| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. | 
+| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. | 
+| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\). | 
+| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. | 
+| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. | 
+| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. | 
+| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. | 
+| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. | 
+| ConfluenceCloud.Content.container.key | String | Key of the container of the content. | 
+| ConfluenceCloud.Content.container.name | String | Name of the container of the content. | 
+| ConfluenceCloud.Content.container.type | String | Type of the container of the content. | 
+| ConfluenceCloud.Content.container.status | String | Status of the container of the content. | 
+| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. | 
+| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. | 
+| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. | 
+| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. | 
+| ConfluenceCloud.Content.extensions.position | Number | The content extension position. | 
+| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. | 
+| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. | 
+| ConfluenceCloud.Content._links.self | String | Link to the content. | 
+| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. | 
+| ConfluenceCloud.PageToken.name | String | The command name. | 
+| ConfluenceCloud.PageToken.next_token | String | The next page token. | 
 
 ### confluence-cloud-user-list
 
@@ -4536,70 +4189,53 @@ There is no context output for this command.
 ```bash
 !confluence-cloud-oauth-test
 ```
-
-### confluence-cloud-space-listv2
+### confluence-cloud-get-events
 
 ***
-Returns a list of spaces from Confluence Cloud (REST API v2).
+Retrieves a list of events from the Atlassian Confluence Cloud instance. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
 
 #### Base Command
 
-`confluence-cloud-space-listv2`
+`confluence-cloud-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of space IDs to filter by. | Optional |
-| keys | A comma-separated list of space keys to filter by. | Optional |
-| type | The type of spaces to filter by. Possible values are: global, personal. | Optional |
-| status | The status of spaces to filter by. Possible values are: current, archived. | Optional |
-| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional |
-| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional |
-| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
+| start_date | Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds. | Optional | 
+| limit | The maximum number of records to return per page. Note, this may be restricted by fixed system limits. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Space.id | String | The ID of the space. |
-| ConfluenceCloud.Space.key | String | The key of the space. |
-| ConfluenceCloud.Space.name | String | The name of the space. |
-| ConfluenceCloud.Space.type | String | The type of the space. |
-| ConfluenceCloud.Space.status | String | The status of the space. |
-| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. |
-| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. |
-
-### confluence-cloud-blogpost-update
-
-***
-Updates an existing blog post in Confluence Cloud (REST API v2).
-
-#### Base Command
-
-`confluence-cloud-blogpost-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| blogpost_id | The ID of the blog post to update. | Required |
-| version_number | The new version number for the blog post. Must be one greater than the current version. | Required |
-| title | The title of the blog post. | Optional |
-| status | The status of the blog post. Possible values are: current, draft. Default is current. | Optional |
-| body_value | The content body value of the blog post. | Optional |
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional |
-| version_message | A message describing the update for the version history. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. |
-| ConfluenceCloud.Blogpost.status | String | The status of the blog post. |
-| ConfluenceCloud.Blogpost.title | String | The title of the blog post. |
-| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. |
-| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. |
+| ConfluenceCloud.Event.author.type | String | The type of author who created this event. | 
+| ConfluenceCloud.Event.author.displayName | String | The display name of the author who created this event. | 
+| ConfluenceCloud.Event.author.operations | String | Nullable. Author's operations. | 
+| ConfluenceCloud.Event.author.username | String | Username of the author of this event. | 
+| ConfluenceCloud.Event.author.userKey | String | User key of the author of this event. | 
+| ConfluenceCloud.Event.author.accountId | String | Account ID of the author of this event. | 
+| ConfluenceCloud.Event.author.accountType | String | Type of account of the author of this event. | 
+| ConfluenceCloud.Event.author.externalCollaborator | Boolean | Deprecated. Is the author of this event an external collaborator. | 
+| ConfluenceCloud.Event.author.isExternalCollaborator | Boolean | Deprecated. Is the author of this event an external collaborator. | 
+| ConfluenceCloud.Event.author.publicName | String | The public name of the author of this event. | 
+| ConfluenceCloud.Event.remoteAddress | String | The remote address from which the event was performed. | 
+| ConfluenceCloud.Event.creationDate | Number | The creation date-time of the audit record, as a timestamp. | 
+| ConfluenceCloud.Event.summary | Strings | Summary of the audit. | 
+| ConfluenceCloud.Event.description | String | Description of the audit. | 
+| ConfluenceCloud.Event.category | String | Category of the event. | 
+| ConfluenceCloud.Event.sysAdmin | Boolean | Was the event created by a system administrator. | 
+| ConfluenceCloud.Event.superAdmin | Boolean | Was the event created by a super administrator. | 
+| ConfluenceCloud.Event.affectedObject.name | String | Name of the object affected by the event. | 
+| ConfluenceCloud.Event.affectedObject.objectType | String | Type of the object affected by the event. | 
+| ConfluenceCloud.Event.changedValues.name | String | Name of the changed value. | 
+| ConfluenceCloud.Event.changedValues.oldValue | String | The old value before the change the event describes. | 
+| ConfluenceCloud.Event.changedValues.hiddenOldValue | String | The old hidden value before the change the event describes. | 
+| ConfluenceCloud.Event.changedValues.newValue | String | The new value after the change the event describes. | 
+| ConfluenceCloud.Event.changedValues.hiddenNewValue | String | The new hidden value after the change the event describes. | 
+| ConfluenceCloud.Event.associatedObjects.name | String | Name of the associated object. | 
+| ConfluenceCloud.Event.associatedObjects.objectType | String | The type of the associated object. | 
 
 ### confluence-cloud-blogpost-create
 
@@ -4614,86 +4250,54 @@ Creates a new blog post in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| space_id | The ID of the space where the blog post is created. Retrieve using the confluence-cloud-space-listv2 command. | Required |
-| title | The title of the blog post. | Optional |
-| status | The status of the blog post to be created. Possible values are: current, draft. Default is current. | Optional |
-| body_value | The content body value of the blog post. | Optional |
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional |
+| space_id | The ID of the space where the blog post is created. Retrieve using the confluence-cloud-space-listv2 command. | Required | 
+| title | The title of the blog post. | Required | 
+| status | The status of the blog post to be created. Possible values are: current, draft. Default is current. | Optional | 
+| body_value | The content body value of the blog post. | Required | 
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. |
-| ConfluenceCloud.Blogpost.status | String | The status of the blog post. |
-| ConfluenceCloud.Blogpost.title | String | The title of the blog post. |
-| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. |
-| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. |
-| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created. |
-| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. |
+| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. | 
+| ConfluenceCloud.Blogpost.status | String | The status of the blog post. | 
+| ConfluenceCloud.Blogpost.title | String | The title of the blog post. | 
+| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. | 
+| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. | 
+| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created \(e.g., 2024-01-15T12:34:56Z\). | 
+| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. | 
 
-### confluence-cloud-blogpost-list
+### confluence-cloud-blogpost-update
 
 ***
-Returns a list of blog posts from Confluence Cloud (REST API v2).
+Updates an existing blog post in Confluence Cloud (REST API v2).
 
 #### Base Command
 
-`confluence-cloud-blogpost-list`
+`confluence-cloud-blogpost-update`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | A comma-separated list of blog post IDs to filter by. | Optional |
-| space_id | A comma-separated list of space IDs to filter by. | Optional |
-| status | The status of blog posts to filter by. Possible values are: current, deleted, trashed. | Optional |
-| title | The title of blog posts to filter by. | Optional |
-| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional |
-| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional |
-| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional |
+| blogpost_id | The ID of the blog post to update. | Required | 
+| version_number | The new version number for the blog post. Must be one greater than the current version. | Required | 
+| title | The title of the blog post. | Required | 
+| status | The status of the blog post. Possible values are: current, draft. Default is current. | Optional | 
+| body_value | The content body value of the blog post. | Required | 
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional | 
+| version_message | A message describing the update for the version history. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. |
-| ConfluenceCloud.Blogpost.status | String | The status of the blog post. |
-| ConfluenceCloud.Blogpost.title | String | The title of the blog post. |
-| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. |
-| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. |
-| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created. |
-| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. |
-| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. |
-
-### confluence-cloud-space-createv2
-
-***
-Creates a new space in Confluence Cloud (REST API v2).
-
-#### Base Command
-
-`confluence-cloud-space-createv2`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| name | The name of the new space. The maximum length is 200 characters. | Required |
-| key | The key for the new space. It can contain any alphanumeric character (a-z, 0-9). The maximum length is 255 characters. | Required |
-| description_value | The description text of the new space. | Optional |
-| description_format | The format of the space description. Possible values are: plain, view. Default is plain. | Optional |
-| role_assignments | A JSON array of role assignments granting access to principals. For example: [{"principal": {"type": "user", "id": "&lt;accountId&gt;"}, "roleId": "&lt;roleId&gt;"}]. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ConfluenceCloud.Space.id | String | The ID of the space. |
-| ConfluenceCloud.Space.key | String | The key of the space. |
-| ConfluenceCloud.Space.name | String | The name of the space. |
-| ConfluenceCloud.Space.type | String | The type of the space. |
-| ConfluenceCloud.Space.status | String | The status of the space. |
+| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. | 
+| ConfluenceCloud.Blogpost.status | String | The status of the blog post. | 
+| ConfluenceCloud.Blogpost.title | String | The title of the blog post. | 
+| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. | 
+| ConfluenceCloud.Blogpost.version.number | Number | The version number of the blog post. | 
 
 ### confluence-cloud-footer-comment-create
 
@@ -4708,99 +4312,24 @@ Creates a footer comment in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| body_value | The content body value of the comment. | Required |
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format. Default is storage. | Optional |
-| page_id | The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required. | Optional |
-| blogpost_id | The ID of the blog post to attach the comment to. | Optional |
-| parent_comment_id | The ID of the parent comment to reply to. | Optional |
-| attachment_id | The ID of the attachment to attach the comment to. | Optional |
-| custom_content_id | The ID of the custom content to attach the comment to. | Optional |
+| body_value | The content body value of the comment. | Required | 
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format. Default is storage. | Optional | 
+| page_id | The ID of the page to attach the comment to. One of page_id, blogpost_id, parent_comment_id, attachment_id, or custom_content_id is required. | Optional | 
+| blogpost_id | The ID of the blog post to attach the comment to. | Optional | 
+| parent_comment_id | The ID of the parent comment to reply to. | Optional | 
+| attachment_id | The ID of the attachment to attach the comment to. | Optional | 
+| custom_content_id | The ID of the custom content to attach the comment to. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Comment.id | String | The ID of the comment. |
-| ConfluenceCloud.Comment.status | String | The status of the comment. |
-| ConfluenceCloud.Comment.pageId | String | The ID of the page the comment belongs to. |
-| ConfluenceCloud.Comment.blogPostId | String | The ID of the blog post the comment belongs to. |
-| ConfluenceCloud.Comment.parentCommentId | String | The ID of the parent comment. |
-| ConfluenceCloud.Comment.version.number | Number | The version number of the comment. |
-
-### confluence-cloud-blogpost-delete
-
-***
-Deletes a blog post in Confluence Cloud (REST API v2).
-
-#### Base Command
-
-`confluence-cloud-blogpost-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| blogpost_id | The ID of the blog post to delete. | Required |
-| purge | Whether to permanently purge the blog post from the trash. Requires the blog post to already be in the trash. Possible values are: true, false. Default is false. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### confluence-cloud-page-delete
-
-***
-Deletes a page in Confluence Cloud (REST API v2).
-
-#### Base Command
-
-`confluence-cloud-page-delete`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| page_id | The ID of the page to delete. | Required |
-| purge | Whether to permanently purge the page from the trash. Requires the page to already be in the trash. Possible values are: true, false. Default is false. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### confluence-cloud-page-list
-
-***
-Returns a list of pages from Confluence Cloud (REST API v2).
-
-#### Base Command
-
-`confluence-cloud-page-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | A comma-separated list of page IDs to filter by. | Optional |
-| space_id | A comma-separated list of space IDs to filter by. | Optional |
-| status | The status of pages to filter by. Possible values are: current, archived, deleted, trashed. | Optional |
-| title | The title of pages to filter by. | Optional |
-| subtype | The subtype of pages to filter by. Possible values are: page, live. | Optional |
-| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional |
-| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional |
-| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ConfluenceCloud.Page.id | String | The ID of the page. |
-| ConfluenceCloud.Page.status | String | The status of the page. |
-| ConfluenceCloud.Page.title | String | The title of the page. |
-| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. |
-| ConfluenceCloud.Page.authorId | String | The account ID of the page author. |
-| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created. |
-| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. |
-| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. |
+| ConfluenceCloud.Comment.id | String | The ID of the comment. | 
+| ConfluenceCloud.Comment.status | String | The status of the comment. | 
+| ConfluenceCloud.Comment.pageId | String | The ID of the page the comment belongs to. | 
+| ConfluenceCloud.Comment.blogPostId | String | The ID of the blog post the comment belongs to. | 
+| ConfluenceCloud.Comment.parentCommentId | String | The ID of the parent comment. | 
+| ConfluenceCloud.Comment.version.number | Number | The version number of the comment. | 
 
 ### confluence-cloud-page-update
 
@@ -4815,24 +4344,53 @@ Updates an existing page in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_id | The ID of the page to update. | Required |
-| version_number | The new version number for the page. Must be one greater than the current version. | Required |
-| title | The title of the page. | Optional |
-| status | The status of the page. Possible values are: current, draft. Default is current. | Optional |
-| body_value | The content body value of the page. | Optional |
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional |
-| space_id | The ID of the space to move the page to. | Optional |
-| version_message | A message describing the update for the version history. | Optional |
+| page_id | The ID of the page to update. | Required | 
+| version_number | The new version number for the page. Must be one greater than the current version. | Required | 
+| title | The title of the page. | Required | 
+| status | The status of the page. Possible values are: current, draft. Default is current. | Required | 
+| body_value | The content body value of the page. | Required | 
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional | 
+| space_id | The ID of the space to move the page to. | Optional | 
+| version_message | A message describing the update for the version history. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Page.id | String | The ID of the page. |
-| ConfluenceCloud.Page.status | String | The status of the page. |
-| ConfluenceCloud.Page.title | String | The title of the page. |
-| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. |
-| ConfluenceCloud.Page.version.number | Number | The version number of the page. |
+| ConfluenceCloud.Page.id | String | The ID of the page. | 
+| ConfluenceCloud.Page.status | String | The status of the page. | 
+| ConfluenceCloud.Page.title | String | The title of the page. | 
+| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. | 
+| ConfluenceCloud.Page.version.number | Number | The version number of the page. | 
+
+### confluence-cloud-space-createv2
+
+***
+Creates a new space in Confluence Cloud (REST API v2).
+
+#### Base Command
+
+`confluence-cloud-space-createv2`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the new space. The maximum length is 200 characters. | Required | 
+| key | The key for the new space. It can contain any alphanumeric character (a-z, 0-9). The maximum length is 255 characters. | Required | 
+| description_value | The description text of the new space. | Optional | 
+| description_format | The format of the space description. Possible values are: plain, view. Default is plain. | Optional | 
+| role_assignments | A JSON array of role assignments granting access to principals. For example: [{"principal": {"type": "user", "id": "&lt;accountId&gt;"}, "roleId": "&lt;roleId&gt;"}]. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ConfluenceCloud.Space.id | String | The ID of the space. | 
+| ConfluenceCloud.Space.key | String | The key of the space. | 
+| ConfluenceCloud.Space.name | String | The name of the space. | 
+| ConfluenceCloud.Space.type | String | The type of the space. | 
+| ConfluenceCloud.Space.status | String | The status of the space. | 
 
 ### confluence-cloud-page-create
 
@@ -4847,22 +4405,163 @@ Creates a new page in Confluence Cloud (REST API v2).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| space_id | The ID of the space where the page is created. Retrieve using the confluence-cloud-space-listv2 command. | Required |
-| title | The title of the page. | Optional |
-| status | The status of the page to be created. Possible values are: current, draft. Default is current. | Optional |
-| body_value | The content body value of the page. | Optional |
-| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional |
-| parent_id | The ID of the parent page under which the new page is created. | Optional |
+| space_id | The ID of the space where the page is created. Retrieve using the confluence-cloud-space-listv2 command. | Required | 
+| title | The title of the page. | Required | 
+| status | The status of the page to be created. Possible values are: current, draft. Default is current. | Optional | 
+| body_value | The content body value of the page. | Required | 
+| body_representation | The content format type of the body value. Possible values are: storage, atlas_doc_format, wiki. Default is storage. | Optional | 
+| parent_id | The ID of the parent page under which the new page is created. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Page.id | String | The ID of the page. |
-| ConfluenceCloud.Page.status | String | The status of the page. |
-| ConfluenceCloud.Page.title | String | The title of the page. |
-| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. |
-| ConfluenceCloud.Page.parentId | String | The ID of the parent page. |
-| ConfluenceCloud.Page.authorId | String | The account ID of the page author. |
-| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created. |
-| ConfluenceCloud.Page.version.number | Number | The version number of the page. |
+| ConfluenceCloud.Page.id | String | The ID of the page. | 
+| ConfluenceCloud.Page.status | String | The status of the page. | 
+| ConfluenceCloud.Page.title | String | The title of the page. | 
+| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. | 
+| ConfluenceCloud.Page.parentId | String | The ID of the parent page. | 
+| ConfluenceCloud.Page.authorId | String | The account ID of the page author. | 
+| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created \(e.g., 2024-01-15T12:34:56Z\). | 
+| ConfluenceCloud.Page.version.number | Number | The version number of the page. | 
+
+### confluence-cloud-space-listv2
+
+***
+Returns a list of spaces from Confluence Cloud (REST API v2).
+
+#### Base Command
+
+`confluence-cloud-space-listv2`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of space IDs to filter by. | Optional | 
+| keys | A comma-separated list of space keys to filter by. | Optional | 
+| type | The type of spaces to filter by. Possible values are: global, personal. | Optional | 
+| status | The status of spaces to filter by. Possible values are: current, archived. | Optional | 
+| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional | 
+| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional | 
+| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ConfluenceCloud.Space.id | String | The ID of the space. | 
+| ConfluenceCloud.Space.key | String | The key of the space. | 
+| ConfluenceCloud.Space.name | String | The name of the space. | 
+| ConfluenceCloud.Space.type | String | The type of the space. | 
+| ConfluenceCloud.Space.status | String | The status of the space. | 
+| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. | 
+| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. | 
+
+### confluence-cloud-blogpost-delete
+
+***
+Deletes a blog post in Confluence Cloud (REST API v2).
+
+#### Base Command
+
+`confluence-cloud-blogpost-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| blogpost_id | The ID of the blog post to delete. | Required | 
+| purge | Whether to permanently purge the blog post from the trash. Requires the blog post to already be in the trash. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### confluence-cloud-page-list
+
+***
+Returns a list of pages from Confluence Cloud (REST API v2).
+
+#### Base Command
+
+`confluence-cloud-page-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | A comma-separated list of page IDs to filter by. | Optional | 
+| space_id | A comma-separated list of space IDs to filter by. | Optional | 
+| status | The status of pages to filter by. Possible values are: current, archived, deleted, trashed. | Optional | 
+| title | The title of pages to filter by. | Optional | 
+| subtype | The subtype of pages to filter by. Possible values are: page, live. | Optional | 
+| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional | 
+| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional | 
+| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ConfluenceCloud.Page.id | String | The ID of the page. | 
+| ConfluenceCloud.Page.status | String | The status of the page. | 
+| ConfluenceCloud.Page.title | String | The title of the page. | 
+| ConfluenceCloud.Page.spaceId | String | The ID of the space the page belongs to. | 
+| ConfluenceCloud.Page.authorId | String | The account ID of the page author. | 
+| ConfluenceCloud.Page.createdAt | Date | Date and time, in ISO 8601 format, when the page was created \(e.g., 2024-01-15T12:34:56Z\). | 
+| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. | 
+| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. | 
+
+### confluence-cloud-blogpost-list
+
+***
+Returns a list of blog posts from Confluence Cloud (REST API v2).
+
+#### Base Command
+
+`confluence-cloud-blogpost-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | A comma-separated list of blog post IDs to filter by. | Optional | 
+| space_id | A comma-separated list of space IDs to filter by. | Optional | 
+| status | The status of blog posts to filter by. Possible values are: current, deleted, trashed. | Optional | 
+| title | The title of blog posts to filter by. | Optional | 
+| sort | Ordering of the results by a particular field. Prefix with '-' for descending order. | Optional | 
+| limit | The maximum number of records to return. Value must be between 1 and 250. Default is 50. | Optional | 
+| cursor | The cursor to use for fetching the next page of results (from a previous run's ConfluenceCloud.PageToken output). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ConfluenceCloud.Blogpost.id | String | The ID of the blog post. | 
+| ConfluenceCloud.Blogpost.status | String | The status of the blog post. | 
+| ConfluenceCloud.Blogpost.title | String | The title of the blog post. | 
+| ConfluenceCloud.Blogpost.spaceId | String | The ID of the space the blog post belongs to. | 
+| ConfluenceCloud.Blogpost.authorId | String | The account ID of the blog post author. | 
+| ConfluenceCloud.Blogpost.createdAt | Date | Date and time, in ISO 8601 format, when the blog post was created \(e.g., 2024-01-15T12:34:56Z\). | 
+| ConfluenceCloud.PageToken.Content.next_page_token | String | The cursor to use for fetching the next page of results. | 
+| ConfluenceCloud.PageToken.Content.name | String | The name of the command that produced the page token. | 
+
+### confluence-cloud-page-delete
+
+***
+Deletes a page in Confluence Cloud (REST API v2).
+
+#### Base Command
+
+`confluence-cloud-page-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page_id | The ID of the page to delete. | Required | 
+| purge | Whether to permanently purge the page from the trash. Requires the page to already be in the trash. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
