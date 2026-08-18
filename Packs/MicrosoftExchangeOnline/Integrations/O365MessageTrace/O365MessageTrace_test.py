@@ -419,12 +419,21 @@ class TestParseIntegrationParams:
     def test_default_max_events_when_not_supplied(self):
         result = parse_integration_params(self._client_credentials_params())
 
-        assert result["max_events"] == Config.DEFAULT_MAX_EVENTS
+        # TEMPORARY (XSUP-74411): the effective batch is capped at 3000 to keep the per-run tail
+        # (dedup + send) inside the 5-minute execution limit, so the default 50000 is overridden.
+        assert result["max_events"] == 3000
 
     def test_custom_max_events_parsed_from_max_fetch(self):
         result = parse_integration_params(self._client_credentials_params(max_fetch="250"))
 
+        # Below the temporary 3000 cap, so the configured value is used unchanged.
         assert result["max_events"] == 250
+
+    def test_max_events_capped_at_temporary_limit(self):
+        # TEMPORARY (XSUP-74411): a max_fetch above the 3000 cap is clamped down to 3000.
+        result = parse_integration_params(self._client_credentials_params(max_fetch="10000"))
+
+        assert result["max_events"] == 3000
 
     def test_default_base_url_built_from_azure_cloud(self):
         result = parse_integration_params(self._client_credentials_params())

@@ -16,7 +16,7 @@ class Config:
     """Global static configuration."""
 
     # Bump on every hotfix so the running build can be confirmed from the `[Version]` debug log.
-    VERSION_TAG = "o365-message-trace/2.0.5-fetch-lookback"
+    VERSION_TAG = "o365-message-trace/2.0.6-fetch-lookback"
 
     VENDOR = "microsoft"
     PRODUCT = "o365_message_trace"
@@ -42,9 +42,11 @@ class Config:
     # Trailing look-back overlap (minutes): each cycle re-scans from ``last_fetch - LOOKBACK``.
     # Records are mutable (status evolves) but keep their original ``receivedDateTime``, so late
     # status updates must be re-scanned to be captured. Status-aware ``_unique_id`` dedup prevents
-    # real duplicates from being re-sent. Observed status-settling lag is ~8 min max; 15 min adds
-    # headroom for the tail. Configurable via the integration parameter if needed.
-    DEFAULT_LOOKBACK_MINUTES = 15
+    # real duplicates from being re-sent. Observed status-settling lag is ~8 min max, so 10 min
+    # still fully covers it while trimming the per-run re-scan (fewer overlap events to re-fetch
+    # and de-duplicate each cycle -> smaller tail -> more timeout headroom). Configurable via the
+    # integration parameter if needed. (Lowered 15 -> 10 under XSUP-74411 to reduce tail work.)
+    DEFAULT_LOOKBACK_MINUTES = 10
 
     # Fixed backoff schedule (in seconds) applied between retries when the Graph
     # API responds with HTTP 429 (Too Many Requests).
@@ -376,6 +378,23 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     max_events = arg_to_number(params.get("max_fetch")) or Config.DEFAULT_MAX_EVENTS
+    # ----- TEMPORARY HOTFIX (XSUP-74411): cap events-per-run -----
+    # The per-run tail work (dedup + build seen_ids + send_events_to_xsiam) scales with the number
+    # of events collected. In dense backlog regions the run collected ~6,400 events and the tail
+    # pushed the total past the platform's 5-minute hard kill, so ``setLastRun`` never ran and the
+    # cursor re-froze. Capping the effective batch at TEMP_MAX_EVENTS_CAP keeps the tail small so
+    # every run finishes and persists its cursor. This is SAFE at the observed density: the densest
+    # single 5-min window holds ~300 events and the 15-min look-back overlap ~900 - both far below
+    # the cap - so no window is truncated and every look-back-overlap key is captured in seen_ids
+    # (no data loss, no duplicates). Remove once the proper per-run event-count cap ships.
+    TEMP_MAX_EVENTS_CAP = 3000
+    if max_events > TEMP_MAX_EVENTS_CAP:
+        demisto.debug(
+            f"[Config] TEMPORARY cap active: max_fetch={max_events} overridden to {TEMP_MAX_EVENTS_CAP} "
+            f"(XSUP-74411 timeout hotfix)."
+        )
+        max_events = TEMP_MAX_EVENTS_CAP
+    # ----- END TEMPORARY HOTFIX -----
     lookback_minutes = arg_to_number(params.get("lookback_minutes")) or Config.DEFAULT_LOOKBACK_MINUTES
 
     # ----- Validation -----
