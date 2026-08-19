@@ -200,7 +200,7 @@ class ETDClient(ContentClient):
 def fetch_and_ingest_logs(client: ETDClient, params: dict[str, Any]) -> None:
     demisto.debug("ETD fetch-events started")
     now = datetime.now(UTC).replace(minute=0, second=0, microsecond=0)
-    max_fetch = int(params.get("max_fetch", 1000))
+    max_fetch = int(params.get("max_fetch", 5000))
     event_types = argToList(params.get("event_type"))
     if not event_types:
         event_types = ETD_LOG_TYPES
@@ -264,7 +264,7 @@ def fetch_and_ingest_logs(client: ETDClient, params: dict[str, Any]) -> None:
 
 
 def cisco_etd_get_events_command(client: ETDClient, args: dict[str, Any]) -> CommandResults:
-    limit = int(args.get("limit", 1000))
+    limit = int(args.get("limit", 5000))
     event_types = argToList(args.get("log_type"))
     if not event_types:
         event_types = ETD_LOG_TYPES
