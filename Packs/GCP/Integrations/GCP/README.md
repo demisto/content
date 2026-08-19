@@ -2055,10 +2055,10 @@ Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.crypt
 | location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
 | key_ring | The ID of the key ring that holds the crypto key. | Required |
 | crypto_key | The ID of the crypto key to encrypt with. | Required |
-| plaintext | The plain text to encrypt. Must be no larger than 64KiB. Mutually exclusive with base64_plaintext and entry_id. | Optional |
-| base64_plaintext | The base64-encoded plain text to encrypt. Mutually exclusive with plaintext and entry_id. | Optional |
-| entry_id | The war room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext. | Optional |
-| additional_authenticated_data | The base64-encoded additional authenticated data (AAD). The same value must be supplied when decrypting. | Optional |
+| plaintext | The plaintext to encrypt. Must be no larger than 64KiB. Mutually exclusive with base64_plaintext and entry_id. | Optional |
+| base64_plaintext | The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id. | Optional |
+| entry_id | The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext. | Optional |
+| additional_authenticated_data | The Base64-encoded additional authenticated data (AAD). The same value must be supplied when decrypting. | Optional |
 
 #### Context Output
 
@@ -2066,7 +2066,7 @@ Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.crypt
 | --- | --- | --- |
 | GCP.KMS.SymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
 | GCP.KMS.SymmetricEncrypt.ResourceName | String | The full resource name of the crypto key used for the encryption. |
-| GCP.KMS.SymmetricEncrypt.Ciphertext | String | The base64-encoded encrypted cipher text. |
+| GCP.KMS.SymmetricEncrypt.Ciphertext | String | The Base64-encoded encrypted ciphertext. |
 
 ### gcp-kms-symmetric-decrypt
 
@@ -2085,9 +2085,9 @@ Decrypts data that was encrypted with a symmetric crypto key. Required Permissio
 | location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
 | key_ring | The ID of the key ring that holds the crypto key. | Required |
 | crypto_key | The ID of the crypto key to decrypt with. | Required |
-| ciphertext | The base64-encoded cipher text to decrypt. Mutually exclusive with entry_id. | Optional |
-| entry_id | The war room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
-| additional_authenticated_data | The base64-encoded additional authenticated data (AAD) that was supplied during encryption. | Optional |
+| ciphertext | The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id. | Optional |
+| entry_id | The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
+| additional_authenticated_data | The Base64-encoded additional authenticated data (AAD) that was supplied during encryption. | Optional |
 
 #### Context Output
 
@@ -2095,7 +2095,7 @@ Decrypts data that was encrypted with a symmetric crypto key. Required Permissio
 | --- | --- | --- |
 | GCP.KMS.SymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
 | GCP.KMS.SymmetricDecrypt.ResourceName | String | The full resource name of the crypto key used for the decryption. |
-| GCP.KMS.SymmetricDecrypt.Plaintext | String | The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
+| GCP.KMS.SymmetricDecrypt.Plaintext | String | The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
 
 ### gcp-kms-asymmetric-encrypt
 
@@ -2115,9 +2115,9 @@ Encrypts data with the public key of an asymmetric crypto key version. The encry
 | key_ring | The ID of the key ring that holds the crypto key. | Required |
 | crypto_key | The ID of the asymmetric crypto key to encrypt with. | Required |
 | crypto_key_version | The ID of the crypto key version to encrypt with. Default is 1. | Optional |
-| plaintext | The plain text to encrypt. Mutually exclusive with base64_plaintext and entry_id. | Optional |
-| base64_plaintext | The base64-encoded plain text to encrypt. Mutually exclusive with plaintext and entry_id. | Optional |
-| entry_id | The war room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext. | Optional |
+| plaintext | The plaintext to encrypt. Mutually exclusive with base64_plaintext and entry_id. | Optional |
+| base64_plaintext | The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id. | Optional |
+| entry_id | The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext. | Optional |
 
 #### Context Output
 
@@ -2125,7 +2125,7 @@ Encrypts data with the public key of an asymmetric crypto key version. The encry
 | --- | --- | --- |
 | GCP.KMS.AsymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
 | GCP.KMS.AsymmetricEncrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the encryption. |
-| GCP.KMS.AsymmetricEncrypt.Ciphertext | String | The base64-encoded encrypted cipher text. |
+| GCP.KMS.AsymmetricEncrypt.Ciphertext | String | The Base64-encoded encrypted ciphertext. |
 
 ### gcp-kms-asymmetric-decrypt
 
@@ -2145,8 +2145,8 @@ Decrypts data using an asymmetric crypto key version. Required Permissions: clou
 | key_ring | The ID of the key ring that holds the crypto key. | Required |
 | crypto_key | The ID of the asymmetric crypto key to decrypt with. | Required |
 | crypto_key_version | The ID of the crypto key version to decrypt with. Default is 1. | Optional |
-| ciphertext | The base64-encoded cipher text to decrypt. Mutually exclusive with entry_id. | Optional |
-| entry_id | The war room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
+| ciphertext | The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id. | Optional |
+| entry_id | The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
 
 #### Context Output
 
@@ -2154,4 +2154,4 @@ Decrypts data using an asymmetric crypto key version. Required Permissions: clou
 | --- | --- | --- |
 | GCP.KMS.AsymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
 | GCP.KMS.AsymmetricDecrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the decryption. |
-| GCP.KMS.AsymmetricDecrypt.Plaintext | String | The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
+| GCP.KMS.AsymmetricDecrypt.Plaintext | String | The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |

@@ -2686,18 +2686,18 @@ script:
       description: The ID of the crypto key to encrypt with.
       required: true
     - name: plaintext
-      description: The plain text to encrypt. Must be no larger than 64KiB. Mutually exclusive with base64_plaintext and entry_id.
+      description: The plaintext to encrypt. Must be no larger than 64KiB. Mutually exclusive with base64_plaintext and entry_id.
       required: false
       secret: true
     - name: base64_plaintext
-      description: The base64-encoded plain text to encrypt. Mutually exclusive with plaintext and entry_id.
+      description: The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id.
       required: false
       secret: true
     - name: entry_id
-      description: The war room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
+      description: The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
       required: false
     - name: additional_authenticated_data
-      description: The base64-encoded additional authenticated data (AAD). The same value must be supplied when decrypting.
+      description: The Base64-encoded additional authenticated data (AAD). The same value must be supplied when decrypting.
       required: false
     outputs:
       - contextPath: GCP.KMS.SymmetricEncrypt.CryptoKey
@@ -2707,7 +2707,7 @@ script:
         description: The full resource name of the crypto key used for the encryption.
         type: String
       - contextPath: GCP.KMS.SymmetricEncrypt.Ciphertext
-        description: The base64-encoded encrypted cipher text.
+        description: The Base64-encoded encrypted ciphertext.
         type: String
   - name: gcp-kms-symmetric-decrypt
     description: "Decrypts data that was encrypted with a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
@@ -2727,14 +2727,14 @@ script:
       description: The ID of the crypto key to decrypt with.
       required: true
     - name: ciphertext
-      description: The base64-encoded cipher text to decrypt. Mutually exclusive with entry_id.
+      description: The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id.
       required: false
       secret: true
     - name: entry_id
-      description: The war room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
+      description: The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext.
       required: false
     - name: additional_authenticated_data
-      description: The base64-encoded additional authenticated data (AAD) that was supplied during encryption.
+      description: The Base64-encoded additional authenticated data (AAD) that was supplied during encryption.
       required: false
     outputs:
       - contextPath: GCP.KMS.SymmetricDecrypt.CryptoKey
@@ -2744,7 +2744,7 @@ script:
         description: The full resource name of the crypto key used for the decryption.
         type: String
       - contextPath: GCP.KMS.SymmetricDecrypt.Plaintext
-        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
+        description: The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
         type: String
   - name: gcp-kms-asymmetric-encrypt
     description: "Encrypts data with the public key of an asymmetric crypto key version. The encryption is performed locally using the retrieved public key. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey."
@@ -2768,15 +2768,15 @@ script:
       required: false
       defaultValue: '1'
     - name: plaintext
-      description: The plain text to encrypt. Mutually exclusive with base64_plaintext and entry_id.
+      description: The plaintext to encrypt. Mutually exclusive with base64_plaintext and entry_id.
       required: false
       secret: true
     - name: base64_plaintext
-      description: The base64-encoded plain text to encrypt. Mutually exclusive with plaintext and entry_id.
+      description: The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id.
       required: false
       secret: true
     - name: entry_id
-      description: The war room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
+      description: The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
       required: false
     outputs:
       - contextPath: GCP.KMS.AsymmetricEncrypt.CryptoKey
@@ -2786,7 +2786,7 @@ script:
         description: The resource name of the crypto key version used for the encryption.
         type: String
       - contextPath: GCP.KMS.AsymmetricEncrypt.Ciphertext
-        description: The base64-encoded encrypted cipher text.
+        description: The Base64-encoded encrypted ciphertext.
         type: String
   - name: gcp-kms-asymmetric-decrypt
     description: "Decrypts data using an asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
@@ -2810,11 +2810,11 @@ script:
       required: false
       defaultValue: '1'
     - name: ciphertext
-      description: The base64-encoded cipher text to decrypt. Mutually exclusive with entry_id.
+      description: The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id.
       required: false
       secret: true
     - name: entry_id
-      description: The war room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
+      description: The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext.
       required: false
     outputs:
       - contextPath: GCP.KMS.AsymmetricDecrypt.CryptoKey
@@ -2824,7 +2824,7 @@ script:
         description: The resource name of the crypto key version used for the decryption.
         type: String
       - contextPath: GCP.KMS.AsymmetricDecrypt.Plaintext
-        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
+        description: The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
         type: String
 
 # The command is currently unsupported.
