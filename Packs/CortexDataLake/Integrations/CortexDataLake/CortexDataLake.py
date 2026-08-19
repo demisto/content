@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import os
 import re
 import json
+import traceback
 from pan_cortex_data_lake import Credentials, exceptions, QueryService
 import time
 import base64
@@ -426,13 +427,14 @@ def is_url_reachable(url: str, verify: bool = True, trust_env: bool = False) -> 
         True if the host responded, False on timeout / connection error / any error.
     """
     try:
-        session = requests.Session()
-        session.trust_env = trust_env
-        session.get(url, timeout=URL_REACHABILITY_TIMEOUT, verify=verify)
-        demisto.debug(f"CDL - URL reachable: {url}")
-        return True
+        with requests.Session() as session:
+            session.trust_env = trust_env
+            session.get(url, timeout=URL_REACHABILITY_TIMEOUT, verify=verify)
+            demisto.debug(f"CDL - URL reachable: {url}")
+            return True
     except Exception as e:
         demisto.info(f"CDL - URL not reachable: {url}. Error: {e}")
+        demisto.debug(f"CDL - URL reachability probe traceback for {url}:\n{traceback.format_exc()}")
         return False
 
 
