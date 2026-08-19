@@ -204,9 +204,6 @@ class GCPServices(Enum):
         return results
 
 
-# The maximum number of log entries the Cloud Logging entries.list API returns per page.
-MAX_LOGGING_PAGE_SIZE = 1000
-
 # Command requirements mapping: (GCP_Service_Enum, [Required_Permissions])
 COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-firewall-patch": (
@@ -1060,7 +1057,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
         update_params = {"bucket": bucket_name, "object": object_name, "entity": entity, "body": entry, "generation": generation}
         remove_nulls_from_dictionary(update_params)
         try:
-            demisto.debug(f"[GCP: storage_bucket_object_policy_set] Updating ACL #{idx+1} for entity {entity}")
+            demisto.debug(f"[GCP: storage_bucket_object_policy_set] Updating ACL #{idx + 1} for entity {entity}")
             resp = storage.objectAccessControls().patch(**update_params).execute()  # pylint: disable=E1101
             results.append(resp)
             continue
@@ -1531,7 +1528,7 @@ def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> Command
 
     demisto.debug(f"Add network tag response for {project_id}: \n{response}")
     new_tag = args.get("tag")
-    readable_output = f"Added '{new_tag}' tag to instance {resource_name} successfully\n" f"The full network tag list is: {tags}"
+    readable_output = f"Added '{new_tag}' tag to instance {resource_name} successfully\nThe full network tag list is: {tags}"
 
     return CommandResults(
         readable_output=readable_output,
@@ -2414,31 +2411,30 @@ def logging_log_entries_list(creds: Credentials, args: dict[str, Any]) -> Comman
         creds (Credentials): Authorized GCP credentials used to access the Cloud Logging API.
         args (dict): Command arguments including:
             - project_id (str, optional): The GCP project to read log entries from.
-            - organization_name (str, optional): Comma-separated organization IDs to read log entries from.
-            - billing_account_name (str, optional): Comma-separated billing account IDs to read log entries from.
-            - folder_name (str, optional): Comma-separated folder IDs to read log entries from.
+            - organization_names (str, optional): Comma-separated organization IDs to read log entries from.
+            - billing_account_names (str, optional): Comma-separated billing account IDs to read log entries from.
+            - folder_names (str, optional): Comma-separated folder IDs to read log entries from.
             - filter (str, optional): Advanced logs filter expression.
             - order_by (str, optional): "timestamp asc" or "timestamp desc".
-            - limit (int, optional): The maximum number of entries to return (1-1000).
-            - page_size (int, optional): The maximum number of results per page. Defaults to 50.
-            - page_token (str, optional): Token to retrieve the next page of results.
+            - limit (int, optional): The maximum number of entries to return (1-500).
+            - next_token (str, optional): Token to retrieve the next page of results.
 
     Returns:
-        CommandResults: The log entries under `GCP.Logging.LogEntry` and the continuation
-        token under `GCP.Logging(true).LogEntryNextToken`.
+        CommandResults: The log entries under `GCP.Logging.LogEntries` and the continuation
+        token under `GCP.Logging(true).LogEntriesNextToken`.
 
     Raises:
         DemistoException: If none of the parent resource arguments are provided.
     """
     resource_project = argToList(args.get("project_id"))
-    resource_organizations = argToList(args.get("organization_name"))
-    resource_billing_accounts = argToList(args.get("billing_account_name"))
-    resource_folders = argToList(args.get("folder_name"))
+    resource_organizations = argToList(args.get("organization_names"))
+    resource_billing_accounts = argToList(args.get("billing_account_names"))
+    resource_folders = argToList(args.get("folder_names"))
 
     if not (resource_project or resource_organizations or resource_billing_accounts or resource_folders):
         raise DemistoException(
             "At least one of the following resources must be provided: "
-            "project_id, organization_name, billing_account_name, or folder_name."
+            "project_id, organization_names, billing_account_names, or folder_names."
         )
 
     resource_names = [f"projects/{project}" for project in resource_project]
@@ -2447,56 +2443,35 @@ def logging_log_entries_list(creds: Credentials, args: dict[str, Any]) -> Comman
     resource_names += [f"folders/{folder}" for folder in resource_folders]
 
     limit = arg_to_number(args.get("limit")) or 50
-    # The Cloud Logging API caps pageSize at 1000. Default the per-page size to that cap so a large
-    # limit is fetched in as few calls as possible; honor an explicit page_size only when provided.
-    page_size = arg_to_number(args.get("page_size")) or MAX_LOGGING_PAGE_SIZE
-    page_token = args.get("page_token")
+    validate_limit(limit)
+
+    request_body: dict[str, Any] = {
+        "resourceNames": resource_names,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+        "pageSize": limit,
+        "pageToken": args.get("next_token"),
+    }
+    remove_nulls_from_dictionary(request_body)
 
     logging_service = GCPServices.LOGGING.build(creds)
-
-    entries: list[dict[str, Any]] = []
-    next_token = page_token
-    # Accumulate pages internally until the requested limit is reached or there are no more results.
-    while len(entries) < limit:
-        request_body: dict[str, Any] = {
-            "resourceNames": resource_names,
-            "filter": args.get("filter"),
-            "orderBy": args.get("order_by"),
-            "pageSize": min(limit - len(entries), page_size),
-            "pageToken": next_token,
-        }
-        remove_nulls_from_dictionary(request_body)
-
-        response = logging_service.entries().list(body=request_body).execute()  # pylint: disable=E1101
-        current_entries = response.get("entries", [])
-        entries.extend(current_entries)
-
-        next_token = response.get("nextPageToken")
-        if not next_token or not current_entries:
-            break
+    response = logging_service.entries().list(body=request_body).execute()  # pylint: disable=E1101
+    entries = response.get("entries", [])
+    next_token = response.get("nextPageToken")
 
     headers = ["timestamp", "logName", "insertId", "resource", "severity", "operation"]
-    metadata = (
-        "Run the following command to retrieve the next batch of log entries:\n"
-        f"!gcp-logging-log-entries-list page_token={next_token}"
-        if next_token
-        else None
-    )
     readable_output = tableToMarkdown(
         "GCP Logging Log Entries",
         entries,
         headers=headers,
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
 
     outputs: dict[str, Any] = {
-        "GCP.Logging.LogEntry(val.insertId && val.insertId == obj.insertId)": entries,
-        "GCP.Logging(true)": {"LogEntryNextToken": next_token},
+        "GCP.Logging.LogEntries(val.insertId && val.insertId == obj.insertId)": entries,
+        "GCP.Logging(true)": {"LogEntriesNextToken": next_token},
     }
-    if not next_token:
-        outputs.pop("GCP.Logging(true)")
     return CommandResults(
         outputs=outputs,
         readable_output=readable_output,
