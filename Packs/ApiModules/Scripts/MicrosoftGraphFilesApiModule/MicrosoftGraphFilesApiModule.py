@@ -133,8 +133,9 @@ def resolve_item_addressing(args: dict[str, str], allow_path: bool = True, allow
     endpoint. YAML cannot express "exactly one of these", so the rule is enforced here.
 
     Returns:
-        {'mode': 'item_id'|'item_path'|'share_url', 'value': ...}, plus 'object_type' and
-        'object_type_id' for the id and path modes.
+        {'mode': 'item_id'|'item_path'|'share_url', 'value': ..., 'object_type': ...,
+        'object_type_id': ...}. The shape is the same for every mode so callers can index
+        directly. share_url is self-addressing, so its object type fields are empty.
 
     Raises:
         DemistoException: If the addressing arguments are missing, ambiguous or unsupported.
@@ -144,7 +145,8 @@ def resolve_item_addressing(args: dict[str, str], allow_path: bool = True, allow
 
     mode = _select_addressing_mode(addressing_args, allow_path, allow_share_url)
     if mode == "share_url":
-        return {"mode": "share_url", "value": addressing_args["share_url"]}
+        # A sharing URL resolves via /shares/{token}, which needs no parent resource.
+        return {"mode": "share_url", "value": addressing_args["share_url"], "object_type": "", "object_type_id": ""}
 
     object_type_id = args.get("object_type_id") or ""
     if not object_type_id:
@@ -1902,8 +1904,8 @@ def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) 
     include_sharepoint_ids = argToBoolean(args.get("include_sharepoint_ids", "false"))
 
     raw_response = client.get_driveitem(
-        object_type=addressing.get("object_type", ""),
-        object_type_id=addressing.get("object_type_id", ""),
+        object_type=addressing["object_type"],
+        object_type_id=addressing["object_type_id"],
         item_id=addressing["value"] if addressing["mode"] == "item_id" else "",
         item_path=addressing["value"] if addressing["mode"] == "item_path" else "",
         share_url=addressing["value"] if addressing["mode"] == "share_url" else "",

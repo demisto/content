@@ -2177,11 +2177,17 @@ def test_resolve_item_addressing_by_share_url():
     """
     Given: Only share_url, on a command that supports it.
     When: Resolving the addressing mode.
-    Then: The share_url mode is returned and the object type arguments are not required.
+    Then: The share_url mode is returned with empty object type fields, keeping the shape
+          uniform across modes, because a sharing URL addresses the item on its own.
     """
     result = resolve_item_addressing({"share_url": "https://e.sharepoint.com/x"}, allow_share_url=True)
 
-    assert result == {"mode": "share_url", "value": "https://e.sharepoint.com/x"}
+    assert result == {
+        "mode": "share_url",
+        "value": "https://e.sharepoint.com/x",
+        "object_type": "",
+        "object_type_id": "",
+    }
 
 
 @pytest.mark.parametrize(
@@ -2250,7 +2256,23 @@ def test_resolve_item_addressing_share_url_does_not_require_object_type():
     """
     result = resolve_item_addressing({"share_url": "https://e.sharepoint.com/x"}, allow_share_url=True)
 
-    assert result == {"mode": "share_url", "value": "https://e.sharepoint.com/x"}
+    assert result["mode"] == "share_url"
+    assert result["object_type"] == ""
+    assert result["object_type_id"] == ""
+
+
+def test_resolve_item_addressing_returns_the_same_keys_for_every_mode():
+    """
+    Given: Each of the three addressing modes.
+    When: Resolving the addressing mode.
+    Then: The returned dictionaries carry an identical key set, so callers can index directly
+          instead of guarding every lookup with .get().
+    """
+    by_id = resolve_item_addressing({"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1"})
+    by_path = resolve_item_addressing({"object_type": "sites", "object_type_id": "site-1", "item_path": "a/b.docx"})
+    by_url = resolve_item_addressing({"share_url": "https://e.sharepoint.com/x"}, allow_share_url=True)
+
+    assert by_id.keys() == by_path.keys() == by_url.keys()
 
 
 def test_resolve_item_addressing_ignores_empty_strings():
