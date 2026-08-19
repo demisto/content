@@ -849,7 +849,19 @@ class TestXDRHandlerBuiltinPath:
     Builtin command itself (asked for via the hidden `verify_quarantine` arg) and
     surfaced under the `Core.QuarantineFiles.status` context path, so no identity is
     forwarded from caller-supplied args into any RBAC-enforced status command.
+
+    The Builtin path additionally requires a minimum platform version; these tests
+    satisfy that gate by default via the autouse fixture below.
     """
+
+    @pytest.fixture(autouse=True)
+    def _mock_builtin_version(self, mocker):
+        """Satisfy the minimum-version gate on `use_builtin` for the Builtin-path tests.
+
+        The version-gate behavior itself is covered by
+        test_constructor_keeps_legacy_command_for_old_version_on_platform.
+        """
+        mocker.patch("QuarantineFile.is_demisto_version_ge", return_value=True)
 
     def test_constructor_uses_builtin_command_for_core_on_platform(self, mocker):
         """
@@ -876,6 +888,22 @@ class TestXDRHandlerBuiltinPath:
 
         assert handler.use_builtin is False
         assert handler.quarantine_command == "xdr-file-quarantine"
+
+    def test_constructor_keeps_legacy_command_for_old_version_on_platform(self, mocker):
+        """
+        Given: The Core-IR brand on the platform, but the platform version is below the
+               minimum required for the Builtin quarantineFile command.
+        When:  The XDRHandler is constructed.
+        Then:  use_builtin is False and the legacy Core command is used (version gate).
+        """
+        mocker.patch("QuarantineFile.is_platform", return_value=True)
+        # Override the autouse version mock: simulate an older platform version.
+        mocker.patch("QuarantineFile.is_demisto_version_ge", return_value=False)
+        args = {"endpoint_id": "id1", "file_hash": SHA_256_HASH, "file_path": "/path"}
+        handler = XDRHandler(Brands.CORTEX_CORE_IR, _get_orchestrator(args))
+
+        assert handler.use_builtin is False
+        assert handler.quarantine_command == "core-quarantine-files"
 
     def test_display_brand_is_builtin_on_platform(self, mocker):
         """
