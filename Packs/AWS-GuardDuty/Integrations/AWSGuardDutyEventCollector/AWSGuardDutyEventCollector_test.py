@@ -169,7 +169,7 @@ def test_test_module(mocker):
                 ),
                 call(
                     **get_expected_list_finding_args(
-                        detector_id="detector_id2", updated_at_ts=1661681559000, gd_severity=1, max_results=9, next_token=None
+                        detector_id="detector_id2", updated_at_ts=1661681559000, gd_severity=1, max_results=10, next_token=None
                     )
                 ),
             ],
@@ -563,7 +563,7 @@ def test_get_events_returns_datetime_as_str(mocker, list_detectors_res, list_fin
                 ),
                 call(
                     **get_expected_list_finding_args(
-                        detector_id="detector_id2", updated_at_ts=1659003099000, gd_severity=1, max_results=9, next_token=None
+                        detector_id="detector_id2", updated_at_ts=1659003099000, gd_severity=1, max_results=10, next_token=None
                     )
                 ),
             ],
@@ -1162,23 +1162,25 @@ def test_multi_detector_truncation_advances_cursors_independently(mocker):
 
     finding_a1 = update_finding_id(FINDING.copy(), "finding_A1", updated_at=a_t1)
     finding_a2 = update_finding_id(FINDING.copy(), "finding_A2", updated_at=a_t2)
+    finding_a3 = update_finding_id(FINDING.copy(), "finding_A3", updated_at=a_t2)
     finding_b1 = update_finding_id(FINDING.copy(), "finding_B1", updated_at=b_t1)
 
-    # limit=3: det_A returns 3 finding ids on one page (reaching the limit so its
-    # loop exits by limit) but one id is a duplicate, so it ingests only 2 events
-    # (A1, A2) and leaves budget for det_B to drain its single finding.
+    # limit=3 is applied PER DETECTOR. det_A returns 3 unique finding ids on one
+    # page, filling its own limit so its loop exits by limit with a pending
+    # NextToken (truncated mid-boundary at the partial second A_t2). det_B then
+    # gets its own fresh limit and drains its single finding.
     client, _, _, _ = create_mocked_client(
         mocker=mocker,
         list_detectors_res=[{"DetectorIds": ["det_A", "det_B"]}],
         list_finding_ids_res=[
-            # det_A: 3 ids fill the limit => loop exits by limit; NextToken still
-            # pending => truncated mid-boundary at the partial second A_t2.
-            {"FindingIds": ["finding_A1", "finding_A2", "finding_A2"], "NextToken": "more"},
-            # det_B: no NextToken => fully drained.
+            # det_A: 3 unique ids fill the per-detector limit => loop exits by
+            # limit; NextToken still pending => truncated mid-boundary at A_t2.
+            {"FindingIds": ["finding_A1", "finding_A2", "finding_A3"], "NextToken": "more"},
+            # det_B: no NextToken => fully drained (its own fresh limit budget).
             {"FindingIds": ["finding_B1"]},
         ],
         get_findings_res=[
-            {"Findings": [finding_a1, finding_a2]},
+            {"Findings": [finding_a1, finding_a2, finding_a3]},
             {"Findings": [finding_b1]},
         ],
     )
@@ -1193,7 +1195,7 @@ def test_multi_detector_truncation_advances_cursors_independently(mocker):
     )
 
     # All distinct fetched findings are still returned this run (nothing dropped).
-    assert sorted(e["Id"] for e in events) == ["finding_A1", "finding_A2", "finding_B1"]
+    assert sorted(e["Id"] for e in events) == ["finding_A1", "finding_A2", "finding_A3", "finding_B1"]
 
     # detector_A: truncated mid-boundary => cursor rolls back to the last
     # fully-drained second (A_t1), NOT the partial A_t2. last_ids holds A_t1's
