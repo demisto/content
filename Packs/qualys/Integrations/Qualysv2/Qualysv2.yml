@@ -2890,6 +2890,7 @@ script:
     - contextPath: Qualys.QID
       description: All the Qualys QID (Qualys ID) associated with a specified CVE.
       type: unknown
+  spec: m
   dockerimage: demisto/python3:3.12.13.10116658
   isfetchevents: true
   isfetchassets: true
