@@ -50,6 +50,9 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - xsiam
+  - agentix
 - defaultvalue: 10 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
@@ -67,6 +70,9 @@ configuration:
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - xsiam
+  - agentix
 - display: "┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉\n‎                                           Manual Mode\nExchange Server Hostname or IP address"
   name: ewsServer
   type: 0
@@ -110,12 +116,22 @@ configuration:
   type: 0
   section: Collect
   required: false
-- defaultvalue: 'true'
-  display: Run as a separate process (protects against memory depletion)
-  name: separate_process
-  type: 8
-  section: Connect
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
   advanced: true
+  required: false
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Run as a separate process (protects against memory depletion)
+  name: separate_process
+  section: Connect
+  type: 8
+  advanced: true
+  defaultvalue: 'true'
   required: false
 - display: Use legacy attachment name
   name: legacy_name
@@ -1060,7 +1076,7 @@ script:
       name: handle_inline_image
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.5.0.118073
+  dockerimage: demisto/py-ews:5.6.0.12072219
   isfetch: true
   runonce: false
   script: '-'

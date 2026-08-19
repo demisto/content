@@ -974,8 +974,19 @@ def get_formatted_message(attached_email) -> str | bytes:
         try:
             return attached_email.as_bytes()
         except Exception as e:
-            demisto.error(f"Could not parse attached mail as bytes, {e}")
-            raise Exception(f"Could not format message, {e}")
+            # Python 3.12 hardened the email library: as_string()/as_bytes() raise
+            # email.errors.HeaderWriteError for headers containing embedded newlines
+            # (policy.verify_generated_headers defaults to True). Retry with a policy
+            # that does not verify generated headers to preserve the previous lenient
+            # behavior of returning the message as bytes even when a header is malformed.
+            demisto.info(f"Could not parse attached mail as bytes, retrying with a non-verifying policy.\n{e}")
+            try:
+                current_policy = getattr(attached_email, "policy", SMTP)
+                lenient_policy = current_policy.clone(verify_generated_headers=False)
+                return attached_email.as_bytes(policy=lenient_policy)
+            except Exception as e:
+                demisto.error(f"Could not parse attached mail as bytes, {e}")
+                raise Exception(f"Could not format message, {e}")
 
 
 def fetch_emails_as_incidents(
