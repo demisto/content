@@ -97,6 +97,11 @@ def encode_sharing_url(share_url: str) -> str:
     return f"u!{encoded.rstrip('=')}"
 
 
+# The MS Graph resources a driveItem can be addressed under. Kept in one place because the
+# URI builders and the argument validation must agree on the set.
+VALID_OBJECT_TYPES = ("drives", "groups", "sites", "users")
+
+
 def _select_addressing_mode(addressing_args: dict[str, str], allow_path: bool, allow_share_url: bool) -> str:
     """Return the name of the single addressing argument supplied, or raise explaining why not.
 
@@ -145,10 +150,19 @@ def resolve_item_addressing(args: dict[str, str], allow_path: bool = True, allow
     if not object_type_id:
         raise DemistoException(f"The object_type_id argument is required when addressing an item by {mode}.")
 
+    # object_type has no default, so an omitted value would otherwise build a malformed URL
+    # such as '/{object_type_id}/drive/items/{item_id}'. Fail here with a usable message.
+    object_type = args.get("object_type") or ""
+    if object_type not in VALID_OBJECT_TYPES:
+        raise DemistoException(
+            f"The object_type argument is required when addressing an item by {mode}, "
+            f"and must be one of: {', '.join(VALID_OBJECT_TYPES)}. Got '{object_type}'."
+        )
+
     return {
         "mode": mode,
         "value": addressing_args[mode],
-        "object_type": args.get("object_type") or "",
+        "object_type": object_type,
         "object_type_id": object_type_id,
     }
 
@@ -755,9 +769,9 @@ class MsGraphClient:
         """
         if object_type == "drives":
             return f"drives/{object_type_id}/items/{item_id}"
-        if object_type in {"groups", "sites", "users"}:
+        if object_type in VALID_OBJECT_TYPES:
             return f"{object_type}/{object_type_id}/drive/items/{item_id}"
-        raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: drives, groups, sites, users.")
+        raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: {', '.join(VALID_OBJECT_TYPES)}.")
 
     def get_sharepoint_ids(self, site_id: str, item_id: str, drive_id: str = "") -> dict:
         """Retrieve the SharePoint identifiers of a driveItem, or {} if it exposes none.
@@ -1729,11 +1743,13 @@ def _summarize_permission_grantees(perm: dict) -> str:
         identity_sets.extend(item for item in listed if isinstance(item, dict))
 
     labels: list[str] = []
+    seen: set[str] = set()
     for identity_set in identity_sets:
         for role in IDENTITY_ROLE_KEYS:
             label = _identity_label(_lookup(identity_set, role) or {})
-            if label and label not in labels:
+            if label and label not in seen:
                 labels.append(label)
+                seen.add(label)
     return ", ".join(labels)
 
 

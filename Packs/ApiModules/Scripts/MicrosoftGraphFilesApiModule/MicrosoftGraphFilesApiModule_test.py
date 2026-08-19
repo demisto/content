@@ -2207,6 +2207,15 @@ def test_resolve_item_addressing_by_share_url():
         ({"share_url": "https://e.sharepoint.com/x"}, {}, "The share_url argument is not supported by this command."),
         # Addressing by id/path requires the parent resource ID.
         ({"object_type": "sites", "item_id": "item-1"}, {}, "The object_type_id argument is required"),
+        # Addressing by id/path also requires a valid object_type. The argument has no default,
+        # so an omitted value would otherwise reach the URI builders and produce a malformed URL.
+        ({"object_type_id": "site-1", "item_id": "item-1"}, {}, "The object_type argument is required"),
+        ({"object_type": "", "object_type_id": "site-1", "item_path": "a/b.docx"}, {}, "The object_type argument is required"),
+        (
+            {"object_type": "bogus", "object_type_id": "site-1", "item_id": "item-1"},
+            {},
+            "must be one of: drives, groups, sites, users. Got 'bogus'.",
+        ),
     ],
 )
 def test_resolve_item_addressing_invalid(args: dict, kwargs: dict, expected_error: str):
@@ -2219,6 +2228,29 @@ def test_resolve_item_addressing_invalid(args: dict, kwargs: dict, expected_erro
         resolve_item_addressing(args, **kwargs)
 
     assert expected_error in str(exc_info.value)
+
+
+@pytest.mark.parametrize("object_type", ["drives", "groups", "sites", "users"])
+def test_resolve_item_addressing_accepts_every_valid_object_type(object_type: str):
+    """
+    Given: Each of the object types Microsoft Graph supports for addressing a driveItem.
+    When: Resolving the addressing mode by item ID.
+    Then: The value is accepted and passed through unchanged.
+    """
+    result = resolve_item_addressing({"object_type": object_type, "object_type_id": "id-1", "item_id": "item-1"})
+
+    assert result["object_type"] == object_type
+
+
+def test_resolve_item_addressing_share_url_does_not_require_object_type():
+    """
+    Given: Only share_url, which is self-addressing.
+    When: Resolving the addressing mode.
+    Then: No object_type is demanded, because the sharing token identifies the item on its own.
+    """
+    result = resolve_item_addressing({"share_url": "https://e.sharepoint.com/x"}, allow_share_url=True)
+
+    assert result == {"mode": "share_url", "value": "https://e.sharepoint.com/x"}
 
 
 def test_resolve_item_addressing_ignores_empty_strings():
