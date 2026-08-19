@@ -2,7 +2,7 @@ import json
 import pytest
 import demistomock as demisto
 from unittest.mock import Mock, patch
-from PaloAltoNetworks_Prisma_AIRs import (
+from PrismaAIRsRedTeam import (
     Client,
     test_module as run_test_module,
     redteam_categories_list_command,

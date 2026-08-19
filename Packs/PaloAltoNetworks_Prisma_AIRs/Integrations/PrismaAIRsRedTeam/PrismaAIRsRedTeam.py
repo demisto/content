@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from PrismaAirsApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
 import base64
 import urllib3
@@ -9,18 +10,9 @@ from typing import Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-# CONSTANTS
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-DEFAULT_LIMIT = 50
-PA_OUTPUT_PREFIX = "PrismaAIRs."
-# API path suffixes (appended to Server URL from config)
-MGMT_API_PATH = "/aisec"
-MODEL_SEC_DATA_PATH = "/aims/data"
-MODEL_SEC_MGMT_PATH = "/aims/mgmt"
-# Red Team API path suffixes
+# CONSTANTS (Red Team specific; shared constants and plane path prefixes come from PrismaAirsApiModule)
+# Red Team API endpoint suffixes (appended after RED_TEAM_DATA_PATH / RED_TEAM_MGMT_PATH from PrismaAirsApiModule)
 # Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts
-RED_TEAM_DATA_PATH = "/ai-red-teaming/data-plane"
-RED_TEAM_MGMT_PATH = "/ai-red-teaming/mgmt-plane"
 RED_TEAM_TARGETS_ENDPOINT = "/v1/target"
 RED_TEAM_SCANS_ENDPOINT = "/v1/scan"
 RED_TEAM_CATEGORIES_ENDPOINT = "/v1/categories"
@@ -49,216 +41,6 @@ RED_TEAM_SENTIMENT_ENDPOINT = "/v1/sentiment"
 # Target-profile error logs (profiling failures for a target) - data-plane.
 # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_ERROR_LOG_TARGET_PROFILE_PATH)
 RED_TEAM_ERROR_LOG_TARGET_PROFILE_ENDPOINT = "/v1/error-log/target-profile"
-# DLP API path suffixes (v2 API) - uses separate base URL
-# Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts
-# CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (NOT the SCM base URL)
-# Default DLP base URL (can be overridden in configuration)
-DEFAULT_DLP_BASE_URL = "https://api.dlp.paloaltonetworks.com"
-# Scanner API path (SDK: SYNC_SCAN_PATH = '/v1/scan/sync/request')
-SCANNER_SYNC_SCAN_PATH = "/v1/scan/sync/request"
-# Default Scanner base URL (can be overridden in configuration)
-DEFAULT_SCANNER_BASE_URL = "https://service.api.aisecurity.paloaltonetworks.com"
-
-
-class Client(BaseClient):
-    """Client class to interact with Prisma AIRs API
-
-    This Client implements API calls to the Prisma AIRs platform via Strata Cloud Manager,
-    and does not contain any XSOAR logic. Handles OAuth2 token retrieval.
-
-    Args:
-       base_url: Strata Cloud Manager server URL.
-       client_id: OAuth2 client ID.
-       client_secret: OAuth2 client secret.
-       tsg_id: The default Prisma SASE Tenant Services Group ID
-       verify: Specifies whether to verify the SSL certificate or not.
-       proxy: Specifies if to use XSOAR proxy settings.
-    """
-
-    def __init__(
-        self,
-        base_url: str,
-        client_id: str,
-        client_secret: str,
-        tsg_id: str | None,
-        runtime_api_key: str | None,
-        scanner_base_url: str | None,
-        dlp_base_url: str | None,
-        verify: bool,
-        proxy: bool,
-        headers: dict[str, str],
-        **kwargs: Any,
-    ):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, **kwargs)
-
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.tsg_id = tsg_id
-        self.runtime_api_key = runtime_api_key
-        # Use configured URLs or fall back to defaults
-        self.scanner_base_url = scanner_base_url or DEFAULT_SCANNER_BASE_URL
-        self.dlp_base_url = dlp_base_url or DEFAULT_DLP_BASE_URL
-        self._access_token: str | None = None
-
-    def get_access_token(self) -> str:
-        """Retrieve OAuth2 access token from SCM token endpoint.
-
-        Returns:
-            str: Access token for API authentication.
-        """
-        if self._access_token:
-            return self._access_token
-
-        token_url = "https://auth.apps.paloaltonetworks.com/oauth2/access_token"
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        data = {
-            "grant_type": "client_credentials",
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
-            "scope": f"profile tsg_id:{self.tsg_id}" if self.tsg_id else "profile",
-        }
-
-        response = self._http_request(method="POST", full_url=token_url, headers=headers, data=data, resp_type="json")
-
-        self._access_token = response.get("access_token")
-        if not self._access_token:
-            raise DemistoException("Failed to retrieve access token from SCM")
-
-        return self._access_token
-
-    def http_request(
-        self,
-        method: str,
-        url_suffix: str = "",
-        params: dict[str, Any] | None = None,
-        json_data: dict[str, Any] | None = None,
-        tsg_id: str | None = None,
-        use_mgmt_base: bool = False,
-        use_model_sec_data: bool = False,
-        use_model_sec_mgmt: bool = False,
-        use_redteam_data: bool = False,
-        use_redteam_mgmt: bool = False,
-        use_dlp_base: bool = False,
-        resp_type: str = "json",
-        return_empty_response: bool = False,
-        headers: dict[str, str] | None = None,
-        files: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        """Execute HTTP request with OAuth2 authentication for Management API.
-
-        Args:
-            method: HTTP method (GET, POST, PUT, DELETE).
-            url_suffix: URL suffix to append to base URL.
-            params: URL parameters.
-            json_data: JSON data for request body.
-            tsg_id: Override TSG ID for this request.
-            use_mgmt_base: If True, use MGMT_API_PATH prefix (e.g., /aisec/v1/mgmt/...).
-            use_model_sec_data: If True, use MODEL_SEC_DATA_PATH prefix (e.g., /aims/data/...).
-            use_model_sec_mgmt: If True, use MODEL_SEC_MGMT_PATH prefix (e.g., /aims/mgmt/...).
-            use_redteam_data: If True, use RED_TEAM_DATA_PATH prefix (e.g., /ai-red-teaming/data-plane/...).
-            use_redteam_mgmt: If True, use RED_TEAM_MGMT_PATH prefix (e.g., /ai-red-teaming/mgmt-plane/...).
-            use_dlp_base: If True, use DLP_BASE_URL (https://api.dlp.paloaltonetworks.com) + url_suffix directly.
-            resp_type: Response type - "json" (default), "text", "content", "xml", or "response".
-            return_empty_response: If True, return empty response object for 204 No Content responses (DELETE operations).
-
-        Returns:
-            dict: API response.
-        """
-        token = self.get_access_token()
-        # 'service-name: api' is required by some tenants' downstream services (notably the DLP API),
-        # which otherwise return a generic HTTP 400. Sent on every management/DLP request to match the SDK.
-        request_headers: dict[str, str] = {"Authorization": f"Bearer {token}", "service-name": "api"}
-        # For multipart file uploads, let the HTTP layer set the Content-Type (with boundary).
-        if files is None:
-            request_headers["Content-Type"] = "application/json"
-        # Allow callers to override/add headers (e.g., application/merge-patch+json for PATCH).
-        if headers:
-            request_headers.update(headers)
-
-        # Determine which API path prefix to use
-        # CRITICAL: DLP v2 API uses a completely different base URL
-        if use_dlp_base:
-            full_url = f"{self.dlp_base_url}{url_suffix}"
-        elif use_model_sec_data:
-            full_url = f"{self._base_url}{MODEL_SEC_DATA_PATH}{url_suffix}"
-        elif use_model_sec_mgmt:
-            full_url = f"{self._base_url}{MODEL_SEC_MGMT_PATH}{url_suffix}"
-        elif use_redteam_data:
-            full_url = f"{self._base_url}{RED_TEAM_DATA_PATH}{url_suffix}"
-        elif use_redteam_mgmt:
-            full_url = f"{self._base_url}{RED_TEAM_MGMT_PATH}{url_suffix}"
-        elif use_mgmt_base:
-            full_url = f"{self._base_url}{MGMT_API_PATH}{url_suffix}"
-        else:
-            # Use default base URL without additional prefix
-            return self._http_request(
-                method=method,
-                url_suffix=url_suffix,
-                params=params,
-                json_data=json_data,
-                files=files,
-                headers=request_headers,
-                resp_type=resp_type,
-                return_empty_response=return_empty_response,
-            )
-
-        return self._http_request(
-            method=method,
-            full_url=full_url,
-            params=params,
-            json_data=json_data,
-            files=files,
-            headers=request_headers,
-            resp_type=resp_type,
-            return_empty_response=return_empty_response,
-        )
-
-    def scanner_request(
-        self,
-        json_data: dict[str, Any],
-    ) -> dict[str, Any]:
-        """Execute scanner API request with API key authentication.
-
-        Args:
-            json_data: JSON data for scanner request body.
-
-        Returns:
-            dict: Scanner API response.
-        """
-        if not self.runtime_api_key:
-            raise DemistoException(
-                "Runtime API Key is required for scanner operations. "
-                "Please configure the Runtime API Key in the integration settings."
-            )
-
-        headers = {"x-pan-token": self.runtime_api_key, "Content-Type": "application/json"}
-
-        # Use regional scanner endpoint + sync scan path
-        # Full URL: https://service{-region}.api.aisecurity.paloaltonetworks.com/v1/scan/sync/request
-        return self._http_request(
-            method="POST",
-            full_url=f"{self.scanner_base_url}{SCANNER_SYNC_SCAN_PATH}",
-            json_data=json_data,
-            headers=headers,
-            resp_type="json",
-        )
-
-
-def test_module(client: Client) -> str:
-    """Test connectivity to Prisma AIRs API.
-
-    Args:
-        client: Prisma AIRs API client.
-
-    Returns:
-        str: 'ok' if test passed, error message otherwise.
-    """
-    try:
-        # Test authentication by attempting to get access token
-        client.get_access_token()
-        return "ok"
-    except Exception as e:
-        return f"Test failed: {str(e)}"
 
 
 def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -5611,7 +5393,7 @@ def redteam_custom_attack_property_stats_command(client: Client, args: dict[str,
 
 
 def main() -> None:
-    """Main function for Prisma AIRs integration."""
+    """Main function for Prisma AIRs AI Red Teaming integration."""
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -5619,15 +5401,12 @@ def main() -> None:
     demisto.debug(f"Command being called is {command}")
 
     try:
-        # Client configuration
+        # Client configuration (scoped credentials for the AI Red Teaming mgmt/data planes)
         base_url = params.get("url", "https://api.sase.paloaltonetworks.com")
         credentials = params.get("credentials", {})
         client_id = credentials.get("identifier", "")
         client_secret = credentials.get("password", "")
         tsg_id = params.get("tsg_id")
-        runtime_api_key = params.get("runtime_api_key", {}).get("password", "") or params.get("runtime_api_key", "")
-        scanner_base_url = params.get("scanner_base_url")
-        dlp_base_url = params.get("dlp_base_url")
         verify_certificate = not params.get("insecure", False)
         proxy = params.get("proxy", False)
 
@@ -5638,9 +5417,6 @@ def main() -> None:
             client_id=client_id,
             client_secret=client_secret,
             tsg_id=tsg_id,
-            runtime_api_key=runtime_api_key,
-            scanner_base_url=scanner_base_url,
-            dlp_base_url=dlp_base_url,
             verify=verify_certificate,
             proxy=proxy,
             headers=headers,

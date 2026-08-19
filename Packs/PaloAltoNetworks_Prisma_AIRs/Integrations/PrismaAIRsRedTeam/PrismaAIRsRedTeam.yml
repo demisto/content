@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Palo Alto Networks - Prisma AIRs AI Security
+  id: Palo Alto Networks Prisma AIRS - AI Red Teaming
   version: -1
 configuration:
 - defaultvalue: https://api.sase.paloaltonetworks.com
@@ -19,36 +19,12 @@ configuration:
   required: true
   type: 9
   displaypassword: API Client Secret
-- display: Runtime API Key
-  section: Connect
-  name: runtime_api_key
-  required: true
-  type: 9
-  additionalinfo: Runtime API Key for Prisma AIRs Scanner API. This is used exclusively for runtime scanning operations and is different from the OAuth2 Client ID/Secret used for management operations.
-  hiddenusername: true
-  displaypassword: Runtime API Key
 - additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
   display: Tenant Services Group ID
   name: tsg_id
   required: true
   type: 0
   section: Connect
-- display: Scanner API Base URL
-  section: Connect
-  name: scanner_base_url
-  required: false
-  type: 0
-  defaultvalue: https://service.api.aisecurity.paloaltonetworks.com
-  additionalinfo: 'Scanner API base URL for runtime scanning operations. Default is US region. For other regions: EU: https://service-de.api.aisecurity.paloaltonetworks.com, IN: https://service-in.api.aisecurity.paloaltonetworks.com, SG: https://service-sg.api.aisecurity.paloaltonetworks.com. This must match the region selected during deployment profile creation.'
-  advanced: true
-- display: DLP API Base URL
-  section: Connect
-  name: dlp_base_url
-  required: false
-  type: 0
-  defaultvalue: https://api.dlp.paloaltonetworks.com
-  additionalinfo: DLP API base URL for DLP management operations (dictionaries, patterns, filtering profiles). Default is the global DLP endpoint. Change only if using a regional or custom DLP endpoint.
-  advanced: true
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
@@ -63,9 +39,9 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Integrate with Palo Alto Networks Prisma AIRs for AI security capabilities including runtime scanning, red teaming, model security, and DLP configuration.
-display: Palo Alto Networks - Prisma AIRs AI Security
-name: Palo Alto Networks - Prisma AIRs AI Security
+description: 'Discover and remediate AI application vulnerabilities with Palo Alto Networks Prisma AIRS AI Red Teaming: targets, adapters, scans, attack reports, prompt sets, and custom attacks.'
+display: Palo Alto Networks Prisma AIRS - AI Red Teaming
+name: Palo Alto Networks Prisma AIRS - AI Red Teaming
 supportlevelheader: community
 script:
   commands:
@@ -2950,11 +2926,7 @@ script:
   subtype: python3
   type: python
 tests:
-- PaloAltoNetworks_Prisma_AIRs_Model_Security_Test
-- PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test
-- PaloAltoNetworks_Prisma_AIRs_Runtime_Profiles_Test
-- PaloAltoNetworks_Prisma_AIRs_DLP_Patterns_Test
-- PaloAltoNetworks_Prisma_AIRs_Runtime_Scan_Test
+- No tests
 marketplaces:
 - xsoar
 - marketplacev2

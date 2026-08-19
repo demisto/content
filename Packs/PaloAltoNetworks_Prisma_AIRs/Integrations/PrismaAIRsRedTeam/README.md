@@ -1,24 +1,22 @@
-Integrate with Palo Alto Networks Prisma AIRs for AI security capabilities including runtime scanning, red teaming, model security, and DLP configuration.
-This integration was integrated and tested with the Palo Alto Networks - Prisma AIRs AI Security API as of June 2026.
+Discover and remediate AI application vulnerabilities with Palo Alto Networks Prisma AIRS AI Red Teaming: manage targets and adapters, run and monitor red-team scans, review attack reports and remediation guidance, and curate prompt sets and custom attacks.
+This integration was integrated and tested with the Palo Alto Networks Prisma AIRS AI Red Teaming API as of June 2026.
 
 ## Supported Capabilities
 
-- **Runtime Scanning**: Real-time AI threat detection
-- **Security Profiles**: Manage AI security policies
-- **Topic Guardrails**: Custom topic-based protection
-- **DLP Integration**: Data loss prevention for AI applications
+- **Targets & Adapters**: Register, profile, and validate red-team targets and their protocol adapters
+- **Scans**: Launch, list, monitor, and abort red-team scans
+- **Attack Reports**: Review attack outcomes, multi-turn transcripts, remediation, and runtime policy guidance
+- **Prompt Sets & Prompts**: Create, version, and curate custom prompt sets and prompts
+- **Custom Attacks & Properties**: Manage custom-attack reports, properties, and network broker channels
 
-## Configure Palo Alto Networks - Prisma AIRs AI Security in Cortex
+## Configure Palo Alto Networks Prisma AIRS - AI Red Teaming in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
 | API Client ID |  | True |
 | API Client Secret |  | True |
-| Runtime API Key | Runtime API Key for Prisma AIRs Scanner API. This is used exclusively for runtime scanning operations and is different from the OAuth2 Client ID/Secret used for management operations. | True |
 | Tenant Services Group ID | Default Tenant Services Group ID to use for API calls. Example: 1234567890. | True |
-| Scanner API Base URL | Scanner API base URL for runtime scanning operations. Default is US region. For other regions: EU: https://service-de.api.aisecurity.paloaltonetworks.com, IN: https://service-in.api.aisecurity.paloaltonetworks.com, SG: https://service-sg.api.aisecurity.paloaltonetworks.com. This must match the region selected during deployment profile creation. | False |
-| DLP API Base URL | DLP API base URL for DLP management operations \(dictionaries, patterns, filtering profiles\). Default is the global DLP endpoint. Change only if using a regional or custom DLP endpoint. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
