@@ -65,27 +65,27 @@ BAD_REQUEST_REGEX = r"^Error in API call \[400\].*"
 # Only the URLs listed here are mapped; any other URL is left unchanged.
 MIGRATED_SLS_URL_BY_ORIGINAL_URL = {
     # americas
-    "https://api.us.cdl.paloaltonetworks.com": "https://api.us1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.us.cdl.paloaltonetworks.com": "https://read-api.us1.prd.strata.logging.paloaltonetworks.com",
     # europe
-    "https://api.nl.cdl.paloaltonetworks.com": "https://api.eu1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.nl.cdl.paloaltonetworks.com": "https://read-api.eu1.prd.strata.logging.paloaltonetworks.com",
     # au
-    "https://api.au1.se1.cdl.paloaltonetworks.com": "https://api.au1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.au1.se1.cdl.paloaltonetworks.com": "https://read-api.au1.prd.strata.logging.paloaltonetworks.com",
     # ca
-    "https://api.ca1.ne1.cdl.paloaltonetworks.com": "https://api.ca1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.ca1.ne1.cdl.paloaltonetworks.com": "https://read-api.ca1.prd.strata.logging.paloaltonetworks.com",
     # de
-    "https://api.de1.ew3.cdl.paloaltonetworks.com": "https://api.de1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.de1.ew3.cdl.paloaltonetworks.com": "https://read-api.de1.prd.strata.logging.paloaltonetworks.com",
     # fr
-    "https://api.fr1.ew9.cdl.paloaltonetworks.com": "https://api.fr1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.fr1.ew9.cdl.paloaltonetworks.com": "https://read-api.fr1.prd.strata.logging.paloaltonetworks.com",
     # jp
-    "https://api.jp1.ne1.cdl.paloaltonetworks.com": "https://api.jp1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.jp1.ne1.cdl.paloaltonetworks.com": "https://read-api.jp1.prd.strata.logging.paloaltonetworks.com",
     # in
-    "https://api.in1.as1.cdl.paloaltonetworks.com": "https://api.in1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.in1.as1.cdl.paloaltonetworks.com": "https://read-api.in1.prd.strata.logging.paloaltonetworks.com",
     # id
-    "https://api.id1.se2.cdl.paloaltonetworks.com": "https://api.id1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.id1.se2.cdl.paloaltonetworks.com": "https://read-api.id1.prd.strata.logging.paloaltonetworks.com",
     # sg
-    "https://api.sg1.se1.cdl.paloaltonetworks.com": "https://api.sg1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.sg1.se1.cdl.paloaltonetworks.com": "https://read-api.sg1.prd.strata.logging.paloaltonetworks.com",
     # uk
-    "https://api.uk.cdl.paloaltonetworks.com": "https://api.uk1.prd.strata.logging.paloaltonetworks.com",
+    "https://api.uk.cdl.paloaltonetworks.com": "https://read-api.uk1.prd.strata.logging.paloaltonetworks.com",
 }
 URL_REACHABILITY_TIMEOUT = 10
 
@@ -258,8 +258,8 @@ class Client(BaseClient):
                 "POST",
                 "/cdl-token",
                 json_data=data,
-                timeout=(60 * 3, 60 * 3),
-                retries=3,
+                timeout=(10 ,10),
+                retries=1,
                 backoff_factor=10,
                 status_list_to_retry=[400],
             )
