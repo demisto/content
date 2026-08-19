@@ -951,7 +951,7 @@ Lists an organization or source's findings using the Security Command Center v2 
 | sourceTypeId | Filter findings by providing the value of a single source type. If any source type Id value is not provided, by default all source types will be considered for list findings. Default is -. | Optional |
 | pageSize | The maximum number of results to return in a single response. The minimum value is 1 and maximum value is 1000. Default is 10. | Optional |
 | state | Filter the findings by their state. Can be 'ACTIVE', 'INACTIVE'. Comma-separated values are supported and if any state value is not provided, by default 'ACTIVE' state will be considered for listing of findings. Value provided inside the state would be applied in the query as a filter parameter for filtering results. Possible values are: ACTIVE, INACTIVE. Default is ACTIVE. | Optional |
-| location | The location in which the findings reside (for example, 'global', 'us', 'eu', 'me-central2'). If no location is provided, findings are assumed to be in 'global'. Possible values are: global, us, eu, me-central2. Default is global. | Optional |
+| location | The location in which the findings reside. 'sa' is the location identifier of the Saudi Arabia (me-central2) region. If no location is provided, findings are assumed to be in 'global'. Possible values are: global, us, eu, sa. Default is global. | Optional |
 | filter | The v2 filter expression is a list of one or more restrictions combined via logical operators AND and OR.<br/>Parentheses are supported, and OR has higher precedence than AND. Examples include:<br/>1) name<br/>2) securityMarks.marks.marka<br/><br/>The supported operators are:<br/>1) = for all value types.<br/>2) &gt;, &lt;, &gt;=, &lt;= for integer values.<br/>3) :, meaning substring matching, for strings.<br/><br/>The following field and operator combinations are supported:<br/>1) name: =<br/>2) parent: =, :<br/>3) resourceName: =, :<br/>4) state: =, :<br/>5) category: =, :<br/>6) externalUri: =, :<br/>7) eventTime: =, &gt;, &lt;, &gt;=, &lt;= (using an RFC3339 timestamp or milliseconds since epoch)<br/>8) severity: =, :<br/>9) securityMarks.marks: =, :<br/>10) resource:<br/>11) resource.name: =, :<br/><br/>Examples: "category="XSS_SCRIPTING" AND state="ACTIVE""<br/>Use a negated partial match on the empty string to filter based on a property not existing: "-severity=LOW".<br/>. | Optional |
 | orderBy | This parameter defines what fields and order to use for sorting.<br/>The string value should be a comma-separated list of fields. The default sorting order is ascending.<br/>To specify descending order for a field, a suffix " desc" should be appended to the field name.<br/><br/>For example: "name desc,category".<br/><br/>Supported fields in the v2 API: name, parent, state, category, resourceName, eventTime, severity, securityMarks.marks. | Optional |
 | pageToken | The value returned by the last response of a google-cloud-scc-v2-finding-list command indicates that this is a continuation of a prior findings.list call, and that the system should return the next page of data. | Optional |
@@ -998,12 +998,12 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.indicator.signatures.yaraRuleSignature.yaraRule | String | The name of the YARA rule. |
 | GoogleCloudSCC.FindingV2.indicator.uris | Unknown | The list of URIs associated to the Findings. |
 | GoogleCloudSCC.FindingV2.vulnerability | Unknown | Represents vulnerability-specific fields like CVE and CVSS scores. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>) |
+| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>). |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.id | String | The unique identifier for the vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references | Unknown | Additional information about the CVE. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.uri | String | Uri for the mentioned source e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.baseScore | Number | The base score is a function of the base metric scores. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackVector | String | Base Metrics Represents the intrinsic characteristics of a vulnerability that are constant over time and across user environments. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackComplexity | String | This metric describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. |
@@ -1035,10 +1035,10 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.submissionTime | String | Submission time of this Security Bulletin. |
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.suggestedUpgradeVersion | String | This represents a version that the cluster receiving this notification should be upgraded to, based on its current version. |
 | GoogleCloudSCC.FindingV2.vulnerability.providerRiskScore | String | Provider provided risk_score based on multiple factors. |
-| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\) |
+| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\). |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes | Unknown | Represents one or more Common Weakness Enumeration \(CWE\) information on this vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.id | String | The CWE identifier, e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.uri | String | Uri for the mentioned source e.g. |
 | GoogleCloudSCC.FindingV2.muteUpdateTime | String | The time at which the finding was muted or unmuted. |
@@ -1081,10 +1081,10 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.processes.binary.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.binary.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.binary.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries | Unknown | File information for libraries loaded by the process. |
 | GoogleCloudSCC.FindingV2.processes.libraries.path | String | Absolute path of the file as a JSON encoded string. |
@@ -1094,10 +1094,10 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.processes.libraries.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.libraries.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.script | Unknown | When the process represents the invocation of a script, binary provides information about the interpreter, while script provides information about the script file provided to the interpreter. |
 | GoogleCloudSCC.FindingV2.processes.script.path | String | Absolute path of the file as a JSON encoded string. |
@@ -1107,10 +1107,10 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.processes.script.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.script.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.script.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.args | Unknown | Process arguments as JSON encoded strings. |
 | GoogleCloudSCC.FindingV2.processes.argumentsTruncated | Boolean | True if args is incomplete. |
@@ -1124,8 +1124,8 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.contacts | Unknown | Map containing the points of contact for the given finding. |
 | GoogleCloudSCC.FindingV2.compliances | Unknown | Contains compliance information for security standards associated to the finding. |
 | GoogleCloudSCC.FindingV2.compliances.standard | String | Industry-wide compliance standards or benchmarks, such as CIS, PCI, and OWASP. |
-| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1 |
-| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1 |
+| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1. |
+| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1. |
 | GoogleCloudSCC.FindingV2.parentDisplayName | String | The human readable display name of the finding source, such as "Event Threat Detection" or "Security Health Analytics". |
 | GoogleCloudSCC.FindingV2.description | String | Contains more details about the finding. |
 | GoogleCloudSCC.FindingV2.exfiltration | Unknown | Represents exfiltrations associated with the finding. |
@@ -1230,10 +1230,10 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.files.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.files.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.files.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.files.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.files.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.files.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection | Unknown | Cloud Data Loss Prevention \(Cloud DLP\) inspection results that are associated with the finding. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection.inspectJob | String | Name of the inspection job, for example, projects/123/locations/europe/dlpJobs/i-8383929. |
@@ -1305,7 +1305,7 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.securityPosture.policySet | String | The name of the updated policy set, for example, cis-policyset. |
 | GoogleCloudSCC.FindingV2.securityPosture.policy | String | The ID of the updated policy, for example, compute-policy-1. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails | Unknown | The details about a change in an updated policy that violates the deployed posture. |
-| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce |
+| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.expectedValue | String | The value of this field that was configured in a posture, for example, true or allowed_values=\{"projects/29831892"\}. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.detectedValue | String | The detected value that violates the deployed posture, for example, false or allowed_values=\{"projects/22831892"\}. |
 | GoogleCloudSCC.FindingV2.logEntries | Unknown | Log entries that are relevant to the finding. |
@@ -1382,19 +1382,19 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.chokepoint | Unknown | Contains details about a chokepoint, which is a resource or resource group where high-risk attack paths converge. |
 | GoogleCloudSCC.FindingV2.chokepoint.relatedFindings | Unknown | List of resource names of findings associated with this chokepoint. |
 | GoogleCloudSCC.FindingV2.complianceDetails | Unknown | Details about the compliance implications of the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding. |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.displayName | String | Display name of the framework. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.category | Unknown | Category of the framework associated with the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\) |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\). |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls | Unknown | The controls associated with the framework. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.displayName | String | Display name of the control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.cloudControlName | String | Name of the CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.type | String | Type of cloud control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl. |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControlDeploymentNames | Unknown | Cloud Control Deployments associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi | Unknown | VertexAi associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi.datasets | Unknown | Datasets associated with the finding. |
@@ -1434,10 +1434,10 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.externalExposure.instanceGroup | String | The full resource name of the instance group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/instanceGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkEndpointGroup | String | The full resource name of the network endpoint group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/networkEndpointGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.hostnameUri | String | Hostname of the exposed application, for example, <https://example.com/> |
-| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}" |
-| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}". |
+| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.internalBackendService | String | The full resource name of load balancer backend service in the internal project having resource exposed via PSC, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendServices/\{name\}". |
-| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.exposedApplication | String | The name and version of the exposed web application, for example, "Jenkins 2.184". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkIngressFirewallPolicy | String | The full resource name of the network ingress firewall policy, for example, "//compute.googleapis.com/projects/\{project-id\}/global/firewallPolicies/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.httpResponse | Unknown | The http response returned by the web application. |
@@ -1475,7 +1475,7 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.resource.resourcePathString | String | A string representation of the resource path, made up of the resources of the ancestry hierarchy of the resource separated by forward slashes. |
 | GoogleCloudSCC.FindingV2.resource.application | Unknown | The App Hub application this resource belongs to. |
 | GoogleCloudSCC.FindingV2.resource.application.name | String | The resource name of an Application. |
-| GoogleCloudSCC.FindingV2.resource.application.attributes | Unknown | Consumer provided attributes for the application |
+| GoogleCloudSCC.FindingV2.resource.application.attributes | Unknown | Consumer provided attributes for the application. |
 | GoogleCloudSCC.FindingV2.resource.application.attributes.criticality | Unknown | User-defined criticality information. |
 | GoogleCloudSCC.FindingV2.resource.application.attributes.criticality.type | String | Criticality Type. |
 | GoogleCloudSCC.FindingV2.resource.application.attributes.environment | Unknown | User-defined environment information. |
@@ -1484,7 +1484,7 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.resource.application.attributes.developerOwners.email | String | Email address of the contacts. |
 | GoogleCloudSCC.FindingV2.resource.application.attributes.operatorOwners | Unknown | Operator team that ensures runtime and operations. |
 | GoogleCloudSCC.FindingV2.resource.application.attributes.operatorOwners.email | String | Email address of the contacts. |
-| GoogleCloudSCC.FindingV2.resource.application.attributes.businessOwners | Unknown | Business team that ensures user needs are met and value is delivered |
+| GoogleCloudSCC.FindingV2.resource.application.attributes.businessOwners | Unknown | Business team that ensures user needs are met and value is delivered. |
 | GoogleCloudSCC.FindingV2.resource.application.attributes.businessOwners.email | String | Email address of the contacts. |
 | GoogleCloudSCC.FindingV2.resource.adcApplication | Unknown | The ADC application associated with the finding. |
 | GoogleCloudSCC.FindingV2.resource.adcApplication.name | String | The resource name of an ADC Application. |
@@ -1497,7 +1497,7 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.resource.adcApplication.attributes.developerOwners.email | String | Email address of the contacts. |
 | GoogleCloudSCC.FindingV2.resource.adcApplication.attributes.operatorOwners | Unknown | Operator team that ensures runtime and operations. |
 | GoogleCloudSCC.FindingV2.resource.adcApplication.attributes.operatorOwners.email | String | Email address of the contacts. |
-| GoogleCloudSCC.FindingV2.resource.adcApplication.attributes.businessOwners | Unknown | Business team that ensures user needs are met and value is delivered |
+| GoogleCloudSCC.FindingV2.resource.adcApplication.attributes.businessOwners | Unknown | Business team that ensures user needs are met and value is delivered. |
 | GoogleCloudSCC.FindingV2.resource.adcApplication.attributes.businessOwners.email | String | Email address of the contacts. |
 | GoogleCloudSCC.FindingV2.resource.adcApplicationTemplate | Unknown | The ADC template associated with the finding. |
 | GoogleCloudSCC.FindingV2.resource.adcApplicationTemplate.name | String | The resource name of an ADC Application Template Revision. |
@@ -2581,12 +2581,12 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.indicator.signatures.yaraRuleSignature.yaraRule | String | The name of the YARA rule. |
 | GoogleCloudSCC.FindingV2.indicator.uris | Unknown | The list of URIs associated to the Findings. |
 | GoogleCloudSCC.FindingV2.vulnerability | Unknown | Represents vulnerability-specific fields like CVE and CVSS scores. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>) |
+| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>). |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.id | String | The unique identifier for the vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references | Unknown | Additional information about the CVE. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.uri | String | Uri for the mentioned source e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.baseScore | Number | The base score is a function of the base metric scores. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackVector | String | Base Metrics Represents the intrinsic characteristics of a vulnerability that are constant over time and across user environments. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackComplexity | String | This metric describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. |
@@ -2618,10 +2618,10 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.submissionTime | String | Submission time of this Security Bulletin. |
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.suggestedUpgradeVersion | String | This represents a version that the cluster receiving this notification should be upgraded to, based on its current version. |
 | GoogleCloudSCC.FindingV2.vulnerability.providerRiskScore | String | Provider provided risk_score based on multiple factors. |
-| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\) |
+| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\). |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes | Unknown | Represents one or more Common Weakness Enumeration \(CWE\) information on this vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.id | String | The CWE identifier, e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.uri | String | Uri for the mentioned source e.g. |
 | GoogleCloudSCC.FindingV2.muteUpdateTime | String | The time at which the finding was muted or unmuted. |
@@ -2664,10 +2664,10 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.processes.binary.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.binary.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.binary.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries | Unknown | File information for libraries loaded by the process. |
 | GoogleCloudSCC.FindingV2.processes.libraries.path | String | Absolute path of the file as a JSON encoded string. |
@@ -2677,10 +2677,10 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.processes.libraries.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.libraries.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.script | Unknown | When the process represents the invocation of a script, binary provides information about the interpreter, while script provides information about the script file provided to the interpreter. |
 | GoogleCloudSCC.FindingV2.processes.script.path | String | Absolute path of the file as a JSON encoded string. |
@@ -2690,10 +2690,10 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.processes.script.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.script.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.script.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.args | Unknown | Process arguments as JSON encoded strings. |
 | GoogleCloudSCC.FindingV2.processes.argumentsTruncated | Boolean | True if args is incomplete. |
@@ -2707,8 +2707,8 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.contacts | Unknown | Map containing the points of contact for the given finding. |
 | GoogleCloudSCC.FindingV2.compliances | Unknown | Contains compliance information for security standards associated to the finding. |
 | GoogleCloudSCC.FindingV2.compliances.standard | String | Industry-wide compliance standards or benchmarks, such as CIS, PCI, and OWASP. |
-| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1 |
-| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1 |
+| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1. |
+| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1. |
 | GoogleCloudSCC.FindingV2.parentDisplayName | String | The human readable display name of the finding source, such as "Event Threat Detection" or "Security Health Analytics". |
 | GoogleCloudSCC.FindingV2.description | String | Contains more details about the finding. |
 | GoogleCloudSCC.FindingV2.exfiltration | Unknown | Represents exfiltrations associated with the finding. |
@@ -2813,10 +2813,10 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.files.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.files.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.files.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.files.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.files.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.files.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection | Unknown | Cloud Data Loss Prevention \(Cloud DLP\) inspection results that are associated with the finding. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection.inspectJob | String | Name of the inspection job, for example, projects/123/locations/europe/dlpJobs/i-8383929. |
@@ -2888,7 +2888,7 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.securityPosture.policySet | String | The name of the updated policy set, for example, cis-policyset. |
 | GoogleCloudSCC.FindingV2.securityPosture.policy | String | The ID of the updated policy, for example, compute-policy-1. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails | Unknown | The details about a change in an updated policy that violates the deployed posture. |
-| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce |
+| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.expectedValue | String | The value of this field that was configured in a posture, for example, true or allowed_values=\{"projects/29831892"\}. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.detectedValue | String | The detected value that violates the deployed posture, for example, false or allowed_values=\{"projects/22831892"\}. |
 | GoogleCloudSCC.FindingV2.logEntries | Unknown | Log entries that are relevant to the finding. |
@@ -2965,19 +2965,19 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.chokepoint | Unknown | Contains details about a chokepoint, which is a resource or resource group where high-risk attack paths converge. |
 | GoogleCloudSCC.FindingV2.chokepoint.relatedFindings | Unknown | List of resource names of findings associated with this chokepoint. |
 | GoogleCloudSCC.FindingV2.complianceDetails | Unknown | Details about the compliance implications of the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding. |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.displayName | String | Display name of the framework. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.category | Unknown | Category of the framework associated with the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\) |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\). |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls | Unknown | The controls associated with the framework. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.displayName | String | Display name of the control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.cloudControlName | String | Name of the CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.type | String | Type of cloud control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl. |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControlDeploymentNames | Unknown | Cloud Control Deployments associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi | Unknown | VertexAi associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi.datasets | Unknown | Datasets associated with the finding. |
@@ -3017,10 +3017,10 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.externalExposure.instanceGroup | String | The full resource name of the instance group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/instanceGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkEndpointGroup | String | The full resource name of the network endpoint group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/networkEndpointGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.hostnameUri | String | Hostname of the exposed application, for example, <https://example.com/> |
-| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}" |
-| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}". |
+| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.internalBackendService | String | The full resource name of load balancer backend service in the internal project having resource exposed via PSC, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendServices/\{name\}". |
-| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.exposedApplication | String | The name and version of the exposed web application, for example, "Jenkins 2.184". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkIngressFirewallPolicy | String | The full resource name of the network ingress firewall policy, for example, "//compute.googleapis.com/projects/\{project-id\}/global/firewallPolicies/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.httpResponse | Unknown | The http response returned by the web application. |
@@ -3953,12 +3953,12 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.indicator.signatures.yaraRuleSignature.yaraRule | String | The name of the YARA rule. |
 | GoogleCloudSCC.FindingV2.indicator.uris | Unknown | The list of URIs associated to the Findings. |
 | GoogleCloudSCC.FindingV2.vulnerability | Unknown | Represents vulnerability-specific fields like CVE and CVSS scores. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>) |
+| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>). |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.id | String | The unique identifier for the vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references | Unknown | Additional information about the CVE. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.uri | String | Uri for the mentioned source e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.baseScore | Number | The base score is a function of the base metric scores. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackVector | String | Base Metrics Represents the intrinsic characteristics of a vulnerability that are constant over time and across user environments. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackComplexity | String | This metric describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. |
@@ -3990,10 +3990,10 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.submissionTime | String | Submission time of this Security Bulletin. |
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.suggestedUpgradeVersion | String | This represents a version that the cluster receiving this notification should be upgraded to, based on its current version. |
 | GoogleCloudSCC.FindingV2.vulnerability.providerRiskScore | String | Provider provided risk_score based on multiple factors. |
-| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\) |
+| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\). |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes | Unknown | Represents one or more Common Weakness Enumeration \(CWE\) information on this vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.id | String | The CWE identifier, e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.uri | String | Uri for the mentioned source e.g. |
 | GoogleCloudSCC.FindingV2.muteUpdateTime | String | The time at which the finding was muted or unmuted. |
@@ -4036,10 +4036,10 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.processes.binary.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.binary.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.binary.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries | Unknown | File information for libraries loaded by the process. |
 | GoogleCloudSCC.FindingV2.processes.libraries.path | String | Absolute path of the file as a JSON encoded string. |
@@ -4049,10 +4049,10 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.processes.libraries.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.libraries.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.script | Unknown | When the process represents the invocation of a script, binary provides information about the interpreter, while script provides information about the script file provided to the interpreter. |
 | GoogleCloudSCC.FindingV2.processes.script.path | String | Absolute path of the file as a JSON encoded string. |
@@ -4062,10 +4062,10 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.processes.script.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.script.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.script.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.args | Unknown | Process arguments as JSON encoded strings. |
 | GoogleCloudSCC.FindingV2.processes.argumentsTruncated | Boolean | True if args is incomplete. |
@@ -4079,8 +4079,8 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.contacts | Unknown | Map containing the points of contact for the given finding. |
 | GoogleCloudSCC.FindingV2.compliances | Unknown | Contains compliance information for security standards associated to the finding. |
 | GoogleCloudSCC.FindingV2.compliances.standard | String | Industry-wide compliance standards or benchmarks, such as CIS, PCI, and OWASP. |
-| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1 |
-| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1 |
+| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1. |
+| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1. |
 | GoogleCloudSCC.FindingV2.parentDisplayName | String | The human readable display name of the finding source, such as "Event Threat Detection" or "Security Health Analytics". |
 | GoogleCloudSCC.FindingV2.description | String | Contains more details about the finding. |
 | GoogleCloudSCC.FindingV2.exfiltration | Unknown | Represents exfiltrations associated with the finding. |
@@ -4185,10 +4185,10 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.files.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.files.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.files.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.files.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.files.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.files.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection | Unknown | Cloud Data Loss Prevention \(Cloud DLP\) inspection results that are associated with the finding. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection.inspectJob | String | Name of the inspection job, for example, projects/123/locations/europe/dlpJobs/i-8383929. |
@@ -4260,7 +4260,7 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.securityPosture.policySet | String | The name of the updated policy set, for example, cis-policyset. |
 | GoogleCloudSCC.FindingV2.securityPosture.policy | String | The ID of the updated policy, for example, compute-policy-1. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails | Unknown | The details about a change in an updated policy that violates the deployed posture. |
-| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce |
+| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.expectedValue | String | The value of this field that was configured in a posture, for example, true or allowed_values=\{"projects/29831892"\}. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.detectedValue | String | The detected value that violates the deployed posture, for example, false or allowed_values=\{"projects/22831892"\}. |
 | GoogleCloudSCC.FindingV2.logEntries | Unknown | Log entries that are relevant to the finding. |
@@ -4337,19 +4337,19 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.chokepoint | Unknown | Contains details about a chokepoint, which is a resource or resource group where high-risk attack paths converge. |
 | GoogleCloudSCC.FindingV2.chokepoint.relatedFindings | Unknown | List of resource names of findings associated with this chokepoint. |
 | GoogleCloudSCC.FindingV2.complianceDetails | Unknown | Details about the compliance implications of the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding. |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.displayName | String | Display name of the framework. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.category | Unknown | Category of the framework associated with the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\) |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\). |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls | Unknown | The controls associated with the framework. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.displayName | String | Display name of the control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.cloudControlName | String | Name of the CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.type | String | Type of cloud control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl. |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControlDeploymentNames | Unknown | Cloud Control Deployments associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi | Unknown | VertexAi associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi.datasets | Unknown | Datasets associated with the finding. |
@@ -4389,10 +4389,10 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.externalExposure.instanceGroup | String | The full resource name of the instance group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/instanceGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkEndpointGroup | String | The full resource name of the network endpoint group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/networkEndpointGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.hostnameUri | String | Hostname of the exposed application, for example, <https://example.com/> |
-| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}" |
-| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}". |
+| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.internalBackendService | String | The full resource name of load balancer backend service in the internal project having resource exposed via PSC, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendServices/\{name\}". |
-| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.exposedApplication | String | The name and version of the exposed web application, for example, "Jenkins 2.184". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkIngressFirewallPolicy | String | The full resource name of the network ingress firewall policy, for example, "//compute.googleapis.com/projects/\{project-id\}/global/firewallPolicies/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.httpResponse | Unknown | The http response returned by the web application. |
@@ -5324,12 +5324,12 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.indicator.signatures.yaraRuleSignature.yaraRule | String | The name of the YARA rule. |
 | GoogleCloudSCC.FindingV2.indicator.uris | Unknown | The list of URIs associated to the Findings. |
 | GoogleCloudSCC.FindingV2.vulnerability | Unknown | Represents vulnerability-specific fields like CVE and CVSS scores. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>) |
+| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>). |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.id | String | The unique identifier for the vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references | Unknown | Additional information about the CVE. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.uri | String | Uri for the mentioned source e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.baseScore | Number | The base score is a function of the base metric scores. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackVector | String | Base Metrics Represents the intrinsic characteristics of a vulnerability that are constant over time and across user environments. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackComplexity | String | This metric describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. |
@@ -5361,10 +5361,10 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.submissionTime | String | Submission time of this Security Bulletin. |
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.suggestedUpgradeVersion | String | This represents a version that the cluster receiving this notification should be upgraded to, based on its current version. |
 | GoogleCloudSCC.FindingV2.vulnerability.providerRiskScore | String | Provider provided risk_score based on multiple factors. |
-| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\) |
+| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\). |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes | Unknown | Represents one or more Common Weakness Enumeration \(CWE\) information on this vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.id | String | The CWE identifier, e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.uri | String | Uri for the mentioned source e.g. |
 | GoogleCloudSCC.FindingV2.muteUpdateTime | String | The time at which the finding was muted or unmuted. |
@@ -5407,10 +5407,10 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.processes.binary.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.binary.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.binary.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries | Unknown | File information for libraries loaded by the process. |
 | GoogleCloudSCC.FindingV2.processes.libraries.path | String | Absolute path of the file as a JSON encoded string. |
@@ -5420,10 +5420,10 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.processes.libraries.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.libraries.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.script | Unknown | When the process represents the invocation of a script, binary provides information about the interpreter, while script provides information about the script file provided to the interpreter. |
 | GoogleCloudSCC.FindingV2.processes.script.path | String | Absolute path of the file as a JSON encoded string. |
@@ -5433,10 +5433,10 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.processes.script.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.script.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.script.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.args | Unknown | Process arguments as JSON encoded strings. |
 | GoogleCloudSCC.FindingV2.processes.argumentsTruncated | Boolean | True if args is incomplete. |
@@ -5450,8 +5450,8 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.contacts | Unknown | Map containing the points of contact for the given finding. |
 | GoogleCloudSCC.FindingV2.compliances | Unknown | Contains compliance information for security standards associated to the finding. |
 | GoogleCloudSCC.FindingV2.compliances.standard | String | Industry-wide compliance standards or benchmarks, such as CIS, PCI, and OWASP. |
-| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1 |
-| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1 |
+| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1. |
+| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1. |
 | GoogleCloudSCC.FindingV2.parentDisplayName | String | The human readable display name of the finding source, such as "Event Threat Detection" or "Security Health Analytics". |
 | GoogleCloudSCC.FindingV2.description | String | Contains more details about the finding. |
 | GoogleCloudSCC.FindingV2.exfiltration | Unknown | Represents exfiltrations associated with the finding. |
@@ -5556,10 +5556,10 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.files.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.files.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.files.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.files.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.files.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.files.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection | Unknown | Cloud Data Loss Prevention \(Cloud DLP\) inspection results that are associated with the finding. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection.inspectJob | String | Name of the inspection job, for example, projects/123/locations/europe/dlpJobs/i-8383929. |
@@ -5631,7 +5631,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.securityPosture.policySet | String | The name of the updated policy set, for example, cis-policyset. |
 | GoogleCloudSCC.FindingV2.securityPosture.policy | String | The ID of the updated policy, for example, compute-policy-1. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails | Unknown | The details about a change in an updated policy that violates the deployed posture. |
-| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce |
+| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.expectedValue | String | The value of this field that was configured in a posture, for example, true or allowed_values=\{"projects/29831892"\}. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.detectedValue | String | The detected value that violates the deployed posture, for example, false or allowed_values=\{"projects/22831892"\}. |
 | GoogleCloudSCC.FindingV2.logEntries | Unknown | Log entries that are relevant to the finding. |
@@ -5708,19 +5708,19 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.chokepoint | Unknown | Contains details about a chokepoint, which is a resource or resource group where high-risk attack paths converge. |
 | GoogleCloudSCC.FindingV2.chokepoint.relatedFindings | Unknown | List of resource names of findings associated with this chokepoint. |
 | GoogleCloudSCC.FindingV2.complianceDetails | Unknown | Details about the compliance implications of the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding. |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.displayName | String | Display name of the framework. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.category | Unknown | Category of the framework associated with the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\) |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\). |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls | Unknown | The controls associated with the framework. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.displayName | String | Display name of the control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.cloudControlName | String | Name of the CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.type | String | Type of cloud control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl. |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControlDeploymentNames | Unknown | Cloud Control Deployments associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi | Unknown | VertexAi associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi.datasets | Unknown | Datasets associated with the finding. |
@@ -5760,10 +5760,10 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.externalExposure.instanceGroup | String | The full resource name of the instance group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/instanceGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkEndpointGroup | String | The full resource name of the network endpoint group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/networkEndpointGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.hostnameUri | String | Hostname of the exposed application, for example, <https://example.com/> |
-| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}" |
-| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}". |
+| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.internalBackendService | String | The full resource name of load balancer backend service in the internal project having resource exposed via PSC, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendServices/\{name\}". |
-| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.exposedApplication | String | The name and version of the exposed web application, for example, "Jenkins 2.184". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkIngressFirewallPolicy | String | The full resource name of the network ingress firewall policy, for example, "//compute.googleapis.com/projects/\{project-id\}/global/firewallPolicies/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.httpResponse | Unknown | The http response returned by the web application. |
@@ -6695,12 +6695,12 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.indicator.signatures.yaraRuleSignature.yaraRule | String | The name of the YARA rule. |
 | GoogleCloudSCC.FindingV2.indicator.uris | Unknown | The list of URIs associated to the Findings. |
 | GoogleCloudSCC.FindingV2.vulnerability | Unknown | Represents vulnerability-specific fields like CVE and CVSS scores. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>) |
+| GoogleCloudSCC.FindingV2.vulnerability.cve | Unknown | CVE stands for Common Vulnerabilities and Exposures \(&lt;<https://cve.mitre.org/about/&gt;\>). |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.id | String | The unique identifier for the vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references | Unknown | Additional information about the CVE. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.references.uri | String | Uri for the mentioned source e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3 | Unknown | Describe Common Vulnerability Scoring System specified at &lt;<https://www.first.org/cvss/v3.1/specification-document>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.baseScore | Number | The base score is a function of the base metric scores. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackVector | String | Base Metrics Represents the intrinsic characteristics of a vulnerability that are constant over time and across user environments. |
 | GoogleCloudSCC.FindingV2.vulnerability.cve.cvssv3.attackComplexity | String | This metric describes the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. |
@@ -6732,10 +6732,10 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.submissionTime | String | Submission time of this Security Bulletin. |
 | GoogleCloudSCC.FindingV2.vulnerability.securityBulletin.suggestedUpgradeVersion | String | This represents a version that the cluster receiving this notification should be upgraded to, based on its current version. |
 | GoogleCloudSCC.FindingV2.vulnerability.providerRiskScore | String | Provider provided risk_score based on multiple factors. |
-| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\) |
+| GoogleCloudSCC.FindingV2.vulnerability.reachable | Boolean | Represents whether the vulnerability is reachable \(detected via static analysis\). |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes | Unknown | Represents one or more Common Weakness Enumeration \(CWE\) information on this vulnerability. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.id | String | The CWE identifier, e.g. |
-| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt; |
+| GoogleCloudSCC.FindingV2.vulnerability.cwes.references | Unknown | Any reference to the details on the CWE, for example, &lt;<https://dummyuser1@dummy.com/data/definitions/94.html>&gt;. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.source | String | Source of the reference e.g. |
 | GoogleCloudSCC.FindingV2.vulnerability.cwes.references.uri | String | Uri for the mentioned source e.g. |
 | GoogleCloudSCC.FindingV2.muteUpdateTime | String | The time at which the finding was muted or unmuted. |
@@ -6778,10 +6778,10 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.processes.binary.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.binary.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.binary.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.binary.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.binary.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.binary.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.binary.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries | Unknown | File information for libraries loaded by the process. |
 | GoogleCloudSCC.FindingV2.processes.libraries.path | String | Absolute path of the file as a JSON encoded string. |
@@ -6791,10 +6791,10 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.processes.libraries.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.libraries.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.libraries.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.libraries.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.libraries.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.libraries.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.libraries.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.script | Unknown | When the process represents the invocation of a script, binary provides information about the interpreter, while script provides information about the script file provided to the interpreter. |
 | GoogleCloudSCC.FindingV2.processes.script.path | String | Absolute path of the file as a JSON encoded string. |
@@ -6804,10 +6804,10 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.processes.script.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.processes.script.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.processes.script.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.processes.script.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.processes.script.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.processes.script.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.processes.script.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.processes.args | Unknown | Process arguments as JSON encoded strings. |
 | GoogleCloudSCC.FindingV2.processes.argumentsTruncated | Boolean | True if args is incomplete. |
@@ -6821,8 +6821,8 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.contacts | Unknown | Map containing the points of contact for the given finding. |
 | GoogleCloudSCC.FindingV2.compliances | Unknown | Contains compliance information for security standards associated to the finding. |
 | GoogleCloudSCC.FindingV2.compliances.standard | String | Industry-wide compliance standards or benchmarks, such as CIS, PCI, and OWASP. |
-| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1 |
-| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1 |
+| GoogleCloudSCC.FindingV2.compliances.version | String | Version of the standard or benchmark, for example, 1.1. |
+| GoogleCloudSCC.FindingV2.compliances.ids | Unknown | Policies within the standard or benchmark, for example, A.12.4.1. |
 | GoogleCloudSCC.FindingV2.parentDisplayName | String | The human readable display name of the finding source, such as "Event Threat Detection" or "Security Health Analytics". |
 | GoogleCloudSCC.FindingV2.description | String | Contains more details about the finding. |
 | GoogleCloudSCC.FindingV2.exfiltration | Unknown | Represents exfiltrations associated with the finding. |
@@ -6927,10 +6927,10 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.files.partiallyHashed | Boolean | True when the hash covers only a prefix of the file. |
 | GoogleCloudSCC.FindingV2.files.contents | String | Prefix of the file contents as a JSON-encoded string. |
 | GoogleCloudSCC.FindingV2.files.diskPath | Unknown | Path of the file in terms of underlying disk/partition identifiers. |
-| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>) |
+| GoogleCloudSCC.FindingV2.files.diskPath.partitionUuid | String | UUID of the partition \(format &lt;<https://wiki.archlinux.org/title/persistent_block_device_naming\#by-uuid&gt;\>). |
 | GoogleCloudSCC.FindingV2.files.diskPath.relativePath | String | Relative path of the file in the partition as a JSON encoded string. |
 | GoogleCloudSCC.FindingV2.files.operations | Unknown | Operation\(s\) performed on a file. |
-| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation |
+| GoogleCloudSCC.FindingV2.files.operations.type | String | The type of the operation. |
 | GoogleCloudSCC.FindingV2.files.fileLoadState | String | The load state of the file. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection | Unknown | Cloud Data Loss Prevention \(Cloud DLP\) inspection results that are associated with the finding. |
 | GoogleCloudSCC.FindingV2.cloudDlpInspection.inspectJob | String | Name of the inspection job, for example, projects/123/locations/europe/dlpJobs/i-8383929. |
@@ -7002,7 +7002,7 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.securityPosture.policySet | String | The name of the updated policy set, for example, cis-policyset. |
 | GoogleCloudSCC.FindingV2.securityPosture.policy | String | The ID of the updated policy, for example, compute-policy-1. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails | Unknown | The details about a change in an updated policy that violates the deployed posture. |
-| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce |
+| GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.field | String | The name of the updated field, for example constraint.implementation.policy_rules\\\[0\\\].enforce. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.expectedValue | String | The value of this field that was configured in a posture, for example, true or allowed_values=\{"projects/29831892"\}. |
 | GoogleCloudSCC.FindingV2.securityPosture.policyDriftDetails.detectedValue | String | The detected value that violates the deployed posture, for example, false or allowed_values=\{"projects/22831892"\}. |
 | GoogleCloudSCC.FindingV2.logEntries | Unknown | Log entries that are relevant to the finding. |
@@ -7079,19 +7079,19 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.chokepoint | Unknown | Contains details about a chokepoint, which is a resource or resource group where high-risk attack paths converge. |
 | GoogleCloudSCC.FindingV2.chokepoint.relatedFindings | Unknown | List of resource names of findings associated with this chokepoint. |
 | GoogleCloudSCC.FindingV2.complianceDetails | Unknown | Details about the compliance implications of the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks | Unknown | Details of Frameworks associated with the finding. |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.name | String | Name of the framework associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.displayName | String | Display name of the framework. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.category | Unknown | Category of the framework associated with the finding. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\) |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.type | String | Type of the framework associated with the finding, to specify whether the framework is built-in \(pre-defined and immutable\) or a custom framework defined by the customer \(equivalent to security posture\). |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls | Unknown | The controls associated with the framework. |
-| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.controlName | String | Name of the Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.frameworks.controls.displayName | String | Display name of the control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl | Unknown | CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.cloudControlName | String | Name of the CloudControl associated with the finding. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.type | String | Type of cloud control. |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl |
-| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.policyType | String | Policy type of the CloudControl. |
+| GoogleCloudSCC.FindingV2.complianceDetails.cloudControl.version | Number | Version of the Cloud Control. |
 | GoogleCloudSCC.FindingV2.complianceDetails.cloudControlDeploymentNames | Unknown | Cloud Control Deployments associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi | Unknown | VertexAi associated with the finding. |
 | GoogleCloudSCC.FindingV2.vertexAi.datasets | Unknown | Datasets associated with the finding. |
@@ -7131,10 +7131,10 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.externalExposure.instanceGroup | String | The full resource name of the instance group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/instanceGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkEndpointGroup | String | The full resource name of the network endpoint group, for example, "//compute.googleapis.com/projects/\{project-id\}/global/networkEndpointGroups/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.hostnameUri | String | Hostname of the exposed application, for example, <https://example.com/> |
-| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}" |
-| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.pscServiceAttachment | String | The full resource name of the PSC \(Private Service Connect\) service attachment that the load balancer network endpoint group targets, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/serviceAttachments/\{name\}". |
+| GoogleCloudSCC.FindingV2.externalExposure.pscNetworkAttachment | String | The full resource name of the PSC \(Private Service Connect\) network attachment that network interface controller is attached to, for example, "//compute.googleapis.com/projects/\{project-id\}/regions/\{region\}/networkAttachments/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.internalBackendService | String | The full resource name of load balancer backend service in the internal project having resource exposed via PSC, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendServices/\{name\}". |
-| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}" |
+| GoogleCloudSCC.FindingV2.externalExposure.backendBucket | String | The full resource name of the load balancer backend bucket, for example, "//compute.googleapis.com/projects/\{project-id\}/global/backendBuckets/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.exposedApplication | String | The name and version of the exposed web application, for example, "Jenkins 2.184". |
 | GoogleCloudSCC.FindingV2.externalExposure.networkIngressFirewallPolicy | String | The full resource name of the network ingress firewall policy, for example, "//compute.googleapis.com/projects/\{project-id\}/global/firewallPolicies/\{name\}". |
 | GoogleCloudSCC.FindingV2.externalExposure.httpResponse | Unknown | The http response returned by the web application. |
@@ -8088,7 +8088,7 @@ Create a mute rule (mute config) for an organization using the Security Command 
 | type | The type of the mute rule, which determines what type of mute state the rule affects. Immutable after creation.<br/><br/>STATIC: sets the static mute state of future matching findings to muted.<br/><br/>DYNAMIC: applied to existing and future matching findings, setting their dynamic mute state to muted. Possible values are: STATIC, DYNAMIC. | Required |
 | description | A description of the mute rule. | Optional |
 | expiryTime | The expiry of the mute rule. Only applicable for dynamic mute rules. If the expiry is set, when the mute rule expires, it is removed from all findings.<br/><br/>Format: YYYY-MM-ddTHH:mm:ss.sssZ<br/><br/>Example: 2026-07-22T07:10:02.782Z, 2026-06-02T15:01:23.045123456Z. | Optional |
-| location | The location in which the mute rule is created. If no location is specified, the mute rule is created in "global".<br/><br/>Example: global, eu, us, me-central2. | Optional |
+| location | The location in which the mute rule is created. If no location is specified, the mute rule is created in "global".<br/>'sa' is the location identifier of the Saudi Arabia (me-central2) region.<br/><br/>Example: global, eu, us, sa. | Optional |
 
 #### Context Output
 

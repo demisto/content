@@ -1962,3 +1962,173 @@ def test_create_mute_rule_v2_resource_routing(client, parent, expect_locations):
     else:
         organizations.muteConfigs().create.assert_called_once_with(parent=parent, muteConfigId="mute-rule", body=body)
         organizations.locations().muteConfigs().create.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "location, expected",
+    [
+        (None, "global"),
+        ("", "global"),
+        ("GLOBAL", "global"),
+        (" eu ", "eu"),
+        ("us", "us"),
+        ("sa", "sa"),
+        ("me-central2", "sa"),
+    ],
+)
+def test_normalize_location_id(location, expected):
+    """
+    Scenario: Normalize the location provided by the user to a v2 location identifier.
+
+    Given:
+    - An empty location, locations differing in case or padded with spaces, and the "me-central2" region name.
+
+    Then:
+    - Ensure an empty location defaults to "global".
+    - Ensure the location is lower-cased and stripped.
+    - Ensure "me-central2" is translated to its location identifier "sa".
+    """
+    from GoogleCloudSCC import normalize_location_id
+
+    assert normalize_location_id(location) == expected
+
+
+def test_normalize_location_id_with_invalid_location():
+    """
+    Scenario: Normalize an unsupported location.
+
+    Given:
+    - A location that is not supported by the v2 API.
+
+    Then:
+    - Ensure a ValueError listing the supported locations is raised.
+    """
+    from GoogleCloudSCC import normalize_location_id
+
+    with pytest.raises(ValueError, match="Invalid location 'asia-south1'. Supported values are: global, us, eu, sa."):
+        normalize_location_id("asia-south1")
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        ({}, "global"),
+        ({"location": "me-central2"}, "sa"),
+        ({"name": "organizations/123/sources/456/locations/sa/findings/789"}, "sa"),
+        ({"name": "organizations/123/locations/eu/muteConfigs/mute-rule"}, "eu"),
+        ({"name": "organizations/123/sources/456/findings/789"}, "global"),
+        ({"location": "us", "name": "organizations/123/sources/456/locations/eu/findings/789"}, "us"),
+    ],
+)
+def test_get_location_from_args(args, expected):
+    """
+    Scenario: Resolve the location a v2 command targets.
+
+    Given:
+    - Arguments with an explicit location, with a resource name carrying a locations/{location} segment,
+      with a resource name without that segment, and with both.
+
+    Then:
+    - Ensure the explicit location argument takes precedence.
+    - Ensure the location is otherwise read from the resource name, defaulting to "global".
+    """
+    from GoogleCloudSCC import get_location_from_args
+
+    assert get_location_from_args(args) == expected
+
+
+@pytest.mark.parametrize(
+    "location, expected",
+    [
+        ("global", None),
+        ("us", "https://securitycenter.us.rep.googleapis.com/"),
+        ("eu", "https://securitycenter.eu.rep.googleapis.com/"),
+        ("sa", "https://securitycenter.me-central2.rep.googleapis.com/"),
+    ],
+)
+def test_get_regional_endpoint(location, expected):
+    """
+    Scenario: Get the endpoint the requests of a location must be sent to.
+
+    Given:
+    - The supported location identifiers.
+
+    Then:
+    - Ensure "global" resolves to None, so that the default global endpoint is used.
+    - Ensure every other location resolves to its regional endpoint.
+    """
+    from GoogleCloudSCC import get_regional_endpoint
+
+    assert get_regional_endpoint(location) == expected
+
+
+SA_ENDPOINT = "https://securitycenter.me-central2.rep.googleapis.com/"
+
+
+@pytest.mark.parametrize(
+    "api_endpoint, expected_client_options",
+    [
+        (None, None),
+        (SA_ENDPOINT, {"api_endpoint": SA_ENDPOINT}),
+    ],
+)
+@patch("GoogleCloudSCC.discovery.build")
+@patch("GoogleCloudSCC.service_account.Credentials.from_service_account_info")
+def test_base_client_builds_v2_service_with_api_endpoint(mock_credentials, mock_build, api_endpoint, expected_client_options):
+    """
+    Scenario: Build the v2 service for a global and for a regional location.
+
+    Given:
+    - No api_endpoint (global), and the regional endpoint of the Kingdom of Saudi Arabia.
+
+    Then:
+    - Ensure the api_endpoint is forwarded to the discovery build through client_options.
+    - Ensure no client_options are set when no api_endpoint is provided.
+    """
+    BaseGoogleClient(
+        service_name="securitycenter",
+        service_version="v2",
+        service_account_json=TEST_JSON,
+        scopes=[],
+        proxy=False,
+        insecure=False,
+        api_endpoint=api_endpoint,
+    )
+
+    assert mock_build.call_args.kwargs["client_options"] == expected_client_options
+
+
+@pytest.mark.parametrize(
+    "args, expected_api_endpoint",
+    [
+        ({}, None),
+        ({"location": "me-central2"}, SA_ENDPOINT),
+    ],
+)
+def test_main_initializes_v2_client_with_regional_endpoint(mocker, args, expected_api_endpoint):
+    """
+    Scenario: Execute a v2 command whose location is absent or given explicitly.
+
+    Given:
+    - No arguments, and an explicit location argument.
+
+    Then:
+    - Ensure the v2 client is initialized with the regional endpoint of the resolved location.
+    - Ensure no api_endpoint is set for "global", so that the default global endpoint is used.
+    - Ensure the integration params are forwarded to the client alongside the api_endpoint.
+    """
+    import GoogleCloudSCC
+    from GoogleCloudSCC import demisto
+
+    params = {"service_account_json": TEST_JSON, "organization_id": "organization_id"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="google-cloud-scc-v2-finding-list")
+    mocker.patch.object(demisto, "args", return_value=args)
+    init_client = mocker.patch.object(GoogleCloudSCC, "init_google_scc_v2_client")
+    command_func = mocker.patch.object(GoogleCloudSCC, "finding_list_v2_command")
+    mocker.patch.object(GoogleCloudSCC, "return_results")
+
+    GoogleCloudSCC.main()
+
+    init_client.assert_called_once_with(api_endpoint=expected_api_endpoint, **params)
+    command_func.assert_called_once_with(init_client.return_value, args)

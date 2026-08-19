@@ -46,6 +46,21 @@ MARKDOWN_LINK = "[{}]({})"
 TIMEOUT_TIME = 60  # in second
 # Matches the optional locations/{location} segment of a v2 resource name.
 LOCATIONS_SEGMENT_REGEX = r"/locations/[^/]+/"
+# Captures the location id of the optional locations/{location} segment of a v2 resource name.
+LOCATION_ID_CAPTURE_REGEX = r"/locations/([^/]+)"
+# Location identifiers supported by the v2 API.
+# (ref: https://cloud.google.com/security-command-center/docs/data-residency-support)
+SUPPORTED_LOCATION_IDS = ["global", "us", "eu", "sa"]
+# Region names accepted as an alias of their location identifier, for backward compatibility.
+LOCATION_ID_ALIASES = {"me-central2": "sa"}
+# Requests for a location other than global must be sent to the regional endpoint of that location; the
+# global endpoint rejects them with a 400 Bad Request.
+# (ref: https://cloud.google.com/security-command-center/docs/regional-endpoints)
+REGIONAL_ENDPOINTS = {
+    "us": "https://securitycenter.us.rep.googleapis.com/",
+    "eu": "https://securitycenter.eu.rep.googleapis.com/",
+    "sa": "https://securitycenter.me-central2.rep.googleapis.com/",
+}
 
 # The maximum number of results to return in a single response.
 # (ref: https://cloud.google.com/security-command-center/docs/reference/rest/v1/organizations.sources.findings/list)
@@ -93,6 +108,7 @@ ERROR_MESSAGES: dict[str, str] = {
     "EXPIRY_TIME_NOT_ALLOWED_ERROR": "The expiryTime argument is only applicable for DYNAMIC mute rules.",
     "INVALID_MUTE_CONFIG_ID_ERROR": "muteConfigId must consist of only lowercase letters, numbers, and hyphens, must"
     " start with a letter, must end with either a letter or a number, and must be 63 characters or less.",
+    "INVALID_LOCATION_ERROR": "Invalid location '{}'. Supported values are: {}.",
 }
 
 OUTPUT_PREFIX: dict[str, Any] = {
@@ -261,6 +277,7 @@ class BaseGoogleClient:
         scopes: list,
         proxy: bool,
         insecure: bool,
+        api_endpoint: str | None = None,
         **kwargs,
     ):
         """
@@ -270,6 +287,7 @@ class BaseGoogleClient:
         :param service_account_json: A string of the generated credentials.json
         :param scopes: The scope needed for the project. (i.e. ['https://www.googleapis.com/auth/cloud-platform'])
         :param proxy: Proxy flag
+        :param api_endpoint: Base URL the API requests are sent to. Defaults to the global endpoint of the service.
         :param kwargs: Potential arguments dict
         """
         service_account_json = safe_load_non_strict_json(service_account_json)  # type: ignore
@@ -284,12 +302,15 @@ class BaseGoogleClient:
             # securitycenter v2 discovery doc is not bundled as a static artifact in google-api-python-client,
             # so fetch it over the network. v1 keeps the bundled static doc (offline, faster).
             if service_version == "v2":
+                # The discovery document is always read from the global endpoint (it carries no finding data);
+                # api_endpoint only redirects the API requests built from it to the regional endpoint.
                 self.service = discovery.build(
                     service_name,
                     service_version,
                     http=http_client,
                     cache_discovery=False,
                     static_discovery=False,
+                    client_options={"api_endpoint": api_endpoint} if api_endpoint else None,
                 )
             else:
                 self.service = discovery.build(service_name, service_version, http=http_client, cache_discovery=False)
@@ -866,6 +887,51 @@ def init_google_scc_client(**kwargs) -> GoogleSccClient:
     return client
 
 
+def normalize_location_id(location: str | None) -> str:
+    """
+    Normalize a location to the identifier expected in a v2 resource name.
+
+    Region names that have a distinct location identifier (e.g. "me-central2" for the Kingdom of Saudi Arabia,
+    whose identifier is "sa") are translated, and the result is validated against the supported identifiers.
+
+    :param location: location as provided by the user. An empty value defaults to "global".
+    :return: supported location identifier.
+    """
+    location = (location or DEFAULT_LOCATION_ID).strip().lower()
+    location = LOCATION_ID_ALIASES.get(location, location)
+    if location not in SUPPORTED_LOCATION_IDS:
+        raise ValueError(ERROR_MESSAGES["INVALID_LOCATION_ERROR"].format(location, ", ".join(SUPPORTED_LOCATION_IDS)))
+    return location
+
+
+def get_location_from_args(args: dict) -> str:
+    """
+    Resolve the location a v2 command targets.
+
+    The location is either given explicitly through the "location" argument, or carried by the locations/{location}
+    segment of the "name" argument of a v2 resource name (e.g. organizations/{organization}/sources/{source}/
+    locations/{location}/findings/{finding}). When neither is present, the location is "global".
+
+    :param args: command argument(s).
+    :return: supported location identifier.
+    """
+    location = args.get("location")
+    if not location:
+        match = re.search(LOCATION_ID_CAPTURE_REGEX, args.get("name") or "")
+        location = match.group(1) if match else DEFAULT_LOCATION_ID
+    return normalize_location_id(location)
+
+
+def get_regional_endpoint(location: str) -> str | None:
+    """
+    Get the endpoint the requests of a location must be sent to.
+
+    :param location: supported location identifier.
+    :return: the regional endpoint of the location, or None for "global" (which uses the default global endpoint).
+    """
+    return REGIONAL_ENDPOINTS.get(location)
+
+
 def init_google_scc_v2_client(**kwargs) -> GoogleSccClient:
     """
     Initializes google scc client
@@ -1426,7 +1492,11 @@ def get_and_validate_args_mute_rule_create(args: dict[str, Any]) -> tuple:
 
     # An empty location keeps the parent at organizations/{organization_id}, which the API treats as global.
     location = args.get("location")
-    parent = GoogleNameParser.get_location_organization_path(location) if location else GoogleNameParser.get_organization_path()
+    parent = (
+        GoogleNameParser.get_location_organization_path(normalize_location_id(location))
+        if location
+        else GoogleNameParser.get_organization_path()
+    )
 
     return parent, mute_config_id, mute_config_type, mute_filter, args.get("description"), expiry_time
 
@@ -2071,7 +2141,7 @@ def finding_list_v2_command(client: GoogleSccClient, args: dict) -> CommandResul
     order_by = argToList(args.get("orderBy", ""), transform=lambda s: s.strip())
     order_by = ",".join(order_by)
     page_token = args.get("pageToken", None)
-    location = args.get("location") or DEFAULT_LOCATION_ID
+    location = normalize_location_id(args.get("location"))
 
     # Validates command args
     validate_state_and_severity_list(state, severity)
@@ -2305,7 +2375,9 @@ def main() -> None:
             client = init_google_scc_client(**params)
             return_results(commands[command](client, args))
         elif command in commands_v2:
-            client = init_google_scc_v2_client(**params)
+            # A location other than global is only reachable through its regional endpoint.
+            api_endpoint = get_regional_endpoint(get_location_from_args(args))
+            client = init_google_scc_v2_client(api_endpoint=api_endpoint, **params)
             return_results(commands_v2[command](client, args))
     # Log exceptions
     except Exception as e:
