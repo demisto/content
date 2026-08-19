@@ -3510,6 +3510,81 @@ def redteam_report_stream_get_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
+def _report_download_filename(job_id: str, file_format: str, content: bytes, content_disposition: str) -> str:
+    """Derive a filename for a downloaded Red Team report.
+
+    Prefers the server-provided ``Content-Disposition`` filename; otherwise picks an
+    extension by sniffing the payload magic bytes (the API zips reports), falling back
+    to the requested format.
+
+    Args:
+        job_id: Scan job identifier (used to build a fallback filename).
+        file_format: Requested format (CSV, JSON, or ALL).
+        content: Raw response bytes.
+        content_disposition: Value of the response ``Content-Disposition`` header.
+
+    Returns:
+        str: A safe filename for the War Room attachment.
+    """
+    # 1) Honour an explicit server-supplied filename.
+    match = re.search(r'filename\*?=(?:UTF-8\'\')?"?([^";]+)"?', content_disposition or "")
+    if match:
+        candidate = os.path.basename(match.group(1).strip())
+        if candidate:
+            return candidate
+
+    # 2) Sniff the payload: reports come back as a ZIP archive; JSON/CSV may be served raw.
+    if content[:4] == b"PK\x03\x04":
+        ext = "zip"
+    elif content[:1] in (b"{", b"["):
+        ext = "json"
+    else:
+        ext = {"CSV": "csv", "JSON": "json", "ALL": "zip"}.get(file_format, "dat")
+
+    return f"redteam_report_{job_id}.{ext}"
+
+
+def redteam_report_download_command(client: Client, args: dict[str, Any]) -> dict:
+    """Download a Red Team scan report and attach it to the War Room.
+
+    The download endpoint streams the report back as raw bytes — a ZIP archive bundling
+    the report file(s) (e.g. ``report_summary.csv``), not a JSON envelope. This fetches
+    the raw ``Response`` so the ``Content-Disposition``/``Content-Type`` headers can name
+    the file, then returns it as a War Room attachment.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        dict: A ``fileResult`` entry carrying the report bytes.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    file_format = (args.get("file_format") or "CSV").upper()
+    if file_format not in ("CSV", "JSON", "ALL"):
+        raise ValueError("file_format must be one of: CSV, JSON, ALL.")
+
+    # The download endpoint lives on the data plane and returns the report file as raw
+    # bytes (a ZIP archive), so request the full Response instead of JSON parsing.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/reports-client.ts (downloadReport)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_REPORTS_ENDPOINT}/{job_id}/download",
+        params={"file_format": file_format},
+        use_redteam_data=True,
+        resp_type="response",
+    )
+
+    content = response.content
+    content_disposition = response.headers.get("Content-Disposition", "")
+    filename = _report_download_filename(job_id, file_format, content, content_disposition)
+
+    return fileResult(filename=filename, data=content)
+
+
 def redteam_eula_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get Red Team EULA acceptance status.
 
@@ -5899,6 +5974,9 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-report-stream-get":
             return_results(redteam_report_stream_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-download":
+            return_results(redteam_report_download_command(client, args))
 
         elif command == "prisma-airs-redteam-eula-status":
             return_results(redteam_eula_status_command(client, args))

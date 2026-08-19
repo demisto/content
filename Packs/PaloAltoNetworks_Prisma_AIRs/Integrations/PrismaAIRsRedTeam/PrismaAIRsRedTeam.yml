@@ -2058,6 +2058,33 @@ script:
     - contextPath: PrismaAIRs.RedTeamStream.iterations
       description: The array of per-iteration attack progression records.
       type: Unknown
+  - name: prisma-airs-redteam-report-download
+    description: Download a Red Team scan report and attach it to the War Room. The endpoint streams the report back as a ZIP archive bundling the report file(s) (for example report_summary.csv).
+    arguments:
+    - name: job_id
+      description: The UUID of the scan job whose report to download.
+      required: true
+    - name: file_format
+      description: The report file format to request.
+      auto: PREDEFINED
+      predefined:
+      - CSV
+      - JSON
+      - ALL
+      defaultValue: CSV
+    outputs:
+    - contextPath: InfoFile.Name
+      description: The attached report file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The War Room entry ID of the attached report file.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The attached report file size in bytes.
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The attached report file type.
+      type: String
   - name: prisma-airs-redteam-eula-status
     description: Get Red Team EULA acceptance status.
     outputs:

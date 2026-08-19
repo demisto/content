@@ -2316,6 +2316,60 @@ Get stream details for a Red Team dynamic scan report.
 | PrismaAIRs.RedTeamStream.first_threat_iteration | Unknown | The first iteration flagged as a threat. |
 | PrismaAIRs.RedTeamStream.iterations | Unknown | The array of per-iteration attack progression records. |
 
+### prisma-airs-redteam-report-download
+
+***
+Download a Red Team scan report and attach it to the War Room. The endpoint streams the report back as a ZIP archive bundling the report file(s) (for example `report_summary.csv`).
+
+#### Base Command
+
+`prisma-airs-redteam-report-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The UUID of the scan job whose report to download. | Required |
+| file_format | The report file format to request. Possible values are: CSV, JSON, ALL. Default is CSV. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | String | The attached report file name. |
+| InfoFile.EntryID | String | The War Room entry ID of the attached report file. |
+| InfoFile.Size | Number | The attached report file size in bytes. |
+| InfoFile.Type | String | The attached report file type. |
+
+#### Command example
+
+```!prisma-airs-redteam-report-download job_id=7cd7dd0b-917a-44d1-8044-95f82a5a1032 file_format=ALL```
+
+#### Context Example
+
+```json
+{
+    "InfoFile": {
+        "EntryID": "71@37335",
+        "Extension": "zip",
+        "Info": "application/zip",
+        "Name": "report_7cd7dd0b-917a-44d1-8044-95f82a5a1032_all.zip",
+        "Size": 4739584,
+        "Type": "Zip archive data, at least v2.0 to extract, compression method=deflate"
+    }
+}
+```
+
+#### Human Readable Output
+
+Returns the report as a downloadable ZIP file in the War Room. The archive contents depend on `file_format`:
+
+- `CSV` — `report_summary.csv`, `attacks.csv`
+- `JSON` — `report_summary.json`, `attacks.json`
+- `ALL` — all four of the above
+
+`report_summary` carries the per-job scorecard (ASR, risk score, per-category security/severity breakdowns, and the narrative summary); `attacks` carries the full per-attack detail rows.
+
 ### prisma-airs-redteam-eula-status
 
 ***

@@ -68,6 +68,8 @@ from PrismaAIRsRedTeam import (
     redteam_properties_create_command,
     redteam_properties_list_command,
     redteam_properties_values_command,
+    _report_download_filename,
+    redteam_report_download_command,
     redteam_dashboard_overview_command,
     redteam_dashboard_scan_statistics_command,
     redteam_dashboard_score_trend_command,
@@ -787,6 +789,82 @@ class TestCommands:
         assert kwargs["url_suffix"] == "/v1/dashboard/overview"
         # Overview is the one telemetry endpoint on the management plane.
         assert kwargs["use_redteam_mgmt"] is True
+
+    def test_report_download_filename(self) -> None:
+        """Test filename derivation: Content-Disposition wins, else magic-byte sniff, else format."""
+        zip_bytes = b"PK\x03\x04rest-of-archive"
+        # 1) Content-Disposition filename takes precedence.
+        assert (
+            _report_download_filename("job-1", "CSV", zip_bytes, 'attachment; filename="report_summary.zip"')
+            == "report_summary.zip"
+        )
+        # 2) No header -> sniff ZIP magic bytes.
+        assert _report_download_filename("job-1", "CSV", zip_bytes, "") == "redteam_report_job-1.zip"
+        # 3) No header -> sniff JSON body.
+        assert _report_download_filename("job-1", "JSON", b'{"a":1}', "") == "redteam_report_job-1.json"
+        # 4) No header, unrecognized body -> fall back to requested format.
+        assert _report_download_filename("job-1", "CSV", b"a,b,c\n1,2,3\n", "") == "redteam_report_job-1.csv"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_report_download_routing(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test report-download requests the raw Response and routes to the data plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        resp = Mock()
+        resp.content = b"PK\x03\x04zip"
+        resp.headers = {"Content-Disposition": 'attachment; filename="report_summary.zip"'}
+        mock_http.return_value = resp
+
+        result = redteam_report_download_command(mock_client, {"job_id": "job-1", "file_format": "csv"})
+
+        # A single fileResult entry carrying the attachment.
+        assert result["File"] == "report_summary.zip"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/report/job-1/download"
+        assert kwargs["use_redteam_data"] is True
+        assert kwargs["params"] == {"file_format": "CSV"}
+        # Raw bytes, not JSON parsing.
+        assert kwargs["resp_type"] == "response"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_report_download_sniffs_when_no_header(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test report-download falls back to magic-byte sniffing when no Content-Disposition.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        resp = Mock()
+        resp.content = b"PK\x03\x04zip-archive-bytes"
+        resp.headers = {}
+        mock_http.return_value = resp
+
+        result = redteam_report_download_command(mock_client, {"job_id": "job-9"})
+
+        assert result["File"] == "redteam_report_job-9.zip"
+
+    def test_redteam_report_download_requires_job_id(self, mock_client: Client) -> None:
+        """Test report-download raises when job_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="job_id"):
+            redteam_report_download_command(mock_client, {})
+
+    def test_redteam_report_download_invalid_format(self, mock_client: Client) -> None:
+        """Test report-download rejects an unsupported file_format.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="file_format"):
+            redteam_report_download_command(mock_client, {"job_id": "job-1", "file_format": "pdf"})
 
     @patch.object(Client, "http_request")
     def test_redteam_sentiment_update_up_command(self, mock_http: Mock, mock_client: Client) -> None:
