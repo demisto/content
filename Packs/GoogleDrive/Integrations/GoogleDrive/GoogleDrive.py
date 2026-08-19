@@ -12,7 +12,7 @@ import dateparser
 import urllib3
 import yaml
 from apiclient import discovery, errors
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from googleapiclient.http import MediaFileUpload, MediaInMemoryUpload, MediaIoBaseDownload
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,6 +21,7 @@ urllib3.disable_warnings()
 
 API_VERSION = "v3"
 SERVICE_NAME = "drive"
+FOLDER_MIME_TYPE = "application/vnd.google-apps.folder"
 
 MESSAGES: dict[str, str] = {
     "TEST_FAILED_ERROR": "Test connectivity failed. Check the configuration parameters provided.",
@@ -31,6 +32,8 @@ MESSAGES: dict[str, str] = {
     "MAX_INCIDENT_ERROR": "The parameter Max Incidents must be a positive integer."
     " Accepted values can be in the range of 1-100.",
     "USER_ID_REQUIRED": "The parameter User ID is required.",
+    "CONTENT_ON_FOLDER": f'The argument content cannot be used when mime_type is "{FOLDER_MIME_TYPE}".'
+    ' Use a file MIME type such as "text/plain".',
 }
 
 HR_MESSAGES: dict[str, str] = {
@@ -2044,11 +2047,40 @@ def file_move_command(client: "GSuiteClient", args: dict[str, str]) -> CommandRe
     )
 
 
+def create_file_with_content(
+    client: "GSuiteClient",
+    body: dict[str, Any],
+    content: str,
+    mime_type: str,
+    supports_all_drives: bool,
+) -> dict[str, Any]:
+    """
+    Create a file and upload ``content`` as its body in a single multipart request.
+
+    The metadata-only endpoint used by :func:`file_create_command` cannot carry a
+    payload, so a file created through it is always 0 bytes. Uploading content
+    requires the ``upload/`` endpoint with a media body, which the Drive client
+    library handles as a multipart request.
+
+    :param client: Client object with an already-authorized http.
+    :param body: File metadata (name, mimeType, parents, description).
+    :param content: The text to write into the file.
+    :param mime_type: MIME type of the uploaded content.
+    :param supports_all_drives: Whether shared drives are supported.
+
+    :return: The created file resource.
+    """
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
+    media = MediaInMemoryUpload(content.encode("utf-8"), mimetype=mime_type, resumable=False)
+    return drive_service.files().create(body=body, media_body=media, supportsAllDrives=supports_all_drives, fields="*").execute()
+
+
 @logger
 def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
     """
     google-drive-file-create
-    Create a metadata-only file or folder (no content upload).
+    Create a file or folder. Content is uploaded only when the ``content``
+    argument is given; otherwise the file is created metadata-only (0 bytes).
 
     :param client: Client object.
     :param args: Command arguments.
@@ -2056,20 +2088,19 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     :return: Command Result.
     """
     file_name = args.get("file_name", "")
-    mime_type = args.get("mime_type", "application/vnd.google-apps.folder")
+    mime_type = args.get("mime_type", FOLDER_MIME_TYPE)
     parent = args.get("parent", "")
     description = args.get("description", "")
+    content = args.get("content", "")
     supports_all_drives = argToBoolean(args.get("supports_all_drives", False))
+
+    if content and mime_type == FOLDER_MIME_TYPE:
+        raise DemistoException(MESSAGES["CONTENT_ON_FOLDER"])
 
     # user_id can be overridden in the args
     user_id = args.get("user_id") or client.user_id
     client.set_authorized_http(scopes=COMMAND_SCOPES["FILES"], subject=user_id)
 
-    url_suffix = URL_SUFFIX["FILE_CREATE"]
-    params = {
-        "fields": args.get("fields", "*"),
-        "supportsAllDrives": supports_all_drives,
-    }
     body: dict[str, Any] = {
         "name": file_name,
         "mimeType": mime_type,
@@ -2079,7 +2110,14 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     if description:
         body["description"] = description
 
-    response = client.http_request(url_suffix=url_suffix, method="POST", params=params, body=body)
+    if content:
+        response = create_file_with_content(client, body, content, mime_type, supports_all_drives)
+    else:
+        params = {
+            "fields": args.get("fields", "*"),
+            "supportsAllDrives": supports_all_drives,
+        }
+        response = client.http_request(url_suffix=URL_SUFFIX["FILE_CREATE"], method="POST", params=params, body=body)
 
     readable_output = tableToMarkdown(
         f'Created "{file_name}" successfully.',

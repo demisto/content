@@ -1226,3 +1226,102 @@ class TestFilePermissionMethods:
         assert call_kwargs["params"]["supportsAllDrives"] is True
         assert call_kwargs["body"]["name"] == "Shared Drive Folder"
         assert call_kwargs["body"]["parents"] == ["shared_drive_root_id"]
+
+    def test_file_create_command_with_content(self, mocker, gsuite_client):
+        """
+        Scenario: google-drive-file-create with the content argument.
+
+        Given:
+        - Command args including content and a text/plain mime_type.
+
+        When:
+        - Calling google-drive-file-create.
+
+        Then:
+        - Ensure the multipart upload path is taken, the media body carries the
+          content, and the metadata is passed alongside it.
+        """
+        import GoogleDrive
+        from GoogleDrive import file_create_command
+
+        mock_response = {
+            "kind": "drive#file",
+            "id": "tombstone_with_body",
+            "name": "quarantined-file.txt",
+            "mimeType": "text/plain",
+            "parents": ["original_folder_id"],
+        }
+        create_mock = mocker.patch.object(GoogleDrive.discovery, "build")
+        create_mock.return_value.files.return_value.create.return_value.execute.return_value = mock_response
+
+        args = {
+            "file_name": "quarantined-file.txt",
+            "mime_type": "text/plain",
+            "user_id": "owner@example.com",
+            "parent": "original_folder_id",
+            "content": "This file was quarantined by Cortex.",
+        }
+        result: CommandResults = file_create_command(gsuite_client, args)
+
+        assert result.outputs["id"] == "tombstone_with_body"
+
+        _, create_kwargs = create_mock.return_value.files.return_value.create.call_args
+        assert create_kwargs["body"]["name"] == "quarantined-file.txt"
+        assert create_kwargs["body"]["mimeType"] == "text/plain"
+        assert create_kwargs["body"]["parents"] == ["original_folder_id"]
+        assert create_kwargs["media_body"].getbytes(0, create_kwargs["media_body"].size()) == (
+            b"This file was quarantined by Cortex."
+        )
+        assert create_kwargs["media_body"].mimetype() == "text/plain"
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_without_content_stays_metadata_only(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-create without the content argument.
+
+        Given:
+        - Command args with a file mime_type but no content.
+
+        When:
+        - Calling google-drive-file-create.
+
+        Then:
+        - Ensure the metadata-only endpoint is used and no content key leaks
+          into the request body.
+        """
+        from GoogleDrive import file_create_command
+
+        mocker_http_request.return_value = {"id": "empty_file_id", "name": "empty.txt", "mimeType": "text/plain"}
+
+        args = {
+            "file_name": "empty.txt",
+            "mime_type": "text/plain",
+            "user_id": "owner@example.com",
+        }
+        result: CommandResults = file_create_command(gsuite_client, args)
+
+        assert result.outputs["id"] == "empty_file_id"
+        _, call_kwargs = mocker_http_request.call_args
+        assert "content" not in call_kwargs["body"]
+
+    def test_file_create_command_content_on_folder_raises(self, gsuite_client):
+        """
+        Scenario: google-drive-file-create with content on a folder mime_type.
+
+        Given:
+        - Command args with content but the default folder mime_type.
+
+        When:
+        - Calling google-drive-file-create.
+
+        Then:
+        - Ensure a DemistoException is raised, since folders hold no content.
+        """
+        from GoogleDrive import MESSAGES, file_create_command
+
+        args = {
+            "file_name": "Some Folder",
+            "content": "this cannot go into a folder",
+        }
+        with pytest.raises(DemistoException, match=re.escape(MESSAGES["CONTENT_ON_FOLDER"])):
+            file_create_command(gsuite_client, args)
