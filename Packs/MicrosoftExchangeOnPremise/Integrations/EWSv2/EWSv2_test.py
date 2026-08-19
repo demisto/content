@@ -1291,7 +1291,7 @@ def test_get_client_from_params(mocker, manual_username, expected_username):
     assert not client.insecure
 
 
-def test_start_logging_does_not_leak_exchangelib_output_to_stdout(mocker, capsys):
+def test_start_logging_does_not_leak_exchangelib_output_to_stdout(mocker, capfd):
     """
     Given:
         The instance Log Level is set to debug/verbose (is_debug_mode() is True), and a
@@ -1327,7 +1327,7 @@ def test_start_logging_does_not_leak_exchangelib_output_to_stdout(mocker, capsys
         exchangelib_logger.debug("Request headers: {'X-Foo': 'bar'}")
         exchangelib_logger.debug("Response XML: b'<xml/>'")
 
-        captured = capsys.readouterr()
+        captured = capfd.readouterr()
         # The exchangelib dump must not reach stdout.
         assert "Request headers: {" not in captured.out
         assert "Response XML:" not in captured.out
