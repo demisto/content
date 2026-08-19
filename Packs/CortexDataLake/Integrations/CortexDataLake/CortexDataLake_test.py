@@ -778,7 +778,7 @@ def test_resolve_reachable_api_url_maps_url_when_unreachable(mocker):
     mocker.patch("CortexDataLake.is_url_reachable", return_value=False)
 
     original_url = "https://api.de1.ew3.cdl.paloaltonetworks.com"
-    migrated_url = "https://api.de1.prd.strata.logging.paloaltonetworks.com"
+    migrated_url = "https://read-api.de1.prd.strata.logging.paloaltonetworks.com"
 
     result = Client._resolve_reachable_api_url(client, original_url)
 

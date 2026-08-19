@@ -258,8 +258,8 @@ class Client(BaseClient):
                 "POST",
                 "/cdl-token",
                 json_data=data,
-                timeout=(10 ,10),
-                retries=1,
+                timeout=(60 * 3, 60 * 3),
+                retries=3,
                 backoff_factor=10,
                 status_list_to_retry=[400],
             )
