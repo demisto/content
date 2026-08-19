@@ -1898,7 +1898,7 @@ def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) 
     surfaced next to it: a sharing URL to a personal file resolves against that user's
     OneDrive, so its ItemID differs from the one the same file has under a site library.
     """
-    addressing = resolve_item_addressing(args, allow_path=True, allow_share_url=True)
+    addressing = resolve_item_addressing(args, allow_share_url=True)
     include_sharepoint_ids = argToBoolean(args.get("include_sharepoint_ids", "false"))
 
     raw_response = client.get_driveitem(
