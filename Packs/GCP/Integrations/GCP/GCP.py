@@ -176,6 +176,11 @@ class GCPServices(Enum):
         elif self == GCPServices.BIGQUERY:
             # BigQuery has no project-level testIamPermissions; a lightweight dataset list verifies connectivity.
             client.datasets().list(projectId=project_id, maxResults=1).execute()  # pylint: disable=E1101
+        elif self == GCPServices.LOGGING:
+            # Logging has no project-level testIamPermissions; a minimal log-entries list verifies connectivity.
+            client.entries().list(  # pylint: disable=E1101
+                body={"resourceNames": [f"projects/{project_id}"], "pageSize": 1}
+            ).execute()
         else:
             raise NotImplementedError(f"No connectivity probe defined for service {self.api_name}")
 

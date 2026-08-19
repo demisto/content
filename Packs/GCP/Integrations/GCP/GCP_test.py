@@ -5786,6 +5786,30 @@ def test_test_connectivity_container_uses_clusters_list(mocker):
     )
 
 
+def test_test_connectivity_logging_uses_entries_list(mocker):
+    """
+    Given:
+        - The LOGGING service and a built API client.
+    When:
+        - test_connectivity is called.
+    Then:
+        - A project-scoped log entries list is invoked (Logging has no project testIamPermissions),
+          so no NotImplementedError is raised.
+    """
+    from GCP import GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.LOGGING, "build", return_value=mock_client)
+
+    GCPServices.LOGGING.test_connectivity(creds, "dummy-project-id")
+
+    mock_client.entries.return_value.list.assert_called_once_with(
+        body={"resourceNames": ["projects/dummy-project-id"], "pageSize": 1}
+    )
+
+
 def test_test_all_services_wraps_results_into_tuples(mocker):
     """
     Given:
@@ -6782,3 +6806,25 @@ def test_logging_log_entries_list_empty_results(mocker):
 
     assert result.outputs["GCP.Logging.LogEntries(val.insertId && val.insertId == obj.insertId)"] == []
     assert result.outputs["GCP.Logging(true)"]["LogEntriesNextToken"] is None
+
+
+def test_logging_log_entries_list_api_error_propagates(mocker):
+    """
+    Given: A mocked Logging client whose entries().list raises a 403 HttpError.
+    When: logging_log_entries_list is called.
+    Then: The HttpError propagates out of the handler (to be handled by main()),
+          rather than being swallowed or converted.
+    """
+    from GCP import logging_log_entries_list
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    http_error = _make_http_error(403, '{"error": {"code": 403, "message": "caller does not have permission"}}')
+    mock_logging.entries.return_value.list.return_value.execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    with pytest.raises(HttpError) as e:
+        logging_log_entries_list(mock_creds, {"project_id": "mock_project_id"})
+
+    assert e.value.resp.status == 403
