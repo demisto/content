@@ -41,6 +41,15 @@ RED_TEAM_SENTIMENT_ENDPOINT = "/v1/sentiment"
 # Target-profile error logs (profiling failures for a target) - data-plane.
 # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_ERROR_LOG_TARGET_PROFILE_PATH)
 RED_TEAM_ERROR_LOG_TARGET_PROFILE_ENDPOINT = "/v1/error-log/target-profile"
+# Job-level error logs (per-scan-job probe failures) - data-plane.
+# Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_ERROR_LOG_PATH)
+RED_TEAM_ERROR_LOG_JOB_ENDPOINT = "/v1/error-log/job"
+# Dashboard telemetry - scan-statistics + score-trend are data-plane; overview is mgmt-plane.
+# Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_DASHBOARD_PATH / RED_TEAM_MGMT_DASHBOARD_PATH)
+RED_TEAM_DASHBOARD_ENDPOINT = "/v1/dashboard"
+# Metering quota summary (static/dynamic/custom allocations) - data-plane, POST with no body.
+# Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_QUOTA_PATH)
+RED_TEAM_QUOTA_ENDPOINT = "/v1/metering/quota"
 
 
 def redteam_targets_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1816,6 +1825,318 @@ def redteam_targets_error_logs_command(client: Client, args: dict[str, Any]) -> 
     return CommandResults(
         outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetErrorLog",
         outputs=logs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_scan_error_logs_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List job-level error logs for a Red Team scan.
+
+    Returns the per-attack probe failures recorded while a scan job was running (e.g. timeouts,
+    target connection or authentication errors), newest first. Unlike the target-profile error
+    logs (which cover profiling), these are scoped to a single scan job.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    skip = arg_to_number(args.get("skip"))
+    search = args.get("search")
+
+    # The endpoint honors skip/limit/search (serializeListing shape).
+    params: dict[str, Any] = {"limit": limit}
+    if skip is not None:
+        params["skip"] = skip
+    if search:
+        params["search"] = search
+
+    # Job-level error logs live on the data plane.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/client.ts (getErrorLogs)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_ERROR_LOG_JOB_ENDPOINT}/{job_id}",
+        params=params,
+        use_redteam_data=True,
+    )
+
+    # Schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (ErrorLogListResponseSchema)
+    logs = []
+    for entry in response.get("data", []):
+        logs.append(
+            assign_params(
+                created_at=entry.get("created_at"),
+                updated_at=entry.get("updated_at"),
+                job_id=entry.get("job_id"),
+                target_id=entry.get("target_id"),
+                target_version=entry.get("target_version"),
+                attack_id=entry.get("attack_id"),
+                error_type=entry.get("error_type"),
+                error_source=entry.get("error_source"),
+                error_message=entry.get("error_message"),
+                target_object=entry.get("target_object"),
+                extra_info=entry.get("extra_info"),
+                version=entry.get("version"),
+            )
+        )
+
+    total_items = (response.get("pagination") or {}).get("total_items")
+    title = f"Red Team Scan Error Logs: {job_id}"
+    if total_items is not None:
+        title += f" ({total_items} total)"
+
+    readable_output = tableToMarkdown(
+        title,
+        logs,
+        headers=["created_at", "error_type", "error_source", "error_message", "attack_id", "target_id"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScanErrorLog",
+        outputs=logs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_dashboard_scan_statistics_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get Red Team scan statistics and risk profile (data-plane dashboard telemetry).
+
+    Returns aggregate scan counts and, when available, breakdowns by target type, scan status,
+    and risk rating. Optional filters narrow the window (date_range) or a single target (target_id).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    params: dict[str, Any] = {}
+    date_range = args.get("date_range")
+    target_id = args.get("target_id")
+    if date_range:
+        params["date_range"] = date_range
+    if target_id:
+        params["target_id"] = target_id
+
+    # Scan statistics live on the data plane.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/client.ts (getScanStatistics)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_DASHBOARD_ENDPOINT}/scan-statistics",
+        params=params or None,
+        use_redteam_data=True,
+    )
+
+    # Schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (ScanStatisticsResponseSchema)
+    outputs = assign_params(
+        total_scans=response.get("total_scans"),
+        targets_scanned=response.get("targets_scanned"),
+        targets_scanned_by_type=response.get("targets_scanned_by_type"),
+        scan_status=response.get("scan_status"),
+        risk_profile=response.get("risk_profile"),
+    )
+
+    summary = tableToMarkdown(
+        "Red Team Scan Statistics",
+        [{"total_scans": response.get("total_scans"), "targets_scanned": response.get("targets_scanned")}],
+        headers=["total_scans", "targets_scanned"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+    if response.get("scan_status"):
+        summary += tableToMarkdown(
+            "Scan Status",
+            response.get("scan_status"),
+            headers=["name", "count"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True,
+        )
+    if response.get("risk_profile"):
+        summary += tableToMarkdown(
+            "Risk Profile",
+            response.get("risk_profile"),
+            headers=["risk_rating", "total"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True,
+        )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScanStatistics",
+        outputs=outputs,
+        readable_output=summary,
+        raw_response=response,
+    )
+
+
+def redteam_dashboard_score_trend_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get the Red Team risk score trend for a target (data-plane dashboard telemetry).
+
+    Returns time-bucketed labels plus one or more data series (e.g. risk score over time) for the
+    given target.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    target_id = args.get("target_id")
+    if not target_id:
+        raise ValueError("target_id is required")
+
+    # Score trend lives on the data plane; target_id is required (uuid).
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/client.ts (getScoreTrend)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_DASHBOARD_ENDPOINT}/score-trend",
+        params={"target_id": target_id},
+        use_redteam_data=True,
+    )
+
+    # Schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (ScoreTrendResponseSchema)
+    labels = response.get("labels") or []
+    series = response.get("series") or []
+    outputs = assign_params(target_id=target_id, labels=labels, series=series)
+
+    # Render each series as a row of label -> data, aligned to the shared labels.
+    table_rows = []
+    for s in series:
+        row: dict[str, Any] = {"series": s.get("label")}
+        for idx, label in enumerate(labels):
+            data = s.get("data") or []
+            row[label] = data[idx] if idx < len(data) else None
+        table_rows.append(row)
+
+    readable_output = tableToMarkdown(
+        f"Red Team Score Trend: {target_id}",
+        table_rows,
+        headers=["series", *labels],
+        removeNull=False,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamScoreTrend",
+        outputs_key_field="target_id",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_metering_quota_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get the Red Team metering quota summary (data-plane).
+
+    Returns the allocated / consumed / unlimited flags for each quota bucket (static, dynamic,
+    custom). Called as a POST with no body, mirroring the SDK.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR (unused).
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Quota lives on the data plane and is a POST with no body.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/client.ts (getQuota)
+    response = client.http_request(
+        method="POST",
+        url_suffix=RED_TEAM_QUOTA_ENDPOINT,
+        use_redteam_data=True,
+    )
+
+    # Schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (QuotaSummarySchema)
+    outputs = assign_params(
+        static=response.get("static"),
+        dynamic=response.get("dynamic"),
+        custom=response.get("custom"),
+    )
+
+    table_rows = []
+    for bucket in ("static", "dynamic", "custom"):
+        details = response.get(bucket) or {}
+        table_rows.append(
+            {
+                "quota_type": bucket,
+                "allocated": details.get("allocated"),
+                "consumed": details.get("consumed"),
+                "unlimited": details.get("unlimited"),
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        "Red Team Metering Quota",
+        table_rows,
+        headers=["quota_type", "allocated", "consumed", "unlimited"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamQuota",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_dashboard_overview_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get the Red Team management dashboard overview (mgmt-plane).
+
+    Returns the total target count and, when available, a breakdown of targets by type.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR (unused).
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Dashboard overview is the one telemetry endpoint on the management plane.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/client.ts (getDashboardOverview)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_DASHBOARD_ENDPOINT}/overview",
+        use_redteam_mgmt=True,
+    )
+
+    # Schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (DashboardOverviewResponseSchema)
+    outputs = assign_params(
+        total_targets=response.get("total_targets"),
+        targets_by_type=response.get("targets_by_type"),
+    )
+
+    readable_output = tableToMarkdown(
+        "Red Team Dashboard Overview",
+        [{"total_targets": response.get("total_targets")}],
+        headers=["total_targets"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+    if response.get("targets_by_type"):
+        readable_output += tableToMarkdown(
+            "Targets by Type",
+            response.get("targets_by_type"),
+            headers=["name", "count"],
+            headerTransform=lambda h: h.replace("_", " ").title(),
+            removeNull=True,
+        )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamDashboardOverview",
+        outputs=outputs,
         readable_output=readable_output,
         raw_response=response,
     )
@@ -5462,6 +5783,22 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-targets-error-logs":
             return_results(redteam_targets_error_logs_command(client, args))
+
+        # Red Team Dashboard / Metering telemetry (5 commands)
+        elif command == "prisma-airs-redteam-scan-error-logs":
+            return_results(redteam_scan_error_logs_command(client, args))
+
+        elif command == "prisma-airs-redteam-dashboard-scan-statistics":
+            return_results(redteam_dashboard_scan_statistics_command(client, args))
+
+        elif command == "prisma-airs-redteam-dashboard-score-trend":
+            return_results(redteam_dashboard_score_trend_command(client, args))
+
+        elif command == "prisma-airs-redteam-metering-quota":
+            return_results(redteam_metering_quota_command(client, args))
+
+        elif command == "prisma-airs-redteam-dashboard-overview":
+            return_results(redteam_dashboard_overview_command(client, args))
 
         elif command == "prisma-airs-redteam-instances-create":
             return_results(redteam_instances_create_command(client, args))

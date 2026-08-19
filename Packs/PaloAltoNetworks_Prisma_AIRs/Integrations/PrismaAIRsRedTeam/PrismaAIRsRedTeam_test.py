@@ -68,6 +68,11 @@ from PrismaAIRsRedTeam import (
     redteam_properties_create_command,
     redteam_properties_list_command,
     redteam_properties_values_command,
+    redteam_dashboard_overview_command,
+    redteam_dashboard_scan_statistics_command,
+    redteam_dashboard_score_trend_command,
+    redteam_metering_quota_command,
+    redteam_scan_error_logs_command,
     redteam_sentiment_get_command,
     redteam_sentiment_update_command,
     redteam_targets_error_logs_command,
@@ -581,6 +586,207 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="target_id"):
             redteam_targets_error_logs_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_scan_error_logs_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam scan error-logs command routing, params, and parsing.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "pagination": {"total_items": 1},
+            "data": [
+                {
+                    "created_at": "2026-01-01T00:00:00Z",
+                    "updated_at": "2026-01-01T00:00:00Z",
+                    "job_id": "job-1",
+                    "attack_id": "attack-1",
+                    "error_type": "TIMEOUT",
+                    "error_source": "scanner",
+                    "error_message": "request timed out",
+                    "target_id": None,
+                }
+            ],
+        }
+
+        result = redteam_scan_error_logs_command(
+            mock_client, {"job_id": "job-1", "limit": "10", "skip": "5", "search": "timed"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamScanErrorLog"
+        assert len(result.outputs) == 1
+        entry = result.outputs[0]
+        assert entry["error_type"] == "TIMEOUT"
+        assert entry["attack_id"] == "attack-1"
+        # assign_params drops the None target_id.
+        assert "target_id" not in entry
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/error-log/job/job-1"
+        assert kwargs["use_redteam_data"] is True
+        assert kwargs["params"] == {"limit": 10, "skip": 5, "search": "timed"}
+
+    @patch.object(Client, "http_request")
+    def test_redteam_scan_error_logs_default_limit(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam scan error-logs applies the default limit and omits optional params.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"pagination": {}, "data": []}
+
+        redteam_scan_error_logs_command(mock_client, {"job_id": "job-1"})
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["params"] == {"limit": 50}  # DEFAULT_LIMIT
+        assert "skip" not in kwargs["params"]
+        assert "search" not in kwargs["params"]
+
+    def test_redteam_scan_error_logs_requires_job_id(self, mock_client: Client) -> None:
+        """Test redteam scan error-logs raises when job_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="job_id"):
+            redteam_scan_error_logs_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_dashboard_scan_statistics_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam dashboard scan-statistics routing, filters, and parsing.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "total_scans": 10,
+            "targets_scanned": 5,
+            "scan_status": [{"name": "completed", "count": 8}],
+            "risk_profile": [{"risk_rating": "high", "total": 3}],
+        }
+
+        result = redteam_dashboard_scan_statistics_command(
+            mock_client, {"date_range": "30d", "target_id": "target-1"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamScanStatistics"
+        assert result.outputs["total_scans"] == 10
+        assert result.outputs["targets_scanned"] == 5
+        assert result.outputs["scan_status"][0]["count"] == 8
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/dashboard/scan-statistics"
+        assert kwargs["use_redteam_data"] is True
+        assert kwargs["params"] == {"date_range": "30d", "target_id": "target-1"}
+
+    @patch.object(Client, "http_request")
+    def test_redteam_dashboard_scan_statistics_no_filters(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam dashboard scan-statistics passes params=None when no filters are given.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"total_scans": 0, "targets_scanned": 0}
+
+        redteam_dashboard_scan_statistics_command(mock_client, {})
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["params"] is None
+
+    @patch.object(Client, "http_request")
+    def test_redteam_dashboard_score_trend_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam dashboard score-trend routing, required target_id, and parsing.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "labels": ["2026-04", "2026-05"],
+            "series": [{"label": "risk", "data": [42, 38]}],
+        }
+
+        result = redteam_dashboard_score_trend_command(mock_client, {"target_id": "target-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamScoreTrend"
+        assert result.outputs_key_field == "target_id"
+        assert result.outputs["target_id"] == "target-1"
+        assert result.outputs["labels"] == ["2026-04", "2026-05"]
+        assert result.outputs["series"][0]["label"] == "risk"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/dashboard/score-trend"
+        assert kwargs["use_redteam_data"] is True
+        assert kwargs["params"] == {"target_id": "target-1"}
+
+    def test_redteam_dashboard_score_trend_requires_target_id(self, mock_client: Client) -> None:
+        """Test redteam dashboard score-trend raises when target_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="target_id"):
+            redteam_dashboard_score_trend_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_metering_quota_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam metering quota routing (POST, no body) and parsing.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "static": {"allocated": 100, "unlimited": False, "consumed": 5},
+            "dynamic": {"allocated": 50, "unlimited": False, "consumed": 2},
+            "custom": {"allocated": 0, "unlimited": True, "consumed": 0},
+        }
+
+        result = redteam_metering_quota_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamQuota"
+        assert result.outputs["static"]["allocated"] == 100
+        assert result.outputs["custom"]["unlimited"] is True
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        assert kwargs["url_suffix"] == "/v1/metering/quota"
+        assert kwargs["use_redteam_data"] is True
+        # POST with no body — json_data must not be passed.
+        assert "json_data" not in kwargs
+
+    @patch.object(Client, "http_request")
+    def test_redteam_dashboard_overview_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam dashboard overview routing (mgmt plane) and parsing.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "total_targets": 7,
+            "targets_by_type": [{"name": "API", "count": 4}],
+        }
+
+        result = redteam_dashboard_overview_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamDashboardOverview"
+        assert result.outputs["total_targets"] == 7
+        assert result.outputs["targets_by_type"][0]["name"] == "API"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/dashboard/overview"
+        # Overview is the one telemetry endpoint on the management plane.
+        assert kwargs["use_redteam_mgmt"] is True
 
     @patch.object(Client, "http_request")
     def test_redteam_sentiment_update_up_command(self, mock_http: Mock, mock_client: Client) -> None:

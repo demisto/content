@@ -480,6 +480,233 @@ List target-profile (profiling) error logs for a Red Team target. Returns the fa
 >|---|---|---|---|---|---|
 >| 2026-01-01T00:00:00Z | PROBE | profiler | connection refused |  |  |
 
+### prisma-airs-redteam-scan-error-logs
+
+***
+List job-level error logs for a Red Team scan. Returns the per-attack probe failures recorded while a scan job was running (for example, timeouts or target connection or authentication errors), scoped to a single scan job.
+
+#### Base Command
+
+`prisma-airs-redteam-scan-error-logs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The UUID of the scan job whose error logs to retrieve. | Required |
+| limit | The maximum number of error-log entries to return. Default is 50. | Optional |
+| skip | The number of entries to skip (offset) for pagination. | Optional |
+| search | Optional text to filter the error-log entries by. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamScanErrorLog.created_at | Date | The timestamp when the error was recorded. |
+| PrismaAIRs.RedTeamScanErrorLog.updated_at | Date | The timestamp when the error record was last updated. |
+| PrismaAIRs.RedTeamScanErrorLog.job_id | String | The scan job UUID associated with the error. |
+| PrismaAIRs.RedTeamScanErrorLog.target_id | String | The target UUID the error relates to, if any. |
+| PrismaAIRs.RedTeamScanErrorLog.target_version | Number | The target version the error relates to. |
+| PrismaAIRs.RedTeamScanErrorLog.attack_id | String | The attack UUID associated with the error, if any. |
+| PrismaAIRs.RedTeamScanErrorLog.error_type | String | The category of the error. |
+| PrismaAIRs.RedTeamScanErrorLog.error_source | String | The source component that raised the error. |
+| PrismaAIRs.RedTeamScanErrorLog.error_message | String | The human-readable error message. |
+| PrismaAIRs.RedTeamScanErrorLog.target_object | Unknown | The target object snapshot associated with the error. |
+| PrismaAIRs.RedTeamScanErrorLog.extra_info | Unknown | Additional error context, if provided. |
+| PrismaAIRs.RedTeamScanErrorLog.version | Number | The record schema version. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-scan-error-logs job_id=16c3d68d-95ba-43fd-b3f3-7de463ac051f limit=10
+```
+
+#### Human Readable Output
+
+>### Red Team Scan Error Logs: 16c3d68d-95ba-43fd-b3f3-7de463ac051f (9 total)
+>
+>|Created At|Error Type|Error Source|Error Message|Attack Id|Target Id|
+>|---|---|---|---|---|---|
+>| 2026-08-19T18:59:13.501823Z | UNKNOWN | JOB | Empty output received from target | fd9fe836-c938-4df4-ace8-54b60065350c | 1b127819-8e52-4b38-aaab-4a967e107fe9 |
+>| 2026-08-19T18:58:48.585288Z | UNKNOWN | JOB | Empty output received from target | 1c7e8bf1-3e91-48c1-a227-a861ccb2486f | 1b127819-8e52-4b38-aaab-4a967e107fe9 |
+
+### prisma-airs-redteam-dashboard-scan-statistics
+
+***
+Get Red Team scan statistics and risk profile (dashboard telemetry). Returns aggregate scan counts and, when available, breakdowns by target type, scan status, and risk rating.
+
+#### Base Command
+
+`prisma-airs-redteam-dashboard-scan-statistics`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| date_range | Optional date range filter for the statistics window (for example, 30d). | Optional |
+| target_id | Optional target UUID to scope the statistics to a single target. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamScanStatistics.total_scans | Number | The total number of scans in the window. |
+| PrismaAIRs.RedTeamScanStatistics.targets_scanned | Number | The number of distinct targets scanned in the window. |
+| PrismaAIRs.RedTeamScanStatistics.targets_scanned_by_type.name | String | The target type name in the targets-scanned breakdown. |
+| PrismaAIRs.RedTeamScanStatistics.targets_scanned_by_type.count | Number | The number of targets scanned of this type. |
+| PrismaAIRs.RedTeamScanStatistics.scan_status.name | String | The scan status name in the status breakdown. |
+| PrismaAIRs.RedTeamScanStatistics.scan_status.count | Number | The number of scans in this status. |
+| PrismaAIRs.RedTeamScanStatistics.risk_profile.risk_rating | String | The risk rating label in the risk breakdown. |
+| PrismaAIRs.RedTeamScanStatistics.risk_profile.total | Number | The number of scans or targets at this risk rating. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-dashboard-scan-statistics
+```
+
+#### Human Readable Output
+
+>### Red Team Scan Statistics
+>
+>|Total Scans|Targets Scanned|
+>|---|---|
+>| 79 | 20 |
+>### Scan Status
+>|Name|Count|
+>|---|---|
+>| IN_PROGRESS | 1 |
+>| COMPLETED | 78 |
+>### Risk Profile
+>|Risk Rating|Total|
+>|---|---|
+>| CRITICAL | 0 |
+>| HIGH | 0 |
+>| MEDIUM | 0 |
+>| LOW | 20 |
+
+### prisma-airs-redteam-dashboard-score-trend
+
+***
+Get the Red Team risk score trend for a target (dashboard telemetry). Returns time-bucketed labels plus one or more data series showing how the target's score changed over time.
+
+#### Base Command
+
+`prisma-airs-redteam-dashboard-score-trend`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target_id | The UUID of the target whose score trend to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamScoreTrend.target_id | String | The target UUID the trend relates to. |
+| PrismaAIRs.RedTeamScoreTrend.labels | Unknown | The ordered time-bucket labels for the trend. |
+| PrismaAIRs.RedTeamScoreTrend.series.label | String | The name of the data series. |
+| PrismaAIRs.RedTeamScoreTrend.series.data | Unknown | The data points for the series, aligned to the labels. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-dashboard-score-trend target_id=1b127819-8e52-4b38-aaab-4a967e107fe9
+```
+
+#### Human Readable Output
+
+>### Red Team Score Trend: 1b127819-8e52-4b38-aaab-4a967e107fe9
+>
+>|series|2026-04|2026-05|
+>|---|---|---|
+>| risk | 42 | 38 |
+
+### prisma-airs-redteam-metering-quota
+
+***
+Get the Red Team metering quota summary. Returns the allocated, consumed, and unlimited flags for each quota bucket (static, dynamic, and custom).
+
+#### Base Command
+
+`prisma-airs-redteam-metering-quota`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamQuota.static.allocated | Number | The allocated static quota. |
+| PrismaAIRs.RedTeamQuota.static.consumed | Number | The consumed static quota. |
+| PrismaAIRs.RedTeamQuota.static.unlimited | Boolean | Whether the static quota is unlimited. |
+| PrismaAIRs.RedTeamQuota.dynamic.allocated | Number | The allocated dynamic quota. |
+| PrismaAIRs.RedTeamQuota.dynamic.consumed | Number | The consumed dynamic quota. |
+| PrismaAIRs.RedTeamQuota.dynamic.unlimited | Boolean | Whether the dynamic quota is unlimited. |
+| PrismaAIRs.RedTeamQuota.custom.allocated | Number | The allocated custom quota. |
+| PrismaAIRs.RedTeamQuota.custom.consumed | Number | The consumed custom quota. |
+| PrismaAIRs.RedTeamQuota.custom.unlimited | Boolean | Whether the custom quota is unlimited. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-metering-quota
+```
+
+#### Human Readable Output
+
+>### Red Team Metering Quota
+>
+>|Quota Type|Allocated|Consumed|Unlimited|
+>|---|---|---|---|
+>| static | 100 | 5 | false |
+>| dynamic | 50 | 2 | false |
+>| custom | 0 | 0 | true |
+
+### prisma-airs-redteam-dashboard-overview
+
+***
+Get the Red Team management dashboard overview. Returns the total target count and, when available, a breakdown of targets by type.
+
+#### Base Command
+
+`prisma-airs-redteam-dashboard-overview`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamDashboardOverview.total_targets | Number | The total number of Red Team targets. |
+| PrismaAIRs.RedTeamDashboardOverview.targets_by_type.name | String | The target type name in the breakdown. |
+| PrismaAIRs.RedTeamDashboardOverview.targets_by_type.count | Number | The number of targets of this type. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-dashboard-overview
+```
+
+#### Human Readable Output
+
+>### Red Team Dashboard Overview
+>
+>|Total Targets|
+>|---|
+>| 24 |
+>### Targets by Type
+>|Name|Count|
+>|---|---|
+>| AGENT | 0 |
+>| APPLICATION | 24 |
+>| MODEL | 0 |
+
 ### prisma-airs-redteam-instances-create
 
 ***
