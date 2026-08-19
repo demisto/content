@@ -15,6 +15,48 @@ from cryptography.hazmat.primitives.asymmetric import padding
 
 urllib3.disable_warnings()
 
+KMS_KEY_TABLE = [
+    "Name",
+    "Project",
+    "Location",
+    "KeyRing",
+    "Purpose",
+    "CreationTime",
+    "NextRotationTime",
+    "RotationPeriod",
+    "Labels",
+]
+
+# The KMS locations the "all locations" listing commands sweep when `all_locations` is set.
+KMS_ALL_LOCATIONS = [
+    "global",
+    "asia-east1",
+    "asia-east2",
+    "asia-northeast1",
+    "asia-northeast2",
+    "asia-south1",
+    "asia-southeast1",
+    "australia-southeast1",
+    "europe-north1",
+    "europe-west1",
+    "europe-west2",
+    "europe-west3",
+    "europe-west4",
+    "europe-west6",
+    "northamerica-northeast1",
+    "us-central1",
+    "us-east1",
+    "us-east4",
+    "us-west1",
+    "us-west2",
+    "southamerica-east1",
+    "eur4",
+    "nam4",
+    "asia",
+    "europe",
+    "us",
+]
+
 
 def build_http_client(use_proxy: bool, verify_ssl: bool) -> httplib2.Http:
     """Builds an httplib2.Http honoring the given proxy and SSL settings.
@@ -376,48 +418,6 @@ OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "s
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
-
-KMS_KEY_TABLE = [
-    "Name",
-    "Project",
-    "Location",
-    "KeyRing",
-    "Purpose",
-    "CreationTime",
-    "NextRotationTime",
-    "RotationPeriod",
-    "Labels",
-]
-
-# The KMS locations the "all locations" listing commands sweep when `all_locations` is set.
-KMS_ALL_LOCATIONS = [
-    "global",
-    "asia-east1",
-    "asia-east2",
-    "asia-northeast1",
-    "asia-northeast2",
-    "asia-south1",
-    "asia-southeast1",
-    "australia-southeast1",
-    "europe-north1",
-    "europe-west1",
-    "europe-west2",
-    "europe-west3",
-    "europe-west4",
-    "europe-west6",
-    "northamerica-northeast1",
-    "us-central1",
-    "us-east1",
-    "us-east4",
-    "us-west1",
-    "us-west2",
-    "southamerica-east1",
-    "eur4",
-    "nam4",
-    "asia",
-    "europe",
-    "us",
-]
 
 
 def parse_firewall_rule(rule_str: str) -> list[dict[str, list[str] | str]]:

@@ -7058,7 +7058,6 @@ def test_kms_key_get_permission_error_is_handled(mocker):
     """
     import GCP
     from googleapiclient.errors import HttpError
-    from GCP import handle_permission_error, kms_key_get
 
     _, crypto_keys, _, _ = _mock_kms_client(mocker)
     resp = mocker.MagicMock()
@@ -7072,9 +7071,9 @@ def test_kms_key_get_permission_error_is_handled(mocker):
     args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
 
     with pytest.raises(HttpError) as raised:
-        kms_key_get(creds, args)
+        GCP.kms_key_get(creds, args)
 
-    handle_permission_error(raised.value, "mock_project_id", "gcp-kms-key-get")
+    GCP.handle_permission_error(raised.value, "mock_project_id", "gcp-kms-key-get")
 
     reported = mock_report.call_args[0][0]
     assert reported[0]["name"] == "cloudkms.cryptoKeys.get"
@@ -7169,8 +7168,6 @@ def test_kms_parse_rotation_time_accepts_relative_expression():
     When: _kms_parse_rotation_time is called.
     Then: It is resolved into an absolute RFC 3339 UTC timestamp.
     """
-    import re
-
     from GCP import _kms_parse_rotation_time
 
     assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", _kms_parse_rotation_time("in 30 days") or "")
@@ -7205,8 +7202,6 @@ def test_kms_key_create_parses_relative_rotation_time(mocker):
     When: kms_key_create is called.
     Then: An absolute RFC 3339 timestamp is sent to the API rather than the raw expression.
     """
-    import re
-
     from GCP import kms_key_create
 
     _, crypto_keys, _, _ = _mock_kms_client(mocker)
@@ -7233,8 +7228,6 @@ def test_kms_key_update_parses_relative_rotation_time(mocker):
     When: kms_key_update is called.
     Then: An absolute RFC 3339 timestamp is sent and the update mask includes the field.
     """
-    import re
-
     from GCP import kms_key_update
 
     _, crypto_keys, _, _ = _mock_kms_client(mocker)
