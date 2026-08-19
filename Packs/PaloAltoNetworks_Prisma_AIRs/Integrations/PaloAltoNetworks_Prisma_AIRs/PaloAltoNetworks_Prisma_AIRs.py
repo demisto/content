@@ -47,6 +47,9 @@ RED_TEAM_NETWORK_CHANNELS_ENDPOINT = "/network-broker/v1/channels"
 # Sentiment (up/down-vote a scan report) - data-plane.
 # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_SENTIMENT_PATH)
 RED_TEAM_SENTIMENT_ENDPOINT = "/v1/sentiment"
+# Target-profile error logs (profiling failures for a target) - data-plane.
+# Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_ERROR_LOG_TARGET_PROFILE_PATH)
+RED_TEAM_ERROR_LOG_TARGET_PROFILE_ENDPOINT = "/v1/error-log/target-profile"
 # DLP API path suffixes (v2 API) - uses separate base URL
 # Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts
 # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (NOT the SCM base URL)
@@ -5963,6 +5966,84 @@ def redteam_targets_templates_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
+def redteam_targets_error_logs_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List target-profile (profiling) error logs for a Red Team target.
+
+    Returns the profiling failures recorded while Prisma AIRs was probing/profiling the
+    target (e.g. connection, probe, or authentication errors), newest first.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    target_id = args.get("target_id")
+    if not target_id:
+        raise ValueError("target_id is required")
+
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    skip = arg_to_number(args.get("skip"))
+    search = args.get("search")
+
+    # The endpoint honors skip/limit/search (serializeListing shape).
+    params: dict[str, Any] = {"limit": limit}
+    if skip is not None:
+        params["skip"] = skip
+    if search:
+        params["search"] = search
+
+    # Target-profile error logs live on the data plane.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/client.ts (getTargetProfileErrorLogs)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_ERROR_LOG_TARGET_PROFILE_ENDPOINT}/{target_id}",
+        params=params,
+        use_redteam_data=True,
+    )
+
+    # Schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (ErrorLogListResponseSchema)
+    logs = []
+    for entry in response.get("data", []):
+        logs.append(
+            assign_params(
+                created_at=entry.get("created_at"),
+                updated_at=entry.get("updated_at"),
+                job_id=entry.get("job_id"),
+                target_id=entry.get("target_id"),
+                target_version=entry.get("target_version"),
+                attack_id=entry.get("attack_id"),
+                error_type=entry.get("error_type"),
+                error_source=entry.get("error_source"),
+                error_message=entry.get("error_message"),
+                target_object=entry.get("target_object"),
+                extra_info=entry.get("extra_info"),
+                version=entry.get("version"),
+            )
+        )
+
+    total_items = (response.get("pagination") or {}).get("total_items")
+    title = f"Red Team Target-Profile Error Logs: {target_id}"
+    if total_items is not None:
+        title += f" ({total_items} total)"
+
+    readable_output = tableToMarkdown(
+        title,
+        logs,
+        headers=["created_at", "error_type", "error_source", "error_message", "job_id", "attack_id"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetErrorLog",
+        outputs=logs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def redteam_scan_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a new Red Team scan job.
 
@@ -11688,6 +11769,9 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-targets-templates":
             return_results(redteam_targets_templates_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-error-logs":
+            return_results(redteam_targets_error_logs_command(client, args))
 
         elif command == "prisma-airs-redteam-instances-create":
             return_results(redteam_instances_create_command(client, args))

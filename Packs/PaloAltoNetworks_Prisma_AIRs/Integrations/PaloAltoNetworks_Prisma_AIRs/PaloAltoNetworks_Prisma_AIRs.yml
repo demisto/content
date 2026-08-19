@@ -4070,6 +4070,56 @@ script:
     - contextPath: PrismaAIRs.RedTeamTargetTemplate
       description: The provider-keyed dictionary of target configuration templates.
       type: Unknown
+  - name: prisma-airs-redteam-targets-error-logs
+    description: List target-profile (profiling) error logs for a Red Team target. Returns the failures recorded while Prisma AIRs was probing or profiling the target (for example, connection, probe, or authentication errors).
+    arguments:
+    - name: target_id
+      description: The UUID of the target whose profiling error logs to retrieve.
+      required: true
+    - name: limit
+      description: The maximum number of error-log entries to return.
+      defaultValue: '50'
+    - name: skip
+      description: The number of entries to skip (offset) for pagination.
+    - name: search
+      description: Optional text to filter the error-log entries by.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.created_at
+      description: The timestamp when the error was recorded.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.updated_at
+      description: The timestamp when the error record was last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.job_id
+      description: The scan job UUID associated with the error, if any.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.target_id
+      description: The target UUID the error relates to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.target_version
+      description: The target version the error relates to.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.attack_id
+      description: The attack UUID associated with the error, if any.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.error_type
+      description: The category of the error.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.error_source
+      description: The source component that raised the error.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.error_message
+      description: The human-readable error message.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.target_object
+      description: The target object snapshot associated with the error.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.extra_info
+      description: Additional error context, if provided.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.version
+      description: The record schema version.
+      type: Number
   - name: prisma-airs-redteam-instances-create
     description: Create a new Red Team tenant instance.
     arguments:

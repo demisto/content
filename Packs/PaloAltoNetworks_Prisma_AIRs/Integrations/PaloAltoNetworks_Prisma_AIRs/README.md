@@ -4283,6 +4283,55 @@ There are no input arguments for this command.
 >| MS_COPILOT_STUDIO | id, name, is_custom |
 >| CUSTOM_TARGET_ADAPTER | id, name, is_custom |
 
+### prisma-airs-redteam-targets-error-logs
+
+***
+List target-profile (profiling) error logs for a Red Team target. Returns the failures recorded while Prisma AIRS was probing or profiling the target (for example, connection, probe, or authentication errors).
+
+#### Base Command
+
+`prisma-airs-redteam-targets-error-logs`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target_id | The UUID of the target whose profiling error logs to retrieve. | Required |
+| limit | The maximum number of error-log entries to return. Default is 50. | Optional |
+| skip | The number of entries to skip (offset) for pagination. | Optional |
+| search | Optional text to filter the error-log entries by. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamTargetErrorLog.created_at | Date | The timestamp when the error was recorded. |
+| PrismaAIRs.RedTeamTargetErrorLog.updated_at | Date | The timestamp when the error record was last updated. |
+| PrismaAIRs.RedTeamTargetErrorLog.job_id | String | The scan job UUID associated with the error, if any. |
+| PrismaAIRs.RedTeamTargetErrorLog.target_id | String | The target UUID the error relates to. |
+| PrismaAIRs.RedTeamTargetErrorLog.target_version | Number | The target version the error relates to. |
+| PrismaAIRs.RedTeamTargetErrorLog.attack_id | String | The attack UUID associated with the error, if any. |
+| PrismaAIRs.RedTeamTargetErrorLog.error_type | String | The category of the error. |
+| PrismaAIRs.RedTeamTargetErrorLog.error_source | String | The source component that raised the error. |
+| PrismaAIRs.RedTeamTargetErrorLog.error_message | String | The human-readable error message. |
+| PrismaAIRs.RedTeamTargetErrorLog.target_object | Unknown | The target object snapshot associated with the error. |
+| PrismaAIRs.RedTeamTargetErrorLog.extra_info | Unknown | Additional error context, if provided. |
+| PrismaAIRs.RedTeamTargetErrorLog.version | Number | The record schema version. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-targets-error-logs target_id=550e8400-e29b-41d4-a716-446655440000 limit=10
+```
+
+#### Human Readable Output
+
+>### Red Team Target-Profile Error Logs: 550e8400-e29b-41d4-a716-446655440000 (1 total)
+>
+>|Created At|Error Type|Error Source|Error Message|Job Id|Attack Id|
+>|---|---|---|---|---|---|
+>| 2026-01-01T00:00:00Z | PROBE | profiler | connection refused |  |  |
+
 ### prisma-airs-redteam-instances-create
 
 ***

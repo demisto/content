@@ -143,6 +143,7 @@ from PaloAltoNetworks_Prisma_AIRs import (
     redteam_properties_values_command,
     redteam_sentiment_get_command,
     redteam_sentiment_update_command,
+    redteam_targets_error_logs_command,
     redteam_targets_metadata_command,
     redteam_targets_templates_command,
     redteam_targets_validate_auth_command,
@@ -1201,6 +1202,73 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="job_id"):
             redteam_sentiment_get_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_error_logs_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam targets error-logs command routing, params, and parsing.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "pagination": {"total_items": 1},
+            "data": [
+                {
+                    "created_at": "2026-01-01T00:00:00Z",
+                    "updated_at": "2026-01-01T00:00:00Z",
+                    "target_id": "target-1",
+                    "error_type": "PROBE",
+                    "error_source": "profiler",
+                    "error_message": "connection refused",
+                    "job_id": None,
+                }
+            ],
+        }
+
+        result = redteam_targets_error_logs_command(
+            mock_client, {"target_id": "target-1", "limit": "10", "skip": "5", "search": "refused"}
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetErrorLog"
+        assert len(result.outputs) == 1
+        entry = result.outputs[0]
+        assert entry["error_type"] == "PROBE"
+        assert entry["error_message"] == "connection refused"
+        # assign_params drops the None job_id.
+        assert "job_id" not in entry
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/error-log/target-profile/target-1"
+        assert kwargs["use_redteam_data"] is True
+        assert kwargs["params"] == {"limit": 10, "skip": 5, "search": "refused"}
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_error_logs_default_limit(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam targets error-logs applies the default limit and omits optional params.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"pagination": {}, "data": []}
+
+        redteam_targets_error_logs_command(mock_client, {"target_id": "target-1"})
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["params"] == {"limit": 50}  # DEFAULT_LIMIT
+        assert "skip" not in kwargs["params"]
+        assert "search" not in kwargs["params"]
+
+    def test_redteam_targets_error_logs_requires_target_id(self, mock_client: Client) -> None:
+        """Test redteam targets error-logs raises when target_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="target_id"):
+            redteam_targets_error_logs_command(mock_client, {})
 
     @patch.object(Client, "http_request")
     def test_redteam_sentiment_update_up_command(self, mock_http: Mock, mock_client: Client) -> None:
