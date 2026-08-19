@@ -2085,6 +2085,28 @@ script:
     - contextPath: InfoFile.Type
       description: The attached report file type.
       type: String
+  - name: prisma-airs-redteam-report-generate-partial
+    description: 'Unlock the partial report of a still-running Red Team scan. Consumes one quota credit of the job type and unlocks the report for viewing. The job must be in the PARTIALLY_COMPLETE state. Returns the updated job information.'
+    arguments:
+    - name: job_id
+      description: The UUID of the scan job whose partial report to unlock.
+      required: true
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPartialReport.job_id
+      description: The scan job UUID whose partial report was unlocked.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPartialReport.status
+      description: The scan job status after unlocking the partial report.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPartialReport.report_stats.partial_report_unlocked
+      description: Whether the partial report has been unlocked with a credit.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPartialReport.report_stats.partial_report_unlocked_at
+      description: The timestamp when the partial report was unlocked, in ISO 8601 format.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPartialReport.report_stats.output_completion_percentage
+      description: The percentage of attack outputs that completed successfully (0-100).
+      type: Number
   - name: prisma-airs-redteam-eula-status
     description: Get Red Team EULA acceptance status.
     outputs:

@@ -70,6 +70,7 @@ from PrismaAIRsRedTeam import (
     redteam_properties_values_command,
     _report_download_filename,
     redteam_report_download_command,
+    redteam_report_generate_partial_command,
     redteam_dashboard_overview_command,
     redteam_dashboard_scan_statistics_command,
     redteam_dashboard_score_trend_command,
@@ -865,6 +866,61 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="file_format"):
             redteam_report_download_command(mock_client, {"job_id": "job-1", "file_format": "pdf"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_report_generate_partial_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test report-generate-partial routing, context, and readable table.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "id": "job-1",
+            "status": "PARTIALLY_COMPLETE",
+            "report_stats": {
+                "partial_report_unlocked": True,
+                "partial_report_unlocked_at": "2026-08-19T12:00:00Z",
+                "output_completion_percentage": 42.5,
+            },
+        }
+
+        result = redteam_report_generate_partial_command(mock_client, {"job_id": "job-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamPartialReport"
+        assert result.outputs["id"] == "job-1"
+        assert result.outputs["report_stats"]["partial_report_unlocked"] is True
+        assert "Partial Report Unlocked" in result.readable_output
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        assert kwargs["url_suffix"] == "/v1/report/job-1/generate-partial-report"
+        assert kwargs["use_redteam_data"] is True
+        # POST with no body.
+        assert "json_data" not in kwargs
+
+    @patch.object(Client, "http_request")
+    def test_redteam_report_generate_partial_injects_job_id(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test report-generate-partial adds job_id to context when the response omits it.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"report_stats": {"partial_report_unlocked": True}}
+
+        result = redteam_report_generate_partial_command(mock_client, {"job_id": "job-9"})
+
+        assert result.outputs["job_id"] == "job-9"
+
+    def test_redteam_report_generate_partial_requires_job_id(self, mock_client: Client) -> None:
+        """Test report-generate-partial raises when job_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="job_id"):
+            redteam_report_generate_partial_command(mock_client, {})
 
     @patch.object(Client, "http_request")
     def test_redteam_sentiment_update_up_command(self, mock_http: Mock, mock_client: Client) -> None:

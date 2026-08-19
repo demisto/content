@@ -2370,6 +2370,33 @@ Returns the report as a downloadable ZIP file in the War Room. The archive conte
 
 `report_summary` carries the per-job scorecard (ASR, risk score, per-category security/severity breakdowns, and the narrative summary); `attacks` carries the full per-attack detail rows.
 
+### prisma-airs-redteam-report-generate-partial
+
+***
+Unlock the partial report of a still-running Red Team scan. Consumes one quota credit of the job type and unlocks the report for viewing. The job must be in the `PARTIALLY_COMPLETE` state. Returns the updated job information.
+
+#### Base Command
+
+`prisma-airs-redteam-report-generate-partial`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The UUID of the scan job whose partial report to unlock. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamPartialReport.job_id | String | The scan job UUID whose partial report was unlocked. |
+| PrismaAIRs.RedTeamPartialReport.status | String | The scan job status after unlocking the partial report. |
+| PrismaAIRs.RedTeamPartialReport.report_stats.partial_report_unlocked | Boolean | Whether the partial report has been unlocked with a credit. |
+| PrismaAIRs.RedTeamPartialReport.report_stats.partial_report_unlocked_at | Date | The timestamp when the partial report was unlocked, in ISO 8601 format. |
+| PrismaAIRs.RedTeamPartialReport.report_stats.output_completion_percentage | Number | The percentage of attack outputs that completed successfully (0-100). |
+
+> **Note:** This command applies only to scans in the `PARTIALLY_COMPLETE` state and consumes one quota credit per call. Against jobs in other states (e.g. `RUNNING`, `COMPLETED`) the API currently returns `HTTP 500 Internal Server Error` rather than a clean validation error.
+
 ### prisma-airs-redteam-eula-status
 
 ***

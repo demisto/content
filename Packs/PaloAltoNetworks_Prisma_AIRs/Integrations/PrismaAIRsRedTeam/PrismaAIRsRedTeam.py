@@ -3585,6 +3585,74 @@ def redteam_report_download_command(client: Client, args: dict[str, Any]) -> dic
     return fileResult(filename=filename, data=content)
 
 
+def redteam_report_generate_partial_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Unlock the partial report of a still-running Red Team scan.
+
+    Consumes one quota credit of the job's type and unlocks the partial report for viewing.
+    The job must be in the PARTIALLY_COMPLETE state; otherwise the API rejects the request.
+    Returns the updated job information reflecting the unlocked report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    # Data-plane POST with no body. Consumes 1 quota credit; requires job PARTIALLY_COMPLETE.
+    # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/reports-client.ts (generatePartialReport)
+    # OpenAPI: .../prisma-airs-redteam/data-plane/dp-openapi.yaml (POST /v1/report/{job_id}/generate-partial-report)
+    response = client.http_request(
+        method="POST",
+        url_suffix=f"{RED_TEAM_REPORTS_ENDPOINT}/{job_id}/generate-partial-report",
+        use_redteam_data=True,
+    )
+
+    # The API documents the 200 body as "updated job information with unlocked report" but does
+    # not fully type it. Surface the whole response, keying on job_id, and pull out the known
+    # partial-report status fields (StaticJobReportStats) for the readable table when present.
+    outputs = response if isinstance(response, dict) else {"response": response}
+    if isinstance(outputs, dict) and job_id and "job_id" not in outputs and "id" not in outputs:
+        outputs = {"job_id": job_id, **outputs}
+
+    report_stats = {}
+    if isinstance(response, dict):
+        report_stats = response.get("report_stats") or {}
+
+    table_row = {
+        "job_id": (response.get("id") or response.get("job_id") or job_id) if isinstance(response, dict) else job_id,
+        "status": response.get("status") if isinstance(response, dict) else None,
+        "partial_report_unlocked": report_stats.get("partial_report_unlocked"),
+        "partial_report_unlocked_at": report_stats.get("partial_report_unlocked_at"),
+        "output_completion_percentage": report_stats.get("output_completion_percentage"),
+    }
+    readable_output = tableToMarkdown(
+        f"Red Team Partial Report Unlocked: {job_id}",
+        [table_row],
+        headers=[
+            "job_id",
+            "status",
+            "partial_report_unlocked",
+            "partial_report_unlocked_at",
+            "output_completion_percentage",
+        ],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamPartialReport",
+        outputs_key_field="job_id",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def redteam_eula_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get Red Team EULA acceptance status.
 
@@ -5977,6 +6045,9 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-report-download":
             return_results(redteam_report_download_command(client, args))
+
+        elif command == "prisma-airs-redteam-report-generate-partial":
+            return_results(redteam_report_generate_partial_command(client, args))
 
         elif command == "prisma-airs-redteam-eula-status":
             return_results(redteam_eula_status_command(client, args))
