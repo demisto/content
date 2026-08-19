@@ -443,7 +443,6 @@ class XDRHandler(BrandHandler):
     QUARANTINE_STATUS_SUCCESS = "COMPLETED_SUCCESSFULLY"
     # Builtin command names (used on the Cortex platform for the Core brand).
     BUILTIN_QUARANTINE_COMMAND = "quarantineFile"
-    BUILTIN_QUARANTINE_STATUS_COMMAND = "getFileQuarantineStatus"
 
     def __init__(self, brand: str, orchestrator):
         """
@@ -458,7 +457,7 @@ class XDRHandler(BrandHandler):
         # On the Cortex platform the Core-IR quarantine command is the Builtin "quarantineFile"
         # (no integration instance needed). Off-platform, and for the XDR brand, use the legacy
         # integration commands.
-        self.use_builtin = self.command_prefix == self.CORE_COMMAND_PREFIX and is_platform()
+        self.use_builtin = self.command_prefix == self.CORE_COMMAND_PREFIX and is_platform() and is_demisto_version_ge("8.16.0")
         if self.use_builtin:
             self.quarantine_command = XDRHandler.BUILTIN_QUARANTINE_COMMAND
         elif self.command_prefix == self.CORE_COMMAND_PREFIX:
