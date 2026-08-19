@@ -1,7 +1,6 @@
-fromversion: 8.2.0
-toversion: 8.14.0
+fromversion: 8.15.0
 id: Kubernetes_ModelingRule
-name: Kubernetes Modeling Rules
+name: Kubernetes Modeling Rule
 rules: ''
 schema: ''
 tags: ''
