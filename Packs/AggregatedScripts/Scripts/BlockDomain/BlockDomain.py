@@ -467,7 +467,10 @@ class PanOs:
         else:
             create_args: dict = {"name": object_name, "fqdn": domain}
             if self.tag:
+                # create_tag=true auto-creates the tag on the firewall; pan-os-create-address otherwise
+                # fails when the tag does not already exist.
                 create_args["tag"] = self.tag
+                create_args["create_tag"] = "true"
             self.execute_or_raise("pan-os-create-address", create_args, f"Failed to create address-object '{object_name}'")
             actions.append(ACTION_CREATED)
             messages.append(f"Address-object '{object_name}' created for '{domain}'.")
