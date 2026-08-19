@@ -318,7 +318,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.STORAGE,
         ["storage.buckets.delete", "storage.objects.list", "storage.objects.delete"],
     ),
-    "gcp-storage-bucket-block-public-access": (
+    "gcp-storage-bucket-public-access-block": (
         GCPServices.STORAGE,
         ["storage.buckets.update"],
     ),
@@ -832,7 +832,7 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.BucketObject",
+        outputs_prefix="GCP.Storage.Bucket.Object",
         outputs=objects,
         outputs_key_field=["name", "id"],
         raw_response=objects,
@@ -1005,7 +1005,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
 
     Returns:
         CommandResults: Human-readable table of ACL entries and machine outputs under
-        'GCP.Storage.BucketObjectPolicy'.
+        'GCP.Storage.Bucket.ObjectPolicy'.
     """
     bucket_name = args.get("bucket_name", "")
     object_name = args.get("object_name", "")
@@ -1020,7 +1020,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
         return storage_bucket_policy_list(
             creds=creds,
             args=args,
-            outputs_prefix="GCP.Storage.BucketObjectPolicy",
+            outputs_prefix="GCP.Storage.Bucket.ObjectPolicy",
             object_name=object_name,
         )
 
@@ -1041,7 +1041,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
             return storage_bucket_policy_list(
                 creds=creds,
                 args=args,
-                outputs_prefix="GCP.Storage.BucketObjectPolicy",
+                outputs_prefix="GCP.Storage.Bucket.ObjectPolicy",
                 object_name=object_name,
             )
         demisto.debug(f"[GCP: storage_bucket_object_policy_get] HttpError status={getattr(e.resp, 'status', None)}")
@@ -1052,7 +1052,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.BucketObjectPolicy",
+        outputs_prefix="GCP.Storage.Bucket.ObjectPolicy",
         outputs=items,
         raw_response=response,
         outputs_key_field=["Bucket", "Key"],
@@ -1080,7 +1080,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
 
     Returns:
         CommandResults: Human-readable table of applied ACL entries and machine outputs under
-        'GCP.Storage.BucketObjectPolicy'.
+        'GCP.Storage.Bucket.ObjectPolicy'.
     """
     bucket_name = args.get("bucket_name", "")
     object_name = args.get("object_name", "")
@@ -1148,7 +1148,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.BucketObjectPolicy",
+        outputs_prefix="GCP.Storage.Bucket.ObjectPolicy",
         outputs=results,
         raw_response=results,
         outputs_key_field="resourceId",
@@ -1946,7 +1946,7 @@ def storage_bucket_delete(creds: Credentials, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=f"Bucket {bucket_name} was deleted successfully.")
 
 
-def storage_bucket_block_public_access(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def storage_bucket_public_access_block(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Sets the public access prevention configuration on a GCS bucket.
 
@@ -1964,7 +1964,7 @@ def storage_bucket_block_public_access(creds: Credentials, args: dict[str, Any])
     body = {"iamConfiguration": {"publicAccessPrevention": public_access_prevention}}
 
     storage = GCPServices.STORAGE.build(creds)
-    demisto.debug(f"[GCP: storage_bucket_block_public_access] Setting public access prevention to {public_access_prevention}")
+    demisto.debug(f"[GCP: storage_bucket_public_access_block] Setting public access prevention to {public_access_prevention}")
     response = storage.buckets().patch(bucket=bucket_name, body=body).execute()  # pylint: disable=E1101
 
     return CommandResults(
@@ -2016,11 +2016,12 @@ def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> Co
     demisto.debug(f"[GCP: storage_bucket_object_upload] Uploading {file_name} to bucket {bucket_name} as {object_name}")
     response = storage.objects().insert(**request_params).execute()  # pylint: disable=E1101
 
+    outputs = {"Name": bucket_name, "Object": response}
     return CommandResults(
         readable_output=f"File {file_name} was successfully uploaded to bucket {bucket_name} as {object_name}.",
-        outputs_prefix="GCP.Storage.BucketObject",
-        outputs=response,
-        outputs_key_field=["name", "id"],
+        outputs_prefix="GCP.Storage.Bucket",
+        outputs=outputs,
+        outputs_key_field="Name",
         raw_response=response,
     )
 
@@ -2107,11 +2108,12 @@ def storage_bucket_object_copy(creds: Credentials, args: dict[str, Any]) -> Comm
         .execute()
     )
 
+    outputs = {"Name": destination_bucket_name, "Object": response}
     return CommandResults(
         readable_output=(f"File was successfully copied to bucket {destination_bucket_name} as {destination_object_name}."),
-        outputs_prefix="GCP.Storage.BucketObject",
-        outputs=response,
-        outputs_key_field=["name", "id"],
+        outputs_prefix="GCP.Storage.Bucket",
+        outputs=outputs,
+        outputs_key_field="Name",
         raw_response=response,
     )
 
@@ -3393,7 +3395,7 @@ def main():  # pragma: no cover
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
             "gcp-storage-bucket-create": storage_bucket_create,
             "gcp-storage-bucket-delete": storage_bucket_delete,
-            "gcp-storage-bucket-block-public-access": storage_bucket_block_public_access,
+            "gcp-storage-bucket-public-access-block": storage_bucket_public_access_block,
             "gcp-storage-bucket-object-upload": storage_bucket_object_upload,
             "gcp-storage-bucket-object-download": storage_bucket_object_download,
             "gcp-storage-bucket-object-copy": storage_bucket_object_copy,

@@ -3011,7 +3011,7 @@ def test_storage_bucket_objects_list_basic(mocker):
     result = storage_bucket_objects_list(creds, args)
 
     mock_objects.list.assert_called_with(bucket="b1", prefix="p/", delimiter="/", maxResults=5, pageToken="tok")
-    assert result.outputs_prefix == "GCP.Storage.BucketObject"
+    assert result.outputs_prefix == "GCP.Storage.Bucket.Object"
     assert result.outputs[0]["name"] == "o1"
 
 
@@ -3081,15 +3081,15 @@ def test_storage_bucket_object_policy_list_normal_and_ubla(mocker):
     creds = mocker.Mock(spec=Credentials)
     result = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
     mock_oac.list.assert_called_with(bucket="b1", object="o1")
-    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs_prefix == "GCP.Storage.Bucket.ObjectPolicy"
     assert result.outputs[0]["entity"] == "allUsers"
 
     # Case 2: UBLA enabled -> delegates to bucket policy list
     mocker.patch("GCP._is_ubla_enabled", return_value=True)
     # Patch bucket policy list to observe delegation
-    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicy"))
+    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.Bucket.ObjectPolicy"))
     result2 = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
-    assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result2.outputs_prefix == "GCP.Storage.Bucket.ObjectPolicy"
 
 
 def test_storage_bucket_object_policy_set_update_then_insert(mocker):
@@ -3117,7 +3117,7 @@ def test_storage_bucket_object_policy_set_update_then_insert(mocker):
 
     mock_oac.patch.assert_called()
     mock_oac.insert.assert_called()
-    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs_prefix == "GCP.Storage.Bucket.ObjectPolicy"
     assert result.outputs[0]["entity"] == "allUsers"
 
 
@@ -6847,15 +6847,15 @@ def test_storage_bucket_delete_api_error(mocker):
 
 
 # ---------------------------------------------------------------------------
-# gcp-storage-bucket-block-public-access
+# gcp-storage-bucket-public-access-block
 # ---------------------------------------------------------------------------
-def test_storage_bucket_block_public_access_enforced(mocker):
+def test_storage_bucket_public_access_block_enforced(mocker):
     """
     Given: A bucket name with the default enforced setting.
-    When: storage_bucket_block_public_access is called.
+    When: storage_bucket_public_access_block is called.
     Then: It patches the bucket with publicAccessPrevention=enforced.
     """
-    from GCP import storage_bucket_block_public_access
+    from GCP import storage_bucket_public_access_block
 
     mock_storage = mocker.Mock()
     mock_buckets = mocker.Mock()
@@ -6864,39 +6864,39 @@ def test_storage_bucket_block_public_access_enforced(mocker):
     mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
 
     creds = mocker.Mock(spec=Credentials)
-    result = storage_bucket_block_public_access(creds, {"project_id": "p1", "bucket_name": "b1"})
+    result = storage_bucket_public_access_block(creds, {"project_id": "p1", "bucket_name": "b1"})
 
     call_kwargs = mock_buckets.patch.call_args[1]
     assert call_kwargs["body"]["iamConfiguration"]["publicAccessPrevention"] == "enforced"
     assert "enforced" in result.readable_output
 
 
-def test_storage_bucket_block_public_access_inherited(mocker):
+def test_storage_bucket_public_access_block_inherited(mocker):
     """
     Given: A bucket name with public_access_prevention set to inherited.
-    When: storage_bucket_block_public_access is called.
+    When: storage_bucket_public_access_block is called.
     Then: It patches the bucket with publicAccessPrevention=inherited.
     """
-    from GCP import storage_bucket_block_public_access
+    from GCP import storage_bucket_public_access_block
 
     mock_storage = mocker.Mock()
     mock_storage.buckets.return_value.patch.return_value.execute.return_value = {"name": "b1"}
     mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
 
     creds = mocker.Mock(spec=Credentials)
-    result = storage_bucket_block_public_access(
+    result = storage_bucket_public_access_block(
         creds, {"project_id": "p1", "bucket_name": "b1", "public_access_prevention": "inherited"}
     )
     assert "inherited" in result.readable_output
 
 
-def test_storage_bucket_block_public_access_outputs(mocker):
+def test_storage_bucket_public_access_block_outputs(mocker):
     """
     Given: A bucket that returns its updated IAM configuration.
-    When: storage_bucket_block_public_access is called.
+    When: storage_bucket_public_access_block is called.
     Then: The full API response is returned under the shared bucket outputs prefix.
     """
-    from GCP import storage_bucket_block_public_access
+    from GCP import storage_bucket_public_access_block
 
     response = {"name": "b1", "id": "b1", "iamConfiguration": {"publicAccessPrevention": "enforced"}}
     mock_storage = mocker.Mock()
@@ -6904,7 +6904,7 @@ def test_storage_bucket_block_public_access_outputs(mocker):
     mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
 
     creds = mocker.Mock(spec=Credentials)
-    result = storage_bucket_block_public_access(creds, {"project_id": "p1", "bucket_name": "b1"})
+    result = storage_bucket_public_access_block(creds, {"project_id": "p1", "bucket_name": "b1"})
 
     assert result.outputs_prefix == "GCP.Storage.Bucket"
     assert result.outputs_key_field == ["name", "id"]
@@ -6939,7 +6939,8 @@ def test_storage_bucket_object_upload_success(mocker):
     assert call_kwargs["bucket"] == "b1"
     assert call_kwargs["name"] == "o1"
     assert "f.txt was successfully uploaded" in result.readable_output
-    assert result.outputs_prefix == "GCP.Storage.BucketObject"
+    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs == {"Name": "b1", "Object": {"name": "o1", "bucket": "b1"}}
 
 
 def test_storage_bucket_object_upload_with_acl(mocker):
@@ -7220,7 +7221,8 @@ def test_storage_bucket_object_copy_success(mocker):
     assert call_kwargs["sourceObject"] == "o1"
     assert call_kwargs["destinationBucket"] == "dst"
     assert call_kwargs["destinationObject"] == "o2"
-    assert result.outputs["name"] == "o2"
+    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs == {"Name": "dst", "Object": {"name": "o2", "bucket": "dst"}}
 
 
 def test_storage_bucket_object_copy_default_destination_name(mocker):

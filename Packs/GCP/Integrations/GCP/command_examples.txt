@@ -7,7 +7,7 @@
 !gcp-compute-instance-get instance=instance-name project_id=project-id zone=zone
 !gcp-compute-instance-labels-set instance=instance-name labels=key=k1,value=v1 project_id=project-id zone=zone label_fingerprint=label-fingerprint
 !gcp-storage-bucket-create project_id="test-project" bucket_name=test-bucket location=US uniform_bucket_level_access=true
-!gcp-storage-bucket-block-public-access project_id="test-project" bucket_name=test-bucket public_access_prevention=enforced
+!gcp-storage-bucket-public-access-block project_id="test-project" bucket_name=test-bucket public_access_prevention=enforced
 !gcp-storage-bucket-object-upload project_id="test-project" bucket_name=test-bucket object_name=dir/sample.txt entry_id=entry-id
 !gcp-storage-bucket-object-download project_id="test-project" bucket_name=test-bucket object_name=dir/sample.txt saved_file_name=sample.txt
 !gcp-storage-bucket-object-copy project_id="test-project" source_bucket_name=test-bucket source_object_name=dir/sample.txt destination_bucket_name=test-bucket-dst destination_object_name=copied.txt
