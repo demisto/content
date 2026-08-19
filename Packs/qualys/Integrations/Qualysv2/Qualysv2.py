@@ -3610,7 +3610,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
 
 
 def main():  # pragma: no cover
-    demisto.debug("[QualysV2][XSUP-74619] Running QualysV2 integration build XSUP-74619 (spec: m)")
+    demisto.debug("[QualysV2][XSUP-74619] Running QualysV2 integration build XSUP-74619 (spec: l)")
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
