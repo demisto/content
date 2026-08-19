@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account as google_service_account
 from google_auth_httplib2 import AuthorizedHttp
 import httplib2
+import io
 import urllib.parse
 import urllib3
 from COOCApiModule import *
@@ -320,7 +321,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     ),
     "gcp-storage-bucket-public-access-block": (
         GCPServices.STORAGE,
-        ["storage.buckets.update"],
+        ["storage.buckets.update", "storage.buckets.setIamPolicy"],
     ),
     "gcp-storage-bucket-object-upload": (
         GCPServices.STORAGE,
@@ -527,26 +528,49 @@ def _delete_all_bucket_objects(storage_client, bucket_name: str) -> int:
 
     Returns:
         int: The number of objects deleted.
+
+    Raises:
+        DemistoException: If one or more objects failed to delete, or if the bucket still
+            contains objects after reaching MAX_OBJECT_LIST_PAGES. In both cases the bucket
+            cannot be deleted while it still holds objects, so an informative error is raised
+            that reports how many objects were already deleted.
     """
     deleted = 0
+    failed_objects: list[str] = []
     page_token = None
     for _ in range(MAX_OBJECT_LIST_PAGES):
         request_params = {"bucket": bucket_name, "versions": True, "pageToken": page_token}
         remove_nulls_from_dictionary(request_params)
         response = storage_client.objects().list(**request_params).execute()  # pylint: disable=E1101
         for obj in response.get("items", []):
-            storage_client.objects().delete(  # pylint: disable=E1101
-                bucket=bucket_name, object=obj["name"], generation=obj.get("generation")
-            ).execute()
-            deleted += 1
+            try:
+                storage_client.objects().delete(  # pylint: disable=E1101
+                    bucket=bucket_name, object=obj["name"], generation=obj.get("generation")
+                ).execute()
+                deleted += 1
+            except Exception as e:
+                failed_objects.append(obj["name"])
+                demisto.debug(
+                    f"[GCP: _delete_all_bucket_objects] Failed to delete object {obj['name']} " f"from bucket {bucket_name}: {e}"
+                )
         page_token = response.get("nextPageToken")
         if not page_token:
             break
-    if page_token:
-        demisto.debug(
-            f"[GCP: _delete_all_bucket_objects] Reached the maximum page limit ({MAX_OBJECT_LIST_PAGES}) "
-            f"while deleting objects in bucket {bucket_name}. {deleted} objects were deleted."
+
+    if failed_objects:
+        raise DemistoException(
+            f"Failed to delete {len(failed_objects)} object(s) from bucket {bucket_name}: "
+            f"{', '.join(failed_objects)}. {deleted} object(s) were successfully deleted. "
+            f"The bucket cannot be deleted while it still contains objects."
         )
+
+    if page_token:
+        raise DemistoException(
+            f"Reached the maximum page limit ({MAX_OBJECT_LIST_PAGES}) while deleting objects in bucket "
+            f"{bucket_name}, but it still contains objects. {deleted} object(s) were deleted. "
+            f"The bucket cannot be deleted while it still contains objects."
+        )
+
     return deleted
 
 
@@ -1888,15 +1912,15 @@ def storage_bucket_create(creds: Credentials, args: dict[str, Any]) -> CommandRe
         "location": location,
         "iamConfiguration": {"uniformBucketLevelAccess": {"enabled": True}} if uniform_bucket_level_access else None,
     }
-    remove_nulls_from_dictionary(body)
 
-    request_params = {
-        "project": project_id,
-        "body": body,
-        "predefinedAcl": bucket_acl,
-        "predefinedDefaultObjectAcl": default_object_acl,
-    }
-    remove_nulls_from_dictionary(request_params)
+    request_params: dict[str, Any] = remove_empty_elements(
+        {
+            "project": project_id,
+            "body": body,
+            "predefinedAcl": bucket_acl,
+            "predefinedDefaultObjectAcl": default_object_acl,
+        }
+    )
 
     storage = GCPServices.STORAGE.build(creds)
     demisto.debug(f"[GCP: storage_bucket_create] Request params keys: {list(request_params.keys())}")
@@ -1936,6 +1960,7 @@ def storage_bucket_delete(creds: Credentials, args: dict[str, Any]) -> CommandRe
     force = argToBoolean(args.get("force", False))
 
     storage = GCPServices.STORAGE.build(creds)
+    deleted_objects = 0
     if force:
         deleted_objects = _delete_all_bucket_objects(storage, bucket_name)
         demisto.debug(f"[GCP: storage_bucket_delete] Force deleted {deleted_objects} objects from bucket {bucket_name}")
@@ -1943,7 +1968,10 @@ def storage_bucket_delete(creds: Credentials, args: dict[str, Any]) -> CommandRe
     demisto.debug(f"[GCP: storage_bucket_delete] Deleting bucket {bucket_name}")
     storage.buckets().delete(bucket=bucket_name).execute()  # pylint: disable=E1101
 
-    return CommandResults(readable_output=f"Bucket {bucket_name} was deleted successfully.")
+    readable_output = f"Bucket {bucket_name} was deleted successfully."
+    if deleted_objects:
+        readable_output += f" {deleted_objects} object(s) were deleted from the bucket before deletion."
+    return CommandResults(readable_output=readable_output)
 
 
 def storage_bucket_public_access_block(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -2030,8 +2058,7 @@ def storage_bucket_object_download(creds: Credentials, args: dict[str, Any]) -> 
     """
     Downloads an object from a GCS bucket and returns it as a War Room file.
 
-    The object is streamed to disk in chunks so that large objects do not have to be held
-    in memory in full.
+    The object is streamed in chunks into an in-memory buffer and returned via fileResult.
 
     Args:
         creds (Credentials): GCP credentials.
@@ -2047,22 +2074,21 @@ def storage_bucket_object_download(creds: Credentials, args: dict[str, Any]) -> 
     bucket_name = args["bucket_name"]
     object_name = args["object_name"]
     requested_file_name = args.get("saved_file_name") or object_name
-    # Keep only the base name so that a value containing path separators cannot write outside
-    # the working directory (for example "../../etc/passwd").
+    # Keep only the base name so that a value containing path separators cannot influence the
+    # created War Room file name (for example "../../etc/passwd").
     saved_file_name = os.path.basename(requested_file_name.replace("\\", "/").rstrip("/")) or demisto.uniqueFile()
 
     storage = GCPServices.STORAGE.build(creds)
     demisto.debug(f"[GCP: storage_bucket_object_download] Downloading {object_name} from bucket {bucket_name}")
     request = storage.objects().get_media(bucket=bucket_name, object=object_name)  # pylint: disable=E1101
 
-    file_path = os.path.join(os.getcwd(), saved_file_name)
-    with open(file_path, "wb") as file_handle:
-        downloader = MediaIoBaseDownload(file_handle, request)
-        done = False
-        for _ in range(MAX_DOWNLOAD_CHUNKS):
-            _, done = downloader.next_chunk()
-            if done:
-                break
+    file_buffer = io.BytesIO()
+    downloader = MediaIoBaseDownload(file_buffer, request)
+    done = False
+    for _ in range(MAX_DOWNLOAD_CHUNKS):
+        _, done = downloader.next_chunk()
+        if done:
+            break
 
     if not done:
         raise DemistoException(
@@ -2070,7 +2096,7 @@ def storage_bucket_object_download(creds: Credentials, args: dict[str, Any]) -> 
             f"from bucket {bucket_name}. The downloaded file is incomplete."
         )
 
-    return file_result_existing_file(file_path, saved_file_name)
+    return fileResult(saved_file_name, file_buffer.getvalue())
 
 
 def storage_bucket_object_copy(creds: Credentials, args: dict[str, Any]) -> CommandResults:

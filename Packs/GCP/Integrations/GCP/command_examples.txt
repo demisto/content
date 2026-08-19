@@ -11,6 +11,6 @@
 !gcp-storage-bucket-object-upload project_id="test-project" bucket_name=test-bucket object_name=dir/sample.txt entry_id=entry-id
 !gcp-storage-bucket-object-download project_id="test-project" bucket_name=test-bucket object_name=dir/sample.txt saved_file_name=sample.txt
 !gcp-storage-bucket-object-copy project_id="test-project" source_bucket_name=test-bucket source_object_name=dir/sample.txt destination_bucket_name=test-bucket-dst destination_object_name=copied.txt
-!gcp-storage-bucket-object-policy-delete project_id="test-project" bucket_name=test-bucket object_name=dir/sample.txt entity=user:test@mail.com
+!gcp-storage-bucket-object-policy-delete project_id="test-project" bucket_name=test-bucket object_name=dir/sample.txt entity=user-test@example.com
 !gcp-storage-bucket-object-delete project_id="test-project" bucket_name=test-bucket object_name=dir/sample.txt
 !gcp-storage-bucket-delete project_id="test-project" bucket_name=test-bucket force=true
