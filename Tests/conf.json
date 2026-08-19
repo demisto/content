@@ -5953,27 +5953,27 @@
             "integrations": ["CIRCL CVE Search","Palo Alto Networks Threat Vault v2"]
         },
         {
-            "integrations": "Palo Alto Networks - Prisma AIRs AI Security",
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Model Security",
             "playbookID": "PaloAltoNetworks_Prisma_AIRs_Model_Security_Test",
             "fromversion": "6.10.0"
         },
         {
-            "integrations": "Palo Alto Networks - Prisma AIRs AI Security",
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Red Teaming",
             "playbookID": "PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test",
             "fromversion": "6.10.0"
         },
         {
-            "integrations": "Palo Alto Networks - Prisma AIRs AI Security",
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Runtime Security",
             "playbookID": "PaloAltoNetworks_Prisma_AIRs_Runtime_Profiles_Test",
             "fromversion": "6.10.0"
         },
         {
-            "integrations": "Palo Alto Networks - Prisma AIRs AI Security",
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Runtime Security",
             "playbookID": "PaloAltoNetworks_Prisma_AIRs_DLP_Patterns_Test",
             "fromversion": "6.10.0"
         },
         {
-            "integrations": "Palo Alto Networks - Prisma AIRs AI Security",
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Runtime Security",
             "playbookID": "PaloAltoNetworks_Prisma_AIRs_Runtime_Scan_Test",
             "fromversion": "6.10.0"
         }

@@ -1345,7 +1345,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- PaloAltoNetworks_Prisma_AIRs_Model_Security_Test
 marketplaces:
 - xsoar
 - marketplacev2

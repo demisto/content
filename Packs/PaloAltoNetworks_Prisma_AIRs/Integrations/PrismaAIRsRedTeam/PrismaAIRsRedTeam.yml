@@ -2926,7 +2926,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test
 marketplaces:
 - xsoar
 - marketplacev2

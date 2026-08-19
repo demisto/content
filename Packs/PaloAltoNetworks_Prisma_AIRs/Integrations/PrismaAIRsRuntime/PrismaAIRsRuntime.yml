@@ -2428,7 +2428,9 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- PaloAltoNetworks_Prisma_AIRs_Runtime_Profiles_Test
+- PaloAltoNetworks_Prisma_AIRs_Runtime_Scan_Test
+- PaloAltoNetworks_Prisma_AIRs_DLP_Patterns_Test
 marketplaces:
 - xsoar
 - marketplacev2
