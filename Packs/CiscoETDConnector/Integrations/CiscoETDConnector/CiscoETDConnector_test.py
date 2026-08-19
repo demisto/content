@@ -148,3 +148,69 @@ def test_download_logs_http_error(mock_token, mock_get):
     client = ETDClient(base_url="dummy", params={})
     with pytest.raises(DemistoException):
         client.download_logs([("message", "https://example.com/log")])
+
+
+@patch("CiscoETDConnector.send_events_to_xsiam")
+@patch("CiscoETDConnector.demisto.setLastRun")
+@patch("CiscoETDConnector.demisto.getLastRun")
+@patch.object(ETDClient, "download_logs")
+@patch.object(ETDClient, "get_links")
+@patch.object(ETDClient, "request_log_export")
+@patch.object(ETDClient, "get_access_token", return_value="dummy")
+def test_fetch_and_ingest_logs_success(
+    mock_token,
+    mock_request,
+    mock_links,
+    mock_download,
+    mock_last_run,
+    mock_set_last_run,
+    mock_send,
+):
+    from CiscoETDConnector import fetch_and_ingest_logs
+    mock_last_run.return_value = {}
+    mock_request.return_value = {"data": {}}
+    mock_links.return_value = [("message", "https://example.com/log")]
+    mock_download.return_value = [
+        {
+            "_time": "2026-07-01T10:00:00Z",
+            "_event_id": "1",
+            "message": {},
+        }
+    ]
+    client = ETDClient(base_url="dummy", params={})
+    fetch_and_ingest_logs(client, {"max_fetch": 100})
+    mock_send.assert_called_once()
+    mock_set_last_run.assert_called_once()
+
+
+@patch("CiscoETDConnector.send_events_to_xsiam")
+@patch("CiscoETDConnector.demisto.setLastRun")
+@patch("CiscoETDConnector.demisto.getLastRun")
+@patch.object(ETDClient, "download_logs")
+@patch.object(ETDClient, "get_links")
+@patch.object(ETDClient, "request_log_export")
+@patch.object(ETDClient, "get_access_token", return_value="dummy")
+def test_fetch_and_ingest_logs_success(
+    mock_token,
+    mock_request,
+    mock_links,
+    mock_download,
+    mock_last_run,
+    mock_set_last_run,
+    mock_send,
+):
+    from CiscoETDConnector import fetch_and_ingest_logs
+    mock_last_run.return_value = {}
+    mock_request.return_value = {"data": {}}
+    mock_links.return_value = [("message", "https://example.com/log")]
+    mock_download.return_value = [
+        {
+            "_time": "2026-07-01T10:00:00Z",
+            "_event_id": "1",
+            "message": {},
+        }
+    ]
+    client = ETDClient(base_url="dummy", params={})
+    fetch_and_ingest_logs(client, {"max_fetch": 100})
+    mock_send.assert_called_once()
+    mock_set_last_run.assert_called_once()
