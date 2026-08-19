@@ -2037,8 +2037,8 @@ def github_trigger_workflow_command():
     inputs = json.loads(args.get("inputs", "{}"), strict=False)
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
-    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json", "X-GitHub-Api-Version": "2026-03-10"}
-    data = assign_params(ref=branch, inputs=inputs)
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
+    data = assign_params(ref=branch, inputs=inputs, return_run_details=True)
     response = http_request("POST", url_suffix=suffix, headers=headers, data=data)
     # http_request returns a dict for 200 (JSON body) and a Response object for 204 No Content.
     if isinstance(response, dict):
@@ -2077,7 +2077,7 @@ def github_get_workflow_run_command():
     run_id = args.get("run_id")
 
     suffix = f"/repos/{owner}/{repository}/actions/runs/{run_id}"
-    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json", "X-GitHub-Api-Version": "2026-03-10"}
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
     response = http_request("GET", url_suffix=suffix, headers=headers)
 
