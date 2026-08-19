@@ -239,14 +239,16 @@ def get_events(
         updated_at = parse_date_string(collect_from.get(detector_id)) if collect_from.get(detector_id) else collect_from_default
         # Dedup against all ids seen at the cursor second.
         seen_ids = _normalize_last_ids_entry(last_ids.get(detector_id))
-        # List all finding ids
-        while next_token and len(events) + len(finding_ids) < limit:
+        # List all finding ids. The ``limit`` budget is applied PER DETECTOR so that a busy detector
+        # earlier in the loop can never starve detectors processed later (each detector gets its own
+        # full ``limit`` per cycle instead of sharing one global budget across all detectors).
+        while next_token and len(set(finding_ids)) < limit:
             demisto.debug(f"AWSGuardDutyEventCollector - Getting more finding ids with {next_token=}, {updated_at=}")
             list_finding_args = {
                 "DetectorId": detector_id,
                 "FindingCriteria": {"Criterion": _build_finding_criterion(updated_at, severity, exclude_archived)},
                 "SortCriteria": {"AttributeName": "updatedAt", "OrderBy": "ASC"},
-                "MaxResults": min(limit - (len(events) + len(set(finding_ids))), MAX_RESULTS),
+                "MaxResults": min(limit - len(set(finding_ids)), MAX_RESULTS),
             }
             if next_token != "starting_token":
                 list_finding_args.update({"NextToken": next_token})

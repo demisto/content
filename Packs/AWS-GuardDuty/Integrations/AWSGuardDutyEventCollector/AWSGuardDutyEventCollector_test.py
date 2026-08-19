@@ -1207,6 +1207,76 @@ def test_multi_detector_truncation_advances_cursors_independently(mocker):
     assert new_last_ids["det_B"] == ["finding_B1"]
 
 
+def test_busy_detector_does_not_starve_later_detector(mocker):
+    """
+    Given:
+        Two detectors processed in order [det_busy, det_late]. det_busy alone
+        produces exactly `limit` findings on its first page (filling the budget),
+        while det_late has its own findings to return.
+
+    When:
+        get_events processes both detectors in the same run with limit=2.
+
+    Then:
+        The `limit` budget is applied PER DETECTOR, so det_busy consuming the
+        whole limit must NOT prevent det_late from being queried. Both detectors'
+        findings are ingested and both cursors advance. This guards against a
+        global-budget starvation defect where a busy earlier detector left later
+        detectors un-queried with their cursor frozen.
+
+    Reference:
+        AWSGuardDutyEventCollector.get_events — per-detector `limit` budget.
+    """
+    busy_t = "2026-04-10T03:00:00.000000"
+    late_t = "2026-04-10T04:00:00.000000"
+
+    finding_busy1 = update_finding_id(FINDING.copy(), "finding_busy1", updated_at=busy_t)
+    finding_busy2 = update_finding_id(FINDING.copy(), "finding_busy2", updated_at=busy_t)
+    finding_late1 = update_finding_id(FINDING.copy(), "finding_late1", updated_at=late_t)
+    finding_late2 = update_finding_id(FINDING.copy(), "finding_late2", updated_at=late_t)
+
+    # limit=2: det_busy returns 2 ids on its first (and only) page => it alone
+    # fills the entire limit. Under a global budget, det_late's finding-ids loop
+    # guard would be False on entry, so list_findings would NEVER be called for
+    # det_late and it would be starved. Per-detector budget prevents that.
+    client, _, list_findings_mock, _ = create_mocked_client(
+        mocker=mocker,
+        list_detectors_res=[{"DetectorIds": ["det_busy", "det_late"]}],
+        list_finding_ids_res=[
+            {"FindingIds": ["finding_busy1", "finding_busy2"]},  # det_busy: fills limit, fully drained
+            {"FindingIds": ["finding_late1", "finding_late2"]},  # det_late: must still be queried
+        ],
+        get_findings_res=[
+            {"Findings": [finding_busy1, finding_busy2]},
+            {"Findings": [finding_late1, finding_late2]},
+        ],
+    )
+
+    events, new_last_ids, new_collect_from = get_events(
+        aws_client=client,
+        collect_from={},
+        collect_from_default=datetime(2026, 4, 10, 2, 0, 0),
+        last_ids={},
+        severity="Low",
+        limit=2,
+    )
+
+    # det_late was queried (not starved): list_findings called for BOTH detectors.
+    assert list_findings_mock.call_count == 2
+    # Both detectors' findings are ingested — the later detector is not dropped.
+    assert sorted(e["Id"] for e in events) == [
+        "finding_busy1",
+        "finding_busy2",
+        "finding_late1",
+        "finding_late2",
+    ]
+    # Both cursors advance independently to their respective seconds.
+    assert new_collect_from["det_busy"] == busy_t
+    assert new_collect_from["det_late"] == late_t
+    assert sorted(new_last_ids["det_busy"]) == ["finding_busy1", "finding_busy2"]
+    assert sorted(new_last_ids["det_late"]) == ["finding_late1", "finding_late2"]
+
+
 # ---------------------------------------------------------------------------
 # Single-boundary-cannot-drain — an entire truncated page shares one UpdatedAt.
 #
