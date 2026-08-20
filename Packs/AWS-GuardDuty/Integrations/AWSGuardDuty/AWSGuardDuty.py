@@ -356,6 +356,74 @@ def update_threat_intel_set(client: "GuardDutyClient", args: dict):
         raise Exception(f"Failed updating ThreatIntel set {args.get('threatIntelSetId')}. Response was: {response}")
 
 
+def create_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResults:
+    tags = args.get("tags")
+    kwargs = remove_empty_elements(
+        {
+            "DetectorId": args.get("detectorId"),
+            "Activate": arg_to_bool_or_none(args.get("activate")),
+            "Format": args.get("format"),
+            "Location": args.get("location"),
+            "Name": args.get("name"),
+            "ClientToken": args.get("clientToken"),
+            "ExpectedBucketOwner": args.get("expectedBucketOwner"),
+            "Tags": dict(item.split("=", 1) for item in argToList(tags)) if tags else None,
+        }
+    )
+
+    response = client.create_threat_entity_set(**kwargs)
+
+    data = {"DetectorId": args.get("detectorId"), "ThreatEntitySetId": response["ThreatEntitySetId"]}
+
+    readable_output = tableToMarkdown("AWS GuardDuty Threat Entity Set", data) if data else "No result were found"
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=data,
+        outputs_prefix="AWS.GuardDuty.Detectors.ThreatEntitySet",
+        outputs_key_field="ThreatEntitySetId",
+    )
+
+
+def delete_threat_entity_set(client: "GuardDutyClient", args: dict):
+    response = client.delete_threat_entity_set(
+        DetectorId=args.get("detectorId", ""), ThreatEntitySetId=args.get("threatEntitySetId", "")
+    )
+    if response == {} or response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
+        return f"The Threat Entity Set {args.get('threatEntitySetId')} has been deleted from Detector {args.get('detectorId')}"
+    else:
+        raise Exception(f"Failed to delete Threat Entity set {args.get('threatEntitySetId')} . Response was: {response}")
+
+
+def list_threat_entity_sets(client: "GuardDutyClient", args: dict) -> CommandResults:
+    limit, page_size, page = get_pagination_args(args)
+
+    paginator = client.get_paginator("list_threat_entity_sets")
+    response_iterator = paginator.paginate(
+        DetectorId=args.get("detectorId", ""),
+        PaginationConfig={
+            "MaxItems": limit,
+            "PageSize": page_size,
+        },
+    )
+
+    data = []
+    data.append({"DetectorId": args.get("detectorId")})
+    for i, page_response in enumerate(response_iterator):
+        if page is None or (page - 1) == i:
+            for threatEntitySet in page_response["ThreatEntitySetIds"]:
+                data.append({"ThreatEntitySetId": threatEntitySet})
+            if page:
+                break
+
+    readable_output = tableToMarkdown("AWS GuardDuty Threat Entity Sets", data) if data else "No result were found"
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=data,
+        outputs_prefix="AWS.GuardDuty.Detectors.ThreatEntitySet",
+        outputs_key_field="ThreatEntitySetId",
+    )
+
+
 def severity_mapping(severity: Optional[float]) -> Optional[int]:
     demisto_severity = None
     if severity:
@@ -835,6 +903,15 @@ def main():  # pragma: no cover
 
         elif demisto.command() == "aws-gd-update-threatintel-set":
             result = update_threat_intel_set(client, demisto.args())
+
+        elif demisto.command() == "aws-gd-create-threat-entity-set":
+            result = create_threat_entity_set(client, demisto.args())
+
+        elif demisto.command() == "aws-gd-delete-threat-entity-set":
+            result = delete_threat_entity_set(client, demisto.args())
+
+        elif demisto.command() == "aws-gd-list-threat-entity-sets":
+            result = list_threat_entity_sets(client, demisto.args())
 
         elif demisto.command() == "aws-gd-list-findings":
             result = list_findings(client, demisto.args())
