@@ -493,9 +493,6 @@ def get_source_override(args: Optional[dict], key: str) -> str:
 def add_playbook_metadata(data: dict, command: str, args: Optional[dict] = None) -> None:
     """Add the playbook metadata to the request data.
 
-    The 'source_id' and 'source_name' arguments, when provided and not empty, mask the
-    playbook ID and playbook name that are otherwise derived from the calling context.
-
     Args:
         data (dict): The request data to enrich.
         command (str): The name of the command being executed.
@@ -514,7 +511,6 @@ def add_playbook_metadata(data: dict, command: str, args: Optional[dict] = None)
     task_id = entry_task.get("taskId", "")
     brand = ctx_output.get("context", {}).get("IntegrationBrand", "")
 
-    # Explicitly provided source values mask the context-derived playbook values.
     playbook_id = get_source_override(args, "source_id") or playbook_id
     playbook_name = get_source_override(args, "source_name") or playbook_name
 
