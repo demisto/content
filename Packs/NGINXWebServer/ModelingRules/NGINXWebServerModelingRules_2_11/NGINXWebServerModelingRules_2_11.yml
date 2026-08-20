@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: NGINXWebServer_ModelingRule
+name: NGINXWebServer Modeling Rule
+rules: ''
+schema: ''
+tags: NGINX Web Server
+supportedModules:
+- xsiam
