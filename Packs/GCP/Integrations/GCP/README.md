@@ -166,16 +166,229 @@ Configures security settings for GKE clusters, including access controls and vis
 | GCP.Container.Operations.enableBinaryAuthorization | Boolean | Whether Binary Authorization is enabled for the cluster. |
 | GCP.Container.Operations.enableLegacyABAC | Boolean | Whether legacy ABAC is enabled for the cluster. |
 | GCP.Container.Operations.clusterIpv4Cidr | String | The cluster’s IPv4 CIDR block. |
-| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | Unknown | List of authorized CIDR blocks that can access the GKE cluster master. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | List | List of authorized CIDR blocks that can access the GKE cluster master. |
 | GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled | Boolean | Whether master authorized networks are enabled for the cluster. |
 | GCP.Container.Operations.network | String | The network to which the GKE cluster belongs. |
 | GCP.Container.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
 | GCP.Container.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
 | GCP.Container.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
-| GCP.Container.Operations.nodePools | Unknown | A list of node pools in the cluster, with their configuration and security settings. |
+| GCP.Container.Operations.nodePools | List | A list of node pools in the cluster, with their configuration and security settings. |
 | GCP.Container.Operations.privateClusterConfig.enablePrivateNodes | Boolean | Whether private nodes are enabled in the cluster. |
 | GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
 | GCP.Container.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
+
+### gcp-container-cluster-list
+
+***
+Lists all GKE clusters owned by a project in the specified location. Required permissions: container.clusters.list.
+
+#### Base Command
+
+`gcp-container-cluster-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) to list clusters from. Use "-" to list clusters from all locations. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.Clusters.name | String | The name of the GKE cluster. |
+| GCP.Container.Clusters.location | String | The location \(zone or region\) of the GKE cluster. |
+| GCP.Container.Clusters.currentMasterVersion | String | The current version of the Kubernetes master in the cluster. |
+| GCP.Container.Clusters.endpoint | String | The IP address of the cluster's master endpoint. |
+| GCP.Container.Clusters.status | String | The current status of the cluster. |
+
+### gcp-container-cluster-get
+
+***
+Gets the details of a specific GKE cluster. Required permissions: container.clusters.get.
+
+#### Base Command
+
+`gcp-container-cluster-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| resource_name | The name of the GKE cluster. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.Clusters.name | String | The name of the GKE cluster. |
+| GCP.Container.Clusters.location | String | The location \(zone or region\) of the GKE cluster. |
+| GCP.Container.Clusters.currentMasterVersion | String | The current version of the Kubernetes master in the cluster. |
+| GCP.Container.Clusters.endpoint | String | The IP address of the cluster's master endpoint. |
+| GCP.Container.Clusters.status | String | The current status of the cluster. |
+
+### gcp-container-node-pool-list
+
+***
+Lists the node pools for a GKE cluster. Required permissions: container.clusters.get.
+
+#### Base Command
+
+`gcp-container-node-pool-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| cluster | The name of the GKE cluster. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.NodePools.name | String | The name of the node pool. |
+| GCP.Container.NodePools.version | String | The Kubernetes version running on the node pool. |
+| GCP.Container.NodePools.status | String | The current status of the node pool. |
+| GCP.Container.NodePools.initialNodeCount | Number | The initial node count for the node pool. |
+
+### gcp-container-node-pool-get
+
+***
+Gets the details of a specific node pool in a GKE cluster. Required permissions: container.clusters.get.
+
+#### Base Command
+
+`gcp-container-node-pool-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| cluster | The name of the GKE cluster. | Required |
+| node_pool | The name of the node pool. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.NodePools.name | String | The name of the node pool. |
+| GCP.Container.NodePools.version | String | The Kubernetes version running on the node pool. |
+| GCP.Container.NodePools.status | String | The current status of the node pool. |
+| GCP.Container.NodePools.initialNodeCount | Number | The initial node count for the node pool. |
+
+### gcp-container-node-pool-management-set
+
+***
+Enables or disables the auto-repair and/or auto-upgrade management features of a node pool. Required permissions: container.clusters.update.
+
+#### Base Command
+
+`gcp-container-node-pool-management-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| cluster | The name of the GKE cluster. | Required |
+| node_pool | The name of the node pool. | Required |
+| auto_repair | Whether to enable node auto-repair for the node pool. Possible values are: true, false. | Optional |
+| auto_upgrade | Whether to enable node auto-upgrade for the node pool. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.Operations.name | String | The name of the operation. |
+| GCP.Container.Operations.operationType | String | The type of the operation. |
+| GCP.Container.Operations.status | String | The current status of the operation. |
+| GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
+| GCP.Container.Operations.startTime | Date | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | Date | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
+
+### gcp-container-operation-list
+
+***
+Lists all GKE operations in a project for the specified location. Required permissions: container.operations.list.
+
+#### Base Command
+
+`gcp-container-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) to list operations from. Use "-" to list operations from all locations. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.Operations.name | String | The name of the operation. |
+| GCP.Container.Operations.operationType | String | The type of the operation. |
+| GCP.Container.Operations.status | String | The current status of the operation. |
+| GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
+| GCP.Container.Operations.startTime | Date | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | Date | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
+
+### gcp-container-operation-get
+
+***
+Gets the details of a specific GKE operation. Required permissions: container.operations.get.
+
+#### Base Command
+
+`gcp-container-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the operation. | Required |
+| operation | The name of the operation. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.Operations.name | String | The name of the operation. |
+| GCP.Container.Operations.operationType | String | The type of the operation. |
+| GCP.Container.Operations.status | String | The current status of the operation. |
+| GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
+| GCP.Container.Operations.startTime | Date | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | Date | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
+
+### gcp-container-operation-cancel
+
+***
+Cancels a specific GKE operation. Required permissions: container.operations.update.
+
+#### Base Command
+
+`gcp-container-operation-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the operation. | Required |
+| operation | The name of the operation to cancel. | Required |
+
+#### Context Output
+
+There is no context output for this command.
 
 ### gcp-storage-bucket-metadata-update
 
