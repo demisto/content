@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Akamai_SIEM_ModelingRule
+name: Akamai_SIEM Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
