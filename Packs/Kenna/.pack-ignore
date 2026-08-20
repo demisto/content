@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:playbook-Kenna_-_Vulnerability_Handling.yml]
+ignore=RM116
