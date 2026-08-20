@@ -22,6 +22,14 @@ RESPONSE_KEYS_DICTIONARY = {
 
 EXCLUDE_LIST = ["eTag", "cTag", "quota"]
 
+# The MS Graph resources a driveItem can be addressed under.
+VALID_OBJECT_TYPES = ("drives", "groups", "sites", "users")
+
+# Listed explicitly because $select narrows the projection - anything omitted here will
+# be absent from the response.
+DRIVEITEM_SELECT_FIELDS = (
+    "id,name,size,webUrl,createdDateTime,lastModifiedDateTime,createdBy,lastModifiedBy,parentReference,file,folder"
+)
 
 def parse_key_to_context(obj: dict) -> dict:
     """Parse graph api data as received from Microsoft Graph API into Demisto's conventions
@@ -95,11 +103,6 @@ def encode_sharing_url(share_url: str) -> str:
     """
     encoded = base64.urlsafe_b64encode(share_url.encode("utf-8")).decode("utf-8")
     return f"u!{encoded.rstrip('=')}"
-
-
-# The MS Graph resources a driveItem can be addressed under. Kept in one place because the
-# URI builders and the argument validation must agree on the set.
-VALID_OBJECT_TYPES = ("drives", "groups", "sites", "users")
 
 
 def validate_object_type(object_type: str) -> None:
@@ -778,9 +781,9 @@ class MsGraphClient:
         """
         if object_type == "drives":
             return f"drives/{object_type_id}/items/{item_id}"
-        if object_type in VALID_OBJECT_TYPES:
+        if object_type in {"groups", "sites", "users"}:
             return f"{object_type}/{object_type_id}/drive/items/{item_id}"
-        raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: {', '.join(VALID_OBJECT_TYPES)}.")
+        raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: drives, groups, sites, users.")
 
     def get_sharepoint_ids(self, site_id: str, item_id: str, drive_id: str = "") -> dict:
         """Retrieve the SharePoint identifiers of a driveItem, or {} if it exposes none.
@@ -850,12 +853,6 @@ class MsGraphClient:
         list_id, list_item_unique_id = self.resolve_list_item_ids(site_id, item_id)
         url_suffix = f"sites/{site_id}/lists/{list_id}/items/{list_item_unique_id}/analytics/{time_range}"
         return self.ms_client.http_request(method="GET", url_suffix=url_suffix)
-
-    # Listed explicitly because $select narrows the projection - anything omitted here will
-    # be absent from the response.
-    DRIVEITEM_SELECT_FIELDS = (
-        "id,name,size,webUrl,createdDateTime,lastModifiedDateTime,createdBy,lastModifiedBy,parentReference,file,folder"
-    )
 
     def get_driveitem(
         self,
