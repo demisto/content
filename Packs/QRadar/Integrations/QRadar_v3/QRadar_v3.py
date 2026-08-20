@@ -3827,12 +3827,12 @@ def qradar_reference_map_value_upsert_command(client: Client, args: dict[str, An
         response = client.reference_map_value_upsert(ref_name, key, value, source)
         outputs = response
         final_outputs = sanitize_outputs(outputs, REFERENCE_MAPS_RAW_FORMATTED)
-        headers = build_headers(
-            ["Name", "ElementType", "NumberOfElements", "CreationTime", "Namespace", "CollectionID"],
-            set(REFERENCE_MAPS_RAW_FORMATTED.values()),
-        )
+        # headers = build_headers(
+        #    ["Name", "ElementType", "NumberOfElements", "CreationTime", "Namespace", "CollectionID"],
+        #    set(REFERENCE_MAPS_RAW_FORMATTED.values()),
+        # )
         return CommandResults(
-            readable_output=tableToMarkdown("Upsert Reference Maps Value", final_outputs, headers, removeNull=True),
+            readable_output=f'Reference map "{ref_name}" successfully updated: "{key}" set to "{value}".',
             outputs_prefix="QRadar.ReferenceMaps",
             outputs_key_field="Name",
             outputs=final_outputs,
