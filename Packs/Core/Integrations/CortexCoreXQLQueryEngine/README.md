@@ -29,7 +29,9 @@ Execute an XQL query and retrieve results of an executed XQL query API. The comm
 | interval_in_seconds | Interval in seconds between each poll. | Optional |
 | max_fields | The maximum number of returned fields per result. Default is 20. | Optional |
 | query_name | The name of the query. | Required |
-| parse_result_file_to_context | If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context. | Optional |  
+| parse_result_file_to_context | If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context. | Optional |
+| source_id | The ID of the source that initiated the query. Relevant only when the command runs from a playbook. When provided, this value is reported instead of the automatically detected playbook ID. | Optional |
+| source_name | The name of the source that initiated the query. Relevant only when the command runs from a playbook. When provided, this value is reported instead of the automatically detected playbook name. | Optional |
 
 #### Context Output
 
