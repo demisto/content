@@ -679,8 +679,32 @@ async def handle_fetch_and_send_all_events(
 async def get_events_command_async(
     client: Client, args: dict[str, Any], last_run: dict, should_push_events: bool = False
 ) -> CommandResults:
-    """Manual netskope-get-events command: fetch a small batch, optionally push it, and display it."""
+    """Manual netskope-get-events command: fetch a small batch, optionally push it, and display it.
+
+    Optionally accepts a manual time window via the `start_time`/`end_time` args. When provided,
+    we synthesize a `last_run` that pins the window for every fetched type, so the existing fetch
+    pipeline (including the per-type API param mapping and the audit no-count path) is reused as-is.
+    When the args are omitted, the instance's real `last_run` is used - i.e. the default behavior
+    is unchanged.
+    """
     limit = arg_to_number(args.get("limit")) or 10
+
+    # Optional manual time window. `end_time` defaults to "now" when only `start_time` is given.
+    # NOTE: for the audit type this window filters by INSERTION time (insertionstarttime/endtime),
+    # matching the field Netskope's audit data endpoint (and the customer's curl) uses.
+    start_arg = arg_to_datetime(args.get("start_time")) if args.get("start_time") else None
+    if start_arg:
+        end_arg = arg_to_datetime(args.get("end_time")) if args.get("end_time") else arg_to_datetime("now")
+        start_epoch = str(int(start_arg.timestamp()))
+        end_epoch = str(int(end_arg.timestamp()))  # type: ignore[union-attr]
+        last_run = {
+            event_type: {"next_fetch_start_time": start_epoch, "next_fetch_end_time": end_epoch, "failures": []}
+            for event_type in client.event_types_to_fetch
+        }
+        demisto.debug(
+            f"[Get-Events] Using manual time window {start_epoch} -> {end_epoch} for types={client.event_types_to_fetch}"
+        )
+
     demisto.debug(f"[Get-Events] Running netskope-get-events with {limit=}, {should_push_events=}")
 
     # Two distinct flows use send_to_xsiam differently:
@@ -741,7 +765,9 @@ async def main() -> None:  # pragma: no cover
         # TEMPORARY BUILD MARKER (XSUP-74841) - remove before merge.
         # Lets us confirm from the tenant logs which fix build is deployed. Bump the version suffix
         # whenever a new build is pushed to the customer so old/new builds are distinguishable.
-        demisto.info("XSUP-74841 BUILD MARKER v2: audit skips count + paginates directly (sequential) deployed")
+        demisto.info(
+            "XSUP-74841 BUILD MARKER v3: audit skips count (sequential) + get-events manual start_time/end_time window deployed"
+        )
 
         event_types_to_fetch = handle_event_types_to_fetch(params.get("event_types_to_fetch"))
         demisto.debug(f"Event types that will be fetched in this instance: {event_types_to_fetch}")

@@ -246,6 +246,70 @@ async def test_get_events_command_push_uses_plain_send(mocker):
 
 
 @pytest.mark.asyncio
+async def test_get_events_command_manual_time_window(mocker):
+    """
+    Given:
+        - netskope-get-events called with explicit start_time and end_time args.
+    When:
+        - Running get_events_command_async.
+    Then:
+        - A synthetic last_run is built that pins the given window (next_fetch_start_time /
+          next_fetch_end_time) for every fetched type, and it is what is passed to the fetch
+          pipeline (instead of the instance's real last_run).
+    """
+    import datetime
+
+    from NetskopeEventCollector_v2 import get_events_command_async
+
+    fetch_mock = mocker.patch(
+        "NetskopeEventCollector_v2.handle_fetch_and_send_all_events",
+        return_value=([], 0, {}),
+    )
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=["audit", "alert"])
+
+    start_epoch = str(int(datetime.datetime(2026, 8, 11, 0, 0, 0, tzinfo=datetime.UTC).timestamp()))
+    end_epoch = str(int(datetime.datetime(2026, 8, 12, 0, 0, 0, tzinfo=datetime.UTC).timestamp()))
+
+    await get_events_command_async(
+        client,
+        {"limit": 50, "start_time": "2026-08-11T00:00:00Z", "end_time": "2026-08-12T00:00:00Z"},
+        {"audit": {"next_fetch_start_time": "999", "failures": []}},  # real last_run that must be ignored
+        should_push_events=False,
+    )
+
+    passed_last_run = fetch_mock.call_args.kwargs["last_run"]
+    for event_type in ["audit", "alert"]:
+        assert passed_last_run[event_type]["next_fetch_start_time"] == start_epoch
+        assert passed_last_run[event_type]["next_fetch_end_time"] == end_epoch
+        assert passed_last_run[event_type]["failures"] == []
+
+
+@pytest.mark.asyncio
+async def test_get_events_command_no_window_uses_real_last_run(mocker):
+    """
+    Given:
+        - netskope-get-events called WITHOUT start_time / end_time (default behavior).
+    When:
+        - Running get_events_command_async.
+    Then:
+        - The instance's real last_run is passed through unchanged (no synthetic window),
+          preserving the existing behavior.
+    """
+    from NetskopeEventCollector_v2 import get_events_command_async
+
+    fetch_mock = mocker.patch(
+        "NetskopeEventCollector_v2.handle_fetch_and_send_all_events",
+        return_value=([], 0, {}),
+    )
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=["audit"])
+
+    real_last_run = {"audit": {"next_fetch_start_time": "12345", "failures": []}}
+    await get_events_command_async(client, {"limit": 50}, real_last_run, should_push_events=False)
+
+    assert fetch_mock.call_args.kwargs["last_run"] is real_last_run, "Default path must pass the real last_run unchanged"
+
+
+@pytest.mark.asyncio
 async def test_fetch_path_empty_page(mocker):
     """
     Given:

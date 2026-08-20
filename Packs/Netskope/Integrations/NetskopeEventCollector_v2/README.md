@@ -34,6 +34,8 @@ Returns events extracted from SaaS traffic and or logs.
 | --- | --- | --- |
 | limit | The maximum number of alerts to return (default: 10). | Optional |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. | Optional |
+| start_time | Start of the time window to fetch events for. Accepts a date (e.g. "2026-08-11T00:00:00Z") or a relative time (e.g. "3 days"). If omitted, the command uses the instance's last-run position (default behavior). | Optional |
+| end_time | End of the time window to fetch events for. Accepts a date (e.g. "2026-08-12T00:00:00Z") or a relative time (e.g. "1 day"). Defaults to now. | Optional |
 
 #### Context Output
 
