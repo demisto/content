@@ -1,3 +1,4 @@
+import time
 import uuid
 from enum import Enum
 from urllib.parse import urlparse
@@ -21,9 +22,14 @@ from exchangelib import (
 from exchangelib.credentials import BaseCredentials, OAuth2AuthorizationCodeCredentials
 from exchangelib.errors import (
     AutoDiscoverFailed,
+    ErrorInternalServerTransientError,
     ErrorInvalidIdMalformed,
+    ErrorIrresolvableConflict,
     ErrorItemNotFound,
     ErrorNameResolutionNoResults,
+    ErrorServerBusy,
+    MalformedResponseError,
+    RateLimitError,
     ResponseMessageError,
 )
 from exchangelib.folders.base import BaseFolder
@@ -57,6 +63,17 @@ SUPPORTED_ON_PREM_BUILDS = {
     "2016": EXCHANGE_2016,
     "2019": EXCHANGE_2019,
 }
+
+MARK_AS_READ_RETRY_DELAY = 0.1
+
+# Errors indicating Exchange is throttling or temporarily unavailable (HTTP 503/504).
+# They resolve on their own, so callers should back off and retry rather than fail outright.
+TRANSIENT_SERVER_ERRORS = (
+    RateLimitError,
+    ErrorServerBusy,
+    ErrorInternalServerTransientError,
+    MalformedResponseError,
+)
 
 """ Context Keys """
 ATTACHMENT_ID = "attachmentId"
@@ -692,9 +709,12 @@ class EWSClient:
             try:
                 demisto.debug(f"resolving {part=} {path_parts=}")
                 folder = folder // part
+            except TRANSIENT_SERVER_ERRORS:
+                demisto.debug(f"Transient error while resolving {part=} of {path_parts=}, propagating.\n{traceback.format_exc()}")
+                raise
             except Exception as e:
                 demisto.debug(f"got error {e}")
-                raise ValueError(f"No such folder {path_parts}")
+                raise ValueError(f"No such folder {path_parts}") from e
         return folder
 
     def send_email(self, message: Message):
@@ -1395,13 +1415,38 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
     operation = args.get("operation", "read")
     target_mailbox = args.get("target_mailbox")
     marked_items = []
+    skipped_items = []
     item_ids = argToList(item_ids)
+
     items = client.get_items_from_mailbox(target_mailbox, item_ids)
     items = [x for x in items if isinstance(x, Message)]
+    demisto.debug(f"mark_item_as_read: resolved {len(items)} message(s) out of {len(item_ids)} requested id(s).")
 
     for item in items:
-        item.is_read = operation == "read"
-        item.save()
+        is_read = operation == "read"
+        item.is_read = is_read
+        demisto.debug(f"mark_item_as_read: saving {item.id=} | {item.changekey=}")
+
+        try:
+            item.save()
+        except ErrorIrresolvableConflict as e:
+            demisto.error(
+                f"mark_item_as_read: change key conflict for {item.id=} | {item.changekey=}: {e}. "
+                f"Refreshing the item and retrying in {MARK_AS_READ_RETRY_DELAY} seconds.\n{traceback.format_exc()}"
+            )
+            time.sleep(MARK_AS_READ_RETRY_DELAY)  # pylint: disable=sleep-exists
+            try:
+                item.refresh()
+                item.is_read = is_read
+                item.save()
+                demisto.debug(f"mark_item_as_read: retry succeeded for {item.id=}")
+            except ErrorIrresolvableConflict as retry_error:
+                demisto.error(
+                    f"mark_item_as_read: skipping {item.id=}, still conflicting after retry: {retry_error}\n"
+                    f"{traceback.format_exc()}"
+                )
+                skipped_items.append(item.id)
+                continue
 
         marked_items.append(
             {
@@ -1410,6 +1455,10 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
                 ACTION: f"marked-as-{operation}",
             }
         )
+
+    demisto.debug(
+        f"mark_item_as_read: marked {len(marked_items)} item(s) as {operation}, " f"skipped {len(skipped_items)}: {skipped_items}"
+    )
 
     return get_entry_for_object(
         f"Marked items ({operation} marked operation)",
