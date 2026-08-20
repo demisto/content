@@ -1434,7 +1434,7 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
                 f"mark_item_as_read: change key conflict for {item.id=} | {item.message_id=} | {item.changekey=}: {e}. "
                 f"Retrying in {MARK_AS_READ_RETRY_DELAY} seconds."
             )
-            time.sleep(MARK_AS_READ_RETRY_DELAY)
+            time.sleep(MARK_AS_READ_RETRY_DELAY)  # pylint: disable=sleep-exists
             try:
                 item.save()
                 demisto.debug(f"mark_item_as_read: retry succeeded for {item.id=}")
@@ -1455,8 +1455,7 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
         )
 
     demisto.debug(
-        f"mark_item_as_read: marked {len(marked_items)} item(s) as {operation}, "
-        f"skipped {len(skipped_items)}: {skipped_items}"
+        f"mark_item_as_read: marked {len(marked_items)} item(s) as {operation}, " f"skipped {len(skipped_items)}: {skipped_items}"
     )
 
     return get_entry_for_object(
