@@ -1,0 +1,88 @@
+[MODEL: dataset = koi_koi_raw]
+
+// Audit Logs mapping
+filter source_log_type = "Audit"
+| alter
+    os_family = if(
+        platform in ("software_windows"), XDM_CONST.OS_FAMILY_WINDOWS,
+        platform in ("software_mac", "homebrew"), XDM_CONST.OS_FAMILY_MACOS,
+        platform in ("chrome", "talon"), XDM_CONST.OS_FAMILY_CHROMEOS,
+        null
+    )
+| alter
+    xdm.event.id = id,
+    xdm.event.type = source_log_type,
+    xdm.event.original_event_type = type,
+    xdm.event.operation_sub_type = action,
+    xdm.event.description = message,
+    xdm.event.outcome_reason = reason,
+    xdm.source.host.hostname = coalesce(hostname, endpoint),
+    xdm.source.host.os_family = os_family,
+    xdm.observer.name = _collector_name,
+    xdm.observer.type = _collector_type,
+    xdm.target.application.name = object_name,
+    xdm.target.application.version = item_version,
+    xdm.target.application.publisher = marketplace,
+    xdm.target.resource.id = object_id,
+    xdm.target.resource.name = object_name,
+    xdm.target.resource.type = object_type,
+    xdm.target.resource.sub_type = platform,
+    xdm.target.resource.value = item_version;
+
+// Alert Logs mapping
+filter source_log_type = "Alerts"
+| alter
+    log_level = if(
+        severity_id = 1, XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+        severity_id = 2, XDM_CONST.LOG_LEVEL_INFORMATIONAL,
+        severity_id = 3, XDM_CONST.LOG_LEVEL_WARNING,
+        severity_id = 4, XDM_CONST.LOG_LEVEL_WARNING,
+        severity_id = 5, XDM_CONST.LOG_LEVEL_CRITICAL,
+        severity_id = 6, XDM_CONST.LOG_LEVEL_CRITICAL,
+        null
+    ),
+    outcome = if(
+        status_id = 4, XDM_CONST.OUTCOME_SUCCESS,
+        status_id = 3, XDM_CONST.OUTCOME_SUCCESS,
+        status_id = 2, XDM_CONST.OUTCOME_PARTIAL,
+        status_id = 1, XDM_CONST.OUTCOME_UNKNOWN,
+        XDM_CONST.OUTCOME_UNKNOWN
+    ),
+    // finding_info and metadata use -> sugar syntax (JSON string fields)
+    finding_title = finding_info -> title,
+    finding_desc = finding_info -> desc,
+    finding_uid = finding_info -> uid,
+    product_name = metadata -> product.name,
+    product_vendor = metadata -> product.vendor_name,
+    product_version = metadata -> version,
+    // resources is a JSON array string — filter by type to get item and device resources
+    item_resource = arrayindex(arrayfilter(json_extract_array(resources, "$"), json_extract_scalar("@element", "$.type") = "item"), 0),
+    device_resource = arrayindex(arrayfilter(json_extract_array(resources, "$"), json_extract_scalar("@element", "$.type") = "device"), 0),
+    // observables is a JSON array string — find the event.id observable
+    event_id_observable = arrayindex(arrayfilter(json_extract_array(observables, "$"), json_extract_scalar("@element", "$.name") = "event.id"), 0)
+| alter
+    xdm.event.id = event_id_observable -> value,
+    xdm.event.type = source_log_type,
+    xdm.event.original_event_type = activity_name,
+    xdm.event.operation_sub_type = class_name,
+    xdm.event.description = message,
+    xdm.event.log_level = log_level,
+    xdm.event.outcome = outcome,
+    xdm.alert.name = finding_title,
+    xdm.alert.original_alert_id = finding_uid,
+    xdm.alert.severity = severity,
+    xdm.alert.description = coalesce(finding_desc, message),
+    xdm.observer.vendor = product_vendor,
+    xdm.observer.product = product_name,
+    xdm.observer.version = product_version,
+    xdm.source.host.hostname = device_resource -> data.hostname,
+    xdm.source.host.os = device_resource -> data.os,
+    xdm.source.host.device_id = device_resource -> data.serial,
+    xdm.source.user.username = device_resource -> data.last_logged_on_user,
+    xdm.target.resource.id = item_resource -> uid,
+    xdm.target.resource.name = item_resource -> name,
+    xdm.target.resource.type = item_resource -> type,
+    xdm.target.resource.value = item_resource -> version,
+    xdm.target.application.name = item_resource -> data.item_display_name,
+    xdm.target.application.version = item_resource -> version,
+    xdm.target.application.publisher = item_resource -> data.marketplace;
