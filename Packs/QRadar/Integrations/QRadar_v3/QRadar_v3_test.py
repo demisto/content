@@ -3037,9 +3037,8 @@ def test_qradar_reference_map_value_upsert_command(mocker, command, ref_name, ke
     )
     res = qradar_reference_map_value_upsert_command(client, {"ref_name": ref_name, "key": key, "value": value})
 
-    assert res.outputs_prefix == command_test_data[command]["expected"]["outputs_prefix"]
-    assert res.outputs_key_field == command_test_data[command]["expected"]["outputs_key_field"]
-    assert res.outputs == command_test_data[command]["expected"]["outputs"]
+    assert res.raw_response == command_test_data[command]["expected"]["raw_response"]
+    assert res.outputs is None
 
 
 def test_qradar_reference_map_value_upsert_command_exception(mocker):

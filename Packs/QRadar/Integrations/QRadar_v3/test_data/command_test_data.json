@@ -2614,18 +2614,16 @@
                 "timeout_type": "UNKNOWN"
             }
         ],
-        "expected": {
-            "outputs_prefix": "QRadar.ReferenceMaps",
-            "outputs_key_field": "Name",
-            "outputs": [
+        "expected": {            
+            "raw_response": [
                 {
-                    "CollectionID": 136,
-                    "CreationTime": "2025-05-14T15:12:07.932000+00:00",
-                    "ElementType": "NUM",
-                    "Name": "Monitoring Identifier Gaps",
-                    "Namespace": "SHARED",
-                    "NumberOfElements": 3,
-                    "TimeoutType": "UNKNOWN"
+                    "collection_id": 136,
+                    "creation_time": 1747235527932,
+                    "element_type": "NUM",
+                    "name": "Monitoring Identifier Gaps",
+                    "namespace": "SHARED",
+                    "number_of_elements": 3,
+                    "timeout_type": "UNKNOWN"
                 }
             ]
         }

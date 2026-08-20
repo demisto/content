@@ -1139,38 +1139,7 @@ script:
       description: If true, does not output the updated reference set data. This argument helps avoid large outputs when the reference set is large.
     polling: true
   - name: qradar-reference-map-value-upsert
-    description: Adds or updates an element in a reference map.
-    outputs:
-    - contextPath: QRadar.ReferenceMaps.CollectionID
-      description: The collection ID of the reference map.
-      type: Number
-    - contextPath: QRadar.ReferenceMaps.CreationTime
-      description: The date when the reference map was created in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
-      type: Date
-    - contextPath: QRadar.ReferenceMaps.ElementType
-      description: The type of the elements in the reference map.
-      type: String
-    - contextPath: QRadar.ReferenceMaps.KeyLabel
-      description: The label of the key that was added or updated.
-      type: String
-    - contextPath: QRadar.ReferenceMaps.Name
-      description: The name of the reference map.
-      type: String
-    - contextPath: QRadar.ReferenceMaps.Namespace
-      description: 'The namespace of the reference map. Possible values: "PRIVATE", "SHARED", "TENANT".'
-      type: String
-    - contextPath: QRadar.ReferenceMaps.NumberOfElements
-      description: The number of elements in the reference map.
-      type: Number
-    - contextPath: QRadar.ReferenceMaps.TimeToLive
-      description: The time left to live for the reference.
-      type: String
-    - contextPath: QRadar.ReferenceMaps.TimeoutType
-      description: 'The timeout type of the reference map. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN".'
-      type: String
-    - contextPath: QRadar.ReferenceMaps.ValueLabel
-      description: The label of the data value that was added or updated.
-      type: String
+    description: Adds or updates an element in a reference map.    
     arguments:
     - name: ref_name
       required: true
