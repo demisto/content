@@ -1675,3 +1675,53 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
+
+### gcp-logging-log-entries-list
+
+***
+Lists log entries. Use this command to retrieve log entries that originated from a project, organization, billing account, or folder. Required Permissions: logging.logEntries.list.
+
+#### Base Command
+
+`gcp-logging-log-entries-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID to read log entries from. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| organization_names | A comma-separated list of organization IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional |
+| billing_account_names | A comma-separated list of billing account IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional |
+| folder_names | A comma-separated list of folder IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional |
+| filter | The filter to limit results to log entries that match. The maximum length of a filter is 20,000 characters. For example: "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name". | Optional |
+| order_by | The criteria to use for sorting the results. Can be "timestamp asc" or "timestamp desc". Possible values are: timestamp asc, timestamp desc. Default is timestamp asc. | Optional |
+| limit | The maximum number of results to return. Valid range is 1-500. Default is 50. | Optional |
+| next_token | The token used to retrieve the next batch of results. Must be the value of LogEntriesNextToken from the previous response. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Logging.LogEntries.logName | String | The resource name of the log to which this log entry belongs. |
+| GCP.Logging.LogEntries.resource.type | String | The monitored resource type. |
+| GCP.Logging.LogEntries.resource.labels | Unknown | The values for all labels listed in the associated monitored resource descriptor. |
+| GCP.Logging.LogEntries.timestamp | String | The time the event described by the log entry occurred, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z". |
+| GCP.Logging.LogEntries.receiveTimestamp | String | The time the log entry was received by Logging, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z". |
+| GCP.Logging.LogEntries.severity | String | The severity of the log entry. The default value is LogSeverity.DEFAULT. |
+| GCP.Logging.LogEntries.insertId | String | A unique identifier for the log entry. |
+| GCP.Logging.LogEntries.httpRequest | Unknown | The HTTP request associated with the log entry, containing requestMethod, requestUrl, status, userAgent, remoteIp, and other fields. |
+| GCP.Logging.LogEntries.labels | Unknown | The map of key-value pairs that provides additional information about the log entry. |
+| GCP.Logging.LogEntries.operation | Unknown | The information about an operation associated with the log entry, containing the ID, producer, first, and last fields. |
+| GCP.Logging.LogEntries.trace | String | The REST resource name of the trace being written to Cloud Trace in association with this log entry. |
+| GCP.Logging.LogEntries.spanId | String | The ID of the Cloud Trace span associated with the current operation in which the log is being written. |
+| GCP.Logging.LogEntries.traceSampled | Boolean | The sampling decision of the trace associated with the log entry. |
+| GCP.Logging.LogEntries.sourceLocation | Unknown | The source code location information associated with the log entry, containing file, line, and function fields. |
+| GCP.Logging.LogEntries.split | Unknown | The information indicating this LogEntry is part of a sequence of multiple log entries split from a single LogEntry, containing the UID, index, and totalSplits fields. |
+| GCP.Logging.LogEntries.errorGroups | Unknown | The Error Reporting error groups associated with this LogEntry, if any. |
+| GCP.Logging.LogEntries.apphub | Unknown | The AppHub application metadata associated with the monitored resource of this log entry. |
+| GCP.Logging.LogEntries.apphubDestination | Unknown | The AppHub application metadata associated with the destination of this log entry. |
+| GCP.Logging.LogEntries.apphubSource | Unknown | The AppHub application metadata associated with the source of this log entry. |
+| GCP.Logging.LogEntries.protoPayload | Unknown | The log entry payload, represented as a protocol buffer. A log entry has exactly one of protoPayload, textPayload, or jsonPayload. |
+| GCP.Logging.LogEntries.textPayload | String | The log entry payload, represented as a Unicode string \(UTF-8\). A log entry has exactly one of protoPayload, textPayload, or jsonPayload. |
+| GCP.Logging.LogEntries.jsonPayload | Unknown | The log entry payload, represented as a structure that is expressed as a JSON object. A log entry has exactly one of protoPayload, textPayload, or jsonPayload. |
+| GCP.Logging.LogEntriesNextToken | String | The nextPageToken included when there are more results than those appearing in this response. To get the next set of results, call this command again using the value of nextPageToken as next_token. |

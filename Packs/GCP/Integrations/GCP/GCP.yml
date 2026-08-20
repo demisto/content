@@ -2051,6 +2051,113 @@ script:
       - contextPath: GCP.BigQuery.Datasets.catalogSource
         description: The origin of the dataset.
         type: String
+  - name: gcp-logging-log-entries-list
+    description: "Lists log entries. Use this command to retrieve log entries that originated from a project, organization, billing account, or folder. Required Permissions: logging.logEntries.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID to read log entries from. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: organization_names
+      description: A comma-separated list of organization IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.
+      required: false
+      isArray: true
+    - name: billing_account_names
+      description: A comma-separated list of billing account IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.
+      required: false
+      isArray: true
+    - name: folder_names
+      description: A comma-separated list of folder IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified.
+      required: false
+      isArray: true
+    - name: filter
+      description: 'The filter to limit results to log entries that match. The maximum length of a filter is 20,000 characters. For example: "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name".'
+      required: false
+    - name: order_by
+      description: The criteria to use for sorting the results. Can be "timestamp asc" or "timestamp desc".
+      required: false
+      auto: PREDEFINED
+      defaultValue: timestamp asc
+      predefined:
+      - timestamp asc
+      - timestamp desc
+    - name: limit
+      description: The maximum number of results to return. Valid range is 1-500.
+      required: false
+      defaultValue: '50'
+    - name: next_token
+      description: The token used to retrieve the next batch of results. Must be the value of LogEntriesNextToken from the previous response.
+      required: false
+    outputs:
+      - contextPath: GCP.Logging.LogEntries.logName
+        description: The resource name of the log to which this log entry belongs.
+        type: String
+      - contextPath: GCP.Logging.LogEntries.resource.type
+        description: The monitored resource type.
+        type: String
+      - contextPath: GCP.Logging.LogEntries.resource.labels
+        description: The values for all labels listed in the associated monitored resource descriptor.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.timestamp
+        description: 'The time the event described by the log entry occurred, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z".'
+        type: String
+      - contextPath: GCP.Logging.LogEntries.receiveTimestamp
+        description: 'The time the log entry was received by Logging, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z".'
+        type: String
+      - contextPath: GCP.Logging.LogEntries.severity
+        description: The severity of the log entry. The default value is LogSeverity.DEFAULT.
+        type: String
+      - contextPath: GCP.Logging.LogEntries.insertId
+        description: A unique identifier for the log entry.
+        type: String
+      - contextPath: GCP.Logging.LogEntries.httpRequest
+        description: The HTTP request associated with the log entry, containing requestMethod, requestUrl, status, userAgent, remoteIp, and other fields.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.labels
+        description: The map of key-value pairs that provides additional information about the log entry.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.operation
+        description: The information about an operation associated with the log entry, containing the ID, producer, first, and last fields.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.trace
+        description: The REST resource name of the trace being written to Cloud Trace in association with this log entry.
+        type: String
+      - contextPath: GCP.Logging.LogEntries.spanId
+        description: The ID of the Cloud Trace span associated with the current operation in which the log is being written.
+        type: String
+      - contextPath: GCP.Logging.LogEntries.traceSampled
+        description: The sampling decision of the trace associated with the log entry.
+        type: Boolean
+      - contextPath: GCP.Logging.LogEntries.sourceLocation
+        description: The source code location information associated with the log entry, containing file, line, and function fields.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.split
+        description: The information indicating this LogEntry is part of a sequence of multiple log entries split from a single LogEntry, containing the UID, index, and totalSplits fields.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.errorGroups
+        description: The Error Reporting error groups associated with this LogEntry, if any.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.apphub
+        description: The AppHub application metadata associated with the monitored resource of this log entry.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.apphubDestination
+        description: The AppHub application metadata associated with the destination of this log entry.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.apphubSource
+        description: The AppHub application metadata associated with the source of this log entry.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.protoPayload
+        description: The log entry payload, represented as a protocol buffer. A log entry has exactly one of protoPayload, textPayload, or jsonPayload.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntries.textPayload
+        description: The log entry payload, represented as a Unicode string (UTF-8). A log entry has exactly one of protoPayload, textPayload, or jsonPayload.
+        type: String
+      - contextPath: GCP.Logging.LogEntries.jsonPayload
+        description: The log entry payload, represented as a structure that is expressed as a JSON object. A log entry has exactly one of protoPayload, textPayload, or jsonPayload.
+        type: Unknown
+      - contextPath: GCP.Logging.LogEntriesNextToken
+        description: The nextPageToken included when there are more results than those appearing in this response. To get the next set of results, call this command again using the value of nextPageToken as next_token.
+        type: String
 
 # The command is currently unsupported.
 #  - name: gcp-iam-project-deny-policy-create
