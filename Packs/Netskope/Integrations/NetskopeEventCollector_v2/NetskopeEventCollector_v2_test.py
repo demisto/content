@@ -58,7 +58,11 @@ def test_populate_prepare_events():
     """
     from NetskopeEventCollector_v2 import prepare_events
 
-    event = EVENTS_RAW.get("result")[0]
+    # Load a FRESH copy from disk: other tests feed the shared EVENTS_RAW list straight into the fetch
+    # flow, which mutates each event in place (timestamp -> _time). Reusing EVENTS_RAW here would read
+    # an already-mutated event and make this test order-dependent, so we reload it instead.
+    fresh_events = util_load_json("../NetskopeEventCollector/test_data/events_raw.json")
+    event = fresh_events["result"][0]
     prepare_events([event], event_type="audit")
     assert event.get("_time") == "2022-01-18T19:58:07.000Z"
     assert event.get("source_log_event") == "audit"
@@ -105,17 +109,17 @@ async def test_get_all_events(requests_mock, mocker):
     assert isinstance(new_last_run, dict), f"Expected new_last_run to be a dict, got {type(new_last_run)}"
     assert len(events) == 26, f"Expected 26 events, got {len(events)}"
     assert events[0].get("event_id") == "1", f"Expected first event_id to be '1', got {events[0].get('event_id')}"
-    assert events[0].get("_time") == "2023-05-22T10:30:16.000Z", (
-        f"Expected first _time to be '2023-05-22T10:30:16.000Z', got {events[0].get('_time')}"
-    )
+    assert (
+        events[0].get("_time") == "2023-05-22T10:30:16.000Z"
+    ), f"Expected first _time to be '2023-05-22T10:30:16.000Z', got {events[0].get('_time')}"
     # Check that new_last_run contains all expected event types
-    assert all(event_type in new_last_run for event_type in ALL_SUPPORTED_EVENT_TYPES), (
-        f"Not all event types present in new_last_run. Expected: {ALL_SUPPORTED_EVENT_TYPES}, Got: {list(new_last_run.keys())}"
-    )
+    assert all(
+        event_type in new_last_run for event_type in ALL_SUPPORTED_EVENT_TYPES
+    ), f"Not all event types present in new_last_run. Expected: {ALL_SUPPORTED_EVENT_TYPES}, Got: {list(new_last_run.keys())}"
     # Check that each event type has some timing information
-    assert all(isinstance(new_last_run[event_type], dict) for event_type in ALL_SUPPORTED_EVENT_TYPES), (
-        "All event types should have dict values in new_last_run"
-    )
+    assert all(
+        isinstance(new_last_run[event_type], dict) for event_type in ALL_SUPPORTED_EVENT_TYPES
+    ), "All event types should have dict values in new_last_run"
 
 
 @pytest.mark.asyncio
@@ -201,9 +205,9 @@ async def test_fetch_path_partial_failure(mocker):
     # The other types still contributed their events to the total (partial-failure accounting).
     assert total_count > 0, f"total_events_count should reflect the types that DID send, got {total_count}"
     # The failing type's cursor is not advanced, so it will be retried next cycle.
-    assert "next_fetch_start_time" not in new_last_run.get(failing_type, {}), (
-        "Failing type must NOT advance its cursor (so it retries next cycle)"
-    )
+    assert "next_fetch_start_time" not in new_last_run.get(
+        failing_type, {}
+    ), "Failing type must NOT advance its cursor (so it retries next cycle)"
 
 
 @pytest.mark.asyncio
@@ -403,9 +407,9 @@ def test_fix_last_run(last_run, supported_event_types, expected_result):
     from NetskopeEventCollector_v2 import remove_unsupported_event_types
 
     remove_unsupported_event_types(last_run, supported_event_types)
-    assert last_run == expected_result, (
-        f"Expected last_run={expected_result}, got {last_run} for supported_event_types={supported_event_types}"
-    )
+    assert (
+        last_run == expected_result
+    ), f"Expected last_run={expected_result}, got {last_run} for supported_event_types={supported_event_types}"
 
 
 @pytest.mark.asyncio
@@ -479,28 +483,79 @@ async def test_get_events_count(mocker):
 
 
 @pytest.mark.asyncio
-async def test_get_events_count_audit_uses_underscore_id(mocker):
+async def test_audit_skips_count_and_pages_directly(mocker):
     """
     Given:
-        - A Netskope Client counting `audit` events (audit events have no `id` field, only `_id`).
+        - The `audit` event type, whose Netskope dataset does NOT support the count() aggregation
+          (the count query always returns 0). Regression for XSUP-74841.
     When:
-        - Calling get_events_count for the audit type.
+        - Fetching audit events via fetch_and_send_events_async.
     Then:
-        - The count query must aggregate on `_id` (event_count:count(_id)), not `id`.
-        - Regression test for XSUP-74841 where `count(id)` returned 0 and audit was never fetched.
+        - get_events_count is NEVER called for audit (the count pre-flight is skipped).
+        - Events are paged directly and returned/sent, instead of being skipped because count == 0.
     """
-    from NetskopeEventCollector_v2 import Client
+    from NetskopeEventCollector_v2 import Client, fetch_and_send_events_async
 
     client = Client(BASE_URL, "token", False, False, ["audit"])
-    mock_data = mocker.patch.object(client, "get_events_data_async", return_value={"result": [{"event_count": 7}]})
 
-    count = await client.get_events_count("audit", {})
+    # If the code ever calls the count for audit, this would make it fail fast (count==0 => skip).
+    count_spy = mocker.patch.object(client, "get_events_count", return_value=0)
 
-    assert count == 7
-    # Verify the aggregation field sent to the API counts on `_id`, not `id`.
-    _, kwargs = mock_data.call_args
-    called_params = kwargs.get("params") if "params" in kwargs else mock_data.call_args[0][1]
-    assert called_params["fields"] == "event_count:count(_id)"
+    # One short page (fewer than the page size) => sequential paging stops after a single page.
+    audit_page = {"result": [{"_id": "a1", "timestamp": 1700000000}, {"_id": "a2", "timestamp": 1700000001}]}
+    mocker.patch.object(client, "get_events_data_async", return_value=audit_page)
+
+    # get-events path (send_to_xsiam=False) returns the actual events for inspection.
+    success, failures = await fetch_and_send_events_async(
+        client,
+        "audit",
+        {"limit": 10000, "insertionstarttime": "1", "insertionendtime": "2", "offset": 0},
+        limit=10000,
+        send_to_xsiam=False,
+    )
+
+    assert not failures
+    # count must NOT be used for audit
+    count_spy.assert_not_called()
+    # events were actually fetched (not skipped)
+    fetched = [ev for page in success for ev in page]
+    assert len(fetched) == 2
+    assert {e["_id"] for e in fetched} == {"a1", "a2"}
+
+
+@pytest.mark.asyncio
+async def test_audit_sequential_paging_stops_on_short_page(mocker):
+    """
+    Given:
+        - Audit returns a full page followed by a short page.
+    When:
+        - Fetching audit events (sequential, no-count path).
+    Then:
+        - Paging continues while pages are full and stops once a short page is returned.
+    """
+    from NetskopeEventCollector_v2 import Client, fetch_and_send_events_async
+
+    client = Client(BASE_URL, "token", False, False, ["audit"])
+    mocker.patch.object(client, "get_events_count", return_value=0)
+
+    page_size = 2
+    full_page = {"result": [{"_id": "1", "timestamp": 1}, {"_id": "2", "timestamp": 2}]}
+    short_page = {"result": [{"_id": "3", "timestamp": 3}]}
+    data_mock = mocker.patch.object(client, "get_events_data_async", side_effect=[full_page, short_page])
+
+    success, failures = await fetch_and_send_events_async(
+        client,
+        "audit",
+        {"limit": page_size, "insertionstarttime": "1", "insertionendtime": "2", "offset": 0},
+        limit=10000,
+        send_to_xsiam=False,
+    )
+
+    assert not failures
+    # Exactly two API calls: the full page, then the short page (which stops the loop).
+    assert data_mock.call_count == 2
+    fetched = [ev for page in success for ev in page]
+    assert {e["_id"] for e in fetched} == {"1", "2", "3"}
 
 
 @pytest.mark.asyncio
@@ -574,6 +629,7 @@ def test_populate_parsing_rule_fields():
                 "endpoint": "/events/data/{type}",
                 "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
                 "count_field": "event_count:count(id)",
+                "supports_count": True,
             },
         ),
         (
@@ -582,6 +638,7 @@ def test_populate_parsing_rule_fields():
                 "endpoint": "/events/data/{type}",
                 "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
                 "count_field": "event_count:count(id)",
+                "supports_count": True,
             },
         ),
         (
@@ -590,16 +647,18 @@ def test_populate_parsing_rule_fields():
                 "endpoint": "/events/data/{type}",
                 "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
                 "count_field": "event_count:count(id)",
+                "supports_count": True,
             },
         ),
-        # Audit uses the default endpoint/time params but MUST count on `_id`, since audit
-        # events have no `id` field. `count(id)` returns 0 and skips the fetch (XSUP-74841).
+        # Audit: the Netskope audit dataset does NOT support the count() aggregation (count always
+        # returns 0), so it is flagged supports_count=False and paged directly (XSUP-74841).
         (
             "audit",
             {
                 "endpoint": "/events/data/{type}",
                 "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-                "count_field": "event_count:count(_id)",
+                "count_field": "event_count:count(id)",
+                "supports_count": False,
             },
         ),
         (
@@ -608,6 +667,7 @@ def test_populate_parsing_rule_fields():
                 "endpoint": "/events/data/{type}",
                 "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
                 "count_field": "event_count:count(id)",
+                "supports_count": True,
             },
         ),
         # Unknown event type (should return default configuration)
@@ -617,6 +677,7 @@ def test_populate_parsing_rule_fields():
                 "endpoint": "/events/data/{type}",
                 "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
                 "count_field": "event_count:count(id)",
+                "supports_count": True,
             },
         ),
     ],
