@@ -3203,7 +3203,7 @@ script:
       description: The list of parent folder IDs.
       type: Unknown
   - name: google-drive-file-create
-    description: Creates a new metadata-only file or folder without uploading content. Use for creating quarantine folders or tombstone placeholder files.
+    description: Creates a new file or folder. By default the file is metadata-only, which is useful for creating quarantine folders or tombstone placeholder files. Provide the "content" argument to also write text content into the created file.
     arguments:
     - name: file_name
       required: true
@@ -3218,6 +3218,8 @@ script:
       description: The ID of the parent folder. If not specified, the file will be created in the user's root folder.
     - name: description
       description: A short description of the file or folder.
+    - name: content
+      description: 'Optional text content to write into the created file. When provided, the content is uploaded together with the file metadata in a single request. Requires a non-folder "mime_type" (for example "text/plain"), since folders cannot hold content. The maximum supported size is 5 MB. To upload binary files, use the google-drive-file-upload command with an entry ID instead.'
     - auto: PREDEFINED
       defaultValue: "false"
       description: 'Whether the requesting application supports both My Drives and shared drives.'

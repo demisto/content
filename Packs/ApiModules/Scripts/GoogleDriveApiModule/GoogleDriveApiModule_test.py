@@ -1259,6 +1259,144 @@ class TestFilePermissionMethods:
         assert call_kwargs["body"]["parents"] == ["shared_drive_root_id"]
 
     @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_without_content_uses_metadata_only_path(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-create is called without the content argument.
+
+        Given:
+        - Command args that do not include content.
+
+        When:
+        - Calling google-drive-file-create command.
+
+        Then:
+        - Ensure the metadata-only http_request path is used unchanged and no media is uploaded,
+          preserving backward compatibility for existing playbooks.
+        """
+        from GoogleDriveApiModule import file_create_command
+
+        mock_response = {
+            "kind": "drive#file",
+            "id": "metadata_only_id",
+            "name": "Placeholder.txt",
+            "mimeType": "text/plain",
+        }
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            "file_name": "Placeholder.txt",
+            "mime_type": "text/plain",
+            "user_id": "admin@example.com",
+        }
+
+        with patch("GoogleDriveApiModule.discovery.build") as mock_discovery_build:
+            result: CommandResults = file_create_command(gsuite_client, args)
+
+        # The content path must not be reached when content is not supplied.
+        mock_discovery_build.assert_not_called()
+        mocker_http_request.assert_called_once()
+
+        _, call_kwargs = mocker_http_request.call_args
+        assert call_kwargs["method"] == "POST"
+        assert call_kwargs["body"] == {"name": "Placeholder.txt", "mimeType": "text/plain"}
+        assert call_kwargs["params"]["supportsAllDrives"] is False
+        assert result.outputs_prefix == "GoogleDrive.File"
+        assert result.outputs["id"] == "metadata_only_id"
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_with_content_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-create is called with the content argument.
+
+        Given:
+        - Command args including content and a non-folder mime_type.
+
+        When:
+        - Calling google-drive-file-create command.
+
+        Then:
+        - Ensure the multipart upload path is used, the media body carries the UTF-8 encoded
+          content, and the outputs contract is unchanged.
+        """
+        from GoogleDriveApiModule import file_create_command
+
+        mock_response = {
+            "kind": "drive#file",
+            "id": "file_with_content_id",
+            "name": "Notes.txt",
+            "mimeType": "text/plain",
+            "parents": ["root"],
+        }
+        mock_create = MagicMock()
+        mock_create.execute.return_value = mock_response
+        mock_drive_service = MagicMock()
+        mock_drive_service.files.return_value.create.return_value = mock_create
+
+        args = {
+            "file_name": "Notes.txt",
+            "mime_type": "text/plain",
+            "user_id": "admin@example.com",
+            "parent": "root",
+            "description": "Investigation notes",
+            "content": "hello world",
+        }
+
+        with patch("GoogleDriveApiModule.discovery.build", return_value=mock_drive_service):
+            result: CommandResults = file_create_command(gsuite_client, args)
+
+        # The metadata-only path must not be used when content is supplied.
+        mocker_http_request.assert_not_called()
+
+        _, create_kwargs = mock_drive_service.files.return_value.create.call_args
+        assert create_kwargs["body"] == {
+            "name": "Notes.txt",
+            "mimeType": "text/plain",
+            "parents": ["root"],
+            "description": "Investigation notes",
+        }
+        assert create_kwargs["supportsAllDrives"] is False
+        assert create_kwargs["fields"] == "*"
+
+        media = create_kwargs["media_body"]
+        assert media.mimetype() == "text/plain"
+        assert media.getbytes(0, media.size()) == b"hello world"
+
+        assert result.outputs_prefix == "GoogleDrive.File"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "file_with_content_id"
+        assert "Created" in result.readable_output
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_with_content_and_folder_mime_type(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-create is called with content while mime_type is a folder.
+
+        Given:
+        - Command args including content and the default folder mime_type.
+
+        When:
+        - Calling google-drive-file-create command.
+
+        Then:
+        - Ensure a DemistoException is raised, since folders cannot hold content, and that
+          no API call is made.
+        """
+        from GoogleDriveApiModule import file_create_command
+
+        args = {
+            "file_name": "Quarantine Folder",
+            "user_id": "admin@example.com",
+            "content": "hello world",
+        }
+
+        with patch("GoogleDriveApiModule.discovery.build") as mock_discovery_build:  # noqa: SIM117
+            with pytest.raises(DemistoException, match="folders cannot hold content"):
+                file_create_command(gsuite_client, args)
+
+        mock_discovery_build.assert_not_called()
+        mocker_http_request.assert_not_called()
+
+    @patch(MOCKER_HTTP_METHOD)
     def test_file_delete_command_soft_delete_true(self, mocker_http_request, gsuite_client):
         """
         Scenario: google-drive-file-delete invoked with soft_delete=true.
