@@ -1235,6 +1235,7 @@ Deletes (revokes) a single sharing permission from a driveItem. Returns success 
 | MsGraphFiles.RemovedItemPermission.PermissionId | String | Echo of the permission_id argument that was deleted. |
 | MsGraphFiles.RemovedItemPermission.ObjectType | String | Echo of the object_type argument supplied to the command. |
 | MsGraphFiles.RemovedItemPermission.ObjectTypeId | String | Echo of the object_type_id argument supplied to the command. |
+
 ### msgraph-driveitem-activities-list
 
 ***
