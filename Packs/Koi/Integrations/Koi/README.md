@@ -583,3 +583,9 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Allowlist item 'example-extension' (marketplace: vscode) was added successfully.
+
+## Troubleshooting
+
+### Out-of-memory (OOM) on high-volume tenants
+
+This integration can fetch several event types (Alerts, Audit) in a single instance. On very high-volume tenants this may push a single instance toward its memory limit. Events are streamed to XSIAM page-by-page (send-and-flush), so peak memory is bounded by a single page regardless of total volume. If you still encounter OOM errors (e.g. "killed due to memory resource exhaustion"), it is recommended to **split the event types across multiple instances** — configure each instance to fetch a subset of the types (ideally one type per instance) using the **Event types to fetch** parameter. This spreads the fetch and send load across separate, isolated runtimes and reduces per-instance memory pressure and fetch time.

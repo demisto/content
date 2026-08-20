@@ -604,7 +604,11 @@ class TestFetchEventsCommand:
 
         fetch_events_command(mock_client)
 
-        mock_send.assert_called_once()
+        # Send-and-flush: each log type streams its page separately (Alerts + Audit = 2 sends),
+        # and every fetch-path send must use the streaming sender to keep memory flat.
+        assert mock_send.call_count == 2
+        for call in mock_send.call_args_list:
+            assert call.kwargs.get("use_streaming_send") is True
         mock_set_last_run.assert_called_once()
 
         # Verify last_run contains state for both log types
@@ -636,8 +640,10 @@ class TestFetchEventsCommand:
 
         fetch_events_command(mock_client)
 
-        # Should have sent only 1 event (alert-002, since alert-001 is deduped)
+        # Should have sent only 1 event (alert-002, since alert-001 is deduped),
+        # streamed page-by-page with the streaming sender.
         mock_send.assert_called_once()
+        assert mock_send.call_args.kwargs.get("use_streaming_send") is True
         sent_events = mock_send.call_args[0][0]
         assert len(sent_events) == 1
         assert sent_events[0]["id"] == "alert-002"
@@ -815,6 +821,94 @@ class TestFetchEventsCommand:
         assert "last_fetch_alerts" in last_run_arg
         assert "last_fetch_audit" not in last_run_arg
 
+    def test_send_and_flush_streams_one_send_per_page(self, mock_client, mocker):
+        """OOM fix (XSUP-73937): events must be streamed page-by-page, not accumulated.
+
+        With multiple full pages, send_events must be called once per page (send-and-flush)
+        with use_streaming_send=True — never once with the whole set. This proves peak
+        memory is bounded by a single page regardless of total volume.
+        """
+        page_size = Config.MAX_PAGE_SIZE
+        # Two full pages then a partial page for a single log type (Audit).
+        page1 = [{"id": f"audit-{i}", "created_at": f"2024-01-01T00:{i // 60:02d}:{i % 60:02d}Z"} for i in range(page_size)]
+        page2 = [
+            {"id": f"audit-{page_size + i}", "created_at": f"2024-01-01T01:{i // 60:02d}:{i % 60:02d}Z"} for i in range(page_size)
+        ]
+        page3 = [{"id": "audit-last", "created_at": "2024-01-01T02:00:00Z"}]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=[page1, page2, page3])
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # One send per page (3 pages) — never a single accumulated send.
+        assert mock_send.call_count == 3
+        for call in mock_send.call_args_list:
+            assert call.kwargs.get("use_streaming_send") is True
+        # Every page passed to send is bounded by page_size (no single giant list).
+        assert all(len(call.args[0]) <= page_size for call in mock_send.call_args_list)
+        # Total streamed equals all events across pages.
+        total_sent = sum(len(call.args[0]) for call in mock_send.call_args_list)
+        assert total_sent == (2 * page_size) + 1
+
+        # HWM state reflects the last page's newest event.
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["last_fetch_audit"] == "2024-01-01T02:00:00Z"
+        assert last_run_arg["previous_ids_audit"] == ["audit-last"]
+
+    def test_streaming_send_consuming_list_does_not_corrupt_state(self, mock_client, mocker):
+        """OOM fix (XSUP-73937): streaming send empties its input list — state must survive it.
+
+        CommonServerPython's use_streaming_send=True nulls out each slot of the list passed to
+        send_events as it serializes (free-as-you-go). This test makes the mock actually clear
+        the list (mimicking CSP), then asserts the HWM timestamp, HWM IDs and counts are still
+        computed correctly — proving all derived values are captured BEFORE the send consumes them.
+
+        Note: on a first run (no previous IDs) deduplicate_events returns the SAME page object,
+        so the streaming send here empties the very list the integration also derived HWM from —
+        this is precisely the aliasing case we must be safe against.
+        """
+        page = [
+            {"id": "audit-1", "created_at": "2024-01-01T00:00:00Z"},
+            {"id": "audit-2", "created_at": "2024-01-01T00:00:02Z"},
+            {"id": "audit-3", "created_at": "2024-01-01T00:00:02Z"},  # ties HWM with audit-2
+        ]
+        # Single partial page (len < page_size) so pagination stops after it.
+        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+
+        def consuming_send(events, use_streaming_send=False):
+            # Mimic CSP streaming send: null out every slot in the passed list.
+            if use_streaming_send:
+                for i in range(len(events)):
+                    events[i] = None
+
+        mock_send = mocker.patch.object(mock_client, "send_events", side_effect=consuming_send)
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # The page was streamed with the streaming sender (which emptied the list).
+        mock_send.assert_called_once()
+        assert mock_send.call_args.kwargs.get("use_streaming_send") is True
+
+        # Despite the send emptying the list, HWM state is intact and correct.
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:02Z"
+        assert set(last_run_arg["previous_ids_audit"]) == {"audit-2", "audit-3"}
+
 
 class TestLastRunState:
     """Parametrized tests for last_run state management across all scenarios."""
@@ -955,10 +1049,14 @@ class TestLastRunState:
         for key in expected_missing_keys:
             assert key not in last_run_arg, f"Unexpected key '{key}' found in last_run: {last_run_arg}"
 
-        # Verify event count
+        # Verify event count. Events are now streamed per page/log-type (send-and-flush),
+        # so sum the events across all send_events calls rather than expecting one call.
         if expected_event_count > 0:
-            mock_send.assert_called_once()
-            assert len(mock_send.call_args[0][0]) == expected_event_count
+            total_sent = sum(len(call.args[0]) for call in mock_send.call_args_list)
+            assert total_sent == expected_event_count
+            # Every fetch-path send must use the streaming sender to keep memory flat.
+            for call in mock_send.call_args_list:
+                assert call.kwargs.get("use_streaming_send") is True
         else:
             mock_send.assert_not_called()
 
@@ -3499,13 +3597,18 @@ class TestClientSendEvents:
     """Tests for the Client.send_events method."""
 
     def test_send_events_calls_send_events_to_xsiam(self, mock_client, mocker):
-        """Test that send_events delegates to send_events_to_xsiam with correct vendor/product."""
+        """Test that send_events delegates to send_events_to_xsiam with correct vendor/product.
+
+        By default (display path) streaming is off so the events survive for readable output.
+        """
         mock_send_to_xsiam = mocker.patch("Koi.send_events_to_xsiam")
         events = [{"id": "1", "_time": "2024-01-01T00:00:00Z"}, {"id": "2", "_time": "2024-01-01T00:00:01Z"}]
 
         mock_client.send_events(events)
 
-        mock_send_to_xsiam.assert_called_once_with(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        mock_send_to_xsiam.assert_called_once_with(
+            events=events, vendor=Config.VENDOR, product=Config.PRODUCT, use_streaming_send=False
+        )
 
     def test_send_events_with_empty_list(self, mock_client, mocker):
         """Test that send_events still calls send_events_to_xsiam when events list is empty."""
@@ -3513,7 +3616,20 @@ class TestClientSendEvents:
 
         mock_client.send_events([])
 
-        mock_send_to_xsiam.assert_called_once_with(events=[], vendor=Config.VENDOR, product=Config.PRODUCT)
+        mock_send_to_xsiam.assert_called_once_with(
+            events=[], vendor=Config.VENDOR, product=Config.PRODUCT, use_streaming_send=False
+        )
+
+    def test_send_events_streaming_forwarded(self, mock_client, mocker):
+        """Test that use_streaming_send=True is forwarded to send_events_to_xsiam (fetch path)."""
+        mock_send_to_xsiam = mocker.patch("Koi.send_events_to_xsiam")
+        events = [{"id": "1", "_time": "2024-01-01T00:00:00Z"}]
+
+        mock_client.send_events(events, use_streaming_send=True)
+
+        mock_send_to_xsiam.assert_called_once_with(
+            events=events, vendor=Config.VENDOR, product=Config.PRODUCT, use_streaming_send=True
+        )
 
 
 # endregion
