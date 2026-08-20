@@ -110,6 +110,41 @@ def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
     )
 
 
+def test_alert_search_request_limit_is_capped(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A limit that is higher than the maximum the Prisma Cloud alert search API accepts
+    When:
+        - Calling alert_search_request
+    Then:
+        - The limit sent to the API is capped to ALERT_SEARCH_MAX_LIMIT, so the API does not fail with
+          400 - Bad Request [{"i18nKey":"invalid_alert_search_limit"}]
+    """
+    from PrismaCloudV2 import ALERT_SEARCH_MAX_LIMIT
+
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request")
+    time_range = {"type": "relative", "value": {"amount": 3, "unit": "week"}}
+    prisma_cloud_v2_client.alert_search_request(time_range=time_range, filters=[], limit=ALERT_SEARCH_MAX_LIMIT + 1)
+
+    assert http_request.call_args.kwargs["json_data"]["limit"] == ALERT_SEARCH_MAX_LIMIT
+
+
+def test_alert_search_request_limit_under_max_is_not_changed(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A limit that is lower than the maximum the Prisma Cloud alert search API accepts
+    When:
+        - Calling alert_search_request
+    Then:
+        - The limit sent to the API is unchanged
+    """
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request")
+    time_range = {"type": "relative", "value": {"amount": 3, "unit": "week"}}
+    prisma_cloud_v2_client.alert_search_request(time_range=time_range, filters=[], limit=50)
+
+    assert http_request.call_args.kwargs["json_data"]["limit"] == 50
+
+
 def test_alert_get_details_command(mocker, prisma_cloud_v2_client):
     """
     Given:

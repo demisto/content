@@ -60,6 +60,7 @@ INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE = "Closed by XSOAR"
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
 PAGE_SIZE_MAX_VALUE = 10000
+ALERT_SEARCH_MAX_LIMIT = 10000
 
 DEFAULT_LIMIT = "50"
 
@@ -763,6 +764,11 @@ class Client(BaseClient):
         sort_by: Optional[List[str]] = None,
     ):
         params = assign_params(detailed=detailed)
+        if limit is not None and limit > ALERT_SEARCH_MAX_LIMIT:
+            demisto.debug(
+                f"Requested alert search limit {limit} exceeds the API maximum, using {ALERT_SEARCH_MAX_LIMIT} instead."
+            )
+            limit = ALERT_SEARCH_MAX_LIMIT
         data = remove_empty_values(
             {
                 "limit": limit,
