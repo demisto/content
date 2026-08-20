@@ -1862,39 +1862,39 @@ Uploads a War Room file (by entry ID) to a GCS bucket as an object. Required per
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Storage.Bucket.Name | String | The name of the bucket containing the uploaded object. |
-| GCP.Storage.Bucket.Object.kind | String | The kind of item this is. For objects, this is always storage\#object. |
-| GCP.Storage.Bucket.Object.id | String | The ID of the uploaded object, including the bucket name, object name, and generation number. |
-| GCP.Storage.Bucket.Object.selfLink | String | The link to the uploaded object. |
-| GCP.Storage.Bucket.Object.mediaLink | String | The media download link for the uploaded object. |
-| GCP.Storage.Bucket.Object.name | String | The name of the uploaded object. |
-| GCP.Storage.Bucket.Object.bucket | String | The name of the bucket containing the object. |
-| GCP.Storage.Bucket.Object.generation | String | The content generation of the uploaded object. Used for object versioning. |
-| GCP.Storage.Bucket.Object.metageneration | String | The version of the metadata for the object at this generation. |
-| GCP.Storage.Bucket.Object.contentType | String | The content type of the uploaded object. |
-| GCP.Storage.Bucket.Object.storageClass | String | The storage class of the uploaded object. |
-| GCP.Storage.Bucket.Object.size | String | The content length of the uploaded object in bytes. |
-| GCP.Storage.Bucket.Object.md5Hash | String | The MD5 hash of the uploaded object. |
-| GCP.Storage.Bucket.Object.crc32c | String | The CRC32c checksum of the uploaded object. |
-| GCP.Storage.Bucket.Object.etag | String | The HTTP 1.1 Entity tag for the uploaded object. |
-| GCP.Storage.Bucket.Object.timeCreated | Date | The creation time of the uploaded object in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.updated | Date | The modification time of the uploaded object metadata in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.timeStorageClassUpdated | Date | The time at which the object's storage class was last changed, in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.contentEncoding | String | The content encoding of the uploaded object. |
-| GCP.Storage.Bucket.Object.contentDisposition | String | The content disposition of the uploaded object. |
-| GCP.Storage.Bucket.Object.contentLanguage | String | The content language of the uploaded object. |
-| GCP.Storage.Bucket.Object.cacheControl | String | The cache control directive for the uploaded object. |
-| GCP.Storage.Bucket.Object.metadata | Unknown | User-provided metadata, in key/value pairs. |
-| GCP.Storage.Bucket.Object.acl | Unknown | The access control list for the uploaded object. |
-| GCP.Storage.Bucket.Object.owner.entity | String | The entity of the object owner. |
-| GCP.Storage.Bucket.Object.owner.entityId | String | The ID of the object owner entity. |
-| GCP.Storage.Bucket.Object.componentCount | Number | The number of component objects that make up a composite object. |
-| GCP.Storage.Bucket.Object.customTime | Date | A user-specified timestamp for the uploaded object, in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.eventBasedHold | Boolean | Whether an event-based hold is active on the uploaded object. |
-| GCP.Storage.Bucket.Object.temporaryHold | Boolean | Whether a temporary hold is active on the uploaded object. |
-| GCP.Storage.Bucket.Object.retentionExpirationTime | Date | The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.kmsKeyName | String | The Cloud KMS key used to encrypt the uploaded object, if any. |
-| GCP.Storage.Bucket.Object.customerEncryption.encryptionAlgorithm | String | The encryption algorithm used with the customer-supplied encryption key. |
-| GCP.Storage.Bucket.Object.customerEncryption.keySha256 | String | The SHA256 hash of the customer-supplied encryption key. |
+| GCP.Storage.BucketObject.kind | String | The kind of item this is. For objects, this is always storage\#object. |
+| GCP.Storage.BucketObject.id | String | The ID of the uploaded object, including the bucket name, object name, and generation number. |
+| GCP.Storage.BucketObject.selfLink | String | The link to the uploaded object. |
+| GCP.Storage.BucketObject.mediaLink | String | The media download link for the uploaded object. |
+| GCP.Storage.BucketObject.name | String | The name of the uploaded object. |
+| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.BucketObject.generation | String | The content generation of the uploaded object. Used for object versioning. |
+| GCP.Storage.BucketObject.metageneration | String | The version of the metadata for the object at this generation. |
+| GCP.Storage.BucketObject.contentType | String | The content type of the uploaded object. |
+| GCP.Storage.BucketObject.storageClass | String | The storage class of the uploaded object. |
+| GCP.Storage.BucketObject.size | String | The content length of the uploaded object in bytes. |
+| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the uploaded object. |
+| GCP.Storage.BucketObject.crc32c | String | The CRC32c checksum of the uploaded object. |
+| GCP.Storage.BucketObject.etag | String | The HTTP 1.1 Entity tag for the uploaded object. |
+| GCP.Storage.BucketObject.timeCreated | Date | The creation time of the uploaded object in RFC 3339 format. |
+| GCP.Storage.BucketObject.updated | Date | The modification time of the uploaded object metadata in RFC 3339 format. |
+| GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time at which the object's storage class was last changed, in RFC 3339 format. |
+| GCP.Storage.BucketObject.contentEncoding | String | The content encoding of the uploaded object. |
+| GCP.Storage.BucketObject.contentDisposition | String | The content disposition of the uploaded object. |
+| GCP.Storage.BucketObject.contentLanguage | String | The content language of the uploaded object. |
+| GCP.Storage.BucketObject.cacheControl | String | The cache control directive for the uploaded object. |
+| GCP.Storage.BucketObject.metadata | Unknown | User-provided metadata, in key/value pairs. |
+| GCP.Storage.BucketObject.acl | Unknown | The access control list for the uploaded object. |
+| GCP.Storage.BucketObject.owner.entity | String | The entity of the object owner. |
+| GCP.Storage.BucketObject.owner.entityId | String | The ID of the object owner entity. |
+| GCP.Storage.BucketObject.componentCount | Number | The number of component objects that make up a composite object. |
+| GCP.Storage.BucketObject.customTime | Date | A user-specified timestamp for the uploaded object, in RFC 3339 format. |
+| GCP.Storage.BucketObject.eventBasedHold | Boolean | Whether an event-based hold is active on the uploaded object. |
+| GCP.Storage.BucketObject.temporaryHold | Boolean | Whether a temporary hold is active on the uploaded object. |
+| GCP.Storage.BucketObject.retentionExpirationTime | Date | The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format. |
+| GCP.Storage.BucketObject.kmsKeyName | String | The Cloud KMS key used to encrypt the uploaded object, if any. |
+| GCP.Storage.BucketObject.customerEncryption.encryptionAlgorithm | String | The encryption algorithm used with the customer-supplied encryption key. |
+| GCP.Storage.BucketObject.customerEncryption.keySha256 | String | The SHA256 hash of the customer-supplied encryption key. |
 
 ### gcp-storage-bucket-object-download
 
@@ -1949,39 +1949,39 @@ Copies an object from a source bucket to a destination bucket. Required permissi
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Storage.Bucket.Name | String | The name of the destination bucket containing the copied object. |
-| GCP.Storage.Bucket.Object.kind | String | The kind of item this is. For objects, this is always storage\#object. |
-| GCP.Storage.Bucket.Object.id | String | The ID of the copied object, including the bucket name, object name, and generation number. |
-| GCP.Storage.Bucket.Object.selfLink | String | The link to the copied object. |
-| GCP.Storage.Bucket.Object.mediaLink | String | The media download link for the copied object. |
-| GCP.Storage.Bucket.Object.name | String | The name of the copied object. |
-| GCP.Storage.Bucket.Object.bucket | String | The name of the bucket containing the object. |
-| GCP.Storage.Bucket.Object.generation | String | The content generation of the copied object. Used for object versioning. |
-| GCP.Storage.Bucket.Object.metageneration | String | The version of the metadata for the object at this generation. |
-| GCP.Storage.Bucket.Object.contentType | String | The content type of the copied object. |
-| GCP.Storage.Bucket.Object.storageClass | String | The storage class of the copied object. |
-| GCP.Storage.Bucket.Object.size | String | The content length of the copied object in bytes. |
-| GCP.Storage.Bucket.Object.md5Hash | String | The MD5 hash of the copied object. |
-| GCP.Storage.Bucket.Object.crc32c | String | The CRC32c checksum of the copied object. |
-| GCP.Storage.Bucket.Object.etag | String | The HTTP 1.1 Entity tag for the copied object. |
-| GCP.Storage.Bucket.Object.timeCreated | Date | The creation time of the copied object in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.updated | Date | The modification time of the copied object metadata in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.timeStorageClassUpdated | Date | The time at which the object's storage class was last changed, in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.contentEncoding | String | The content encoding of the copied object. |
-| GCP.Storage.Bucket.Object.contentDisposition | String | The content disposition of the copied object. |
-| GCP.Storage.Bucket.Object.contentLanguage | String | The content language of the copied object. |
-| GCP.Storage.Bucket.Object.cacheControl | String | The cache control directive for the copied object. |
-| GCP.Storage.Bucket.Object.metadata | Unknown | User-provided metadata, in key/value pairs. |
-| GCP.Storage.Bucket.Object.acl | Unknown | The access control list for the copied object. |
-| GCP.Storage.Bucket.Object.owner.entity | String | The entity of the object owner. |
-| GCP.Storage.Bucket.Object.owner.entityId | String | The ID of the object owner entity. |
-| GCP.Storage.Bucket.Object.componentCount | Number | The number of component objects that make up a composite object. |
-| GCP.Storage.Bucket.Object.customTime | Date | A user-specified timestamp for the copied object, in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.eventBasedHold | Boolean | Whether an event-based hold is active on the copied object. |
-| GCP.Storage.Bucket.Object.temporaryHold | Boolean | Whether a temporary hold is active on the copied object. |
-| GCP.Storage.Bucket.Object.retentionExpirationTime | Date | The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format. |
-| GCP.Storage.Bucket.Object.kmsKeyName | String | The Cloud KMS key used to encrypt the copied object, if any. |
-| GCP.Storage.Bucket.Object.customerEncryption.encryptionAlgorithm | String | The encryption algorithm used with the customer-supplied encryption key. |
-| GCP.Storage.Bucket.Object.customerEncryption.keySha256 | String | The SHA256 hash of the customer-supplied encryption key. |
+| GCP.Storage.BucketObject.kind | String | The kind of item this is. For objects, this is always storage\#object. |
+| GCP.Storage.BucketObject.id | String | The ID of the copied object, including the bucket name, object name, and generation number. |
+| GCP.Storage.BucketObject.selfLink | String | The link to the copied object. |
+| GCP.Storage.BucketObject.mediaLink | String | The media download link for the copied object. |
+| GCP.Storage.BucketObject.name | String | The name of the copied object. |
+| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.BucketObject.generation | String | The content generation of the copied object. Used for object versioning. |
+| GCP.Storage.BucketObject.metageneration | String | The version of the metadata for the object at this generation. |
+| GCP.Storage.BucketObject.contentType | String | The content type of the copied object. |
+| GCP.Storage.BucketObject.storageClass | String | The storage class of the copied object. |
+| GCP.Storage.BucketObject.size | String | The content length of the copied object in bytes. |
+| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the copied object. |
+| GCP.Storage.BucketObject.crc32c | String | The CRC32c checksum of the copied object. |
+| GCP.Storage.BucketObject.etag | String | The HTTP 1.1 Entity tag for the copied object. |
+| GCP.Storage.BucketObject.timeCreated | Date | The creation time of the copied object in RFC 3339 format. |
+| GCP.Storage.BucketObject.updated | Date | The modification time of the copied object metadata in RFC 3339 format. |
+| GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time at which the object's storage class was last changed, in RFC 3339 format. |
+| GCP.Storage.BucketObject.contentEncoding | String | The content encoding of the copied object. |
+| GCP.Storage.BucketObject.contentDisposition | String | The content disposition of the copied object. |
+| GCP.Storage.BucketObject.contentLanguage | String | The content language of the copied object. |
+| GCP.Storage.BucketObject.cacheControl | String | The cache control directive for the copied object. |
+| GCP.Storage.BucketObject.metadata | Unknown | User-provided metadata, in key/value pairs. |
+| GCP.Storage.BucketObject.acl | Unknown | The access control list for the copied object. |
+| GCP.Storage.BucketObject.owner.entity | String | The entity of the object owner. |
+| GCP.Storage.BucketObject.owner.entityId | String | The ID of the object owner entity. |
+| GCP.Storage.BucketObject.componentCount | Number | The number of component objects that make up a composite object. |
+| GCP.Storage.BucketObject.customTime | Date | A user-specified timestamp for the copied object, in RFC 3339 format. |
+| GCP.Storage.BucketObject.eventBasedHold | Boolean | Whether an event-based hold is active on the copied object. |
+| GCP.Storage.BucketObject.temporaryHold | Boolean | Whether a temporary hold is active on the copied object. |
+| GCP.Storage.BucketObject.retentionExpirationTime | Date | The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format. |
+| GCP.Storage.BucketObject.kmsKeyName | String | The Cloud KMS key used to encrypt the copied object, if any. |
+| GCP.Storage.BucketObject.customerEncryption.encryptionAlgorithm | String | The encryption algorithm used with the customer-supplied encryption key. |
+| GCP.Storage.BucketObject.customerEncryption.keySha256 | String | The SHA256 hash of the customer-supplied encryption key. |
 
 ### gcp-storage-bucket-object-delete
 

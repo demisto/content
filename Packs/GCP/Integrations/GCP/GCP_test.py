@@ -6925,8 +6925,8 @@ def test_storage_bucket_object_upload_success(mocker):
     assert call_kwargs["bucket"] == "b1"
     assert call_kwargs["name"] == "o1"
     assert "f.txt was successfully uploaded" in result.readable_output
-    assert result.outputs_prefix == "GCP.Storage.Bucket"
-    assert result.outputs == {"Name": "b1", "Object": {"name": "o1", "bucket": "b1"}}
+    assert result.outputs_prefix == "GCP.Storage.BucketObject"
+    assert result.outputs == {"name": "o1", "bucket": "b1"}
 
 
 def test_storage_bucket_object_upload_with_acl(mocker):
@@ -7199,8 +7199,8 @@ def test_storage_bucket_object_copy_success(mocker):
     assert call_kwargs["sourceObject"] == "o1"
     assert call_kwargs["destinationBucket"] == "dst"
     assert call_kwargs["destinationObject"] == "o2"
-    assert result.outputs_prefix == "GCP.Storage.Bucket"
-    assert result.outputs == {"Name": "dst", "Object": {"name": "o2", "bucket": "dst"}}
+    assert result.outputs_prefix == "GCP.Storage.BucketObject"
+    assert result.outputs == {"name": "o2", "bucket": "dst"}
 
 
 def test_storage_bucket_object_copy_default_destination_name(mocker):

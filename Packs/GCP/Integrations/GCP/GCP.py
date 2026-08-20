@@ -2044,12 +2044,11 @@ def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> Co
     demisto.debug(f"[GCP: storage_bucket_object_upload] Uploading {file_name} to bucket {bucket_name} as {object_name}")
     response = storage.objects().insert(**request_params).execute()  # pylint: disable=E1101
 
-    outputs = {"Name": bucket_name, "Object": response}
     return CommandResults(
         readable_output=f"File {file_name} was successfully uploaded to bucket {bucket_name} as {object_name}.",
-        outputs_prefix="GCP.Storage.Bucket",
-        outputs=outputs,
-        outputs_key_field="Name",
+        outputs_prefix="GCP.Storage.BucketObject",
+        outputs=response,
+        outputs_key_field="id",
         raw_response=response,
     )
 
@@ -2134,12 +2133,11 @@ def storage_bucket_object_copy(creds: Credentials, args: dict[str, Any]) -> Comm
         .execute()
     )
 
-    outputs = {"Name": destination_bucket_name, "Object": response}
     return CommandResults(
         readable_output=(f"File was successfully copied to bucket {destination_bucket_name} as {destination_object_name}."),
-        outputs_prefix="GCP.Storage.Bucket",
-        outputs=outputs,
-        outputs_key_field="Name",
+        outputs_prefix="GCP.Storage.BucketObject",
+        outputs=response,
+        outputs_key_field="id",
         raw_response=response,
     )
 
