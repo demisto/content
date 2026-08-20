@@ -1,0 +1,21 @@
+{
+    "items": [
+        {
+            "id": "req-001",
+            "item_id": "ext-abc",
+            "name": "Test Extension",
+            "marketplace": "chrome_web_store",
+            "platform": "chrome",
+            "approval_status": "pending",
+            "requested_by": "user@example.com",
+            "justification": "Needed for development",
+            "reject_reason": null,
+            "version": "1.0.0",
+            "publisher_name": "Test Publisher",
+            "created_at": "2025-06-01T10:00:00Z",
+            "updated_at": "2025-06-01T10:00:00Z",
+            "resolved_at": null
+        }
+    ],
+    "total_count": 1
+}

@@ -1,12 +1,12 @@
 {
-    "name": "KOI",
-    "description": "Koi (Agentic Endpoint Security) provides visibility and governance over non-binary software supply chains including browser extensions, IDE extensions, code packages, AI models, MCP servers, OS packages, binaries, and repositories.",
+    "name": "KOI Dev",
+    "description": "Development/testing version of the KOI (Agentic Endpoint Security) integration pack. Installs side-by-side with the production KOI pack for validating new features.",
     "support": "xsoar",
     "currentVersion": "1.3.0",
     "author": "Jon Huebner",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "jhuebner@paloaltonetworks.com",
-    "created": "2026-03-26T00:00:00Z",
+    "created": "2026-08-20T00:00:00Z",
     "categories": [
         "Endpoint"
     ],
@@ -31,11 +31,14 @@
         "guardrails",
         "Supply Chain",
         "AI Security",
-        "Software Composition Analysis"
+        "Software Composition Analysis",
+        "dev",
+        "development"
     ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
         "platform"
-    ]
+    ],
+    "hidden": true
 }
