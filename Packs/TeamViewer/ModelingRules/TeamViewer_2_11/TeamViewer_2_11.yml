@@ -1,0 +1,7 @@
+fromversion: 8.15.0
+id: TeamViewer_ModelingRule
+name: TeamViewer Modeling Rule
+rules: ''
+schema: ''
+supportedModules:
+- xsiam

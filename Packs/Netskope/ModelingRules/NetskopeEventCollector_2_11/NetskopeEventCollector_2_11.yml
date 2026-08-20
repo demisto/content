@@ -1,6 +1,5 @@
-fromversion: 6.10.0
-toversion: 8.14.0
-id: Netskope_Modeling_Rule
+fromversion: 8.15.0
+id: Netskope_ModelingRule
 name: Netskope Modeling Rule
 rules: ''
 schema: ''
