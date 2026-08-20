@@ -18,6 +18,9 @@
         "platform"
     ],
     "defaultDataSource": "InfobloxBloxOneThreatDefense",
+    "itemPrefix": [
+        "Infoblox Cloud"
+    ],
     "supportedModules": [
         "agentix",
         "xsiam"
