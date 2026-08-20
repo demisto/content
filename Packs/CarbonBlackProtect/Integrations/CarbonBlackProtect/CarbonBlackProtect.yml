@@ -1523,6 +1523,21 @@ script:
     - contextPath: CBP.UserDisable.Name
       description: The name of the user account.
       type: String 
+    name: cbp-user-delete
+    arguments:
+    - name: user_id
+      required: true
+      description: ID of the user to delete. Retrieved from cbp-user-data-get.
+    outputs:
+    - contextPath: CBP.UserDelete.Department
+      description: The department of the user.
+    - contextPath: CBP.UserDelete.EmailAddress
+      description: The email of the user.
+    - contextPath: CBP.UserDelete.ID
+      description: The ID of the user in Carbon Black.
+    - contextPath: CBP.UserDelete.Name
+      description: The name of the user account.
+    description: Sends request to delete user account.
   dockerimage: demisto/python3:3.12.13.10116658
   subtype: python3
   isfetch: true
