@@ -1107,6 +1107,6 @@ In the ***absolute-device-application-list*** command, the following argument wa
 
 The following configuration parameters require the **Cortex XSIAM** license:
 
-- isFetchEvents
+- Fetch Events
 
 </~PLATFORM>
