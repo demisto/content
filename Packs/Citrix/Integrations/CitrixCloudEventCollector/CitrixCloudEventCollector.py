@@ -14,6 +14,7 @@ PRODUCT = "Cloud"
 RECORDS_REQUEST_LIMIT = 200
 ACCESS_TOKEN_CONST = "access_token"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+FIRST_FETCH_LOOKBACK = "5 minutes"
 
 
 """ CLIENT CLASS """
@@ -159,7 +160,13 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    start_date_time = last_run.get("LastRun") or datetime.utcnow().strftime(DATE_FORMAT)
+    # Without a stored LastRun, look back FIRST_FETCH_LOOKBACK instead of "now" (the API returns
+    # events at/after start_date_time and events arrive delayed, so "now" yields nothing).
+    start_date_time = last_run.get("LastRun")
+    if not start_date_time:
+        first_fetch_dt = dateparser.parse(f"{FIRST_FETCH_LOOKBACK} ago", settings={"TIMEZONE": "UTC"})
+        start_date_time = first_fetch_dt.strftime(DATE_FORMAT)  # type: ignore[union-attr]
+
     records, _ = client.get_records_with_pagination(
         limit=max_fetch, start_date_time=start_date_time, last_record_id=last_run.get("RecordId")
     )
