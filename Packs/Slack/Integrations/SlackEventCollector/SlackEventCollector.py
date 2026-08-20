@@ -269,6 +269,11 @@ def fetch_slack_events(client: Client, params: dict, last_run: dict) -> list[dic
         last_run = {}
     limit = arg_to_number(params.get("limit")) or 1000
     upper_bound = arg_to_timestamp(params.get("latest")) or get_now_timestamp()
+
+    oldest_ts = arg_to_timestamp(params.get("oldest"))
+    if oldest_ts is not None and oldest_ts > upper_bound:
+        return_error("The 'oldest' argument must be earlier than or equal to the 'latest' argument.")
+
     demisto.debug(f"Starting Slack event collection cycle. limit={limit}, upper_bound={upper_bound}, last_run={last_run}")
     extra_params = {
         "action": params.get("action"),

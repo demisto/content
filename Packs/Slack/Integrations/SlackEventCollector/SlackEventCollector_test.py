@@ -1137,3 +1137,49 @@ def test_fetch_events_later_window_first_page_failure_propagates(mocker):
             params={"limit": 100},
             last_run={"last_fetched_time": 0, "last_fetched_ids": []},
         )
+
+
+def test_get_events_inverted_range_returns_error(mocker):
+    """
+    Given:
+        - slack-get-events called with 'oldest' later than 'latest' (an inverted range).
+    When:
+        - Running the command.
+    Then:
+        - return_error is raised (SystemExit) with a clear message, and no API call is made.
+    """
+    from SlackEventCollector import get_events_command
+
+    return_error = mocker.patch("SlackEventCollector.return_error", side_effect=SystemExit)
+    http = mocker.patch.object(Client, "_http_request")
+
+    with pytest.raises(SystemExit):
+        get_events_command(Client(base_url=""), args={"limit": 10, "oldest": "300", "latest": "100"})
+
+    assert "'oldest' argument must be earlier than or equal to the 'latest'" in return_error.call_args.args[0]
+    http.assert_not_called()  # validation short-circuits before any API call
+
+
+def test_fetch_events_no_oldest_arg_skips_range_validation(mocker):
+    """
+    Given:
+        - The automated fetch-events collector, which never supplies an 'oldest' argument.
+    When:
+        - Running the collection cycle (upper_bound defaults to the current time).
+    Then:
+        - The inverted-range guard is a no-op (no return_error) and collection proceeds normally.
+    """
+    from SlackEventCollector import fetch_events_command
+
+    mocker.patch("SlackEventCollector.get_now_timestamp", return_value=300)
+    return_error = mocker.patch("SlackEventCollector.return_error", side_effect=SystemExit)
+    mocker.patch.object(Client, "_http_request", return_value=make_page([{"id": "a", "date_create": 100}]))
+
+    events, _ = fetch_events_command(
+        Client(base_url=""),
+        params={"limit": 100},
+        last_run={"last_fetched_time": 0, "last_fetched_ids": []},
+    )
+
+    return_error.assert_not_called()  # no 'oldest' arg -> guard is a no-op
+    assert [e["id"] for e in events] == ["a"]
