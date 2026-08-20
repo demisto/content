@@ -710,9 +710,7 @@ class EWSClient:
                 demisto.debug(f"resolving {part=} {path_parts=}")
                 folder = folder // part
             except TRANSIENT_SERVER_ERRORS:
-                demisto.debug(
-                    f"Transient error while resolving {part=} of {path_parts=}, propagating.\n{traceback.format_exc()}"
-                )
+                demisto.debug(f"Transient error while resolving {part=} of {path_parts=}, propagating.\n{traceback.format_exc()}")
                 raise
             except Exception as e:
                 demisto.debug(f"got error {e}")
