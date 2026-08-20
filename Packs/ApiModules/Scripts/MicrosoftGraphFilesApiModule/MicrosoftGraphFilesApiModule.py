@@ -31,6 +31,7 @@ DRIVEITEM_SELECT_FIELDS = (
     "id,name,size,webUrl,createdDateTime,lastModifiedDateTime,createdBy,lastModifiedBy,parentReference,file,folder"
 )
 
+
 def parse_key_to_context(obj: dict) -> dict:
     """Parse graph api data as received from Microsoft Graph API into Demisto's conventions
 
@@ -106,8 +107,7 @@ def encode_sharing_url(share_url: str) -> str:
 
 
 def validate_object_type(object_type: str) -> None:
-    """Raise if object_type is not a resource a driveItem can be addressed under.
-    """
+    """Raise if object_type is not a resource a driveItem can be addressed under."""
     if object_type not in VALID_OBJECT_TYPES:
         raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: {', '.join(VALID_OBJECT_TYPES)}.")
 
@@ -871,7 +871,7 @@ class MsGraphClient:
         sharepointIds is not returned even when asked for in $select, so it is fetched with a
         second call. It carries the identifiers activities and analytics need.
         """
-        params = {"$select": self.DRIVEITEM_SELECT_FIELDS}
+        params = {"$select": DRIVEITEM_SELECT_FIELDS}
 
         if share_url:
             # The /shares route needs Files.ReadWrite.All (application) - a higher permission
