@@ -199,30 +199,30 @@ Updates Google Cloud Storage (GCS) bucket metadata, including settings such as v
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.StorageBucket.Metadata | Unknown | Updated bucket metadata. |
-| GCP.StorageBucket.Metadata.name | String | The name of the GCP bucket. |
-| GCP.StorageBucket.Metadata.id | String | The ID of the GCP bucket. |
-| GCP.StorageBucket.Metadata.location | String | The location of the bucket. |
-| GCP.StorageBucket.Metadata.storageClass | String | The storage class of the bucket \(e.g., STANDARD, NEARLINE\). |
-| GCP.StorageBucket.Metadata.created | Date | The creation timestamp of the bucket. |
-| GCP.StorageBucket.Metadata.updated | Date | The last update timestamp of the bucket. |
-| GCP.StorageBucket.Metadata.metageneration | Number | The metadata generation of the bucket. |
-| GCP.StorageBucket.Metadata.labels | Unknown | The labels attached to the bucket. |
-| GCP.StorageBucket.Metadata.defaultEventBasedHold | Boolean | Whether a default event-based hold is enabled on the bucket. |
-| GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod | Number | The duration in seconds that objects in the bucket must be retained. |
-| GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime | Date | The time from which the retention policy is effective. |
-| GCP.StorageBucket.Metadata.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
-| GCP.StorageBucket.Metadata.versioning.enabled | Boolean | Whether object versioning is enabled. |
-| GCP.StorageBucket.Metadata.logging.logBucket | String | The destination bucket where access logs are stored. |
-| GCP.StorageBucket.Metadata.logging.logObjectPrefix | String | The object prefix used for logging. |
-| GCP.StorageBucket.Metadata.lifecycle.rule | Unknown | A list of lifecycle management rules for the bucket. |
-| GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess | Boolean | Whether uniform bucket-level access is enabled. |
-| GCP.StorageBucket.Metadata.cors | Unknown | CORS configuration for the bucket. |
-| GCP.StorageBucket.Metadata.customPlacementConfig | Unknown | Custom placement configuration for multi-region buckets. |
-| GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName | String | The default Cloud KMS key used to encrypt objects. |
-| GCP.StorageBucket.Metadata.billing.requesterPays | Boolean | Whether requester pays is enabled. |
-| GCP.StorageBucket.Metadata.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. |
-| GCP.StorageBucket.Metadata.website.notFoundPage | String | The path to the custom 404 page for the bucket website. |
+| GCP.Storage.Bucket | Unknown | Updated bucket metadata. |
+| GCP.Storage.Bucket.name | String | The name of the GCP bucket. |
+| GCP.Storage.Bucket.id | String | The ID of the GCP bucket. |
+| GCP.Storage.Bucket.location | String | The location of the bucket. |
+| GCP.Storage.Bucket.storageClass | String | The storage class of the bucket \(e.g., STANDARD, NEARLINE\). |
+| GCP.Storage.Bucket.created | Date | The creation timestamp of the bucket. |
+| GCP.Storage.Bucket.updated | Date | The last update timestamp of the bucket. |
+| GCP.Storage.Bucket.metageneration | Number | The metadata generation of the bucket. |
+| GCP.Storage.Bucket.labels | Unknown | The labels attached to the bucket. |
+| GCP.Storage.Bucket.defaultEventBasedHold | Boolean | Whether a default event-based hold is enabled on the bucket. |
+| GCP.Storage.Bucket.retentionPolicy.retentionPeriod | Number | The duration in seconds that objects in the bucket must be retained. |
+| GCP.Storage.Bucket.retentionPolicy.effectiveTime | Date | The time from which the retention policy is effective. |
+| GCP.Storage.Bucket.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
+| GCP.Storage.Bucket.versioning.enabled | Boolean | Whether object versioning is enabled. |
+| GCP.Storage.Bucket.logging.logBucket | String | The destination bucket where access logs are stored. |
+| GCP.Storage.Bucket.logging.logObjectPrefix | String | The object prefix used for logging. |
+| GCP.Storage.Bucket.lifecycle.rule | Unknown | A list of lifecycle management rules for the bucket. |
+| GCP.Storage.Bucket.iamConfiguration.uniformBucketLevelAccess | Boolean | Whether uniform bucket-level access is enabled. |
+| GCP.Storage.Bucket.cors | Unknown | CORS configuration for the bucket. |
+| GCP.Storage.Bucket.customPlacementConfig | Unknown | Custom placement configuration for multi-region buckets. |
+| GCP.Storage.Bucket.encryption.defaultKmsKeyName | String | The default Cloud KMS key used to encrypt objects. |
+| GCP.Storage.Bucket.billing.requesterPays | Boolean | Whether requester pays is enabled. |
+| GCP.Storage.Bucket.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. |
+| GCP.Storage.Bucket.website.notFoundPage | String | The path to the custom 404 page for the bucket website. |
 
 ### gcp-iam-project-policy-binding-remove
 
@@ -720,24 +720,24 @@ Retrieves the list of objects in a bucket. Required permission: storage.objects.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.BucketObject.id | String | The unique identifier for the object. |
-| GCP.Storage.BucketObject.name | String | The name of the object. |
-| GCP.Storage.BucketObject.kind | String | The type of resource \(for example, storage\#object\). |
-| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
-| GCP.Storage.BucketObject.contentType | String | The MIME type of the object. |
-| GCP.Storage.BucketObject.size | Number | The size of the object in bytes. |
-| GCP.Storage.BucketObject.crc32c | String | The CRC32C checksum of the object. |
-| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the object. |
-| GCP.Storage.BucketObject.etag | String | The HTTP entity tag of the object. |
-| GCP.Storage.BucketObject.generation | String | The generation number of the object. |
-| GCP.Storage.BucketObject.metageneration | String | The metageneration number of the object. |
-| GCP.Storage.BucketObject.storageClass | String | The storage class of the object. |
-| GCP.Storage.BucketObject.mediaLink | String | The link for downloading the object content. |
-| GCP.Storage.BucketObject.selfLink | String | The link to the object resource in the GCP API. |
-| GCP.Storage.BucketObject.timeCreated | Date | The time when the object was created. |
-| GCP.Storage.BucketObject.timeFinalized | Date | The time when the object was finalized. |
-| GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
-| GCP.Storage.BucketObject.updated | Date | The time when the object was last modified. |
+| GCP.Storage.Buckets.Objects.id | String | The unique identifier for the object. |
+| GCP.Storage.Buckets.Objects.name | String | The name of the object. |
+| GCP.Storage.Buckets.Objects.kind | String | The type of resource \(for example, storage\#object\). |
+| GCP.Storage.Buckets.Objects.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.Buckets.Objects.contentType | String | The MIME type of the object. |
+| GCP.Storage.Buckets.Objects.size | Number | The size of the object in bytes. |
+| GCP.Storage.Buckets.Objects.crc32c | String | The CRC32C checksum of the object. |
+| GCP.Storage.Buckets.Objects.md5Hash | String | The MD5 hash of the object. |
+| GCP.Storage.Buckets.Objects.etag | String | The HTTP entity tag of the object. |
+| GCP.Storage.Buckets.Objects.generation | String | The generation number of the object. |
+| GCP.Storage.Buckets.Objects.metageneration | String | The metageneration number of the object. |
+| GCP.Storage.Buckets.Objects.storageClass | String | The storage class of the object. |
+| GCP.Storage.Buckets.Objects.mediaLink | String | The link for downloading the object content. |
+| GCP.Storage.Buckets.Objects.selfLink | String | The link to the object resource in the GCP API. |
+| GCP.Storage.Buckets.Objects.timeCreated | Date | The time when the object was created. |
+| GCP.Storage.Buckets.Objects.timeFinalized | Date | The time when the object was finalized. |
+| GCP.Storage.Buckets.Objects.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
+| GCP.Storage.Buckets.Objects.updated | Date | The time when the object was last modified. |
 
 ### gcp-storage-bucket-policy-list
 
@@ -895,28 +895,28 @@ Retrieves details for a specific snapshot. Required permission: compute.snapshot
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
-| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
-| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
-| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
-| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
-| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
-| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
-| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
-| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
-| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
-| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
-| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
-| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
-| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
-| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
-| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
-| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
-| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.Snapshotד.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshotד.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshotד.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshotד.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshotד.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshotד.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshotד.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshotד.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshotד.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshotד.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshotד.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshotד.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshotד.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshotד.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshotד.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshotד.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshotד.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshotד.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshotד.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshotד.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshotד.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshotד.storageLocations | Unknown | List of storage locations for the snapshot. |
 
 ### gcp-compute-instances-aggregated-list-by-ip
 
@@ -941,11 +941,11 @@ Returns an aggregated list of instances across all zones that can be filtered by
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Instance.name | string | Instance name. |
-| GCP.Compute.Instance.id | string | Instance ID. |
-| GCP.Compute.Instance.zone | string | Instance zone URL. |
-| GCP.Compute.Instance.status | string | Instance status. |
-| GCP.Compute.Instance.networkInterfaces | Unknown | Network interfaces of the instance. |
+| GCP.Compute.AggregatedInstances.name | string | Instance name. |
+| GCP.Compute.AggregatedInstances.id | string | Instance ID. |
+| GCP.Compute.AggregatedInstances.zone | string | Instance zone URL. |
+| GCP.Compute.AggregatedInstances.status | string | Instance status. |
+| GCP.Compute.AggregatedInstances.networkInterfaces | Unknown | Network interfaces of the instance. |
 
 ### gcp-compute-network-tag-set
 
@@ -1594,28 +1594,28 @@ Lists snapshots in a specific project. Required permission: compute.snapshots.li
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
-| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
-| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
-| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
-| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
-| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
-| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
-| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
-| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
-| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
-| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
-| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
-| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
-| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
-| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
-| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
-| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
-| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.Snapshotד.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshotד.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshotד.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshotד.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshotד.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshotד.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshotד.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshotד.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshotד.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshotד.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshotד.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshotד.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshotד.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshotד.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshotד.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshotד.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshotד.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshotד.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshotד.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshotד.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshotד.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshotד.storageLocations | Unknown | List of storage locations for the snapshot. |
 | GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
 
 ### gcp-bq-dataset-policy-remove

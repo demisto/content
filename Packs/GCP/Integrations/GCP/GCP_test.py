@@ -268,7 +268,7 @@ def test_compute_firewall_list_with_pagination_and_filter(mocker):
     assert called_kwargs["pageToken"] == "t0"
     assert called_kwargs["filter"] == "name eq fw-*"
 
-    assert res.outputs["GCP.Compute(true)"]["FirewallNextToken"] == "t1"
+    assert res.outputs["GCP.Compute(true)"]["FirewallsNextToken"] == "t1"
 
 
 def test_compute_firewall_get_found_and_not_found(mocker):
@@ -290,7 +290,7 @@ def test_compute_firewall_get_found_and_not_found(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     mocker.patch("GCP.tableToMarkdown", return_value="md")
     res = compute_firewall_get(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
-    assert res.outputs_prefix == "GCP.Compute.Firewall"
+    assert res.outputs_prefix == "GCP.Compute.Firewalls"
 
     # Not found case
     resp = mocker.MagicMock()
@@ -324,7 +324,7 @@ def test_compute_snapshots_list_with_pagination(mocker):
     mocker.patch("GCP.tableToMarkdown", return_value="md")
 
     res = compute_snapshots_list(mock_creds, args)
-    assert res.outputs["GCP.Compute(true)"]["SnapshotNextToken"] == "b"
+    assert res.outputs["GCP.Compute(true)"]["SnapshotsNextToken"] == "b"
 
 
 def test_compute_snapshot_get_found_and_not_found(mocker):
@@ -346,7 +346,7 @@ def test_compute_snapshot_get_found_and_not_found(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     mocker.patch("GCP.tableToMarkdown", return_value="md")
     res = compute_snapshot_get(mock_creds, {"project_id": "p1", "resource_name": "snap-1"})
-    assert res.outputs_prefix == "GCP.Compute.Snapshot"
+    assert res.outputs_prefix == "GCP.Compute.Snapshots"
 
     # Not found
     resp = mocker.MagicMock()
@@ -400,8 +400,8 @@ def test_compute_instances_aggregated_list_by_ip_internal(mocker):
     res = compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6", "limit": "10"})
 
     # Expect only i-2
-    assert len(res.outputs) == 1
-    assert res.outputs[0]["name"] == "i-2"
+    assert len(res.outputs["GCP.Compute.AggregatedInstances(val.id && val.id == obj.id)"]) == 1
+    assert res.outputs["GCP.Compute.AggregatedInstances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
 
 
 def test_compute_instances_aggregated_list_by_ip_external(mocker):
@@ -449,8 +449,8 @@ def test_compute_instances_aggregated_list_by_ip_external(mocker):
     )
 
     # Expect only i-2
-    assert len(res.outputs) == 1
-    assert res.outputs[0]["name"] == "i-2"
+    assert len(res.outputs["GCP.Compute.AggregatedInstances(val.id && val.id == obj.id)"]) == 1
+    assert res.outputs["GCP.Compute.AggregatedInstances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
 
 
 def test__collect_instance_ips_basic():
@@ -947,7 +947,7 @@ def test_storage_bucket_metadata_update_enable_both_settings(mocker):
     assert body["iamConfiguration"]["uniformBucketLevelAccess"]["enabled"] is False
 
     # Check outputs
-    assert result.outputs_prefix == "GCP.StorageBucket.Metadata"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
     assert result.outputs == mock_response
     assert result.outputs_key_field == "name"
 
@@ -2940,8 +2940,7 @@ def test_storage_bucket_list_basic(mocker):
     result = storage_bucket_list(creds, args)
 
     mock_buckets.list.assert_called_with(project="p1", maxResults=10, prefix="p", pageToken="t")
-    assert result.outputs_prefix == "GCP.Storage.Bucket"
-    assert result.outputs[0]["name"] == "b1"
+    assert result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"][0]["name"] == "b1"
 
 
 def test_storage_bucket_get_basic(mocker):
@@ -2969,7 +2968,7 @@ def test_storage_bucket_get_basic(mocker):
     result = storage_bucket_get(creds, {"bucket_name": "b1"})
 
     mock_buckets.get.assert_called_with(bucket="b1")
-    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
     assert result.outputs["name"] == "b1"
 
 
@@ -2995,6 +2994,7 @@ def test_storage_bucket_objects_list_basic(mocker):
                 "updated": "2024-01-02T00:00:00Z",
                 "md5Hash": "md5",
                 "crc32c": "crc",
+                "id": "bucket_name/object_name/generation_number",
             }
         ]
     }
@@ -3005,8 +3005,8 @@ def test_storage_bucket_objects_list_basic(mocker):
     result = storage_bucket_objects_list(creds, args)
 
     mock_objects.list.assert_called_with(bucket="b1", prefix="p/", delimiter="/", maxResults=5, pageToken="tok")
-    assert result.outputs_prefix == "GCP.Storage.BucketObject"
-    assert result.outputs[0]["name"] == "o1"
+    assert "GCP.Storage.Buckets(val.name && val.name == obj.name)" in result.outputs
+    assert result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"]["Objects"][0]["name"] == "o1"
 
 
 def test_storage_bucket_policy_list_with_version(mocker):
@@ -3028,7 +3028,7 @@ def test_storage_bucket_policy_list_with_version(mocker):
     result = storage_bucket_policy_list(creds, args)
 
     mock_buckets.getIamPolicy.assert_called_with(bucket="b1", optionsRequestedPolicyVersion=3)
-    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicies"
     assert result.outputs["version"] == 3
 
 
@@ -3052,7 +3052,7 @@ def test_storage_bucket_policy_set_basic(mocker):
     result = storage_bucket_policy_set(creds, args)
 
     mock_buckets.setIamPolicy.assert_called_with(bucket="b1", body=policy)
-    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicies"
     assert result.outputs["etag"] == "etag1"
 
 
@@ -3075,15 +3075,15 @@ def test_storage_bucket_object_policy_list_normal_and_ubla(mocker):
     creds = mocker.Mock(spec=Credentials)
     result = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
     mock_oac.list.assert_called_with(bucket="b1", object="o1")
-    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
     assert result.outputs[0]["entity"] == "allUsers"
 
     # Case 2: UBLA enabled -> delegates to bucket policy list
     mocker.patch("GCP._is_ubla_enabled", return_value=True)
     # Patch bucket policy list to observe delegation
-    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicy"))
+    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicies"))
     result2 = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
-    assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
 
 
 def test_storage_bucket_object_policy_set_update_then_insert(mocker):
@@ -3111,7 +3111,7 @@ def test_storage_bucket_object_policy_set_update_then_insert(mocker):
 
     mock_oac.patch.assert_called()
     mock_oac.insert.assert_called()
-    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
     assert result.outputs[0]["entity"] == "allUsers"
 
 
