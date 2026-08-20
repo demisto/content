@@ -42,7 +42,7 @@ More information can be found [here](https://docs.umbrella.com/deployment-umbrel
 2. Click **Amazon S3**.
 3. Click **Connect** or **Connect Another Instance**.
 4. Set the following values:
-   - SQS URL - Refer to Configure an Amazon Simple Queue Service (SQS) [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3).
+   - SQS URL - Refer to Configure an Amazon Simple Queue Service (SQS) [here](https://cortex-docs.paloaltonetworks.com/cortex-xsiam/configure-cortex-xsiam/cortex-xsiam-data-sources/vendor-specific-data-sources-and-connectors/amazon/amazon-s3/ingest-generic-logs-from-amazon-s3).
    - Name as `Cisco Umbrella`
    - AWS Client ID
    - AWS Client Secret
@@ -53,6 +53,6 @@ More information can be found [here](https://docs.umbrella.com/deployment-umbrel
    - Compression as `gzip`
    - Multiline Parsing Regex as `^\"\d{4,}`
 
-For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3).
+For more information, see this [doc](https://cortex-docs.paloaltonetworks.com/cortex-xsiam/configure-cortex-xsiam/cortex-xsiam-data-sources/vendor-specific-data-sources-and-connectors/amazon/amazon-s3/ingest-generic-logs-from-amazon-s3).
 
 </~XSIAM>
