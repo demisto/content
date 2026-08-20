@@ -175,7 +175,7 @@ class Client(BaseClient):
         Returns:
             The reachable (or best-effort) API URL to use and persist.
         """
-        if is_url_reachable(api_url, verify=self.use_ssl, trust_env=self.trust_env):
+        if self._is_url_reachable(api_url):
             demisto.debug(f"CDL - oproxy api_url is reachable, using it as-is: {api_url}")
             return api_url
 
@@ -184,6 +184,30 @@ class Client(BaseClient):
         if mapped_url != api_url:
             demisto.info(f"CDL - Using migrated SLS api_url: {mapped_url}")
         return mapped_url
+
+    def _is_url_reachable(self, url: str) -> bool:
+        """Performs a lightweight reachability probe against the given URL.
+
+        Any failure - including a timeout (host unreachable), connection error, or any other exception -
+        is treated as "not reachable" and returns False. A successful HTTP response means the host is
+        reachable and returns True.
+
+        Args:
+            url: The URL to probe.
+
+        Returns:
+            True if the host responded, False on timeout / connection error / any error.
+        """
+        try:
+            with requests.Session() as session:
+                session.trust_env = self.trust_env
+                session.get(url, timeout=URL_REACHABILITY_TIMEOUT, verify=self.use_ssl)
+            demisto.debug(f"CDL - URL reachable: {url}")
+            return True
+        except Exception as e:
+            demisto.info(f"CDL - URL not reachable: {url}. Error: {e}")
+            demisto.debug(f"CDL - URL reachability probe traceback for {url}:\n{traceback.format_exc()}")
+            return False
 
     def _get_access_token_with_backoff_strategy(self) -> dict:
         """Implements a backoff strategy for retrieving an access token.
@@ -409,33 +433,6 @@ def map_to_migrated_url(original_url: str) -> str:
 
     demisto.debug(f"CDL - Mapped URL '{original_url}' to migrated URL: {migrated_url}")
     return migrated_url
-
-
-def is_url_reachable(url: str, verify: bool = True, trust_env: bool = False) -> bool:
-    """Performs a lightweight reachability probe against the given URL.
-
-    Any failure - including a timeout (host unreachable), connection error, or any
-    other exception - is treated as "not reachable" and returns False. Any HTTP
-    response (regardless of status code) means the host is reachable and returns True.
-
-    Args:
-        url: The URL to probe.
-        verify: Whether to verify the SSL certificate.
-        trust_env: Whether to trust environment proxy settings.
-
-    Returns:
-        True if the host responded, False on timeout / connection error / any error.
-    """
-    try:
-        with requests.Session() as session:
-            session.trust_env = trust_env
-            session.get(url, timeout=URL_REACHABILITY_TIMEOUT, verify=verify)
-            demisto.debug(f"CDL - URL reachable: {url}")
-            return True
-    except Exception as e:
-        demisto.info(f"CDL - URL not reachable: {url}. Error: {e}")
-        demisto.debug(f"CDL - URL reachability probe traceback for {url}:\n{traceback.format_exc()}")
-        return False
 
 
 def human_readable_time_from_epoch_time(epoch_time: int, utc_time: bool = False):
