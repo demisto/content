@@ -602,7 +602,7 @@ script:
       type: String
   - name: bitbucket-issue-create
     deprecated: true
-    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Creates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.'
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-create-issue*** command in the Atlassian Jira v3 integration instead. Creates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -765,7 +765,7 @@ script:
       type: Unknown
   - name: bitbucket-issue-list
     deprecated: true
-    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.'
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-get-issue*** command (for a single issue) or the ***jira-issue-query*** command (to list issues using JQL) in the Atlassian Jira v3 integration instead. If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -893,7 +893,7 @@ script:
       type: Number
   - name: bitbucket-issue-update
     deprecated: true
-    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Updates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.'
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-edit-issue*** command in the Atlassian Jira v3 integration instead. Updates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -1750,7 +1750,7 @@ script:
       type: String
   - name: bitbucket-issue-comment-create
     deprecated: true
-    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Creates a comment on an issue in Bitbucket.'
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-add-comment*** command in the Atlassian Jira v3 integration instead. Creates a comment on an issue in Bitbucket.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -1842,7 +1842,7 @@ script:
       type: String
   - name: bitbucket-issue-comment-delete
     deprecated: true
-    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Deletes a comment on an issue in Bitbucket.'
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-delete-comment*** command in the Atlassian Jira v3 integration instead. Deletes a comment on an issue in Bitbucket.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -1854,7 +1854,7 @@ script:
       description: The ID of the comment to delete. To get the comment_id, use the !bitbucket-issue-comment-list command.
   - name: bitbucket-issue-comment-list
     deprecated: true
-    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.'
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-get-comments*** command in the Atlassian Jira v3 integration instead. Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -1949,7 +1949,7 @@ script:
       type: String
   - name: bitbucket-issue-comment-update
     deprecated: true
-    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Updates a specific comment on a given issue.'
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-edit-comment*** command in the Atlassian Jira v3 integration instead. Updates a specific comment on a given issue.'
     arguments:
     - name: repo
       description: The repository name or slug.

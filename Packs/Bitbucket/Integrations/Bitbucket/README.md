@@ -1295,7 +1295,7 @@ Returns the content of the given file, along with the option to download it.
 ### bitbucket-issue-create
 
 ***
-Creates an issue in Bitbucket.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-create-issue*** command in the Atlassian Jira v3 integration instead. Creates an issue in Bitbucket.
 
 ##### Required Permissions
 
@@ -1443,7 +1443,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 ### bitbucket-issue-list
 
 ***
-If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-get-issue*** command (for a single issue) or the ***jira-issue-query*** command (to list issues using JQL) in the Atlassian Jira v3 integration instead. If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.
 
 #### Base Command
 
@@ -1683,7 +1683,7 @@ If an issue_id is given, returns the information about it. Otherwise, returns a 
 ### bitbucket-issue-update
 
 ***
-Updates an issue in Bitbucket.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-edit-issue*** command in the Atlassian Jira v3 integration instead. Updates an issue in Bitbucket.
 
 ##### Required Permissions
 
@@ -2931,7 +2931,7 @@ Returns a list of the pull requests. If a state is provided than the list will c
 ### bitbucket-issue-comment-create
 
 ***
-Creates a comment on an issue in Bitbucket.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-add-comment*** command in the Atlassian Jira v3 integration instead. Creates a comment on an issue in Bitbucket.
 
 #### Base Command
 
@@ -3060,7 +3060,7 @@ Creates a comment on an issue in Bitbucket.
 ### bitbucket-issue-comment-delete
 
 ***
-Deletes a comment on an issue in Bitbucket.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-delete-comment*** command in the Atlassian Jira v3 integration instead. Deletes a comment on an issue in Bitbucket.
 
 #### Base Command
 
@@ -3085,7 +3085,7 @@ There is no context output for this command.
 ### bitbucket-issue-comment-list
 
 ***
-Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-get-comments*** command in the Atlassian Jira v3 integration instead. Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
 
 #### Base Command
 
@@ -3288,7 +3288,7 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 ### bitbucket-issue-comment-update
 
 ***
-Updates a specific comment on a given issue.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-edit-comment*** command in the Atlassian Jira v3 integration instead. Updates a specific comment on a given issue.
 
 #### Base Command
 
