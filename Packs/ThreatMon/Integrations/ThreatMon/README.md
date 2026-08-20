@@ -87,7 +87,7 @@ Support: [integration@threatmonit.io](mailto:integration@threatmonit.io)
 
 ## License Requirements
 
-The following configuration parameters require one of these licenses: **Cortex XSIAM**, or **Agentix**:
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
 
 - Fetch incidents
 

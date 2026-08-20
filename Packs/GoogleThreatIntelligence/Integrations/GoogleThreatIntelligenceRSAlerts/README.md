@@ -486,7 +486,7 @@ Update the status of an RS Alert.
 
 ## License Requirements
 
-The following configuration parameters require one of these licenses: **Cortex XSIAM**, or **Agentix**:
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
 
 - Fetch incidents
 

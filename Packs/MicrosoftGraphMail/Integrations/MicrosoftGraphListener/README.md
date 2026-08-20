@@ -714,7 +714,7 @@ In case of a **hash verification** error:
 
 ## License Requirements
 
-The following configuration parameters require one of these licenses: **Agentix**, or **Cortex XSIAM**:
+The following configuration parameters require one of these licenses: **Agentix** or **Cortex XSIAM**:
 
 - Fetch incidents
 

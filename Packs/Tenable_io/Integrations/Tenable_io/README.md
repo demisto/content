@@ -1649,7 +1649,7 @@ The following configuration parameters require the **Cortex XSIAM** license:
 
 - Fetch events
 
-The following configuration parameters require one of these licenses: **Cortex XSIAM**, or **Exposure Management**:
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Exposure Management**:
 
 - Fetch assets and vulnerabilities
 

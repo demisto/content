@@ -3429,7 +3429,7 @@ Note: This action is only supported on XDR Agent version 8.9 and above.
 
 ## License Requirements
 
-The following commands require one of these licenses: **Cloud Runtime Security**, **EP / EDR - Endpoint Protection**, or **Cortex XSIAM**.
+The following commands require one of these licenses: **Cloud Runtime Security**, **EP / EDR - Endpoint Protection**, or **Cortex XSIAM**:
 
 - `core-isolate-endpoint`
 - `core-isolate-endpoint-quick-action`

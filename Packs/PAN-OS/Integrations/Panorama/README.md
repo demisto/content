@@ -10266,7 +10266,7 @@ Gets rule hit counts from the firewall.  When connected to Panorama this command
 
 ## License Requirements
 
-The following configuration parameters require one of these licenses: **Agentix**, or **Cortex XSIAM**:
+The following configuration parameters require one of these licenses: **Agentix** or **Cortex XSIAM**:
 
 - Fetch incidents
 

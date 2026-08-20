@@ -3205,7 +3205,7 @@ Create an asset group.
 
 ## License Requirements
 
-The following configuration parameters require one of these licenses: **Cortex XSIAM**, or **Exposure Management**:
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Exposure Management**:
 
 - Fetch Assets
 

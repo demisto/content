@@ -1069,7 +1069,7 @@ The following commands require one of these licenses: **Cortex Cloud**, **Cloud 
 
 - `core-list-endpoints`
 
-The following commands require one of these licenses: **Cloud Runtime Security**, or **Cloud Posture (Security)**:
+The following commands require one of these licenses: **Cloud Runtime Security** or **Cloud Posture (Security)**:
 
 - `core-add-assessment-profile`
 - `core-list-compliance-standards`
