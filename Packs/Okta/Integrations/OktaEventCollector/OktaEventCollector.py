@@ -294,6 +294,10 @@ class Client(ContentClient):
             split_url = urlsplit(next_link_url)
             base_url = urlunsplit((split_url.scheme, split_url.netloc, split_url.path, "", ""))
             link_params = dict(parse_qsl(split_url.query))
+            # Set page size and ordering explicitly so the API does not fall back to its
+            # smaller default page or reverse the order, which would stall the cursor.
+            link_params["limit"] = str(page_size)
+            link_params["sortOrder"] = Config.SORT_ORDER
             return self._http_request(method="GET", full_url=base_url, params=link_params, resp_type="response")
 
         params = {
