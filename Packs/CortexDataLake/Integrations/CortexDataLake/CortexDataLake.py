@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import os
 import re
 import json
+import traceback
 from pan_cortex_data_lake import Credentials, exceptions, QueryService
 import time
 import base64
@@ -57,6 +58,37 @@ FETCH_TABLE_HR_NAME = {
     "log.config": "Cortex Common Config",
 }
 BAD_REQUEST_REGEX = r"^Error in API call \[400\].*"
+
+# Strata Logging Service (SLS) migration mapping.
+# Following the SLS migration, the oproxy may return a pre-migration URL that is no longer reachable.
+# If the URL returned by oproxy is unreachable, we fall back to the migrated URL using this table,
+# which maps the exact pre-migration URL (as returned by oproxy) to its migrated URL (whole URL to whole URL).
+# Only the URLs listed here are mapped; any other URL is left unchanged.
+MIGRATED_SLS_URL_BY_ORIGINAL_URL = {
+    # americas
+    "https://api.us.cdl.paloaltonetworks.com": "https://read-api.us1.prd.strata.logging.paloaltonetworks.com",
+    # europe
+    "https://api.nl.cdl.paloaltonetworks.com": "https://read-api.eu1.prd.strata.logging.paloaltonetworks.com",
+    # au
+    "https://api.au1.se1.cdl.paloaltonetworks.com": "https://read-api.au1.prd.strata.logging.paloaltonetworks.com",
+    # ca
+    "https://api.ca1.ne1.cdl.paloaltonetworks.com": "https://read-api.ca1.prd.strata.logging.paloaltonetworks.com",
+    # de
+    "https://api.de1.ew3.cdl.paloaltonetworks.com": "https://read-api.de1.prd.strata.logging.paloaltonetworks.com",
+    # fr
+    "https://api.fr1.ew9.cdl.paloaltonetworks.com": "https://read-api.fr1.prd.strata.logging.paloaltonetworks.com",
+    # jp
+    "https://api.jp1.ne1.cdl.paloaltonetworks.com": "https://read-api.jp1.prd.strata.logging.paloaltonetworks.com",
+    # in
+    "https://api.in1.as1.cdl.paloaltonetworks.com": "https://read-api.in1.prd.strata.logging.paloaltonetworks.com",
+    # id
+    "https://api.id1.se2.cdl.paloaltonetworks.com": "https://read-api.id1.prd.strata.logging.paloaltonetworks.com",
+    # sg
+    "https://api.sg1.se1.cdl.paloaltonetworks.com": "https://read-api.sg1.prd.strata.logging.paloaltonetworks.com",
+    # uk
+    "https://api.uk.cdl.paloaltonetworks.com": "https://read-api.uk1.prd.strata.logging.paloaltonetworks.com",
+}
+URL_REACHABILITY_TIMEOUT = 10
 
 
 class Client(BaseClient):
@@ -125,7 +157,57 @@ class Client(BaseClient):
                 f"Missing attribute in response: access_token, instance_id or api are missing.\n"
                 f"Oproxy response: {oproxy_response}"
             )
+        # Following the SLS migration, the URL returned by oproxy may point to a pre-migration (unreachable) host.
+        # Probe it and, if unreachable, fall back to the migrated URL from the mapping table before it is persisted.
+        api_url = self._resolve_reachable_api_url(api_url)
         return access_token, api_url, instance_id, refresh_token, expires_in
+
+    def _resolve_reachable_api_url(self, api_url: str) -> str:
+        """Returns a reachable SLS API URL.
+
+        Probes the URL returned by oproxy; if it is unreachable (timeout / connection error / any error),
+        attempts to map it to its migrated equivalent via the whole-URL mapping table. If no mapping
+        exists, the original URL is returned unchanged.
+
+        Args:
+            api_url: The API URL as returned by oproxy.
+
+        Returns:
+            The reachable (or best-effort) API URL to use and persist.
+        """
+        if self._is_url_reachable(api_url):
+            demisto.debug(f"CDL - oproxy api_url is reachable, using it as-is: {api_url}")
+            return api_url
+
+        demisto.info(f"CDL - oproxy api_url is unreachable: {api_url}. Attempting to map to the migrated SLS URL.")
+        mapped_url = map_to_migrated_url(api_url)
+        if mapped_url != api_url:
+            demisto.info(f"CDL - Using migrated SLS api_url: {mapped_url}")
+        return mapped_url
+
+    def _is_url_reachable(self, url: str) -> bool:
+        """Performs a lightweight reachability probe against the given URL.
+
+        Any failure - including a timeout (host unreachable), connection error, or any other exception -
+        is treated as "not reachable" and returns False. A successful HTTP response means the host is
+        reachable and returns True.
+
+        Args:
+            url: The URL to probe.
+
+        Returns:
+            True if the host responded, False on timeout / connection error / any error.
+        """
+        try:
+            with requests.Session() as session:
+                session.trust_env = self.trust_env
+                session.get(url, timeout=URL_REACHABILITY_TIMEOUT, verify=self.use_ssl)
+            demisto.debug(f"CDL - URL reachable: {url}")
+            return True
+        except Exception as e:
+            demisto.info(f"CDL - URL not reachable: {url}. Error: {e}")
+            demisto.debug(f"CDL - URL reachability probe traceback for {url}:\n{traceback.format_exc()}")
+            return False
 
     def _get_access_token_with_backoff_strategy(self) -> dict:
         """Implements a backoff strategy for retrieving an access token.
@@ -328,6 +410,29 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def map_to_migrated_url(original_url: str) -> str:
+    """Maps a pre-migration SLS URL to its migrated equivalent by exact whole-URL lookup.
+
+    Looks up the exact URL returned by oproxy in the migration mapping table. If the URL
+    is present, the migrated URL is returned. If it is not in the table, the original URL
+    is returned unchanged.
+
+    Args:
+        original_url: The API URL as returned by oproxy.
+
+    Returns:
+        The migrated URL if the URL is mapped, otherwise the original URL.
+    """
+    migrated_url = MIGRATED_SLS_URL_BY_ORIGINAL_URL.get(original_url)
+
+    if not migrated_url:
+        demisto.info(f"CDL - URL '{original_url}' is not in the migration table. Using the original URL unchanged.")
+        return original_url
+
+    demisto.debug(f"CDL - Mapped URL '{original_url}' to migrated URL: {migrated_url}")
+    return migrated_url
 
 
 def human_readable_time_from_epoch_time(epoch_time: int, utc_time: bool = False):
