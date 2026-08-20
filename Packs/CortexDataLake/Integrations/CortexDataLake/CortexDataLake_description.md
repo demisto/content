@@ -7,7 +7,7 @@ This integration was integrated and tested with version 2 of Strata Logging Serv
 
 ---
 
-## Configure Strata Logging Service XSOAR Connector on Cortex XSOAR 
+## Configure Strata Logging Service XSOAR Connector on Cortex XSOAR
 
 ---
 
@@ -15,8 +15,8 @@ This integration was integrated and tested with version 2 of Strata Logging Serv
 2. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
 3. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and log in using your Palo Alto Networks credentials.
 4. Under the `Cortex™ XSOAR` app select the relevant instance. If you don't have an active `Cortex™ XSOAR` app check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started) to learn about app activation.
-5. Insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order
-to get the __Registration ID__, __Encryption Key__, and __Client Secret__.
+5. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order
+to get the __Registration ID__, __Encryption Key__, and either __Authentication Token__ or __Client Secret__.
 6. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 7. Search for Palo Alto Networks Cortex v2.
 8. Click __Add instance__ to create and configure a new integration instance.
@@ -24,7 +24,7 @@ to get the __Registration ID__, __Encryption Key__, and __Client Secret__.
     * __Registration ID__: From the authentication process.
        * The token retrieval URL is inferred based on the tenant's FedRAMP status unless explicitly specified in the __Registration ID__ parameter in the format `REGISTRATION_ID@URL`.
     * __Encryption Key__: From the authentication process.
-    * __Client Secret__: From the authentication process.
+    * __Authentication Token__ OR __Client Secret__: From the authentication process.
     * __proxy__: Use system proxy settings.
     * __insecure__: Trust any certificate (not secure).
     * __Fetch incidents__: Whether to fetch incidents.
