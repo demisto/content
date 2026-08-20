@@ -1,0 +1,68 @@
+{
+    "druva_druva_raw": {
+        "timeStamp": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "clientOS": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventID": {
+            "type": "int",
+            "is_array": false
+        },
+        "eventState": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventType": {
+            "type": "string",
+            "is_array": false
+        },
+        "initiator": {
+            "type": "string",
+            "is_array": false
+        },
+        "inSyncDataSourceID": {
+            "type": "int",
+            "is_array": false
+        },
+        "inSyncUserEmail": {
+            "type": "string",
+            "is_array": false
+        },
+        "inSyncUserID": {
+            "type": "int",
+            "is_array": false
+        },
+        "inSyncUserName": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "profileName": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "int",
+            "is_array": false
+        },
+        "inSyncDataSourceName": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

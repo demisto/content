@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: IllusiveNetworks_ModelingRule
+name: IllusiveNetworks Modeling Rule
+rules: ''
+schema: ''
+tags: Illusive Networks
+supportedModules:
+- xsiam

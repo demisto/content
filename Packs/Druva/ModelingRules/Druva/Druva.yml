@@ -1,4 +1,5 @@
 fromversion: 8.6.0  # Will be updated with XSIAM version updates
+toversion: 8.14.0
 id: Druva_Druva_ModelingRule
 name: Druva Druva Modeling Rule
 rules: ''
