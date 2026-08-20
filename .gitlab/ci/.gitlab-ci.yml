@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "sk_update_aud"
+  CURRENT_BRANCH_NAME: $INFRA_BRANCH
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "sk_update_aud"
+    ref: $INFRA_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
