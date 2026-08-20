@@ -1,7 +1,6 @@
-fromversion: 8.3.0 
-toversion: 8.14.0
+fromversion: 8.15.0
 id: IBM_AIX_ModelingRule
-name: IBM AIX Modeling Rule
+name: IBM_AIX Modeling Rule
 rules: ''
 schema: ''
 tags: ''
