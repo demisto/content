@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: F5APM_ModelingRule
+name: F5APM Modeling Rule
+rules: ''
+schema: ''
+tags: F5 APM
+supportedModules:
+- xsiam
