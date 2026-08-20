@@ -33,7 +33,9 @@ from MicrosoftGraphFilesApiModule import (
     list_site_permissions_command,
     parse_key_to_context,
     remove_identity_key,
+    replace_an_existing_file_command,
     resolve_item_addressing,
+    validate_object_type,
     update_driveitem_command,
     update_site_permissions_command,
     upload_new_file_command,
@@ -1660,6 +1662,78 @@ def test_summarize_permission_grantees_empty() -> None:
     """
     perm = {"ID": "perm-link", "Roles": ["read"], "Link": {"Scope": "anonymous", "Type": "view"}}
     assert _summarize_permission_grantees(perm) == ""
+
+
+# object_type validation
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("object_type", ["drives", "groups", "sites", "users"])
+def test_validate_object_type_accepts_every_supported_resource(object_type: str) -> None:
+    """
+    Given:
+        - Each MS Graph resource a driveItem can be addressed under
+    When:
+        - validate_object_type is called
+    Then:
+        - It returns without raising
+    """
+    assert validate_object_type(object_type) is None
+
+
+@pytest.mark.parametrize("object_type", ["", "bogus", "site", "Drives", "DRIVES", "drive"])
+def test_validate_object_type_rejects_unsupported_values(object_type: str) -> None:
+    """
+    Given:
+        - An empty, misspelled, singular or wrongly-cased object_type
+    When:
+        - validate_object_type is called
+    Then:
+        - A DemistoException naming the supported values is raised
+    """
+    with pytest.raises(DemistoException, match="Must be one of: drives, groups, sites, users"):
+        validate_object_type(object_type)
+
+
+# Every command that accepts object_type, with the minimum args needed to reach the guard.
+COMMANDS_TAKING_AN_OBJECT_TYPE = {
+    "download_file": (download_file_command, {"item_id": "ITEM"}),
+    "list_drive_content": (list_drive_content_command, {"item_id": "ITEM"}),
+    "replace_existing_file": (replace_an_existing_file_command, {"item_id": "ITEM", "entry_id": "E1"}),
+    "upload_new_file": (upload_new_file_command, {"parent_id": "PID", "file_name": "n.txt", "entry_id": "E1"}),
+    "create_new_folder": (create_new_folder_command, {"parent_id": "PID", "folder_name": "folder"}),
+    "delete_file": (delete_file_command, {"item_id": "ITEM"}),
+    "update_driveitem": (update_driveitem_command, {"item_id": "ITEM", "new_name": "x"}),
+    "copy_driveitem": (copy_driveitem_command, {"item_id": "ITEM", "parent_id": "PID"}),
+    "list_driveitem_permissions": (list_driveitem_permissions_command, {"item_id": "ITEM"}),
+    "delete_driveitem_permission": (delete_driveitem_permission_command, {"item_id": "ITEM", "permission_id": "PERM"}),
+    "get_sensitivity_label": (get_sensitivity_label_command, {"item_id": "ITEM"}),
+    "assign_sensitivity_label": (assign_sensitivity_label_command, {"item_id": "ITEM", "sensitivity_label_id": "L1"}),
+}
+
+
+@pytest.mark.parametrize("command_name", list(COMMANDS_TAKING_AN_OBJECT_TYPE))
+def test_commands_reject_an_invalid_object_type(mocker: MockerFixture, command_name: str) -> None:
+    """
+    Given:
+        - A command that accepts object_type
+        - An object_type outside the supported set, as an API or playbook caller could send
+          (the YAML 'predefined' list only constrains the UI)
+    When:
+        - The command is run
+    Then:
+        - It raises before calling the client, so no malformed URL is ever requested
+    """
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "/dev/null"})
+    command, extra_args = COMMANDS_TAKING_AN_OBJECT_TYPE[command_name]
+    client = MsGraphClient.__new__(MsGraphClient)
+    client.ms_client = MagicMock()
+
+    args = {"object_type": "bogus", "object_type_id": "OID", **extra_args}
+    with pytest.raises(DemistoException, match="Invalid object_type 'bogus'"):
+        command(client, args)
+
+    client.ms_client.http_request.assert_not_called()
 
 
 # Sensitivity-label commands

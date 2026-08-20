@@ -102,6 +102,13 @@ def encode_sharing_url(share_url: str) -> str:
 VALID_OBJECT_TYPES = ("drives", "groups", "sites", "users")
 
 
+def validate_object_type(object_type: str) -> None:
+    """Raise if object_type is not a resource a driveItem can be addressed under.
+    """
+    if object_type not in VALID_OBJECT_TYPES:
+        raise DemistoException(f"Invalid object_type '{object_type}'. Must be one of: {', '.join(VALID_OBJECT_TYPES)}.")
+
+
 def _select_addressing_mode(addressing_args: dict[str, str], allow_path: bool, allow_share_url: bool) -> str:
     """Return the name of the single addressing argument supplied, or raise explaining why not.
 
@@ -978,6 +985,7 @@ def download_file_command(client: MsGraphClient, args: dict[str, str]) -> dict:
     :return: FileResult object
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     object_type_id = args["object_type_id"]
     item_id = args["item_id"]
     file_name = args.get("file_name") or item_id
@@ -1009,6 +1017,7 @@ def list_drive_content_command(client: MsGraphClient, args: dict[str, str]) -> t
     :return: human_readable, context, result
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     object_type_id = args["object_type_id"]
     item_id = args.get("item_id", "root")
     limit = args.get("limit")
@@ -1128,6 +1137,7 @@ def replace_an_existing_file_command(client: MsGraphClient, args: dict[str, str]
     :return: human_readable, context, result
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     item_id = args["item_id"]
     entry_id = args["entry_id"]
     object_type_id = args["object_type_id"]
@@ -1190,6 +1200,7 @@ def upload_new_file_command(client: MsGraphClient, args: dict[str, str]) -> tupl
     :return: human_readable, context, result
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     object_type_id = args["object_type_id"]
     parent_id = args["parent_id"]
     entry_id = args["entry_id"]
@@ -1230,6 +1241,7 @@ def create_new_folder_command(client: MsGraphClient, args: dict[str, str]) -> tu
     :return: human_readable, context, result
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     parent_id = args["parent_id"]
     folder_name = args["folder_name"]
     object_type_id = args["object_type_id"]
@@ -1265,6 +1277,7 @@ def delete_file_command(client: MsGraphClient, args: dict[str, str]) -> tuple[st
     :return: raw response and action result test
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     item_id = args["item_id"]
     object_type_id = args["object_type_id"]
 
@@ -1490,6 +1503,7 @@ def update_driveitem_command(client: MsGraphClient, args: dict[str, str]) -> Com
         CommandResults with the updated driveItem under MsGraphFiles.UpdatedItem.
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     object_type_id = args["object_type_id"]
     item_id = args["item_id"]
 
@@ -1567,6 +1581,7 @@ def copy_driveitem_command(client: MsGraphClient, args: dict[str, str]) -> Comma
         CommandResults with MsGraphFiles.CopyOperation context including MonitorUrl.
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     object_type_id = args["object_type_id"]
     item_id = args["item_id"]
 
@@ -1769,6 +1784,7 @@ def list_driveitem_permissions_command(client: MsGraphClient, args: dict[str, st
         CommandResults with MsGraphFiles.ItemPermission context.
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     object_type_id = args["object_type_id"]
     item_id = args["item_id"]
     limit = args.get("limit") or None
@@ -1837,6 +1853,7 @@ def delete_driveitem_permission_command(client: MsGraphClient, args: dict[str, s
         CommandResults with MsGraphFiles.RemovedItemPermission echo context.
     """
     object_type = args["object_type"]
+    validate_object_type(object_type)
     object_type_id = args["object_type_id"]
     item_id = args["item_id"]
     permission_id = args["permission_id"]
@@ -2123,6 +2140,7 @@ def get_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]) -
         as returned by Microsoft Graph.
     """
     object_type = args.get("object_type", "")
+    validate_object_type(object_type)
     object_type_id = args.get("object_type_id", "")
     item_id = args.get("item_id", "")
 
@@ -2176,6 +2194,7 @@ def assign_sensitivity_label_command(client: MsGraphClient, args: dict[str, str]
         `Location` header URL returned by Microsoft Graph.
     """
     object_type = args.get("object_type", "")
+    validate_object_type(object_type)
     object_type_id = args.get("object_type_id", "")
     item_id = args.get("item_id", "")
     sensitivity_label_id = args.get("sensitivity_label_id", "")
