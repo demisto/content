@@ -2,7 +2,8 @@ import pytest
 from CommonServerPython import *
 from unittest.mock import MagicMock
 from freezegun import freeze_time
-from CitrixCloudEventCollector import Client, get_events_command, fetch_events_command, module_test_command
+import CitrixCloudEventCollector
+from CitrixCloudEventCollector import Client, get_events_command, fetch_events_command, module_test_command, main
 
 
 @pytest.fixture
@@ -156,11 +157,12 @@ def test_fetch_events_command_first_run(mocker):
     Given:
         - A client returning 2 event records.
     When:
-        - Running `fetch_events_command` for the first time to retrieve events.
+        - Running `fetch_events_command` for the first time (empty last_run) to retrieve events.
     Then:
         - The function should return events and set a new LastRun value with the timestamp and record id of
-            the first event in the list(descending order).
-        - The function get_records_with_pagination start_date_time argument value is datetime.utcnow.
+            the last event in the list.
+        - The get_records_with_pagination start_date_time uses the FIRST_FETCH_LOOKBACK window (5 minutes ago),
+            not the exact current second, so recently-arrived/lagged events are captured.
     """
     client = Client("url", "cust", "id", "secret", False, True)
     get_records_mocker = mocker.patch.object(
@@ -178,7 +180,48 @@ def test_fetch_events_command_first_run(mocker):
     assert "LastRun" in last_run
     assert last_run["LastRun"] == "2024-01-01T00:00:00Z"
     assert last_run["RecordId"] == "id1"
-    assert get_records_mocker.call_args.kwargs["start_date_time"] == "2025-01-14T00:00:00.000Z"
+    assert get_records_mocker.call_args.kwargs["start_date_time"] == "2025-01-13T23:55:00.000Z"
+
+
+@freeze_time("2025-01-14T00:00:00Z")
+def test_fetch_events_command_first_run_no_events(mocker):
+    """
+    Given:
+        - A client returning no event records on the first fetch (empty last_run).
+    When:
+        - Running `fetch_events_command`.
+    Then:
+        - No LastRun is set, so the next cycle looks back FIRST_FETCH_LOOKBACK from "now" again
+            (rolling window) instead of getting stuck querying "now".
+    """
+    client = Client("url", "cust", "id", "secret", False, True)
+    get_records_mocker = mocker.patch.object(client, "get_records_with_pagination", return_value=([], {}))
+
+    events, last_run = fetch_events_command(client, 5, {})
+
+    assert events == []
+    assert get_records_mocker.call_args.kwargs["start_date_time"] == "2025-01-13T23:55:00.000Z"
+    assert "LastRun" not in last_run
+
+
+def test_fetch_events_command_no_events_keeps_existing_last_run(mocker):
+    """
+    Given:
+        - An existing LastRun (past events) and no new events this cycle.
+    When:
+        - Running `fetch_events_command`.
+    Then:
+        - The window continues from the existing LastRun and last_run is returned unchanged.
+    """
+    client = Client("url", "cust", "id", "secret", False, True)
+    get_records_mocker = mocker.patch.object(client, "get_records_with_pagination", return_value=([], {}))
+
+    prev_last_run = {"LastRun": "2024-06-01T00:00:00Z", "RecordId": "prev_id"}
+    events, last_run = fetch_events_command(client, 5, prev_last_run)
+
+    assert events == []
+    assert get_records_mocker.call_args.kwargs["start_date_time"] == "2024-06-01T00:00:00Z"
+    assert last_run == {"LastRun": "2024-06-01T00:00:00Z", "RecordId": "prev_id"}
 
 
 def test_fetch_events_command_sets_last_run(mocker):
@@ -215,3 +258,137 @@ def test_module_test_command_returns_ok(mocker):
 
     result = module_test_command(client, {})
     assert result == "ok"
+
+
+@freeze_time("2025-01-14T00:00:00Z")
+def test_main_fetch_events_first_run_no_events(mocker):
+    """
+    Given:
+        - A fresh instance (empty getLastRun) where the API returns no events.
+    When:
+        - Running main() with the `fetch-events` command.
+    Then:
+        - The look-back window is queried (not "now") and no LastRun is saved, so the next cycle
+            rolls back again instead of getting stuck (XSUP-74934 regression).
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://api.cloud.com",
+            "customer_id": "cust",
+            "client_id": "id",
+            "credentials": {"password": "secret"},
+            "insecure": True,
+            "proxy": False,
+            "max_fetch": "2000",
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    send_events = mocker.patch.object(CitrixCloudEventCollector, "send_events_to_xsiam")
+    get_records = mocker.patch.object(Client, "get_records_with_pagination", return_value=([], {}))
+
+    main()
+
+    assert get_records.call_args.kwargs["start_date_time"] == "2025-01-13T23:55:00.000Z"
+    set_last_run.assert_called_once()
+    assert "LastRun" not in set_last_run.call_args.args[0]
+    send_events.assert_called_once()
+    assert send_events.call_args.args[0] == []
+
+
+@freeze_time("2025-01-14T00:00:00Z")
+def test_main_fetch_events_with_events(mocker):
+    """
+    Given:
+        - A fresh instance where the API returns events.
+    When:
+        - Running main() with the `fetch-events` command.
+    Then:
+        - Events are sent to XSIAM and last run advances to the last event's timestamp/recordId.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://api.cloud.com",
+            "customer_id": "cust",
+            "client_id": "id",
+            "credentials": {"password": "secret"},
+            "insecure": True,
+            "proxy": False,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    send_events = mocker.patch.object(CitrixCloudEventCollector, "send_events_to_xsiam")
+    records = [
+        {"_time": "2025-01-13T23:58:00Z", "recordId": "r2"},
+        {"_time": "2025-01-13T23:57:00Z", "recordId": "r1"},
+    ]
+    mocker.patch.object(Client, "get_records_with_pagination", return_value=(records, {}))
+
+    main()
+
+    send_events.assert_called_once()
+    assert send_events.call_args.args[0] == records
+    set_last_run.assert_called_once_with({"LastRun": "2025-01-13T23:57:00Z", "RecordId": "r1"})
+
+
+def test_main_test_module(mocker):
+    """
+    Given:
+        - A configured instance.
+    When:
+        - Running main() with the `test-module` command.
+    Then:
+        - return_results is called with 'ok'.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "url": "https://api.cloud.com",
+            "customer_id": "cust",
+            "client_id": "id",
+            "credentials": {"password": "secret"},
+            "insecure": True,
+            "proxy": False,
+        },
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(CitrixCloudEventCollector, "get_events_command", return_value=None)
+    return_results = mocker.patch.object(CitrixCloudEventCollector, "return_results")
+
+    main()
+
+    return_results.assert_called_once_with("ok")
+
+
+def test_get_records_default_limit_capping(mocker):
+    """
+    Given:
+        - A client with a valid token and a requested limit larger than the API max.
+    When:
+        - Calling get_records with limit greater than RECORDS_REQUEST_LIMIT.
+    Then:
+        - The Limit param sent to the API is capped at RECORDS_REQUEST_LIMIT.
+    """
+    client = Client("https://api.citrixcloud.com", "cust", "id", "secret", False, True)
+    demisto.getIntegrationContext.return_value = {"access_token": "token123"}
+
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {"items": [], "continuationToken": None}
+    http = mocker.patch.object(client, "_http_request", return_value=mock_resp)
+
+    client.get_records("2024-01-01", None, limit=99999)
+
+    sent_params = http.call_args.kwargs["params"]
+    assert sent_params["Limit"] == CitrixCloudEventCollector.RECORDS_REQUEST_LIMIT
