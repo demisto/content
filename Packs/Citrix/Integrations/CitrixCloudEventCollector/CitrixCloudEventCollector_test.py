@@ -204,24 +204,24 @@ def test_fetch_events_command_first_run_no_events(mocker):
     assert "LastRun" not in last_run
 
 
-@freeze_time("2025-01-14T00:00:00Z")
-def test_fetch_events_command_subsequent_run_no_events_uses_lookback(mocker):
+def test_fetch_events_command_no_events_keeps_existing_last_run(mocker):
     """
     Given:
-        - A previous cycle that found no events (last_run has no LastRun) and still no new events.
+        - An existing LastRun (past events) and no new events this cycle.
     When:
         - Running `fetch_events_command`.
     Then:
-        - The window rolls back FIRST_FETCH_LOOKBACK from the current "now" again, not stuck on a stale time.
+        - The window continues from the existing LastRun and last_run is returned unchanged.
     """
     client = Client("url", "cust", "id", "secret", False, True)
     get_records_mocker = mocker.patch.object(client, "get_records_with_pagination", return_value=([], {}))
 
-    events, last_run = fetch_events_command(client, 5, {"RecordId": "prev_id"})
+    prev_last_run = {"LastRun": "2024-06-01T00:00:00Z", "RecordId": "prev_id"}
+    events, last_run = fetch_events_command(client, 5, prev_last_run)
 
     assert events == []
-    assert get_records_mocker.call_args.kwargs["start_date_time"] == "2025-01-13T23:55:00.000Z"
-    assert "LastRun" not in last_run
+    assert get_records_mocker.call_args.kwargs["start_date_time"] == "2024-06-01T00:00:00Z"
+    assert last_run == {"LastRun": "2024-06-01T00:00:00Z", "RecordId": "prev_id"}
 
 
 def test_fetch_events_command_sets_last_run(mocker):
