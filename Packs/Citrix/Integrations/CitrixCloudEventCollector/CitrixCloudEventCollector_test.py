@@ -192,7 +192,7 @@ def test_fetch_events_command_first_run_no_events(mocker):
         - Running `fetch_events_command`.
     Then:
         - No LastRun is set, so the next cycle looks back FIRST_FETCH_LOOKBACK from "now" again
-            (rolling window) instead of getting stuck querying "now" (XSUP-74934 regression).
+            (rolling window) instead of getting stuck querying "now".
     """
     client = Client("url", "cust", "id", "secret", False, True)
     get_records_mocker = mocker.patch.object(client, "get_records_with_pagination", return_value=([], {}))
