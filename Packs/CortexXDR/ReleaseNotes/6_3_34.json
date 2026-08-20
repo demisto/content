@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "In the Cortex XDR Alerts Handling v2 playbook, the deprecated ***xdr-get-incident-extra-data*** command was replaced with ***xdr-case-list***, so the data is now written to **PaloAltoNetworksXDR.Case** instead of **PaloAltoNetworksXDR.Incident**. As a result, the default values of the *incident_id* and *alert_id* playbook inputs were updated to **PaloAltoNetworksXDR.Case.case_id** and **PaloAltoNetworksXDR.Case.Issues.issue_id** respectively. The input names are unchanged. Custom parent playbooks that run this playbook as a sub-playbook and pass these inputs explicitly must be updated to the new context paths."
+}

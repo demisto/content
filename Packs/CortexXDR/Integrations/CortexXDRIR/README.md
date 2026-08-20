@@ -4496,6 +4496,36 @@ Returns a list of cases based on the specified filters.
 | PaloAltoNetworksXDR.Case.Issues.action_file_path | String | The file path involved in the issue. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.Issues.mitre_tactic_id_and_name | String | The MITRE ATT&amp;CK tactic associated with the issue. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.Issues.mitre_technique_id_and_name | String | The MITRE ATT&amp;CK technique associated with the issue. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.host_ip_list | Unknown | Host IP address involved in the alert. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.event_type | String | Event type. Valid values are: "Process Execution","Network Event","File Event","Registry Event","Injection Event","Load Image Event","Windows Event Log". Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.actor_process_image_name | String | Image name. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.actor_process_command_line | String | Command line. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.actor_process_signature_status | String | Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash". Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.actor_process_signature_vendor | String | Signature vendor name. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.causality_actor_process_image_name | String | Image name. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.causality_actor_process_command_line | String | Command line. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.causality_actor_process_signature_status | String | Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash". Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.causality_actor_process_signature_vendor | String | Signature vendor. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.causality_actor_causality_id | Unknown | Causality ID. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_process_image_name | String | Image name. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_process_image_command_line | String | Command line. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_process_image_sha256 | String | Image SHA256 hash. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_process_signature_status | String | Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash". Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_process_signature_vendor | String | Signature vendor name. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_file_md5 | String | MD5 hash of the file. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_file_sha256 | String | SHA256 hash of the file. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_registry_data | String | Registry data. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_registry_full_key | String | Registry full key. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_local_ip | String | Local IP address. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_local_port | Number | Local port. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_remote_ip | String | Remote IP address. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_remote_port | Number | Remote port. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.action_external_hostname | String | External hostname. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.fw_app_id | Unknown | Firewall app ID. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.is_whitelisted | String | Whether the alert is on the allow list. Valid values are: "Yes" "No". Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.starred | Boolean | Whether the alert is starred. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.description | String | Description of the alert. Returned when extra_data is set to true. |
+| PaloAltoNetworksXDR.Case.Issues.endpoint_id | String | The endpoint ID associated with the issue. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.FileArtifacts.case_id | String | The identifier of the case associated with the file artifact. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.FileArtifacts.type | String | The type of the file artifact. Returned when extra_data is set to true. |
 | PaloAltoNetworksXDR.Case.FileArtifacts.file_name | String | The name of the file. Returned when extra_data is set to true. |

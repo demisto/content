@@ -4407,6 +4407,96 @@ script:
     - contextPath: PaloAltoNetworksXDR.Case.Issues.mitre_technique_id_and_name
       description: The MITRE ATT&CK technique associated with the issue. Returned when extra_data is set to true.
       type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.host_ip_list
+      description: Host IP address involved in the alert. Returned when extra_data is set to true.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.event_type
+      description: 'Event type. Valid values are: "Process Execution","Network Event","File Event","Registry Event","Injection Event","Load Image Event","Windows Event Log". Returned when extra_data is set to true.'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.actor_process_image_name
+      description: Image name. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.actor_process_command_line
+      description: Command line. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.actor_process_signature_status
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash". Returned when extra_data is set to true.'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.actor_process_signature_vendor
+      description: Signature vendor name. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.causality_actor_process_image_name
+      description: Image name. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.causality_actor_process_command_line
+      description: Command line. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.causality_actor_process_signature_status
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash". Returned when extra_data is set to true.'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.causality_actor_process_signature_vendor
+      description: Signature vendor. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.causality_actor_causality_id
+      description: Causality ID. Returned when extra_data is set to true.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_process_image_name
+      description: Image name. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_process_image_command_line
+      description: Command line. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_process_image_sha256
+      description: Image SHA256 hash. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_process_signature_status
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash". Returned when extra_data is set to true.'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_process_signature_vendor
+      description: Signature vendor name. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_file_md5
+      description: MD5 hash of the file. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_file_sha256
+      description: SHA256 hash of the file. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_registry_data
+      description: Registry data. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_registry_full_key
+      description: Registry full key. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_local_ip
+      description: Local IP address. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_local_port
+      description: Local port. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_remote_ip
+      description: Remote IP address. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_remote_port
+      description: Remote port. Returned when extra_data is set to true.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_external_hostname
+      description: External hostname. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.fw_app_id
+      description: Firewall app ID. Returned when extra_data is set to true.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.is_whitelisted
+      description: 'Whether the alert is on the allow list. Valid values are: "Yes" "No". Returned when extra_data is set to true.'
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.starred
+      description: Whether the alert is starred. Returned when extra_data is set to true.
+      type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.description
+      description: Description of the alert. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.endpoint_id
+      description: The endpoint ID associated with the issue. Returned when extra_data is set to true.
+      type: String
     - contextPath: PaloAltoNetworksXDR.Case.FileArtifacts.case_id
       description: The identifier of the case associated with the file artifact. Returned when extra_data is set to true.
       type: String

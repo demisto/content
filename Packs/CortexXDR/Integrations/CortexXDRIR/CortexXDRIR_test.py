@@ -4320,6 +4320,7 @@ def test_normalize_case_data_record_maps_fields_and_nests_data():
     Then:
         - Incident fields are renamed to their case-shaped equivalents (e.g. incident_id -> case_id).
         - Nested alerts/artifacts are surfaced under Issues/FileArtifacts/NetworkArtifacts.
+        - Each nested issue record's alert_id is renamed to the documented issue_id.
         - Each nested record inherits the parent case_id when one is not already set.
     """
     from CortexXDRIR import normalize_case_data_record
@@ -4350,10 +4351,10 @@ def test_normalize_case_data_record_maps_fields_and_nests_data():
     assert case["description"] == "some description"
     assert "incident_id" not in case
 
-    # Nested data surfaced under the case-shaped keys.
+    # Nested data surfaced under the case-shaped keys, with alert_id renamed to issue_id.
     assert case["Issues"] == [
-        {"alert_id": "a1", "case_id": "100"},
-        {"alert_id": "a2", "case_id": "999"},
+        {"issue_id": "a1", "case_id": "100"},
+        {"issue_id": "a2", "case_id": "999"},
     ]
     assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
     assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
@@ -4427,7 +4428,7 @@ def test_case_list_command_extra_data_returns_normalized_cases(mocker):
     assert case["case_id"] == "100"
     assert case["case_name"] == "My Case"
     assert case["case_domain"] == "example.com"
-    assert case["Issues"] == [{"alert_id": "a1", "case_id": "100"}]
+    assert case["Issues"] == [{"issue_id": "a1", "case_id": "100"}]
     assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
     assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
 
