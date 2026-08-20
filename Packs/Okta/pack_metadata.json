@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Okta"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
