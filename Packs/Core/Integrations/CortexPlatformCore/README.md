@@ -1065,24 +1065,21 @@ Retrieves endpoint update versions for the provided endpoint IDs.
 
 ## License Requirements
 
-The following commands require one of these licenses: **Cortex Cloud**, **Cloud Runtime Security**, **Cloud Posture (Security)**, **Cortex XSIAM**, or **EP / EDR - Endpoint Protection**:
+The following commands require one of these licenses: **Cortex XSIAM**, **EP / EDR - Endpoint Protection**, **Cortex Cloud**, **Cloud Posture (Security)**, or **Cloud Runtime Security**:
 
 - `core-list-endpoints`
 
-The following commands require one of these licenses: **Cloud Runtime Security** or **Cloud Posture (Security)**:
+The following commands require one of these licenses: **Cortex XSIAM**, **EP / EDR - Endpoint Protection**, or **Cloud Runtime Security**:
 
-- `core-add-assessment-profile`
-- `core-list-compliance-standards`
-
-The following commands require one of these licenses: **Cloud Runtime Security**, **EP / EDR - Endpoint Protection**, or **Cortex XSIAM**:
-
+- `core-get-endpoint-support-file`
 - `core-list-scripts`
 - `core-run-script-agentix`
 - `core-get-endpoint-update-version`
 - `core-update-endpoint-version`
 
-The following commands require one of these licenses: **Cloud Runtime Security**, **Cortex XSIAM**, or **EP / EDR - Endpoint Protection**:
+The following commands require one of these licenses: **Cloud Posture (Security)** or **Cloud Runtime Security**:
 
-- `core-get-endpoint-support-file`
+- `core-add-assessment-profile`
+- `core-list-compliance-standards`
 
 </~PLATFORM>

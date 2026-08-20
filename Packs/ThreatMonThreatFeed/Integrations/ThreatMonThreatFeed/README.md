@@ -85,7 +85,7 @@ Indicators are also ingested automatically according to the **Feed Fetch Interva
 
 ## License Requirements
 
-The following configuration parameters require one of these licenses: **Agentix** or **Cortex XSIAM**:
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
 
 - Fetch indicators
 - Incremental Feed

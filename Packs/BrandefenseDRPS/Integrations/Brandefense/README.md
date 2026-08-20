@@ -710,7 +710,7 @@ Get indicators from Brandefense. Retrieves Consolidated Data and Incident indica
 
 ## License Requirements
 
-The following configuration parameters require one of these licenses: **Agentix** or **Cortex XSIAM**:
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
 
 - Fetch incidents
 

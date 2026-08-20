@@ -1828,7 +1828,7 @@ Retrieve incidents from Netcraft using the same API request as *fetch-incidents*
 
 ## License Requirements
 
-The following configuration parameters require one of these licenses: **Agentix** or **Cortex XSIAM**:
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
 
 - Fetch incidents
 

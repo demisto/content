@@ -2041,7 +2041,7 @@ Moves a published Knowledge article to Draft using the standard createDraftFromO
 
 ## License Requirements
 
-The following configuration parameters require one of these licenses: **Agentix** or **Cortex XSIAM**:
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
 
 - Fetch incidents
 
