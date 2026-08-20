@@ -3,7 +3,7 @@ provider: Google
 commonfields:
   id: GoogleSheets
   version: -1
-sectionOrder:
+sectionorder:
 - Connect
 - Collect
 configuration:
