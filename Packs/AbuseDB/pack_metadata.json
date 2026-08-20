@@ -17,6 +17,8 @@
     "keywords": [
         "AbuseDB"
     ],
+    "managed": true,
+    "source": "cloud_managed",
     "marketplaces": [
         "xsoar",
         "marketplacev2",
