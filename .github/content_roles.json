@@ -12,6 +12,7 @@
     ],
     "CONTRIBUTION_TL": "kamalq97",
     "CONTRIBUTION_SECURITY_REVIEWER": ["Benimanela"],
+    "CONTRIBUTION_DOCKERFILES_REVIEWER": "shmuel44",
     "MAPPING_REVIEWER": ["eepstain"],
     "ON_CALL_DEVS": [
         "jbabazadeh",

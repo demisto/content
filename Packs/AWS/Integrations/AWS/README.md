@@ -108,6 +108,41 @@ Returns some or all (up to 1,000) of the objects in a bucket. Required IAM Permi
 | AWS.S3.Buckets.Objects.ETag | String | The entity tag \(hash\) of the object. |
 | AWS.S3.Buckets.ObjectsNextToken | String | Token to use for pagination in subsequent requests. |
 
+### aws-s3-bucket-objects-list-v2
+
+***
+Lists objects in an Amazon S3 bucket (up to 1,000 objects) using the ListObjectsV2 API. Unlike aws-s3-bucket-objects-list, this command consistently returns a pagination token for truncated results, even when no delimiter is used. Required IAM Permission: s3:ListBucket.
+
+#### Base Command
+
+`aws-s3-bucket-objects-list-v2`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket | The name of S3 bucket. | Required |
+| account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| delimiter | The delimiter character (like a slash /) used to bundle keys into folders, turning a long list of file names into an organized hierarchy. | Optional |
+| prefix | The string that restricts the response to include only those keys that begin with it. This is commonly used to filter results to a specific folder or category. | Optional |
+| start_after | The key to start listing after. Amazon S3 lists objects alphabetically and returns only keys that come after this value. This can be any key in the bucket. | Optional |
+| next_token | The continuation token indicating where Amazon S3 should continue listing from. Use the ObjectsV2NextToken value returned by a previous call to retrieve the next set of results. | Optional |
+| limit | The maximum number of keys to return in the response, ranging from 1 to 1,000. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.S3.Buckets.BucketName | String | The name of S3 bucket. |
+| AWS.S3.Buckets.ObjectsV2.Key | String | The name of S3 object. |
+| AWS.S3.Buckets.ObjectsV2.Size | Number | The object size in bytes. |
+| AWS.S3.Buckets.ObjectsV2.LastModified | String | The date and time the object was last modified, in ISO 8601 format (for example: 2023-01-01T12:00:00+00:00). |
+| AWS.S3.Buckets.ObjectsV2.StorageClass | String | The storage class of the object. |
+| AWS.S3.Buckets.ObjectsV2.ChecksumType | String | The checksum algorithm used to calculate the object checksum. |
+| AWS.S3.Buckets.ObjectsV2.ETag | String | The entity tag \(hash\) of the object. |
+| AWS.S3.Buckets.ObjectsV2NextToken | String | The token to use for pagination in subsequent requests. |
+
 ### aws-s3-bucket-acl-put
 
 ***
@@ -262,10 +297,10 @@ Retrieves the website configuration for a bucket. Required IAM permission: s3:Ge
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3-Buckets.BucketWebsite.ErrorDocument | Object | The object key name of the website error document to use for 4XX class errors. |
-| AWS.S3-Buckets.BucketWebsite.IndexDocument | Object | The name of the index document for the website \(for example index.html\). |
-| AWS.S3-Buckets.BucketWebsite.RedirectAllRequestsTo | Object | Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket. |
-| AWS.S3-Buckets.BucketWebsite.RoutingRules | Array | Rules that define when a redirect is applied and the redirect behavior. |
+| AWS.S3.Buckets.BucketWebsite.ErrorDocument | Object | The object key name of the website error document to use for 4XX class errors. |
+| AWS.S3.Buckets.BucketWebsite.IndexDocument | Object | The name of the index document for the website \(for example index.html\). |
+| AWS.S3.Buckets.BucketWebsite.RedirectAllRequestsTo | Object | The redirect behavior of all requests to a website endpoint of an Amazon S3 bucket. |
+| AWS.S3.Buckets.BucketWebsite.RoutingRules | Array | The rules that define when a redirect is applied and the redirect behavior. |
 
 ### aws-s3-bucket-acl-get
 
@@ -288,8 +323,8 @@ Retrieves the access control list (ACL) of a bucket. Required IAM permission: s3
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3-Buckets.BucketAcl.Grants | Array | A list of grants. |
-| AWS.S3-Buckets.BucketAcl.Owner | Object | Container for the bucket owner's display name and ID. |
+| AWS.S3.Buckets.BucketAcl.Grants | Array | The list of grants. |
+| AWS.S3.Buckets.BucketAcl.Owner | Object | The container for the bucket owner's display name and ID. |
 
 ### aws-iam-account-password-policy-get
 
@@ -2238,11 +2273,11 @@ Retrieves the public access block configuration for an Amazon S3 bucket. Shows t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
-| AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcls | boolean | Whether Amazon S3 blocks public access control lists \(ACLs\) for this bucket and objects in this bucket. |
-| AWS.S3-Buckets.PublicAccessBlock.IgnorePublicAcls | boolean | Whether Amazon S3 ignores public ACLs for this bucket and objects in this bucket. |
-| AWS.S3-Buckets.PublicAccessBlock.BlockPublicPolicy | boolean | Whether Amazon S3 blocks public bucket policies for this bucket. |
-| AWS.S3-Buckets.PublicAccessBlock.RestrictPublicBuckets | boolean | Whether Amazon S3 restricts public bucket policies for this bucket. |
+| AWS.S3.Buckets.BucketName | string | The name of the S3 bucket. |
+| AWS.S3.Buckets.PublicAccessBlock.BlockPublicAcls | boolean | Whether Amazon S3 blocks public access control lists \(ACLs\) for this bucket and objects in this bucket. |
+| AWS.S3.Buckets.PublicAccessBlock.IgnorePublicAcls | boolean | Whether Amazon S3 ignores public ACLs for this bucket and objects in this bucket. |
+| AWS.S3.Buckets.PublicAccessBlock.BlockPublicPolicy | boolean | Whether Amazon S3 blocks public bucket policies for this bucket. |
+| AWS.S3.Buckets.PublicAccessBlock.RestrictPublicBuckets | boolean | Whether Amazon S3 restricts public bucket policies for this bucket. |
 
 ### aws-ec2-images-describe
 
@@ -2573,8 +2608,8 @@ Retrieves the default encryption configuration for an Amazon S3 bucket. Shows th
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
-| AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules | array | Container for information about a particular server-side encryption configuration rule. |
+| AWS.S3.Buckets.BucketName | string | The name of the S3 bucket. |
+| AWS.S3.Buckets.ServerSideEncryptionConfiguration.Rules | array | The container for information about a particular server-side encryption configuration rule. |
 
 ### aws-s3-bucket-policy-get
 
@@ -2598,15 +2633,15 @@ Retrieves the bucket policy for an Amazon S3 bucket. Returns the policy document
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.S3-Buckets.BucketName | string | Name of the S3 bucket. |
-| AWS.S3-Buckets.Policy.Version | string | The version of the policy. |
-| AWS.S3-Buckets.Policy.Id | string | The id of the policy. |
-| AWS.S3-Buckets.Policy.Statement.Sid | string | Identifier of the policy statement. |
-| AWS.S3-Buckets.Policy.Statement.Effect | string | Specifies whether the statement results in an allow or an explicit deny. |
-| AWS.S3-Buckets.Policy.Statement.Principal | unknown | Specify the principal that is allowed or denied access to a resource. |
-| AWS.S3-Buckets.Policy.Statement.Action | unknown | Describes the specific action or actions that will be allowed or denied. |
-| AWS.S3-Buckets.Policy.Statement.Resource | unknown | Defines the object or objects that the statement applies to. |
-| AWS.S3-Buckets.Policy.Statement.Condition | string | Specify conditions for when a policy is in effect. |
+| AWS.S3.Buckets.BucketName | string | The name of the S3 bucket. |
+| AWS.S3.Buckets.Policy.Version | string | The version of the policy. |
+| AWS.S3.Buckets.Policy.Id | string | The id of the policy. |
+| AWS.S3.Buckets.Policy.Statement.Sid | string | The identifier of the policy statement. |
+| AWS.S3.Buckets.Policy.Statement.Effect | string | The specification of whether the statement results in an allow or an explicit deny. |
+| AWS.S3.Buckets.Policy.Statement.Principal | Unknown | The principal that is allowed or denied access to a resource. |
+| AWS.S3.Buckets.Policy.Statement.Action | Unknown | The specific action or actions that will be allowed or denied. |
+| AWS.S3.Buckets.Policy.Statement.Resource | Unknown | The object or objects that the statement applies to. |
+| AWS.S3.Buckets.Policy.Statement.Condition | string | The conditions for when a policy is in effect. |
 
 ### aws-lambda-function-configuration-get
 
@@ -5676,7 +5711,7 @@ Retrieves the metadata for the firewalls that you have defined. Required permiss
 | --- | --- | --- |
 | account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
-| limit | The maximum number of objects that you want Network Firewall to return for this request. Default is 50. | Optional |
+| limit | The maximum number of Network Firewall objects to return for this request. Default is 50. | Optional |
 | next_token | The NextToken value returned from a previous paginated ListFirewalls request. The next_token will be at AWS.NetworkFirewall.FirewallsNextToken. | Optional |
 | vpc_ids | A comma-separated list of unique identifiers of the VPCs that you want to retrieve the firewalls for. | Optional |
 
@@ -6571,7 +6606,7 @@ Retrieves the metadata for the firewall policies that you have defined. Required
 | --- | --- | --- |
 | account_id | The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-west-3, eu-south-2, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
-| limit | The maximum number of objects that you want Network Firewall to return for this request. Default value is 50. | Optional |
+| limit | The maximum number of Network Firewall objects to return for this request. Default value is 50. | Optional |
 | next_token | The nextToken value returned from a previous paginated request. You can find it under AWS.NetworkFirewall.FirewallPoliciesNextToken. | Optional |
 
 #### Context Output
@@ -7011,7 +7046,7 @@ Retrieves metadata for defined rule groups. Depending on the max_results setting
 | --- | --- | --- |
 | account_id | The AWS account ID. | Required |
 | region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-southeast-7, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
-| limit | The maximum number of objects that you want Network Firewall to return for this request. Default is 50. | Optional |
+| limit | The maximum number of Network Firewall objects to return for this request. Default is 50. | Optional |
 | next_token | The nextToken value returned from a previous paginated request. You can find it under AWS.NetworkFirewall.RuleGroupsNextToken. | Optional |
 | scope | The scope of the request. The default setting of ACCOUNT or a setting of NULL returns all of the rule groups in your account. A setting of MANAGED returns all available managed rule groups. Possible values are: MANAGED, ACCOUNT. Default is ACCOUNT. | Optional |
 | managed_type | The general category of the Amazon Web Services managed rule group. Possible values are: AWS_MANAGED_THREAT_SIGNATURES, AWS_MANAGED_DOMAIN_LISTS, ACTIVE_THREAT_DEFENSE, PARTNER_MANAGED. | Optional |
@@ -7076,3 +7111,200 @@ Updates the rule settings for the specified rule group. Modifying a rule group u
 | AWS.NetworkFirewall.RuleGroups.NumberOfAssociations | Number | The number of firewall policies that use this rule group. |
 | AWS.NetworkFirewall.RuleGroups.EncryptionConfiguration | Unknown | The complex type that contains the Amazon Web Services KMS encryption configuration settings for your rule group. |
 | AWS.NetworkFirewall.RuleGroups.LastModifiedTime | String | The last time that the rule group was changed. |
+
+### aws-network-firewall-resource-policy-describe
+
+***
+Retrieves a resource policy that you created in an aws-network-firewall-resource-policy-put request. Required permissions: network-firewall:DescribeResourcePolicy.
+
+#### Base Command
+
+`aws-network-firewall-resource-policy-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| resource_arn | The Amazon Resource Name (ARN) of the rule group or firewall policy whose resource policy you want to retrieve. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.ResourcePolicies.ResourceArn | String | The Amazon Resource Name \(ARN\) of the rule group or firewall policy. |
+| AWS.NetworkFirewall.ResourcePolicies.Policy | String | The AWS Identity and Access Management policy for the resource. |
+
+### aws-network-firewall-resource-policy-put
+
+***
+Creates or updates an AWS Identity and Access Management policy for your rule group or firewall policy. Use this to share rule groups and firewall policies between accounts. Required permissions: network-firewall:PutResourcePolicy.
+
+#### Base Command
+
+`aws-network-firewall-resource-policy-put`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| resource_arn | The Amazon Resource Name (ARN) of the account that you want to share your rule group or firewall policy with. | Required |
+| policy | The AWS Identity and Access Management policy statement that lists the accounts that you want to share your rule group or firewall policy with and the operations that you want the accounts to be able to perform. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-network-firewall-resource-untag
+
+***
+Removes the tags with the specified keys from the specified resource. Required permissions: network-firewall:UntagResource.
+
+#### Base Command
+
+`aws-network-firewall-resource-untag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| resource_arn | The Amazon Resource Name (ARN) of the resource. | Required |
+| tag_keys | A comma-separated list of tag keys to remove from the resource. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-network-firewall-logging-configuration-describe
+
+***
+Returns the logging configuration for the specified firewall. Required permissions: network-firewall:DescribeLoggingConfiguration.
+
+#### Base Command
+
+`aws-network-firewall-logging-configuration-describe`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| firewall_name | The descriptive name of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
+| firewall_arn | The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.Firewalls.FirewallArn | String | The Amazon Resource Name \(ARN\) of the firewall. |
+| AWS.NetworkFirewall.Firewalls.LoggingConfiguration.LogDestinationConfigs | Unknown | The firewall log destination, containing LogType, LogDestinationType, and LogDestination fields. |
+| AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard | Boolean | Whether the monitoring dashboard is enabled for the firewall. |
+
+### aws-network-firewall-resource-tag
+
+***
+Adds the specified tags to the specified resource. Tags are key:value pairs that you can use to categorize and manage your resources. Required permissions: network-firewall:TagResource.
+
+#### Base Command
+
+`aws-network-firewall-resource-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| resource_arn | The Amazon Resource Name (ARN) of the resource. | Required |
+| tags | The tags to add to the resource. Must be separated by a semicolon (;) and specified using the format "key=abc,value=123;key=fed,value=456". | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-network-firewall-resource-policy-delete
+
+***
+Deletes a resource policy that you created in an aws-network-firewall-resource-policy-put request. Required permissions: network-firewall:DeleteResourcePolicy.
+
+#### Base Command
+
+`aws-network-firewall-resource-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| resource_arn | The Amazon Resource Name (ARN) of the rule group or firewall policy whose resource policy you want to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-network-firewall-logging-configuration-update
+
+***
+Sets the logging configuration for the specified firewall. To set a logging destination, provide the log_type, log_destination_type, log_destination_key, and log_destination_value arguments. To review the current configuration before updating, call aws-network-firewall-logging-configuration-describe. Required permissions: network-firewall:UpdateLoggingConfiguration, s3:PutBucketPolicy, s3:GetBucketPolicy, logs:CreateLogDelivery, logs:GetLogDelivery, logs:UpdateLogDelivery, logs:DeleteLogDelivery, logs:ListLogDeliveries, firehose:TagDeliveryStream, iam:CreateServiceLinkedRole.
+
+#### Base Command
+
+`aws-network-firewall-logging-configuration-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| firewall_name | The descriptive name of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
+| firewall_arn | The Amazon Resource Name (ARN) of the firewall. You must specify the ARN or the name, and you can specify both. | Optional |
+| log_type | The type of log to record. FLOW logs capture network traffic that passes through the firewall. ALERT logs report traffic that matches stateful rules with an action setting that sends an alert. TLS logs report on TLS handshake negotiation results. Possible values are: FLOW, ALERT, TLS. | Optional |
+| log_destination_type | The type of storage destination that the logs are sent to. Possible values are: S3, CloudWatchLogs, KinesisDataFirehose. | Optional |
+| log_destination_key | The key for the logging destination, according to the log_destination_type. For example: `bucketName` for S3, `logGroup` for CloudWatchLogs, or `deliveryStream` for KinesisDataFirehose. | Optional |
+| log_destination_value | The value for the logging destination, matching the log_destination_key. For example: the S3 bucket name, the CloudWatch Logs log group name, or the Kinesis Data Firehose delivery stream name. | Optional |
+| enable_monitoring_dashboard | Whether to enable the detailed firewall monitoring dashboard on the firewall. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.Firewalls.FirewallArn | String | The Amazon Resource Name \(ARN\) of the firewall. |
+| AWS.NetworkFirewall.Firewalls.FirewallName | String | The descriptive name of the firewall. |
+| AWS.NetworkFirewall.Firewalls.LoggingConfiguration.LogDestinationConfigs | Unknown | The firewall log destination, containing LogType, LogDestinationType, and LogDestination fields. |
+| AWS.NetworkFirewall.Firewalls.EnableMonitoringDashboard | Boolean | Whether the monitoring dashboard is enabled for the firewall. |
+
+### aws-network-firewall-tags-for-resource-list
+
+***
+Retrieves the tags associated with the specified resource. Tags are key:value pairs that you can use to categorize and manage your resources. Required permissions: network-firewall:ListTagsForResource.
+
+#### Base Command
+
+`aws-network-firewall-tags-for-resource-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| region | The AWS region. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud. Optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, mx-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Optional |
+| resource_arn | The Amazon Resource Name (ARN) of the resource. | Required |
+| limit | The maximum number of Network Firewall objects to return for this request. Default is 50. | Optional |
+| next_token | The pagination token returned in a previous response, used to retrieve the next set of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.Tags.ResourceArn | String | The Amazon Resource Name \(ARN\) of the resource. |
+| AWS.NetworkFirewall.Tags.Tags.Key | String | The part of the key:value pair that defines a tag. |
+| AWS.NetworkFirewall.Tags.Tags.Value | String | The part of the key:value pair that defines a tag. |
+| AWS.NetworkFirewall.Tags.TagsNextToken | String | The token to use when requesting the next set of items. |
