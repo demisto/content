@@ -6,6 +6,7 @@ from AtlassianConfluenceCloud import (
     DEFAULT_GET_EVENTS_LIMIT,
     MESSAGES,
     URL_SUFFIX,
+    URL_SUFFIX_V2,
     Client,
     create_client,
     create_oauth_client,
@@ -1442,6 +1443,486 @@ class TestOAuthFunctions:
         }
         result = create_client(params)
         assert isinstance(result, Client)
+
+
+# --- REST API v2 command tests ---
+
+
+def test_confluence_cloud_page_create_command(requests_mock):
+    """
+    Given: Command arguments for the page-create command.
+    When: Calling `confluence-cloud-page-create`.
+    Then: The response data is returned in the ConfluenceCloud.Page context.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_page_create_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_create/page_create_command_response.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX_V2["PAGES"], json=expected_response)
+    expected_context = util_load_json(os.path.join("test_data", "page_create/page_create_command_context.json"))
+    with open(os.path.join("test_data", "page_create/page_create_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"space_id": "98765", "title": "XSOAR_Page", "body_value": "<p>Hello</p>"}
+    response = confluence_cloud_page_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Page"
+    assert response.outputs_key_field == "id"
+    assert response.outputs == expected_context
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.content_create_v2_invalid_args)
+def test_confluence_cloud_page_create_command_invalid_args(args, err_msg):
+    """
+    Given: Invalid command arguments for the page-create command.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloud import validate_content_create_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_content_create_args_v2(args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_page_list_command(requests_mock):
+    """
+    Given: Command arguments for the page-list command with a single page of results.
+    When: Calling `confluence-cloud-page-list` with a limit larger than the available results.
+    Then: The results are returned and no manual next-page token is emitted (auto-pagination).
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_page_list_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_list/page_list_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["PAGES"], json=expected_response)
+    expected_context = util_load_json(os.path.join("test_data", "page_list/page_list_command_context.json"))
+
+    response = confluence_cloud_page_list_command(client, {"space_id": "98765"})
+
+    assert response.outputs["ConfluenceCloud.Page(val.id == obj.id)"] == expected_context
+    # Auto-pagination replaced the manual cursor output; no PageToken should be emitted.
+    assert "ConfluenceCloud.PageToken.Content(val.name == obj.name)" not in response.outputs
+
+
+def test_confluence_cloud_page_list_command_empty(requests_mock):
+    """
+    Given: A page-list response with no results.
+    When: Calling `confluence-cloud-page-list`.
+    Then: A no-records-found message is returned.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_page_list_command
+
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["PAGES"], json={"results": []})
+    response = confluence_cloud_page_list_command(client, {})
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("page(s)")
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.content_list_v2_invalid_args)
+def test_confluence_cloud_page_list_command_invalid_args(args, err_msg):
+    """
+    Given: Invalid arguments for the page-list command.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloud import CONTENT_V2_CONFIG, validate_content_list_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_content_list_args_v2(args, CONTENT_V2_CONFIG["page"])
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_page_update_command(requests_mock):
+    """
+    Given: Command arguments for the page-update command.
+    When: Calling `confluence-cloud-page-update`.
+    Then: The updated page is returned.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_page_update_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_create/page_create_command_response.json"))
+    requests_mock.put(BASE_URL + URL_SUFFIX_V2["PAGES"] + "/12345", json=expected_response)
+
+    args = {"page_id": "12345", "version_number": "2", "title": "XSOAR_Page", "body_value": "<p>Updated</p>"}
+    response = confluence_cloud_page_update_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Page"
+    assert response.outputs_key_field == "id"
+
+
+def test_confluence_cloud_page_delete_command(requests_mock):
+    """
+    Given: Command arguments for the page-delete command.
+    When: Calling `confluence-cloud-page-delete`.
+    Then: A success message is returned.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_page_delete_command
+
+    requests_mock.delete(BASE_URL + URL_SUFFIX_V2["PAGES"] + "/12345", status_code=204)
+    response = confluence_cloud_page_delete_command(client, {"page_id": "12345"})
+    assert response.readable_output == MESSAGES["HR_PAGE_DELETE"].format("12345")
+
+
+def test_confluence_cloud_blogpost_create_command(requests_mock):
+    """
+    Given: Command arguments for the blogpost-create command.
+    When: Calling `confluence-cloud-blogpost-create`.
+    Then: The response data is returned in the ConfluenceCloud.Blogpost context.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_blogpost_create_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_create/page_create_command_response.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"], json=expected_response)
+
+    args = {"space_id": "98765", "title": "XSOAR_Page", "body_value": "<p>Hello</p>"}
+    response = confluence_cloud_blogpost_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Blogpost"
+    assert response.outputs_key_field == "id"
+
+
+def test_confluence_cloud_blogpost_delete_command(requests_mock):
+    """
+    Given: Command arguments for the blogpost-delete command.
+    When: Calling `confluence-cloud-blogpost-delete`.
+    Then: A success message is returned.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_blogpost_delete_command
+
+    requests_mock.delete(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"] + "/12345", status_code=204)
+    response = confluence_cloud_blogpost_delete_command(client, {"blogpost_id": "12345"})
+    assert response.readable_output == MESSAGES["HR_BLOGPOST_DELETE"].format("12345")
+
+
+def test_confluence_cloud_footer_comment_create_command(requests_mock):
+    """
+    Given: Command arguments for the footer-comment-create command.
+    When: Calling `confluence-cloud-footer-comment-create`.
+    Then: The response data is returned in the ConfluenceCloud.Comment context.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_footer_comment_create_command
+
+    expected_response = util_load_json(
+        os.path.join("test_data", "footer_comment_create/footer_comment_create_command_response.json")
+    )
+    requests_mock.post(BASE_URL + URL_SUFFIX_V2["FOOTER_COMMENTS"], json=expected_response)
+    expected_context = util_load_json(
+        os.path.join("test_data", "footer_comment_create/footer_comment_create_command_context.json")
+    )
+    with open(os.path.join("test_data", "footer_comment_create/footer_comment_create_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"body_value": "<p>This is a footer comment</p>", "page_id": "12345"}
+    response = confluence_cloud_footer_comment_create_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Comment"
+    assert response.outputs == expected_context
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.comment_create_v2_invalid_args)
+def test_confluence_cloud_comment_create_command_invalid_args(args, err_msg):
+    """
+    Given: Invalid arguments for the comment-create commands.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloud import validate_comment_create_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_comment_create_args_v2(args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_space_list_command_v2(requests_mock):
+    """
+    Given: Command arguments for the space-listv2 command.
+    When: Calling `confluence-cloud-space-listv2`.
+    Then: The space results are returned.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_space_list_command_v2
+
+    expected_response = util_load_json(os.path.join("test_data", "space_list_v2/space_list_v2_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["SPACES"], json=expected_response)
+    expected_context = util_load_json(os.path.join("test_data", "space_list_v2/space_list_v2_command_context.json"))
+    with open(os.path.join("test_data", "space_list_v2/space_list_v2_command.md")) as f:
+        expected_readable_output = f.read()
+
+    response = confluence_cloud_space_list_command_v2(client, {})
+
+    assert response.outputs["ConfluenceCloud.Space(val.id == obj.id)"] == expected_context
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.space_list_v2_invalid_args)
+def test_confluence_cloud_space_list_command_v2_invalid_args(args, err_msg):
+    """
+    Given: Invalid arguments for the space-listv2 command.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloud import validate_space_list_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_space_list_args_v2(args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_space_create_command_v2(requests_mock):
+    """
+    Given: Command arguments for the space-createv2 command.
+    When: Calling `confluence-cloud-space-createv2`.
+    Then: The created space is returned.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_space_create_command_v2
+
+    expected_response = util_load_json(os.path.join("test_data", "space_create_v2/space_create_v2_command_response.json"))
+    requests_mock.post(BASE_URL + URL_SUFFIX_V2["SPACES"], json=expected_response)
+    expected_context = util_load_json(os.path.join("test_data", "space_create_v2/space_create_v2_command_context.json"))
+    with open(os.path.join("test_data", "space_create_v2/space_create_v2_command.md")) as f:
+        expected_readable_output = f.read()
+
+    args = {"name": "XSOAR Space", "key": "XSOAR"}
+    response = confluence_cloud_space_create_command_v2(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Space"
+    assert response.outputs == expected_context
+    assert response.readable_output == expected_readable_output
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.space_create_v2_invalid_args)
+def test_confluence_cloud_space_create_command_v2_invalid_args(args, err_msg):
+    """
+    Given: Invalid arguments for the space-createv2 command.
+    When: Calling the validation helper.
+    Then: A ValueError with the expected message is raised.
+    """
+    from AtlassianConfluenceCloud import validate_space_create_args_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_space_create_args_v2(args)
+    assert str(de.value) == err_msg
+
+
+def test_confluence_cloud_blogpost_list_command(requests_mock):
+    """
+    Given: Command arguments for the blogpost-list command with a single page of results.
+    When: Calling `confluence-cloud-blogpost-list`.
+    Then: The results are returned under the Blogpost context and no next-page token is emitted.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_blogpost_list_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_list/page_list_command_response.json"))
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"], json=expected_response)
+
+    response = confluence_cloud_blogpost_list_command(client, {"space_id": "98765"})
+
+    assert "ConfluenceCloud.Blogpost(val.id == obj.id)" in response.outputs
+    assert len(response.outputs["ConfluenceCloud.Blogpost(val.id == obj.id)"]) == 2
+    assert "ConfluenceCloud.PageToken.Content(val.name == obj.name)" not in response.outputs
+
+
+def test_confluence_cloud_blogpost_list_command_empty(requests_mock):
+    """
+    Given: A blogpost-list response with no results.
+    When: Calling `confluence-cloud-blogpost-list`.
+    Then: A no-records-found message is returned.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_blogpost_list_command
+
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"], json={"results": []})
+    response = confluence_cloud_blogpost_list_command(client, {})
+    assert response.readable_output == MESSAGES["NO_RECORDS_FOUND"].format("blog post(s)")
+
+
+def test_confluence_cloud_blogpost_update_command(requests_mock):
+    """
+    Given: Command arguments for the blogpost-update command.
+    When: Calling `confluence-cloud-blogpost-update`.
+    Then: The updated blogpost is returned under the Blogpost context.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_blogpost_update_command
+
+    expected_response = util_load_json(os.path.join("test_data", "page_create/page_create_command_response.json"))
+    requests_mock.put(BASE_URL + URL_SUFFIX_V2["BLOGPOSTS"] + "/12345", json=expected_response)
+
+    args = {"blogpost_id": "12345", "version_number": "2", "title": "XSOAR_Blogpost", "body_value": "<p>Updated</p>"}
+    response = confluence_cloud_blogpost_update_command(client, args)
+
+    assert response.outputs_prefix == "ConfluenceCloud.Blogpost"
+    assert response.outputs_key_field == "id"
+
+
+def test_confluence_cloud_page_list_command_auto_paginates_to_limit(requests_mock):
+    """
+    Given: A page-list request with limit=3 and an API that returns 2 results per page with a next cursor.
+    When: Calling `confluence-cloud-page-list`.
+    Then: The command follows the cursor across pages and returns exactly `limit` (3) records.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_page_list_command
+
+    first_page = {
+        "results": [{"id": "1", "title": "P1"}, {"id": "2", "title": "P2"}],
+        "_links": {"base": f"{BASE_URL}/wiki"},
+    }
+    second_page = {
+        "results": [{"id": "3", "title": "P3"}, {"id": "4", "title": "P4"}],
+        "_links": {"base": f"{BASE_URL}/wiki"},
+    }
+    next_link = f'<{BASE_URL}/wiki/api/v2/pages?cursor=NEXT_CURSOR>; rel="next"'
+    requests_mock.get(
+        BASE_URL + URL_SUFFIX_V2["PAGES"],
+        [
+            {"json": first_page, "headers": {"Link": next_link}},
+            {"json": second_page},
+        ],
+    )
+
+    response = confluence_cloud_page_list_command(client, {"space_id": "98765", "limit": "3"})
+
+    results = response.outputs["ConfluenceCloud.Page(val.id == obj.id)"]
+    assert [item["id"] for item in results] == ["1", "2", "3"]
+    assert requests_mock.call_count == 2
+
+
+def test_confluence_cloud_page_list_command_stops_when_no_next_cursor(requests_mock):
+    """
+    Given: A page-list request with a large limit but the API returns a single page with no next cursor.
+    When: Calling `confluence-cloud-page-list`.
+    Then: The command returns the available results without issuing further requests.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_page_list_command
+
+    single_page = {"results": [{"id": "1", "title": "P1"}], "_links": {"base": f"{BASE_URL}/wiki"}}
+    requests_mock.get(BASE_URL + URL_SUFFIX_V2["PAGES"], json=single_page)
+
+    response = confluence_cloud_page_list_command(client, {"space_id": "98765", "limit": "500"})
+
+    assert len(response.outputs["ConfluenceCloud.Page(val.id == obj.id)"]) == 1
+    assert requests_mock.call_count == 1
+
+
+def test_paginate_v2_results_caps_per_page_request_at_max(requests_mock):
+    """
+    Given: A total limit larger than the API single-page maximum (MAX_LIMIT_V2).
+    When: Calling paginate_v2_results.
+    Then: The first per-page request uses limit=MAX_LIMIT_V2, not the full total.
+    """
+    from AtlassianConfluenceCloud import MAX_LIMIT_V2, URL_SUFFIX_V2, paginate_v2_results
+
+    page = {"results": [{"id": str(i)} for i in range(MAX_LIMIT_V2)], "_links": {}}
+    next_link = f'<{BASE_URL}/wiki/api/v2/pages?cursor=C2>; rel="next"'
+    last_page = {"results": [{"id": "last"}], "_links": {}}
+    requests_mock.get(
+        BASE_URL + URL_SUFFIX_V2["PAGES"],
+        [
+            {"json": page, "headers": {"Link": next_link}},
+            {"json": last_page},
+        ],
+    )
+
+    results, _ = paginate_v2_results(client, URL_SUFFIX_V2["PAGES"], {}, MAX_LIMIT_V2 + 1)
+
+    assert len(results) == MAX_LIMIT_V2 + 1
+    assert int(requests_mock.request_history[0].qs["limit"][0]) == MAX_LIMIT_V2
+
+
+def test_validate_limit_v2_allows_value_above_previous_cap():
+    """
+    Given: A limit value larger than the old 250 hard cap.
+    When: Calling validate_limit_v2.
+    Then: The value is accepted and returned (the artificial cap was removed).
+    """
+    from AtlassianConfluenceCloud import validate_limit_v2
+
+    assert validate_limit_v2({"limit": "1000"}) == 1000
+
+
+@pytest.mark.parametrize("bad_limit", ["0", "-5"])
+def test_validate_limit_v2_rejects_non_positive(bad_limit):
+    """
+    Given: A non-positive limit value.
+    When: Calling validate_limit_v2.
+    Then: A ValueError with the INVALID_LIMIT_V2 message is raised.
+    """
+    from AtlassianConfluenceCloud import validate_limit_v2
+
+    with pytest.raises(ValueError) as de:
+        validate_limit_v2({"limit": bad_limit})
+    assert str(de.value) == MESSAGES["INVALID_LIMIT_V2"].format(int(bad_limit))
+
+
+def test_prepare_space_create_params_v2_invalid_role_assignments():
+    """
+    Given: A role_assignments argument that is not valid JSON.
+    When: Building space-create v2 params.
+    Then: A ValueError with the role_assignments-specific message is raised (not the advanced_permissions one).
+    """
+    from AtlassianConfluenceCloud import prepare_space_create_params_v2
+
+    args = {"name": "XSOAR Space", "key": "XSOAR", "role_assignments": "not-json"}
+    with pytest.raises(ValueError) as de:
+        prepare_space_create_params_v2(args)
+    assert str(de.value) == MESSAGES["INVALID_ROLE_ASSIGNMENTS_V2"]
+
+
+def test_validate_content_update_args_v2_invalid_status_uses_update_message():
+    """
+    Given: An invalid status on the content-update v2 path.
+    When: Validating update args.
+    Then: The error uses the update-specific message and echoes the received value.
+    """
+    from AtlassianConfluenceCloud import CONTENT_V2_CONFIG, validate_content_update_args_v2
+
+    args = {"page_id": "12345", "version_number": "2", "status": "archived"}
+    with pytest.raises(ValueError) as de:
+        validate_content_update_args_v2(args, CONTENT_V2_CONFIG["page"])
+    assert str(de.value) == f"{MESSAGES['INVALID_STATUS_UPDATE_V2']} Received: 'archived'."
+
+
+def test_prepare_hr_for_content_v2_handles_null_version():
+    """
+    Given: A content object where the API returned version as null.
+    When: Preparing the human-readable output.
+    Then: No AttributeError is raised and the Version field is empty.
+    """
+    from AtlassianConfluenceCloud import prepare_hr_for_content_list_v2
+
+    content = [{"id": "1", "title": "P1", "status": "current", "createdAt": "2024-01-01T10:00:00.000Z", "version": None}]
+    # Should not raise AttributeError on null version.
+    hr = prepare_hr_for_content_list_v2(content, "Page")
+    assert "P1" in hr
+
+
+def test_prepare_hr_for_comment_v2_handles_null_version():
+    """
+    Given: A comment object where the API returned version as null.
+    When: Preparing the human-readable output.
+    Then: No AttributeError is raised.
+    """
+    from AtlassianConfluenceCloud import prepare_hr_for_comment_v2
+
+    comment = {"id": "1", "status": "current", "version": None}
+    # Should not raise AttributeError on null version.
+    prepare_hr_for_comment_v2(comment, "Footer Comment")
+
+
+def test_prepare_cursor_from_link_header():
+    """
+    Given: A requests.Response with a Link header containing a next cursor.
+    When: Calling prepare_cursor_from_link_header.
+    Then: The cursor value is extracted correctly.
+    """
+    from AtlassianConfluenceCloud import prepare_cursor_from_link_header
+
+    response = MagicMock()
+    response.headers = {"Link": f'<{BASE_URL}/wiki/api/v2/pages?limit=25&cursor=ABC123>; rel="next"'}
+    assert prepare_cursor_from_link_header(response) == "ABC123"
+
+    response.headers = {}
+    assert prepare_cursor_from_link_header(response) == ""
+
+    response.headers = {"Link": f'<{BASE_URL}/wiki/api/v2/pages?cursor=PREV>; rel="prev"'}
+    assert prepare_cursor_from_link_header(response) == ""
 
 
 @pytest.mark.parametrize(
