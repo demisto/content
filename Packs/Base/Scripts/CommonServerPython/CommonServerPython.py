@@ -1659,6 +1659,8 @@ def b64_decode(b64_str):
     :return: decoded binary
     :rtype: bytes
     """
+    a = "test"
+    print(a)
     b64 = b64_str.encode('ascii')
     b64 += b'=' * (-len(b64) % 4)  # add padding
     return binascii.a2b_base64(b64)
