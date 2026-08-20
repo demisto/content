@@ -720,24 +720,24 @@ Retrieves the list of objects in a bucket. Required permission: storage.objects.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.BucketObject.id | String | The unique identifier for the object. |
-| GCP.Storage.BucketObject.name | String | The name of the object. |
-| GCP.Storage.BucketObject.kind | String | The type of resource \(for example, storage\#object\). |
-| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
-| GCP.Storage.BucketObject.contentType | String | The MIME type of the object. |
-| GCP.Storage.BucketObject.size | Number | The size of the object in bytes. |
-| GCP.Storage.BucketObject.crc32c | String | The CRC32C checksum of the object. |
-| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the object. |
-| GCP.Storage.BucketObject.etag | String | The HTTP entity tag of the object. |
-| GCP.Storage.BucketObject.generation | String | The generation number of the object. |
-| GCP.Storage.BucketObject.metageneration | String | The metageneration number of the object. |
-| GCP.Storage.BucketObject.storageClass | String | The storage class of the object. |
-| GCP.Storage.BucketObject.mediaLink | String | The link for downloading the object content. |
-| GCP.Storage.BucketObject.selfLink | String | The link to the object resource in the GCP API. |
-| GCP.Storage.BucketObject.timeCreated | Date | The time when the object was created. |
-| GCP.Storage.BucketObject.timeFinalized | Date | The time when the object was finalized. |
-| GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
-| GCP.Storage.BucketObject.updated | Date | The time when the object was last modified. |
+| GCP.Storage.Buckets.Objects.id | String | The unique identifier for the object. |
+| GCP.Storage.Buckets.Objects.name | String | The name of the object. |
+| GCP.Storage.Buckets.Objects.kind | String | The type of resource \(for example, storage\#object\). |
+| GCP.Storage.Buckets.Objects.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.Buckets.Objects.contentType | String | The MIME type of the object. |
+| GCP.Storage.Buckets.Objects.size | Number | The size of the object in bytes. |
+| GCP.Storage.Buckets.Objects.crc32c | String | The CRC32C checksum of the object. |
+| GCP.Storage.Buckets.Objects.md5Hash | String | The MD5 hash of the object. |
+| GCP.Storage.Buckets.Objects.etag | String | The HTTP entity tag of the object. |
+| GCP.Storage.Buckets.Objects.generation | String | The generation number of the object. |
+| GCP.Storage.Buckets.Objects.metageneration | String | The metageneration number of the object. |
+| GCP.Storage.Buckets.Objects.storageClass | String | The storage class of the object. |
+| GCP.Storage.Buckets.Objects.mediaLink | String | The link for downloading the object content. |
+| GCP.Storage.Buckets.Objects.selfLink | String | The link to the object resource in the GCP API. |
+| GCP.Storage.Buckets.Objects.timeCreated | Date | The time when the object was created. |
+| GCP.Storage.Buckets.Objects.timeFinalized | Date | The time when the object was finalized. |
+| GCP.Storage.Buckets.Objects.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
+| GCP.Storage.Buckets.Objects.updated | Date | The time when the object was last modified. |
 
 ### gcp-storage-bucket-policy-list
 
@@ -895,28 +895,28 @@ Retrieves details for a specific snapshot. Required permission: compute.snapshot
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
-| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
-| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
-| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
-| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
-| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
-| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
-| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
-| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
-| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
-| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
-| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
-| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
-| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
-| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
-| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
-| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
-| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.Snapshotד.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshotד.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshotד.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshotד.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshotד.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshotד.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshotד.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshotד.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshotד.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshotד.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshotד.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshotד.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshotד.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshotד.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshotד.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshotד.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshotד.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshotד.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshotד.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshotד.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshotד.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshotד.storageLocations | Unknown | List of storage locations for the snapshot. |
 
 ### gcp-compute-instances-aggregated-list-by-ip
 
@@ -941,11 +941,11 @@ Returns an aggregated list of instances across all zones that can be filtered by
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Instance.name | string | Instance name. |
-| GCP.Compute.Instance.id | string | Instance ID. |
-| GCP.Compute.Instance.zone | string | Instance zone URL. |
-| GCP.Compute.Instance.status | string | Instance status. |
-| GCP.Compute.Instance.networkInterfaces | Unknown | Network interfaces of the instance. |
+| GCP.Compute.AggregatedInstances.name | string | Instance name. |
+| GCP.Compute.AggregatedInstances.id | string | Instance ID. |
+| GCP.Compute.AggregatedInstances.zone | string | Instance zone URL. |
+| GCP.Compute.AggregatedInstances.status | string | Instance status. |
+| GCP.Compute.AggregatedInstances.networkInterfaces | Unknown | Network interfaces of the instance. |
 
 ### gcp-compute-network-tag-set
 
@@ -1594,28 +1594,28 @@ Lists snapshots in a specific project. Required permission: compute.snapshots.li
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
-| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
-| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
-| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
-| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
-| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
-| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
-| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
-| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
-| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
-| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
-| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
-| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
-| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
-| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
-| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
-| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
-| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.Snapshotד.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshotד.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshotד.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshotד.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshotד.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshotד.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshotד.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshotד.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshotד.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshotד.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshotד.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshotד.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshotד.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshotד.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshotד.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshotד.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshotד.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshotד.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshotד.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshotד.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshotד.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshotד.storageLocations | Unknown | List of storage locations for the snapshot. |
 | GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
 
 ### gcp-bq-dataset-policy-remove
