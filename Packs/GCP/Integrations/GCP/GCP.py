@@ -1029,7 +1029,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
 
     Returns:
         CommandResults: Human-readable table of ACL entries and machine outputs under
-        'GCP.Storage.Bucket.ObjectPolicy'.
+        'GCP.Storage.BucketObjectPolicy'.
     """
     bucket_name = args.get("bucket_name", "")
     object_name = args.get("object_name", "")
@@ -1044,7 +1044,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
         return storage_bucket_policy_list(
             creds=creds,
             args=args,
-            outputs_prefix="GCP.Storage.Bucket.ObjectPolicy",
+            outputs_prefix="GCP.Storage.BucketObjectPolicy",
             object_name=object_name,
         )
 
@@ -1065,7 +1065,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
             return storage_bucket_policy_list(
                 creds=creds,
                 args=args,
-                outputs_prefix="GCP.Storage.Bucket.ObjectPolicy",
+                outputs_prefix="GCP.Storage.BucketObjectPolicy",
                 object_name=object_name,
             )
         demisto.debug(f"[GCP: storage_bucket_object_policy_get] HttpError status={getattr(e.resp, 'status', None)}")
@@ -1076,7 +1076,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.Bucket.ObjectPolicy",
+        outputs_prefix="GCP.Storage.BucketObjectPolicy",
         outputs=items,
         raw_response=response,
         outputs_key_field=["Bucket", "Key"],
