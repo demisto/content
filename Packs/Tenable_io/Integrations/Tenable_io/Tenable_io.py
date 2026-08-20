@@ -2047,6 +2047,7 @@ def parse_vulnerabilities(vulns):  # pylint: disable=W9014
 
 def main():  # pragma: no cover   # pylint: disable=W9018
     """main function, parses params and runs command functions"""
+    demisto.debug("[Tenable.io] Running Tenable.io integration build spec (spec: m)")
     args = demisto.args()
     command = demisto.command()
     params = demisto.params()
