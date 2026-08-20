@@ -27,19 +27,31 @@ PRODUCT = "netskope"
 
 # Event type configuration mapping
 # Each event type can have specific endpoint, time parameters, and count field configurations
-EVENT_TYPE_CONFIGS = {
+EVENT_TYPE_CONFIGS: dict[str, dict[str, Any]] = {
     "incident": {
         "endpoint": "/events/datasearch/incident",
         "time_params": {"start_time": "starttime", "end_time": "endtime"},
         "count_field": "event_count:count(_id)",
-    }
+    },
+    # The Netskope audit dataset (endpoint /events/data/audit) does NOT support the
+    # `fields=...:count()` aggregation - the count query always returns 0 regardless of the count
+    # field (there is also no /events/datasearch/audit endpoint). Relying on the count made the
+    # collector skip audit entirely (XSUP-74841). `supports_count=False` tells the fetch flow to
+    # skip the pre-flight count and page directly instead.
+    "audit": {
+        "endpoint": "/events/data/{type}",
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+        "count_field": "event_count:count(id)",
+        "supports_count": False,
+    },
 }
 
 # Default configuration for all other event types
-DEFAULT_EVENT_TYPE_CONFIG = {
+DEFAULT_EVENT_TYPE_CONFIG: dict[str, Any] = {
     "endpoint": "/events/data/{type}",
     "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
     "count_field": "event_count:count(id)",
+    "supports_count": True,
 }
 
 
@@ -486,8 +498,46 @@ async def fetch_and_send_events_async(
             # get-events path: caller needs the actual events
             return events
 
+    def _page_result_len(page_result) -> int:
+        # _handle_page returns an int (send-and-flush path) or the events list (get-events path).
+        return page_result if isinstance(page_result, int) else len(page_result)
+
+    async def _handle_all_pages_sequential():
+        """Paginate without a pre-flight count.
+
+        Some Netskope datasets (e.g. `audit`) do NOT support the `fields=...:count()` aggregation -
+        the count query always returns 0, which made the collector skip fetching them entirely
+        (XSUP-74841). For these types we page directly with offset/limit until a page returns fewer
+        rows than the requested page size (i.e. we've reached the last page for this window).
+
+        Pages are fetched one at a time (we cannot pre-compute how many there are). Concurrency and
+        peak memory are still bounded by ``client.page_semaphore`` inside ``_handle_page``.
+        """
+        init_offset = int(request_params.pop("offset", 0))
+        request_limit = int(request_params.get("limit", MAX_EVENTS_PAGE_SIZE))
+        max_offset = init_offset + int(limit)
+        demisto.debug(
+            f"[Fetch] type={type}: sequential paging (count unsupported) from {init_offset=} "
+            f"up to {limit} events in pages of {request_limit}"
+        )
+
+        results: list = []
+        offset = init_offset
+        while offset < max_offset:
+            page_result = await _handle_page(request_params | {"offset": offset})
+            results.append(page_result)
+            if _page_result_len(page_result) < request_limit:
+                # short page => no more data available in this time window
+                break
+            offset += request_limit
+        return results
+
     async def _handle_all_pages():
         try:
+            # Datasets that don't support the count aggregation must page directly (no pre-flight count).
+            if not is_re_fetch_failed_fetch and not get_event_type_config(type).get("supports_count", True):
+                return await _handle_all_pages_sequential()
+
             # the `offset` should not be in the get_events_count request
             init_offset = int(request_params.pop("offset", 0))
 
@@ -688,6 +738,10 @@ async def main() -> None:  # pragma: no cover
 
         command_name = demisto.command()
         demisto.debug(f"Command being called is {command_name}")
+        # TEMPORARY BUILD MARKER (XSUP-74841) - remove before merge.
+        # Lets us confirm from the tenant logs which fix build is deployed. Bump the version suffix
+        # whenever a new build is pushed to the customer so old/new builds are distinguishable.
+        demisto.info("XSUP-74841 BUILD MARKER v2: audit skips count + paginates directly (sequential) deployed")
 
         event_types_to_fetch = handle_event_types_to_fetch(params.get("event_types_to_fetch"))
         demisto.debug(f"Event types that will be fetched in this instance: {event_types_to_fetch}")
