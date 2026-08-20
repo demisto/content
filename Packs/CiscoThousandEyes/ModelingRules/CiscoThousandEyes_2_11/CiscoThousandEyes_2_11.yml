@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: CiscoThousandEyes_ModelingRule
+name: CiscoThousandEyes Modeling Rule
+rules: ''
+schema: ''
+tags: 
+supportedModules:
+- xsiam
