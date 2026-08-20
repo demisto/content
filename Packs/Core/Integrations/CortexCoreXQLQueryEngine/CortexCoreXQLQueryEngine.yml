@@ -60,9 +60,9 @@ script:
       - "true"
       - "false"
       defaultValue: "false"
-    - description: The ID of the source that initiated the query. When provided, this value is reported to the backend instead of the automatically detected playbook ID.
+    - description: The ID of the source that initiated the query.
       name: source_id
-    - description: The name of the source that initiated the query. When provided, this value is reported to the backend instead of the automatically detected playbook name.
+    - description: The name of the source that initiated the query.
       name: source_name
     description: |-
       Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
