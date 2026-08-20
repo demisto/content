@@ -350,7 +350,7 @@ class ClientV3(BaseClient):
         return all_events
 
     def prepare_query_string_for_fetch_events(
-        self, start_date: datetime, end_date: datetime, page_size: int = None, next_page: str = None
+        self, start_date: datetime, end_date: datetime, page_size: Optional[int] = None, next_page: Optional[str] = None
     ) -> str:
         """
         Prepares the query string for fetching events based on the provided parameters.
@@ -1142,6 +1142,257 @@ def get_device_location_command(args, client) -> CommandResults:
         return CommandResults(readable_output=f"No device locations found in {INTEGRATION} for the given filters: {args}")
 
 
+def prepare_wipe_request_query(args: dict, status: str, next_page: Optional[str] = None, page_size: Optional[int] = None) -> str:
+    created_from = args.get("created_from_date_time_utc")
+    created_to = args.get("created_to_date_time_utc")
+    request_status = args.get("request_status") or args.get("action_status")
+
+    query_params = []
+    if created_from:
+        query_params.append(f"createdFromDateTimeUtc={created_from}")
+    if created_to:
+        query_params.append(f"createdToDateTimeUtc={created_to}")
+    if request_status:
+        query_params.append(f"{status}={request_status}")
+    if next_page:
+        query_params.append(f"nextPage={next_page}")
+    if page_size:
+        query_params.append(f"pageSize={page_size}")
+
+    return "&".join(query_params)
+
+
+def wipe_actions_list_command(args, client) -> CommandResults:
+    """
+    Get the status of actions by devices or by request.
+
+    Args:
+        args (Dict[str, Any]): Command arguments.
+        client (ClientV3): Absolute Client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    prefix = "[absolute-wipe-actions-list]"
+    demisto.debug(f"{prefix} {args=}")
+    request_uid = args.get("request_uid")
+    device_uids = argToList(args.get("device_uids"))
+    next_page = args.get("page")
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    payload: dict[str, Any] = {}
+    payload["deviceUids"] = device_uids
+
+    query_string = prepare_wipe_request_query(args, "actionStatus", next_page=next_page, page_size=limit)
+    if request_uid:
+        demisto.debug(f"{prefix} request_uid provided: {request_uid}. Getting actions for the request.")
+        demisto.debug(f"{prefix} query_string: {query_string}.\nPayload: {payload}.")
+        res = client.api_request_absolute(
+            "POST",
+            f"/v3/actions/wipe/get-actions/{request_uid}",
+            query_string=query_string,
+            body=payload,
+        )
+    else:
+        demisto.debug(f"{prefix} request_uid not provided. Getting actions for the devices.")
+        demisto.debug(f"{prefix} query_string: {query_string}.\nPayload: {payload}.")
+        res = client.api_request_absolute(
+            "POST",
+            "/v3/actions/wipe/get-actions",
+            query_string=query_string,
+            body=payload,
+        )
+
+    if res:
+        outputs = res
+        human_readable = tableToMarkdown(
+            f"{INTEGRATION} wipe actions list:",
+            outputs,
+            headers=["actionUid", "requestUid", "deviceUid", "deviceName", "esn", "actionStatus"],
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="Absolute.WipeAction",
+            outputs=outputs,
+            outputs_key_field="actionUid",
+            readable_output=human_readable,
+            raw_response=res,
+        )
+    else:
+        return CommandResults(readable_output=f"No wipe actions found in {INTEGRATION} for the given filters: {args}")
+
+
+def wipe_request_cancel_command(args, client) -> CommandResults:
+    """
+    Cancel a wipe request based on provided arguments.
+
+    Args:
+        args (Dict[str, Any]): Command arguments.
+        client (ClientV3): Absolute Client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    prefix = "[absolute-wipe-request-cancel]"
+    demisto.debug(f"{prefix} {args=}")
+    request_uid = args.get("request_uid")
+    action_uids = argToList(args.get("action_uids"))
+    cancel_all_actions = args.get("cancel_all_actions", False)
+
+    payload: dict[str, Any] = {}
+    if action_uids:
+        payload["actionUids"] = action_uids
+    payload["cancelAllActions"] = argToBoolean(cancel_all_actions)
+
+    demisto.debug(f"{prefix} Canceling wipe actions for the request {request_uid}.\nPayload: {payload}.")
+    res = client.api_request_absolute(
+        "POST", f"/v3/actions/wipe/cancel-actions/{request_uid}", body=payload, success_status_code=[202]
+    )
+
+    return CommandResults(
+        readable_output=f"Wipe actions for the request {request_uid} have been successfully canceled.",
+        raw_response=res,
+    )
+
+
+def wipe_request_create_command(args, client) -> CommandResults:
+    """
+    Create a Wipe request for the devices based on provided arguments.
+
+     Args:
+         args (Dict[str, Any]): Command arguments.
+         client (ClientV3): Absolute Client.
+
+     Returns:
+         CommandResults: The command results.
+    """
+    prefix = "[absolute-wipe-request-create]"
+    demisto.debug(f"{prefix} {args=}")
+    device_uids = argToList(args.get("device_uids"))
+    mac_user_name = args.get("mac_user_name")
+    mac_pwd = args.get("mac_pwd")
+    name = args.get("name")
+    description = args.get("description")
+    secure_erase_count = arg_to_number(args.get("secure_erase_count"), required=False)
+
+    payload: dict[str, Any] = {
+        "deviceUids": device_uids,
+        "unenrollDevicesAndFreeLicenses": argToBoolean(args.get("unenroll_devices_and_free_licenses", False)),
+    }
+    if name:
+        payload["name"] = name
+    if description:
+        payload["description"] = description
+    if mac_user_name:
+        payload["macUsername"] = mac_user_name
+    if mac_pwd:
+        payload["macPwd"] = mac_pwd
+
+    firmware_wipe_requested = args.get("firmware_wipe_requested")
+    if firmware_wipe_requested is not None:
+        payload["firmwareWipeRequested"] = argToBoolean(firmware_wipe_requested)
+
+    crypto_wipe_requested = args.get("crypto_wipe_requested")
+    if crypto_wipe_requested is not None:
+        payload["cryptoWipeRequested"] = argToBoolean(crypto_wipe_requested)
+
+    wipe_used_space_only = args.get("wipe_used_space_only")
+    if wipe_used_space_only is not None:
+        payload["wipeUsedSpaceOnly"] = argToBoolean(wipe_used_space_only)
+
+    delete_all_files_requested = args.get("delete_all_files_requested")
+    if delete_all_files_requested is not None:
+        payload["deleteAllFilesRequested"] = argToBoolean(delete_all_files_requested)
+
+    disable_window_os = args.get("disable_window_os")
+    if disable_window_os is not None:
+        payload["disableWindowOS"] = argToBoolean(disable_window_os)
+
+    if secure_erase_count is not None:
+        if secure_erase_count not in (1, 3, 7):
+            raise_demisto_exception("secure_erase_count must be one of: 1, 3, 7.")
+        payload["secureEraseCount"] = secure_erase_count
+
+    demisto.debug(f"{prefix} Creating wipe request with payload: {payload}")
+    res = client.api_request_absolute(
+        "POST",
+        "/v3/actions/requests/wipe",
+        body=payload,
+    )
+    if not res:
+        raise DemistoException(f"{INTEGRATION} error: Failed to create wipe request - received empty response from API.")
+
+    return CommandResults(
+        readable_output=f"Wipe request {res.get('requestUid')} has been successfully created.",
+        raw_response=res,
+    )
+
+
+def wipe_request_list_command(args, client) -> CommandResults:
+    """
+    Retrieves wipe requests based on provided arguments.
+
+    Args:
+        args (Dict[str, Any]): Command arguments.
+        client (ClientV3): Absolute Client.
+
+    Returns:
+        CommandResults: The command results.
+    """
+    prefix = "[absolute-wipe-request-list]"
+    demisto.debug(f"{prefix} {args=}")
+    request_uid = args.get("request_uid")
+    next_page = args.get("page")
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+
+    hr_headers = [
+        "requestId",
+        "requestUid",
+        "requestStatus",
+        "totalDevices",
+        "pending",
+        "processing",
+        "completed",
+        "canceled",
+        "failed",
+    ]
+
+    if request_uid:
+        demisto.debug(f"{prefix} request_uid provided, fetching details for request_uid: {request_uid}")
+        response = client.send_request_to_api("GET", f"/v3/actions/requests/wipe/{request_uid}", "", ok_codes=(200,))
+        res = response.get("data") if isinstance(response, dict) else response
+    else:
+        demisto.debug(f"{prefix} no request_uid provided, fetching wipe requests list with filters: {args}")
+        query_string = prepare_wipe_request_query(args, "requestStatus", next_page=next_page, page_size=limit)
+        query_string = client.prepare_query_string_for_canonical_request(query_string)
+        demisto.debug(f"{prefix} query_string for wipe requests list: {query_string}")
+        response = client.send_request_to_api("GET", "/v3/actions/requests/wipe", query_string, ok_codes=(200,))
+        res = response.get("data") if isinstance(response, dict) else response
+
+    if res:
+        human_readable = tableToMarkdown(
+            f"{INTEGRATION} wipe request details:" if request_uid else f"{INTEGRATION} wipe requests list:",
+            res,
+            headers=hr_headers,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        )
+        return CommandResults(
+            outputs_prefix="Absolute.WipeRequest",
+            outputs=res,
+            outputs_key_field="requestUid",
+            readable_output=human_readable,
+            raw_response=res,
+        )
+    else:
+        return CommandResults(
+            readable_output=f"No wipe request found in {INTEGRATION} for the given request_uid: {request_uid}"
+            if request_uid
+            else f"No wipe requests found in {INTEGRATION} for the given filters: {args}"
+        )
+
+
 """ EVENT COLLECTOR """
 
 
@@ -1312,6 +1563,18 @@ def main() -> None:  # pragma: no cover
             if should_push_events and events:
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_result)
+
+        elif demisto.command() == "absolute-wipe-request-list":
+            return_results(wipe_request_list_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-actions-list":
+            return_results(wipe_actions_list_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-request-create":
+            return_results(wipe_request_create_command(args=args, client=client_v3))
+
+        elif demisto.command() == "absolute-wipe-request-cancel":
+            return_results(wipe_request_cancel_command(args=args, client=client_v3))
 
         else:
             raise NotImplementedError(f"{demisto.command()} is not an existing {INTEGRATION} command.")

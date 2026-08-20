@@ -931,3 +931,243 @@ def test_last_run_hold_created_time_and_events_sorted_by_created_time_in_fetch_e
     assert last_run_object.get("latest_events_time") == events[-1].get("createdDateTimeUtc")
     for event in events:
         assert event.get("_time") == event.get("eventDateTimeUtc")
+
+
+def test_wipe_request_list_command(mocker, absolute_client_v3):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - wipe_request_list_command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Absolute import wipe_request_list_command
+
+    response = util_load_json("test_data/wipe_requests.json")
+    mocker.patch.object(absolute_client_v3, "send_request_to_api", return_value={"data": response})
+    command_results = wipe_request_list_command(
+        args={"created_from_date_time_utc": "2018-1-03T10:15:30.000Z", "created_to_date_time_utc": "2020-1-03T10:15:30.000Z"},
+        client=absolute_client_v3,
+    )
+    assert isinstance(command_results.outputs, list)
+    assert command_results.outputs[0].get("requestUid") == "23dbd460-0547-466d-a655-99d9340ff598"
+
+
+def test_wipe_request_list_command_with_request_uid(mocker, absolute_client_v3):
+    """
+    Given:
+        - A request_uid argument is provided
+
+    When:
+        - wipe_request_list_command is executed
+
+    Then:
+        - The http request is called with the right endpoint and the single request data is returned
+    """
+    from Absolute import wipe_request_list_command
+
+    response = util_load_json("test_data/wipe_requests.json")
+    mock_api = mocker.patch.object(absolute_client_v3, "send_request_to_api", return_value={"data": response[0]})
+    command_results = wipe_request_list_command(
+        args={"request_uid": "23dbd460-0547-466d-a655-99d9340ff598"},
+        client=absolute_client_v3,
+    )
+    assert command_results.outputs.get("requestUid") == "23dbd460-0547-466d-a655-99d9340ff598"
+    call_args = mock_api.call_args
+    assert "/v3/actions/requests/wipe/23dbd460-0547-466d-a655-99d9340ff598" in call_args[0][1]
+
+
+def test_wipe_actions_list_command(mocker, absolute_client_v3):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - wipe_actions_list_command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Absolute import wipe_actions_list_command
+
+    response = util_load_json("test_data/wipe_actions.json")
+    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
+    command_results = wipe_actions_list_command(
+        args={
+            "request_uid": "1",
+            "device_uids": "2",
+            "created_from_date_time_utc": "2018-1-03T10:15:30.000Z",
+            "created_to_date_time_utc": "2020-1-03T10:15:30.000Z",
+        },
+        client=absolute_client_v3,
+    )
+    assert isinstance(command_results.outputs, list)
+    assert command_results.outputs[0].get("requestUid") == "1"
+    assert command_results.outputs[0].get("actionUid") == "7f0741c5-fbe9-4144-8c54-498db6559304"
+
+
+def test_wipe_request_create_command(mocker, absolute_client_v3):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - wipe_request_create_command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Absolute import wipe_request_create_command
+
+    response = {"requestUid": "23dbd460-0547-466d-a655-99d9340ff598"}
+    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
+    command_results = wipe_request_create_command(
+        args={"device_uids": "497f6eca-6276-4993-bfeb-53cbbbba6f08"}, client=absolute_client_v3
+    )
+    assert command_results.readable_output == "Wipe request 23dbd460-0547-466d-a655-99d9340ff598 has been successfully created."
+
+
+def test_wipe_request_create_command_with_all_args(mocker, absolute_client_v3):
+    """
+    Given:
+        - All optional arguments for the wipe request create command
+
+    When:
+        - wipe_request_create_command is executed with all arguments
+
+    Then:
+        - The http request is called with the right payload including all optional fields
+    """
+    from Absolute import wipe_request_create_command
+
+    response = {"requestUid": "23dbd460-0547-466d-a655-99d9340ff598"}
+    mock_api = mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
+    command_results = wipe_request_create_command(
+        args={
+            "device_uids": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+            "name": "Test Wipe",
+            "description": "Test wipe description",
+            "firmware_wipe_requested": "true",
+            "crypto_wipe_requested": "false",
+            "wipe_used_space_only": "true",
+            "delete_all_files_requested": "true",
+            "disable_window_os": "false",
+            "secure_erase_count": "3",
+            "mac_user_name": "admin",
+            "mac_pwd": "password123",
+            "unenroll_devices_and_free_licenses": "true",
+        },
+        client=absolute_client_v3,
+    )
+    assert command_results.readable_output == "Wipe request 23dbd460-0547-466d-a655-99d9340ff598 has been successfully created."
+
+    call_kwargs = mock_api.call_args
+    payload = call_kwargs.kwargs.get("body") or call_kwargs[1].get("body")
+    assert payload["deviceUids"] == ["497f6eca-6276-4993-bfeb-53cbbbba6f08"]
+    assert payload["name"] == "Test Wipe"
+    assert payload["description"] == "Test wipe description"
+    assert payload["firmwareWipeRequested"] is True
+    assert payload["cryptoWipeRequested"] is False
+    assert payload["wipeUsedSpaceOnly"] is True
+    assert payload["deleteAllFilesRequested"] is True
+    assert payload["disableWindowOS"] is False
+    assert payload["secureEraseCount"] == 3
+    assert payload["macUsername"] == "admin"
+    assert payload["macPwd"] == "password123"
+    assert payload["unenrollDevicesAndFreeLicenses"] is True
+
+
+def test_wipe_request_create_command_invalid_secure_erase_count(mocker, absolute_client_v3):
+    """
+    Given:
+        - An invalid secure_erase_count value (not 1, 3, or 7)
+
+    When:
+        - wipe_request_create_command is executed
+
+    Then:
+        - A DemistoException is raised with the appropriate error message
+    """
+    from Absolute import wipe_request_create_command
+
+    with pytest.raises(DemistoException, match="secure_erase_count must be one of: 1, 3, 7."):
+        wipe_request_create_command(
+            args={
+                "device_uids": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                "secure_erase_count": "5",
+            },
+            client=absolute_client_v3,
+        )
+
+
+def test_wipe_request_cancel_command(mocker, absolute_client_v3):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+
+    When:
+        - wipe_request_cancel_command is executed
+
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Absolute import wipe_request_cancel_command
+
+    response = util_load_json("test_data/cancel_wipe_request.json")
+    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
+    command_results = wipe_request_cancel_command(args={"request_uid": "1"}, client=absolute_client_v3)
+    assert command_results.readable_output == "Wipe actions for the request 1 have been successfully canceled."
+
+
+def test_wipe_request_cancel_command_cancel_all(mocker, absolute_client_v3):
+    """
+    Given:
+        - cancel_all_actions is set to true and no action_uids are provided
+
+    When:
+        - wipe_request_cancel_command is executed
+
+    Then:
+        - The payload includes cancelAllActions=true and does not include actionUids
+    """
+    from Absolute import wipe_request_cancel_command
+
+    mock_api = mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=None)
+    command_results = wipe_request_cancel_command(
+        args={"request_uid": "1", "cancel_all_actions": "true"},
+        client=absolute_client_v3,
+    )
+    assert command_results.readable_output == "Wipe actions for the request 1 have been successfully canceled."
+
+    call_kwargs = mock_api.call_args
+    payload = call_kwargs.kwargs.get("body") or call_kwargs[1].get("body")
+    assert payload["cancelAllActions"] is True
+    assert "actionUids" not in payload
+
+
+def test_wipe_request_cancel_command_cancel_all_false(mocker, absolute_client_v3):
+    """
+    Given:
+        - cancel_all_actions is explicitly set to false
+
+    When:
+        - wipe_request_cancel_command is executed
+
+    Then:
+        - The payload includes cancelAllActions=false (not silently dropped)
+    """
+    from Absolute import wipe_request_cancel_command
+
+    mock_api = mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=None)
+    wipe_request_cancel_command(
+        args={"request_uid": "1", "action_uids": "uid1", "cancel_all_actions": "false"},
+        client=absolute_client_v3,
+    )
+
+    call_kwargs = mock_api.call_args
+    payload = call_kwargs.kwargs.get("body") or call_kwargs[1].get("body")
+    assert payload["cancelAllActions"] is False
+    assert payload["actionUids"] == ["uid1"]
