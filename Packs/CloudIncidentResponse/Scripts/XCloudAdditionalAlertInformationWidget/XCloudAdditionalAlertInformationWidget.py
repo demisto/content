@@ -54,7 +54,7 @@ def main():  # pragma: no cover
         alert_context = demisto.investigation()
         core_alert_context = demisto.context().get("Core", {})
         if not core_alert_context.get("OriginalAlert"):
-            original_alert_data = demisto.executeCommand("core-get-cloud-original-alerts", {"alert_ids": alert_context.get("id")})
+            original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
             if original_alert_data:
                 res = verify_list_type(original_alert_data)
                 demisto.executeCommand("SetByIncidentId", {"key": "Core", "value": res, "id": alert_context.get("id")})
