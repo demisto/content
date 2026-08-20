@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Oracle_IAM_ModelingRule
+name: Oracle_IAM Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
