@@ -287,15 +287,13 @@ class Client(ContentClient):
         """
         if next_link_url:
             demisto.debug("[API Fetch] Requesting events using the pagination next_link")
-            # The pagination link carries the cursor in its query string. Pass the query
-            # parameters explicitly rather than relying on the raw URL alone, so the
-            # underlying HTTP client cannot drop them while resolving the request. Losing
-            # these parameters would reset the cursor and cause the API to restart paging.
+            # Build the request from the cursor carried in the link plus an explicit page
+            # size and ordering, so it does not depend on which parameters the link happens
+            # to include. A link that carries only the cursor would otherwise let the API
+            # apply its smaller default page size and default ordering, stalling the cursor.
             split_url = urlsplit(next_link_url)
             base_url = urlunsplit((split_url.scheme, split_url.netloc, split_url.path, "", ""))
             link_params = dict(parse_qsl(split_url.query))
-            # Set page size and ordering explicitly so the API does not fall back to its
-            # smaller default page or reverse the order, which would stall the cursor.
             link_params["limit"] = str(page_size)
             link_params["sortOrder"] = Config.SORT_ORDER
             return self._http_request(method="GET", full_url=base_url, params=link_params, resp_type="response")

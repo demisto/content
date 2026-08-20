@@ -1370,7 +1370,7 @@ def test_next_link_request_preserves_query_parameters(scripted_client, capfd):
            needs to resume paging (ordering, page size and the cursor token).
     When: The client follows that link to fetch the next page.
     Then: Every query parameter is present on the outgoing request, so the API resumes
-          exactly where the previous page stopped instead of restarting.
+          from the cursor with the expected page size and ordering.
     """
     next_link = (
         "https://okta.example.com/api/v1/logs"
