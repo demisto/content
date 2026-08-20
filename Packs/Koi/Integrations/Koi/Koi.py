@@ -154,13 +154,14 @@ class Config:
 class LogType(Enum):
     """Enum to hold all configuration for different log types."""
 
-    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS)
-    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS)
+    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS, "alerts")
+    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS, "items")
 
-    def __init__(self, type_string: str, title: str, api_endpoint: str):
+    def __init__(self, type_string: str, title: str, api_endpoint: str, response_key: str):
         self.type_string = type_string
         self.title = title
         self.api_endpoint = api_endpoint
+        self.response_key = response_key
 
 
 # Valid audit log type filters
@@ -628,6 +629,14 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _validate_pagination_args(page_size: int, limit_arg: int | None) -> None:
+    """Validate page_size and limit against configured maximums."""
+    if page_size > Config.MAX_PAGE_SIZE:
+        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
+    if limit_arg and limit_arg > Config.MAX_LIMIT:
+        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
+
 # endregion
 
 # region Client
@@ -721,7 +730,7 @@ class Client(ContentClient):
             params=params,
         )
 
-        events = response.get("alerts") or response.get("data") or response.get("items") or response.get("results") or []
+        events = response.get(log_type.response_key, [])
         demisto.debug(f"[API Fetch] {log_type.type_string} | Page {page}: {len(events)} events returned")
 
         return events
@@ -1588,7 +1597,7 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="KOI.Event",
+        outputs_prefix="Koi.Event",
         outputs_key_field="id",
         outputs=all_events,
     )
@@ -1819,10 +1828,7 @@ def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResu
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
 
-    if page_size > Config.MAX_PAGE_SIZE:
-        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
-    if limit_arg and limit_arg > Config.MAX_LIMIT:
-        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         # Single-page mode: fetch the requested page
@@ -1835,7 +1841,11 @@ def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResu
         # Auto-paginate mode: fetch pages until limit is reached
         limit = limit_arg or Config.DEFAULT_LIMIT
         demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
-        policies = _fetch_policies_with_pagination(client, limit=limit)
+        policies = _paginate_generic(
+            lambda p, ps: client.get_policies(page=p, page_size=ps),
+            limit=limit,
+            items_key="policies",
+        )
 
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} Policies",
@@ -1850,50 +1860,6 @@ def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResu
         outputs_key_field="id",
         outputs=policies,
     )
-
-
-def _fetch_policies_with_pagination(
-    client: Client,
-    limit: int,
-    page_size: int = Config.MAX_PAGE_SIZE,
-) -> list[dict]:
-    """Auto-paginate through policies until limit is reached.
-
-    Args:
-        client: The Koi client.
-        limit: Maximum total number of policies to collect.
-        page_size: Number of results per API page.
-
-    Returns:
-        List of policy dictionaries.
-    """
-    policies: list[dict] = []
-    page = Config.DEFAULT_PAGE
-
-    while len(policies) < limit:
-        response = client.get_policies(page=page, page_size=page_size)
-        page_policies = response.get("policies", [])
-
-        if not page_policies:
-            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
-            break
-
-        policies.extend(page_policies)
-        demisto.debug(f"[Pagination] Page {page}: +{len(page_policies)} policies. Total: {len(policies)}")
-
-        if len(page_policies) < page_size:
-            demisto.debug("[Pagination] Last page (partial). Stopping.")
-            break
-
-        page += 1
-
-    # Trim to limit
-    if len(policies) > limit:
-        demisto.debug(f"[Pagination] Trimming {len(policies)} policies to limit {limit}")
-        policies = policies[:limit]
-
-    demisto.debug(f"[Pagination] Returning {len(policies)} policies")
-    return policies
 
 
 def koi_allowlist_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2174,10 +2140,7 @@ def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandR
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
 
-    if page_size > Config.MAX_PAGE_SIZE:
-        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
-    if limit_arg and limit_arg > Config.MAX_LIMIT:
-        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+    _validate_pagination_args(page_size, limit_arg)
 
     # Extract filter arguments
     filter_kwargs: dict[str, Any] = assign_params(
@@ -2212,7 +2175,11 @@ def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandR
         # Auto-paginate mode: fetch pages until limit is reached
         limit = limit_arg or Config.DEFAULT_LIMIT
         demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
-        items = _fetch_inventory_with_pagination(client, limit=limit, filter_kwargs=filter_kwargs)
+        items = _paginate_generic(
+            lambda p, ps: client.get_inventory(page=p, page_size=ps, **filter_kwargs),
+            limit=limit,
+            items_key="items",
+        )
 
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} Inventory",
@@ -2255,52 +2222,6 @@ def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandR
         outputs_key_field="item_id",
         outputs=items,
     )
-
-
-def _fetch_inventory_with_pagination(
-    client: Client,
-    limit: int,
-    filter_kwargs: dict[str, Any],
-    page_size: int = Config.MAX_PAGE_SIZE,
-) -> list[dict]:
-    """Auto-paginate through inventory items until limit is reached.
-
-    Args:
-        client: The Koi client.
-        limit: Maximum total number of items to collect.
-        filter_kwargs: Filter parameters to pass to the API.
-        page_size: Number of results per API page.
-
-    Returns:
-        List of inventory item dictionaries.
-    """
-    items: list[dict] = []
-    page = Config.DEFAULT_PAGE
-
-    while len(items) < limit:
-        response = client.get_inventory(page=page, page_size=page_size, **filter_kwargs)
-        page_items = response.get("items", [])
-
-        if not page_items:
-            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
-            break
-
-        items.extend(page_items)
-        demisto.debug(f"[Pagination] Page {page}: +{len(page_items)} items. Total: {len(items)}")
-
-        if len(page_items) < page_size:
-            demisto.debug("[Pagination] Last page (partial). Stopping.")
-            break
-
-        page += 1
-
-    # Trim to limit
-    if len(items) > limit:
-        demisto.debug(f"[Pagination] Trimming {len(items)} items to limit {limit}")
-        items = items[:limit]
-
-    demisto.debug(f"[Pagination] Returning {len(items)} inventory items")
-    return items
 
 
 def koi_inventory_item_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2393,10 +2314,7 @@ def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> Comman
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
 
-    if page_size > Config.MAX_PAGE_SIZE:
-        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
-    if limit_arg and limit_arg > Config.MAX_LIMIT:
-        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+    _validate_pagination_args(page_size, limit_arg)
 
     filter_obj: dict[str, Any] = parse_filter_from_args(args)
     sort_by: str | None = args.get("sort_by")
@@ -2419,12 +2337,12 @@ def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> Comman
         # Auto-paginate mode
         limit = limit_arg or Config.DEFAULT_LIMIT
         demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
-        items = _search_inventory_with_pagination(
-            client,
+        items = _paginate_generic(
+            lambda p, ps: client.search_inventory(
+                page=p, page_size=ps, filter_obj=filter_obj, sort_by=sort_by, sort_direction=sort_direction
+            ),
             limit=limit,
-            filter_obj=filter_obj,
-            sort_by=sort_by,
-            sort_direction=sort_direction,
+            items_key="items",
         )
 
     readable_output = tableToMarkdown(
@@ -2470,62 +2388,6 @@ def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> Comman
     )
 
 
-def _search_inventory_with_pagination(
-    client: Client,
-    limit: int,
-    filter_obj: dict[str, Any],
-    sort_by: str | None = None,
-    sort_direction: str | None = None,
-    page_size: int = Config.MAX_PAGE_SIZE,
-) -> list[dict]:
-    """Auto-paginate through inventory search results until limit is reached.
-
-    Args:
-        client: The Koi client.
-        limit: Maximum total number of items to collect.
-        filter_obj: Filter object for the search.
-        sort_by: Column to sort by.
-        sort_direction: Sort direction.
-        page_size: Number of results per API page.
-
-    Returns:
-        List of inventory item dictionaries.
-    """
-    items: list[dict] = []
-    page = Config.DEFAULT_PAGE
-
-    while len(items) < limit:
-        response = client.search_inventory(
-            page=page,
-            page_size=page_size,
-            filter_obj=filter_obj,
-            sort_by=sort_by,
-            sort_direction=sort_direction,
-        )
-        page_items = response.get("items", [])
-
-        if not page_items:
-            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
-            break
-
-        items.extend(page_items)
-        demisto.debug(f"[Pagination] Page {page}: +{len(page_items)} items. Total: {len(items)}")
-
-        if len(page_items) < page_size:
-            demisto.debug("[Pagination] Last page (partial). Stopping.")
-            break
-
-        page += 1
-
-    # Trim to limit
-    if len(items) > limit:
-        demisto.debug(f"[Pagination] Trimming {len(items)} items to limit {limit}")
-        items = items[:limit]
-
-    demisto.debug(f"[Pagination] Returning {len(items)} inventory search results")
-    return items
-
-
 def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List endpoints that have a specific inventory item installed.
 
@@ -2553,10 +2415,7 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
 
-    if page_size > Config.MAX_PAGE_SIZE:
-        raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
-    if limit_arg and limit_arg > Config.MAX_LIMIT:
-        raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         # Single-page mode
@@ -2575,12 +2434,12 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
         # Auto-paginate mode
         limit = limit_arg or Config.DEFAULT_LIMIT
         demisto.debug(f"[Command] Auto-paginate mode: limit={limit}")
-        endpoints = _fetch_item_endpoints_with_pagination(
-            client,
-            item_id=item_id,
-            marketplace=marketplace,
-            version=version,
+        endpoints = _paginate_generic(
+            lambda p, ps: client.get_inventory_item_endpoints(
+                item_id=item_id, marketplace=marketplace, version=version, page=p, page_size=ps
+            ),
             limit=limit,
+            items_key="endpoints",
         )
 
     readable_output = tableToMarkdown(
@@ -2609,62 +2468,6 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
     )
 
 
-def _fetch_item_endpoints_with_pagination(
-    client: Client,
-    item_id: str,
-    marketplace: str,
-    version: str,
-    limit: int,
-    page_size: int = Config.MAX_PAGE_SIZE,
-) -> list[dict]:
-    """Auto-paginate through item endpoints until limit is reached.
-
-    Args:
-        client: The Koi client.
-        item_id: Unique identifier for the item.
-        marketplace: The marketplace where the item is hosted.
-        version: The specific version of the item.
-        limit: Maximum total number of endpoints to collect.
-        page_size: Number of results per API page.
-
-    Returns:
-        List of endpoint dictionaries.
-    """
-    endpoints: list[dict] = []
-    page = Config.DEFAULT_PAGE
-
-    while len(endpoints) < limit:
-        response = client.get_inventory_item_endpoints(
-            item_id=item_id,
-            marketplace=marketplace,
-            version=version,
-            page=page,
-            page_size=page_size,
-        )
-        page_endpoints = response.get("endpoints", [])
-
-        if not page_endpoints:
-            demisto.debug(f"[Pagination] Page {page}: Empty. Stopping.")
-            break
-
-        endpoints.extend(page_endpoints)
-        demisto.debug(f"[Pagination] Page {page}: +{len(page_endpoints)} endpoints. Total: {len(endpoints)}")
-
-        if len(page_endpoints) < page_size:
-            demisto.debug("[Pagination] Last page (partial). Stopping.")
-            break
-
-        page += 1
-
-    # Trim to limit
-    if len(endpoints) > limit:
-        demisto.debug(f"[Pagination] Trimming {len(endpoints)} endpoints to limit {limit}")
-        endpoints = endpoints[:limit]
-
-    demisto.debug(f"[Pagination] Returning {len(endpoints)} endpoints")
-    return endpoints
-
-
 # --- Agent Activity Commands ---
 
 
@@ -2678,6 +2481,7 @@ def koi_agent_activity_events_list_command(client: Client, args: dict[str, Any])
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.get_agent_activity_events(
@@ -2732,6 +2536,7 @@ def koi_agent_activity_sessions_list_command(client: Client, args: dict[str, Any
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.get_agent_activity_sessions(
@@ -2781,6 +2586,7 @@ def koi_approval_request_list_command(client: Client, args: dict[str, Any]) -> C
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.get_approval_requests(page=page_arg, page_size=page_size, **filter_kwargs)
@@ -2872,6 +2678,7 @@ def koi_device_list_command(client: Client, args: dict[str, Any]) -> CommandResu
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.get_devices(page=page_arg, page_size=page_size, **filter_kwargs)
@@ -2909,6 +2716,7 @@ def koi_device_inventory_get_command(client: Client, args: dict[str, Any]) -> Co
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.get_device_inventory(device_id=device_id, page=page_arg, page_size=page_size, finding_id=finding_id)
@@ -2936,6 +2744,7 @@ def koi_finding_list_command(client: Client, args: dict[str, Any]) -> CommandRes
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.get_findings(page=page_arg, page_size=page_size)
@@ -2976,6 +2785,7 @@ def koi_group_list_command(client: Client, args: dict[str, Any]) -> CommandResul
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.get_groups(page=page_arg, page_size=page_size)
@@ -3059,6 +2869,7 @@ def koi_runtime_policy_list_command(client: Client, args: dict[str, Any]) -> Com
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.get_runtime_policies(page=page_arg, page_size=page_size)
@@ -3106,7 +2917,7 @@ def koi_runtime_policy_create_command(client: Client, args: dict[str, Any]) -> C
     if args.get("description"):
         body["description"] = args["description"]
     if args.get("group_ids"):
-        body["group_ids"] = argToList(args["group_ids"])
+        body["group_ids"] = [int(gid) for gid in argToList(args["group_ids"])]
 
     response = client.create_runtime_policy(body)
 
@@ -3166,7 +2977,7 @@ def koi_runtime_policy_update_command(client: Client, args: dict[str, Any]) -> C
     if args.get("description"):
         body["description"] = args["description"]
     if args.get("group_ids"):
-        body["group_ids"] = argToList(args["group_ids"])
+        body["group_ids"] = [int(gid) for gid in argToList(args["group_ids"])]
 
     response = client.update_runtime_policy(policy_id, body)
 
@@ -3191,21 +3002,33 @@ def koi_runtime_policy_delete_command(client: Client, args: dict[str, Any]) -> C
 # --- Koidex Commands ---
 
 
-def koi_koidex_fetch_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    demisto.debug("[Command] koi-koidex-fetch triggered")
-
+def _parse_items_arg(args: dict[str, Any]) -> list:
+    """Parse and validate the 'items' JSON array argument."""
     items_json = args.get("items")
+    if not items_json:
+        raise DemistoException("The 'items' argument is required and must be a JSON array.")
     if isinstance(items_json, str):
         items = json.loads(items_json)
     else:
         items = items_json
+    if not isinstance(items, list):
+        raise DemistoException(f"The 'items' argument must be a JSON array, got {type(items).__name__}.")
+    return items
+
+
+def koi_koidex_fetch_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-koidex-fetch triggered")
+
+    items = _parse_items_arg(args)
 
     response = client.koidex_fetch(items)
 
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} Koidex Fetch Triggered", response, headerTransform=string_to_table_header
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.KoidexFetch", outputs=response)
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.KoidexFetch", outputs_key_field="id", outputs=response
+    )
 
 
 def koi_koidex_risk_report_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -3232,6 +3055,7 @@ def koi_koidex_search_command(client: Client, args: dict[str, Any]) -> CommandRe
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.search_koidex(marketplace=marketplace, search_term=search_term, page=page_arg, page_size=page_size)
@@ -3325,6 +3149,7 @@ def koi_remediation_list_command(client: Client, args: dict[str, Any]) -> Comman
     page_arg = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
     limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
 
     if page_arg:
         response = client.get_remediations(page=page_arg, page_size=page_size, **filter_kwargs)
@@ -3346,28 +3171,22 @@ def koi_remediation_list_command(client: Client, args: dict[str, Any]) -> Comman
 def koi_remediation_submit_command(client: Client, args: dict[str, Any]) -> CommandResults:
     demisto.debug("[Command] koi-remediation-submit triggered")
 
-    items_json = args.get("items")
-    if isinstance(items_json, str):
-        items = json.loads(items_json)
-    else:
-        items = items_json
+    items = _parse_items_arg(args)
 
     response = client.submit_remediations(items)
 
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} Remediation Submitted", response, headerTransform=string_to_table_header
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Remediation", outputs=response)
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.Remediation", outputs_key_field="id", outputs=response
+    )
 
 
 def koi_remediation_dismiss_command(client: Client, args: dict[str, Any]) -> CommandResults:
     demisto.debug("[Command] koi-remediation-dismiss triggered")
 
-    items_json = args.get("items")
-    if isinstance(items_json, str):
-        items = json.loads(items_json)
-    else:
-        items = items_json
+    items = _parse_items_arg(args)
 
     dismissed_by = args.get("dismissed_by")
     client.dismiss_remediations(items, dismissed_by=dismissed_by)

@@ -20,3 +20,11 @@ This pack includes an integration with full Koi API v2 coverage, supporting even
 - **Private Items**: Upload and scan private/internal software items for risk assessment.
 - **Reports**: Create asynchronous reports and check their status.
 - **User Management**: List, create, and delete users.
+
+### Pack Contributors:
+
+---
+ - Eric Partington
+ - Jon Huebner
+
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).

@@ -588,7 +588,7 @@ class TestGetEventsCommand:
         mocker.patch.object(
             mock_client,
             "get_events_page",
-            side_effect=[alerts_response["alerts"], audit_response["data"]],
+            side_effect=[alerts_response["alerts"], audit_response["items"]],
         )
 
         args = {"limit": "50", "should_push_events": "false"}
@@ -624,7 +624,7 @@ class TestFetchEventsCommand:
             log_type = kwargs.get("log_type")
             if log_type == LogType.ALERTS:
                 return alerts_response["alerts"]
-            return audit_response["data"]
+            return audit_response["items"]
 
         mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
         mocker.patch.object(
@@ -789,7 +789,7 @@ class TestFetchEventsCommand:
         def side_effect_get_events_page(**kwargs):
             if kwargs.get("log_type") == LogType.ALERTS:
                 raise Exception("API timeout for alerts")
-            return audit_response["data"]
+            return audit_response["items"]
 
         mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
         mocker.patch.object(
@@ -1038,7 +1038,7 @@ class TestLastRunState:
             log_type = kwargs.get("log_type")
             if log_type == LogType.ALERTS:
                 return alerts_response["alerts"]
-            return audit_response["data"]
+            return audit_response["items"]
 
         mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
         mocker.patch.object(
