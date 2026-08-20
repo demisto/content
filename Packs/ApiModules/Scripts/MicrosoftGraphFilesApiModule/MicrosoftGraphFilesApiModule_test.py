@@ -2331,6 +2331,54 @@ def test_get_driveitem_metadata_command_by_item_id(mocker: MockerFixture):
     assert "drive-abc" in result.readable_output
 
 
+def test_get_driveitem_metadata_command_keeps_the_nested_creator_identity(mocker: MockerFixture):
+    """
+    Given: A driveItem whose createdBy and lastModifiedBy carry a full user identity.
+    When: Running msgraph-driveitem-metadata-get.
+    Then: Email, ID and DisplayName all survive under the role key, and the display name
+          reaches the readable table.
+
+          parse_key_to_context() routes these two fields through remove_identity_key(), which
+          collapses {'user': {...}} to {'DisplayName': ..., 'Type': 'User'} and drops the email
+          and ID. CRTX-218926 specifies the nested shape because the email is what correlates
+          a creator with an activity actor, so the command restores it.
+    """
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_METADATA_RESPONSE)
+
+    result = get_driveitem_metadata_command(
+        CLIENT_MOCKER,
+        {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1", "include_sharepoint_ids": "false"},
+    )
+
+    assert result.outputs["CreatedBy"] == {
+        "User": {"Email": "fake.user@example.com", "ID": "826411a3", "DisplayName": "Fake User"}
+    }
+    assert result.outputs["LastModifiedBy"] == {
+        "User": {"Email": "fake.user@example.com", "ID": "826411a3", "DisplayName": "Fake User"}
+    }
+    # The table reads CreatedBy.User.DisplayName, so a flattened identity renders nothing.
+    assert "Fake User" in result.readable_output
+
+
+def test_get_driveitem_metadata_command_without_an_identity_set(mocker: MockerFixture):
+    """
+    Given: A driveItem response carrying no createdBy or lastModifiedBy at all.
+    When: Running msgraph-driveitem-metadata-get.
+    Then: The command succeeds and simply omits the two fields, rather than emitting empty ones.
+    """
+    response = {k: v for k, v in DRIVEITEM_METADATA_RESPONSE.items() if k not in ("createdBy", "lastModifiedBy")}
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=response)
+
+    result = get_driveitem_metadata_command(
+        CLIENT_MOCKER,
+        {"object_type": "sites", "object_type_id": "site-1", "item_id": "item-1", "include_sharepoint_ids": "false"},
+    )
+
+    assert "CreatedBy" not in result.outputs
+    assert "LastModifiedBy" not in result.outputs
+    assert result.outputs["ID"] == "a9670e1f-67b8-43e1-85f6-b395c4119acf"
+
+
 def test_get_driveitem_metadata_command_by_item_path(mocker: MockerFixture):
     """
     Given: An item_path instead of an item_id.
@@ -2625,6 +2673,63 @@ def test_list_driveitem_activities_command_next_page_url(mocker: MockerFixture):
     assert http_request.call_args.kwargs["full_url"] == next_url
 
 
+def test_list_driveitem_activities_command_next_page_url_without_a_skiptoken(mocker: MockerFixture):
+    """
+    Given: A next_page_url carrying an opaque continuation token rather than $skiptoken.
+    When: Running msgraph-driveitem-activities-list.
+    Then: The URL is followed. This endpoint accepts no OData query parameters, so its
+          @odata.nextLink need not carry $skiptoken - demanding one would reject the very
+          link the previous call returned.
+    """
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", return_value=DRIVEITEM_ACTIVITIES_RESPONSE)
+    next_url = "https://graph.microsoft.com/v1.0/sites/site-1/lists/list-1/items/list-item-1/activities?token=opaque"
+
+    list_driveitem_activities_command(CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1", "next_page_url": next_url})
+
+    assert http_request.call_args.kwargs["full_url"] == next_url
+
+
+@pytest.mark.parametrize(
+    "next_page_url",
+    [
+        "https://evil.example.com/v1.0/sites/site-1/activities",
+        "http://graph.microsoft.com/v1.0/sites/site-1/activities",
+    ],
+    ids=["foreign host", "plaintext scheme"],
+)
+def test_list_driveitem_activities_command_rejects_a_foreign_next_page_url(mocker: MockerFixture, next_page_url: str):
+    """
+    Given: A next_page_url that is not an https Microsoft Graph URL.
+    When: Running msgraph-driveitem-activities-list.
+    Then: The command raises and issues no request, so a caller-supplied URL cannot redirect
+          the authenticated call elsewhere.
+    """
+    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request")
+
+    with pytest.raises(DemistoException, match="Invalid next_page_url"):
+        list_driveitem_activities_command(
+            CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1", "next_page_url": next_page_url}
+        )
+
+    http_request.assert_not_called()
+
+
+@pytest.mark.parametrize("limit", ["0", "-5"])
+def test_list_driveitem_activities_command_rejects_a_non_positive_limit(mocker: MockerFixture, limit: str):
+    """
+    Given: A limit of zero or a negative number.
+    When: Running msgraph-driveitem-activities-list.
+    Then: The command raises. Slicing on these misbehaves silently - 0 is falsy so the cap is
+          skipped and every activity is returned, and a negative value trims from the end.
+    """
+    mocker.patch.object(
+        CLIENT_MOCKER.ms_client, "http_request", side_effect=[SHAREPOINT_IDS_RESPONSE, DRIVEITEM_ACTIVITIES_RESPONSE]
+    )
+
+    with pytest.raises(DemistoException, match="limit argument must be a positive integer"):
+        list_driveitem_activities_command(CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1", "limit": limit})
+
+
 """ msgraph-driveitem-analytics-get """
 
 
@@ -2663,6 +2768,33 @@ def test_get_driveitem_analytics_command_uses_list_item_route(mocker: MockerFixt
     # The stats are lifted out of the time-range wrapper into a single Stats object.
     assert result.outputs["Stats"]["Access"]["ActionCount"] == 24
     assert "24" in result.readable_output
+
+
+def test_get_driveitem_analytics_command_skips_the_incomplete_data_scalar(mocker: MockerFixture):
+    """
+    Given: An analytics payload carrying incompleteData alongside a real action facet.
+    When: Running msgraph-driveitem-analytics-get.
+    Then: Only the real facet becomes a row. incompleteData reports that Graph throttled or
+          truncated the aggregation - it is an object, so without an explicit exclusion it
+          passes the dict check and renders as an action row with no counts, which reads as a
+          facet with zero activity. It still reaches the context output.
+    """
+    response = {
+        "allTime": {
+            "startDateTime": "2024-01-01T00:00:00Z",
+            "endDateTime": "2026-01-15T00:00:00Z",
+            "incompleteData": {"wasThrottled": True, "resultsPending": False},
+            "access": {"actionCount": 24, "actorCount": 5},
+        }
+    }
+    mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request", side_effect=[SHAREPOINT_IDS_RESPONSE, response])
+
+    result = get_driveitem_analytics_command(CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1"})
+
+    assert "Access" in result.readable_output
+    assert "Incomplete" not in result.readable_output
+    # The caller can still see it was throttled - it is only kept out of the action table.
+    assert result.outputs["Stats"]["IncompleteData"]["WasThrottled"] is True
 
 
 def test_get_driveitem_analytics_command_surfaces_undocumented_facets(mocker: MockerFixture):

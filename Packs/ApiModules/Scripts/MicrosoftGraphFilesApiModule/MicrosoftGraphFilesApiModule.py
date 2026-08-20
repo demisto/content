@@ -825,8 +825,13 @@ class MsGraphClient:
         limiting has to happen client-side.
         """
         if next_page_url:
-            url = url_validation(next_page_url)
-            return self.ms_client.http_request(method="GET", full_url=url)
+            parsed_url = urlparse(next_page_url)
+            if parsed_url.scheme != "https" or not parsed_url.netloc.endswith("graph.microsoft.com"):
+                raise DemistoException(
+                    f"Invalid next_page_url: {next_page_url}. Expected an https Microsoft Graph URL, "
+                    f"as returned in MsGraphFiles.ItemActivity.NextToken."
+                )
+            return self.ms_client.http_request(method="GET", full_url=next_page_url)
 
         list_id, list_item_unique_id = self.resolve_list_item_ids(site_id, item_id)
         url_suffix = f"sites/{site_id}/lists/{list_id}/items/{list_item_unique_id}/activities"
@@ -1860,6 +1865,29 @@ def delete_driveitem_permission_command(client: MsGraphClient, args: dict[str, s
     )
 
 
+def _nested_identity_set(raw_identity_set: Any) -> dict:
+    """Convert a raw Graph identitySet into context conventions, keeping the role nesting.
+
+    parse_key_to_context() routes CreatedBy and LastModifiedBy through remove_identity_key(),
+    which collapses {'user': {...}} into {'DisplayName': ..., 'Type': 'User'} and discards the
+    email and ID. Those two fields are the join keys between this command and the activities
+    command - an actor is correlated by email, not by display name - so CRTX-218926 specifies
+    the full nested identity here. The flattening stays in place for the older commands that
+    already depend on it; only this command re-derives the nested shape from the raw response.
+
+    Returns:
+        {'User': {'Email': ..., 'ID': ..., 'DisplayName': ...}}, with one key per role present.
+        Returns {} when the payload carries no usable identity.
+    """
+    if not isinstance(raw_identity_set, dict):
+        return {}
+    return {
+        string_to_context_key(camel_case_to_underscore(role)): parse_key_to_context(identity)
+        for role, identity in raw_identity_set.items()
+        if isinstance(identity, dict) and identity
+    }
+
+
 def _driveitem_metadata_readable(context_entry: dict) -> str:
     """Render the human-readable table for a single driveItem's metadata.
 
@@ -1913,6 +1941,13 @@ def get_driveitem_metadata_command(client: MsGraphClient, args: dict[str, str]) 
     )
 
     context_entry = parse_key_to_context(raw_response)
+
+    # Restore the nested identity that parse_key_to_context() flattened away. Without this the
+    # creator's email and ID are lost, and the readable table below finds nothing under 'User'.
+    for raw_field, context_field in (("createdBy", "CreatedBy"), ("lastModifiedBy", "LastModifiedBy")):
+        if identity_set := _nested_identity_set(raw_response.get(raw_field)):
+            context_entry[context_field] = identity_set
+
     # SiteID and DriveId are surfaced at the top level because callers need them for follow-up
     # commands, and they are otherwise buried inside parentReference. DriveId also states which
     # drive ItemID belongs to - the two are only meaningful together.
@@ -1969,6 +2004,9 @@ def list_driveitem_activities_command(client: MsGraphClient, args: dict[str, str
     next_page_url = args.get("next_page_url") or ""
     limit = arg_to_number(args.get("limit"))
 
+    if limit is not None and limit <= 0:
+        raise DemistoException(f"The limit argument must be a positive integer. Got {limit}.")
+
     raw_response = client.list_driveitem_activities(
         site_id=site_id,
         item_id=item_id,
@@ -2006,7 +2044,7 @@ def _driveitem_analytics_readable(parsed_stats: dict, item_id: str, time_range: 
     An absent facet simply produces no row. The itemActivityStat scalars are skipped: they
     describe the window the statistics cover, not an action.
     """
-    non_action_fields = {"StartDateTime", "EndDateTime", "IsTrending", "Incomplete"}
+    non_action_fields = {"StartDateTime", "EndDateTime", "IsTrending", "IncompleteData"}
     readable_rows = [
         {
             "Action": action,
