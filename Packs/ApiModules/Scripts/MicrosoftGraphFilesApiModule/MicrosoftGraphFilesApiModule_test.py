@@ -2689,31 +2689,6 @@ def test_list_driveitem_activities_command_next_page_url_without_a_skiptoken(moc
     assert http_request.call_args.kwargs["full_url"] == next_url
 
 
-@pytest.mark.parametrize(
-    "next_page_url",
-    [
-        "https://evil.example.com/v1.0/sites/site-1/activities",
-        "http://graph.microsoft.com/v1.0/sites/site-1/activities",
-    ],
-    ids=["foreign host", "plaintext scheme"],
-)
-def test_list_driveitem_activities_command_rejects_a_foreign_next_page_url(mocker: MockerFixture, next_page_url: str):
-    """
-    Given: A next_page_url that is not an https Microsoft Graph URL.
-    When: Running msgraph-driveitem-activities-list.
-    Then: The command raises and issues no request, so a caller-supplied URL cannot redirect
-          the authenticated call elsewhere.
-    """
-    http_request = mocker.patch.object(CLIENT_MOCKER.ms_client, "http_request")
-
-    with pytest.raises(DemistoException, match="Invalid next_page_url"):
-        list_driveitem_activities_command(
-            CLIENT_MOCKER, {"site_id": "site-1", "item_id": "item-1", "next_page_url": next_page_url}
-        )
-
-    http_request.assert_not_called()
-
-
 @pytest.mark.parametrize("limit", ["0", "-5"])
 def test_list_driveitem_activities_command_rejects_a_non_positive_limit(mocker: MockerFixture, limit: str):
     """

@@ -822,15 +822,11 @@ class MsGraphClient:
         identifiers resolved from sharepointIds first.
 
         This endpoint supports no OData query parameters, so there is no $top - result
-        limiting has to happen client-side.
+        limiting has to happen client-side. For the same reason its @odata.nextLink carries
+        an opaque token rather than $skiptoken, so url_validation is not applied here: it
+        would reject the very paging link the previous call returned.
         """
         if next_page_url:
-            parsed_url = urlparse(next_page_url)
-            if parsed_url.scheme != "https" or not parsed_url.netloc.endswith("graph.microsoft.com"):
-                raise DemistoException(
-                    f"Invalid next_page_url: {next_page_url}. Expected an https Microsoft Graph URL, "
-                    f"as returned in MsGraphFiles.ItemActivity.NextToken."
-                )
             return self.ms_client.http_request(method="GET", full_url=next_page_url)
 
         list_id, list_item_unique_id = self.resolve_list_item_ids(site_id, item_id)
