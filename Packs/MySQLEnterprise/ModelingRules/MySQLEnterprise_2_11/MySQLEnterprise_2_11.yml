@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: MySQLEnterprise_ModelingRule
+name: MySQLEnterprise Modeling Rule
+rules: ''
+schema: ''
+tags: MySQL Enterprise
+supportedModules:
+- xsiam

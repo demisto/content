@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: NetBox_ModelingRule
+name: NetBox Modeling Rule
+rules: ''
+schema: ''
+tags: NetBox
+supportedModules:
+- xsiam
