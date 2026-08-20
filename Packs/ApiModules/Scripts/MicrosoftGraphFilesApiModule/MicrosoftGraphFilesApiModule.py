@@ -31,6 +31,9 @@ DRIVEITEM_SELECT_FIELDS = (
     "id,name,size,webUrl,createdDateTime,lastModifiedDateTime,createdBy,lastModifiedBy,parentReference,file,folder"
 )
 
+# The role keys an identitySet may nest an identity under, in preference order. 'siteUser'
+# matters for SharePoint sharing entries, where it is often the only one populated.
+IDENTITY_ROLE_KEYS = ("user", "siteUser", "group", "application", "device")
 
 def parse_key_to_context(obj: dict) -> dict:
     """Parse graph api data as received from Microsoft Graph API into Demisto's conventions
@@ -1660,11 +1663,6 @@ def _decode_sharepoint_login_name(login_name: str) -> str:
             return f"{local}@{domain}"
         return guest_part
     return encoded_upn
-
-
-# The role keys an identitySet may nest an identity under, in preference order. 'siteUser'
-# matters for SharePoint sharing entries, where it is often the only one populated.
-IDENTITY_ROLE_KEYS = ("user", "siteUser", "group", "application", "device")
 
 
 def _lookup(source: dict, *names: str) -> Any:
