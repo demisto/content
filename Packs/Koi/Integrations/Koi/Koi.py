@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, UTC
 from enum import Enum
 from typing import Any
+from collections.abc import Callable
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -43,6 +44,22 @@ class ApiPaths:
     BLOCKLIST = f"{BASE}/policies/blocklist"
     INVENTORY = f"{BASE}/inventory"
     INVENTORY_SEARCH = f"{BASE}/inventory/search"
+    AGENT_ACTIVITY_EVENTS = f"{BASE}/agent-activity/events"
+    AGENT_ACTIVITY_SESSIONS = f"{BASE}/agent-activity/sessions"
+    APPROVAL_REQUESTS = f"{BASE}/approval-requests"
+    DEVICES = f"{BASE}/devices"
+    FINDINGS = f"{BASE}/findings"
+    FINDINGS_CUSTOMIZE_RISK = f"{BASE}/findings/customize-risk"
+    GROUPS = f"{BASE}/groups"
+    RUNTIME_POLICIES = f"{BASE}/hardening/runtime-policies"
+    KOIDEX_FETCH = f"{BASE}/koidex/fetch"
+    KOIDEX_RISK_REPORT = f"{BASE}/koidex/risk-report"
+    KOIDEX_SEARCH = f"{BASE}/koidex/search"
+    PRIVATE_ITEMS = f"{BASE}/private-items"
+    REMEDIATIONS = f"{BASE}/remediations"
+    REMEDIATIONS_DISMISS = f"{BASE}/remediations/dismiss"
+    REPORTS = f"{BASE}/reports"
+    USERS = f"{BASE}/users"
 
     @classmethod
     def policy(cls, policy_id: int) -> str:
@@ -58,6 +75,50 @@ class ApiPaths:
     def inventory_item_endpoints(cls, item_id: str) -> str:
         """Return the path for the endpoints of a specific inventory item."""
         return f"{cls.INVENTORY}/{item_id}/endpoints"
+
+    @classmethod
+    def approval_request_approve(cls, request_id: str) -> str:
+        return f"{cls.APPROVAL_REQUESTS}/{request_id}/approve"
+
+    @classmethod
+    def approval_request_reject(cls, request_id: str) -> str:
+        return f"{cls.APPROVAL_REQUESTS}/{request_id}/reject"
+
+    @classmethod
+    def device(cls, device_id: str) -> str:
+        return f"{cls.DEVICES}/{device_id}"
+
+    @classmethod
+    def device_archive(cls, device_id: str) -> str:
+        return f"{cls.DEVICES}/{device_id}/archive"
+
+    @classmethod
+    def device_inventory(cls, device_id: str) -> str:
+        return f"{cls.DEVICES}/{device_id}/inventory"
+
+    @classmethod
+    def group(cls, group_id: int) -> str:
+        return f"{cls.GROUPS}/{group_id}"
+
+    @classmethod
+    def group_device(cls, group_id: int, device_id: str) -> str:
+        return f"{cls.GROUPS}/{group_id}/devices/{device_id}"
+
+    @classmethod
+    def runtime_policy(cls, policy_id: str) -> str:
+        return f"{cls.RUNTIME_POLICIES}/{policy_id}"
+
+    @classmethod
+    def private_item(cls, item_id: str) -> str:
+        return f"{cls.PRIVATE_ITEMS}/{item_id}"
+
+    @classmethod
+    def report(cls, report_id: str) -> str:
+        return f"{cls.REPORTS}/{report_id}"
+
+    @classmethod
+    def user(cls, user_id: str) -> str:
+        return f"{cls.USERS}/{user_id}"
 
 
 class Config:
@@ -120,6 +181,8 @@ VALID_AUDIT_TYPES = [
 
 # Valid marketplace values for allowlist operations
 VALID_MARKETPLACES = [
+    "binaries",
+    "bitbucket",
     "chocolatey",
     "chrome_web_store",
     "claude_desktop_extensions",
@@ -127,21 +190,77 @@ VALID_MARKETPLACES = [
     "docker",
     "edge_add_ons",
     "firefox_add_ons",
+    "github",
     "github_mcp_registry",
+    "gitlab",
     "homebrew",
     "hugging_face",
     "jetbrains",
     "linux",
     "mac",
+    "mcp_registry",
     "notepad++",
     "npm",
     "office_add_ins",
+    "ollama",
     "open_vsx_registry",
     "pypi",
+    "skill",
     "visual_studio",
     "vscode",
     "windows",
     "windsurf",
+]
+
+VALID_PLATFORMS = [
+    "antigravity",
+    "aqua",
+    "arc",
+    "brave",
+    "brew",
+    "chatgpt_atlas",
+    "chocolatey",
+    "chrome",
+    "chromium",
+    "claude",
+    "claude_code",
+    "claude_desktop",
+    "clion",
+    "codex",
+    "comet",
+    "cursor",
+    "datagrip",
+    "dataspell",
+    "dia",
+    "edge",
+    "excel",
+    "firefox",
+    "fleet",
+    "goland",
+    "hugging_face",
+    "ollama",
+    "intellij_community",
+    "intellij",
+    "kiro",
+    "mac",
+    "npm",
+    "notepad++",
+    "opera",
+    "outlook",
+    "phpstorm",
+    "powerpoint",
+    "prisma_access_browser",
+    "pycharm",
+    "pypi",
+    "rider",
+    "rubymine",
+    "rustrover",
+    "vscode",
+    "webstorm",
+    "windsurf",
+    "word",
+    "windows",
+    "writerside",
 ]
 
 
@@ -205,7 +324,7 @@ def get_log_types_from_titles(event_types_to_fetch: list[str]) -> list[LogType]:
     if invalid_types:
         valid_options = ", ".join(sorted(valid_titles))
         raise DemistoException(
-            f"Invalid event type(s) provided: {invalid_types}. " f"Please select from the following list: {valid_options}"
+            f"Invalid event type(s) provided: {invalid_types}. Please select from the following list: {valid_options}"
         )
 
     return [lt for lt in LogType if lt.title in event_types_to_fetch]
@@ -447,7 +566,7 @@ def parse_filter_from_args(args: dict[str, Any]) -> dict[str, Any]:
 
         if not isinstance(data, dict):
             raise DemistoException(
-                f"Invalid filter JSON structure in entry ID '{entry_id}': " f"expected a dictionary, got {type(data).__name__}."
+                f"Invalid filter JSON structure in entry ID '{entry_id}': expected a dictionary, got {type(data).__name__}."
             )
 
         demisto.debug(f"[Filter Parse] Parsed filter from file: {data}")
@@ -985,6 +1104,309 @@ class Client(ContentClient):
         demisto.debug("[API] Inventory search response received")
         return response
 
+    # --- Agent Activity ---
+
+    def get_agent_activity_events(
+        self,
+        created_at_gte: str,
+        created_at_lte: str,
+        page: int = 1,
+        page_size: int = Config.DEFAULT_PAGE_SIZE,
+        session_id: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = assign_params(
+            created_at_gte=created_at_gte,
+            created_at_lte=created_at_lte,
+            page=page,
+            page_size=min(page_size, Config.MAX_PAGE_SIZE),
+            session_id=session_id,
+        )
+        return self._http_request(method="GET", url_suffix=ApiPaths.AGENT_ACTIVITY_EVENTS, params=params)
+
+    def get_agent_activity_sessions(
+        self,
+        created_at_gte: str,
+        created_at_lte: str,
+        page: int = 1,
+        page_size: int = Config.DEFAULT_PAGE_SIZE,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = assign_params(
+            created_at_gte=created_at_gte,
+            created_at_lte=created_at_lte,
+            page=page,
+            page_size=min(page_size, Config.MAX_PAGE_SIZE),
+            **kwargs,
+        )
+        return self._http_request(method="GET", url_suffix=ApiPaths.AGENT_ACTIVITY_SESSIONS, params=params)
+
+    # --- Approval Requests ---
+
+    def get_approval_requests(
+        self,
+        page: int = 1,
+        page_size: int = Config.DEFAULT_PAGE_SIZE,
+        approval_status: str | None = None,
+        marketplace: str | None = None,
+        requested_by: str | None = None,
+        created_at_gte: str | None = None,
+        created_at_lte: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = assign_params(
+            page=page,
+            page_size=min(page_size, Config.MAX_PAGE_SIZE),
+            approval_status=approval_status,
+            marketplace=marketplace,
+            requested_by=requested_by,
+            created_at_gte=created_at_gte,
+            created_at_lte=created_at_lte,
+        )
+        return self._http_request(method="GET", url_suffix=ApiPaths.APPROVAL_REQUESTS, params=params)
+
+    def create_approval_request(self, body: dict[str, Any]) -> dict[str, Any]:
+        return self._http_request(method="POST", url_suffix=ApiPaths.APPROVAL_REQUESTS, json_data=body)
+
+    def approve_approval_request(self, request_id: str, approved_by: str | None = None) -> None:
+        body: dict[str, Any] = assign_params(approved_by=approved_by)
+        self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.approval_request_approve(request_id),
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+    def reject_approval_request(self, request_id: str, rejected_by: str | None = None, reason: str | None = None) -> None:
+        body: dict[str, Any] = assign_params(rejected_by=rejected_by, reason=reason)
+        self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.approval_request_reject(request_id),
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+    # --- Devices ---
+
+    def get_devices(
+        self,
+        page: int = 1,
+        page_size: int = Config.DEFAULT_PAGE_SIZE,
+        status: str | None = None,
+        last_seen_gte: str | None = None,
+        last_seen_lte: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = assign_params(
+            page=page,
+            page_size=min(page_size, Config.MAX_PAGE_SIZE),
+            status=status,
+            last_seen_gte=last_seen_gte,
+            last_seen_lte=last_seen_lte,
+        )
+        return self._http_request(method="GET", url_suffix=ApiPaths.DEVICES, params=params)
+
+    def archive_device(self, device_id: str, archived_by_user_email: str) -> None:
+        body: dict[str, Any] = {"archived_by_user_email": archived_by_user_email}
+        self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.device_archive(device_id),
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+    def get_device_inventory(
+        self,
+        device_id: str,
+        page: int = 1,
+        page_size: int = Config.DEFAULT_PAGE_SIZE,
+        finding_id: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = assign_params(
+            page=page,
+            page_size=min(page_size, Config.MAX_PAGE_SIZE),
+            finding_id=finding_id,
+        )
+        return self._http_request(method="GET", url_suffix=ApiPaths.device_inventory(device_id), params=params)
+
+    # --- Findings ---
+
+    def get_findings(self, page: int = 1, page_size: int = Config.DEFAULT_PAGE_SIZE) -> dict[str, Any]:
+        params: dict[str, Any] = {"page": page, "page_size": min(page_size, Config.MAX_PAGE_SIZE)}
+        return self._http_request(method="GET", url_suffix=ApiPaths.FINDINGS, params=params)
+
+    def customize_finding_risk(self, finding_id: str, risk: int) -> None:
+        body: dict[str, Any] = {"finding_id": finding_id, "risk": risk}
+        self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.FINDINGS_CUSTOMIZE_RISK,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+    # --- Groups ---
+
+    def get_groups(self, page: int = 1, page_size: int = Config.DEFAULT_PAGE_SIZE) -> dict[str, Any]:
+        params: dict[str, Any] = {"page": page, "page_size": min(page_size, Config.MAX_PAGE_SIZE)}
+        return self._http_request(method="GET", url_suffix=ApiPaths.GROUPS, params=params)
+
+    def create_groups(self, groups: list[dict[str, Any]], creator: str | None = None) -> dict[str, Any]:
+        body: dict[str, Any] = {"groups": groups}
+        if creator:
+            body["creator"] = creator
+        return self._http_request(method="POST", url_suffix=ApiPaths.GROUPS, json_data=body)
+
+    def update_group(self, group_id: int, name: str) -> None:
+        body: dict[str, Any] = {"name": name}
+        self._http_request(
+            method="PUT",
+            url_suffix=ApiPaths.group(group_id),
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+    def add_device_to_group(self, group_id: int, device_id: str) -> None:
+        self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.group_device(group_id, device_id),
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+    def remove_device_from_group(self, group_id: int, device_id: str) -> None:
+        self._http_request(
+            method="DELETE",
+            url_suffix=ApiPaths.group_device(group_id, device_id),
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+    # --- Runtime Policies ---
+
+    def get_runtime_policies(self, page: int = 1, page_size: int = Config.DEFAULT_PAGE_SIZE) -> dict[str, Any]:
+        params: dict[str, Any] = {"page": page, "page_size": min(page_size, Config.MAX_PAGE_SIZE)}
+        return self._http_request(method="GET", url_suffix=ApiPaths.RUNTIME_POLICIES, params=params)
+
+    def create_runtime_policy(self, body: dict[str, Any]) -> dict[str, Any]:
+        return self._http_request(method="POST", url_suffix=ApiPaths.RUNTIME_POLICIES, json_data=body)
+
+    def get_runtime_policy(self, policy_id: str) -> dict[str, Any]:
+        return self._http_request(method="GET", url_suffix=ApiPaths.runtime_policy(policy_id))
+
+    def update_runtime_policy(self, policy_id: str, body: dict[str, Any]) -> dict[str, Any]:
+        return self._http_request(method="PUT", url_suffix=ApiPaths.runtime_policy(policy_id), json_data=body)
+
+    def delete_runtime_policy(self, policy_id: str) -> None:
+        self._http_request(
+            method="DELETE",
+            url_suffix=ApiPaths.runtime_policy(policy_id),
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+    # --- Koidex ---
+
+    def koidex_fetch(self, items: list[dict[str, Any]]) -> dict[str, Any]:
+        body: dict[str, Any] = {"items": items}
+        return self._http_request(method="POST", url_suffix=ApiPaths.KOIDEX_FETCH, json_data=body)
+
+    def get_koidex_risk_report(self, item_id: str, marketplace: str, version: str | None = None) -> dict[str, Any]:
+        params: dict[str, Any] = assign_params(item_id=item_id, marketplace=marketplace, version=version)
+        return self._http_request(method="GET", url_suffix=ApiPaths.KOIDEX_RISK_REPORT, params=params)
+
+    def search_koidex(
+        self,
+        marketplace: str,
+        search_term: str,
+        page: int = 1,
+        page_size: int = Config.DEFAULT_PAGE_SIZE,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {
+            "marketplace": marketplace,
+            "search_term": search_term,
+            "page": page,
+            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+        }
+        return self._http_request(method="GET", url_suffix=ApiPaths.KOIDEX_SEARCH, params=params)
+
+    # --- Private Items ---
+
+    def get_private_items(self) -> dict[str, Any]:
+        return self._http_request(method="GET", url_suffix=ApiPaths.PRIVATE_ITEMS)
+
+    def upload_private_item(self, file_data: bytes, file_name: str, created_by: str, marketplace: str) -> dict[str, Any]:
+        return self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.PRIVATE_ITEMS,
+            files={"item": (file_name, file_data)},
+            data={"created_by": created_by, "marketplace": marketplace},
+        )
+
+    def get_private_item_details(self, item_id: str, version: str | None = None) -> dict[str, Any]:
+        params: dict[str, Any] = assign_params(version=version)
+        return self._http_request(method="GET", url_suffix=ApiPaths.private_item(item_id), params=params)
+
+    # --- Remediations ---
+
+    def get_remediations(
+        self,
+        page: int = 1,
+        page_size: int = Config.DEFAULT_PAGE_SIZE,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = assign_params(
+            page=page,
+            page_size=min(page_size, Config.MAX_PAGE_SIZE),
+            **kwargs,
+        )
+        return self._http_request(method="GET", url_suffix=ApiPaths.REMEDIATIONS, params=params)
+
+    def submit_remediations(self, items: list[dict[str, Any]]) -> dict[str, Any]:
+        body: dict[str, Any] = {"items": items}
+        return self._http_request(method="POST", url_suffix=ApiPaths.REMEDIATIONS, json_data=body)
+
+    def dismiss_remediations(self, items: list[dict[str, Any]], dismissed_by: str | None = None) -> None:
+        body: dict[str, Any] = {"items": items}
+        if dismissed_by:
+            body["dismissed_by"] = dismissed_by
+        self._http_request(
+            method="POST",
+            url_suffix=ApiPaths.REMEDIATIONS_DISMISS,
+            json_data=body,
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
+    # --- Reports ---
+
+    def create_report(self, report_type: str, filters: dict[str, Any] | None = None) -> dict[str, Any]:
+        body: dict[str, Any] = {"report_type": report_type}
+        if filters:
+            body["filters"] = filters
+        return self._http_request(method="POST", url_suffix=ApiPaths.REPORTS, json_data=body)
+
+    def get_report_status(self, report_id: str) -> dict[str, Any]:
+        return self._http_request(method="GET", url_suffix=ApiPaths.report(report_id))
+
+    # --- Users ---
+
+    def get_users(self) -> dict[str, Any]:
+        return self._http_request(method="GET", url_suffix=ApiPaths.USERS)
+
+    def create_user(self, email: str, role: str) -> dict[str, Any]:
+        body: dict[str, Any] = {"email": email, "role": role}
+        return self._http_request(method="POST", url_suffix=ApiPaths.USERS, json_data=body)
+
+    def delete_user(self, user_id: str) -> None:
+        self._http_request(
+            method="DELETE",
+            url_suffix=ApiPaths.user(user_id),
+            resp_type="response",
+            ok_codes=(204,),
+        )
+
     def send_events(self, events: list[dict]) -> None:
         """Send events to XSIAM using the ContentClient context.
 
@@ -1226,9 +1648,7 @@ def _fetch_single_log_type(
 
         if last_fetch_timestamp:
             time_input = last_fetch_timestamp
-            demisto.debug(
-                f"[Fetch] {log_type.type_string}: Continuing from {time_input}. " f"Prev ID count: {len(last_fetched_ids)}"
-            )
+            demisto.debug(f"[Fetch] {log_type.type_string}: Continuing from {time_input}. Prev ID count: {len(last_fetched_ids)}")
         else:
             time_input = Config.DEFAULT_FROM_TIME
             demisto.debug(f"[Fetch] {log_type.type_string}: First run - starting from default time")
@@ -2245,6 +2665,822 @@ def _fetch_item_endpoints_with_pagination(
     return endpoints
 
 
+# --- Agent Activity Commands ---
+
+
+def koi_agent_activity_events_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-agent-activity-events-list triggered")
+
+    created_at_gte = get_formatted_utc_time(args["created_at_gte"])
+    created_at_lte = get_formatted_utc_time(args["created_at_lte"])
+    session_id = args.get("session_id")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.get_agent_activity_events(
+            created_at_gte=created_at_gte,
+            created_at_lte=created_at_lte,
+            page=page_arg,
+            page_size=page_size,
+            session_id=session_id,
+        )
+        items = response.get("data", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_generic(
+            lambda p, ps: client.get_agent_activity_events(
+                created_at_gte=created_at_gte,
+                created_at_lte=created_at_lte,
+                page=p,
+                page_size=ps,
+                session_id=session_id,
+            ),
+            limit=limit,
+            items_key="data",
+        )
+
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Agent Activity Events", items, headerTransform=string_to_table_header)
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.AgentActivityEvent", outputs_key_field="id", outputs=items
+    )
+
+
+def koi_agent_activity_sessions_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-agent-activity-sessions-list triggered")
+
+    created_at_gte = get_formatted_utc_time(args["created_at_gte"])
+    created_at_lte = get_formatted_utc_time(args["created_at_lte"])
+
+    filter_kwargs = assign_params(
+        agent=args.get("agent"),
+        host=args.get("host"),
+        model=args.get("model"),
+        user_email=args.get("user_email"),
+        verdict=args.get("verdict"),
+        mcp=args.get("mcp"),
+        skill=args.get("skill"),
+        action=args.get("action"),
+        governed_by=args.get("governed_by"),
+        filter=args.get("filter"),
+        sort_by=args.get("sort_by"),
+        sort_direction=args.get("sort_direction"),
+    )
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.get_agent_activity_sessions(
+            created_at_gte=created_at_gte,
+            created_at_lte=created_at_lte,
+            page=page_arg,
+            page_size=page_size,
+            **filter_kwargs,
+        )
+        items = response.get("data", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_generic(
+            lambda p, ps: client.get_agent_activity_sessions(
+                created_at_gte=created_at_gte,
+                created_at_lte=created_at_lte,
+                page=p,
+                page_size=ps,
+                **filter_kwargs,
+            ),
+            limit=limit,
+            items_key="data",
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Agent Activity Sessions", items, headerTransform=string_to_table_header
+    )
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.AgentActivitySession", outputs_key_field="id", outputs=items
+    )
+
+
+# --- Approval Request Commands ---
+
+
+def koi_approval_request_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-approval-request-list triggered")
+
+    filter_kwargs = assign_params(
+        approval_status=args.get("approval_status"),
+        marketplace=args.get("marketplace"),
+        requested_by=args.get("requested_by"),
+        created_at_gte=get_formatted_utc_time(args["created_at_gte"]) if args.get("created_at_gte") else None,
+        created_at_lte=get_formatted_utc_time(args["created_at_lte"]) if args.get("created_at_lte") else None,
+    )
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.get_approval_requests(page=page_arg, page_size=page_size, **filter_kwargs)
+        items = response.get("items", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_generic(
+            lambda p, ps: client.get_approval_requests(page=p, page_size=ps, **filter_kwargs),
+            limit=limit,
+            items_key="items",
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Approval Requests",
+        items,
+        headers=[
+            "id",
+            "item_id",
+            "name",
+            "marketplace",
+            "platform",
+            "approval_status",
+            "requested_by",
+            "justification",
+            "reject_reason",
+            "created_at",
+            "updated_at",
+            "resolved_at",
+        ],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.ApprovalRequest", outputs_key_field="id", outputs=items
+    )
+
+
+def koi_approval_request_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-approval-request-create triggered")
+
+    body: dict[str, Any] = {
+        "item_id": args["item_id"],
+        "marketplace": args["marketplace"],
+        "platform": args["platform"],
+        "justification": args["justification"],
+        "requested_by": args["requested_by"],
+    }
+    if args.get("version"):
+        body["version"] = args["version"]
+
+    response = client.create_approval_request(body)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Approval Request Created",
+        response,
+        headers=["id", "item_id", "name", "marketplace", "platform", "approval_status", "requested_by", "created_at"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.ApprovalRequest", outputs_key_field="id", outputs=response
+    )
+
+
+def koi_approval_request_approve_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-approval-request-approve triggered")
+    request_id = args["approval_request_id"]
+    client.approve_approval_request(request_id, approved_by=args.get("approved_by"))
+    return CommandResults(readable_output=f"Approval request '{request_id}' was approved successfully.")
+
+
+def koi_approval_request_reject_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-approval-request-reject triggered")
+    request_id = args["approval_request_id"]
+    client.reject_approval_request(request_id, rejected_by=args.get("rejected_by"), reason=args.get("reason"))
+    return CommandResults(readable_output=f"Approval request '{request_id}' was rejected successfully.")
+
+
+# --- Device Commands ---
+
+
+def koi_device_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-device-list triggered")
+
+    filter_kwargs = assign_params(
+        status=args.get("status"),
+        last_seen_gte=get_formatted_utc_time(args["last_seen_gte"]) if args.get("last_seen_gte") else None,
+        last_seen_lte=get_formatted_utc_time(args["last_seen_lte"]) if args.get("last_seen_lte") else None,
+    )
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.get_devices(page=page_arg, page_size=page_size, **filter_kwargs)
+        items = response.get("devices", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_generic(
+            lambda p, ps: client.get_devices(page=p, page_size=ps, **filter_kwargs),
+            limit=limit,
+            items_key="devices",
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Devices",
+        items,
+        headers=["id", "hostname", "os", "platform", "status", "last_seen", "serial"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Device", outputs_key_field="id", outputs=items)
+
+
+def koi_device_archive_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-device-archive triggered")
+    device_id = args["device_id"]
+    client.archive_device(device_id, archived_by_user_email=args["archived_by_user_email"])
+    return CommandResults(readable_output=f"Device '{device_id}' was archived successfully.")
+
+
+def koi_device_inventory_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-device-inventory-get triggered")
+
+    device_id = args["device_id"]
+    finding_id = args.get("finding_id")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.get_device_inventory(device_id=device_id, page=page_arg, page_size=page_size, finding_id=finding_id)
+        items = response.get("inventory", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_generic(
+            lambda p, ps: client.get_device_inventory(device_id=device_id, page=p, page_size=ps, finding_id=finding_id),
+            limit=limit,
+            items_key="inventory",
+        )
+
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Device Inventory", items, headerTransform=string_to_table_header)
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.DeviceInventory", outputs_key_field="item_id", outputs=items
+    )
+
+
+# --- Finding Commands ---
+
+
+def koi_finding_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-finding-list triggered")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.get_findings(page=page_arg, page_size=page_size)
+        items = response.get("items", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_generic(
+            lambda p, ps: client.get_findings(page=p, page_size=ps),
+            limit=limit,
+            items_key="items",
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Findings",
+        items,
+        headers=["id", "name", "description", "risk"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Finding", outputs_key_field="id", outputs=items)
+
+
+def koi_finding_customize_risk_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-finding-customize-risk triggered")
+    finding_id = args["finding_id"]
+    risk = arg_to_number(args["risk"])
+    if risk is None or risk < 0 or risk > 10:
+        raise DemistoException("risk must be an integer between 0 and 10.")
+    client.customize_finding_risk(finding_id=finding_id, risk=risk)
+    return CommandResults(readable_output=f"Finding '{finding_id}' risk level was updated to {risk}.")
+
+
+# --- Group Commands ---
+
+
+def koi_group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-group-list triggered")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.get_groups(page=page_arg, page_size=page_size)
+        groups = response.get("groups", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        groups = _paginate_generic(
+            lambda p, ps: client.get_groups(page=p, page_size=ps),
+            limit=limit,
+            items_key="groups",
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Groups",
+        groups,
+        headers=["id", "name", "created_at", "devices"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Group", outputs_key_field="id", outputs=groups)
+
+
+def koi_group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-group-create triggered")
+
+    name = args["name"]
+    device_ids = argToList(args.get("device_ids"))
+    creator = args.get("creator")
+
+    group_input: dict[str, Any] = {"name": name}
+    if device_ids:
+        group_input["device_ids"] = device_ids
+
+    response = client.create_groups(groups=[group_input], creator=creator)
+    groups = response.get("groups", [])
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Group Created",
+        groups,
+        headers=["id", "name", "created_at", "devices"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Group", outputs_key_field="id", outputs=groups)
+
+
+def koi_group_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-group-update triggered")
+    group_id = arg_to_number(args["group_id"])
+    if group_id is None:
+        raise DemistoException("group_id is required and must be a valid integer.")
+    name = args["name"]
+    client.update_group(group_id=group_id, name=name)
+    return CommandResults(readable_output=f"Group {group_id} was renamed to '{name}' successfully.")
+
+
+def koi_group_device_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-group-device-add triggered")
+    group_id = arg_to_number(args["group_id"])
+    if group_id is None:
+        raise DemistoException("group_id is required and must be a valid integer.")
+    device_id = args["device_id"]
+    client.add_device_to_group(group_id=group_id, device_id=device_id)
+    return CommandResults(readable_output=f"Device '{device_id}' was added to group {group_id} successfully.")
+
+
+def koi_group_device_remove_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-group-device-remove triggered")
+    group_id = arg_to_number(args["group_id"])
+    if group_id is None:
+        raise DemistoException("group_id is required and must be a valid integer.")
+    device_id = args["device_id"]
+    client.remove_device_from_group(group_id=group_id, device_id=device_id)
+    return CommandResults(readable_output=f"Device '{device_id}' was removed from group {group_id} successfully.")
+
+
+# --- Runtime Policy Commands ---
+
+
+def koi_runtime_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-runtime-policy-list triggered")
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.get_runtime_policies(page=page_arg, page_size=page_size)
+        items = response.get("policies", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_generic(
+            lambda p, ps: client.get_runtime_policies(page=p, page_size=ps),
+            limit=limit,
+            items_key="policies",
+        )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Runtime Policies",
+        items,
+        headers=[
+            "id",
+            "display_name",
+            "description",
+            "enforcement_mode",
+            "enabled",
+            "agents",
+            "rules",
+            "group_ids",
+            "created_at",
+            "updated_at",
+        ],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.RuntimePolicy", outputs_key_field="id", outputs=items
+    )
+
+
+def koi_runtime_policy_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-runtime-policy-create triggered")
+
+    body: dict[str, Any] = {
+        "display_name": args["display_name"],
+        "enforcement_mode": args["enforcement_mode"],
+        "agents": argToList(args["agents"]),
+        "rules": json.loads(args["rules"]) if isinstance(args.get("rules"), str) else args.get("rules", []),
+        "enabled": argToBoolean(args.get("enabled", "true")),
+    }
+    if args.get("description"):
+        body["description"] = args["description"]
+    if args.get("group_ids"):
+        body["group_ids"] = argToList(args["group_ids"])
+
+    response = client.create_runtime_policy(body)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Runtime Policy Created",
+        response,
+        headers=["id", "display_name", "enforcement_mode", "enabled", "created_at"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.RuntimePolicy", outputs_key_field="id", outputs=response
+    )
+
+
+def koi_runtime_policy_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-runtime-policy-get triggered")
+    policy_id = args["policy_id"]
+    response = client.get_runtime_policy(policy_id)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Runtime Policy",
+        response,
+        headers=[
+            "id",
+            "display_name",
+            "description",
+            "enforcement_mode",
+            "enabled",
+            "agents",
+            "rules",
+            "group_ids",
+            "created_at",
+            "updated_at",
+        ],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.RuntimePolicy", outputs_key_field="id", outputs=response
+    )
+
+
+def koi_runtime_policy_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-runtime-policy-update triggered")
+
+    policy_id = args["policy_id"]
+    body: dict[str, Any] = {}
+    if args.get("display_name"):
+        body["display_name"] = args["display_name"]
+    if args.get("enforcement_mode"):
+        body["enforcement_mode"] = args["enforcement_mode"]
+    if args.get("agents"):
+        body["agents"] = argToList(args["agents"])
+    if args.get("rules"):
+        body["rules"] = json.loads(args["rules"]) if isinstance(args["rules"], str) else args["rules"]
+    if args.get("enabled") is not None:
+        body["enabled"] = argToBoolean(args["enabled"])
+    if args.get("description"):
+        body["description"] = args["description"]
+    if args.get("group_ids"):
+        body["group_ids"] = argToList(args["group_ids"])
+
+    response = client.update_runtime_policy(policy_id, body)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Runtime Policy Updated",
+        response,
+        headers=["id", "display_name", "enforcement_mode", "enabled", "updated_at"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.RuntimePolicy", outputs_key_field="id", outputs=response
+    )
+
+
+def koi_runtime_policy_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-runtime-policy-delete triggered")
+    policy_id = args["policy_id"]
+    client.delete_runtime_policy(policy_id)
+    return CommandResults(readable_output=f"Runtime policy '{policy_id}' was deleted successfully.")
+
+
+# --- Koidex Commands ---
+
+
+def koi_koidex_fetch_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-koidex-fetch triggered")
+
+    items_json = args.get("items")
+    if isinstance(items_json, str):
+        items = json.loads(items_json)
+    else:
+        items = items_json
+
+    response = client.koidex_fetch(items)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Koidex Fetch Triggered", response, headerTransform=string_to_table_header
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.KoidexFetch", outputs=response)
+
+
+def koi_koidex_risk_report_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-koidex-risk-report-get triggered")
+
+    response = client.get_koidex_risk_report(
+        item_id=args["item_id"],
+        marketplace=args["marketplace"],
+        version=args.get("version"),
+    )
+
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Koidex Risk Report", response, headerTransform=string_to_table_header)
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.KoidexRiskReport", outputs_key_field="item_id", outputs=response
+    )
+
+
+def koi_koidex_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-koidex-search triggered")
+
+    marketplace = args["marketplace"]
+    search_term = args["search_term"]
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.search_koidex(marketplace=marketplace, search_term=search_term, page=page_arg, page_size=page_size)
+        items = response.get("items", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_generic(
+            lambda p, ps: client.search_koidex(marketplace=marketplace, search_term=search_term, page=p, page_size=ps),
+            limit=limit,
+            items_key="items",
+        )
+
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Koidex Search Results", items, headerTransform=string_to_table_header)
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.KoidexSearch", outputs_key_field="item_id", outputs=items
+    )
+
+
+# --- Private Item Commands ---
+
+
+def koi_private_item_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-private-item-list triggered")
+
+    response = client.get_private_items()
+    items = response.get("items", []) if isinstance(response, dict) else response
+
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Private Items", items, headerTransform=string_to_table_header)
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=items
+    )
+
+
+def koi_private_item_upload_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-private-item-upload triggered")
+
+    entry_id = args["entry_id"]
+    created_by = args["created_by"]
+    marketplace = args["marketplace"]
+
+    file_result = demisto.getFilePath(entry_id)
+    file_path = file_result["path"]
+    file_name = file_result["name"]
+
+    with open(file_path, "rb") as f:
+        file_data = f.read()
+
+    response = client.upload_private_item(
+        file_data=file_data, file_name=file_name, created_by=created_by, marketplace=marketplace
+    )
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Private Item Uploaded", response, headerTransform=string_to_table_header
+    )
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=response
+    )
+
+
+def koi_private_item_details_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-private-item-details-get triggered")
+
+    item_id = args["item_id"]
+    version = args.get("version")
+    response = client.get_private_item_details(item_id=item_id, version=version)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Private Item Details", response, headerTransform=string_to_table_header
+    )
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=response
+    )
+
+
+# --- Remediation Commands ---
+
+
+def koi_remediation_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-remediation-list triggered")
+
+    filter_kwargs = assign_params(
+        hostname=args.get("hostname"),
+        platform=args.get("platform"),
+        risk_level=args.get("risk_level"),
+        status=args.get("status"),
+        reason=args.get("reason"),
+        sort_by=args.get("sort_by"),
+        sort_direction=args.get("sort_direction"),
+    )
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+
+    if page_arg:
+        response = client.get_remediations(page=page_arg, page_size=page_size, **filter_kwargs)
+        items = response.get("items", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        items = _paginate_generic(
+            lambda p, ps: client.get_remediations(page=p, page_size=ps, **filter_kwargs),
+            limit=limit,
+            items_key="items",
+        )
+
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Remediations", items, headerTransform=string_to_table_header)
+    return CommandResults(
+        readable_output=readable_output, outputs_prefix="Koi.Remediation", outputs_key_field="id", outputs=items
+    )
+
+
+def koi_remediation_submit_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-remediation-submit triggered")
+
+    items_json = args.get("items")
+    if isinstance(items_json, str):
+        items = json.loads(items_json)
+    else:
+        items = items_json
+
+    response = client.submit_remediations(items)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Remediation Submitted", response, headerTransform=string_to_table_header
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Remediation", outputs=response)
+
+
+def koi_remediation_dismiss_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-remediation-dismiss triggered")
+
+    items_json = args.get("items")
+    if isinstance(items_json, str):
+        items = json.loads(items_json)
+    else:
+        items = items_json
+
+    dismissed_by = args.get("dismissed_by")
+    client.dismiss_remediations(items, dismissed_by=dismissed_by)
+    return CommandResults(readable_output=f"{len(items)} remediation(s) were dismissed successfully.")
+
+
+# --- Report Commands ---
+
+
+def koi_report_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-report-create triggered")
+
+    report_type = args["report_type"]
+    filters_raw = args.get("filters")
+    filters = json.loads(filters_raw) if isinstance(filters_raw, str) else filters_raw
+
+    response = client.create_report(report_type=report_type, filters=filters)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Report Created",
+        response,
+        headers=["id", "report_type", "status"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Report", outputs_key_field="id", outputs=response)
+
+
+def koi_report_status_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-report-status-get triggered")
+
+    report_id = args["report_id"]
+    response = client.get_report_status(report_id)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Report Status",
+        response,
+        headers=["id", "report_type", "status", "download_url", "created_at"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Report", outputs_key_field="id", outputs=response)
+
+
+# --- User Commands ---
+
+
+def koi_user_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-user-list triggered")
+
+    response = client.get_users()
+    users = response.get("users", []) if isinstance(response, dict) else response
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Users",
+        users,
+        headers=["id", "email", "role", "created_at"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.User", outputs_key_field="id", outputs=users)
+
+
+def koi_user_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-user-create triggered")
+
+    response = client.create_user(email=args["email"], role=args["role"])
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} User Created",
+        response,
+        headers=["id", "email", "role", "created_at"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.User", outputs_key_field="id", outputs=response)
+
+
+def koi_user_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-user-delete triggered")
+    user_id = args["user_id"]
+    client.delete_user(user_id)
+    return CommandResults(readable_output=f"User '{user_id}' was deleted successfully.")
+
+
+# --- Generic Pagination Helper ---
+
+
+def _paginate_generic(
+    fetch_fn: Callable[[int, int], dict[str, Any]],
+    limit: int,
+    items_key: str = "items",
+    page_size: int = Config.MAX_PAGE_SIZE,
+) -> list[dict]:
+    items: list[dict] = []
+    page = Config.DEFAULT_PAGE
+
+    while len(items) < limit:
+        response = fetch_fn(page, page_size)
+        page_items = response.get(items_key, [])
+
+        if not page_items:
+            break
+
+        items.extend(page_items)
+
+        if len(page_items) < page_size:
+            break
+
+        page += 1
+
+    if len(items) > limit:
+        items = items[:limit]
+
+    return items
+
+
 # endregion
 
 # region Main router
@@ -2256,18 +3492,67 @@ COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
     "koi-get-events": get_events_command,
     "fetch-events": fetch_events_command,
+    # Policies
     "koi-policy-list": koi_policy_list_command,
+    "koi-policy-status-update": koi_policy_status_update_command,
+    # Allowlist / Blocklist
     "koi-allowlist-get": koi_allowlist_get_command,
     "koi-allowlist-items-remove": koi_allowlist_items_remove_command,
     "koi-allowlist-items-add": koi_allowlist_items_add_command,
     "koi-blocklist-get": koi_blocklist_get_command,
     "koi-blocklist-items-remove": koi_blocklist_items_remove_command,
     "koi-blocklist-items-add": koi_blocklist_items_add_command,
-    "koi-policy-status-update": koi_policy_status_update_command,
+    # Inventory
     "koi-inventory-list": koi_inventory_list_command,
     "koi-inventory-item-get": koi_inventory_item_get_command,
     "koi-inventory-search": koi_inventory_search_command,
     "koi-inventory-item-endpoints-list": koi_inventory_item_endpoints_list_command,
+    # Agent Activity
+    "koi-agent-activity-events-list": koi_agent_activity_events_list_command,
+    "koi-agent-activity-sessions-list": koi_agent_activity_sessions_list_command,
+    # Approval Requests
+    "koi-approval-request-list": koi_approval_request_list_command,
+    "koi-approval-request-create": koi_approval_request_create_command,
+    "koi-approval-request-approve": koi_approval_request_approve_command,
+    "koi-approval-request-reject": koi_approval_request_reject_command,
+    # Devices
+    "koi-device-list": koi_device_list_command,
+    "koi-device-archive": koi_device_archive_command,
+    "koi-device-inventory-get": koi_device_inventory_get_command,
+    # Findings
+    "koi-finding-list": koi_finding_list_command,
+    "koi-finding-customize-risk": koi_finding_customize_risk_command,
+    # Groups
+    "koi-group-list": koi_group_list_command,
+    "koi-group-create": koi_group_create_command,
+    "koi-group-update": koi_group_update_command,
+    "koi-group-device-add": koi_group_device_add_command,
+    "koi-group-device-remove": koi_group_device_remove_command,
+    # Runtime Policies
+    "koi-runtime-policy-list": koi_runtime_policy_list_command,
+    "koi-runtime-policy-create": koi_runtime_policy_create_command,
+    "koi-runtime-policy-get": koi_runtime_policy_get_command,
+    "koi-runtime-policy-update": koi_runtime_policy_update_command,
+    "koi-runtime-policy-delete": koi_runtime_policy_delete_command,
+    # Koidex
+    "koi-koidex-fetch": koi_koidex_fetch_command,
+    "koi-koidex-risk-report-get": koi_koidex_risk_report_get_command,
+    "koi-koidex-search": koi_koidex_search_command,
+    # Private Items
+    "koi-private-item-list": koi_private_item_list_command,
+    "koi-private-item-upload": koi_private_item_upload_command,
+    "koi-private-item-details-get": koi_private_item_details_get_command,
+    # Remediations
+    "koi-remediation-list": koi_remediation_list_command,
+    "koi-remediation-submit": koi_remediation_submit_command,
+    "koi-remediation-dismiss": koi_remediation_dismiss_command,
+    # Reports
+    "koi-report-create": koi_report_create_command,
+    "koi-report-status-get": koi_report_status_get_command,
+    # Users
+    "koi-user-list": koi_user_list_command,
+    "koi-user-create": koi_user_create_command,
+    "koi-user-delete": koi_user_delete_command,
 }
 
 

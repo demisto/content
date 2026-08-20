@@ -23,3 +23,45 @@
 !koi-inventory-search filter_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID page=1 page_size=100
 !koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode version=1.2.3 limit=50
 !koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode page=1 page_size=100
+!koi-agent-activity-events-list limit=50
+!koi-agent-activity-events-list device_id=device-123 agent=cursor limit=10
+!koi-agent-activity-sessions-list limit=50
+!koi-agent-activity-sessions-list device_id=device-123 agent=cursor limit=10
+!koi-approval-request-list limit=50
+!koi-approval-request-list status=pending marketplace=vscode limit=10
+!koi-approval-request-create item_id=ext-123 marketplace=vscode justification="Required for development workflow"
+!koi-approval-request-approve request_id=req-001
+!koi-approval-request-reject request_id=req-001
+!koi-device-list limit=50
+!koi-device-list status=active os=windows limit=10
+!koi-device-archive device_id=device-123
+!koi-device-inventory-get device_id=device-123
+!koi-finding-list limit=50
+!koi-finding-list severity=high status=open marketplace=vscode limit=10
+!koi-finding-customize-risk finding_id=finding-001 risk_level=low justification="False positive, internal tool"
+!koi-group-list limit=50
+!koi-group-create name="Engineering" description="Engineering team devices"
+!koi-group-update group_id=grp-001 name="Engineering Team" description="Updated description"
+!koi-group-device-add group_id=grp-001 device_id=device-123
+!koi-group-device-remove group_id=grp-001 device_id=device-123
+!koi-runtime-policy-list limit=50
+!koi-runtime-policy-create name="Block AI Agents" description="Block unauthorized AI agents" action=block agents=cursor,codex
+!koi-runtime-policy-get policy_id=rtpol-001
+!koi-runtime-policy-update policy_id=rtpol-001 name="Updated Policy" action=alert
+!koi-runtime-policy-delete policy_id=rtpol-001
+!koi-koidex-fetch item_id=ext-123 marketplace=vscode
+!koi-koidex-risk-report-get item_id=ext-123 marketplace=vscode
+!koi-koidex-risk-report-get item_id=ext-123 marketplace=vscode version=1.2.3
+!koi-koidex-search query="react" marketplace=vscode limit=10
+!koi-private-item-list limit=50
+!koi-private-item-upload entry_id=ENTRY_ID@INVESTIGATION_ID marketplace=vscode item_name="internal-tool"
+!koi-private-item-details-get item_id=priv-001
+!koi-remediation-list limit=50
+!koi-remediation-list status=pending severity=high limit=10
+!koi-remediation-submit remediation_ids=rem-001,rem-002
+!koi-remediation-dismiss remediation_ids=rem-001 justification="Accepted risk"
+!koi-report-create report_type=inventory
+!koi-report-status-get report_id=rpt-001
+!koi-user-list limit=50
+!koi-user-create email="analyst@company.com" role=analyst
+!koi-user-delete user_id=user-003

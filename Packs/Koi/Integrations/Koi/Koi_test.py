@@ -13,6 +13,7 @@ from Koi import (
     LogType,
     VALID_AUDIT_TYPES,
     VALID_MARKETPLACES,
+    VALID_PLATFORMS,
     COMMAND_MAP,
     get_log_types_from_titles,
     extract_time_from_event,
@@ -35,11 +36,47 @@ from Koi import (
     koi_inventory_item_get_command,
     koi_inventory_search_command,
     koi_inventory_item_endpoints_list_command,
+    koi_agent_activity_events_list_command,
+    koi_agent_activity_sessions_list_command,
+    koi_approval_request_list_command,
+    koi_approval_request_create_command,
+    koi_approval_request_approve_command,
+    koi_approval_request_reject_command,
+    koi_device_list_command,
+    koi_device_archive_command,
+    koi_device_inventory_get_command,
+    koi_finding_list_command,
+    koi_finding_customize_risk_command,
+    koi_group_list_command,
+    koi_group_create_command,
+    koi_group_update_command,
+    koi_group_device_add_command,
+    koi_group_device_remove_command,
+    koi_runtime_policy_list_command,
+    koi_runtime_policy_create_command,
+    koi_runtime_policy_get_command,
+    koi_runtime_policy_update_command,
+    koi_runtime_policy_delete_command,
+    koi_koidex_fetch_command,
+    koi_koidex_risk_report_get_command,
+    koi_koidex_search_command,
+    koi_private_item_list_command,
+    koi_private_item_upload_command,
+    koi_private_item_details_get_command,
+    koi_remediation_list_command,
+    koi_remediation_submit_command,
+    koi_remediation_dismiss_command,
+    koi_report_create_command,
+    koi_report_status_get_command,
+    koi_user_list_command,
+    koi_user_create_command,
+    koi_user_delete_command,
     parse_filter_from_args,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
     get_formatted_utc_time,
     parse_date_or_use_current,
+    _paginate_generic,
     main,
 )
 
@@ -3514,6 +3551,649 @@ class TestClientSendEvents:
         mock_client.send_events([])
 
         mock_send_to_xsiam.assert_called_once_with(events=[], vendor=Config.VENDOR, product=Config.PRODUCT)
+
+
+# endregion
+
+# region New command tests
+
+
+class TestKoiAgentActivityEventsListCommand:
+
+    def test_single_page(self, mock_client, mocker):
+        response = load_test_data("agent_activity_events_response.json")
+        mocker.patch.object(mock_client, "get_agent_activity_events", return_value=response)
+
+        args = {"created_at_gte": "2025-06-01T09:00:00Z", "created_at_lte": "2025-06-01T11:00:00Z", "page": "1"}
+        result = koi_agent_activity_events_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.AgentActivityEvent"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["id"] == "evt-001"
+
+    def test_auto_paginate(self, mock_client, mocker):
+        response = load_test_data("agent_activity_events_response.json")
+        mocker.patch.object(mock_client, "get_agent_activity_events", return_value=response)
+
+        args = {"created_at_gte": "2025-06-01T09:00:00Z", "created_at_lte": "2025-06-01T11:00:00Z", "limit": "10"}
+        result = koi_agent_activity_events_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.AgentActivityEvent"
+        assert len(result.outputs) == 2
+
+
+class TestKoiAgentActivitySessionsListCommand:
+
+    def test_list_sessions(self, mock_client, mocker):
+        response = load_test_data("agent_activity_sessions_response.json")
+        mocker.patch.object(mock_client, "get_agent_activity_sessions", return_value=response)
+
+        args = {"created_at_gte": "2025-06-01T00:00:00Z", "created_at_lte": "2025-06-01T23:59:59Z", "page": "1"}
+        result = koi_agent_activity_sessions_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.AgentActivitySession"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["agent"] == "claude-code"
+
+
+class TestKoiApprovalRequestListCommand:
+
+    def test_list_requests(self, mock_client, mocker):
+        response = load_test_data("approval_requests_response.json")
+        mocker.patch.object(mock_client, "get_approval_requests", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_approval_request_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.ApprovalRequest"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["approval_status"] == "pending"
+
+    def test_list_with_filters(self, mock_client, mocker):
+        response = load_test_data("approval_requests_response.json")
+        mocker.patch.object(mock_client, "get_approval_requests", return_value=response)
+
+        args = {"approval_status": "pending", "marketplace": "chrome_web_store", "page": "1"}
+        result = koi_approval_request_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.ApprovalRequest"
+
+
+class TestKoiApprovalRequestCreateCommand:
+
+    def test_create_request(self, mock_client, mocker):
+        response = load_test_data("approval_request_created_response.json")
+        mocker.patch.object(mock_client, "create_approval_request", return_value=response)
+
+        args = {
+            "item_id": "ext-xyz",
+            "marketplace": "npm",
+            "platform": "npm",
+            "justification": "Required dependency",
+            "requested_by": "dev@example.com",
+            "version": "2.0.0",
+        }
+        result = koi_approval_request_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.ApprovalRequest"
+        assert result.outputs["id"] == "req-002"
+        mock_client.create_approval_request.assert_called_once()
+
+
+class TestKoiApprovalRequestApproveCommand:
+
+    def test_approve_request(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "approve_approval_request", return_value=None)
+
+        args = {"approval_request_id": "req-001", "approved_by": "admin@example.com"}
+        result = koi_approval_request_approve_command(mock_client, args)
+
+        assert "approved" in result.readable_output
+        mock_client.approve_approval_request.assert_called_once_with("req-001", approved_by="admin@example.com")
+
+
+class TestKoiApprovalRequestRejectCommand:
+
+    def test_reject_request(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "reject_approval_request", return_value=None)
+
+        args = {"approval_request_id": "req-001", "rejected_by": "admin@example.com", "reason": "Not approved"}
+        result = koi_approval_request_reject_command(mock_client, args)
+
+        assert "rejected" in result.readable_output
+        mock_client.reject_approval_request.assert_called_once_with("req-001", rejected_by="admin@example.com", reason="Not approved")
+
+
+class TestKoiDeviceListCommand:
+
+    def test_list_devices(self, mock_client, mocker):
+        response = load_test_data("devices_response.json")
+        mocker.patch.object(mock_client, "get_devices", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_device_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Device"
+        assert len(result.outputs) == 3
+        assert result.outputs[0]["hostname"] == "dev-laptop-01"
+
+    def test_list_devices_auto_paginate(self, mock_client, mocker):
+        response = load_test_data("devices_response.json")
+        mocker.patch.object(mock_client, "get_devices", return_value=response)
+
+        args = {"limit": "50"}
+        result = koi_device_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Device"
+        assert len(result.outputs) == 3
+
+
+class TestKoiDeviceArchiveCommand:
+
+    def test_archive_device(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "archive_device", return_value=None)
+
+        args = {"device_id": "dev-001", "archived_by_user_email": "admin@company.com"}
+        result = koi_device_archive_command(mock_client, args)
+
+        assert "archived" in result.readable_output
+        mock_client.archive_device.assert_called_once_with("dev-001", archived_by_user_email="admin@company.com")
+
+
+class TestKoiDeviceInventoryGetCommand:
+
+    def test_get_device_inventory(self, mock_client, mocker):
+        response = load_test_data("device_inventory_response.json")
+        mocker.patch.object(mock_client, "get_device_inventory", return_value=response)
+
+        args = {"device_id": "dev-001", "page": "1"}
+        result = koi_device_inventory_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.DeviceInventory"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["item_display_name"] == "Dark Reader"
+
+
+class TestKoiFindingListCommand:
+
+    def test_list_findings(self, mock_client, mocker):
+        response = load_test_data("findings_response.json")
+        mocker.patch.object(mock_client, "get_findings", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_finding_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Finding"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["name"] == "Excessive Permissions"
+
+    def test_list_findings_auto_paginate(self, mock_client, mocker):
+        response = load_test_data("findings_response.json")
+        mocker.patch.object(mock_client, "get_findings", return_value=response)
+
+        args = {"limit": "50"}
+        result = koi_finding_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Finding"
+        assert len(result.outputs) == 2
+
+
+class TestKoiFindingCustomizeRiskCommand:
+
+    def test_customize_risk(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "customize_finding_risk", return_value=None)
+
+        args = {"finding_id": "finding-001", "risk": "5"}
+        result = koi_finding_customize_risk_command(mock_client, args)
+
+        assert "updated to 5" in result.readable_output
+        mock_client.customize_finding_risk.assert_called_once_with(finding_id="finding-001", risk=5)
+
+    def test_invalid_risk_value(self, mock_client, mocker):
+        args = {"finding_id": "finding-001", "risk": "11"}
+        with pytest.raises(DemistoException, match="risk must be an integer between 0 and 10"):
+            koi_finding_customize_risk_command(mock_client, args)
+
+
+class TestKoiGroupListCommand:
+
+    def test_list_groups(self, mock_client, mocker):
+        response = load_test_data("groups_response.json")
+        mocker.patch.object(mock_client, "get_groups", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_group_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Group"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["name"] == "Engineering"
+
+
+class TestKoiGroupCreateCommand:
+
+    def test_create_group(self, mock_client, mocker):
+        response = load_test_data("group_created_response.json")
+        mocker.patch.object(mock_client, "create_groups", return_value=response)
+
+        args = {"name": "Sales", "creator": "admin@company.com"}
+        result = koi_group_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Group"
+        assert result.outputs[0]["name"] == "Sales"
+
+    def test_create_group_with_devices(self, mock_client, mocker):
+        response = load_test_data("group_created_response.json")
+        mocker.patch.object(mock_client, "create_groups", return_value=response)
+
+        args = {"name": "Sales", "device_ids": "dev-001,dev-002"}
+        result = koi_group_create_command(mock_client, args)
+
+        call_args = mock_client.create_groups.call_args
+        assert call_args[1]["groups"][0]["device_ids"] == ["dev-001", "dev-002"]
+
+
+class TestKoiGroupUpdateCommand:
+
+    def test_update_group(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "update_group", return_value=None)
+
+        args = {"group_id": "1", "name": "New Name"}
+        result = koi_group_update_command(mock_client, args)
+
+        assert "renamed" in result.readable_output
+        mock_client.update_group.assert_called_once_with(group_id=1, name="New Name")
+
+
+class TestKoiGroupDeviceAddCommand:
+
+    def test_add_device(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "add_device_to_group", return_value=None)
+
+        args = {"group_id": "1", "device_id": "dev-001"}
+        result = koi_group_device_add_command(mock_client, args)
+
+        assert "added" in result.readable_output
+        mock_client.add_device_to_group.assert_called_once_with(group_id=1, device_id="dev-001")
+
+
+class TestKoiGroupDeviceRemoveCommand:
+
+    def test_remove_device(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "remove_device_from_group", return_value=None)
+
+        args = {"group_id": "1", "device_id": "dev-001"}
+        result = koi_group_device_remove_command(mock_client, args)
+
+        assert "removed" in result.readable_output
+        mock_client.remove_device_from_group.assert_called_once_with(group_id=1, device_id="dev-001")
+
+
+class TestKoiRuntimePolicyListCommand:
+
+    def test_list_runtime_policies(self, mock_client, mocker):
+        response = load_test_data("runtime_policies_response.json")
+        mocker.patch.object(mock_client, "get_runtime_policies", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_runtime_policy_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["display_name"] == "Block MCP Tools"
+
+
+class TestKoiRuntimePolicyCreateCommand:
+
+    def test_create_runtime_policy(self, mock_client, mocker):
+        response = load_test_data("runtime_policy_created_response.json")
+        mocker.patch.object(mock_client, "create_runtime_policy", return_value=response)
+
+        args = {
+            "display_name": "Ask for Approval",
+            "enforcement_mode": "ask",
+            "agents": "claude-code",
+            "rules": '[{"type": "data_access", "action": "ask"}]',
+            "enabled": "true",
+        }
+        result = koi_runtime_policy_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        assert result.outputs["id"] == "rtp-002"
+
+
+class TestKoiRuntimePolicyGetCommand:
+
+    def test_get_runtime_policy(self, mock_client, mocker):
+        response = load_test_data("runtime_policy_created_response.json")
+        mocker.patch.object(mock_client, "get_runtime_policy", return_value=response)
+
+        args = {"policy_id": "rtp-002"}
+        result = koi_runtime_policy_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        assert result.outputs["display_name"] == "Ask for Approval"
+
+
+class TestKoiRuntimePolicyUpdateCommand:
+
+    def test_update_runtime_policy(self, mock_client, mocker):
+        response = load_test_data("runtime_policy_created_response.json")
+        mocker.patch.object(mock_client, "update_runtime_policy", return_value=response)
+
+        args = {"policy_id": "rtp-002", "display_name": "Updated Name", "enforcement_mode": "block"}
+        result = koi_runtime_policy_update_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        mock_client.update_runtime_policy.assert_called_once()
+
+
+class TestKoiRuntimePolicyDeleteCommand:
+
+    def test_delete_runtime_policy(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "delete_runtime_policy", return_value=None)
+
+        args = {"policy_id": "rtp-001"}
+        result = koi_runtime_policy_delete_command(mock_client, args)
+
+        assert "deleted" in result.readable_output
+        mock_client.delete_runtime_policy.assert_called_once_with("rtp-001")
+
+
+class TestKoiKoidexFetchCommand:
+
+    def test_koidex_fetch(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "koidex_fetch", return_value={"status": "ok"})
+
+        args = {"items": '[{"item_id": "abc", "marketplace": "npm", "version": "1.0.0"}]'}
+        result = koi_koidex_fetch_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.KoidexFetch"
+
+
+class TestKoiKoidexRiskReportGetCommand:
+
+    def test_get_risk_report(self, mock_client, mocker):
+        response = load_test_data("koidex_risk_report_response.json")
+        mocker.patch.object(mock_client, "get_koidex_risk_report", return_value=response)
+
+        args = {"item_id": "ext-risk-001", "marketplace": "npm"}
+        result = koi_koidex_risk_report_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.KoidexRiskReport"
+        assert result.outputs["risk"] == 6
+        assert result.outputs["risk_level"] == "medium"
+
+
+class TestKoiKoidexSearchCommand:
+
+    def test_search(self, mock_client, mocker):
+        response = load_test_data("koidex_search_response.json")
+        mocker.patch.object(mock_client, "search_koidex", return_value=response)
+
+        args = {"marketplace": "npm", "search_term": "lodash", "page": "1"}
+        result = koi_koidex_search_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.KoidexSearch"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["name"] == "lodash"
+
+
+class TestKoiPrivateItemListCommand:
+
+    def test_list_private_items(self, mock_client, mocker):
+        response = load_test_data("private_items_response.json")
+        mocker.patch.object(mock_client, "get_private_items", return_value=response)
+
+        args: dict[str, str] = {}
+        result = koi_private_item_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.PrivateItem"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["name"] == "Internal Extension"
+
+
+class TestKoiPrivateItemDetailsGetCommand:
+
+    def test_get_details(self, mock_client, mocker):
+        response = load_test_data("koidex_risk_report_response.json")
+        mocker.patch.object(mock_client, "get_private_item_details", return_value=response)
+
+        args = {"item_id": "priv-001"}
+        result = koi_private_item_details_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.PrivateItem"
+
+
+class TestKoiRemediationListCommand:
+
+    def test_list_remediations(self, mock_client, mocker):
+        response = load_test_data("remediations_response.json")
+        mocker.patch.object(mock_client, "get_remediations", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_remediation_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Remediation"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["status"] == "pending"
+
+    def test_list_with_filters(self, mock_client, mocker):
+        response = load_test_data("remediations_response.json")
+        mocker.patch.object(mock_client, "get_remediations", return_value=response)
+
+        args = {"status": "pending", "risk_level": "high", "page": "1"}
+        result = koi_remediation_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Remediation"
+
+
+class TestKoiRemediationSubmitCommand:
+
+    def test_submit_remediations(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "submit_remediations", return_value={"id": "rem-new", "status": "pending"})
+
+        args = {"items": '[{"item_id": "ext-risky", "platform": "chrome", "version": "1.0", "device_ids": ["dev-001"]}]'}
+        result = koi_remediation_submit_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Remediation"
+
+
+class TestKoiRemediationDismissCommand:
+
+    def test_dismiss_remediations(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "dismiss_remediations", return_value=None)
+
+        args = {
+            "items": '[{"item_id": "ext-risky", "platform": "chrome", "version": "1.0", "device_id": "dev-001"}]',
+            "dismissed_by": "admin@company.com",
+        }
+        result = koi_remediation_dismiss_command(mock_client, args)
+
+        assert "dismissed" in result.readable_output
+
+
+class TestKoiReportCreateCommand:
+
+    def test_create_report(self, mock_client, mocker):
+        response = load_test_data("report_created_response.json")
+        mocker.patch.object(mock_client, "create_report", return_value=response)
+
+        args = {"report_type": "inventory_by_extension"}
+        result = koi_report_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Report"
+        assert result.outputs["id"] == "rpt-001"
+        assert result.outputs["status"] == "pending"
+
+
+class TestKoiReportStatusGetCommand:
+
+    def test_get_report_status(self, mock_client, mocker):
+        response = load_test_data("report_status_response.json")
+        mocker.patch.object(mock_client, "get_report_status", return_value=response)
+
+        args = {"report_id": "rpt-001"}
+        result = koi_report_status_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Report"
+        assert result.outputs["status"] == "completed"
+        assert result.outputs["download_url"] == "https://storage.example.com/reports/rpt-001.csv"
+
+
+class TestKoiUserListCommand:
+
+    def test_list_users(self, mock_client, mocker):
+        response = load_test_data("users_response.json")
+        mocker.patch.object(mock_client, "get_users", return_value=response)
+
+        args: dict[str, str] = {}
+        result = koi_user_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.User"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["email"] == "admin@company.com"
+
+
+class TestKoiUserCreateCommand:
+
+    def test_create_user(self, mock_client, mocker):
+        response = load_test_data("user_created_response.json")
+        mocker.patch.object(mock_client, "create_user", return_value=response)
+
+        args = {"email": "new@company.com", "role": "analyst"}
+        result = koi_user_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.User"
+        assert result.outputs["id"] == "user-003"
+        mock_client.create_user.assert_called_once_with(email="new@company.com", role="analyst")
+
+
+class TestKoiUserDeleteCommand:
+
+    def test_delete_user(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "delete_user", return_value=None)
+
+        args = {"user_id": "user-002"}
+        result = koi_user_delete_command(mock_client, args)
+
+        assert "deleted" in result.readable_output
+        mock_client.delete_user.assert_called_once_with("user-002")
+
+
+class TestPaginateGeneric:
+
+    def test_collects_items_across_pages(self):
+        page1 = {"items": [{"id": i} for i in range(10)]}
+        page2 = {"items": [{"id": i + 10} for i in range(5)]}
+        pages = [page1, page2]
+        call_count = 0
+
+        def fetch_fn(page, page_size):
+            nonlocal call_count
+            result = pages[call_count]
+            call_count += 1
+            return result
+
+        items = _paginate_generic(fetch_fn, limit=20, items_key="items", page_size=10)
+        assert len(items) == 15
+
+    def test_trims_to_limit(self):
+        page = {"items": [{"id": i} for i in range(50)]}
+
+        items = _paginate_generic(lambda p, ps: page, limit=10, items_key="items", page_size=50)
+        assert len(items) == 10
+
+    def test_stops_on_empty_page(self):
+        empty_page = {"items": []}
+
+        items = _paginate_generic(lambda p, ps: empty_page, limit=100, items_key="items")
+        assert len(items) == 0
+
+
+class TestNewApiPaths:
+
+    def test_approval_request_paths(self):
+        assert ApiPaths.approval_request_approve("req-1") == "/api/external/v2/approval-requests/req-1/approve"
+        assert ApiPaths.approval_request_reject("req-1") == "/api/external/v2/approval-requests/req-1/reject"
+
+    def test_device_paths(self):
+        assert ApiPaths.device_archive("dev-1") == "/api/external/v2/devices/dev-1/archive"
+        assert ApiPaths.device_inventory("dev-1") == "/api/external/v2/devices/dev-1/inventory"
+
+    def test_group_paths(self):
+        assert ApiPaths.group(1) == "/api/external/v2/groups/1"
+        assert ApiPaths.group_device(1, "dev-1") == "/api/external/v2/groups/1/devices/dev-1"
+
+    def test_runtime_policy_path(self):
+        assert ApiPaths.runtime_policy("rtp-1") == "/api/external/v2/hardening/runtime-policies/rtp-1"
+
+    def test_report_path(self):
+        assert ApiPaths.report("rpt-1") == "/api/external/v2/reports/rpt-1"
+
+    def test_user_path(self):
+        assert ApiPaths.user("user-1") == "/api/external/v2/users/user-1"
+
+    def test_private_item_path(self):
+        assert ApiPaths.private_item("priv-1") == "/api/external/v2/private-items/priv-1"
+
+
+class TestValidMarketplacesAndPlatforms:
+
+    def test_new_marketplaces_present(self):
+        for mp in ["binaries", "bitbucket", "github", "gitlab", "mcp_registry", "ollama", "skill"]:
+            assert mp in VALID_MARKETPLACES, f"{mp} should be in VALID_MARKETPLACES"
+
+    def test_valid_platforms_present(self):
+        for p in ["claude_code", "claude_desktop", "kiro", "codex", "comet"]:
+            assert p in VALID_PLATFORMS, f"{p} should be in VALID_PLATFORMS"
+
+
+class TestCommandMapCompleteness:
+
+    def test_all_new_commands_in_command_map(self):
+        new_commands = [
+            "koi-agent-activity-events-list",
+            "koi-agent-activity-sessions-list",
+            "koi-approval-request-list",
+            "koi-approval-request-create",
+            "koi-approval-request-approve",
+            "koi-approval-request-reject",
+            "koi-device-list",
+            "koi-device-archive",
+            "koi-device-inventory-get",
+            "koi-finding-list",
+            "koi-finding-customize-risk",
+            "koi-group-list",
+            "koi-group-create",
+            "koi-group-update",
+            "koi-group-device-add",
+            "koi-group-device-remove",
+            "koi-runtime-policy-list",
+            "koi-runtime-policy-create",
+            "koi-runtime-policy-get",
+            "koi-runtime-policy-update",
+            "koi-runtime-policy-delete",
+            "koi-koidex-fetch",
+            "koi-koidex-risk-report-get",
+            "koi-koidex-search",
+            "koi-private-item-list",
+            "koi-private-item-upload",
+            "koi-private-item-details-get",
+            "koi-remediation-list",
+            "koi-remediation-submit",
+            "koi-remediation-dismiss",
+            "koi-report-create",
+            "koi-report-status-get",
+            "koi-user-list",
+            "koi-user-create",
+            "koi-user-delete",
+        ]
+        for cmd in new_commands:
+            assert cmd in COMMAND_MAP, f"Command '{cmd}' should be in COMMAND_MAP"
+
+    def test_command_map_total_count(self):
+        koi_commands = [k for k in COMMAND_MAP if k.startswith("koi-")]
+        assert len(koi_commands) == 48
 
 
 # endregion
