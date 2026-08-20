@@ -6654,3 +6654,21 @@ There is no context output for this command.
 #### Command example
 
 `!cs-falcon-workflow-execution-action ids="exec_id_1" action_name="cancel"`
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch events
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM**, or **Agentix**:
+
+- Fetch incidents
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM**, or **Exposure Management**:
+
+- Fetch assets and vulnerabilities
+
+</~PLATFORM>

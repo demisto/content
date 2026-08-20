@@ -3200,3 +3200,13 @@ Create an asset group.
 #### Command example
 
 ```!nexpose-create-asset-group name=test3 type=dynamic ip_address_is=1.1.1.1 query=`risk-score is-greater-than 8000` escription=test```
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM**, or **Exposure Management**:
+
+- Fetch Assets
+
+</~PLATFORM>

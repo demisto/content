@@ -2805,3 +2805,13 @@ Update the properties of an ediscoveryHoldPolicy object.
 #### Context Output
 
 There is no context output for this command.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Agentix**, or **Cortex XSIAM**:
+
+- Fetch incidents
+
+</~PLATFORM>

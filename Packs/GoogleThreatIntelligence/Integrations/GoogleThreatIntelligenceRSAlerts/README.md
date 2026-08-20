@@ -481,3 +481,13 @@ Update the status of an RS Alert.
 >|Alert Name|Status|
 >|---|---|
 >| [Test Alert Status Update](https://test.test_gti.com/alerts/alert-status-1?project=projects/test-project) | Read |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM**, or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

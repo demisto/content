@@ -3424,3 +3424,48 @@ Note: This action is only supported on XDR Agent version 8.9 and above.
 |---|---|---|
 | Success | AAA | 1.1.1.1 |
 | Failure: Endpoint Disconnected | AAA | 2.2.2.2 |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following commands require one of these licenses: **Cloud Runtime Security**, **EP / EDR - Endpoint Protection**, or **Cortex XSIAM**.
+
+- `core-isolate-endpoint`
+- `core-isolate-endpoint-quick-action`
+- `core-unisolate-endpoint`
+- `core-get-endpoints`
+- `core-get-audit-agent-reports`
+- `core-blocklist-files`
+- `core-allowlist-files`
+- `core-quarantine-files`
+- `core-quarantine-files-quick-action`
+- `core-get-quarantine-status`
+- `core-restore-file`
+- `core-restore-file-quick-action`
+- `core-endpoint-scan`
+- `core-endpoint-scan-quick-action`
+- `core-endpoint-scan-abort`
+- `core-retrieve-files`
+- `core-retrieve-files-quick-action`
+- `core-retrieve-file-details`
+- `core-action-status-get`
+- `core-run-script`
+- `core-run-snippet-code-script`
+- `core-get-script-execution-status`
+- `core-get-script-execution-results`
+- `core-get-script-execution-result-files`
+- `core-run-script-execute-commands`
+- `core-run-script-delete-file`
+- `core-run-script-file-exists`
+- `core-run-script-kill-process`
+- `endpoint`
+- `core-remove-allowlist-files`
+- `core-remove-blocklist-files`
+- `core-script-run`
+- `core-script-run-quick-action`
+- `core-terminate-process`
+- `core-terminate-causality`
+- `core-terminate-causality-quick-action`
+
+</~PLATFORM>

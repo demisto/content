@@ -1060,3 +1060,29 @@ Retrieves endpoint update versions for the provided endpoint IDs.
 | Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count | String | The number of endpoints running a version later than the specified update. |
 | Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count | String | The number of endpoints running the same version as the specified update. |
 | Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count | String | The number of endpoints running a version earlier than the specified update. |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following commands require one of these licenses: **Cortex Cloud**, **Cloud Runtime Security**, **Cloud Posture (Security)**, **Cortex XSIAM**, or **EP / EDR - Endpoint Protection**:
+
+- `core-list-endpoints`
+
+The following commands require one of these licenses: **Cloud Runtime Security**, or **Cloud Posture (Security)**:
+
+- `core-add-assessment-profile`
+- `core-list-compliance-standards`
+
+The following commands require one of these licenses: **Cloud Runtime Security**, **EP / EDR - Endpoint Protection**, or **Cortex XSIAM**:
+
+- `core-list-scripts`
+- `core-run-script-agentix`
+- `core-get-endpoint-update-version`
+- `core-update-endpoint-version`
+
+The following commands require one of these licenses: **Cloud Runtime Security**, **Cortex XSIAM**, or **EP / EDR - Endpoint Protection**:
+
+- `core-get-endpoint-support-file`
+
+</~PLATFORM>

@@ -568,3 +568,13 @@ To enable incident mirroring between Cortex XSOAR incidents and Doppel alerts:
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Doppel.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Agentix**, or **Cortex XSIAM**:
+
+- Fetch incidents
+
+</~PLATFORM>

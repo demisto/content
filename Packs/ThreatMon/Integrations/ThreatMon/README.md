@@ -82,3 +82,13 @@ This is a **community-supported integration**. For issues or feature requests:
 ThreatMon Security Intelligence Team  
 Website: [https://www.threatmon.io](https://www.threatmon.io)  
 Support: [integration@threatmonit.io](mailto:integration@threatmonit.io)
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM**, or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

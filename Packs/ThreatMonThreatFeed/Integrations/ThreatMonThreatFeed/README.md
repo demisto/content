@@ -80,3 +80,15 @@ Indicators are also ingested automatically according to the **Feed Fetch Interva
 
 - **Test failed** - Verify the API token and that the **Server URL** is reachable from the Cortex engine.
 - **No indicators fetched** - Verify that the configured **Collection IDs** contain data, and that **Data Type to Fetch** is not filtering out the indicators you expect. Because the feed is incremental, a run returns nothing when the API has not published indicators newer than the previous run.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Agentix**, or **Cortex XSIAM**:
+
+- Fetch indicators
+- Incremental Feed
+- Bypass exclusion list
+
+</~PLATFORM>

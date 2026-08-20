@@ -124,3 +124,13 @@ Checks if a path exists between the two nodes.
 | **From Principal** | **To Principal** | **Status** | **Message** | **Path Exists** |
 | --- | --- | --- | --- | --- |
 | 12345678-1234-1234-1234-123456789abc | 87654321-4321-4321-4321-cba987654321 | success | Path exists between nodes. | True |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Agentix**, or **Cortex XSIAM**:
+
+- Fetch incidents
+
+</~PLATFORM>

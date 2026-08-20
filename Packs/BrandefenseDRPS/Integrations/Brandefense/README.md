@@ -705,3 +705,13 @@ Get indicators from Brandefense. Retrieves Consolidated Data and Incident indica
 | Brandefense.Indicator.threats.title | String | Threat title. |
 | Brandefense.Indicator.threats.incidents.code | String | Incident code associated with the threat. |
 | Brandefense.Indicator.threats.incidents.organization.name | String | Organization name associated with the incident. |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Agentix**, or **Cortex XSIAM**:
+
+- Fetch incidents
+
+</~PLATFORM>
