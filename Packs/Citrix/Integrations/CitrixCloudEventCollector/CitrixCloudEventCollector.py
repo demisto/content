@@ -160,8 +160,7 @@ def get_events_command(client: Client, args: dict):  # type: ignore
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: dict):
-    # Without a stored LastRun, look back FIRST_FETCH_LOOKBACK instead of "now" (the API returns
-    # events at/after start_date_time and events arrive delayed, so "now" yields nothing).
+    # Without a stored LastRun, look back FIRST_FETCH_LOOKBACK
     start_date_time = last_run.get("LastRun")
     if not start_date_time:
         first_fetch_dt = dateparser.parse(f"{FIRST_FETCH_LOOKBACK} ago", settings={"TIMEZONE": "UTC"})
