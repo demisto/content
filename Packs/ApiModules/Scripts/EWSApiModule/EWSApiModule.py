@@ -710,7 +710,9 @@ class EWSClient:
                 demisto.debug(f"resolving {part=} {path_parts=}")
                 folder = folder // part
             except TRANSIENT_SERVER_ERRORS:
-                demisto.debug(f"Transient error while resolving {part=} of {path_parts=}, propagating.")
+                demisto.debug(
+                    f"Transient error while resolving {part=} of {path_parts=}, propagating.\n{traceback.format_exc()}"
+                )
                 raise
             except Exception as e:
                 demisto.debug(f"got error {e}")
@@ -1417,31 +1419,33 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
     marked_items = []
     skipped_items = []
     item_ids = argToList(item_ids)
-    demisto.debug(f"mark_item_as_read: {operation=} | {target_mailbox=} | requested {len(item_ids)} item(s): {item_ids}")
 
     items = client.get_items_from_mailbox(target_mailbox, item_ids)
     items = [x for x in items if isinstance(x, Message)]
     demisto.debug(f"mark_item_as_read: resolved {len(items)} message(s) out of {len(item_ids)} requested id(s).")
 
     for item in items:
-        item.is_read = operation == "read"
-        demisto.debug(f"mark_item_as_read: saving {item.id=} | {item.message_id=} | {item.changekey=}")
+        is_read = operation == "read"
+        item.is_read = is_read
+        demisto.debug(f"mark_item_as_read: saving {item.id=} | {item.changekey=}")
 
         try:
             item.save()
         except ErrorIrresolvableConflict as e:
             demisto.error(
-                f"mark_item_as_read: change key conflict for {item.id=} | {item.message_id=} | {item.changekey=}: {e}. "
-                f"Retrying in {MARK_AS_READ_RETRY_DELAY} seconds."
+                f"mark_item_as_read: change key conflict for {item.id=} | {item.changekey=}: {e}. "
+                f"Refreshing the item and retrying in {MARK_AS_READ_RETRY_DELAY} seconds.\n{traceback.format_exc()}"
             )
             time.sleep(MARK_AS_READ_RETRY_DELAY)  # pylint: disable=sleep-exists
             try:
+                item.refresh()
+                item.is_read = is_read
                 item.save()
                 demisto.debug(f"mark_item_as_read: retry succeeded for {item.id=}")
             except ErrorIrresolvableConflict as retry_error:
                 demisto.error(
-                    f"mark_item_as_read: skipping {item.id=} | {item.message_id=}, "
-                    f"still conflicting after retry: {retry_error}"
+                    f"mark_item_as_read: skipping {item.id=}, still conflicting after retry: {retry_error}\n"
+                    f"{traceback.format_exc()}"
                 )
                 skipped_items.append(item.id)
                 continue

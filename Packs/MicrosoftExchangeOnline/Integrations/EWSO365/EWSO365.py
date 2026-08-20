@@ -1728,11 +1728,14 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         last_run[ERROR_COUNTER] += 1
         demisto.setLastRun(last_run)
         demisto.debug(
-            f"Transient error on fetch ({type(e).__name__}: {e}). "
-            f"Consecutive failures: {last_run[ERROR_COUNTER]}/{MAX_CONSECUTIVE_TRANSIENT_ERRORS}."
+            f"[Fetch] Transient error on fetch ({type(e).__name__}: {e}). "
+            f"Consecutive failures: {last_run[ERROR_COUNTER]}/{MAX_CONSECUTIVE_TRANSIENT_ERRORS}.\n{traceback.format_exc()}"
         )
         if last_run[ERROR_COUNTER] > MAX_CONSECUTIVE_TRANSIENT_ERRORS:
-            demisto.error(f"Transient error persisted for {last_run[ERROR_COUNTER]} consecutive fetches, failing: {e}")
+            demisto.error(
+                f"[Fetch] Transient error persisted for {last_run[ERROR_COUNTER]} consecutive fetches, failing: {e}\n"
+                f"{traceback.format_exc()}"
+            )
             raise
         return []
 
