@@ -2,6 +2,7 @@ import copy
 import json
 import secrets
 import string
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -489,7 +490,7 @@ def get_source_override(args: Optional[dict], key: str) -> str:
     return str(args.get(key) or "").strip()
 
 
-def add_playbook_metadata(data: dict, command: str, args: Optional[dict] = None):
+def add_playbook_metadata(data: dict, command: str, args: Optional[dict] = None) -> None:
     """Add the playbook metadata to the request data.
 
     The 'source_id' and 'source_name' arguments, when provided and not empty, mask the
@@ -558,6 +559,7 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
         add_playbook_metadata(data, "start_xql_query", args)
     except Exception as e:
         demisto.error(f"Error adding playbook metadata: {str(e)}")
+        demisto.debug(traceback.format_exc())
 
     time_frame = args.get("time_frame")
     if time_frame:
