@@ -85,6 +85,14 @@ configuration:
   type: 0
   section: Collect
   additionalinfo: The maximum number of events to fetch in a single fetch cycle.
+- name: lookback_minutes
+  display: Look-back (minutes)
+  required: false
+  defaultvalue: '15'
+  type: 0
+  section: Collect
+  advanced: true
+  additionalinfo: How many minutes each fetch re-scans before the last fetch time. Message trace records are re-emitted as their status changes (e.g. delivered then recalled) while keeping their original received time, so a look-back window is required to capture late status updates. Duplicates are filtered automatically.
 - name: isFetchEvents
   display: Fetch Events
   required: false
