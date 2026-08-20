@@ -154,12 +154,14 @@ class Client(BaseClient):
             integration_context.get(AUTH_MODE_CONST) or AUTH_MODE_OPROXY
         )  # default to oproxy, since this field wasn't written before
         auth_mode_matches = stored_auth_mode == self.auth_mode
+        demisto.debug(f"Stored auth-mode is '{integration_context.get(AUTH_MODE_CONST)}' (defaulting to oproxy if NONE), current auth mode is '{self.auth_mode}'.")
         if access_token and valid_until and int(time.time()) < valid_until and auth_mode_matches:
             self.access_token = access_token
             self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
             self.instance_id = integration_context.get(INSTANCE_ID_CONST)
+            demisto.debug(f"access token time: {valid_until} still valid. Reusing.")
             return
-        demisto.debug(f"access token time: {valid_until} expired/none (auth_mode={self.auth_mode}). Will authorize.")
+        demisto.debug(f"access token time: {valid_until} expired/none (auth_mode={self.auth_mode}). Refreshing.")
         access_token, api_url, instance_id, refresh_token, expires_in = (
             self._scm_authorize() if self.auth_mode == AUTH_MODE_SCM else self._oproxy_authorize()
         )
@@ -185,9 +187,10 @@ class Client(BaseClient):
         scm_url = get_scm_token_url()
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
-        demisto.debug("CDL: authenticating via SCM (Cortex GW) auth mode")
+        demisto.debug("[_scm_authorize] CDL: authenticating via SCM (Cortex GW) auth mode")
 
         try:
+            demisto.debug(f"[_scm_authorize] Attempting authorization against '{scm_url}'.")
             raw_response = self._http_request(
                 "POST",
                 full_url=scm_url,
@@ -198,7 +201,7 @@ class Client(BaseClient):
             )
         except DemistoException as e:
             status_code = e.res.status_code if e.res is not None else None
-            demisto.debug(f"CDL SCM request failed with status_code={status_code}")
+            demisto.debug(f"[_scm_authorize] CDL SCM request failed with status_code={status_code}")
             if status_code == 429:
                 raise DemistoException(
                     "SCM rate limit exceeded (60 requests/min per registration_id) - try again shortly."
@@ -227,18 +230,20 @@ class Client(BaseClient):
 
         access_token = response.get(ACCESS_TOKEN_CONST)
         if not access_token:
+            demisto.debug("[_scm_authorize] Got a response from SCM auth, but the access token (used for query/v2/jobs requests) is missing!")
             raise DemistoException("Missing access_token in SCM response.")
         # The SCM gateway supplies the data-plane address and instance to query, alongside the token.
         # It reports the TTL as "expiration"; fall back to "expires_in" and then to a default.
         expires_in = int(response.get(SCM_EXPIRATION_CONST) or response.get(EXPIRES_IN) or 0)
         api_url = response.get("url") or DEFAULT_API_URL
         instance_id = response.get(INSTANCE_ID_CONST) or ""
+        # NOTE: refresh token is used only for oproxy, scm does not return it
         refresh_token = None
         if not response.get("url"):
-            demisto.debug(f"CDL: SCM response has no 'url'; falling back to the default API URL {DEFAULT_API_URL}.")
+            demisto.debug(f"[_scm_authorize] CDL: SCM response has no 'url'; falling back to the default API URL {DEFAULT_API_URL}.")
         if not instance_id:
-            demisto.debug("CDL: SCM response has no 'instance_id'; queries will not be scoped to an instance.")
-        demisto.debug(f"CDL: SCM auth succeeded (expires_in={expires_in}, api_url={api_url}, instance_id={instance_id})")
+            demisto.debug("[_scm_authorize] CDL: SCM response has no 'instance_id'; queries will not be scoped to an instance.")
+        demisto.debug(f"[_scm_authorize] CDL: SCM auth succeeded (expires_in={expires_in}, api_url={api_url}, instance_id={instance_id})")
         return access_token, api_url, instance_id, refresh_token, expires_in
 
     def _oproxy_authorize(self) -> tuple[Any, Any, Any, Any, int]:
