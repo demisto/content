@@ -709,3 +709,13 @@ In case of a **hash verification** error:
 2. Execute the command ***!msgraph-mail-auth-reset***. This command resets the authentication mechanism, allowing for the new credentials to be accepted.
 3. Insert the newly created credentials into the original instance where the error occurred. Make sure the credentials are entered correctly to avoid further errors.
 4. After updating the credentials, test the integration.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

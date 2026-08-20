@@ -10261,3 +10261,13 @@ Gets rule hit counts from the firewall.  When connected to Panorama this command
 | PANOS.RuleHitCount.rule_modification_timestamp | Date | Timestamp when the rule was most recently modified. |
 | PANOS.RuleHitCount.rulebase | String | The rulebase of the rule \(such as security, nat, and so on\). |
 | PANOS.RuleHitCount.vsys | String | The name of the firewall VSYS. |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

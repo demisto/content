@@ -944,3 +944,13 @@ Avoid the following where possible to adhere to best practices:
 - [Reputation Commands and DBotScore Documentation](https://xsoar.pan.dev/docs/integrations/dbot)
 - [Pydantic 1.10 Documentation](https://docs.pydantic.dev/1.10/)
 - [Python Type Hints](https://docs.python.org/3/library/typing.html)
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch events
+
+</~PLATFORM>
