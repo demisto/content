@@ -32,14 +32,13 @@ configuration:
   required: false
   display: ""
   section: Connect
-- displaypassword: Authentication Token (DEPRECATED)
-  additionalinfo: Deprecated, Use Client Secret instead.
+- displaypassword: Authentication Token
+  additionalinfo: The API key used for OProxy authentication.
   name: credentials_refresh_token
   hiddenusername: true
   type: 9
   required: false
   display: ""
-  hidden: true
   section: Connect
 - displaypassword: Registration ID
   name: credentials_reg_id
