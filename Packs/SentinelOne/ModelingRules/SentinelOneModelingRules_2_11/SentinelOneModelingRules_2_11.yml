@@ -1,6 +1,5 @@
-fromversion: 6.10.0
-toversion: 8.14.0
-id: sentinelone_modeling_rule
+fromversion: 8.15.0
+id: SentinelOne_ModelingRule
 name: SentinelOne Modeling Rule
 rules: ''
 schema: ''

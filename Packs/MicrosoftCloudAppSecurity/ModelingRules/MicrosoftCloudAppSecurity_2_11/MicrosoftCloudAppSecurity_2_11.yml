@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: MicrosoftCloudAppSecurity_ModelingRule
+name: MicrosoftCloudAppSecurity Modeling Rule
+rules: ''
+schema: ''
+tags: microsoft
+supportedModules:
+- xsiam
