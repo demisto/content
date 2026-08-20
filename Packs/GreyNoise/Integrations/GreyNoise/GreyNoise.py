@@ -466,6 +466,9 @@ def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[
             elif riot_response["trust_level"] == "2":
                 riot_response["classification"] = "unknown"
                 riot_response["trust_level"] = "2 - Commonly Seen"
+            elif riot_response["trust_level"] == "3":
+                riot_response["classification"] = "unknown"
+                riot_response["trust_level"] = "3 - Context Only"
             if riot_response.get("logo_url", "") != "":
                 del riot_response["logo_url"]
 
@@ -1015,8 +1018,11 @@ def riot_command(client: Client, args: dict, reliability: str) -> CommandResults
         if response.get("trust_level") == "1":
             response["trust_level"] = "1 - Reasonably Ignore"
             response["classification"] = "benign"
-        elif response.get("trust_level") == "2":
+        elif response.get("trust_level") == "2":  # Commonly Seen
             response["trust_level"] = "2 - Commonly Seen"
+            response["classification"] = "unknown"
+        elif response.get("trust_level") == "3":  # Context Only
+            response["trust_level"] = "3 - Context Only"
             response["classification"] = "unknown"
         dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
         name = "GreyNoise Business Service Intelligence Lookup"
@@ -1318,21 +1324,12 @@ def main() -> None:
     :return:
     :rtype:
     """
-    # get pack version
-    if is_demisto_version_ge("6.1.0"):
-        response = demisto.internalHttpRequest("GET", "/contentpacks/metadata/installed")
-        packs = json.loads(response["body"])
-    else:
-        packs = []
-
-    pack_version = "2.0.0"
-    if isinstance(packs, list):
-        for pack in packs:
-            if pack["name"] == "GreyNoise":
-                pack_version = pack["currentVersion"]
-    else:  # packs is a dict
-        if packs.get("name") == "GreyNoise":
-            pack_version = packs.get("currentVersion")
+    # get pack version - use default if any step fails
+    pack_version = "2.1.0"
+    try:
+        pack_version = get_pack_version()
+    except Exception as e:
+        demisto.debug(f"Failed to retrieve pack version, using default: {str(e)}")
 
     api_key = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")
     if not api_key:
