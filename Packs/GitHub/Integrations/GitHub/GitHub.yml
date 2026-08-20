@@ -7557,7 +7557,7 @@ script:
       required: true
     description: Deletes a GitHub Actions artifact.
     name: github-delete-actions-artifact
-  dockerimage: demisto/auth-utils:1.0.0.7837600
+  dockerimage: demisto/auth-utils:1.0.0.11671917
   isfetch: true
   runonce: false
   script: '-'

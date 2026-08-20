@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The *cursor* argument was removed from the ***slack-get-events*** command. Use the *oldest* and *latest* arguments to define the date range to fetch instead."
-}
