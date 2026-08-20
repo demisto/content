@@ -2645,58 +2645,58 @@ script:
       required: false
       description: Token for pagination.
     outputs:
-    - contextPath: GCP.Storage.Bucket.Object.id
+    - contextPath: GCP.Storage.BucketObject.id
       description: The unique identifier for the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.name
+    - contextPath: GCP.Storage.BucketObject.name
       description: The name of the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.kind
+    - contextPath: GCP.Storage.BucketObject.kind
       description: The type of resource (for example, storage#object).
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.bucket
+    - contextPath: GCP.Storage.BucketObject.bucket
       description: The name of the bucket containing the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.contentType
+    - contextPath: GCP.Storage.BucketObject.contentType
       description: The MIME type of the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.size
+    - contextPath: GCP.Storage.BucketObject.size
       description: The size of the object in bytes.
       type: Number
-    - contextPath: GCP.Storage.Bucket.Object.crc32c
+    - contextPath: GCP.Storage.BucketObject.crc32c
       description: The CRC32C checksum of the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.md5Hash
+    - contextPath: GCP.Storage.BucketObject.md5Hash
       description: The MD5 hash of the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.etag
+    - contextPath: GCP.Storage.BucketObject.etag
       description: The HTTP entity tag of the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.generation
+    - contextPath: GCP.Storage.BucketObject.generation
       description: The generation number of the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.metageneration
+    - contextPath: GCP.Storage.BucketObject.metageneration
       description: The metageneration number of the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.storageClass
+    - contextPath: GCP.Storage.BucketObject.storageClass
       description: The storage class of the object.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.mediaLink
+    - contextPath: GCP.Storage.BucketObject.mediaLink
       description: The link for downloading the object content.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.selfLink
+    - contextPath: GCP.Storage.BucketObject.selfLink
       description: The link to the object resource in the GCP API.
       type: String
-    - contextPath: GCP.Storage.Bucket.Object.timeCreated
+    - contextPath: GCP.Storage.BucketObject.timeCreated
       description: The time when the object was created.
       type: Date
-    - contextPath: GCP.Storage.Bucket.Object.timeFinalized
+    - contextPath: GCP.Storage.BucketObject.timeFinalized
       description: The time when the object was finalized.
       type: Date
-    - contextPath: GCP.Storage.Bucket.Object.timeStorageClassUpdated
+    - contextPath: GCP.Storage.BucketObject.timeStorageClassUpdated
       description: The time when the object's storage class was last updated.
       type: Date
-    - contextPath: GCP.Storage.Bucket.Object.updated
+    - contextPath: GCP.Storage.BucketObject.updated
       description: The time when the object was last modified.
       type: Date
   - name: gcp-storage-bucket-policy-list
@@ -2803,13 +2803,13 @@ script:
       required: false
       description: Generation of the object.
     outputs:
-    - contextPath: GCP.Storage.Bucket.ObjectPolicy.version
+    - contextPath: GCP.Storage.BucketObjectPolicy.version
       description: IAM policy version after update.
       type: Number
-    - contextPath: GCP.Storage.Bucket.ObjectPolicy.etag
+    - contextPath: GCP.Storage.BucketObjectPolicy.etag
       description: ETag of the updated IAM policy.
       type: String
-    - contextPath: GCP.Storage.Bucket.ObjectPolicy.bindings
+    - contextPath: GCP.Storage.BucketObjectPolicy.bindings
       description: List of role bindings for the object.
       type: Unknown  
   - name: gcp-iam-project-policy-binding-remove

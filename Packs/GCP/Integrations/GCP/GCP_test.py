@@ -3012,7 +3012,7 @@ def test_storage_bucket_objects_list_basic(mocker):
     result = storage_bucket_objects_list(creds, args)
 
     mock_objects.list.assert_called_with(bucket="b1", prefix="p/", delimiter="/", maxResults=5, pageToken="tok")
-    assert result.outputs_prefix == "GCP.Storage.Bucket.Object"
+    assert result.outputs_prefix == "GCP.Storage.BucketObject"
     assert result.outputs[0]["name"] == "o1"
 
 
@@ -3118,7 +3118,7 @@ def test_storage_bucket_object_policy_set_update_then_insert(mocker):
 
     mock_oac.patch.assert_called()
     mock_oac.insert.assert_called()
-    assert result.outputs_prefix == "GCP.Storage.Bucket.ObjectPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
     assert result.outputs[0]["entity"] == "allUsers"
 
 

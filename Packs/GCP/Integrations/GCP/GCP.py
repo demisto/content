@@ -856,7 +856,7 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.Bucket.Object",
+        outputs_prefix="GCP.Storage.BucketObject",
         outputs=objects,
         outputs_key_field=["name", "id"],
         raw_response=objects,
@@ -1172,7 +1172,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.Bucket.ObjectPolicy",
+        outputs_prefix="GCP.Storage.BucketObjectPolicy",
         outputs=results,
         raw_response=results,
         outputs_key_field="resourceId",

@@ -788,24 +788,24 @@ Retrieves the list of objects in a bucket. Required permission: storage.objects.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.Bucket.Object.id | String | The unique identifier for the object. |
-| GCP.Storage.Bucket.Object.name | String | The name of the object. |
-| GCP.Storage.Bucket.Object.kind | String | The type of resource \(for example, storage\#object\). |
-| GCP.Storage.Bucket.Object.bucket | String | The name of the bucket containing the object. |
-| GCP.Storage.Bucket.Object.contentType | String | The MIME type of the object. |
-| GCP.Storage.Bucket.Object.size | Number | The size of the object in bytes. |
-| GCP.Storage.Bucket.Object.crc32c | String | The CRC32C checksum of the object. |
-| GCP.Storage.Bucket.Object.md5Hash | String | The MD5 hash of the object. |
-| GCP.Storage.Bucket.Object.etag | String | The HTTP entity tag of the object. |
-| GCP.Storage.Bucket.Object.generation | String | The generation number of the object. |
-| GCP.Storage.Bucket.Object.metageneration | String | The metageneration number of the object. |
-| GCP.Storage.Bucket.Object.storageClass | String | The storage class of the object. |
-| GCP.Storage.Bucket.Object.mediaLink | String | The link for downloading the object content. |
-| GCP.Storage.Bucket.Object.selfLink | String | The link to the object resource in the GCP API. |
-| GCP.Storage.Bucket.Object.timeCreated | Date | The time when the object was created. |
-| GCP.Storage.Bucket.Object.timeFinalized | Date | The time when the object was finalized. |
-| GCP.Storage.Bucket.Object.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
-| GCP.Storage.Bucket.Object.updated | Date | The time when the object was last modified. |
+| GCP.Storage.BucketObject.id | String | The unique identifier for the object. |
+| GCP.Storage.BucketObject.name | String | The name of the object. |
+| GCP.Storage.BucketObject.kind | String | The type of resource \(for example, storage\#object\). |
+| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.BucketObject.contentType | String | The MIME type of the object. |
+| GCP.Storage.BucketObject.size | Number | The size of the object in bytes. |
+| GCP.Storage.BucketObject.crc32c | String | The CRC32C checksum of the object. |
+| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the object. |
+| GCP.Storage.BucketObject.etag | String | The HTTP entity tag of the object. |
+| GCP.Storage.BucketObject.generation | String | The generation number of the object. |
+| GCP.Storage.BucketObject.metageneration | String | The metageneration number of the object. |
+| GCP.Storage.BucketObject.storageClass | String | The storage class of the object. |
+| GCP.Storage.BucketObject.mediaLink | String | The link for downloading the object content. |
+| GCP.Storage.BucketObject.selfLink | String | The link to the object resource in the GCP API. |
+| GCP.Storage.BucketObject.timeCreated | Date | The time when the object was created. |
+| GCP.Storage.BucketObject.timeFinalized | Date | The time when the object was finalized. |
+| GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
+| GCP.Storage.BucketObject.updated | Date | The time when the object was last modified. |
 
 ### gcp-storage-bucket-policy-list
 
@@ -939,9 +939,9 @@ Sets the IAM policy for a specific object in a bucket. Required permission: stor
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.Bucket.ObjectPolicy.version | Number | IAM policy version after update. |
-| GCP.Storage.Bucket.ObjectPolicy.etag | String | ETag of the updated IAM policy. |
-| GCP.Storage.Bucket.ObjectPolicy.bindings | Unknown | List of role bindings for the object. |
+| GCP.Storage.BucketObjectPolicy.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketObjectPolicy.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketObjectPolicy.bindings | Unknown | List of role bindings for the object. |
 
 ### gcp-compute-snapshot-get
 
