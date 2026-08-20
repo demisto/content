@@ -10,11 +10,23 @@ from ProofpointCloudThreatResponse import (
     Client,
     ProofpointCTRAuthHandler,
     build_filters_body,
+    build_messages_body,
     fetch_incidents,
     format_ctr_date,
     parse_ctr_date,
+    proofpoint_ctr_blocklist_add_entry_command,
+    proofpoint_ctr_blocklist_list_command,
+    proofpoint_ctr_blocklist_remove_entry_command,
     proofpoint_ctr_incident_get_command,
+    proofpoint_ctr_incident_upload_message_command,
     proofpoint_ctr_incidents_list_command,
+    proofpoint_ctr_message_download_command,
+    proofpoint_ctr_message_list_command,
+    proofpoint_ctr_run_workflow_command,
+    proofpoint_ctr_safelist_add_entry_command,
+    proofpoint_ctr_safelist_list_command,
+    proofpoint_ctr_safelist_remove_entry_command,
+    proofpoint_ctr_workflows_list_command,
     run_test_module,
 )
 
@@ -268,3 +280,315 @@ def test_fetch_incidents_caps_max_fetch(client: Client, mocker):
     assert captured["startRow"] == 0
     assert captured["sortParams"] == [{"sort": "asc", "colId": "createdAt"}]
     assert captured["filters"]["other_filters"] == ["open_incidents"]
+
+
+# --------------------------------------------------------------------------- new: incidents-list extras
+
+
+def test_incidents_list_adds_priority_and_sort(client: Client, mocker):
+    captured: dict = {}
+
+    def _capture(self, body):
+        captured.update(body)
+        return {"incidents": []}
+
+    mocker.patch.object(Client, "list_incidents", _capture)
+
+    # Given priority_filters and sort=asc
+    proofpoint_ctr_incidents_list_command(client, {"limit": "5", "priority_filters": "high,low", "sort": "asc"})
+    # Then the body carries priority_filters and asc sort direction
+    assert captured["filters"]["priority_filters"] == ["high", "low"]
+    assert captured["sortParams"] == [{"sort": "asc", "colId": "createdAt"}]
+
+
+def test_incidents_list_rejects_bad_sort(client: Client):
+    with pytest.raises(Exception, match="sort"):
+        proofpoint_ctr_incidents_list_command(client, {"sort": "bogus"})
+
+
+# --------------------------------------------------------------------------- new: workflows
+
+
+def test_workflows_list_command(client: Client, mocker):
+    workflows = [
+        {"id": "wf1", "name": "Quarantine", "enabled": True, "type": "incident", "createdAt": "2026-07-02T12:00:21Z"},
+        {"id": "wf2", "name": "Notify", "enabled": False, "type": "message", "createdAt": "2026-07-02T12:00:21Z"},
+    ]
+    mocker.patch.object(Client, "list_workflows", return_value={"workflows": workflows})
+
+    # Given a workflows response and limit=1
+    result = proofpoint_ctr_workflows_list_command(client, {"limit": "1"})
+    # Then only the first workflow is returned under the Workflow prefix
+    assert result.outputs_prefix == "ProofPointCloud.Workflow"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["id"] == "wf1"
+
+
+def test_workflows_list_all_results(client: Client, mocker):
+    workflows = [{"id": f"wf{i}", "name": "x", "enabled": True, "type": "incident"} for i in range(5)]
+    mocker.patch.object(Client, "list_workflows", return_value=workflows)
+
+    result = proofpoint_ctr_workflows_list_command(client, {"limit": "1", "all_results": "true"})
+    assert len(result.outputs) == 5
+
+
+def test_workflows_list_rejects_bad_type(client: Client):
+    with pytest.raises(Exception, match="type"):
+        proofpoint_ctr_workflows_list_command(client, {"type": "bogus"})
+
+
+# --------------------------------------------------------------------------- new: run-workflow (polling)
+
+
+def test_run_workflow_initiate_continues_polling(client: Client, mocker):
+    mocker.patch("ProofpointCloudThreatResponse.ScheduledCommand.raise_error_if_not_supported", return_value=None)
+    run = {"id": "run1", "state": "IN_PROGRESS", "workflowId": "wf1"}
+    mocker.patch.object(Client, "run_workflow", return_value=run)
+
+    # Given a fresh run that is still IN_PROGRESS
+    result = proofpoint_ctr_run_workflow_command({"workflow_id": "wf1", "target_ids": "t1"}, client=client)
+    # Then the polling decorator schedules a follow-up command
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._args["run_id"] == "run1"
+
+
+def test_run_workflow_terminal_stops_polling(client: Client, mocker):
+    mocker.patch("ProofpointCloudThreatResponse.ScheduledCommand.raise_error_if_not_supported", return_value=None)
+    run = {"id": "run1", "state": "SUCCESS", "workflowId": "wf1"}
+    mocker.patch.object(Client, "get_workflow_run", return_value=run)
+
+    # Given a poll for an existing run that reached SUCCESS
+    result = proofpoint_ctr_run_workflow_command({"run_id": "run1"}, client=client)
+    # Then polling stops (no scheduled command) and the run output is returned
+    assert result.scheduled_command is None
+    assert result.outputs["state"] == "SUCCESS"
+
+
+def test_run_workflow_requires_workflow_id(client: Client, mocker):
+    mocker.patch("ProofpointCloudThreatResponse.ScheduledCommand.raise_error_if_not_supported", return_value=None)
+    with pytest.raises(Exception, match="workflow_id"):
+        proofpoint_ctr_run_workflow_command({"target_ids": "t1"}, client=client)
+
+
+# --------------------------------------------------------------------------- new: messages
+
+
+def test_message_list_single_by_id(client: Client, mocker):
+    # The real single-message GET response nests fields under `details` with camelCase keys.
+    response = {
+        "details": {
+            "id": "m1",
+            "emailSubject": "Hi",
+            "senderAddress": "a@test.com",
+            "recipientAddress": "b@test.com",
+            "receivedAt": 1786117389000,
+            "disposition": "low_risk",
+            "remediationStatus": "not_attempted",
+        },
+        "timeline": [],
+        "comments": [],
+    }
+    getter = mocker.patch.object(Client, "get_message", return_value=response)
+    lister = mocker.patch.object(Client, "list_messages")
+
+    # Given a message_id, the single GET endpoint is used
+    result = proofpoint_ctr_message_list_command(client, {"message_id": "m1"})
+    getter.assert_called_once_with("m1")
+    lister.assert_not_called()
+
+    # Output is normalized to the flat snake_case shape documented in the YAML.
+    assert result.outputs[0]["id"] == "m1"
+    assert result.outputs[0]["email_subject"] == "Hi"
+    assert result.outputs[0]["sender_address"] == "a@test.com"
+    assert result.outputs[0]["recipient_address"] == "b@test.com"
+    assert result.outputs[0]["disposition"] == "low_risk"
+    assert result.outputs[0]["remediation_status"] == "not_attempted"
+
+    # The human-readable table is populated (regression: previously showed "No entries").
+    assert "No entries" not in result.readable_output
+    assert "Hi" in result.readable_output
+    assert "a@test.com" in result.readable_output
+
+    # raw_response preserves the full untouched envelope.
+    assert result.raw_response == response
+
+
+def test_message_list_many_by_filters(client: Client, mocker):
+    getter = mocker.patch.object(Client, "get_message")
+    mocker.patch.object(Client, "list_messages", return_value={"messages": [{"id": "m1"}, {"id": "m2"}]})
+
+    # Given no message_id, the POST list endpoint is used
+    result = proofpoint_ctr_message_list_command(client, {"source_filters": "abuse_mailbox", "verdict_filters": "verdict_threat"})
+    getter.assert_not_called()
+    assert len(result.outputs) == 2
+
+
+def test_build_messages_body_validates_filters():
+    with pytest.raises(Exception, match="source_filters"):
+        build_messages_body({"source_filters": "bogus"})
+
+
+def test_build_messages_body_end_time_without_start_time():
+    # Providing end_time without start_time must raise a clear error rather than
+    # silently dropping the time range filter.
+    with pytest.raises(Exception, match="start_time"):
+        build_messages_body({"end_time": "2024-01-01T00:00:00Z"})
+
+
+def test_message_download_returns_file(client: Client, mocker):
+    mocker.patch.object(Client, "download_message", return_value=b"raw eml bytes")
+
+    # Given a message_id, an EML fileResult is produced
+    result = proofpoint_ctr_message_download_command(client, {"message_id": "m1"})
+    assert result["File"] == "m1.eml"
+
+
+def test_message_download_requires_id(client: Client):
+    with pytest.raises(Exception, match="message_id"):
+        proofpoint_ctr_message_download_command(client, {})
+
+
+# --------------------------------------------------------------------------- new: upload message
+
+
+def test_incident_upload_message_command(client: Client, mocker):
+    response = {
+        "rfcMessageId": "<a@test.com>",
+        "incident_id": "inc1",
+        "incidentDisplayId": 781,
+        "uploadedRecipientsCount": 1,
+    }
+    captured: dict = {}
+
+    def _capture(self, body):
+        captured.update(body)
+        return response
+
+    mocker.patch.object(Client, "upload_message", _capture)
+
+    # Given required args, the body is built with a nested message
+    result = proofpoint_ctr_incident_upload_message_command(
+        client,
+        {"incident_id": "inc1", "rfc_message_id": "<a@test.com>", "recipient_addresses": "user@test.com"},
+    )
+    assert captured["incident_id"] == "inc1"
+    assert captured["message"]["rfcMessageId"] == "<a@test.com>"
+    assert captured["message"]["recipient_addresses"] == ["user@test.com"]
+    assert result.outputs_prefix == "ProofPointCloud.Incident.Message"
+    assert result.outputs["incidentDisplayId"] == 781
+
+
+def test_incident_upload_message_requires_recipients(client: Client):
+    with pytest.raises(Exception, match="recipient_addresses"):
+        proofpoint_ctr_incident_upload_message_command(client, {"incident_id": "inc1", "rfc_message_id": "<a@test.com>"})
+
+
+# --------------------------------------------------------------------------- new: safe list
+
+
+def test_safelist_list_command(client: Client, mocker):
+    entries = [
+        {"attribute": "$from", "operator": "equal", "value": "a@test.com", "comment": "ok"},
+        {"attribute": "$from", "operator": "equal", "value": "b@test.com"},
+    ]
+    mocker.patch.object(Client, "get_org_safelist", return_value={"entries": entries})
+
+    result = proofpoint_ctr_safelist_list_command(client, {"cluster_id": "c1", "limit": "1"})
+    assert result.outputs_prefix == "ProofPointCloud.SafeList"
+    assert len(result.outputs) == 1
+
+
+def test_safelist_add_entry_builds_body(client: Client, mocker):
+    captured: dict = {}
+
+    def _capture(self, cluster_id, body):
+        captured["cluster_id"] = cluster_id
+        captured["body"] = body
+
+    mocker.patch.object(Client, "modify_org_safelist", _capture)
+
+    result = proofpoint_ctr_safelist_add_entry_command(
+        client,
+        {"cluster_id": "c1", "attribute": "from", "operator": "equal", "value": "safe@test.com", "comment": "note"},
+    )
+    assert captured["cluster_id"] == "c1"
+    assert captured["body"] == {
+        "action": "add",
+        "attribute": "$from",
+        "operator": "equal",
+        "value": "safe@test.com",
+        "comment": "note",
+    }
+    assert "added to the Organizational Safe List" in result.readable_output
+
+
+def test_safelist_remove_entry_builds_delete_body(client: Client, mocker):
+    captured: dict = {}
+
+    def _capture(self, cluster_id, body):
+        captured["body"] = body
+
+    mocker.patch.object(Client, "modify_org_safelist", _capture)
+
+    proofpoint_ctr_safelist_remove_entry_command(
+        client, {"cluster_id": "c1", "attribute": "from", "operator": "equal", "value": "safe@test.com"}
+    )
+    assert captured["body"]["action"] == "delete"
+    assert "comment" not in captured["body"]
+
+
+def test_safelist_add_rejects_bad_operator(client: Client):
+    with pytest.raises(Exception, match="operator"):
+        proofpoint_ctr_safelist_add_entry_command(
+            client, {"cluster_id": "c1", "attribute": "from", "operator": "not_equal", "value": "x@test.com"}
+        )
+
+
+# --------------------------------------------------------------------------- new: block list
+
+
+def test_blocklist_list_command(client: Client, mocker):
+    entries = [{"attribute": "$from", "operator": "equal", "value": "bad@test.com"}]
+    mocker.patch.object(Client, "get_org_blocklist", return_value={"entries": entries})
+
+    result = proofpoint_ctr_blocklist_list_command(client, {"cluster_id": "c1"})
+    assert result.outputs_prefix == "ProofPointCloud.BlockList"
+    assert len(result.outputs) == 1
+
+
+def test_blocklist_add_allows_not_equal_operator(client: Client, mocker):
+    captured: dict = {}
+
+    def _capture(self, cluster_id, body):
+        captured["body"] = body
+
+    mocker.patch.object(Client, "modify_org_blocklist", _capture)
+
+    # Given not_equal (valid only for block list), the entry is added
+    result = proofpoint_ctr_blocklist_add_entry_command(
+        client, {"cluster_id": "c1", "attribute": "from", "operator": "not_equal", "value": "bad@test.com"}
+    )
+    assert captured["body"]["operator"] == "not_equal"
+    assert "added to the Organizational Block List" in result.readable_output
+
+
+def test_blocklist_remove_entry_command(client: Client, mocker):
+    captured: dict = {}
+
+    def _capture(self, cluster_id, body):
+        captured["body"] = body
+
+    mocker.patch.object(Client, "modify_org_blocklist", _capture)
+
+    result = proofpoint_ctr_blocklist_remove_entry_command(
+        client, {"cluster_id": "c1", "attribute": "from", "operator": "equal", "value": "bad@test.com"}
+    )
+    assert captured["body"]["action"] == "delete"
+    assert "removed from the Organizational Block List" in result.readable_output
+
+
+def test_list_commands_require_cluster_id(client: Client):
+    with pytest.raises(Exception, match="cluster_id"):
+        proofpoint_ctr_safelist_list_command(client, {})
+    with pytest.raises(Exception, match="cluster_id"):
+        proofpoint_ctr_blocklist_list_command(client, {})
