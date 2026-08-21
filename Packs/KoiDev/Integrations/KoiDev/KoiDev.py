@@ -1,4 +1,5 @@
 import json
+import re
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -26,6 +27,10 @@ Integration for fetching Alerts and Audit Logs from the KOI API.
 # Constants and helpers
 # =================================
 INTEGRATION_NAME = "KOI"
+INDICATOR_TYPE = "Koi Software Item Dev"
+
+SHA1_RE = re.compile(r'^[A-Fa-f0-9]{40}$')
+SHA256_RE = re.compile(r'^[A-Fa-f0-9]{64}$')
 
 
 class ApiPaths:
@@ -3429,6 +3434,8 @@ def koi_alert_list_command(client: Client, args: dict[str, Any]) -> CommandResul
 
     if page_arg:
         response = client.get_alerts(page=page_arg, page_size=page_size, **filter_kwargs)
+        demisto.debug(f"[Command] koi-alert-list raw response keys: {list(response.keys())}, "
+                      f"total_count: {response.get('total_count')}, alerts count: {len(response.get('alerts', []))}")
         alerts = response.get("alerts", [])
     else:
         limit = limit_arg or Config.DEFAULT_LIMIT
@@ -3437,6 +3444,7 @@ def koi_alert_list_command(client: Client, args: dict[str, Any]) -> CommandResul
             limit=limit,
             items_key="alerts",
         )
+        demisto.debug(f"[Command] koi-alert-list auto-paginated {len(alerts)} alerts")
 
     display_rows = []
     for alert in alerts:
@@ -3554,6 +3562,47 @@ def koi_item_enrich_command(client: Client, args: dict[str, Any]) -> list[Comman
         headerTransform=string_to_table_header,
     )
 
+    relationships: list[EntityRelationship] = []
+    reliability = demisto.params().get("integrationReliability", "B - Usually reliable")
+
+    sha256 = response.get("sha256", "")
+    if sha256 and SHA256_RE.match(sha256):
+        relationships.append(EntityRelationship(
+            entity_a=indicator_value,
+            entity_a_type=INDICATOR_TYPE,
+            name=EntityRelationship.Relationships.RELATED_TO,
+            entity_b=sha256,
+            entity_b_type=FeedIndicatorType.File,
+            reverse_name=EntityRelationship.Relationships.RELATED_TO,
+            source_reliability=reliability,
+            brand=INTEGRATION_NAME,
+        ))
+    elif SHA1_RE.match(item_id) or SHA256_RE.match(item_id):
+        relationships.append(EntityRelationship(
+            entity_a=indicator_value,
+            entity_a_type=INDICATOR_TYPE,
+            name=EntityRelationship.Relationships.RELATED_TO,
+            entity_b=item_id,
+            entity_b_type=FeedIndicatorType.File,
+            reverse_name=EntityRelationship.Relationships.RELATED_TO,
+            source_reliability=reliability,
+            brand=INTEGRATION_NAME,
+        ))
+
+    for finding in findings_list:
+        finding_name = finding.get("finding_name", "")
+        if finding_name.upper().startswith("CVE-"):
+            relationships.append(EntityRelationship(
+                entity_a=indicator_value,
+                entity_a_type=INDICATOR_TYPE,
+                name=EntityRelationship.Relationships.RELATED_TO,
+                entity_b=finding_name,
+                entity_b_type=FeedIndicatorType.CVE,
+                reverse_name=EntityRelationship.Relationships.RELATED_TO,
+                source_reliability=reliability,
+                brand=INTEGRATION_NAME,
+            ))
+
     readable = f"{summary_table}\n\n### AI Risk Summary\n{response.get('ai_risk_summary', 'N/A')}\n\n{findings_table}\n\n{compliance_table}"
 
     results.append(CommandResults(
@@ -3562,6 +3611,7 @@ def koi_item_enrich_command(client: Client, args: dict[str, Any]) -> list[Comman
         outputs_key_field="item_id",
         outputs=response,
         indicator=custom_indicator,
+        relationships=relationships,
         raw_response=response,
     ))
 

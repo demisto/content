@@ -34,21 +34,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- name: integrationReliability
-  display: Source Reliability
-  type: 15
-  additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually reliable
-  options:
-  - A+ - 3rd party enrichment
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  section: Collect
-  required: false
 - name: isFetchEvents
   display: Fetch events
   type: 8
@@ -144,7 +129,11 @@ script:
     description: Retrieves a list of alerts from the Koi OCSF alert feed. Supports filtering by alert type, event ID, and date range. Returns structured alert data including finding info, severity, resources, and observables.
     arguments:
     - name: alert_type
-      description: 'Filter alerts by type (e.g., "item_risk_change", "new_item_found", "guardrail_triggered").'
+      description: 'Filter alerts by type. "system" returns system alerts (e.g., guardrails, malware). "policy" returns policy violation alerts.'
+      auto: PREDEFINED
+      predefined:
+      - system
+      - policy
     - name: created_at_gte
       description: 'Filter alerts created on or after this date (ISO 8601 format, e.g., 2024-01-01T00:00:00Z).'
     - name: created_at_lte
@@ -2145,20 +2134,31 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - chrome
-      - edge
+      - chrome_web_store
+      - edge_add_ons
+      - firefox_add_ons
       - vscode
       - jetbrains
       - npm
       - pypi
+      - homebrew
+      - chocolatey
       - docker
+      - hugging_face
       - ollama
       - github
       - gitlab
       - bitbucket
-      - mcp_registry
       - binaries
+      - claude_desktop_extensions
+      - office_add_ins
+      - open_vsx_registry
+      - mcp_registry
+      - cursor
+      - windsurf
+      - notepad++
       - skill
+      - github_mcp_registry
     - name: version
       description: 'Specific version to enrich. If not provided, the latest version is used.'
     outputs:

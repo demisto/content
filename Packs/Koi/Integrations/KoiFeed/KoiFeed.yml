@@ -1,0 +1,217 @@
+category: Data Enrichment & Threat Intelligence
+provider: KOI
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: KOIFeed
+  version: -1
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: https://api.prod.koi.security/
+  type: 0
+  additionalinfo: 'The KOI API server URL.'
+  section: Connect
+- name: api_key
+  display: API Key
+  required: true
+  type: 14
+  additionalinfo: 'The API key for authenticating with the KOI API.'
+  section: Connect
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- name: feed
+  display: Fetch indicators
+  type: 8
+  defaultvalue: 'true'
+  section: Collect
+  required: false
+- name: feedReputation
+  display: Indicator Reputation
+  type: 18
+  defaultvalue: None
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  section: Collect
+  required: false
+- name: feedReliability
+  display: Source Reliability
+  type: 15
+  defaultvalue: B - Usually reliable
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
+  required: true
+- name: feedExpirationPolicy
+  display: ''
+  type: 17
+  defaultvalue: indicatorType
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  section: Collect
+  required: false
+- name: feedExpirationInterval
+  display: ''
+  type: 1
+  defaultvalue: '20160'
+  section: Collect
+  required: false
+- name: feedFetchInterval
+  display: Feed Fetch Interval
+  type: 19
+  defaultvalue: '720'
+  section: Collect
+  required: false
+- name: feedBypassExclusionList
+  display: Bypass exclusion list
+  type: 8
+  defaultvalue: 'false'
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed.
+  section: Collect
+  required: false
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
+  section: Collect
+  required: false
+- name: tlp_color
+  display: Traffic Light Protocol Color
+  type: 15
+  options:
+  - RED
+  - AMBER+STRICT
+  - AMBER
+  - GREEN
+  - WHITE
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  section: Collect
+  required: false
+- name: feedMarketplaces
+  display: Indicator Marketplaces
+  type: 16
+  options:
+  - chrome_web_store
+  - edge_add_ons
+  - firefox_add_ons
+  - vscode
+  - jetbrains
+  - npm
+  - pypi
+  - homebrew
+  - chocolatey
+  - docker
+  - hugging_face
+  - ollama
+  - github
+  - gitlab
+  - bitbucket
+  - binaries
+  - claude_desktop_extensions
+  - office_add_ins
+  - mcp_registry
+  additionalinfo: 'Select which marketplaces to fetch indicators from. If not specified, fetches from all marketplaces.'
+  section: Collect
+  required: false
+- name: feedMinRiskScore
+  display: Minimum Risk Score
+  type: 0
+  defaultvalue: '0'
+  additionalinfo: 'Only fetch indicators with a risk score at or above this value (0-10). Default: 0 (all items).'
+  section: Collect
+  required: false
+- name: createRelationships
+  display: Create relationships
+  type: 8
+  defaultvalue: 'true'
+  additionalinfo: Create relationships between Koi Software Item indicators and related CVEs or file hashes.
+  section: Collect
+  required: false
+description: Fetches Koi (Agentic Endpoint Security) inventory items as indicators into TIM. Creates "Koi Software Item" indicators with DBot scoring based on risk assessment, links file hashes and CVEs via relationships.
+display: KOI Feed
+name: KOIFeed
+script:
+  commands:
+  - name: koi-feed-get-indicators
+    description: Gets indicators from KOI inventory. Use for development and debugging only — does not push to TIM.
+    arguments:
+    - name: limit
+      description: Maximum number of indicators to return.
+      defaultValue: '50'
+    - name: marketplace
+      description: Filter by marketplace.
+      auto: PREDEFINED
+      predefined:
+      - chrome_web_store
+      - edge_add_ons
+      - firefox_add_ons
+      - vscode
+      - jetbrains
+      - npm
+      - pypi
+      - homebrew
+      - chocolatey
+      - docker
+      - hugging_face
+      - ollama
+      - github
+      - gitlab
+      - bitbucket
+      - binaries
+      - claude_desktop_extensions
+      - office_add_ins
+      - mcp_registry
+    - name: min_risk_score
+      description: Minimum risk score filter (0-10).
+      defaultValue: '0'
+    outputs:
+    - contextPath: KoiFeed.Indicator.value
+      description: The indicator value (display name with optional version).
+      type: String
+    - contextPath: KoiFeed.Indicator.type
+      description: The indicator type.
+      type: String
+    - contextPath: KoiFeed.Indicator.fields.koirisk
+      description: The Koi risk score (0-10).
+      type: Number
+    - contextPath: KoiFeed.Indicator.fields.koirisklevel
+      description: The Koi risk level.
+      type: String
+  feed: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.125.0.10158186
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
