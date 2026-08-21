@@ -342,7 +342,7 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 | --- | --- | --- |  
 | search_key | Currently only supports search by URL. | Optional |  
 | queue_state | New queue status to update alert with (ID required). Possible values: actioned, needs_confirmation, doppel_review, monitoring, taken_down, archived. | Optional |  
-| product | Product category the report belongs to. Possible values: domains, social_media, mobile_apps, ecommerce, crypto, emails, paid_adds. | Optional |  
+| product | Product category the report belongs to. Possible values: domains, social_media, mobile_apps, ecommerce, crypto, email, paid_ads, telco, darkweb. | Optional |  
 | created_before | Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | created_after | Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | sort_type | The field to sort the reports by. Defaults to date_sourced. Possible values: date_sourced, date_last_actioned. | Optional |  
@@ -527,6 +527,8 @@ There is no context output for this command.
 
 ### Incident Mirroring
 
+**Note:** The ***fetch-incidents*** command creates Cortex XSOAR incidents only for newly detected Doppel alerts. Changes made to a Doppel alert after it was fetched (such as queue state, entity state, or severity updates) are not pulled in by fetch. To keep existing incidents up to date with Doppel, enable mirroring and set the **Mirror Direction** parameter to Incoming or Incoming And Outgoing.
+
 #### Mirroring In (Doppel → XSOAR)
 
 When incidents are mirrored into Cortex XSOAR from Doppel:
@@ -550,6 +552,9 @@ When incidents are mirrored out from Cortex XSOAR to Doppel. Currently, the Mirr
 The following fields are mirrored:
 
 1. Doppel Queue State – Indicates the queue where the alert is currently assigned.
+2. Close Notes – When an incident is closed with close notes, the notes are sent to Doppel and recorded as a comment on the alert.
+
+**Data sharing note:** Closing an incident sends its analyst-authored close notes to the Doppel platform as an alert comment, where they are visible to anyone with access to the alert in Doppel. If your close notes may contain sensitive internal information, review them before closing, or remove the **closeNotes** mapping from the **Doppel Outgoing_Mapper** to disable this behavior.
 
 #### Configuration Steps
 
