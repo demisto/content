@@ -154,7 +154,9 @@ class Client(BaseClient):
             integration_context.get(AUTH_MODE_CONST) or AUTH_MODE_OPROXY
         )  # default to oproxy, since this field wasn't written before
         auth_mode_matches = stored_auth_mode == self.auth_mode
-        demisto.debug(f"Stored auth-mode is '{integration_context.get(AUTH_MODE_CONST)}' (defaulting to oproxy if NONE), current auth mode is '{self.auth_mode}'.")
+        demisto.debug(
+            f"Stored auth-mode is '{integration_context.get(AUTH_MODE_CONST)}' (defaulting to oproxy if NONE), current auth mode is '{self.auth_mode}'."  # noqa: E501
+        )
         if access_token and valid_until and int(time.time()) < valid_until and auth_mode_matches:
             self.access_token = access_token
             self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
@@ -230,7 +232,9 @@ class Client(BaseClient):
 
         access_token = response.get(ACCESS_TOKEN_CONST)
         if not access_token:
-            demisto.debug("[_scm_authorize] Got a response from SCM auth, but the access token (used for query/v2/jobs requests) is missing!")
+            demisto.debug(
+                "[_scm_authorize] Got a response from SCM auth, but the access token (used for query/v2/jobs requests) is missing!"  # noqa: E501
+            )
             raise DemistoException("Missing access_token in SCM response.")
         # The SCM gateway supplies the data-plane address and instance to query, alongside the token.
         # It reports the TTL as "expiration"; fall back to "expires_in" and then to a default.
@@ -240,10 +244,14 @@ class Client(BaseClient):
         # NOTE: refresh token is used only for oproxy, scm does not return it
         refresh_token = None
         if not response.get("url"):
-            demisto.debug(f"[_scm_authorize] CDL: SCM response has no 'url'; falling back to the default API URL {DEFAULT_API_URL}.")
+            demisto.debug(
+                f"[_scm_authorize] CDL: SCM response has no 'url'; falling back to the default API URL {DEFAULT_API_URL}."
+            )
         if not instance_id:
             demisto.debug("[_scm_authorize] CDL: SCM response has no 'instance_id'; queries will not be scoped to an instance.")
-        demisto.debug(f"[_scm_authorize] CDL: SCM auth succeeded (expires_in={expires_in}, api_url={api_url}, instance_id={instance_id})")
+        demisto.debug(
+            f"[_scm_authorize] CDL: SCM auth succeeded (expires_in={expires_in}, api_url={api_url}, instance_id={instance_id})"
+        )
         return access_token, api_url, instance_id, refresh_token, expires_in
 
     def _oproxy_authorize(self) -> tuple[Any, Any, Any, Any, int]:
