@@ -3,7 +3,7 @@
 Before configuring this integration, you need:
 
 1. **Strata Cloud Manager Access**: Active Prisma SASE account with Strata Cloud Manager access
-2. **OAuth2 Credentials**: Create an OAuth2 client in Strata Cloud Manager with Prisma AIRS AI Model Security API permissions
+2. **OAuth2 Credentials**: Create an OAuth2 client in Strata Cloud Manager with Prisma AIRS AI Supply Chain Security API permissions
 3. **Tenant Services Group ID**: Your Prisma SASE TSG ID (found in Strata Cloud Manager settings)
 
 ### Configuration Steps
@@ -11,7 +11,7 @@ Before configuring this integration, you need:
 1. **Create OAuth2 Client in Strata Cloud Manager**:
    - Navigate to Settings > Identity & Access
    - Create a new service account or OAuth2 client
-   - Assign Prisma AIRS AI Model Security API permissions
+   - Assign Prisma AIRS AI Supply Chain Security API permissions
    - Copy the Client ID and Client Secret
 
 2. **Configure the Integration**:

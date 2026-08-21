@@ -8,7 +8,7 @@ The Prisma AIRs AI Security pack provides integration with Palo Alto Networks' A
 
 - **Runtime Scanning**: Scan prompts and responses against security profiles for AI threats
 - **Red Team Operations**: Execute adversarial testing with static, dynamic, and custom attack modes
-- **Model Security**: Manage ML model supply chain security with security groups and rules
+- **AI Supply Chain Security**: Manage ML model supply chain security with security groups and rules
 - **DLP Configuration**: Configure and manage data loss prevention filtering profiles and patterns
 - **Security Profile Management**: Create and manage AI security profiles with topic-based guardrails
 
@@ -28,7 +28,7 @@ The Prisma AIRs AI Security pack provides integration with Palo Alto Networks' A
 - Custom prompt set management
 - Comprehensive attack reporting with ASR metrics
 
-### Model Security
+### AI Supply Chain Security
 
 - Security group management for model sources (Local, S3, GCS, Azure, Hugging Face)
 - Security rule configuration and enforcement

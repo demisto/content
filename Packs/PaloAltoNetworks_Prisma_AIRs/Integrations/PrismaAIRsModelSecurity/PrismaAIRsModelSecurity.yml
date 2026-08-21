@@ -39,8 +39,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: 'Scan and govern AI models with Palo Alto Networks Prisma AIRS AI Model Security: model scans, evaluations, violations, labels, model groups, and security rules.'
-display: Palo Alto Networks Prisma AIRS - AI Model Security
+description: 'Scan and govern AI models with Palo Alto Networks Prisma AIRS AI Supply Chain Security: model scans, evaluations, violations, labels, model groups, and security rules.'
+display: Palo Alto Networks Prisma AIRS - AI Supply Chain Security
 name: Palo Alto Networks Prisma AIRS - AI Model Security
 supportlevelheader: community
 script:

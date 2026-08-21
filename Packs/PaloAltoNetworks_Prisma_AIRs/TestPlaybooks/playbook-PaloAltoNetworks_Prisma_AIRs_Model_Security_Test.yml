@@ -1,4 +1,4 @@
-description: Test playbook for Prisma AIRs Model Security integration. Tests CRUD operations for model security groups.
+description: Test playbook for Prisma AIRs AI Supply Chain Security integration. Tests CRUD operations for model security groups.
 id: PaloAltoNetworks_Prisma_AIRs_Model_Security_Test
 inputs:
 - key: GroupName

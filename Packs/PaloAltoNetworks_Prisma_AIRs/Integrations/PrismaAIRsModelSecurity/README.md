@@ -1,7 +1,7 @@
-Scan and govern AI models with Palo Alto Networks Prisma AIRS AI Model Security: model scans, evaluations, violations, labels, model groups, and security rules.
-This integration was integrated and tested with version xx of Palo Alto Networks Prisma AIRS - AI Model Security.
+Scan and govern AI models with Palo Alto Networks Prisma AIRS AI Supply Chain Security: model scans, evaluations, violations, labels, model groups, and security rules.
+This integration was integrated and tested with version xx of Palo Alto Networks Prisma AIRS - AI Supply Chain Security.
 
-## Configure Palo Alto Networks Prisma AIRS - AI Model Security in Cortex
+## Configure Palo Alto Networks Prisma AIRS - AI Supply Chain Security in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
