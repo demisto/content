@@ -1,0 +1,10 @@
+{
+    "name": "organizations/1094826489209/locations/global/muteConfigs/mute-cryptomining-alerts",
+    "description": "Mute low severity cryptomining findings for the staging project.",
+    "filter": "severity=\"LOW\" AND category=\"Malware: Cryptomining Bad IP\"",
+    "createTime": "2020-02-18T07:26:42Z",
+    "updateTime": "2020-02-18T07:26:42Z",
+    "mostRecentEditor": "secops@example.com",
+    "type": "DYNAMIC",
+    "expiryTime": "2020-03-18T07:26:42Z"
+}

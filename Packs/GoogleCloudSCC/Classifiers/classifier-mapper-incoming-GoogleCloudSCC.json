@@ -54,6 +54,9 @@
     "GoogleCloudSCC Finding MostRecentlySeen": {
      "simple": "finding.eventTime"
     },
+    "GoogleCloudSCC Finding Mute Status": {
+     "simple": "finding.mute"
+    },
     "GoogleCloudSCC Finding Name": {
      "complex": {
       "filters": [],
