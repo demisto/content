@@ -1,0 +1,1358 @@
+category: Cloud Security
+provider: Palo Alto Networks
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Palo Alto Networks Prisma AIRS - AI Model Security
+  version: -1
+configuration:
+- defaultvalue: https://api.sase.paloaltonetworks.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: API Client ID
+  section: Connect
+  name: credentials
+  required: true
+  type: 9
+  displaypassword: API Client Secret
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
+  display: Tenant Services Group ID
+  name: tsg_id
+  required: true
+  type: 0
+  section: Connect
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: 'Scan and govern AI models with Palo Alto Networks Prisma AIRS AI Supply Chain Security: model scans, evaluations, violations, labels, model groups, and security rules.'
+display: Palo Alto Networks Prisma AIRS - AI Supply Chain Security
+name: Palo Alto Networks Prisma AIRS - AI Model Security
+supportlevelheader: community
+script:
+  commands:
+  - name: prisma-airs-model-security-scans-list
+    description: List all model security scans.
+    arguments:
+    - name: limit
+      required: false
+      description: The maximum number of scans to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityScan.uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.model_uri
+      description: The model URI that was scanned.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.eval_outcome
+      description: The evaluation outcome (ALLOWED, BLOCKED).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.source_type
+      description: The source type (HUGGING_FACE, LOCAL, etc.).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.security_group_uuid
+      description: The security group UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.security_group_name
+      description: The security group name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.scan_origin
+      description: The scan origin.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScan.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityScan.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityScan.created_by
+      description: The user who created the scan.
+      type: String
+  - name: prisma-airs-model-security-scans-create
+    description: Create a new model security scan to check a model for supply chain security issues. Scan is asynchronous - use scans-get to poll for completion.
+    arguments:
+    - name: model_uri
+      required: true
+      description: The model URI (HuggingFace URL like https://huggingface.co/microsoft/DialoGPT-medium or local path).
+    - name: security_group_uuid
+      required: true
+      description: The security group UUID to use for scanning.
+    - name: scan_origin
+      required: false
+      description: The scan origin identifier.
+      defaultValue: MODEL_SECURITY_API
+      auto: PREDEFINED
+      predefined:
+      - MODEL_SECURITY_SDK
+      - MODEL_SECURITY_API
+      - MODEL_SECURITY_FRONTEND
+      - HUGGING_FACE
+    - name: model_name
+      required: false
+      description: The model name (optional metadata).
+    - name: model_author
+      required: false
+      description: The model author (optional metadata).
+    - name: model_version
+      required: false
+      description: The model version (optional metadata).
+    - name: labels
+      required: false
+      description: 'The labels to tag the scan, as a JSON array of key/value objects, e.g. [{"key": "env", "value": "prod"}, {"key": "team", "value": "ml"}]. Keys (<=128 chars) and values (<=256 chars) must match ^[a-zA-Z0-9_-]+$.'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.labels
+      description: The labels (key/value pairs) applied to the scan.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.model_uri
+      description: The model URI that was scanned.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.security_group_uuid
+      description: The security group UUID used for scanning.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.security_group_name
+      description: The security group name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.scan_origin
+      description: The scan origin.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.eval_outcome
+      description: The evaluation outcome (PENDING initially, then ALLOWED/BLOCKED).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.source_type
+      description: The model source type.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.owner
+      description: The scan owner.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.rules_passed
+      description: The number of rules that passed.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.rules_failed
+      description: The number of rules that failed.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityScanCreate.total_rules
+      description: The total number of rules evaluated.
+      type: Number
+  - name: prisma-airs-model-security-scans-get
+    description: Get model security scan status and results. Use this to poll scan completion after scans-create.
+    arguments:
+    - name: uuid
+      required: true
+      description: The scan UUID to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.model_uri
+      description: The model URI that was scanned.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.security_group_uuid
+      description: The security group UUID used for scanning.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.security_group_name
+      description: The security group name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.scan_origin
+      description: The scan origin.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.eval_outcome
+      description: The evaluation outcome (PENDING/ALLOWED/BLOCKED).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.source_type
+      description: The model source type.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.owner
+      description: The scan owner.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.created_by
+      description: The user who created the scan.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.model_version_uuid
+      description: The model version UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.enabled_rule_count_snapshot
+      description: The snapshot of enabled rules count at scan time.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.scanner_version
+      description: The scanner version used.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.time_started
+      description: The scan start time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.total_files_scanned
+      description: The total files scanned.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.total_files_skipped
+      description: The total files skipped.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.rules_passed
+      description: The number of rules that passed.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.rules_failed
+      description: The number of rules that failed.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.total_rules
+      description: The total number of rules evaluated.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.error_code
+      description: The error code if scan failed.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.error_message
+      description: The error message if scan failed.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityScanGet.model_formats
+      description: The model file formats detected.
+      type: Unknown
+  - name: prisma-airs-model-security-scans-violations
+    description: Get rule violations for a model security scan. Shows detailed information about which security rules failed and why.
+    arguments:
+    - name: uuid
+      required: true
+      description: The scan UUID to retrieve violations for.
+    - name: limit
+      required: false
+      description: The maximum number of violations to return.
+      defaultValue: '50'
+    - name: offset
+      required: false
+      description: The offset for pagination.
+      defaultValue: '0'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityViolation.scan_uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.uuid
+      description: The violation UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.rule_name
+      description: The security rule name that failed.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.rule_description
+      description: The security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.description
+      description: The violation description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.rule_instance_state
+      description: The rule instance state (BLOCKING/ALLOWING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.file
+      description: The file path where violation was found.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.threat
+      description: The threat type.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.threat_description
+      description: The threat description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.module
+      description: The module where threat was found.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.operator
+      description: The operator involved in violation.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.hash
+      description: The hash of the violating file.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.rule_instance_uuid
+      description: The rule instance UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.created_at
+      description: The violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.updated_at
+      description: The violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityViolation.violations.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolation.total_items
+      description: The total number of violations available.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityViolation.limit
+      description: The limit used for pagination.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityViolation.offset
+      description: The offset used for pagination.
+      type: Number
+  - name: prisma-airs-model-security-labels-keys
+    description: Get distinct label keys across all model security scans. Use for discovering available labels for filtering/organization.
+    arguments:
+    - name: limit
+      required: false
+      description: The maximum number of label keys to return.
+      defaultValue: '50'
+    - name: offset
+      required: false
+      description: The offset for pagination.
+      defaultValue: '0'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityLabelKeys.keys
+      description: The list of distinct label keys.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityLabelKeys.total_items
+      description: The total number of label keys available.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityLabelKeys.limit
+      description: The limit used for pagination.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityLabelKeys.offset
+      description: The offset used for pagination.
+      type: Number
+  - name: prisma-airs-model-security-labels-values
+    description: Get distinct values for a specific label key across all model security scans. Use to discover what values exist for a given label.
+    arguments:
+    - name: key
+      required: true
+      description: The label key to get values for.
+    - name: limit
+      required: false
+      description: The maximum number of label values to return.
+      defaultValue: '50'
+    - name: offset
+      required: false
+      description: The offset for pagination.
+      defaultValue: '0'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityLabelValues.key
+      description: The label key.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityLabelValues.values
+      description: The list of distinct label values.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityLabelValues.total_items
+      description: The total number of label values available.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityLabelValues.limit
+      description: The limit used for pagination.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityLabelValues.offset
+      description: The offset used for pagination.
+      type: Number
+  - name: prisma-airs-model-security-labels-add
+    description: Add labels to a model security scan for organization and filtering. Labels are key-value pairs.
+    arguments:
+    - name: scan_uuid
+      required: true
+      description: The scan UUID to add labels to.
+    - name: labels
+      required: true
+      description: The labels to add as JSON array (e.g., '[{"key":"env","value":"prod"}]').
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityLabelsAdd.scan_uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityLabelsAdd.labels_added
+      description: The labels that were added.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityLabelsAdd.success
+      description: Whether the operation succeeded.
+      type: Boolean
+  - name: prisma-airs-model-security-labels-set
+    description: Set labels on a model security scan, replacing all existing labels. Use this to completely update scan labels.
+    arguments:
+    - name: scan_uuid
+      required: true
+      description: The scan UUID to set labels on.
+    - name: labels
+      required: true
+      description: The labels to set as JSON array (e.g., '[{"key":"env","value":"staging"}]'). Replaces all existing labels.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityLabelsSet.scan_uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityLabelsSet.labels_set
+      description: The labels that were set.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityLabelsSet.success
+      description: Whether the operation succeeded.
+      type: Boolean
+  - name: prisma-airs-model-security-labels-delete
+    execution: true
+    description: Delete labels from a model security scan by key. Removes specific labels while preserving others.
+    arguments:
+    - name: scan_uuid
+      required: true
+      description: The scan UUID to delete labels from.
+    - name: keys
+      required: true
+      isArray: true
+      description: A comma-separated list of label keys to delete (e.g., "env,team"). Alternatively, a JSON array.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityLabelsDelete.scan_uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityLabelsDelete.keys_deleted
+      description: The label keys that were deleted.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityLabelsDelete.success
+      description: Whether the operation succeeded.
+      type: Boolean
+  - name: prisma-airs-model-security-scans-evaluation
+    description: Get a single rule evaluation by UUID. Retrieves detailed information about how a specific rule was evaluated during a scan.
+    arguments:
+    - name: uuid
+      required: true
+      description: The evaluation UUID to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.uuid
+      description: The evaluation UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.scan_uuid
+      description: The scan UUID this evaluation belongs to.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.rule_instance_uuid
+      description: The rule instance UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.rule_name
+      description: The security rule name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.rule_description
+      description: The security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.result
+      description: The evaluation result (PASSED/FAILED/ERROR).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.violation_count
+      description: The number of violations found.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.rule_instance_state
+      description: The rule instance state (BLOCKING/ALLOWING/DISABLED).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.created_at
+      description: The evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.updated_at
+      description: The evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityEvaluation.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-scans-violation
+    description: Get a single violation by UUID. Retrieves detailed information about a specific security rule violation found during a scan.
+    arguments:
+    - name: uuid
+      required: true
+      description: The violation UUID to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.uuid
+      description: The violation UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.rule_name
+      description: The security rule name that failed.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.rule_description
+      description: The security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.description
+      description: The violation description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.rule_instance_state
+      description: The rule instance state (BLOCKING/ALLOWING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.file
+      description: The file path where violation was found.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.threat
+      description: The threat type.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.threat_description
+      description: The threat description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.module
+      description: The module where threat was found.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.operator
+      description: The operator involved in violation.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.hash
+      description: The hash of the violating file.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.rule_instance_uuid
+      description: The rule instance UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.created_at
+      description: The violation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.updated_at
+      description: The violation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityViolationDetail.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-scans-files
+    description: Get files for a scan. Lists all files that were scanned within a model, showing file structure and scan results.
+    arguments:
+    - name: scan_uuid
+      required: true
+      description: The scan UUID to retrieve files for.
+    - name: limit
+      required: false
+      description: The maximum number of files to return.
+      defaultValue: '50'
+    - name: offset
+      required: false
+      description: The offset for pagination.
+      defaultValue: '0'
+    - name: sort_field
+      required: false
+      description: The sort by field (path, type).
+    - name: sort_dir
+      required: false
+      description: The sort direction (asc, desc).
+    - name: type
+      required: false
+      description: The file type to filter results by (FILE, DIRECTORY).
+    - name: result
+      required: false
+      description: The scan result to filter results by (SUCCESS, FAILURE).
+    - name: query_path
+      required: false
+      description: The path prefix to filter files by.
+      defaultValue: /
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityFiles.scan_uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.uuid
+      description: The file entry UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.path
+      description: The file path within model.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.parent_path
+      description: The parent directory path.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.type
+      description: The file type (FILE, DIRECTORY).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.result
+      description: The scan result (SUCCESS, FAILURE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.model_version_uuid
+      description: The model version UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.blob_id
+      description: The blob storage identifier.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.formats
+      description: The model formats detected.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.scan_uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.created_at
+      description: The file entry creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.updated_at
+      description: The file entry last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityFiles.files.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityFiles.total_items
+      description: The total number of files available.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityFiles.limit
+      description: The limit used for pagination.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityFiles.offset
+      description: The offset used for pagination.
+      type: Number
+  - name: prisma-airs-model-security-scans-evaluations
+    description: Get rule evaluations for a scan. Lists all rule evaluations showing which security rules passed, failed, or had errors.
+    arguments:
+    - name: scan_uuid
+      required: true
+      description: The scan UUID to retrieve evaluations for.
+    - name: limit
+      required: false
+      description: The maximum number of evaluations to return.
+      defaultValue: '50'
+    - name: offset
+      required: false
+      description: The offset for pagination.
+      defaultValue: '0'
+    - name: sort_field
+      required: false
+      description: The sort by field (created_at, updated_at).
+    - name: sort_order
+      required: false
+      description: The sort order (asc, desc).
+    - name: result
+      required: false
+      description: The evaluation result to filter results by (PASSED, FAILED, ERROR).
+    - name: rule_instance_uuid
+      required: false
+      description: The rule instance UUID to filter results by.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.scan_uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.uuid
+      description: The rule evaluation UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.scan_uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_name
+      description: The security rule name (e.g., Pickle Scan, Malware Scan).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.result
+      description: The evaluation result (PASSED, FAILED, ERROR).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.violation_count
+      description: The number of violations detected by this rule.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_state
+      description: The rule instance state (BLOCKING, MONITORING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_instance_uuid
+      description: The rule instance UUID that performed the evaluation.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.rule_description
+      description: The rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.created_at
+      description: The evaluation creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.updated_at
+      description: The evaluation last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.evaluations.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.total_items
+      description: The total number of evaluations available.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.limit
+      description: The limit used for pagination.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityEvaluations.offset
+      description: The offset used for pagination.
+      type: Number
+  - name: prisma-airs-model-security-models-list
+    description: List Model Security model catalog entries (aggregate over their scanned versions). Read-only.
+    arguments:
+    - name: limit
+      required: false
+      description: The maximum number of models to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of records to skip from the start (pagination offset).
+    - name: search_query
+      required: false
+      description: The search query (matches model UUID or name).
+    - name: sort_field
+      required: false
+      description: The field to sort by.
+      auto: PREDEFINED
+      predefined:
+      - created_at
+      - updated_at
+    - name: sort_order
+      required: false
+      description: The sort order.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: latest_version_outcomes
+      required: false
+      description: A comma-separated list of latest-version evaluation outcomes to filter by (e.g., PASSED,FAILED).
+      isArray: true
+    - name: latest_version_formats
+      required: false
+      description: A comma-separated list of latest-version model formats to filter by.
+      isArray: true
+    - name: latest_version_source_types
+      required: false
+      description: A comma-separated list of latest-version source types to filter by (e.g., HUGGING_FACE,S3).
+      isArray: true
+    - name: start_time
+      required: false
+      description: The earliest model creation datetime (ISO 8601); only models created on or after this time are returned.
+    - name: end_time
+      required: false
+      description: The latest model creation datetime (ISO 8601); only models created on or before this time are returned.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModel.uuid
+      description: The model UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.name
+      description: The model name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_uuid
+      description: The UUID of the model's latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_revision
+      description: The revision label of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_outcome
+      description: The evaluation outcome of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_formats
+      description: The model formats of the latest version.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_source_types
+      description: The source types of the latest version.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_scan_time
+      description: The scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModel.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModel.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-model-security-models-get
+    description: Get a single Model Security model by UUID. Read-only.
+    arguments:
+    - name: uuid
+      required: true
+      description: The model UUID.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModel.uuid
+      description: The model UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.name
+      description: The model name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_uuid
+      description: The UUID of the model's latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_revision
+      description: The revision label of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_fingerprint
+      description: The fingerprint of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_hf_commit_sha
+      description: The Hugging Face commit SHA of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_outcome
+      description: The evaluation outcome of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_formats
+      description: The model formats of the latest version.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_source_types
+      description: The source types of the latest version.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_scan_time
+      description: The scan time of the latest version, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModel.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModel.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-model-security-models-versions
+    description: List the versions (revisions) of a Model Security model. Read-only.
+    arguments:
+    - name: model_uuid
+      required: true
+      description: The model UUID whose versions to list.
+    - name: limit
+      required: false
+      description: The maximum number of versions to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of records to skip from the start (pagination offset).
+    - name: sort_order
+      required: false
+      description: The sort order.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.uuid
+      description: The model version UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.model_uuid
+      description: The parent model UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.revision
+      description: The revision label.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.file_count
+      description: The number of files in the version.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.license
+      description: The model license.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.model_formats
+      description: The model formats.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.source_types
+      description: The source types.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome
+      description: The latest evaluation outcome.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.latest_scan_time
+      description: The latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_model_name
+      description: The Hugging Face model name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_organization
+      description: The Hugging Face organization.
+      type: String
+  - name: prisma-airs-model-security-models-version-get
+    description: Get a single Model Security model version by UUID. Read-only.
+    arguments:
+    - name: uuid
+      required: true
+      description: The model version UUID.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.uuid
+      description: The model version UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.model_uuid
+      description: The parent model UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.revision
+      description: The revision label.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.fingerprint
+      description: The version fingerprint.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.file_count
+      description: The number of files in the version.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.license
+      description: The model license.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.model_formats
+      description: The model formats.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.source_types
+      description: The source types.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome
+      description: The latest evaluation outcome.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.latest_scan_time
+      description: The latest scan time in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_model_name
+      description: The Hugging Face model name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_organization
+      description: The Hugging Face organization.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_commit_sha
+      description: The Hugging Face commit SHA.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_commit_title
+      description: The Hugging Face commit title.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-model-security-models-files
+    description: List the files of a Model Security model version. Read-only.
+    arguments:
+    - name: model_version_uuid
+      required: true
+      description: The model version UUID whose files to list.
+    - name: limit
+      required: false
+      description: The maximum number of files to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of records to skip from the start (pagination offset).
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.uuid
+      description: The file UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.path
+      description: The file path within the model tree.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.parent_path
+      description: The parent directory path.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.type
+      description: The entry type (e.g., FILE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.result
+      description: The scan result for the file.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.formats
+      description: The detected file formats.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.model_version_uuid
+      description: The parent model version UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.scan_uuid
+      description: The associated scan UUID.
+      type: String
+  - name: prisma-airs-model-security-groups-list
+    description: List all model security groups.
+    arguments:
+    - name: limit
+      required: false
+      description: The maximum number of security groups to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityGroup.uuid
+      description: The security group UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.name
+      description: The security group name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.description
+      description: The security group description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.source_type
+      description: The source type (HUGGING_FACE, LOCAL, S3, GCS, AZURE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.state
+      description: The group state (ACTIVE, PENDING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroup.is_tombstone
+      description: Whether the group is marked for deletion.
+      type: Boolean
+    - contextPath: PrismaAIRs.ModelSecurityGroup.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroup.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroup.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-groups-get
+    description: Get model security group details by UUID.
+    arguments:
+    - name: uuid
+      required: true
+      description: The security group UUID.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.uuid
+      description: The security group UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.name
+      description: The security group name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.description
+      description: The security group description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.source_type
+      description: The source type (HUGGING_FACE, LOCAL, S3, GCS, AZURE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.state
+      description: The group state (ACTIVE, PENDING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.is_tombstone
+      description: Whether the group is marked for deletion.
+      type: Boolean
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroupGet.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-groups-create
+    description: Create a new model security group for scanning models from a specific source type.
+    arguments:
+    - name: name
+      required: true
+      description: The security group name.
+    - name: source_type
+      required: true
+      description: The model source type.
+      auto: PREDEFINED
+      predefined:
+      - HUGGING_FACE
+      - LOCAL
+      - S3
+      - GCS
+      - AZURE
+    - name: description
+      required: false
+      description: The security group description.
+      defaultValue: ''
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.uuid
+      description: The UUID of the created security group.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.name
+      description: The name of the created security group.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.description
+      description: The description of the created security group.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.source_type
+      description: The source type (HUGGING_FACE, LOCAL, S3, GCS, AZURE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.state
+      description: The group state (PENDING initially, becomes ACTIVE after configuration).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.is_tombstone
+      description: Whether the group is marked for deletion.
+      type: Boolean
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroupAdd.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-groups-delete
+    execution: true
+    description: Delete a security group. Removes a security group that is no longer needed.
+    arguments:
+    - name: uuid
+      required: true
+      description: The security group UUID to delete.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityGroupDelete.uuid
+      description: The UUID of deleted security group.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupDelete.deleted
+      description: Whether the deletion succeeded.
+      type: Boolean
+  - name: prisma-airs-model-security-groups-update
+    description: Update an existing security group. Updates the name and/or description of a security group.
+    arguments:
+    - name: uuid
+      required: true
+      description: The security group UUID to update.
+    - name: name
+      required: false
+      description: The new name for the security group.
+    - name: description
+      required: false
+      description: The new description for the security group.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.uuid
+      description: The UUID of the updated security group.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.name
+      description: The updated security group name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.description
+      description: The updated security group description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.source_type
+      description: The model source type (HUGGING_FACE, LOCAL, S3, GCS, AZURE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.state
+      description: The group state after update.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.is_tombstone
+      description: Whether the group is marked for deletion.
+      type: Boolean
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityGroupUpdate.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+  - name: prisma-airs-model-security-rules-list
+    description: List all model security rules.
+    arguments:
+    - name: limit
+      required: false
+      description: The maximum number of security rules to return.
+      defaultValue: '50'
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityRule.uuid
+      description: The security rule UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRule.name
+      description: The security rule name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRule.description
+      description: The security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRule.rule_type
+      description: The rule type (ARTIFACT, METADATA).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRule.compatible_sources
+      description: The compatible source types for this rule.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityRule.default_state
+      description: The default state (DISABLED, ALLOWING, BLOCKING).
+      type: String
+  - name: prisma-airs-model-security-rules-get
+    description: Get model security rule details by UUID. Returns full rule definition including description, remediation steps, and editable fields.
+    arguments:
+    - name: uuid
+      required: true
+      description: The rule UUID to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.uuid
+      description: The rule UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.name
+      description: The rule name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.description
+      description: The rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.rule_type
+      description: The rule type (ARTIFACT, METADATA, etc).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.compatible_sources
+      description: The compatible source types for this rule.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.default_state
+      description: The default state (DISABLED, ALLOWING, BLOCKING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.remediation_description
+      description: The remediation description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.remediation_steps
+      description: The remediation steps.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.remediation_url
+      description: The remediation reference URL.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.editable_fields
+      description: The editable fields configuration.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.constant_values
+      description: The constant values for this rule.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityRuleGet.default_values
+      description: The default values for editable fields.
+      type: Unknown
+  - name: prisma-airs-model-security-rule-instances-list
+    description: List rule instances for a security group. Rule instances are rules that have been applied to a security group with specific state (DISABLED/ALLOWING/BLOCKING) and optional field customizations.
+    arguments:
+    - name: security_group_uuid
+      required: true
+      description: The security group UUID to list rule instances for.
+    - name: limit
+      required: false
+      description: The maximum number of rule instances to return.
+      defaultValue: '50'
+    - name: offset
+      required: false
+      description: The offset for pagination.
+      defaultValue: '0'
+    - name: security_rule_uuid
+      required: false
+      description: The security rule UUID to filter results by.
+    - name: state
+      required: false
+      description: The rule state to filter results by.
+      predefined:
+      - DISABLED
+      - ALLOWING
+      - BLOCKING
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.security_group_uuid
+      description: The security group UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.uuid
+      description: The rule instance UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.security_group_uuid
+      description: The security group UUID this instance belongs to.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.security_rule_uuid
+      description: The security rule UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.state
+      description: The rule instance state (DISABLED/ALLOWING/BLOCKING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_name
+      description: The security rule name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_type
+      description: The security rule type.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.rule_description
+      description: The security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.created_at
+      description: The rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.updated_at
+      description: The rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.rule_instances.field_values
+      description: The custom field values for this rule instance.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.total_items
+      description: The total number of rule instances available.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.limit
+      description: The limit used for pagination.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstance.offset
+      description: The offset used for pagination.
+      type: Number
+  - name: prisma-airs-model-security-rule-instances-update
+    description: Update a rule instance within a security group. Use this to enable/disable rules or customize rule field values.
+    arguments:
+    - name: security_group_uuid
+      required: true
+      description: The security group UUID.
+    - name: rule_instance_uuid
+      required: true
+      description: The rule instance UUID to update.
+    - name: state
+      required: false
+      description: The new state for the rule instance.
+      predefined:
+      - DISABLED
+      - ALLOWING
+      - BLOCKING
+    - name: field_values
+      required: false
+      description: The custom field values as JSON string.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.uuid
+      description: The rule instance UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.security_group_uuid
+      description: The security group UUID this instance belongs to.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.security_rule_uuid
+      description: The security rule UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.state
+      description: The rule instance state (DISABLED/ALLOWING/BLOCKING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_name
+      description: The security rule name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_type
+      description: The security rule type.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.rule_description
+      description: The security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.created_at
+      description: The rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.updated_at
+      description: The rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceUpdate.field_values
+      description: The custom field values for this rule instance.
+      type: Unknown
+  - name: prisma-airs-model-security-rule-instances-get
+    description: Get a single rule instance within a security group. Retrieves detailed configuration of a specific rule instance.
+    arguments:
+    - name: security_group_uuid
+      required: true
+      description: The security group UUID.
+    - name: rule_instance_uuid
+      required: true
+      description: The rule instance UUID to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.uuid
+      description: The rule instance UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.security_group_uuid
+      description: The security group UUID this instance belongs to.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.security_rule_uuid
+      description: The security rule UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.state
+      description: The rule instance state (DISABLED/ALLOWING/BLOCKING).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.rule_name
+      description: The security rule name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.rule_type
+      description: The security rule type.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.rule_description
+      description: The security rule description.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.created_at
+      description: The rule instance creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.updated_at
+      description: The rule instance last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.field_values
+      description: The custom field values for this rule instance.
+      type: Unknown
+  dockerimage: demisto/python3:3.10.14.95956
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- PaloAltoNetworks_Prisma_AIRs_Model_Security_Test
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+supportedModules:
+- cloud_runtime_security
+- xsiam
+- cloud
+- agentix
+fromversion: 6.10.0

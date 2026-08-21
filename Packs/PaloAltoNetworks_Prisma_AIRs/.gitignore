@@ -1,0 +1,22 @@
+# Local development resources (not committed to repo)
+knowledge/
+shared/
+CLAUDE.md
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# macOS
+.DS_Store
