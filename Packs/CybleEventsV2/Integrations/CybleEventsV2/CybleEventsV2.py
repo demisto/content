@@ -7,13 +7,26 @@ import pytz
 import urllib3
 import dateparser
 import json
+import traceback
 from collections.abc import Sequence
 from datetime import datetime, timedelta
 import time
 from dateutil.parser import parse as parse_date
 
+# Bind demisto on this module when CommonServerPython does not export it (local stubs / builtins-only).
+if "demisto" not in globals():
+    try:
+        import demistomock as demisto  # type: ignore  # noqa: F401
+    except ImportError:
+        pass
+
 
 UTC = pytz.UTC
+
+
+def get_current_utc_time() -> datetime:
+    """Return a timezone-aware UTC datetime. Prefer this over datetime.utcnow()."""
+    return datetime.now(UTC)
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -85,8 +98,14 @@ def should_stop_before_next_page(
     if pages_completed <= 0:
         return False
 
-    elapsed_seconds = (datetime.utcnow().astimezone(pytz.UTC) - execution_start).total_seconds()
-    remaining_seconds = get_execution_timeout_seconds() - elapsed_seconds - TIME_TO_RUN_BUFFER_SECONDS
+    now = get_current_utc_time()
+    start = ensure_aware(execution_start)
+    elapsed_seconds = (now - start).total_seconds()
+    try:
+        timeout_seconds = float(get_execution_timeout_seconds())
+    except (TypeError, ValueError):
+        timeout_seconds = float(DEFAULT_EXECUTION_TIMEOUT_SECONDS)
+    remaining_seconds = timeout_seconds - elapsed_seconds - TIME_TO_RUN_BUFFER_SECONDS
     estimated_next_page_seconds = last_page_duration_seconds if last_page_duration_seconds > 0 else elapsed_seconds
 
     demisto.debug(
@@ -98,8 +117,14 @@ def should_stop_before_next_page(
 
 def should_abort_api_retries(execution_start: datetime) -> bool:
     """Do not start another API attempt when remaining Docker budget is too low for a retry."""
-    elapsed_seconds = (datetime.utcnow().astimezone(pytz.UTC) - execution_start).total_seconds()
-    remaining_seconds = get_execution_timeout_seconds() - elapsed_seconds - TIME_TO_RUN_BUFFER_SECONDS
+    now = get_current_utc_time()
+    start = ensure_aware(execution_start)
+    elapsed_seconds = (now - start).total_seconds()
+    try:
+        timeout_seconds = float(get_execution_timeout_seconds())
+    except (TypeError, ValueError):
+        timeout_seconds = float(DEFAULT_EXECUTION_TIMEOUT_SECONDS)
+    remaining_seconds = timeout_seconds - elapsed_seconds - TIME_TO_RUN_BUFFER_SECONDS
     return remaining_seconds <= 30
 
 
@@ -525,24 +550,35 @@ class Client(BaseClient):
         :return: Tuple of (all_incidents, latest_created_time, stopped_early)
         """
         fetch_context = fetch_context or {}
-        execution_start = fetch_context.get("execution_start", datetime.utcnow().astimezone(pytz.UTC))
+        execution_start = fetch_context.get("execution_start", get_current_utc_time())
         window_gte = fetch_context.get("window_gte", input_params.get("gte"))
         window_lte = fetch_context.get("window_lte", input_params.get("lte"))
         service_index = fetch_context.get("service_index", 0)
 
-        take = min(int(input_params["limit"]), MAX_API_TAKE)
-        skip = int(input_params.get("skip", 0))
+        limit_value = arg_to_number(input_params.get("limit")) or arg_to_number(MAX_ALERTS) or 300
+        take = min(int(limit_value), MAX_API_TAKE)
+        skip = arg_to_number(input_params.get("skip")) or 0
         chunk_gte_iso = input_params["gte"]
         chunk_lte_iso = input_params["lte"]
+        max_fetch = int(limit_value)
+        # Bound the loop (never while True). Worst case is 1 alert per page up to max_fetch,
+        # plus one extra iteration to observe an empty page / natural stop.
+        max_pages = max(max_fetch, 1) + 1
 
         input_params.update({"skip": skip, "take": take})
-        latest_created_time = datetime.utcnow().astimezone(pytz.UTC)
-        all_incidents = []
+        latest_created_time = get_current_utc_time()
+        all_incidents: list[dict] = []
         pages_completed = 0
         last_page_duration = 0.0
 
         try:
-            while True:
+            for _ in range(max_pages):
+                if len(all_incidents) >= max_fetch:
+                    demisto.debug(
+                        f"[insert_data_in_cortex] Reached max_fetch={max_fetch}; stopping pagination for service {service}"
+                    )
+                    break
+
                 if should_stop_before_next_page(pages_completed, last_page_duration, execution_start):
                     save_events_fetch_checkpoint(
                         window_gte, window_lte, chunk_gte_iso, chunk_lte_iso, service, service_index, input_params["skip"]
@@ -590,6 +626,8 @@ class Client(BaseClient):
                     events, incidentsArr = format_incidents(response["data"], input_params["hce"]), []
                     demisto.debug(f"[insert_data_in_cortex] Formatting incidents, total events: {len(events)}")
                     for event in events:
+                        if len(all_incidents) + len(incidentsArr) >= max_fetch:
+                            break
                         try:
                             incident = get_event_format(event)
                             incidentsArr.append(incident)
@@ -614,6 +652,12 @@ class Client(BaseClient):
                 save_events_fetch_checkpoint(
                     window_gte, window_lte, chunk_gte_iso, chunk_lte_iso, service, service_index, input_params["skip"]
                 )
+
+                if len(all_incidents) >= max_fetch:
+                    demisto.debug(
+                        f"[insert_data_in_cortex] Reached max_fetch={max_fetch}; stopping pagination for service {service}"
+                    )
+                    break
 
                 if should_stop_before_next_page(pages_completed, last_page_duration, execution_start):
                     return all_incidents, latest_created_time, True
@@ -645,7 +689,7 @@ class Client(BaseClient):
         else:
             current_start = gte
 
-        execution_start = fetch_context.get("execution_start", datetime.utcnow().astimezone(pytz.UTC))
+        execution_start = fetch_context.get("execution_start", get_current_utc_time())
         window_gte = fetch_context.get("window_gte", input_params["gte"])
         window_lte = fetch_context.get("window_lte", input_params["lte"])
         service_index = fetch_context.get("service_index", 0)
@@ -692,7 +736,7 @@ class Client(BaseClient):
                     latest_created_time = max(latest_created_time, curr_time)
 
             if stopped:
-                return all_alerts, latest_created_time or datetime.utcnow(), True
+                return all_alerts, latest_created_time or get_current_utc_time(), True
 
             is_first_chunk = False
             resume_chunk_lte = None
@@ -700,7 +744,7 @@ class Client(BaseClient):
             current_start = current_end + timedelta(microseconds=1)
 
         if latest_created_time is None:
-            latest_created_time = datetime.utcnow()
+            latest_created_time = get_current_utc_time()
             demisto.debug("No data processed, using current time as latest_created_time")
 
         demisto.debug(
@@ -977,14 +1021,14 @@ def migrate_data(client: Client, input_params: dict[str, Any], last_run: dict[st
     if not services:
         demisto.debug("[migrate_data] No services found in input_params. Returning empty alert list.")
         demisto.debug("No services found in input_params")
-        return [], datetime.utcnow(), False
+        return [], get_current_utc_time(), False
 
     demisto.debug(f"[migrate_data] Services to process: {services}")
 
     resume = parse_events_resume_state(last_run or {})
-    execution_start = datetime.utcnow().astimezone(pytz.UTC)
+    execution_start = get_current_utc_time()
     window_gte = input_params["gte"]
-    window_lte = input_params["lte"]
+    window_lte = input_params.get("lte") or window_gte
 
     resume_valid = bool(resume["service"] and resume["service"] in services)
     if resume["service"] and not resume_valid:
@@ -996,8 +1040,8 @@ def migrate_data(client: Client, input_params: dict[str, Any], last_run: dict[st
     if resume_valid:
         start_index = services.index(resume["service"])
 
-    last_fetched = ensure_aware(datetime.utcnow())
-    all_alerts = []
+    last_fetched = ensure_aware(get_current_utc_time())
+    all_alerts: list = []
     stopped_early = False
 
     try:
@@ -1026,7 +1070,7 @@ def migrate_data(client: Client, input_params: dict[str, Any], last_run: dict[st
                 break
 
     except Exception as e:
-        demisto.error(f"[migrate_data] Migration failed: {str(e)}")
+        demisto.error(f"[migrate_data] Migration failed: {str(e)}\n{traceback.format_exc()}")
         stopped_early = True
 
     return all_alerts, last_fetched, stopped_early
@@ -1206,8 +1250,8 @@ def get_fetch_severities(incident_severity):
 
 def get_gte_limit(curr_gte: str) -> str:
     if not curr_gte:
-        return datetime.utcnow().astimezone(pytz.UTC).isoformat()
-    server_gte = datetime.utcnow().astimezone(pytz.UTC) - timedelta(hours=3)
+        return get_current_utc_time().isoformat()
+    server_gte = get_current_utc_time() - timedelta(hours=3)
     try:
         curr_dt = parse_date(curr_gte)
         if curr_dt.tzinfo is None:
@@ -1235,7 +1279,7 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
 
     initial_interval = demisto.params().get("first_fetch_timestamp", 1)
     resume = parse_events_resume_state(last_run)
-    now_iso = datetime.utcnow().astimezone(pytz.UTC).isoformat()
+    now_iso = get_current_utc_time().isoformat()
 
     if resume["service"] and resume["window_gte"]:
         window_gte = resume["window_gte"]
@@ -1243,7 +1287,7 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
         input_params["gte"] = window_gte
         demisto.debug(f"[cyble_events] Resuming in-progress fetch from service={resume['service']}")
     elif "event_pull_start_date" not in last_run:
-        event_pull_start_date = datetime.utcnow().astimezone(pytz.UTC) - timedelta(hours=int(initial_interval))
+        event_pull_start_date = get_current_utc_time() - timedelta(hours=int(initial_interval))
         window_gte = get_gte_limit(event_pull_start_date.isoformat())
         window_lte = now_iso
         input_params["gte"] = window_gte
@@ -1334,7 +1378,7 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
         "services": services or [],
         "severity": severities or [],
         "gte": last_update.isoformat(),
-        "lte": datetime.utcnow().replace(tzinfo=pytz.UTC).isoformat(),
+        "lte": get_current_utc_time().isoformat(),
     }
     ids = client.get_ids_with_retry(service=services, input_params=input_params, is_update=True)
 
@@ -1427,7 +1471,7 @@ def manual_fetch(client, args, token, url, incident_collections, incident_severi
     demisto.debug("[manual_fetch] Manual run detected")
 
     gte = args.get("start_date")
-    lte = args.get("end_date") or datetime.utcnow().astimezone().isoformat()
+    lte = args.get("end_date") or get_current_utc_time().isoformat()
 
     try:
         gte = datetime.fromisoformat(gte).isoformat()
@@ -1676,7 +1720,7 @@ def main():
 
     params = demisto.params()
     base_url = params.get("base_url")
-    token = sanitize_token(demisto.params().get("credentials", {}).get("password", "") or "")
+    token = sanitize_token(params.get("credentials", {}).get("password", "") or "")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     hide_cvv_expiry = params.get("hide_data", False)
@@ -1685,8 +1729,7 @@ def main():
     incident_severity = params.get("incident_severity", [])
 
     global MAX_ALERTS
-    max_fetch = params.get("max_fetch") or "300"
-    MAX_ALERTS = int(max_fetch)
+    MAX_ALERTS = arg_to_number(params.get("max_fetch")) or 300
 
     try:
         client = Client(base_url=params.get("base_url"), verify=verify_certificate, proxy=proxy)
