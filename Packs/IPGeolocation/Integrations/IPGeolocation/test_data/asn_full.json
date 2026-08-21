@@ -1,0 +1,28 @@
+{
+  "ip": "198.51.100.0",
+  "asn": {
+    "as_number": "AS64499",
+    "organization": "Example University",
+    "country": "US",
+    "type": "EDUCATION",
+    "domain": "example.edu",
+    "date_allocated": "1984-07-05",
+    "asn_name": "EXAMPLE-DOMAIN",
+    "allocation_status": "",
+    "num_of_ipv4_routes": "11",
+    "num_of_ipv6_routes": "1",
+    "rir": "ARIN",
+    "routes": ["198.51.100.0/24", "203.0.113.0/24", "2001:db8::/32"],
+    "downstreams": [
+      {"as_number": "AS64510", "description": "Example Health", "country": "US"},
+      {"as_number": "AS64511", "description": "Example Institute", "country": "US"}
+    ],
+    "upstreams": [
+      {"as_number": "AS64502", "description": "Example Telecom S.p.A.", "country": "IT"}
+    ],
+    "peers": [
+      {"as_number": "AS64503", "description": "Example Transit, LLC", "country": "US"}
+    ],
+    "whois_response": "ASNumber:       64499\nASName:         EXAMPLE-DOMAIN\nOrgAbuseEmail:  abuse@example.edu\n"
+  }
+}

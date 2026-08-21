@@ -1,0 +1,14 @@
+!ip ip=192.0.2.1
+!ip ip=192.0.2.1,198.51.100.1
+!ipgeolocation-ip-lookup ip=192.0.2.1
+!ipgeolocation-ip-lookup ip=198.51.100.1 include=security,abuse
+!ipgeolocation-ip-lookup ip=203.0.113.1 include=geo_accuracy,dma_code,liveHostname
+!ipgeolocation-ip-lookup ip=198.51.100.1 fields=location.country_name,asn.organization
+!ipgeolocation-ip-lookup ip=198.51.100.1 excludes=currency,location.continent_code
+!ipgeolocation-ip-lookup ip=example.com
+!ipgeolocation-ip-security ip=192.0.2.1
+!ipgeolocation-ip-security ip=192.0.2.1 fields=security.threat_score,security.is_vpn
+!ipgeolocation-abuse-contact ip=192.0.2.1
+!ipgeolocation-asn asn=AS64496
+!ipgeolocation-asn asn=64497 include=peers,upstreams,downstreams,routes,whois_response
+!ipgeolocation-asn ip=203.0.113.1
