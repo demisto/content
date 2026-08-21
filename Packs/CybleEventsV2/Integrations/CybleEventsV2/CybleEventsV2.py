@@ -28,6 +28,7 @@ def get_current_utc_time() -> datetime:
     """Return a timezone-aware UTC datetime. Prefer this over datetime.utcnow()."""
     return datetime.now(UTC)
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -91,9 +92,7 @@ def get_execution_timeout_seconds() -> float:
     return float(DEFAULT_EXECUTION_TIMEOUT_SECONDS)
 
 
-def should_stop_before_next_page(
-    pages_completed: int, last_page_duration_seconds: float, execution_start: datetime
-) -> bool:
+def should_stop_before_next_page(pages_completed: int, last_page_duration_seconds: float, execution_start: datetime) -> bool:
     """Stop before the next page when the remaining Docker budget is too low (Akamai-style)."""
     if pages_completed <= 0:
         return False
@@ -448,9 +447,7 @@ class Client(BaseClient):
         backoffs = FETCH_INCIDENT_RETRY_BACKOFF_SECONDS
         for attempt in range(len(backoffs) + 1):
             if execution_start and should_abort_api_retries(execution_start):
-                raise Exception(
-                    f"Approaching Docker execution timeout; aborting API retries for service '{service}'."
-                )
+                raise Exception(f"Approaching Docker execution timeout; aborting API retries for service '{service}'.")
             try:
                 demisto.debug(f"[get_data] final payload is: {payload_json}")
                 response = self.make_request(url, alerts_api_key, "POST", payload_json)
@@ -468,9 +465,7 @@ class Client(BaseClient):
             if response.status_code != 200:
                 if attempt < len(backoffs):
                     if execution_start and should_abort_api_retries(execution_start):
-                        raise Exception(
-                            f"Approaching Docker execution timeout; aborting API retries for service '{service}'."
-                        )
+                        raise Exception(f"Approaching Docker execution timeout; aborting API retries for service '{service}'.")
                     time.sleep(backoffs[attempt])
                     continue
                 raise Exception(
@@ -623,7 +618,8 @@ class Client(BaseClient):
                     raise
 
                 try:
-                    events, incidentsArr = format_incidents(response["data"], input_params["hce"]), []
+                    events = format_incidents(response["data"], input_params["hce"])
+                    incidentsArr: list[dict] = []
                     demisto.debug(f"[insert_data_in_cortex] Formatting incidents, total events: {len(events)}")
                     for event in events:
                         if len(all_incidents) + len(incidentsArr) >= max_fetch:
@@ -640,8 +636,7 @@ class Client(BaseClient):
 
                 all_incidents.extend(incidentsArr)
                 demisto.debug(
-                    f"[insert_data_in_cortex] Accumulated {len(incidentsArr)} incidents "
-                    f"(run total so far: {len(all_incidents)})"
+                    f"[insert_data_in_cortex] Accumulated {len(incidentsArr)} incidents (run total so far: {len(all_incidents)})"
                 )
 
                 returned = len(response["data"])
@@ -1032,9 +1027,7 @@ def migrate_data(client: Client, input_params: dict[str, Any], last_run: dict[st
 
     resume_valid = bool(resume["service"] and resume["service"] in services)
     if resume["service"] and not resume_valid:
-        demisto.debug(
-            f"[migrate_data] Checkpoint service '{resume['service']}' not in current service list; starting fresh."
-        )
+        demisto.debug(f"[migrate_data] Checkpoint service '{resume['service']}' not in current service list; starting fresh.")
 
     start_index = 0
     if resume_valid:

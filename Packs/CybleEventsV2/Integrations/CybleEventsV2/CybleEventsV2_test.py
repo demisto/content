@@ -2386,9 +2386,10 @@ def test_get_current_utc_time_is_aware():
 def test_parse_events_resume_state():
     assert parse_events_resume_state({})["service"] is None
     assert parse_events_resume_state({"service": "stealer_logs", "skip": "10"})["skip"] == 10
-    assert parse_events_resume_state({"service": "stealer_logs", "event_pull_start_date": "2025-12-01T00:00:00Z"})[
-        "window_gte"
-    ] == "2025-12-01T00:00:00Z"
+    assert (
+        parse_events_resume_state({"service": "stealer_logs", "event_pull_start_date": "2025-12-01T00:00:00Z"})["window_gte"]
+        == "2025-12-01T00:00:00Z"
+    )
     assert parse_events_resume_state({"service": "x", "skip": "bad", "service_index": "bad"})["skip"] == 0
     assert parse_events_resume_state({"service": "x", "skip": "bad", "service_index": "bad"})["service_index"] == 0
 
