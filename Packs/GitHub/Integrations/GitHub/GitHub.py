@@ -2038,7 +2038,7 @@ def github_trigger_workflow_command():
 
     suffix = f"/repos/{owner}/{repository}/actions/workflows/{workflow}/dispatches"
     headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
-    data = assign_params(ref=branch, inputs=inputs, return_run_details=True)
+    data = assign_params(ref=branch, inputs=inputs)
     response = http_request("POST", url_suffix=suffix, headers=headers, data=data)
     # http_request returns a dict for 200 (JSON body) and a Response object for 204 No Content.
     if isinstance(response, dict):
