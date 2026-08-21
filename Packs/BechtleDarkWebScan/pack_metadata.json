@@ -1,0 +1,37 @@
+{
+    "name": "Bechtle Dark Web Scan",
+    "description": "The dark web scan by Bechtle notifies you if login credentials to your company or files from your company are being sold on the dark web. Additionally, it checks other external attack vectors like attacks against your website, email security and offers OSINT information that cybercriminals could also abuse.",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Bechtle",
+    "url": "https://darkwebscan.app/contact",
+    "email": "",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [
+        "Bechtle",
+        "BechtleDarkWebScan",
+        "darkwebscan",
+        "dark web",
+        "darkweb",
+        "darknet",
+        "credentials",
+        "leaked credentials",
+        "threat intelligence",
+        "ransomware",
+        "leak detection",
+        "ransomware leaks",
+        "ransomware leak"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "firstCreated": "2026-07-13T14:49:20Z",
+    "githubUser": [
+        "86x"
+    ]
+}
