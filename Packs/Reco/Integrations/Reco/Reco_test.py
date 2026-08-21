@@ -272,6 +272,19 @@ def test_get_alerts_sorts_ascending_and_forwards_pagination(requests_mock, reco_
     assert sent_qs["count"] == ["50"]
 
 
+def test_get_alerts_excludes_preview_status(requests_mock, reco_client: RecoClient) -> None:
+    """get_alerts must always filter out ALERT_STATUS_PREVIEW alerts - Preview-state
+    Policies are meant to stay out of the customer's SOAR, matching the guard already
+    enforced on the webhook and share-service paths."""
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list", json=build_alerts_list_response([]))
+
+    reco_client.get_alerts(risk_levels=["HIGH"])
+
+    sent_filter = requests_mock.last_request.qs["filters"][0]
+    assert 'status ne "alert_status_preview"' in sent_filter
+    assert 'severity eq "high"' in sent_filter
+
+
 def test_fetch_incidents_without_assets_info(requests_mock, reco_client: RecoClient) -> None:
     created_at = datetime.datetime.now().strftime(TIME_FORMAT)
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/alerts/list", json=build_alerts_list_response([ALERT_ID]))

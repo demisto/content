@@ -229,8 +229,12 @@ class RecoClient(BaseClient):
         Sorted ascending by createdAt (rather than the API's default descending order) so
         that fetch_incidents can page through a burst via `start_index` without ever
         skipping alerts, regardless of how many share the same fetch window.
+
+        Preview-state alerts are always excluded: a Policy in Preview state is explicitly
+        meant to stay out of the customer's SOAR/ticketing systems while it's being
+        evaluated (the webhook and share-service paths already enforce this upstream).
         """
-        filter_parts: list[str] = []
+        filter_parts: list[str] = ['status ne "ALERT_STATUS_PREVIEW"']
 
         if risk_levels:
             if len(risk_levels) == 1:
