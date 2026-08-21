@@ -846,6 +846,13 @@ script:
       isArray: true
       name: ip
       required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: 'Whether to accept IPv6 addresses as input for the ip command. Possible values are: true, false.'
+      name: accept_v6_ips
+      predefined:
+      - 'true'
+      - 'false'
     description: Checks the reputation of an IP address.
     name: ip
     outputs:
