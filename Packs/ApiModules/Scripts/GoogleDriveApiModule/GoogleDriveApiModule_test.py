@@ -1397,6 +1397,67 @@ class TestFilePermissionMethods:
         mocker_http_request.assert_not_called()
 
     @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_content_at_max_length(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-create is called with content exactly at the length limit.
+
+        Given:
+        - Command args with content of exactly MAX_CONTENT_LENGTH characters.
+
+        When:
+        - Calling google-drive-file-create command.
+
+        Then:
+        - Ensure the upload proceeds, confirming the boundary is inclusive.
+        """
+        from GoogleDriveApiModule import MAX_CONTENT_LENGTH, file_create_command
+
+        mock_response = {"kind": "drive#file", "id": "max_len_id", "name": "max.txt", "mimeType": "text/plain"}
+        mock_create = MagicMock()
+        mock_create.execute.return_value = mock_response
+        mock_drive_service = MagicMock()
+        mock_drive_service.files.return_value.create.return_value = mock_create
+
+        content = "a" * MAX_CONTENT_LENGTH
+        args = {"file_name": "max.txt", "mime_type": "text/plain", "content": content}
+
+        with patch("GoogleDriveApiModule.discovery.build", return_value=mock_drive_service):
+            result: CommandResults = file_create_command(gsuite_client, args)
+
+        assert result.outputs["id"] == "max_len_id"
+        _, create_kwargs = mock_drive_service.files.return_value.create.call_args
+        media = create_kwargs["media_body"]
+        assert media.size() == MAX_CONTENT_LENGTH
+        mocker_http_request.assert_not_called()
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_file_create_command_content_exceeds_max_length(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: google-drive-file-create is called with content over the length limit.
+
+        Given:
+        - Command args with content of MAX_CONTENT_LENGTH + 1 characters.
+
+        When:
+        - Calling google-drive-file-create command.
+
+        Then:
+        - Ensure a DemistoException is raised before any API call is made, and that the
+          message reports the actual length.
+        """
+        from GoogleDriveApiModule import MAX_CONTENT_LENGTH, file_create_command
+
+        over_limit = MAX_CONTENT_LENGTH + 1
+        args = {"file_name": "too-long.txt", "mime_type": "text/plain", "content": "a" * over_limit}
+
+        with patch("GoogleDriveApiModule.discovery.build") as mock_discovery_build:  # noqa: SIM117
+            with pytest.raises(DemistoException, match=f"must not exceed {MAX_CONTENT_LENGTH} characters, but got {over_limit}"):
+                file_create_command(gsuite_client, args)
+
+        mock_discovery_build.assert_not_called()
+        mocker_http_request.assert_not_called()
+
+    @patch(MOCKER_HTTP_METHOD)
     def test_file_delete_command_soft_delete_true(self, mocker_http_request, gsuite_client):
         """
         Scenario: google-drive-file-delete invoked with soft_delete=true.

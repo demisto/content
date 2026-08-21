@@ -63,6 +63,7 @@ def is_approved_file(file_name: str, mime_type: str = None) -> bool:
 API_VERSION = "v3"
 SERVICE_NAME = "drive"
 FOLDER_MIME_TYPE = "application/vnd.google-apps.folder"
+MAX_CONTENT_LENGTH = 256
 
 MESSAGES: dict[str, str] = {
     "TEST_FAILED_ERROR": "Test connectivity failed. Check the configuration parameters provided.",
@@ -76,6 +77,8 @@ MESSAGES: dict[str, str] = {
     "CONTENT_WITH_FOLDER_MIME_TYPE": f'The "content" argument cannot be used with the mime_type "{FOLDER_MIME_TYPE}",'
     " because folders cannot hold content."
     ' Provide a non-folder mime_type such as "text/plain" to create a file with content.',
+    "CONTENT_TOO_LONG": f'The "content" argument must not exceed {MAX_CONTENT_LENGTH} characters, but got {{}}.'
+    " To create a larger file, use the google-drive-file-upload command with an entry ID.",
 }
 
 HR_MESSAGES: dict[str, str] = {
@@ -2132,10 +2135,14 @@ def create_file_with_content(
 
     :return: The created file resource as returned by the Drive API.
 
-    :raises DemistoException: If the mime_type refers to a folder, which cannot hold content.
+    :raises DemistoException: If the mime_type refers to a folder, which cannot hold content,
+        or if the content exceeds ``MAX_CONTENT_LENGTH`` characters.
     """
     if mime_type == FOLDER_MIME_TYPE:
         raise DemistoException(MESSAGES["CONTENT_WITH_FOLDER_MIME_TYPE"])
+
+    if len(content) > MAX_CONTENT_LENGTH:
+        raise DemistoException(MESSAGES["CONTENT_TOO_LONG"].format(len(content)))
 
     drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
     media = MediaIoBaseUpload(io.BytesIO(content.encode("utf-8")), mimetype=mime_type, resumable=False)

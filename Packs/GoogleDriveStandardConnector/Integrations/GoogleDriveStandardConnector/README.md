@@ -1439,7 +1439,7 @@ Creates a new file or folder. By default the file is metadata-only, which is use
 | user_id | The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation). If not provided, the default user configured in the integration instance will be used. | Optional |
 | parent | The ID of the parent folder. If not specified, the file will be created in the user's root folder. | Optional |
 | description | A short description of the file or folder. | Optional |
-| content | Optional text content to write into the created file. When provided, the content is uploaded together with the file metadata in a single request. Requires a non-folder "mime_type" (for example "text/plain"), since folders cannot hold content. The maximum supported size is 5 MB. To upload binary files, use the google-drive-file-upload command with an entry ID instead. | Optional |
+| content | Optional text content to write into the created file. When provided, the content is uploaded together with the file metadata in a single request. Requires a non-folder "mime_type" (for example "text/plain"), since folders cannot hold content. Limited to 256 characters. To create larger files or upload binary files, use the google-drive-file-upload command with an entry ID instead. | Optional |
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output

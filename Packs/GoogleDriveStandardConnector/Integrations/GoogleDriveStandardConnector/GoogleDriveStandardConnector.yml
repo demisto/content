@@ -3219,7 +3219,7 @@ script:
     - name: description
       description: A short description of the file or folder.
     - name: content
-      description: 'Optional text content to write into the created file. When provided, the content is uploaded together with the file metadata in a single request. Requires a non-folder "mime_type" (for example "text/plain"), since folders cannot hold content. The maximum supported size is 5 MB. To upload binary files, use the google-drive-file-upload command with an entry ID instead.'
+      description: 'Optional text content to write into the created file. When provided, the content is uploaded together with the file metadata in a single request. Requires a non-folder "mime_type" (for example "text/plain"), since folders cannot hold content. Limited to 256 characters. To create larger files or upload binary files, use the google-drive-file-upload command with an entry ID instead.'
     - auto: PREDEFINED
       defaultValue: "false"
       description: 'Whether the requesting application supports both My Drives and shared drives.'
