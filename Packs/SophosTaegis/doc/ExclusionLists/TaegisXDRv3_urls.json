@@ -1,0 +1,36 @@
+[
+	{
+		"id": "",
+		"version": 1,
+		"cacheVersn": 0,
+		"modified": "2026-02-02T19:32:51.772601189Z",
+		"created": "0001-01-01T00:00:00Z",
+		"sizeInBytes": 269,
+		"value": "https:\\/\\/.*\\.secureworks\\.com\\/(share|investigations|alerts|cases|detections)\\/.*",
+		"type": "regex",
+		"user": "admin",
+		"reason": "Taegis XDR URLs",
+		"whitelistTime": "2026-02-02T19:32:51.772534958Z",
+		"locked": false,
+		"reputations": [
+			"URL"
+		]
+	},
+	{
+		"id": "",
+		"version": 1,
+		"cacheVersn": 0,
+		"modified": "2026-02-02T19:36:08.895332849Z",
+		"created": "0001-01-01T00:00:00Z",
+		"sizeInBytes": 229,
+		"value": "(ctpx|\\w+\\.taegis)\\.secureworks\\.com",
+		"type": "regex",
+		"user": "admin",
+		"reason": "Taegis XDR Domains",
+		"whitelistTime": "2026-02-02T19:36:08.895216937Z",
+		"locked": false,
+		"reputations": [
+			"Domain"
+		]
+	}
+]
