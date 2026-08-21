@@ -2,8 +2,8 @@
 
 ---
 
-Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
-This integration was integrated and tested with version 2 of Strata Logging Service XSOAR Connector.
+Palo Alto Networks Strata Logging Service XSOAR Connector provides cloud-based, centralized log storage and aggregation for your on-premises, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
+This integration was tested with version 2 of Strata Logging Service XSOAR Connector.
 
 ---
 
@@ -14,9 +14,8 @@ This integration was integrated and tested with version 2 of Strata Logging Serv
 1. In the War Room, run the command `!GetLicenseID` to get the `license ID`.
 2. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
 3. Go to the [HUB](https://apps.paloaltonetworks.com/apps) and log in using your Palo Alto Networks credentials.
-4. Under the `Cortex™ XSOAR` app select the relevant instance. If you don't have an active `Cortex™ XSOAR` app check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started) to learn about app activation.
-5. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order
-to get the __Registration ID__, __Encryption Key__, and either __Authentication Token__ or __Client Secret__.
+4. Under the `Cortex™ XSOAR` app, select the relevant instance. If you don't have an active `Cortex™ XSOAR` app, check out the Hub [Docs site](https://docs.paloaltonetworks.com/hub/hub-getting-started) to learn about app activation.
+5. Once the page loads, if required, insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the __Registration ID__, __Encryption Key__, and either __Authentication Token__ or __Client Secret__.
 6. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 7. Search for Palo Alto Networks Cortex v2.
 8. Click __Add instance__ to create and configure a new integration instance.
@@ -30,20 +29,20 @@ to get the __Registration ID__, __Encryption Key__, and either __Authentication 
     * __Fetch incidents__: Whether to fetch incidents.
     * __first_fetch_timestamp__: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year).
     * __Severity of events to fetch (Firewall)__: Select from all, Critical, High, Medium, Low, Informational, or Unused.
-    * __Subtype of events to fetch (Firewall)__: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, or wpc-virus,sctp.
+    * __Subtype of events to fetch (Firewall)__: Select from all, attack, url, virus, spyware, vulnerability, file, scan, flood, packet, resource, data, url-content, wildfire, extpcap, wildfire-virus, http-hdr-insert, http-hdr, email-hdr, spyware-dns, spyware-wildfire-dns, spyware-wpc-dns, spyware-custom-dns, spyware-cloud-dns, spyware-raven, spyware-wildfire-raven, spyware-wpc-raven, wpc-virus, or sctp.
 9. Click __Test__ to validate the credentials and connection.
 
 ## CDL Server - API Calls Caching Mechanism
 
-The integration implements a caching mechanism for repetitive error when requesting access token from CDL server.
-When the intgeration reaches the limit of allowed calls, the following error will be shown:
+The integration implements a caching mechanism for repetitive errors when requesting an access token from the CDL server.
+When the integration reaches the limit of allowed calls, the following error will be shown:
 
-```We have found out that your recent attempts to authenticate against the CDL server have failed. Therefore we have limited the number of calls that the CDL integration performs.```
+```We have found out that your recent attempts to authenticate against the CDL server have failed. Therefore, we have limited the number of calls that the CDL integration performs.```
 
 The integration will re-attempt authentication if the command was called under the following cases:
 
 1. First hour - once every minute.
 2. First 48 hours - once in 10 minutes.
-3. After that every 60 minutes.
+3. After that, every 60 minutes.
 
 To try authenticating again, run the 'cdl-reset-authentication-timeout' command and retry.
