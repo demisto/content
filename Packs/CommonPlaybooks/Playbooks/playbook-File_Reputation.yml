@@ -234,6 +234,7 @@ tasks:
       url:
         simple: https://hashlookup.circl.lu/lookup/sha256/${inputs.FileSHA256}
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -277,6 +278,7 @@ tasks:
           transformers:
           - operator: Stringify
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -323,6 +325,12 @@ tasks:
             value:
               simple: Non existing SHA-256
           ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSRLCheckResults
+            iscontext: true
     view: |-
       {
         "position": {

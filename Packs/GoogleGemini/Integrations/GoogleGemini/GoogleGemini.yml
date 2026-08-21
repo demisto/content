@@ -162,7 +162,7 @@ script:
     - contextPath: GoogleGemini.Chat.ConversationId
       description: A unique identifier, used to identify the chat session.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.8160132
+  dockerimage: demisto/google-api-py3:1.0.0.10182333
   runonce: false
   script: ''
   subtype: python3
