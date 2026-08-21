@@ -1,0 +1,52 @@
+{
+  "assets": [
+    {
+      "device_name": "dummy-host-01",
+      "ip_address": [
+        "0.0.0.0"
+      ],
+      "mac_address": [
+        "00:11:22:33:44:55"
+      ],
+      "is_verified": true,
+      "is_risky": false,
+      "total_events": 10,
+      "indicators": [
+        "dummy-indicator-1.com"
+      ],
+      "users": [
+        "dummy-user-1"
+      ],
+      "locations": [
+        "Amsterdam, Netherlands"
+      ],
+      "first_detected": "2026-11-30T00:00:00Z",
+      "last_detected": "2026-12-01T00:00:00Z",
+      "description": "Sample asset flagged for repeated contact with a malicious domain."
+    },
+    {
+      "device_name": "dummy-host-02",
+      "ip_address": [
+        "0.0.0.1"
+      ],
+      "mac_address": [
+        "66:77:88:99:AA:BB"
+      ],
+      "is_verified": false,
+      "is_risky": true,
+      "total_events": 5,
+      "indicators": [
+        "dummy-indicator-2.com"
+      ],
+      "users": [
+        "dummy-user-2"
+      ],
+      "locations": [
+        "Minneapolis, United States"
+      ],
+      "first_detected": "2026-11-30T11:00:00Z",
+      "last_detected": "2026-12-01T11:00:00Z",
+      "description": "Sample unverified asset observed beaconing to a threat indicator."
+    }
+  ]
+}
