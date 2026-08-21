@@ -331,6 +331,8 @@ def advance_cycle_sync_state(
 
     for alert in alerts:
         raw = get_alert_last_sync(alert)
+        if raw is None:
+            continue
         parsed = parse_last_sync(raw)
         if parsed is None:
             continue
