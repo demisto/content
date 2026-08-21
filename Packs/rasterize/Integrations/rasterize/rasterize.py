@@ -2511,7 +2511,13 @@ def rasterize_extract_command():  # pragma: no cover
         if isinstance(extracted_content, str) and extracted_content.startswith("Extraction Error:"):
             results.append(
                 CommandResults(
-                    readable_output=f"Error extracting content from {url!r}:\n{extracted_content}",
+                    readable_output=(
+                        f"Error extracting content from {url!r}:\n{extracted_content}\n"
+                        "The page did not render within the page-load timeout. It may be slow to load, "
+                        "or protected by anti-bot/bot-detection (for example Cloudflare, or the Chrome Web Store). "
+                        "If this URL is expected to be slow, retry once with a higher 'max_page_load_time'; "
+                        "otherwise the page is likely blocked and a different source/action should be used for it."
+                    ),
                     entry_type=EntryType.ERROR,
                 )
             )

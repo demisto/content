@@ -1,8 +1,8 @@
 {
     "name": "ThreatMon",
-    "description": "This integration pulls data from the ThreatMon API and updates XSOAR incidents. You can also update the status of your Incedents in the ThreatMon dashboard from the XSOAR interface with this integration.",
+    "description": "This integration pulls data from the ThreatMon API and updates XSOAR incidents. You can also update the status of your incidents, submit takedown requests, and request data removal for Black Market Monitoring findings directly from the XSOAR interface.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.6",
     "author": "ThreatMon",
     "url": "https://www.threatmon.io",
     "email": "integration@threatmonit.io",
@@ -22,6 +22,5 @@
         "xsoar",
         "marketplacev2",
         "platform"
-        
     ]
 }

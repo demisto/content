@@ -555,5 +555,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": "Identity indicator layout"
+    "description": "Identity indicator layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

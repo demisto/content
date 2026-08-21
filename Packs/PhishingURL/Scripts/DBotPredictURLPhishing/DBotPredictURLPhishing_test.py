@@ -345,6 +345,32 @@ def test_get_urls_to_run_max_urls_zero(mocker: MockerFixture):
     assert urls == []
 
 
+def test_get_urls_to_run_comma_separated_string(mocker: MockerFixture):
+    """
+    Given: the urls argument passed as a comma-separated string (as sent from the war-room/CLI).
+    When: calling get_urls_to_run.
+    Then: the string is split into individual URLs, matching the behavior of passing a list.
+    """
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    model_example = Model()
+    model_example.top_domains = {}
+    _, requested_urls, _ = get_urls_to_run("", "", "www.google.com,www.example.com", 5, model_example, [""], False)
+    assert sorted(requested_urls) == sorted(["www.google.com", "www.example.com"])
+
+
+def test_get_urls_to_run_json_array_string(mocker: MockerFixture):
+    """
+    Given: the urls argument passed as a JSON array formatted string.
+    When: calling get_urls_to_run.
+    Then: the string is parsed into individual URLs, matching the behavior of passing a list.
+    """
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    model_example = Model()
+    model_example.top_domains = {}
+    _, requested_urls, _ = get_urls_to_run("", "", '["www.google.com", "www.example.com"]', 5, model_example, [""], False)
+    assert sorted(requested_urls) == sorted(["www.google.com", "www.example.com"])
+
+
 @pytest.mark.parametrize("input_url", ["http://www.example.com", "https://example.org", "example.net"])
 def test_output_url_match_requested_url(mocker, input_url):
     """

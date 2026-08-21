@@ -21,8 +21,9 @@ configuration:
     display: MCP Server Name
     type: 0
     defaultvalue: sn_mcp_server_default
+    required: true
     additionalinfo: |
-      The name of the MCP server on the ServiceNow instance. Defaults to the preconfigured Quickstart Server `sn_mcp_server_default`.
+      The name of the MCP server on the ServiceNow instance. Use `sn_mcp_server_default` for the preconfigured Quickstart Server.
   - name: oauth_credentials
     type: 9
     display: Client ID
@@ -75,7 +76,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/mcp:1.0.0.9624924
+  dockerimage: demisto/mcp:1.0.0.10120494
   mcp: true
 fromversion: 8.13.0
 tests:

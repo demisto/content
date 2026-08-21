@@ -16,7 +16,7 @@ SERVER = demisto.params().get("server", "")
 EMAIL = demisto.params().get("email", "")
 
 PORT = int(demisto.params().get("port", "995"))
-SSL = demisto.params().get("ssl")
+SSL = demisto.params().get("ssl", True)
 FETCH_TIME = demisto.params().get("fetch_time", "7 days")
 
 # pop3 server connection object.
@@ -83,7 +83,7 @@ def get_attachment_name(headers):
         if m:
             name = m.group(1)
 
-    if re.match("^.+\..{3,5}$", name):
+    if re.match(r"^.+\..{3,5}$", name):
         return name
 
     extension = re.match(r".*[\\/]([\d\w]{2,4}).*", headers.get("content-type", "txt")).group(1)  # type: ignore
