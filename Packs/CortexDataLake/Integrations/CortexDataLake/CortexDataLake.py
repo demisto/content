@@ -1726,11 +1726,13 @@ def main():
         f"enc_key_set={bool(enc_key)} refresh_token_set={bool(refresh_token)} "
         f"registration_id_set={bool(registration_id_and_url)}"
     )
-    if auth_mode == AUTH_MODE_SCM:
-        if not enc_key or not registration_id_and_url:
-            raise DemistoException("Registration ID, Encryption Key and Client Secret must be provided.")
-    elif not enc_key or not refresh_token or not registration_id_and_url:
-        raise DemistoException("Key, Token and ID must be provided.")
+
+    if not enc_key:
+        raise DemistoException("Encryption Key must be provided.")
+    if not registration_id_and_url:
+        raise DemistoException("Registration ID must be provided.")
+    if bool(refresh_token) == bool(client_secret):
+        raise DemistoException("Either an Authentication Token or a Client Secret must be provided, but not both.")
 
     use_ssl = not params.get("insecure", False)
     proxy = params.get("proxy", False)

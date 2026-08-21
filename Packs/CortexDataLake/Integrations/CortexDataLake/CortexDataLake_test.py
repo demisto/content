@@ -1040,3 +1040,92 @@ def test_set_access_token_legacy_oproxy_token_reused(mocker: MockerFixture):
     assert scm_mock.call_count == 0
     assert set_context_mock.call_count == 0
     assert client.access_token == "legacy-oproxy-token"
+
+
+def _credentials_params(reg_id=None, enc_key=None, refresh_token=None, client_secret=None) -> dict:
+    """Builds a demisto.params() dict in the credentials-object shape read by main()."""
+    return {
+        "credentials_reg_id": {"password": reg_id},
+        "credentials_auth_key": {"password": enc_key},
+        "credentials_refresh_token": {"password": refresh_token},
+        "credentials_client_secret": {"password": client_secret},
+    }
+
+
+@pytest.mark.parametrize(
+    "params, expected_error",
+    [
+        pytest.param(
+            _credentials_params(reg_id=SCM_REGISTRATION_ID, refresh_token="a-refresh-token"),
+            "Encryption Key must be provided.",
+            id="Missing encryption key",
+        ),
+        pytest.param(
+            _credentials_params(enc_key=VALID_SCM_ENC_KEY_B64, refresh_token="a-refresh-token"),
+            "Registration ID must be provided.",
+            id="Missing registration ID",
+        ),
+        pytest.param(
+            _credentials_params(reg_id=SCM_REGISTRATION_ID, enc_key=VALID_SCM_ENC_KEY_B64),
+            "Either an Authentication Token or a Client Secret must be provided, but not both.",
+            id="Neither refresh token nor client secret",
+        ),
+        pytest.param(
+            _credentials_params(
+                reg_id=SCM_REGISTRATION_ID,
+                enc_key=VALID_SCM_ENC_KEY_B64,
+                refresh_token="a-refresh-token",
+                client_secret=SCM_CLIENT_SECRET,
+            ),
+            "Either an Authentication Token or a Client Secret must be provided, but not both.",
+            id="Both refresh token and client secret",
+        ),
+        pytest.param(
+            _credentials_params(
+                reg_id=SCM_REGISTRATION_ID,
+                enc_key=VALID_SCM_ENC_KEY_B64,
+                refresh_token="a-refresh-token",
+            ),
+            None,
+            id="Valid OProxy credentials",
+        ),
+        pytest.param(
+            _credentials_params(
+                reg_id=SCM_REGISTRATION_ID,
+                enc_key=VALID_SCM_ENC_KEY_B64,
+                client_secret=SCM_CLIENT_SECRET,
+            ),
+            None,
+            id="Valid SCM credentials",
+        ),
+    ],
+)
+def test_main_credentials_validation(mocker: MockerFixture, params: dict, expected_error: str | None):
+    """
+    Given:
+        - A demisto.params() mapping with a combination of registration ID, encryption key,
+          authentication (refresh) token and client secret.
+    When:
+        - Running main() with the 'test-module' command, with Client construction and test_module mocked.
+    Then:
+        - Invalid combinations raise a DemistoException with the expected message and never reach test_module.
+        - Valid combinations pass validation and invoke test_module exactly once.
+    """
+    from CortexDataLake import demisto, main
+
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch("CortexDataLake.extract_client_args", return_value=("https://token.example.com", SCM_REGISTRATION_ID))
+    client_mock = mocker.patch("CortexDataLake.Client")
+    test_module_mock = mocker.patch("CortexDataLake.test_module")
+
+    if expected_error:
+        with pytest.raises(DemistoException, match=re.escape(expected_error)):
+            main()
+        assert client_mock.call_count == 0
+        assert test_module_mock.call_count == 0
+    else:
+        main()
+        assert client_mock.call_count == 1
+        assert test_module_mock.call_count == 1
