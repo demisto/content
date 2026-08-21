@@ -135,7 +135,14 @@ configuration:
     type: 0
     defaultvalue: '100'
     section: Collect
-    additionalinfo: Maximum number of indicators to fetch per execution.
+    additionalinfo: Maximum indicators per API page (API cap is 100).
+    hidden: true
+  - display: Max indicators per fetch run
+    name: max_indicators_per_fetch
+    type: 0
+    defaultvalue: '100'
+    section: Collect
+    additionalinfo: Hard cap of indicators submitted per fetch-indicators run. Non-TIM XSOAR licenses ingest at most 100 per fetch; leave at 100 unless you have a TIM license that allows more. Raising this on a non-TIM tenant causes skipped IOCs.
     hidden: true
 script:
   type: python

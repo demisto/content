@@ -37,7 +37,7 @@ This integration allows XSOAR to:
 
 ### Fetch Behavior
 
-* Fetch is performed **in 1-hour chunks** until the full range is covered.
+* Fetch is performed **in 15-minute chunks** until the full range is covered.
 * Each page of IOCs is inserted immediately using
   `demisto.createIndicators`.
 * Fetch uses a retry mechanism (up to 5 attempts per page).
