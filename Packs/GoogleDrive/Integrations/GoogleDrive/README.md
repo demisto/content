@@ -1424,7 +1424,7 @@ Moves a file from one folder to another by modifying its parent folder reference
 ### google-drive-file-create
 
 ***
-Creates a new metadata-only file or folder without uploading content. Use for creating quarantine folders or tombstone placeholder files.
+Creates a new file or folder. By default the file is metadata-only, which is useful for creating quarantine folders or tombstone placeholder files. Provide the "content" argument to also write text content into the created file.
 
 #### Base Command
 
@@ -1439,6 +1439,7 @@ Creates a new metadata-only file or folder without uploading content. Use for cr
 | user_id | The user's email address. The command will be executed on behalf of this user (requires domain-wide delegation). If not provided, the default user configured in the integration instance will be used. | Optional |
 | parent | The ID of the parent folder. If not specified, the file will be created in the user's root folder. | Optional |
 | description | A short description of the file or folder. | Optional |
+| content | Optional text content to write into the created file. When provided, the content is uploaded together with the file metadata in a single request. Requires a non-folder "mime_type" (for example "text/plain"), since folders cannot hold content. Limited to 256 characters. To create larger files or upload binary files, use the google-drive-file-upload command with an entry ID instead. | Optional |
 | supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
