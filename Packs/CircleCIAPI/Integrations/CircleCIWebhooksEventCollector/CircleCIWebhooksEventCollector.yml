@@ -1,0 +1,95 @@
+commonfields:
+  id: CircleCI Webhooks Event Collector
+  version: -1
+name: CircleCI Webhooks Event Collector
+display: CircleCI Webhooks Event Collector
+category: Analytics & SIEM
+description: Collect the outbound webhook inventory from the CircleCI v2 API and ingest it into Cortex XSIAM.
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  required: true
+  defaultvalue: https://circleci.com/api/v2
+  additionalinfo: The CircleCI API v2 base URL.
+- display: API Token
+  name: credentials
+  type: 9
+  required: true
+  displaypassword: API Token
+  hiddenusername: true
+  additionalinfo: A CircleCI personal API token. Provide the token in the password field; it is sent as the Circle-Token header.
+- display: Organisation slugs (auto-discover projects)
+  name: org_slugs
+  type: 0
+  required: false
+  additionalinfo: 'A comma-separated list of CircleCI organisation slugs (e.g. "gh/MyOrg" or "circleci/<org-id>"). Projects are auto-discovered from recent pipeline activity in these organisations, so project IDs do not need to be tracked manually. Discovery only sees projects with pipeline activity; add dormant projects explicitly below. At least one of this or Project IDs is required.'
+- display: Project IDs
+  name: project_ids
+  type: 0
+  required: false
+  additionalinfo: 'A comma-separated list of CircleCI project IDs (UUIDs) to collect webhooks from, in addition to any auto-discovered projects. The project ID is shown by GET /project/{project-slug}; it is not the project slug. At least one of this or Organisation slugs is required.'
+- display: Maximum number of webhooks per fetch
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: "5000"
+  advanced: true
+  additionalinfo: The maximum number of webhook records to fetch per project on each run.
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: "60"
+  additionalinfo: How often the collector runs, in minutes. Webhooks are current configuration (a snapshot), so an hourly interval suits snapshot-over-snapshot comparison.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  advanced: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10404775
+  isfetchevents: true
+  commands:
+  - name: circleci-webhooks-get-events
+    description: Manual command to retrieve and preview the CircleCI webhook inventory. Used for testing and development.
+    arguments:
+    - name: project_ids
+      description: A comma-separated list of CircleCI project IDs (UUIDs). Defaults to the instance-configured project IDs.
+      isArray: true
+    - name: org_slugs
+      description: A comma-separated list of CircleCI organisation slugs to auto-discover projects from. Defaults to the instance-configured organisation slugs.
+      isArray: true
+    - name: limit
+      description: The maximum number of webhooks to return per project.
+      defaultValue: "50"
+    - name: should_push_events
+      description: If true, the fetched webhooks are also pushed to the XSIAM dataset. Defaults to false.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+    outputs: []
+fromversion: 6.8.0
+defaultEnabled: true
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- C1
+- C3
+- X1
+- X3
+- X5
+- ENT_PLUS
+tests:
+- No tests (auto formatted)
