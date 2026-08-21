@@ -1,0 +1,31 @@
+commonfields:
+  id: PanoraysCheckOlderDuplicate
+  version: -1
+name: PanoraysCheckOlderDuplicate
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: >-
+  Checks whether an older open/pending "Panorays Finding" incident already exists for the same Finding ID, by
+  calling getIncidents server-side and returning a single explicit boolean output. Used by the Panorays Finding
+  - Triage and Response playbook to avoid a race where two incidents created at nearly the same time could each
+  see the other as already-open and both close as Duplicate - only the newer incident (higher ID) is ever told
+  a duplicate exists.
+enabled: true
+args:
+- name: finding_id
+  required: true
+  description: The Panorays Finding ID to search for.
+- name: incident_id
+  required: true
+  description: The current incident's ID. Only other incidents with a lower ID are considered a match.
+outputs:
+- contextPath: PanoraysDuplicateCheck.OlderDuplicateExists
+  description: Whether an older open/pending duplicate incident exists for this Finding ID.
+  type: Boolean
+scripttarget: 0
+dockerimage: demisto/python3:3.12.13.8319994
+fromversion: 6.10.0
+tests:
+- No tests
