@@ -40,8 +40,8 @@ AUTH_MODE_SCM = "scm"
 
 FEDRAMP_HOSTNAME_SUFFIX = "federal.paloaltonetworks.com"
 DEFAULT_API_URL = "https://api.us.cdl.paloaltonetworks.com"
-STANDARD_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
-FEDRAMP_TOKEN_URL = (
+LEGACY_COMMERCIAL_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
+LEGACY_FEDRAMP_TOKEN_URL = (
     "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"  # guardrails-disable-line
 )
 
@@ -68,12 +68,6 @@ FETCH_TABLE_HR_NAME = {
     "log.config": "Cortex Common Config",
 }
 BAD_REQUEST_REGEX = r"^Error in API call \[400\].*"
-
-
-def get_scm_token_url() -> str:
-    """Resolves the SCM (Cortex GW) get_access_token URL based on the tenant region."""
-    base_url = SCM_GATEWAY_FEDERAL_URL if is_fedramp_tenant() else SCM_GATEWAY_URL
-    return f"{base_url}{SCM_TOKEN_PATH}"
 
 
 def build_scm_signature(encryption_key_b64: str, client_secret: Optional[str], timestamp: int) -> str:
@@ -186,16 +180,15 @@ class Client(BaseClient):
     def _scm_authorize(self) -> tuple[Any, Any, Any, Any, int]:
         """Authorizes against the SCM (Cortex GW) gateway and returns the same shape as _oproxy_authorize."""
         body = build_scm_request_body(self.registration_id, self.enc_key, self.client_secret)
-        scm_url = get_scm_token_url()
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
         demisto.debug("[_scm_authorize] CDL: authenticating via SCM (Cortex GW) auth mode")
 
         try:
-            demisto.debug(f"[_scm_authorize] Attempting authorization against '{scm_url}'.")
+            demisto.debug(f"[_scm_authorize] Attempting authorization against '{urljoin(self._base_url, SCM_TOKEN_PATH)}'.")
             raw_response = self._http_request(
-                "POST",
-                full_url=scm_url,
+                method="POST",
+                url_suffix=SCM_TOKEN_PATH,
                 json_data=body,
                 headers=headers,
                 timeout=(60 * 3, 60 * 3),
@@ -1236,7 +1229,7 @@ def is_fedramp_tenant() -> bool:
     return is_fedramp
 
 
-def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, str]:
+def extract_client_args(configured_registration_id_and_url: str, auth_mode: str) -> tuple[str, str]:
     """
     Extracts the API Client arguments, including token retrieval URL and the registration ID.
 
@@ -1245,6 +1238,7 @@ def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, s
 
     Args:
         configured_registration_id_and_url (str): The "Registration ID" parameter; may contain a URL joined with an "@" symbol.
+        auth_mode (str): The authentication mode in use, inferred from credentials.
 
     Returns:
         tuple[str, str]: The token retrieval URL, registration ID
@@ -1256,6 +1250,7 @@ def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, s
     if len(registration_id_and_url) == 2:
         demisto.debug("Getting token retrieval URL from configured Registration ID.")
         token_retrieval_url = registration_id_and_url[1]
+        demisto.debug(f"{token_retrieval_url=}")
         return token_retrieval_url, registration_id
 
     # Else, infer token URL based on tenant FedRAMP status
@@ -1264,12 +1259,13 @@ def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, s
 
     if is_fr:
         demisto.debug("Getting inferred token retrieval URL for FedRAMP tenant.")
-        token_retrieval_url = FEDRAMP_TOKEN_URL
+        token_retrieval_url = LEGACY_FEDRAMP_TOKEN_URL if auth_mode == AUTH_MODE_OPROXY else SCM_GATEWAY_FEDERAL_URL
 
     else:
         demisto.debug("Getting inferred token retrieval URL for standard tenant.")
-        token_retrieval_url = STANDARD_TOKEN_URL
+        token_retrieval_url = LEGACY_COMMERCIAL_TOKEN_URL if auth_mode == AUTH_MODE_OPROXY else SCM_GATEWAY_URL
 
+    demisto.debug(f"{token_retrieval_url=}")
     return token_retrieval_url, registration_id
 
 
@@ -1747,7 +1743,7 @@ def main():
         return_outputs(readable_output="Caching mechanism failure time counters have been successfully reset.")
         return
 
-    token_retrieval_url, registration_id = extract_client_args(registration_id_and_url)
+    token_retrieval_url, registration_id = extract_client_args(registration_id_and_url, auth_mode)
     client = Client(
         token_retrieval_url,
         registration_id,

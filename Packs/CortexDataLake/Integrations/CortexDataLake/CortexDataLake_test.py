@@ -6,13 +6,17 @@ from datetime import datetime, timedelta
 from unittest.mock import MagicMock
 
 from pytest_mock import MockerFixture
-from CommonServerPython import parse_date_range, DemistoException
+from CommonServerPython import parse_date_range, DemistoException, urljoin
 from CortexDataLake import (
+    AUTH_MODE_OPROXY,
+    AUTH_MODE_SCM,
     FIRST_FAILURE_TIME_CONST,
     LAST_FAILURE_TIME_CONST,
-    STANDARD_TOKEN_URL,
+    LEGACY_COMMERCIAL_TOKEN_URL,
     IS_FEDRAMP_CONST,
-    FEDRAMP_TOKEN_URL,
+    LEGACY_FEDRAMP_TOKEN_URL,
+    SCM_GATEWAY_FEDERAL_URL,
+    SCM_GATEWAY_URL,
 )
 
 HUMAN_READABLE_TIME_FROM_EPOCH_TIME_TEST_CASES = [
@@ -542,43 +546,62 @@ class TestBackoffStrategy:
 
 
 @pytest.mark.parametrize(
-    "configured_reg_id_url, mock_is_fedramp_return_value, expected_result",
+    "configured_reg_id_url, auth_mode, mock_is_fedramp_return_value, expected_result",
     [
         pytest.param(
-            "test_id_custom@https://custom.test.com/api",
+            "test_id_std",
+            AUTH_MODE_OPROXY,
             False,
-            ("https://custom.test.com/api", "test_id_custom"),
-            id="FedRAMP tenant with URL in registration ID",
+            (LEGACY_COMMERCIAL_TOKEN_URL, "test_id_std"),
+            id="oproxy auth mode, standard tenant, no URL in registration ID - legacy commercial URL",
         ),
         pytest.param(
             "test_id_fr",
+            AUTH_MODE_OPROXY,
             True,
-            (FEDRAMP_TOKEN_URL, "test_id_fr"),
-            id="FedRAMP tenant without URL in registration ID",
+            (LEGACY_FEDRAMP_TOKEN_URL, "test_id_fr"),
+            id="oproxy auth mode, FedRAMP tenant, no URL in registration ID - legacy FedRAMP URL",
         ),
         pytest.param(
-            "test_id_std@https://custom.test.com/api",
+            "test_id_scm_std",
+            AUTH_MODE_SCM,
             False,
-            ("https://custom.test.com/api", "test_id_std"),
-            id="Standard tenant with URL in registration ID",
+            (SCM_GATEWAY_URL, "test_id_scm_std"),
+            id="SCM auth mode, standard tenant, no URL in registration ID - SCM gateway URL",
         ),
         pytest.param(
-            "test_id_std_nohost",
+            "test_id_scm_fr",
+            AUTH_MODE_SCM,
+            True,
+            (SCM_GATEWAY_FEDERAL_URL, "test_id_scm_fr"),
+            id="SCM auth mode, FedRAMP tenant, no URL in registration ID - SCM federal gateway URL",
+        ),
+        pytest.param(
+            "test_id_custom@https://custom.test.com/api",
+            AUTH_MODE_OPROXY,
+            True,
+            ("https://custom.test.com/api", "test_id_custom"),
+            id="oproxy auth mode, URL in registration ID - configured URL overrides inference",
+        ),
+        pytest.param(
+            "test_id_custom_scm@https://custom.test.com/api",
+            AUTH_MODE_SCM,
             False,
-            (STANDARD_TOKEN_URL, "test_id_std_nohost"),
-            id="Standard tenant without URL in registration ID",
+            ("https://custom.test.com/api", "test_id_custom_scm"),
+            id="SCM auth mode, URL in registration ID - configured URL overrides inference",
         ),
     ],
 )
 def test_extract_client_args(
     mocker: MockerFixture,
     configured_reg_id_url: str,
+    auth_mode: str,
     mock_is_fedramp_return_value: bool,
     expected_result: tuple,
 ):
     """
     Given:
-        - Configured "Registration ID" param value.
+        - Configured "Registration ID" param value and the authentication mode in use.
     When:
         - Calling `extract_client_args`.
     Then:
@@ -587,7 +610,7 @@ def test_extract_client_args(
     from CortexDataLake import extract_client_args
 
     mocker.patch("CortexDataLake.is_fedramp_tenant", return_value=mock_is_fedramp_return_value)
-    result = extract_client_args(configured_reg_id_url)
+    result = extract_client_args(configured_reg_id_url, auth_mode)
     assert result == expected_result
 
 
@@ -667,7 +690,11 @@ SCM_CLIENT_SECRET = "super-secret-client-secret"  # guardrails-disable-line
 SCM_REGISTRATION_ID = "reg-id-123"
 
 
-def _build_scm_client(mocker: MockerFixture, integration_context: dict | None = None):
+def _build_scm_client(
+    mocker: MockerFixture,
+    integration_context: dict | None = None,
+    token_retrieval_url: str = SCM_GATEWAY_URL,
+):
     """Constructs a Client in SCM auth mode with demisto context mocked so __init__ performs no network I/O.
 
     The integration_context passed here is what demisto.getIntegrationContext() returns during __init__.
@@ -683,7 +710,7 @@ def _build_scm_client(mocker: MockerFixture, integration_context: dict | None = 
     from CortexDataLake import Client
 
     return Client(
-        token_retrieval_url="https://oproxy.demisto.ninja",  # guardrails-disable-line
+        token_retrieval_url=token_retrieval_url,
         registration_id=SCM_REGISTRATION_ID,
         use_ssl=True,
         proxy=False,
@@ -776,33 +803,6 @@ def test_build_scm_request_body_binds_inner_and_outer_timestamp(mocker: MockerFi
     assert recovered["timestamp"] == body["timestamp"]
 
 
-@pytest.mark.parametrize(
-    "is_fedramp, expected_base",
-    [
-        pytest.param(False, "https://cortex-gateway.paloaltonetworks.com", id="commercial when not fedramp"),
-        pytest.param(True, "https://cortex-gateway-federal.paloaltonetworks.com", id="federal when fedramp"),
-    ],
-)
-def test_get_scm_token_url(mocker: MockerFixture, is_fedramp: bool, expected_base: str):
-    """
-    Given:
-        - A tenant that is either commercial or FedRAMP (is_fedramp_tenant mocked).
-    When:
-        - Calling get_scm_token_url.
-    Then:
-        - The commercial base URL is used when not FedRAMP and the federal base URL when FedRAMP.
-        - The resulting URL ends with SCM_TOKEN_PATH.
-    """
-    from CortexDataLake import SCM_TOKEN_PATH, get_scm_token_url
-
-    mocker.patch("CortexDataLake.is_fedramp_tenant", return_value=is_fedramp)
-
-    url = get_scm_token_url()
-
-    assert url == f"{expected_base}{SCM_TOKEN_PATH}"
-    assert url.endswith(SCM_TOKEN_PATH)
-
-
 def test_scm_authorize_success(mocker: MockerFixture):
     """
     Given:
@@ -811,7 +811,8 @@ def test_scm_authorize_success(mocker: MockerFixture):
         - Constructing a Client in SCM mode (which triggers _scm_authorize via _set_access_token).
     Then:
         - The client's access_token, api_url (DEFAULT_API_URL) and instance_id default are set correctly.
-        - The POST is made to the resolved SCM URL with a body containing registration_id/timestamp/signature.
+        - The POST is made to the SCM token path relative to the client's base URL,
+          with a body containing registration_id/timestamp/signature.
     """
     from CortexDataLake import (
         AUTH_MODE_SCM,
@@ -821,7 +822,6 @@ def test_scm_authorize_success(mocker: MockerFixture):
         SCM_TOKEN_PATH,
         SECONDS_30,
         demisto,
-        get_scm_token_url,
     )
 
     mocker.patch("CortexDataLake.is_fedramp_tenant", return_value=False)
@@ -837,7 +837,7 @@ def test_scm_authorize_success(mocker: MockerFixture):
     scm_response.status_code = 200
     scm_response.headers = {"Content-Type": "application/json", "Content-Length": str(len(success_text))}
     scm_response.text = success_text
-    scm_response.url = get_scm_token_url()
+    scm_response.url = urljoin(SCM_GATEWAY_URL, SCM_TOKEN_PATH)
     scm_response.history = []
     scm_response.json.return_value = success_body
     http_mock = mocker.patch(
@@ -845,7 +845,7 @@ def test_scm_authorize_success(mocker: MockerFixture):
         return_value=scm_response,
     )
 
-    client = _build_scm_client(mocker, integration_context={})
+    client = _build_scm_client(mocker, integration_context={}, token_retrieval_url=SCM_GATEWAY_URL)
 
     assert client.access_token == "scm-access-token"
     assert client.api_url == DEFAULT_API_URL
@@ -854,8 +854,10 @@ def test_scm_authorize_success(mocker: MockerFixture):
 
     assert http_mock.call_count == 1
     _, call_kwargs = http_mock.call_args
-    assert call_kwargs["full_url"] == get_scm_token_url()
-    assert call_kwargs["full_url"].endswith(SCM_TOKEN_PATH)
+    # The token URL is now composed by BaseClient from the client's base URL plus the SCM token path.
+    assert client._base_url == SCM_GATEWAY_URL
+    assert call_kwargs["method"] == "POST"
+    assert call_kwargs["url_suffix"] == SCM_TOKEN_PATH
     posted_body = call_kwargs["json_data"]
     assert posted_body["registration_id"] == SCM_REGISTRATION_ID
     assert "timestamp" in posted_body
@@ -891,7 +893,7 @@ def test_set_access_token_routes_to_scm_when_no_stored_token(mocker: MockerFixtu
     oproxy_mock = mocker.patch.object(Client, "_oproxy_authorize")
 
     Client(
-        token_retrieval_url="https://oproxy.demisto.ninja",  # guardrails-disable-line
+        token_retrieval_url=SCM_GATEWAY_URL,
         registration_id=SCM_REGISTRATION_ID,
         use_ssl=True,
         proxy=False,
@@ -941,7 +943,7 @@ def test_set_access_token_reauth_when_stored_auth_mode_differs(mocker: MockerFix
     oproxy_mock = mocker.patch.object(Client, "_oproxy_authorize")
 
     client = Client(
-        token_retrieval_url="https://oproxy.demisto.ninja",  # guardrails-disable-line
+        token_retrieval_url=SCM_GATEWAY_URL,
         registration_id=SCM_REGISTRATION_ID,
         use_ssl=True,
         proxy=False,
