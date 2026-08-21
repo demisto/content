@@ -1,0 +1,18 @@
+{
+  "id": "Koi Software Item",
+  "version": -1,
+  "modified": "2026-08-20T00:00:00.000000Z",
+  "shouldCommit": false,
+  "regex": "",
+  "details": "Koi Software Item",
+  "prevDetails": "Koi Software Item",
+  "reputationCommand": "koi-item-enrich",
+  "system": false,
+  "locked": false,
+  "disabled": false,
+  "file": false,
+  "updateAfter": 0,
+  "mergeContext": false,
+  "expiration": 0,
+  "fromVersion": "6.10.0"
+}

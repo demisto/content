@@ -1,0 +1,14 @@
+{
+    "data": [
+        {
+            "id": "sess-001",
+            "agent": "claude-code",
+            "host": "dev-laptop",
+            "model": "claude-sonnet-4",
+            "user_email": "user@example.com",
+            "verdict": "allowed",
+            "created_at": "2025-06-01T09:00:00Z"
+        }
+    ],
+    "total_count": 1
+}

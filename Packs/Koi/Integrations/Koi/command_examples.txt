@@ -22,4 +22,46 @@
 !koi-inventory-search filter_json="{\"field\":\"risk_level\",\"operator\":\"eq\",\"value\":\"high\"}" limit=50 sort_by=first_seen sort_direction=desc
 !koi-inventory-search filter_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID page=1 page_size=100
 !koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode version=1.2.3 limit=50
-!koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode page=1 page_size=100
+!koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode version=1.2.3 page=1 page_size=100
+!koi-agent-activity-events-list created_at_gte="7 days ago" created_at_lte="now" limit=50
+!koi-agent-activity-events-list created_at_gte="1 day ago" created_at_lte="now" session_id=session-123 limit=10
+!koi-agent-activity-sessions-list created_at_gte="7 days ago" created_at_lte="now" limit=50
+!koi-agent-activity-sessions-list created_at_gte="1 day ago" created_at_lte="now" agent=cursor limit=10
+!koi-approval-request-list limit=50
+!koi-approval-request-list approval_status=pending marketplace=vscode limit=10
+!koi-approval-request-create item_id=ext-123 marketplace=vscode justification="Required for development workflow"
+!koi-approval-request-approve request_id=req-001
+!koi-approval-request-reject request_id=req-001
+!koi-device-list limit=50
+!koi-device-list status=active limit=10
+!koi-device-archive device_id=device-123 archived_by_user_email="admin@company.com"
+!koi-device-inventory-get device_id=device-123
+!koi-finding-list limit=50
+!koi-finding-list page=1 page_size=10
+!koi-finding-customize-risk finding_id=finding-001 risk=3
+!koi-group-list limit=50
+!koi-group-create name="Engineering" description="Engineering team devices"
+!koi-group-update group_id=grp-001 name="Engineering Team" description="Updated description"
+!koi-group-device-add group_id=grp-001 device_id=device-123
+!koi-group-device-remove group_id=grp-001 device_id=device-123
+!koi-runtime-policy-list limit=50
+!koi-runtime-policy-create display_name="Block AI Agents" description="Block unauthorized AI agents" enforcement_mode=block agents=cursor,codex rules="[]"
+!koi-runtime-policy-get policy_id=rtpol-001
+!koi-runtime-policy-update policy_id=rtpol-001 display_name="Updated Policy" enforcement_mode=alert
+!koi-runtime-policy-delete policy_id=rtpol-001
+!koi-koidex-fetch items="[{\"item_id\":\"ext-123\",\"marketplace\":\"vscode\"}]"
+!koi-koidex-risk-report-get item_id=ext-123 marketplace=vscode
+!koi-koidex-risk-report-get item_id=ext-123 marketplace=vscode version=1.2.3
+!koi-koidex-search query="react" marketplace=vscode limit=10
+!koi-private-item-list limit=50
+!koi-private-item-upload entry_id=ENTRY_ID@INVESTIGATION_ID created_by="analyst@company.com" marketplace=vscode
+!koi-private-item-details-get item_id=priv-001
+!koi-remediation-list limit=50
+!koi-remediation-list page=1 page_size=10
+!koi-remediation-submit items="[{\"id\":\"rem-001\"},{\"id\":\"rem-002\"}]"
+!koi-remediation-dismiss items="[{\"id\":\"rem-001\"}]" dismissed_by="analyst@company.com"
+!koi-report-create report_type=inventory_by_extension
+!koi-report-status-get report_id=rpt-001
+!koi-user-list limit=50
+!koi-user-create email="analyst@company.com" role=analyst
+!koi-user-delete user_id=user-003

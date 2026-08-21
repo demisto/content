@@ -27,7 +27,7 @@ Integration for fetching Alerts and Audit Logs from the KOI API.
 # Constants and helpers
 # =================================
 INTEGRATION_NAME = "KOI"
-INDICATOR_TYPE = "Koi Software Item"
+INDICATOR_TYPE = "Koi Software Item Dev"
 
 SHA1_RE = re.compile(r'^[A-Fa-f0-9]{40}$')
 SHA256_RE = re.compile(r'^[A-Fa-f0-9]{64}$')
@@ -1644,7 +1644,7 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Event",
+        outputs_prefix="KoiDev.Event",
         outputs_key_field="id",
         outputs=all_events,
     )
@@ -1903,7 +1903,7 @@ def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResu
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Policy",
+        outputs_prefix="KoiDev.Policy",
         outputs_key_field="id",
         outputs=policies,
     )
@@ -1945,7 +1945,7 @@ def koi_allowlist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Allowlist",
+        outputs_prefix="KoiDev.Allowlist",
         outputs_key_field="item_id",
         outputs=items,
     )
@@ -2049,7 +2049,7 @@ def koi_blocklist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Blocklist",
+        outputs_prefix="KoiDev.Blocklist",
         outputs_key_field="item_id",
         outputs=items,
     )
@@ -2158,7 +2158,7 @@ def koi_policy_status_update_command(client: Client, args: dict[str, Any]) -> Co
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Policy",
+        outputs_prefix="KoiDev.Policy",
         outputs_key_field="id",
         outputs=response,
     )
@@ -2265,7 +2265,7 @@ def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandR
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Inventory",
+        outputs_prefix="KoiDev.Inventory",
         outputs_key_field="item_id",
         outputs=items,
     )
@@ -2332,7 +2332,7 @@ def koi_inventory_item_get_command(client: Client, args: dict[str, Any]) -> Comm
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Inventory",
+        outputs_prefix="KoiDev.Inventory",
         outputs_key_field="item_id",
         outputs=response,
     )
@@ -2429,7 +2429,7 @@ def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> Comman
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Inventory",
+        outputs_prefix="KoiDev.Inventory",
         outputs_key_field="item_id",
         outputs=items,
     )
@@ -2509,7 +2509,7 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Inventory.Endpoint",
+        outputs_prefix="KoiDev.Inventory.Endpoint",
         outputs_key_field="id",
         outputs=endpoints,
     )
@@ -2555,7 +2555,7 @@ def koi_agent_activity_events_list_command(client: Client, args: dict[str, Any])
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Agent Activity Events", items, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.AgentActivityEvent", outputs_key_field="id", outputs=items
+        readable_output=readable_output, outputs_prefix="KoiDev.AgentActivityEvent", outputs_key_field="id", outputs=items
     )
 
 
@@ -2612,7 +2612,7 @@ def koi_agent_activity_sessions_list_command(client: Client, args: dict[str, Any
         f"{INTEGRATION_NAME} Agent Activity Sessions", items, headerTransform=string_to_table_header
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.AgentActivitySession", outputs_key_field="id", outputs=items
+        readable_output=readable_output, outputs_prefix="KoiDev.AgentActivitySession", outputs_key_field="id", outputs=items
     )
 
 
@@ -2666,7 +2666,7 @@ def koi_approval_request_list_command(client: Client, args: dict[str, Any]) -> C
         headerTransform=string_to_table_header,
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.ApprovalRequest", outputs_key_field="id", outputs=items
+        readable_output=readable_output, outputs_prefix="KoiDev.ApprovalRequest", outputs_key_field="id", outputs=items
     )
 
 
@@ -2692,7 +2692,7 @@ def koi_approval_request_create_command(client: Client, args: dict[str, Any]) ->
         headerTransform=string_to_table_header,
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.ApprovalRequest", outputs_key_field="id", outputs=response
+        readable_output=readable_output, outputs_prefix="KoiDev.ApprovalRequest", outputs_key_field="id", outputs=response
     )
 
 
@@ -2744,7 +2744,7 @@ def koi_device_list_command(client: Client, args: dict[str, Any]) -> CommandResu
         headers=["id", "hostname", "os", "platform", "status", "last_seen", "serial"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Device", outputs_key_field="id", outputs=items)
+    return CommandResults(readable_output=readable_output, outputs_prefix="KoiDev.Device", outputs_key_field="id", outputs=items)
 
 
 def koi_device_archive_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2778,7 +2778,7 @@ def koi_device_inventory_get_command(client: Client, args: dict[str, Any]) -> Co
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Device Inventory", items, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.DeviceInventory", outputs_key_field="item_id", outputs=items
+        readable_output=readable_output, outputs_prefix="KoiDev.DeviceInventory", outputs_key_field="item_id", outputs=items
     )
 
 
@@ -2810,7 +2810,7 @@ def koi_finding_list_command(client: Client, args: dict[str, Any]) -> CommandRes
         headers=["id", "name", "description", "risk"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Finding", outputs_key_field="id", outputs=items)
+    return CommandResults(readable_output=readable_output, outputs_prefix="KoiDev.Finding", outputs_key_field="id", outputs=items)
 
 
 def koi_finding_customize_risk_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2851,7 +2851,7 @@ def koi_group_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         headers=["id", "name", "created_at", "devices"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Group", outputs_key_field="id", outputs=groups)
+    return CommandResults(readable_output=readable_output, outputs_prefix="KoiDev.Group", outputs_key_field="id", outputs=groups)
 
 
 def koi_group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2874,7 +2874,7 @@ def koi_group_create_command(client: Client, args: dict[str, Any]) -> CommandRes
         headers=["id", "name", "created_at", "devices"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Group", outputs_key_field="id", outputs=groups)
+    return CommandResults(readable_output=readable_output, outputs_prefix="KoiDev.Group", outputs_key_field="id", outputs=groups)
 
 
 def koi_group_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2947,7 +2947,7 @@ def koi_runtime_policy_list_command(client: Client, args: dict[str, Any]) -> Com
         headerTransform=string_to_table_header,
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.RuntimePolicy", outputs_key_field="id", outputs=items
+        readable_output=readable_output, outputs_prefix="KoiDev.RuntimePolicy", outputs_key_field="id", outputs=items
     )
 
 
@@ -2975,7 +2975,7 @@ def koi_runtime_policy_create_command(client: Client, args: dict[str, Any]) -> C
         headerTransform=string_to_table_header,
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.RuntimePolicy", outputs_key_field="id", outputs=response
+        readable_output=readable_output, outputs_prefix="KoiDev.RuntimePolicy", outputs_key_field="id", outputs=response
     )
 
 
@@ -3002,7 +3002,7 @@ def koi_runtime_policy_get_command(client: Client, args: dict[str, Any]) -> Comm
         headerTransform=string_to_table_header,
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.RuntimePolicy", outputs_key_field="id", outputs=response
+        readable_output=readable_output, outputs_prefix="KoiDev.RuntimePolicy", outputs_key_field="id", outputs=response
     )
 
 
@@ -3035,7 +3035,7 @@ def koi_runtime_policy_update_command(client: Client, args: dict[str, Any]) -> C
         headerTransform=string_to_table_header,
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.RuntimePolicy", outputs_key_field="id", outputs=response
+        readable_output=readable_output, outputs_prefix="KoiDev.RuntimePolicy", outputs_key_field="id", outputs=response
     )
 
 
@@ -3074,7 +3074,7 @@ def koi_koidex_fetch_command(client: Client, args: dict[str, Any]) -> CommandRes
         f"{INTEGRATION_NAME} Koidex Fetch Triggered", response, headerTransform=string_to_table_header
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.KoidexFetch", outputs_key_field="id", outputs=response
+        readable_output=readable_output, outputs_prefix="KoiDev.KoidexFetch", outputs_key_field="id", outputs=response
     )
 
 
@@ -3089,7 +3089,7 @@ def koi_koidex_risk_report_get_command(client: Client, args: dict[str, Any]) -> 
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Koidex Risk Report", response, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.KoidexRiskReport", outputs_key_field="item_id", outputs=response
+        readable_output=readable_output, outputs_prefix="KoiDev.KoidexRiskReport", outputs_key_field="item_id", outputs=response
     )
 
 
@@ -3117,7 +3117,7 @@ def koi_koidex_search_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Koidex Search Results", items, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.KoidexSearch", outputs_key_field="item_id", outputs=items
+        readable_output=readable_output, outputs_prefix="KoiDev.KoidexSearch", outputs_key_field="item_id", outputs=items
     )
 
 
@@ -3132,7 +3132,7 @@ def koi_private_item_list_command(client: Client, args: dict[str, Any]) -> Comma
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Private Items", items, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=items
+        readable_output=readable_output, outputs_prefix="KoiDev.PrivateItem", outputs_key_field="id", outputs=items
     )
 
 
@@ -3158,7 +3158,7 @@ def koi_private_item_upload_command(client: Client, args: dict[str, Any]) -> Com
         f"{INTEGRATION_NAME} Private Item Uploaded", response, headerTransform=string_to_table_header
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=response
+        readable_output=readable_output, outputs_prefix="KoiDev.PrivateItem", outputs_key_field="id", outputs=response
     )
 
 
@@ -3237,7 +3237,7 @@ def koi_private_item_details_get_command(client: Client, args: dict[str, Any]) -
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.PrivateItem",
+        outputs_prefix="KoiDev.PrivateItem",
         outputs_key_field="overview.extension.extensionId",
         outputs=response,
     )
@@ -3277,7 +3277,7 @@ def koi_remediation_list_command(client: Client, args: dict[str, Any]) -> Comman
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Remediations", items, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.Remediation", outputs_key_field="id", outputs=items
+        readable_output=readable_output, outputs_prefix="KoiDev.Remediation", outputs_key_field="id", outputs=items
     )
 
 
@@ -3292,7 +3292,7 @@ def koi_remediation_submit_command(client: Client, args: dict[str, Any]) -> Comm
         f"{INTEGRATION_NAME} Remediation Submitted", response, headerTransform=string_to_table_header
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.Remediation", outputs_key_field="id", outputs=response
+        readable_output=readable_output, outputs_prefix="KoiDev.Remediation", outputs_key_field="id", outputs=response
     )
 
 
@@ -3324,7 +3324,7 @@ def koi_report_create_command(client: Client, args: dict[str, Any]) -> CommandRe
         headers=["id", "report_type", "status"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Report", outputs_key_field="id", outputs=response)
+    return CommandResults(readable_output=readable_output, outputs_prefix="KoiDev.Report", outputs_key_field="id", outputs=response)
 
 
 def koi_report_status_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -3339,7 +3339,7 @@ def koi_report_status_get_command(client: Client, args: dict[str, Any]) -> Comma
         headers=["id", "report_type", "status", "download_url", "created_at"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Report", outputs_key_field="id", outputs=response)
+    return CommandResults(readable_output=readable_output, outputs_prefix="KoiDev.Report", outputs_key_field="id", outputs=response)
 
 
 # --- User Commands ---
@@ -3357,7 +3357,7 @@ def koi_user_list_command(client: Client, args: dict[str, Any]) -> CommandResult
         headers=["id", "email", "role", "created_at"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.User", outputs_key_field="id", outputs=users)
+    return CommandResults(readable_output=readable_output, outputs_prefix="KoiDev.User", outputs_key_field="id", outputs=users)
 
 
 def koi_user_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -3371,7 +3371,7 @@ def koi_user_create_command(client: Client, args: dict[str, Any]) -> CommandResu
         headers=["id", "email", "role", "created_at"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.User", outputs_key_field="id", outputs=response)
+    return CommandResults(readable_output=readable_output, outputs_prefix="KoiDev.User", outputs_key_field="id", outputs=response)
 
 
 def koi_user_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -3481,7 +3481,7 @@ def koi_alert_list_command(client: Client, args: dict[str, Any]) -> CommandResul
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="Koi.Alert",
+        outputs_prefix="KoiDev.Alert",
         outputs_key_field="metadata.notification_event_id",
         outputs=alerts,
     )
@@ -3533,7 +3533,7 @@ def koi_item_enrich_command(client: Client, args: dict[str, Any]) -> list[Comman
     }
 
     custom_indicator = Common.CustomIndicator(
-        indicator_type="Koi Software Item",
+        indicator_type="Koi Software Item Dev",
         dbot_score=dbot_score,
         value=indicator_value,
         data=indicator_data,
@@ -3607,7 +3607,7 @@ def koi_item_enrich_command(client: Client, args: dict[str, Any]) -> list[Comman
 
     results.append(CommandResults(
         readable_output=readable,
-        outputs_prefix="Koi.ItemEnrichment",
+        outputs_prefix="KoiDev.ItemEnrichment",
         outputs_key_field="item_id",
         outputs=response,
         indicator=custom_indicator,
@@ -3646,73 +3646,73 @@ def koi_item_enrich_command(client: Client, args: dict[str, Any]) -> list[Comman
 
 COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
-    "koi-get-events": get_events_command,
+    "koi-dev-get-events": get_events_command,
     "fetch-events": fetch_events_command,
     # Alerts
-    "koi-alert-list": koi_alert_list_command,
+    "koi-dev-alert-list": koi_alert_list_command,
     # Policies
-    "koi-policy-list": koi_policy_list_command,
-    "koi-policy-status-update": koi_policy_status_update_command,
+    "koi-dev-policy-list": koi_policy_list_command,
+    "koi-dev-policy-status-update": koi_policy_status_update_command,
     # Allowlist / Blocklist
-    "koi-allowlist-get": koi_allowlist_get_command,
-    "koi-allowlist-items-remove": koi_allowlist_items_remove_command,
-    "koi-allowlist-items-add": koi_allowlist_items_add_command,
-    "koi-blocklist-get": koi_blocklist_get_command,
-    "koi-blocklist-items-remove": koi_blocklist_items_remove_command,
-    "koi-blocklist-items-add": koi_blocklist_items_add_command,
+    "koi-dev-allowlist-get": koi_allowlist_get_command,
+    "koi-dev-allowlist-items-remove": koi_allowlist_items_remove_command,
+    "koi-dev-allowlist-items-add": koi_allowlist_items_add_command,
+    "koi-dev-blocklist-get": koi_blocklist_get_command,
+    "koi-dev-blocklist-items-remove": koi_blocklist_items_remove_command,
+    "koi-dev-blocklist-items-add": koi_blocklist_items_add_command,
     # Inventory
-    "koi-inventory-list": koi_inventory_list_command,
-    "koi-inventory-item-get": koi_inventory_item_get_command,
-    "koi-inventory-search": koi_inventory_search_command,
-    "koi-inventory-item-endpoints-list": koi_inventory_item_endpoints_list_command,
+    "koi-dev-inventory-list": koi_inventory_list_command,
+    "koi-dev-inventory-item-get": koi_inventory_item_get_command,
+    "koi-dev-inventory-search": koi_inventory_search_command,
+    "koi-dev-inventory-item-endpoints-list": koi_inventory_item_endpoints_list_command,
     # Agent Activity
-    "koi-agent-activity-events-list": koi_agent_activity_events_list_command,
-    "koi-agent-activity-sessions-list": koi_agent_activity_sessions_list_command,
+    "koi-dev-agent-activity-events-list": koi_agent_activity_events_list_command,
+    "koi-dev-agent-activity-sessions-list": koi_agent_activity_sessions_list_command,
     # Approval Requests
-    "koi-approval-request-list": koi_approval_request_list_command,
-    "koi-approval-request-create": koi_approval_request_create_command,
-    "koi-approval-request-approve": koi_approval_request_approve_command,
-    "koi-approval-request-reject": koi_approval_request_reject_command,
+    "koi-dev-approval-request-list": koi_approval_request_list_command,
+    "koi-dev-approval-request-create": koi_approval_request_create_command,
+    "koi-dev-approval-request-approve": koi_approval_request_approve_command,
+    "koi-dev-approval-request-reject": koi_approval_request_reject_command,
     # Devices
-    "koi-device-list": koi_device_list_command,
-    "koi-device-archive": koi_device_archive_command,
-    "koi-device-inventory-get": koi_device_inventory_get_command,
+    "koi-dev-device-list": koi_device_list_command,
+    "koi-dev-device-archive": koi_device_archive_command,
+    "koi-dev-device-inventory-get": koi_device_inventory_get_command,
     # Findings
-    "koi-finding-list": koi_finding_list_command,
-    "koi-finding-customize-risk": koi_finding_customize_risk_command,
+    "koi-dev-finding-list": koi_finding_list_command,
+    "koi-dev-finding-customize-risk": koi_finding_customize_risk_command,
     # Groups
-    "koi-group-list": koi_group_list_command,
-    "koi-group-create": koi_group_create_command,
-    "koi-group-update": koi_group_update_command,
-    "koi-group-device-add": koi_group_device_add_command,
-    "koi-group-device-remove": koi_group_device_remove_command,
+    "koi-dev-group-list": koi_group_list_command,
+    "koi-dev-group-create": koi_group_create_command,
+    "koi-dev-group-update": koi_group_update_command,
+    "koi-dev-group-device-add": koi_group_device_add_command,
+    "koi-dev-group-device-remove": koi_group_device_remove_command,
     # Runtime Policies
-    "koi-runtime-policy-list": koi_runtime_policy_list_command,
-    "koi-runtime-policy-create": koi_runtime_policy_create_command,
-    "koi-runtime-policy-get": koi_runtime_policy_get_command,
-    "koi-runtime-policy-update": koi_runtime_policy_update_command,
-    "koi-runtime-policy-delete": koi_runtime_policy_delete_command,
+    "koi-dev-runtime-policy-list": koi_runtime_policy_list_command,
+    "koi-dev-runtime-policy-create": koi_runtime_policy_create_command,
+    "koi-dev-runtime-policy-get": koi_runtime_policy_get_command,
+    "koi-dev-runtime-policy-update": koi_runtime_policy_update_command,
+    "koi-dev-runtime-policy-delete": koi_runtime_policy_delete_command,
     # Koidex
-    "koi-koidex-fetch": koi_koidex_fetch_command,
-    "koi-koidex-risk-report-get": koi_koidex_risk_report_get_command,
-    "koi-koidex-search": koi_koidex_search_command,
+    "koi-dev-koidex-fetch": koi_koidex_fetch_command,
+    "koi-dev-koidex-risk-report-get": koi_koidex_risk_report_get_command,
+    "koi-dev-koidex-search": koi_koidex_search_command,
     # Private Items
-    "koi-private-item-list": koi_private_item_list_command,
-    "koi-private-item-upload": koi_private_item_upload_command,
-    "koi-private-item-details-get": koi_private_item_details_get_command,
+    "koi-dev-private-item-list": koi_private_item_list_command,
+    "koi-dev-private-item-upload": koi_private_item_upload_command,
+    "koi-dev-private-item-details-get": koi_private_item_details_get_command,
     # Remediations
-    "koi-remediation-list": koi_remediation_list_command,
-    "koi-remediation-submit": koi_remediation_submit_command,
-    "koi-remediation-dismiss": koi_remediation_dismiss_command,
+    "koi-dev-remediation-list": koi_remediation_list_command,
+    "koi-dev-remediation-submit": koi_remediation_submit_command,
+    "koi-dev-remediation-dismiss": koi_remediation_dismiss_command,
     # Reports
-    "koi-report-create": koi_report_create_command,
-    "koi-report-status-get": koi_report_status_get_command,
+    "koi-dev-report-create": koi_report_create_command,
+    "koi-dev-report-status-get": koi_report_status_get_command,
     # Users
-    "koi-user-list": koi_user_list_command,
-    "koi-user-create": koi_user_create_command,
-    "koi-user-delete": koi_user_delete_command,
+    "koi-dev-user-list": koi_user_list_command,
+    "koi-dev-user-create": koi_user_create_command,
+    "koi-dev-user-delete": koi_user_delete_command,
     # Enrichment
-    "koi-item-enrich": koi_item_enrich_command,
+    "koi-dev-item-enrich": koi_item_enrich_command,
 }
 
 
@@ -3743,7 +3743,7 @@ def main() -> None:
             return_results(result)
         elif command == "fetch-events":
             command_func(client)
-        elif command == "koi-get-events":
+        elif command == "koi-dev-get-events":
             result = command_func(client, args, params)
             return_results(result)
         else:

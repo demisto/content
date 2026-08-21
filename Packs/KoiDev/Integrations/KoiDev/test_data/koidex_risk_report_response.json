@@ -1,0 +1,10 @@
+{
+    "item_id": "ext-risk-001",
+    "marketplace": "npm",
+    "risk": 6,
+    "risk_level": "medium",
+    "findings": [
+        {"id": "f1", "name": "Obfuscated Code", "risk": 8},
+        {"id": "f2", "name": "Network Access", "risk": 5}
+    ]
+}

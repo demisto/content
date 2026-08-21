@@ -1,0 +1,17 @@
+{
+    "items": [
+        {
+            "id": "finding-001",
+            "name": "Excessive Permissions",
+            "description": "Extension requests more permissions than needed",
+            "risk": 7
+        },
+        {
+            "id": "finding-002",
+            "name": "Obfuscated Code",
+            "description": "Extension contains obfuscated JavaScript code",
+            "risk": 9
+        }
+    ],
+    "total_count": 2
+}
