@@ -880,6 +880,39 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         else:
             return self.http_request(method="GET", url_suffix=f"rest/api/{self.api_version}/myself")
 
+    def get_request_types(self, service_desk_id: str) -> Dict[str, Any]:
+        """This method is in charge of returning the request types for a specific service desk.
+
+        Args:
+            service_desk_id (str): The id of the service desk.
+
+        Returns:
+            Dict[str, Any]: The results of the API, which will hold the request types.
+        """
+        return self.http_request(method="GET", url_suffix=f"/rest/servicedeskapi/servicedesk/{service_desk_id}/requesttype")
+
+    def list_service_desks(self, project_key: str | None) -> Dict[str, Any]:
+        """This method is in charge of returning the service desks for a specific project.
+
+        Args:
+            project_key (str | None): The key of the project. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The results of the API, which will hold the service desks.
+        """
+        # Service desks are resolved by project, since a freshly created issue isn't yet a JSM customer request.
+        # Returned as a dict (not a bare list), since return_results() would otherwise split a list into one
+        # war-room entry per item, and only the first entry's contents would reach the caller.
+        result = self.http_request(
+            method="GET",
+            url_suffix="/rest/servicedeskapi/servicedesk",
+        )
+        if project_key:
+            result["values"] = [
+                service_desk for service_desk in result.get("values", []) if service_desk.get("projectKey") == project_key
+            ]
+        return result
+
 
 class JiraCloudClient(JiraBaseClient):
     """This class inherits the JiraBaseClient class and implements the required abstract methods,
@@ -2553,6 +2586,52 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
             headerTransform=pascalToSpace,
         ),
         raw_response=res,
+    )
+
+
+def get_request_types_command(client: JiraOnPremClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of returning the request types of a Jira Service Management project.
+
+    Args:
+        client (JiraOnPremClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    request_types = client.get_request_types(service_desk_id=args.get("service_desk_id", ""))
+
+    return CommandResults(
+        outputs_prefix="Jira.RequestType",
+        outputs=request_types,
+        outputs_key_field="ServiceDeskId",
+        readable_output=tableToMarkdown(
+            name=f"Request types for service desk {args.get('service_desk_id', '')}",
+            t=request_types,
+            headerTransform=pascalToSpace,
+            removeNull=True,
+        ),
+        raw_response=request_types,
+    )
+
+
+def list_service_desks_command(client: JiraOnPremClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of returning the service desks of a Jira Service Management project.
+
+    Args:
+        client (JiraOnPremClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    service_desks = client.list_service_desks(project_key=args.get("project_key"))
+
+    return CommandResults(
+        outputs_prefix="Jira.ServiceDesk",
+        outputs=service_desks,
+        readable_output=tableToMarkdown(name="Service desks", t=service_desks, headerTransform=pascalToSpace, removeNull=True),
+        raw_response=service_desks,
     )
 
 
@@ -4989,6 +5068,8 @@ def main():  # pragma: no cover
         "jira-create-metadata-field-list": get_create_metadata_field_command,
         "jira-create-metadata-issue-types-list": get_create_metadata_issue_types_command,
         "get-remote-data-preview": get_remote_data_preview_command,
+        "jira-get-request-types": get_request_types_command,
+        "jira-get-service-desk-id-by-project": list_service_desks_command,
     }
     try:
         client: JiraBaseClient
