@@ -1615,15 +1615,36 @@ def scoreToReputation(score):
        :return: The formatted score
        :rtype: ``str``
     """
-    to_str = {
-        4: 'Critical',
-        3: 'Bad',
-        2: 'Suspicious',
-        1: 'Good',
-        0.5: 'Informational',
-        0: 'Unknown'
+    # Named constants for each numeric DBot score, so the mapping below reads
+    # explicitly instead of relying on bare numeric literals.
+    critical_score = 4
+    bad_score = 3
+    suspicious_score = 2
+    good_score = 1
+    informational_score = 0.5
+    unknown_score = 0
+
+    # The reputation label for every score the platform can emit. Lookup
+    # semantics are identical to the previous inline dict: the same keys map to
+    # the same labels, so every input produces the same output as before.
+    score_to_reputation_map = {
+        critical_score: 'Critical',
+        bad_score: 'Bad',
+        suspicious_score: 'Suspicious',
+        good_score: 'Good',
+        informational_score: 'Informational',
+        unknown_score: 'Unknown',
     }
-    return to_str.get(score, 'None')
+
+    # Returned when the score is not one of the known values, matching the
+    # previous default argument of dict.get.
+    default_reputation = 'None'
+
+    reputation = score_to_reputation_map.get(score)
+    if reputation is None:
+        return default_reputation
+
+    return reputation
 
 
 def b64_encode(text):
