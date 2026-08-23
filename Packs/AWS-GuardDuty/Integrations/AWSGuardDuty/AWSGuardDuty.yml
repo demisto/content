@@ -628,7 +628,7 @@ script:
       description: The unique ID of the detector of the GuardDuty account for which you want to create a ThreatEntitySet.
       required: true
     - name: activate
-      description: A boolean value that indicates whether GuardDuty is to start using the uploaded ThreatEntitySet to generate findings.
+      description: Whether GuardDuty should start using the uploaded ThreatEntitySet to generate findings.
       required: true
       auto: PREDEFINED
       defaultValue: 'True'
@@ -699,12 +699,12 @@ script:
       description: The unique ID of the detector that specifies the GuardDuty service whose ThreatEntitySets you want to list.
       required: true
     - name: limit
-      description: Number of total results to query.
+      description: The maximum number of results to return. Valid range is 1-50.
       defaultValue: '50'
     - name: page
-      description: Specific page to query.
+      description: The specific page of results to return.
     - name: page_size
-      description: Number of total results in each page. The value can range from 1 to 50.
+      description: The number of results to return in each page. Valid range is 1-50.
       defaultValue: '50'
     - name: region
       description: The AWS Region, if not specified the default region will be used.
