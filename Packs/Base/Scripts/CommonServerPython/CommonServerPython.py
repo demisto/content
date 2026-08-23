@@ -1626,7 +1626,7 @@ def scoreToReputation(score):
     return to_str.get(score, 'None')
 
 
-def b64_encode(text):
+def b64_encode(text, encoding):
     """
     Base64 encode a string. Wrapper function around base64.b64encode which will accept a string
     In py3 will encode the string to binary using utf-8 encoding and return a string result decoded using utf-8
@@ -1641,7 +1641,7 @@ def b64_encode(text):
     elif isinstance(text, bytes):
         to_encode = text
     else:
-        to_encode = text.encode('utf-8', 'ignore')
+        to_encode = text.encode(encoding, 'ignore')
 
     res = base64.b64encode(to_encode)
     if IS_PY3:
