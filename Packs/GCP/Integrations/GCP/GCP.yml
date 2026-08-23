@@ -2516,19 +2516,19 @@ script:
       required: false
       defaultValue: default
     outputs:
-      - contextPath: GCP.KMS.CryptoKeyVersion.name
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
         description: The resource name of the crypto key version.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.state
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
         description: The current state of the crypto key version.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.protectionLevel
+      - contextPath: GCP.KMS.CryptoKeyVersions.protectionLevel
         description: The protection level describing how cryptographic operations are performed.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.algorithm
+      - contextPath: GCP.KMS.CryptoKeyVersions.algorithm
         description: The algorithm that the crypto key version supports.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.createTime
+      - contextPath: GCP.KMS.CryptoKeyVersions.createTime
         description: The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
         type: Date
   - name: gcp-kms-key-version-disable
@@ -2553,19 +2553,19 @@ script:
       required: false
       defaultValue: default
     outputs:
-      - contextPath: GCP.KMS.CryptoKeyVersion.name
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
         description: The resource name of the crypto key version.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.state
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
         description: The current state of the crypto key version.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.protectionLevel
+      - contextPath: GCP.KMS.CryptoKeyVersions.protectionLevel
         description: The protection level describing how cryptographic operations are performed.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.algorithm
+      - contextPath: GCP.KMS.CryptoKeyVersions.algorithm
         description: The algorithm that the crypto key version supports.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.createTime
+      - contextPath: GCP.KMS.CryptoKeyVersions.createTime
         description: The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
         type: Date
   - name: gcp-kms-key-version-destroy
@@ -2591,13 +2591,13 @@ script:
       required: false
       defaultValue: default
     outputs:
-      - contextPath: GCP.KMS.CryptoKeyVersion.name
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
         description: The resource name of the crypto key version.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.state
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
         description: The current state of the crypto key version.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.destroyTime
+      - contextPath: GCP.KMS.CryptoKeyVersions.destroyTime
         description: The time at which the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
         type: Date
   - name: gcp-kms-key-version-restore
@@ -2622,16 +2622,16 @@ script:
       required: false
       defaultValue: default
     outputs:
-      - contextPath: GCP.KMS.CryptoKeyVersion.name
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
         description: The resource name of the crypto key version.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.state
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
         description: The current state of the crypto key version.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.protectionLevel
+      - contextPath: GCP.KMS.CryptoKeyVersions.protectionLevel
         description: The protection level describing how cryptographic operations are performed.
         type: String
-      - contextPath: GCP.KMS.CryptoKeyVersion.algorithm
+      - contextPath: GCP.KMS.CryptoKeyVersions.algorithm
         description: The algorithm that the crypto key version supports.
         type: String
   - name: gcp-kms-public-key-get

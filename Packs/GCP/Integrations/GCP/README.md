@@ -1920,11 +1920,11 @@ Enables a crypto key version of a given crypto key. Required Permissions: cloudk
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.CryptoKeyVersion.name | String | The resource name of the crypto key version. |
-| GCP.KMS.CryptoKeyVersion.state | String | The current state of the crypto key version. |
-| GCP.KMS.CryptoKeyVersion.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
-| GCP.KMS.CryptoKeyVersion.algorithm | String | The algorithm that the crypto key version supports. |
-| GCP.KMS.CryptoKeyVersion.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
+| GCP.KMS.CryptoKeyVersions.algorithm | String | The algorithm that the crypto key version supports. |
+| GCP.KMS.CryptoKeyVersions.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
 
 ### gcp-kms-key-version-disable
 
@@ -1949,11 +1949,11 @@ Disables a crypto key version of a given crypto key. Required Permissions: cloud
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.CryptoKeyVersion.name | String | The resource name of the crypto key version. |
-| GCP.KMS.CryptoKeyVersion.state | String | The current state of the crypto key version. |
-| GCP.KMS.CryptoKeyVersion.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
-| GCP.KMS.CryptoKeyVersion.algorithm | String | The algorithm that the crypto key version supports. |
-| GCP.KMS.CryptoKeyVersion.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
+| GCP.KMS.CryptoKeyVersions.algorithm | String | The algorithm that the crypto key version supports. |
+| GCP.KMS.CryptoKeyVersions.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
 
 ### gcp-kms-key-version-destroy
 
@@ -1978,9 +1978,9 @@ Schedules a crypto key version for destruction. The key material is destroyed 24
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.CryptoKeyVersion.name | String | The resource name of the crypto key version. |
-| GCP.KMS.CryptoKeyVersion.state | String | The current state of the crypto key version. |
-| GCP.KMS.CryptoKeyVersion.destroyTime | Date | The time at which the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.destroyTime | Date | The time at which the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
 
 ### gcp-kms-key-version-restore
 
@@ -2005,10 +2005,10 @@ Restores a crypto key version that is scheduled for destruction. Required Permis
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.CryptoKeyVersion.name | String | The resource name of the crypto key version. |
-| GCP.KMS.CryptoKeyVersion.state | String | The current state of the crypto key version. |
-| GCP.KMS.CryptoKeyVersion.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
-| GCP.KMS.CryptoKeyVersion.algorithm | String | The algorithm that the crypto key version supports. |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
+| GCP.KMS.CryptoKeyVersions.algorithm | String | The algorithm that the crypto key version supports. |
 
 ### gcp-kms-public-key-get
 

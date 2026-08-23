@@ -6860,7 +6860,7 @@ def test_kms_key_list_success_with_filter_and_paging(mocker):
     crypto_keys.list.assert_called_once_with(
         parent="projects/mock_project_id/locations/global/keyRings/mock_key_ring",
         pageSize=50,
-        filter="ENABLED",
+        filter="primary.state=ENABLED",
         pageToken="mock_page_token",
     )
     keys = result.outputs["GCP.KMS.CryptoKey(val.ResourceName && val.ResourceName == obj.ResourceName)"]
@@ -7327,7 +7327,7 @@ def test_kms_key_version_disable_explicit_version(mocker):
 
     crypto_keys.get.assert_not_called()
     crypto_key_versions.patch.assert_called_once_with(name=version_name, updateMask="state", body={"state": "DISABLED"})
-    assert result.outputs_prefix == "GCP.KMS.CryptoKeyVersion"
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeyVersions"
     assert "has been set to DISABLED" in result.readable_output
 
 
@@ -7542,6 +7542,19 @@ def test_kms_symmetric_encrypt_without_input_raises(mocker):
     crypto_keys.encrypt.assert_not_called()
 
 
+def test_kms_resolve_plaintext_rejects_multiple_inputs():
+    """
+    Given: More than one of plaintext, base64_plaintext or entry_id.
+    When: _kms_resolve_plaintext is called.
+    Then: A DemistoException is raised naming the mutually exclusive inputs.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import _kms_resolve_plaintext
+
+    with pytest.raises(DemistoException, match="Provide exactly one of 'plaintext', 'base64_plaintext' or 'entry_id'."):
+        _kms_resolve_plaintext("hello", "aGVsbG8=", None)
+
+
 def test_kms_read_entry_file_success(mocker, tmp_path):
     """
     Given: An entry ID that resolves to a readable file holding binary content.
@@ -7735,6 +7748,19 @@ def test_kms_resolve_ciphertext_entry_id_is_not_base64_decoded(mocker, tmp_path)
     mocker.patch("GCP.demisto.getFilePath", return_value={"path": str(path), "name": "cipher.bin"})
 
     assert _kms_resolve_ciphertext(None, "42@abc") == raw_ciphertext
+
+
+def test_kms_resolve_ciphertext_rejects_multiple_inputs():
+    """
+    Given: Both ciphertext and entry_id.
+    When: _kms_resolve_ciphertext is called.
+    Then: A DemistoException is raised naming the mutually exclusive inputs.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import _kms_resolve_ciphertext
+
+    with pytest.raises(DemistoException, match="Provide exactly one of 'ciphertext' or 'entry_id'."):
+        _kms_resolve_ciphertext("Y2lwaGVy", "42@abc")
 
 
 def test_kms_asymmetric_encrypt_uses_public_key(mocker):

@@ -28,33 +28,75 @@ KMS_KEY_TABLE = [
 ]
 
 # The KMS locations the "all locations" listing commands sweep when `all_locations` is set.
+# Matches the locations documented at
+# https://docs.cloud.google.com/kms/docs/locations.
 KMS_ALL_LOCATIONS = [
     "global",
+    # Americas
+    "ca",
+    "nam3",
+    "nam4",
+    "nam6",
+    "nam7",
+    "nam8",
+    "nam9",
+    "nam10",
+    "nam11",
+    "nam12",
+    "northamerica-northeast1",
+    "northamerica-northeast2",
+    "northamerica-south1",
+    "southamerica-east1",
+    "southamerica-west1",
+    "us",
+    "us-central1",
+    "us-east1",
+    "us-east4",
+    "us-east5",
+    "us-south1",
+    "us-west1",
+    "us-west2",
+    "us-west3",
+    "us-west4",
+    # Asia-Pacific
+    "asia",
+    "asia1",
     "asia-east1",
     "asia-east2",
     "asia-northeast1",
     "asia-northeast2",
+    "asia-northeast3",
     "asia-south1",
+    "asia-south2",
     "asia-southeast1",
+    "asia-southeast2",
     "australia-southeast1",
+    "australia-southeast2",
+    # Europe, Middle East, and Africa
+    "africa-south1",
+    "eur3",
+    "eur4",
+    "eur5",
+    "eur6",
+    "eur7",
+    "eur8",
+    "europe",
+    "europe-central2",
     "europe-north1",
+    "europe-north2",
+    "europe-southwest1",
     "europe-west1",
     "europe-west2",
     "europe-west3",
     "europe-west4",
     "europe-west6",
-    "northamerica-northeast1",
-    "us-central1",
-    "us-east1",
-    "us-east4",
-    "us-west1",
-    "us-west2",
-    "southamerica-east1",
-    "eur4",
-    "nam4",
-    "asia",
-    "europe",
-    "us",
+    "europe-west8",
+    "europe-west9",
+    "europe-west10",
+    "europe-west12",
+    "me-central1",
+    "me-central2",
+    "me-west1",
 ]
 
 
@@ -2602,14 +2644,13 @@ def _kms_read_entry_file(entry_id: str) -> bytes:
     Raises:
         ValueError: If the entry ID cannot be resolved to a readable file.
     """
+    file_info = demisto.getFilePath(entry_id)
+    if not file_info or not file_info.get("path"):
+        raise ValueError(f"Could not find a file for entry ID {entry_id}.")
+
     try:
-        file_info = demisto.getFilePath(entry_id)
-        if not file_info or not file_info.get("path"):
-            raise ValueError(f"Could not find a file for entry ID {entry_id}.")
         with open(file_info["path"], "rb") as file_handle:
             return file_handle.read()
-    except ValueError:
-        raise
     except Exception as exception:
         raise ValueError(f"Failed to read the file of entry ID {entry_id}: {exception}") from exception
 
@@ -2626,8 +2667,12 @@ def _kms_resolve_plaintext(plaintext: str | None, base64_plaintext: str | None, 
         bytes: The raw plaintext bytes to send to the API.
 
     Raises:
+        DemistoException: If more than one plaintext input was provided.
         ValueError: If none of the supported plaintext inputs were provided.
     """
+    if len([value for value in (plaintext, base64_plaintext, entry_id) if value]) > 1:
+        raise DemistoException("Provide exactly one of 'plaintext', 'base64_plaintext' or 'entry_id'.")
+
     if plaintext:
         return plaintext.encode("utf-8")
 
@@ -2652,8 +2697,12 @@ def _kms_resolve_ciphertext(ciphertext: str | None, entry_id: str | None) -> byt
         bytes: The raw ciphertext bytes to send to the API.
 
     Raises:
+        DemistoException: If more than one ciphertext input was provided.
         ValueError: If none of the supported ciphertext inputs were provided.
     """
+    if len([value for value in (ciphertext, entry_id) if value]) > 1:
+        raise DemistoException("Provide exactly one of 'ciphertext' or 'entry_id'.")
+
     if ciphertext:
         return base64.b64decode(ciphertext)
 
@@ -2771,10 +2820,14 @@ def kms_key_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     limit = arg_to_number(args.get("limit")) or 50
     validate_limit(limit)
 
+    # The KMS list filter uses dot syntax on the CryptoKey's primary version, so a
+    # key state is filtered as `primary.state=<STATE>`. See
+    # https://docs.cloud.google.com/kms/docs/sorting-and-filtering.
+    key_state = args.get("key_state")
     request_params = {
         "parent": f"projects/{project_id}/locations/{location}/keyRings/{key_ring}",
         "pageSize": limit,
-        "filter": args.get("key_state"),
+        "filter": f"primary.state={key_state}" if key_state else None,
         "pageToken": args.get("page_token"),
     }
     remove_nulls_from_dictionary(request_params)
@@ -3062,7 +3115,6 @@ def _kms_set_key_version_state(
     crypto_key: str,
     crypto_key_version: str,
     state: str,
-    outputs_prefix: str = "GCP.KMS.CryptoKeyVersion",
 ) -> CommandResults:
     """Sets the state of a CryptoKeyVersion (used by the enable and disable commands).
 
@@ -3074,7 +3126,6 @@ def _kms_set_key_version_state(
         crypto_key (str): The CryptoKey ID.
         crypto_key_version (str): The CryptoKeyVersion ID, or "default" to use the primary version.
         state (str): The target state, either ENABLED or DISABLED.
-        outputs_prefix (str): The context output prefix of the returned CryptoKeyVersion.
 
     Returns:
         CommandResults: The updated CryptoKeyVersion.
@@ -3095,22 +3146,19 @@ def _kms_set_key_version_state(
 
     return CommandResults(
         readable_output=f"CryptoKeyVersion {version_name} state has been set to {response.get('state')}.",
-        outputs_prefix=outputs_prefix,
+        outputs_prefix="GCP.KMS.CryptoKeyVersions",
         outputs_key_field="name",
         outputs=response,
         raw_response=response,
     )
 
 
-def kms_key_version_enable(
-    creds: Credentials, args: dict[str, Any], outputs_prefix: str = "GCP.KMS.CryptoKeyVersion"
-) -> CommandResults:
+def kms_key_version_enable(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """Enables a CryptoKeyVersion.
 
     Args:
         creds (Credentials): GCP credentials.
         args (dict[str, Any]): Command arguments including project_id, location, key_ring and crypto_key.
-        outputs_prefix (str): The context output prefix of the returned CryptoKeyVersion.
 
     Returns:
         CommandResults: The enabled CryptoKeyVersion.
@@ -3123,19 +3171,15 @@ def kms_key_version_enable(
         args.get("crypto_key", ""),
         args.get("crypto_key_version", "default"),
         "ENABLED",
-        outputs_prefix,
     )
 
 
-def kms_key_version_disable(
-    creds: Credentials, args: dict[str, Any], outputs_prefix: str = "GCP.KMS.CryptoKeyVersion"
-) -> CommandResults:
+def kms_key_version_disable(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """Disables a CryptoKeyVersion.
 
     Args:
         creds (Credentials): GCP credentials.
         args (dict[str, Any]): Command arguments including project_id, location, key_ring and crypto_key.
-        outputs_prefix (str): The context output prefix of the returned CryptoKeyVersion.
 
     Returns:
         CommandResults: The disabled CryptoKeyVersion.
@@ -3148,7 +3192,6 @@ def kms_key_version_disable(
         args.get("crypto_key", ""),
         args.get("crypto_key_version", "default"),
         "DISABLED",
-        outputs_prefix,
     )
 
 
