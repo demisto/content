@@ -1,6 +1,5 @@
-fromversion: 8.5.0
-toversion: 8.14.0
-id: mcafee_epo_modeling_rule
+fromversion: 8.15.0
+id: McafeeEpo_ModelingRule
 name: Mcafee Epo Modeling Rule
 rules: ''
 schema: ''
