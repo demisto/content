@@ -691,27 +691,38 @@ class PanOs:
         Returns:
             A PollResult when a job is in flight, or the list of result rows when finished.
         """
-        # A legitimate polling re-entry always carries the job id in self.args (the polling
-        # machinery injects it via args_for_next_run). Anything sitting only in demisto.context()
-        # is stale from a previous crashed run and MUST NOT hijack a fresh manual invocation —
-        # otherwise the user gets an opaque poll on a job they didn't start (and, as observed,
-        # a crash when the stale job id no longer resolves).
-        commit_job_id = self.args.get("commit_job_id")
-        push_job_id = self.args.get("push_job_id")
-
-        # Detect and clean up stale context so subsequent runs start fresh.
+        # Polling re-entry mechanics:
+        #  * The @polling_function machinery injects `commit_job_id` back into self.args via
+        #    `args_for_next_run` on each poll cycle. So `commit_job_id in self.args` == "we are
+        #    inside a polling re-invocation".
+        #  * `push_job_id`, however, is not carried in args_for_next_run (see pan_os_push_to_device);
+        #    it is written to demisto.context() by that function and MUST be read back from context
+        #    on subsequent polls. So `push_job_id in demisto.context()` DURING a polling re-entry
+        #    means "we already started the push, now poll its status".
+        #  * A truly-fresh manual invocation has neither in args. Anything hanging around in context
+        #    at that point is leftover state from a previous crashed run and must be scrubbed so it
+        #    can't hijack the fresh run (see bug #4 in the log history).
         incident_context = demisto.context()
-        stale_commit = demisto.get(incident_context, "commit_job_id")
-        stale_push = demisto.get(incident_context, "push_job_id")
-        if not commit_job_id and not push_job_id and (stale_commit or stale_push):
+        commit_job_id = self.args.get("commit_job_id")
+        context_push_job_id = demisto.get(incident_context, "push_job_id")
+        context_commit_job_id = demisto.get(incident_context, "commit_job_id")
+
+        # Detect a fresh invocation: no polling args injected, so args_for_next_run wasn't used.
+        is_polling_reentry = bool(commit_job_id)
+        if not is_polling_reentry and (context_commit_job_id or context_push_job_id):
             demisto.debug(
                 f"{LOG_TAG} Fresh invocation but stale polling context detected "
-                f"(stale_commit={stale_commit!r}, stale_push={stale_push!r}); clearing."
+                f"(stale_commit={context_commit_job_id!r}, stale_push={context_push_job_id!r}); clearing."
             )
             demisto.setContext("commit_job_id", "")
             demisto.setContext("push_job_id", "")
             demisto.setContext("panorama_responses", "")
             demisto.setContext("block_domain_rows", "")
+            context_push_job_id = None
+
+        # push_job_id is only trusted during an actual polling re-entry (otherwise it's stale and
+        # was just cleared above).
+        push_job_id = context_push_job_id if is_polling_reentry else None
 
         demisto.debug(f"{LOG_TAG} manage_pan_os_flow dispatch: {commit_job_id=}, {push_job_id=}")
         if push_job_id:
