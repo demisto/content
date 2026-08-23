@@ -3868,3 +3868,6 @@ defaultclassifier: RedLock
 fromversion: 6.5.0
 hybrid:marketplacev2: true
 hybrid: false
+supportedModules:
+- agentix
+- xsiam
