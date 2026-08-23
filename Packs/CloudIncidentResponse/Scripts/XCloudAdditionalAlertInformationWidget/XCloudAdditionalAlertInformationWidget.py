@@ -18,7 +18,12 @@ def get_additonal_info() -> List[Dict]:
 
     results = []
     for alert in alerts:
-        alert_event = alert.get("event")
+        # Alerts with no XDR cloud-analytics event are returned without an "event" key
+        # (both getRawAlerts and the legacy core-get-cloud-original-alerts omit it in that
+        # case - see filter_general_fields "No XDR cloud analytics event"). Default to an
+        # empty dict so the per-field .get() calls below degrade gracefully instead of
+        # raising 'NoneType' object has no attribute 'get'.
+        alert_event = alert.get("event") or {}
         res = {
             "Alert Full Description": alert.get("alert_full_description"),
             "Detection Module": alert.get("detection_modules"),
@@ -70,12 +75,16 @@ def main():  # pragma: no cover
         alert_context = demisto.investigation()
         core_alert_context = demisto.context().get("Core", {})
         if not core_alert_context.get("OriginalAlert"):
-            if is_demisto_version_ge(MIN_SERVER_VERSION_FOR_RAW_ALERTS):
-                original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
-            else:
-                original_alert_data = demisto.executeCommand(
-                    "core-get-cloud-original-alerts", {"alert_ids": alert_context.get("id")}
-                )
+            # TEMPORARY: version-gate fallback muted for manual-testing tenants that have
+            # getRawAlerts uploaded manually but still report a server version < 8.16.0.
+            # Always use getRawAlerts. Restore the version gate below before merging.
+            original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
+            # if is_demisto_version_ge(MIN_SERVER_VERSION_FOR_RAW_ALERTS):
+            #     original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
+            # else:
+            #     original_alert_data = demisto.executeCommand(
+            #         "core-get-cloud-original-alerts", {"alert_ids": alert_context.get("id")}
+            #     )
             if isError(original_alert_data):
                 raise DemistoException(f"Failed to retrieve original alerts: {get_error(original_alert_data)}")
             if original_alert_data:
