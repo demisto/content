@@ -146,7 +146,12 @@ Configures security settings for GKE clusters, including access controls and vis
 | resource_name | Name of the GKE cluster. | Required |
 | enable_intra_node_visibility | Enable intra-node visibility. Possible values are: true, false. | Optional |
 | enable_master_authorized_networks | Enable Master Authorized Networks. Possible values are: true, false. | Optional |
-| cidrs | Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+| cidrs | A comma-separated list of up to 50 CIDR blocks (for example, "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked. | Optional |
+| enable_binary_authorization | Whether to enable Binary Authorization on the cluster. Possible values are: true, false. | Optional |
+| enable_http_load_balancing | Whether to enable the HTTP load balancing add-on on the cluster. Possible values are: true, false. | Optional |
+| enable_kubernetes_dashboard | Whether to enable the Kubernetes dashboard add-on on the cluster. Possible values are: true, false. | Optional |
+| enable_network_policy | Whether to enable the network policy add-on on the cluster. Possible values are: true, false. | Optional |
+| enable_stackdriver_kubernetes | Whether to enable Stackdriver Kubernetes monitoring and logging on the cluster. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -177,14 +182,43 @@ Configures security settings for GKE clusters, including access controls and vis
 | GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
 | GCP.Container.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
 
-### gcp-container-cluster-list
+### gcp-container-cluster-legacy-abac-auth-set
+
+***
+Enables or disables legacy ABAC authorization for a GKE cluster. Required permissions: container.clusters.setLegacyAbac.
+
+#### Base Command
+
+`gcp-container-cluster-legacy-abac-auth-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| resource_name | The name of the GKE cluster. | Required |
+| enabled | Whether to enable legacy ABAC authorization on the cluster. Possible values are: true, false. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Container.Operations.name | String | The name of the operation. |
+| GCP.Container.Operations.operationType | String | The type of the operation. |
+| GCP.Container.Operations.status | String | The current status of the operation. |
+| GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
+| GCP.Container.Operations.startTime | String | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | String | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
+
+### gcp-container-clusters-list
 
 ***
 Lists all GKE clusters owned by a project in the specified location. Required permissions: container.clusters.list.
 
 #### Base Command
 
-`gcp-container-cluster-list`
+`gcp-container-clusters-list`
 
 #### Input
 
@@ -230,14 +264,14 @@ Gets the details of a specific GKE cluster. Required permissions: container.clus
 | GCP.Container.Clusters.endpoint | String | The IP address of the cluster's master endpoint. |
 | GCP.Container.Clusters.status | String | The current status of the cluster. |
 
-### gcp-container-node-pool-list
+### gcp-container-node-pools-list
 
 ***
 Lists the node pools for a GKE cluster. Required permissions: container.clusters.get.
 
 #### Base Command
 
-`gcp-container-node-pool-list`
+`gcp-container-node-pools-list`
 
 #### Input
 
@@ -311,17 +345,17 @@ Enables or disables the auto-repair and/or auto-upgrade management features of a
 | GCP.Container.Operations.operationType | String | The type of the operation. |
 | GCP.Container.Operations.status | String | The current status of the operation. |
 | GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
-| GCP.Container.Operations.startTime | Date | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
-| GCP.Container.Operations.endTime | Date | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
+| GCP.Container.Operations.startTime | String | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | String | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
 
-### gcp-container-operation-list
+### gcp-container-operations-list
 
 ***
 Lists all GKE operations in a project for the specified location. Required permissions: container.operations.list.
 
 #### Base Command
 
-`gcp-container-operation-list`
+`gcp-container-operations-list`
 
 #### Input
 
@@ -338,8 +372,8 @@ Lists all GKE operations in a project for the specified location. Required permi
 | GCP.Container.Operations.operationType | String | The type of the operation. |
 | GCP.Container.Operations.status | String | The current status of the operation. |
 | GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
-| GCP.Container.Operations.startTime | Date | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
-| GCP.Container.Operations.endTime | Date | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
+| GCP.Container.Operations.startTime | String | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | String | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
 
 ### gcp-container-operation-get
 
@@ -366,8 +400,8 @@ Gets the details of a specific GKE operation. Required permissions: container.op
 | GCP.Container.Operations.operationType | String | The type of the operation. |
 | GCP.Container.Operations.status | String | The current status of the operation. |
 | GCP.Container.Operations.zone | String | The zone in which the operation is taking place. |
-| GCP.Container.Operations.startTime | Date | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
-| GCP.Container.Operations.endTime | Date | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
+| GCP.Container.Operations.startTime | String | The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z"). |
+| GCP.Container.Operations.endTime | String | The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z"). |
 
 ### gcp-container-operation-cancel
 

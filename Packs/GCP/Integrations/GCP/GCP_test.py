@@ -6403,6 +6403,19 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
     declares its own default; it is otherwise not resolvable statically and is
     ignored.
     """
+    return _collect_output_prefixes(function_node, seen=set())
+
+
+def _collect_output_prefixes(function_node: ast.AST, seen: set) -> set:
+    """Recursively collect output prefixes from a function and any local helper it delegates to.
+
+    Handlers may build their CommandResults through a shared local helper (e.g.
+    ``_container_operation_result(response, title)``) that owns the
+    ``outputs_prefix=...`` literal. To keep the wiring check accurate, when a
+    function calls another top-level function defined in the same module, that
+    callee's prefixes are folded in as well. ``seen`` guards against recursion
+    cycles.
+    """
     # Pattern 1c: the prefix declared as this function's own parameter default.
     prefixes: set = _extract_param_default_prefixes(function_node)
 
@@ -6415,6 +6428,12 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
             for keyword in node.keywords:
                 if keyword.arg == "outputs_prefix" and (value := _string_constant(keyword.value)):
                     prefixes.add(value)
+            # Delegation: fold in the prefixes of a called local helper function.
+            if isinstance(node.func, ast.Name):
+                callee_name = node.func.id
+                if callee_name not in seen and (callee_node := _FUNCTION_NODES.get(callee_name)) is not None:
+                    seen.add(callee_name)
+                    prefixes |= _collect_output_prefixes(callee_node, seen)
         # Pattern 1b: outputs_prefix = "..." / outputs_prefix: str = "..."
         elif isinstance(node, ast.Assign | ast.AnnAssign):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
@@ -6666,7 +6685,7 @@ def test_container_cluster_list_success(mocker):
     Then: It calls the container clusters().list endpoint with the correct parent and
           returns CommandResults with the GCP.Container.Clusters prefix.
     """
-    from GCP import container_cluster_list
+    from GCP import container_clusters_list
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_response = {"clusters": [{"name": "mock-cluster-1", "status": "RUNNING", "location": "us-central1-c"}]}
@@ -6676,7 +6695,7 @@ def test_container_cluster_list_success(mocker):
     mocker.patch("GCP.build", return_value=mock_container)
 
     args = {"project_id": "mock_project_id", "region": "us-central1-c"}
-    result = container_cluster_list(mock_creds, args)
+    result = container_clusters_list(mock_creds, args)
 
     called_args, called_kwargs = mock_container.projects().locations().clusters().list.call_args
     assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c"
@@ -6690,7 +6709,7 @@ def test_container_cluster_list_no_results(mocker):
     When: container_cluster_list is called.
     Then: It returns no outputs and a readable output indicating no clusters were found.
     """
-    from GCP import container_cluster_list
+    from GCP import container_clusters_list
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_container = MagicMock()
@@ -6698,7 +6717,7 @@ def test_container_cluster_list_no_results(mocker):
     mocker.patch("GCP.build", return_value=mock_container)
 
     args = {"project_id": "mock_project_id", "region": "us-central1-c"}
-    result = container_cluster_list(mock_creds, args)
+    result = container_clusters_list(mock_creds, args)
 
     assert result.outputs is None
     assert "No clusters found" in result.readable_output
@@ -6736,7 +6755,7 @@ def test_container_node_pool_list_success(mocker):
     Then: It calls nodePools().list with the correct parent and returns the node pools
           in the GCP.Container.NodePools context.
     """
-    from GCP import container_node_pool_list
+    from GCP import container_node_pools_list
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_response = {"nodePools": [{"name": "mock-pool-1", "status": "RUNNING", "version": "1.29"}]}
@@ -6746,7 +6765,7 @@ def test_container_node_pool_list_success(mocker):
     mocker.patch("GCP.build", return_value=mock_container)
 
     args = {"project_id": "mock_project_id", "region": "us-central1-c", "cluster": "mock-cluster-1"}
-    result = container_node_pool_list(mock_creds, args)
+    result = container_node_pools_list(mock_creds, args)
 
     called_args, called_kwargs = mock_container.projects().locations().clusters().nodePools().list.call_args
     assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
@@ -6829,7 +6848,7 @@ def test_container_operation_list_success(mocker):
     Then: It calls operations().list with the correct parent and returns the operations in
           the GCP.Container.Operations context.
     """
-    from GCP import container_operation_list
+    from GCP import container_operations_list
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_response = {"operations": [{"name": "operation-123", "status": "DONE", "operationType": "UPGRADE_MASTER"}]}
@@ -6839,7 +6858,7 @@ def test_container_operation_list_success(mocker):
     mocker.patch("GCP.build", return_value=mock_container)
 
     args = {"project_id": "mock_project_id", "region": "us-central1-c"}
-    result = container_operation_list(mock_creds, args)
+    result = container_operations_list(mock_creds, args)
 
     called_args, called_kwargs = mock_container.projects().locations().operations().list.call_args
     assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c"
@@ -6994,70 +7013,14 @@ def test_container_cluster_security_update_addons(mocker):
     assert result.outputs == mock_response
 
 
-def test_container_cluster_security_update_basic_auth(mocker):
-    """
-    Given: A GKE cluster needs basic (username/password) authentication enabled.
-    When: container_cluster_security_update is called with enable_basic_auth=true.
-    Then: The function calls setMasterAuth with action SET_USERNAME and username "admin",
-          returning the operation in the GCP.Container.Operations context.
-    """
-    from GCP import container_cluster_security_update
-
-    mock_creds = mocker.Mock(spec=Credentials)
-    mock_response = {"name": "operation-123", "status": "RUNNING"}
-
-    mock_container = MagicMock()
-    mock_container.projects().locations().clusters().setMasterAuth().execute.return_value = mock_response
-    mocker.patch("GCP.build", return_value=mock_container)
-
-    args = {
-        "project_id": "mock_project_id",
-        "region": "us-central1-c",
-        "resource_name": "mock-cluster-1",
-        "enable_basic_auth": "true",
-    }
-    result = container_cluster_security_update(mock_creds, args)
-
-    called_args, called_kwargs = mock_container.projects().locations().clusters().setMasterAuth.call_args
-    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
-    assert called_kwargs["body"]["action"] == "SET_USERNAME"
-    assert called_kwargs["body"]["update"]["username"] == "admin"
-    assert result.outputs == mock_response
-
-
-def test_container_cluster_security_update_basic_auth_disable(mocker):
-    """
-    Given: A GKE cluster needs basic authentication disabled.
-    When: container_cluster_security_update is called with enable_basic_auth=false.
-    Then: setMasterAuth is called with an empty username to disable basic auth.
-    """
-    from GCP import container_cluster_security_update
-
-    mock_creds = mocker.Mock(spec=Credentials)
-    mock_container = MagicMock()
-    mock_container.projects().locations().clusters().setMasterAuth().execute.return_value = {"name": "operation-123"}
-    mocker.patch("GCP.build", return_value=mock_container)
-
-    args = {
-        "project_id": "mock_project_id",
-        "region": "us-central1-c",
-        "resource_name": "mock-cluster-1",
-        "enable_basic_auth": "false",
-    }
-    container_cluster_security_update(mock_creds, args)
-
-    called_args, called_kwargs = mock_container.projects().locations().clusters().setMasterAuth.call_args
-    assert called_kwargs["body"]["update"]["username"] == ""
-
-
-def test_container_cluster_security_update_legacy_authorization(mocker):
+def test_container_cluster_legacy_abac_auth_set(mocker):
     """
     Given: A GKE cluster needs legacy ABAC authorization enabled.
-    When: container_cluster_security_update is called with enable_legacy_authorization=true.
-    Then: The function calls setLegacyAbac with enabled True, returning the operation in the
-          GCP.Container.Operations context.
+    When: container_cluster_legacy_abac_auth_set is called with enabled=true.
+    Then: The function calls the dedicated setLegacyAbac endpoint with enabled True, returning the
+          operation in the GCP.Container.Operations context.
     """
-    from GCP import container_cluster_security_update
+    from GCP import container_cluster_legacy_abac_auth_set
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_response = {"name": "operation-123", "status": "RUNNING"}
@@ -7070,14 +7033,39 @@ def test_container_cluster_security_update_legacy_authorization(mocker):
         "project_id": "mock_project_id",
         "region": "us-central1-c",
         "resource_name": "mock-cluster-1",
-        "enable_legacy_authorization": "true",
+        "enabled": "true",
     }
-    result = container_cluster_security_update(mock_creds, args)
+    result = container_cluster_legacy_abac_auth_set(mock_creds, args)
 
     called_args, called_kwargs = mock_container.projects().locations().clusters().setLegacyAbac.call_args
     assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
     assert called_kwargs["body"]["enabled"] is True
     assert result.outputs == mock_response
+
+
+def test_container_cluster_legacy_abac_auth_set_disable(mocker):
+    """
+    Given: A GKE cluster needs legacy ABAC authorization disabled.
+    When: container_cluster_legacy_abac_auth_set is called with enabled=false.
+    Then: The function calls the dedicated setLegacyAbac endpoint with enabled False.
+    """
+    from GCP import container_cluster_legacy_abac_auth_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().setLegacyAbac().execute.return_value = {"name": "operation-123"}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enabled": "false",
+    }
+    container_cluster_legacy_abac_auth_set(mock_creds, args)
+
+    called_args, called_kwargs = mock_container.projects().locations().clusters().setLegacyAbac.call_args
+    assert called_kwargs["body"]["enabled"] is False
 
 
 def test_container_cluster_security_update_stackdriver_kubernetes(mocker):

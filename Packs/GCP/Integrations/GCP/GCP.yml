@@ -992,7 +992,7 @@ script:
         type: String
 
   - name: gcp-container-cluster-security-update
-    description: "Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list, container.clusters.setMasterAuth, container.clusters.setLegacyAbac."
+    description: "Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     arguments:
     - name: project_id
       required: false
@@ -1051,20 +1051,6 @@ script:
       - "true"
       - "false"
       description: Whether to enable the network policy add-on on the cluster.
-    - name: enable_basic_auth
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Whether to enable basic (username/password) authentication on the cluster. Enabling creates an "admin" user with a generated password; disabling clears the username. Note that basic authentication is disabled by default on modern GKE clusters.
-    - name: enable_legacy_authorization
-      required: false
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: Whether to enable legacy ABAC authorization on the cluster.
     - name: enable_stackdriver_kubernetes
       required: false
       auto: PREDEFINED
@@ -1362,11 +1348,51 @@ script:
         description: The current version of the Kubernetes master in the GKE cluster.
         type: String
 
-  - name: gcp-container-cluster-list
+  - name: gcp-container-cluster-legacy-abac-auth-set
+    description: "Enables or disables legacy ABAC authorization for a GKE cluster. Required permissions: container.clusters.setLegacyAbac."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      required: true
+      description: The GCP location (zone or region) of the cluster.
+    - name: resource_name
+      required: true
+      description: The name of the GKE cluster.
+    - name: enabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to enable legacy ABAC authorization on the cluster.
+    outputs:
+    - contextPath: GCP.Container.Operations.name
+      description: The name of the operation.
+      type: String
+    - contextPath: GCP.Container.Operations.operationType
+      description: The type of the operation.
+      type: String
+    - contextPath: GCP.Container.Operations.status
+      description: The current status of the operation.
+      type: String
+    - contextPath: GCP.Container.Operations.zone
+      description: The zone in which the operation is taking place.
+      type: String
+    - contextPath: GCP.Container.Operations.startTime
+      description: The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z").
+      type: String
+    - contextPath: GCP.Container.Operations.endTime
+      description: The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z").
+      type: String
+  - name: gcp-container-clusters-list
     description: "Lists all GKE clusters owned by a project in the specified location. Required permissions: container.clusters.list."
     arguments:
     - name: project_id
       required: false
+      required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
@@ -1392,6 +1418,7 @@ script:
     arguments:
     - name: project_id
       required: false
+      required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
@@ -1415,11 +1442,12 @@ script:
     - contextPath: GCP.Container.Clusters.status
       description: The current status of the cluster.
       type: String
-  - name: gcp-container-node-pool-list
+  - name: gcp-container-node-pools-list
     description: "Lists the node pools for a GKE cluster. Required permissions: container.clusters.get."
     arguments:
     - name: project_id
       required: false
+      required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
@@ -1445,6 +1473,7 @@ script:
     arguments:
     - name: project_id
       required: false
+      required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
@@ -1473,6 +1502,7 @@ script:
     arguments:
     - name: project_id
       required: false
+      required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
@@ -1512,15 +1542,16 @@ script:
       type: String
     - contextPath: GCP.Container.Operations.startTime
       description: The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z").
-      type: Date
+      type: String
     - contextPath: GCP.Container.Operations.endTime
       description: The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z").
-      type: Date
-  - name: gcp-container-operation-list
+      type: String
+  - name: gcp-container-operations-list
     description: "Lists all GKE operations in a project for the specified location. Required permissions: container.operations.list."
     arguments:
     - name: project_id
       required: false
+      required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
@@ -1540,15 +1571,16 @@ script:
       type: String
     - contextPath: GCP.Container.Operations.startTime
       description: The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z").
-      type: Date
+      type: String
     - contextPath: GCP.Container.Operations.endTime
       description: The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z").
-      type: Date
+      type: String
   - name: gcp-container-operation-get
     description: "Gets the details of a specific GKE operation. Required permissions: container.operations.get."
     arguments:
     - name: project_id
       required: false
+      required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
@@ -1571,15 +1603,16 @@ script:
       type: String
     - contextPath: GCP.Container.Operations.startTime
       description: The time the operation started, in RFC3339 text format (for example, "2023-01-15T10:30:00Z").
-      type: Date
+      type: String
     - contextPath: GCP.Container.Operations.endTime
       description: The time the operation completed, in RFC3339 text format (for example, "2023-01-15T10:35:00Z").
-      type: Date
+      type: String
   - name: gcp-container-operation-cancel
     description: "Cancels a specific GKE operation. Required permissions: container.operations.update."
     arguments:
     - name: project_id
       required: false
+      required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
