@@ -612,6 +612,10 @@
                     "complex": null,
                     "simple": "sys_id"
                 },
+                "ServiceNow Ticket ID": {
+                    "complex": null,
+                    "simple": "sys_id"
+                },
                 "dbotMirrorInstance": {
                     "complex": null,
                     "simple": ".='ServiceNow v2_instance_1'"
