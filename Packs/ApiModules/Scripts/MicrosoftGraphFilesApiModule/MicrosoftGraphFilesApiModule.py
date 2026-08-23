@@ -35,6 +35,7 @@ DRIVEITEM_SELECT_FIELDS = (
 # matters for SharePoint sharing entries, where it is often the only one populated.
 IDENTITY_ROLE_KEYS = ("user", "siteUser", "group", "application", "device")
 
+
 def parse_key_to_context(obj: dict) -> dict:
     """Parse graph api data as received from Microsoft Graph API into Demisto's conventions
 
