@@ -1699,12 +1699,12 @@ Lists the Cloud KMS key rings in a given location, or across all locations. Requ
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.KeyRing.Name | String | The ID of the key ring. |
-| GCP.KMS.KeyRing.ResourceName | String | The full resource name of the key ring. |
-| GCP.KMS.KeyRing.Project | String | The project that holds the key ring. |
-| GCP.KMS.KeyRing.Location | String | The location of the key ring. |
-| GCP.KMS.KeyRing.CreationTime | Date | The time at which the key ring was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.KeyRingsNextPageToken | String | The token to pass as the page_token argument to retrieve the next page of key rings. |
+| GCP.KMS.KeyRings.Name | String | The ID of the key ring. |
+| GCP.KMS.KeyRings.ResourceName | String | The full resource name of the key ring. |
+| GCP.KMS.KeyRings.Project | String | The project that holds the key ring. |
+| GCP.KMS.KeyRings.Location | String | The location of the key ring. |
+| GCP.KMS.KeyRings.CreationTime | Date | The time at which the key ring was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.KeyRingsNextToken | String | The token to pass as the page_token argument to retrieve the next page of key rings. |
 
 ### gcp-kms-keys-list
 
@@ -1730,19 +1730,19 @@ Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloud
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.CryptoKey.Name | String | The ID of the crypto key. |
-| GCP.KMS.CryptoKey.ResourceName | String | The full resource name of the crypto key. |
-| GCP.KMS.CryptoKey.Project | String | The project that holds the crypto key. |
-| GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
-| GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
-| GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
-| GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
-| GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
-| GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
-| GCP.KMS.CryptoKeysNextPageToken | String | The token to use when requesting the next set of crypto keys. |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.RotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.Labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
+| GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
+| GCP.KMS.CryptoKeysNextToken | String | The token to use when requesting the next set of crypto keys. |
 
 ### gcp-kms-keys-list-all
 
@@ -1767,18 +1767,18 @@ Lists every crypto key across all key rings in a location, or across all locatio
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.CryptoKey.Name | String | The ID of the crypto key. |
-| GCP.KMS.CryptoKey.ResourceName | String | The full resource name of the crypto key. |
-| GCP.KMS.CryptoKey.Project | String | The project that holds the crypto key. |
-| GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
-| GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
-| GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
-| GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
-| GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
-| GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.RotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.Labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
+| GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
 
 ### gcp-kms-key-get
 
@@ -1802,18 +1802,18 @@ Returns the metadata of a given crypto key and its primary crypto key version. R
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.CryptoKey.Name | String | The ID of the crypto key. |
-| GCP.KMS.CryptoKey.ResourceName | String | The full resource name of the crypto key. |
-| GCP.KMS.CryptoKey.Project | String | The project that holds the crypto key. |
-| GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
-| GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
-| GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
-| GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
-| GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
-| GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.RotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.Labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
+| GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
 
 ### gcp-kms-key-create
 
@@ -1844,18 +1844,18 @@ Creates a new crypto key within a given key ring. Required Permissions: cloudkms
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.CryptoKey.Name | String | The ID of the crypto key. |
-| GCP.KMS.CryptoKey.ResourceName | String | The full resource name of the crypto key. |
-| GCP.KMS.CryptoKey.Project | String | The project that holds the crypto key. |
-| GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
-| GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
-| GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
-| GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
-| GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
-| GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.RotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.Labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
+| GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
 
 ### gcp-kms-key-update
 
@@ -1884,18 +1884,18 @@ Updates the mutable fields of a given crypto key. Only the supplied fields are u
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.KMS.CryptoKey.Name | String | The ID of the crypto key. |
-| GCP.KMS.CryptoKey.ResourceName | String | The full resource name of the crypto key. |
-| GCP.KMS.CryptoKey.Project | String | The project that holds the crypto key. |
-| GCP.KMS.CryptoKey.Location | String | The location of the crypto key. |
-| GCP.KMS.CryptoKey.KeyRing | String | The key ring that holds the crypto key. |
-| GCP.KMS.CryptoKey.Purpose | String | The immutable purpose of the crypto key. |
-| GCP.KMS.CryptoKey.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
-| GCP.KMS.CryptoKey.RotationPeriod | String | The period between automatic key rotations. |
-| GCP.KMS.CryptoKey.Labels | Unknown | The labels with user-defined metadata. |
-| GCP.KMS.CryptoKey.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
-| GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.CreationTime | Date | The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.NextRotationTime | Date | The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
+| GCP.KMS.CryptoKeys.RotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.Labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.VersionTemplate | Unknown | The version template of the crypto key, containing the ProtectionLevel and Algorithm fields. |
+| GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
 
 ### gcp-kms-key-version-enable
 

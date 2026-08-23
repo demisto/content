@@ -6388,7 +6388,7 @@ def _extract_param_default_prefixes(function_node: ast.AST) -> set:
     return {value for parameter, default in pairs if parameter.arg == "outputs_prefix" and (value := _string_constant(default))}
 
 
-def _extract_output_prefixes(function_node: ast.AST) -> set:
+def _extract_output_prefixes(function_node: ast.AST, function_nodes: dict | None = None, _seen: set | None = None) -> set:
     """Extract all output context prefixes declared within the given function node.
 
     Recognizes the supported CommandResults wiring patterns:
@@ -6398,6 +6398,12 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
       2. Context paths used directly as ``outputs`` dict keys, e.g.
          ``"GCP.Some.Path(val.id && val.id == obj.id)": data``. The DT
          transformer suffix in parentheses is stripped.
+      3. Delegation: when the function calls another top-level function in the
+         module (e.g. a thin ``kms_key_version_enable`` handler that returns
+         ``_kms_set_key_version_state(...)``), the prefixes declared in that
+         callee are resolved too. ``function_nodes`` maps function name -> node;
+         when provided, one or more levels of delegation are followed (recursion
+         is guarded by ``_seen`` against cycles).
 
     A prefix forwarded from a variable (``outputs_prefix=outputs_prefix``)
     resolves through pattern 1's parameter-default branch when the function
@@ -6407,7 +6413,16 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
     # Pattern 1c: the prefix declared as this function's own parameter default.
     prefixes: set = _extract_param_default_prefixes(function_node)
 
+    seen = _seen if _seen is not None else set()
+
     for node in ast.walk(function_node):
+        # Pattern 3: follow delegation into a called top-level function.
+        if function_nodes and isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            callee_name = node.func.id
+            callee_node = function_nodes.get(callee_name)
+            if callee_node is not None and callee_name not in seen:
+                seen.add(callee_name)
+                prefixes |= _extract_output_prefixes(callee_node, function_nodes, seen)
         # Pattern 1a: outputs_prefix="GCP.Some.Path" passed as a keyword argument.
         # NOTE: the literal is used verbatim (no .strip()) so that a leading or
         # trailing whitespace typo in the source (e.g. " GCP.Compute.Operations")
@@ -6540,7 +6555,7 @@ def test_yml_output_prefixes_match_py_handler():
         handler_node = _FUNCTION_NODES.get(handler)
         if handler_node is None:
             continue
-        handler_prefixes = _extract_output_prefixes(handler_node)
+        handler_prefixes = _extract_output_prefixes(handler_node, _FUNCTION_NODES)
         for context_path in _YML_SPEC[command_name]["outputs"]:
             if not _is_covered(context_path, handler_prefixes):
                 uncovered.append(f"{command_name} (handler {handler}) -> {context_path}")
@@ -6680,7 +6695,7 @@ def test_kms_key_ring_list_success(mocker):
     """
     Given: A project whose global location holds a single key ring.
     When: kms_key_ring_list is called.
-    Then: The key rings are listed for the requested location and returned under GCP.KMS.KeyRing,
+    Then: The key rings are listed for the requested location and returned under GCP.KMS.KeyRings,
           normalized to the PascalCase context format.
     """
     from GCP import kms_key_ring_list
@@ -6699,7 +6714,7 @@ def test_kms_key_ring_list_success(mocker):
     result = kms_key_ring_list(creds, {"project_id": "mock_project_id", "location": "global"})
 
     key_rings.list.assert_called_once_with(parent="projects/mock_project_id/locations/global", pageSize=50)
-    entry = result.outputs["GCP.KMS.KeyRing(val.ResourceName && val.ResourceName == obj.ResourceName)"][0]
+    entry = result.outputs["GCP.KMS.KeyRings(val.ResourceName && val.ResourceName == obj.ResourceName)"][0]
     assert entry == {
         "Name": "mock_key_ring",
         "ResourceName": "projects/mock_project_id/locations/global/keyRings/mock_key_ring",
@@ -6729,7 +6744,7 @@ def test_kms_key_ring_list_forwards_page_token_and_returns_next_token(mocker):
     key_rings.list.assert_called_once_with(
         parent="projects/mock_project_id/locations/global", pageSize=10, pageToken="prev_token"
     )
-    assert result.outputs["GCP.KMS(true)"] == {"KeyRingsNextPageToken": "next_token"}
+    assert result.outputs["GCP.KMS(true)"] == {"KeyRingsNextToken": "next_token"}
 
 
 def test_kms_key_ring_list_all_locations_ignores_page_token(mocker):
@@ -6863,10 +6878,10 @@ def test_kms_key_list_success_with_filter_and_paging(mocker):
         filter="primary.state=ENABLED",
         pageToken="mock_page_token",
     )
-    keys = result.outputs["GCP.KMS.CryptoKey(val.ResourceName && val.ResourceName == obj.ResourceName)"]
+    keys = result.outputs["GCP.KMS.CryptoKeys(val.ResourceName && val.ResourceName == obj.ResourceName)"]
     assert keys[0]["Name"] == "mock_crypto_key"
     assert keys[0]["KeyRing"] == "mock_key_ring"
-    assert result.outputs["GCP.KMS(true)"]["CryptoKeysNextPageToken"] == "mock_next_page_token"
+    assert result.outputs["GCP.KMS(true)"]["CryptoKeysNextToken"] == "mock_next_page_token"
 
 
 def test_kms_key_list_no_results(mocker):
@@ -6926,7 +6941,7 @@ def test_kms_key_list_all_walks_key_rings(mocker):
     creds = mocker.MagicMock(spec=Credentials)
     result = kms_key_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
 
-    assert result.outputs_prefix == "GCP.KMS.CryptoKey"
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
     assert result.outputs[0]["KeyRing"] == "mock_key_ring"
     assert result.outputs[0]["Name"] == "mock_crypto_key"
 
@@ -7023,7 +7038,7 @@ def test_kms_key_get_success(mocker):
     result = kms_key_get(creds, args)
 
     crypto_keys.get.assert_called_once_with(name=key_name)
-    assert result.outputs_prefix == "GCP.KMS.CryptoKey"
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
     assert result.outputs["Name"] == "mock_crypto_key"
     assert result.outputs["PrimaryCryptoKeyVersion"]["State"] == "ENABLED"
     assert result.outputs["VersionTemplate"]["Algorithm"] == "GOOGLE_SYMMETRIC_ENCRYPTION"
@@ -7115,7 +7130,7 @@ def test_kms_key_create_builds_request(mocker):
     assert call_kwargs["body"]["purpose"] == "ENCRYPT_DECRYPT"
     assert call_kwargs["body"]["rotationPeriod"] == "7776000s"
     assert call_kwargs["body"]["versionTemplate"]["algorithm"] == "GOOGLE_SYMMETRIC_ENCRYPTION"
-    assert result.outputs_prefix == "GCP.KMS.CryptoKey"
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
     assert "created successfully" in result.readable_output
 
 
@@ -7141,6 +7156,43 @@ def test_kms_key_create_skip_initial_version(mocker):
     kms_key_create(creds, args)
 
     assert crypto_keys.create.call_args[1]["skipInitialVersionCreation"] is True
+
+
+def test_kms_key_create_purpose_algorithm_mismatch_raises(mocker):
+    """
+    Given: A purpose and a versionTemplate algorithm that are incompatible (an encrypt/decrypt
+        purpose paired with a signing algorithm).
+    When: kms_key_create is called and the API rejects the combination with a 400 error.
+    Then: The HttpError propagates so main() can route it, and the algorithm was sent to the API.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import kms_key_create
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    resp = mocker.MagicMock()
+    resp.status = 400
+    resp.get.return_value = "application/json"
+    content = json.dumps(
+        {"error": {"message": "Algorithm RSA_SIGN_PSS_2048_SHA256 is not valid for purpose ENCRYPT_DECRYPT."}}
+    ).encode()
+    crypto_keys.create.return_value.execute.side_effect = HttpError(resp=resp, content=content)
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_new_key",
+        "purpose": "ENCRYPT_DECRYPT",
+        "algorithm": "RSA_SIGN_PSS_2048_SHA256",
+    }
+
+    with pytest.raises(HttpError):
+        kms_key_create(creds, args)
+
+    sent_body = crypto_keys.create.call_args[1]["body"]
+    assert sent_body["purpose"] == "ENCRYPT_DECRYPT"
+    assert sent_body["versionTemplate"]["algorithm"] == "RSA_SIGN_PSS_2048_SHA256"
 
 
 @pytest.mark.parametrize(
@@ -7279,7 +7331,7 @@ def test_kms_key_update_builds_update_mask(mocker):
     assert call_kwargs["body"]["labels"] == {"env": "test"}
     assert call_kwargs["body"]["rotationPeriod"] == "7776000s"
     assert "nextRotationTime" not in call_kwargs["body"]
-    assert result.outputs_prefix == "GCP.KMS.CryptoKey"
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
 
 
 def test_kms_key_update_without_updatable_field_raises(mocker):
@@ -7469,6 +7521,33 @@ def test_kms_public_key_get_success(mocker):
     }
 
 
+def test_kms_public_key_get_empty_response(mocker):
+    """
+    Given: The API returns an empty public key response.
+    When: kms_public_key_get is called.
+    Then: The curated PEM/Algorithm fields are None and the empty response is surfaced as the full response.
+    """
+    from GCP import kms_public_key_get
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.getPublicKey.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_asym_key",
+        "crypto_key_version": "1",
+    }
+    result = kms_public_key_get(creds, args)
+
+    assert result.outputs_prefix == "GCP.KMS.PublicKey"
+    assert result.outputs["PEM"] is None
+    assert result.outputs["Algorithm"] is None
+    assert result.outputs["CryptoKey"] == "mock_asym_key"
+    assert result.outputs["FullResponse"] == {}
+
+
 def test_kms_symmetric_encrypt_plaintext(mocker):
     """
     Given: A raw plain text and additional authenticated data.
@@ -7575,13 +7654,13 @@ def test_kms_read_entry_file_unresolvable_entry_raises(mocker, resolved):
     """
     Given: An entry ID that resolves to nothing, or to a record without a path.
     When: _kms_read_entry_file is called.
-    Then: A ValueError naming the entry ID is raised.
+    Then: A ValueError with a meaningful message naming the entry ID is raised.
     """
     from GCP import _kms_read_entry_file
 
     mocker.patch("GCP.demisto.getFilePath", return_value=resolved)
 
-    with pytest.raises(ValueError, match="Could not find a file for entry ID entry-404."):
+    with pytest.raises(ValueError, match="Failed to read the file of entry ID 'entry-404'"):
         _kms_read_entry_file("entry-404")
 
 
@@ -7595,7 +7674,7 @@ def test_kms_read_entry_file_wraps_unexpected_failure(mocker):
 
     mocker.patch("GCP.demisto.getFilePath", side_effect=RuntimeError("entry store is unavailable"))
 
-    with pytest.raises(ValueError, match="Failed to read the file of entry ID entry-boom: entry store is unavailable"):
+    with pytest.raises(ValueError, match="Failed to read the file of entry ID 'entry-boom': entry store is unavailable"):
         _kms_read_entry_file("entry-boom")
 
 
@@ -7651,6 +7730,33 @@ def test_kms_symmetric_decrypt_success(mocker):
 
     assert crypto_keys.decrypt.call_args[1]["body"]["ciphertext"] == "bW9ja19jaXBoZXI="
     assert result.outputs_prefix == "GCP.KMS.SymmetricDecrypt"
+    assert result.outputs["Plaintext"] == "mock secret"
+
+
+def test_kms_symmetric_decrypt_forwards_additional_authenticated_data(mocker):
+    """
+    Given: A cipher text and additional authenticated data.
+    When: kms_symmetric_decrypt is called.
+    Then: The AAD round-trips to the API as additionalAuthenticatedData alongside the cipher text.
+    """
+    from GCP import kms_symmetric_decrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.decrypt.return_value.execute.return_value = {"plaintext": "bW9jayBzZWNyZXQ="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+        "additional_authenticated_data": "context-info",
+    }
+    result = kms_symmetric_decrypt(creds, args)
+
+    sent_body = crypto_keys.decrypt.call_args[1]["body"]
+    assert sent_body["ciphertext"] == "bW9ja19jaXBoZXI="
+    assert sent_body["additionalAuthenticatedData"] == "context-info"
     assert result.outputs["Plaintext"] == "mock secret"
 
 

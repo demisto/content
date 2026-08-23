@@ -2529,7 +2529,9 @@ def _kms_resolve_version_name(kms_client, project_id: str, location: str, key_ri
     """
     key_name = f"projects/{project_id}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}"
     if version and version != "default":
-        key_name = f"{key_name}/cryptoKeyVersions/{version}"
+        return f"{key_name}/cryptoKeyVersions/{version}"
+
+    # No explicit version: fall back to the CryptoKey's primary CryptoKeyVersion.
     key = kms_client.projects().locations().keyRings().cryptoKeys().get(name=key_name).execute()  # pylint: disable=E1101
     primary_name = key.get("primary", {}).get("name")
     if not primary_name:
@@ -2644,15 +2646,17 @@ def _kms_read_entry_file(entry_id: str) -> bytes:
     Raises:
         ValueError: If the entry ID cannot be resolved to a readable file.
     """
-    file_info = demisto.getFilePath(entry_id)
-    if not file_info or not file_info.get("path"):
-        raise ValueError(f"Could not find a file for entry ID {entry_id}.")
-
     try:
+        file_info = demisto.getFilePath(entry_id)
+        if not file_info or not file_info.get("path"):
+            raise ValueError("no file path was resolved for the entry")
         with open(file_info["path"], "rb") as file_handle:
             return file_handle.read()
     except Exception as exception:
-        raise ValueError(f"Failed to read the file of entry ID {entry_id}: {exception}") from exception
+        raise ValueError(
+            f"Failed to read the file of entry ID '{entry_id}': {exception}. "
+            "Make sure the 'entry_id' argument points to a readable file uploaded to the War Room."
+        ) from exception
 
 
 def _kms_resolve_plaintext(plaintext: str | None, base64_plaintext: str | None, entry_id: str | None) -> bytes:
@@ -2729,6 +2733,52 @@ def _kms_decode_plaintext(raw_plaintext: bytes) -> str | None:
     except UnicodeDecodeError:
         demisto.debug("[GCP: KMS] Decrypted payload is not valid UTF-8; returning it as a file.")
         return None
+
+
+def _kms_set_key_version_state(
+    creds: Credentials,
+    project_id: str,
+    location: str,
+    key_ring: str,
+    crypto_key: str,
+    crypto_key_version: str,
+    state: str,
+) -> CommandResults:
+    """Sets the state of a CryptoKeyVersion (used by the enable and disable commands).
+
+    Args:
+        creds (Credentials): GCP credentials.
+        project_id (str): The GCP project ID.
+        location (str): The KMS location.
+        key_ring (str): The KeyRing ID.
+        crypto_key (str): The CryptoKey ID.
+        crypto_key_version (str): The CryptoKeyVersion ID, or "default" to use the primary version.
+        state (str): The target state, either ENABLED or DISABLED.
+
+    Returns:
+        CommandResults: The updated CryptoKeyVersion.
+    """
+    kms_client = GCPServices.KMS.build(creds)
+    version_name = _kms_resolve_version_name(kms_client, project_id, location, key_ring, crypto_key, crypto_key_version)
+    demisto.debug(f"[GCP: _kms_set_key_version_state] Setting {version_name} to {state}")
+
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .cryptoKeyVersions()
+        .patch(name=version_name, updateMask="state", body={"state": state})
+        .execute()
+    )
+
+    return CommandResults(
+        readable_output=f"CryptoKeyVersion {version_name} state has been set to {response.get('state')}.",
+        outputs_prefix="GCP.KMS.CryptoKeyVersions",
+        outputs_key_field="name",
+        outputs=response,
+        raw_response=response,
+    )
 
 
 def kms_key_ring_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -3103,52 +3153,6 @@ def kms_key_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
         outputs_prefix="GCP.KMS.CryptoKeys",
         outputs_key_field="ResourceName",
         outputs=key_context,
-        raw_response=response,
-    )
-
-
-def _kms_set_key_version_state(
-    creds: Credentials,
-    project_id: str,
-    location: str,
-    key_ring: str,
-    crypto_key: str,
-    crypto_key_version: str,
-    state: str,
-) -> CommandResults:
-    """Sets the state of a CryptoKeyVersion (used by the enable and disable commands).
-
-    Args:
-        creds (Credentials): GCP credentials.
-        project_id (str): The GCP project ID.
-        location (str): The KMS location.
-        key_ring (str): The KeyRing ID.
-        crypto_key (str): The CryptoKey ID.
-        crypto_key_version (str): The CryptoKeyVersion ID, or "default" to use the primary version.
-        state (str): The target state, either ENABLED or DISABLED.
-
-    Returns:
-        CommandResults: The updated CryptoKeyVersion.
-    """
-    kms_client = GCPServices.KMS.build(creds)
-    version_name = _kms_resolve_version_name(kms_client, project_id, location, key_ring, crypto_key, crypto_key_version)
-    demisto.debug(f"[GCP: _kms_set_key_version_state] Setting {version_name} to {state}")
-
-    response = (
-        kms_client.projects()  # pylint: disable=E1101
-        .locations()
-        .keyRings()
-        .cryptoKeys()
-        .cryptoKeyVersions()
-        .patch(name=version_name, updateMask="state", body={"state": state})
-        .execute()
-    )
-
-    return CommandResults(
-        readable_output=f"CryptoKeyVersion {version_name} state has been set to {response.get('state')}.",
-        outputs_prefix="GCP.KMS.CryptoKeyVersions",
-        outputs_key_field="name",
-        outputs=response,
         raw_response=response,
     )
 
@@ -3707,6 +3711,7 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
         GCPServices.STORAGE,
         GCPServices.CONTAINER,
         GCPServices.BIGQUERY,
+        GCPServices.KMS,
     ]
 
     for service in services_to_try:

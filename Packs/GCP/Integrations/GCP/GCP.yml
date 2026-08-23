@@ -2078,22 +2078,22 @@ script:
       description: The token for the next page of results, used for pagination. Ignored when all_locations is set to true, because a page token is bound to a single location.
       required: false
     outputs:
-      - contextPath: GCP.KMS.KeyRing.Name
+      - contextPath: GCP.KMS.KeyRings.Name
         description: The ID of the key ring.
         type: String
-      - contextPath: GCP.KMS.KeyRing.ResourceName
+      - contextPath: GCP.KMS.KeyRings.ResourceName
         description: The full resource name of the key ring.
         type: String
-      - contextPath: GCP.KMS.KeyRing.Project
+      - contextPath: GCP.KMS.KeyRings.Project
         description: The project that holds the key ring.
         type: String
-      - contextPath: GCP.KMS.KeyRing.Location
+      - contextPath: GCP.KMS.KeyRings.Location
         description: The location of the key ring.
         type: String
-      - contextPath: GCP.KMS.KeyRing.CreationTime
+      - contextPath: GCP.KMS.KeyRings.CreationTime
         description: The time at which the key ring was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.KeyRingsNextPageToken
+      - contextPath: GCP.KMS.KeyRingsNextToken
         description: The token to pass as the page_token argument to retrieve the next page of key rings.
         type: String
   - name: gcp-kms-keys-list
@@ -2130,43 +2130,43 @@ script:
       description: The token for the next page of results, used for pagination.
       required: false
     outputs:
-      - contextPath: GCP.KMS.CryptoKey.Name
+      - contextPath: GCP.KMS.CryptoKeys.Name
         description: The ID of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.ResourceName
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
         description: The full resource name of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Project
+      - contextPath: GCP.KMS.CryptoKeys.Project
         description: The project that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Location
+      - contextPath: GCP.KMS.CryptoKeys.Location
         description: The location of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.KeyRing
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
         description: The key ring that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Purpose
+      - contextPath: GCP.KMS.CryptoKeys.Purpose
         description: The immutable purpose of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.CreationTime
+      - contextPath: GCP.KMS.CryptoKeys.CreationTime
         description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.NextRotationTime
+      - contextPath: GCP.KMS.CryptoKeys.NextRotationTime
         description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.RotationPeriod
+      - contextPath: GCP.KMS.CryptoKeys.RotationPeriod
         description: The period between automatic key rotations.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Labels
+      - contextPath: GCP.KMS.CryptoKeys.Labels
         description: The labels with user-defined metadata.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.VersionTemplate
+      - contextPath: GCP.KMS.CryptoKeys.VersionTemplate
         description: The version template of the crypto key, containing the ProtectionLevel and Algorithm fields.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion
+      - contextPath: GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion
         description: The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKeysNextPageToken
+      - contextPath: GCP.KMS.CryptoKeysNextToken
         description: The token to use when requesting the next set of crypto keys.
         type: String
   - name: gcp-kms-keys-list-all
@@ -2205,40 +2205,40 @@ script:
       required: false
       defaultValue: '50'
     outputs:
-      - contextPath: GCP.KMS.CryptoKey.Name
+      - contextPath: GCP.KMS.CryptoKeys.Name
         description: The ID of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.ResourceName
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
         description: The full resource name of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Project
+      - contextPath: GCP.KMS.CryptoKeys.Project
         description: The project that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Location
+      - contextPath: GCP.KMS.CryptoKeys.Location
         description: The location of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.KeyRing
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
         description: The key ring that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Purpose
+      - contextPath: GCP.KMS.CryptoKeys.Purpose
         description: The immutable purpose of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.CreationTime
+      - contextPath: GCP.KMS.CryptoKeys.CreationTime
         description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.NextRotationTime
+      - contextPath: GCP.KMS.CryptoKeys.NextRotationTime
         description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.RotationPeriod
+      - contextPath: GCP.KMS.CryptoKeys.RotationPeriod
         description: The period between automatic key rotations.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Labels
+      - contextPath: GCP.KMS.CryptoKeys.Labels
         description: The labels with user-defined metadata.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.VersionTemplate
+      - contextPath: GCP.KMS.CryptoKeys.VersionTemplate
         description: The version template of the crypto key, containing the ProtectionLevel and Algorithm fields.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion
+      - contextPath: GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion
         description: The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields.
         type: Unknown
   - name: gcp-kms-key-get
@@ -2259,40 +2259,40 @@ script:
       description: The ID of the crypto key to fetch.
       required: true
     outputs:
-      - contextPath: GCP.KMS.CryptoKey.Name
+      - contextPath: GCP.KMS.CryptoKeys.Name
         description: The ID of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.ResourceName
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
         description: The full resource name of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Project
+      - contextPath: GCP.KMS.CryptoKeys.Project
         description: The project that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Location
+      - contextPath: GCP.KMS.CryptoKeys.Location
         description: The location of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.KeyRing
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
         description: The key ring that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Purpose
+      - contextPath: GCP.KMS.CryptoKeys.Purpose
         description: The immutable purpose of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.CreationTime
+      - contextPath: GCP.KMS.CryptoKeys.CreationTime
         description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.NextRotationTime
+      - contextPath: GCP.KMS.CryptoKeys.NextRotationTime
         description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.RotationPeriod
+      - contextPath: GCP.KMS.CryptoKeys.RotationPeriod
         description: The period between automatic key rotations.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Labels
+      - contextPath: GCP.KMS.CryptoKeys.Labels
         description: The labels with user-defined metadata.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.VersionTemplate
+      - contextPath: GCP.KMS.CryptoKeys.VersionTemplate
         description: The version template of the crypto key, containing the ProtectionLevel and Algorithm fields.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion
+      - contextPath: GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion
         description: The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields.
         type: Unknown
   - name: gcp-kms-key-create
@@ -2368,40 +2368,40 @@ script:
       - 'false'
       defaultValue: 'false'
     outputs:
-      - contextPath: GCP.KMS.CryptoKey.Name
+      - contextPath: GCP.KMS.CryptoKeys.Name
         description: The ID of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.ResourceName
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
         description: The full resource name of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Project
+      - contextPath: GCP.KMS.CryptoKeys.Project
         description: The project that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Location
+      - contextPath: GCP.KMS.CryptoKeys.Location
         description: The location of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.KeyRing
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
         description: The key ring that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Purpose
+      - contextPath: GCP.KMS.CryptoKeys.Purpose
         description: The immutable purpose of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.CreationTime
+      - contextPath: GCP.KMS.CryptoKeys.CreationTime
         description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.NextRotationTime
+      - contextPath: GCP.KMS.CryptoKeys.NextRotationTime
         description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.RotationPeriod
+      - contextPath: GCP.KMS.CryptoKeys.RotationPeriod
         description: The period between automatic key rotations.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Labels
+      - contextPath: GCP.KMS.CryptoKeys.Labels
         description: The labels with user-defined metadata.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.VersionTemplate
+      - contextPath: GCP.KMS.CryptoKeys.VersionTemplate
         description: The version template of the crypto key, containing the ProtectionLevel and Algorithm fields.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion
+      - contextPath: GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion
         description: The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields.
         type: Unknown
   - name: gcp-kms-key-update
@@ -2458,40 +2458,40 @@ script:
       - SOFTWARE
       - HSM
     outputs:
-      - contextPath: GCP.KMS.CryptoKey.Name
+      - contextPath: GCP.KMS.CryptoKeys.Name
         description: The ID of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.ResourceName
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
         description: The full resource name of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Project
+      - contextPath: GCP.KMS.CryptoKeys.Project
         description: The project that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Location
+      - contextPath: GCP.KMS.CryptoKeys.Location
         description: The location of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.KeyRing
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
         description: The key ring that holds the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Purpose
+      - contextPath: GCP.KMS.CryptoKeys.Purpose
         description: The immutable purpose of the crypto key.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.CreationTime
+      - contextPath: GCP.KMS.CryptoKeys.CreationTime
         description: The time at which the crypto key was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.NextRotationTime
+      - contextPath: GCP.KMS.CryptoKeys.NextRotationTime
         description: The time at which the next scheduled rotation is due to run. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56).
         type: Date
-      - contextPath: GCP.KMS.CryptoKey.RotationPeriod
+      - contextPath: GCP.KMS.CryptoKeys.RotationPeriod
         description: The period between automatic key rotations.
         type: String
-      - contextPath: GCP.KMS.CryptoKey.Labels
+      - contextPath: GCP.KMS.CryptoKeys.Labels
         description: The labels with user-defined metadata.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.VersionTemplate
+      - contextPath: GCP.KMS.CryptoKeys.VersionTemplate
         description: The version template of the crypto key, containing the ProtectionLevel and Algorithm fields.
         type: Unknown
-      - contextPath: GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion
+      - contextPath: GCP.KMS.CryptoKeys.PrimaryCryptoKeyVersion
         description: The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields.
         type: Unknown
   - name: gcp-kms-key-version-enable
