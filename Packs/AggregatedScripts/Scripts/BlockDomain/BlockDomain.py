@@ -315,7 +315,11 @@ class PanOs:
         self.address_group = args["address_group"]
         self.tag = args.get("tag", "")
         self.log_forwarding_name = args.get("log_forwarding_name", "")
-        self.domains: list = args.get("domains", [])
+        # Named "domain_list" (matching the YAML arg name) so that when we merge these args into
+        # args_for_next_run in pan_os_commit / pan_os_push_to_device, the platform re-invokes the
+        # script with the required "domain_list" arg present (otherwise the platform's arg-validation
+        # step rejects the polling re-invocation with "Missing argument values: domain_list").
+        self.domains: list = args.get("domain_list", [])
         self.responses: list = []
         # Tracks whether the deny rule has been ensured this run. The rule create is deferred to
         # after the address-group exists (pan-os-create-rule validates that the destination
@@ -687,9 +691,27 @@ class PanOs:
         Returns:
             A PollResult when a job is in flight, or the list of result rows when finished.
         """
+        # A legitimate polling re-entry always carries the job id in self.args (the polling
+        # machinery injects it via args_for_next_run). Anything sitting only in demisto.context()
+        # is stale from a previous crashed run and MUST NOT hijack a fresh manual invocation —
+        # otherwise the user gets an opaque poll on a job they didn't start (and, as observed,
+        # a crash when the stale job id no longer resolves).
+        commit_job_id = self.args.get("commit_job_id")
+        push_job_id = self.args.get("push_job_id")
+
+        # Detect and clean up stale context so subsequent runs start fresh.
         incident_context = demisto.context()
-        commit_job_id = self.args.get("commit_job_id") or demisto.get(incident_context, "commit_job_id")
-        push_job_id = demisto.get(incident_context, "push_job_id")
+        stale_commit = demisto.get(incident_context, "commit_job_id")
+        stale_push = demisto.get(incident_context, "push_job_id")
+        if not commit_job_id and not push_job_id and (stale_commit or stale_push):
+            demisto.debug(
+                f"{LOG_TAG} Fresh invocation but stale polling context detected "
+                f"(stale_commit={stale_commit!r}, stale_push={stale_push!r}); clearing."
+            )
+            demisto.setContext("commit_job_id", "")
+            demisto.setContext("push_job_id", "")
+            demisto.setContext("panorama_responses", "")
+            demisto.setContext("block_domain_rows", "")
 
         demisto.debug(f"{LOG_TAG} manage_pan_os_flow dispatch: {commit_job_id=}, {push_job_id=}")
         if push_job_id:
@@ -851,14 +873,32 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     Returns:
         The PollResult object.
     """
+    global POLLING
     commit_job_id = args["commit_job_id"]
     res_commit_status = run_execute_command("pan-os-commit-status", {"job_id": commit_job_id})
     responses.append(res_commit_status)
-    result_commit_status = res_commit_status[0].get("Contents", {}).get("response", {}).get("result", {}).get("job", {})
+    # Defensive: when pan-os-commit-status errors (job id no longer exists, transport error,
+    # etc.) Contents is a plain string (the error text) rather than the nested dict shape.
+    # Treat that as a terminal failure and stop polling, instead of blowing up on `.get()`.
+    raw_contents = res_commit_status[0].get("Contents", {}) if res_commit_status else {}
+    if not isinstance(raw_contents, dict):
+        demisto.debug(f"{LOG_TAG} pan-os-commit-status returned non-dict Contents ({raw_contents!r}); treating as failure.")
+        commit_output = {"JobID": commit_job_id, "Status": "Failure"}
+        continue_to_poll = False
+        POLLING = continue_to_poll
+        return PollResult(
+            response=CommandResults(
+                outputs=commit_output,
+                outputs_key_field="JobID",
+                readable_output=tableToMarkdown("Commit Status:", commit_output, removeNull=True),
+            ),
+            args_for_next_run=args,
+            continue_to_poll=continue_to_poll,
+        )
+    result_commit_status = raw_contents.get("response", {}).get("result", {}).get("job", {})
     job_result = result_commit_status.get("result")
     commit_output = {"JobID": commit_job_id, "Status": "Success" if job_result == "OK" else "Failure"}
     continue_to_poll = result_commit_status.get("status") != "FIN"
-    global POLLING
     POLLING = continue_to_poll
     return PollResult(
         response=CommandResults(
@@ -1001,7 +1041,10 @@ def main():  # pragma: no cover
             elif brand == "Panorama" and valid_domains:
                 pan_os = PanOs(
                     {
-                        "domains": valid_domains,
+                        # Key MUST be "domain_list" (the YAML arg name), not "domains" - see
+                        # PanOs.__init__ comment. The platform re-invokes the script during polling
+                        # with args_for_next_run, and it validates YAML-required args on every call.
+                        "domain_list": valid_domains,
                         "rule_name": rule_name,
                         "log_forwarding_name": log_forwarding_name,
                         "address_group": address_group,

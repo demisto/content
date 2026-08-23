@@ -125,7 +125,7 @@ def test_most_significant_action(actions, expected):
 def _pan_os(domains):
     return PanOs(
         {
-            "domains": domains,
+            "domain_list": domains,
             "rule_name": "Cortex - Block Domain",
             "address_group": "Blocked Domains - Cortex",
             "tag": "cortex-blocked-domains",
