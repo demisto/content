@@ -155,21 +155,19 @@ def test_get_events_command_returns_results(mocker):
 def test_fetch_events_command_first_run(mocker):
     """
     Given:
-        - A client returning 2 event records.
+        - A client returning 2 event records in ascending order (oldest first, as produced in production).
     When:
         - Running `fetch_events_command` for the first time (empty last_run) to retrieve events.
     Then:
-        - The function should return events and set a new LastRun value with the timestamp and record id of
-            the last event in the list.
-        - The get_records_with_pagination start_date_time uses the FIRST_FETCH_LOOKBACK window (5 minutes ago),
-            not the exact current second, so recently-arrived/lagged events are captured.
+        - LastRun is set to the newest (last) event, and start_date_time uses the look-back window
+            (5 minutes ago), not the exact current second.
     """
     client = Client("url", "cust", "id", "secret", False, True)
     get_records_mocker = mocker.patch.object(
         client,
         "get_records_with_pagination",
         return_value=(
-            [{"_time": "2025-01-01T00:00:00Z", "recordId": "id2"}, {"_time": "2024-01-01T00:00:00Z", "recordId": "id1"}],
+            [{"_time": "2024-01-01T00:00:00Z", "recordId": "id1"}, {"_time": "2025-01-01T00:00:00Z", "recordId": "id2"}],
             {},
         ),
     )
@@ -177,9 +175,8 @@ def test_fetch_events_command_first_run(mocker):
     events, last_run = fetch_events_command(client, 5, {})
 
     assert len(events) == 2
-    assert "LastRun" in last_run
-    assert last_run["LastRun"] == "2024-01-01T00:00:00Z"
-    assert last_run["RecordId"] == "id1"
+    assert last_run["LastRun"] == "2025-01-01T00:00:00Z"
+    assert last_run["RecordId"] == "id2"
     assert get_records_mocker.call_args.kwargs["start_date_time"] == "2025-01-13T23:55:00.000Z"
 
 
@@ -328,8 +325,8 @@ def test_main_fetch_events_with_events(mocker):
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     send_events = mocker.patch.object(CitrixCloudEventCollector, "send_events_to_xsiam")
     records = [
-        {"_time": "2025-01-13T23:58:00Z", "recordId": "r2"},
         {"_time": "2025-01-13T23:57:00Z", "recordId": "r1"},
+        {"_time": "2025-01-13T23:58:00Z", "recordId": "r2"},
     ]
     mocker.patch.object(Client, "get_records_with_pagination", return_value=(records, {}))
 
@@ -337,7 +334,7 @@ def test_main_fetch_events_with_events(mocker):
 
     send_events.assert_called_once()
     assert send_events.call_args.args[0] == records
-    set_last_run.assert_called_once_with({"LastRun": "2025-01-13T23:57:00Z", "RecordId": "r1"})
+    set_last_run.assert_called_once_with({"LastRun": "2025-01-13T23:58:00Z", "RecordId": "r2"})
 
 
 def test_main_test_module(mocker):
