@@ -76,6 +76,13 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  defaultvalue: '1'
+  section: Collect
+  advanced: true
+  required: false
 - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud). Cortex XSOAR only parameter.'
   defaultvalue: None
   display: Incident Mirroring Direction
