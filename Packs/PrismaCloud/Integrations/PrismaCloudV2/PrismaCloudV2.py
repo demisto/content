@@ -2013,8 +2013,9 @@ def alert_search_paginated_request(
     total_rows: Any = 0
     next_page_token = page_token
     is_first_page = True
+    has_more_pages = True
 
-    while True:
+    while has_more_pages:
         page_limit = min(limit - len(alerts), ALERT_SEARCH_MAX_LIMIT) if limit is not None else None
         response = client.alert_search_request(time_range, filters, page_limit, detailed, next_page_token, sort_by)
 
@@ -2026,10 +2027,11 @@ def alert_search_paginated_request(
             is_first_page = False
         demisto.debug(f"Finished alert search request, got {len(alerts) - alerts_before_page} items, {len(alerts)} in total.")
 
-        # there is a 'nextPageToken' value even if we already got all the results, so we also stop when a page adds
-        # no new alerts, both to detect the end of the results and to make sure the loop always progresses
-        if limit is None or len(alerts) >= limit or len(alerts) == alerts_before_page or not next_page_token:
-            break
+        # there is a 'nextPageToken' value even if we already got all the results, so we also require the page to add
+        # new alerts, both to detect the end of the results and to make sure the loop always progresses
+        has_more_pages = bool(
+            limit is not None and len(alerts) < limit and len(alerts) > alerts_before_page and next_page_token
+        )
 
     return alerts[:limit] if limit is not None else alerts, next_page_token, total_rows
 
