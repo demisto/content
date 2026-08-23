@@ -2998,24 +2998,24 @@ def kms_key_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     key_ring = args.get("key_ring", "")
     crypto_key = args.get("crypto_key", "")
 
-    body: dict[str, Any] = {}
-    update_mask: list[str] = []
+    body: dict[str, Any] = remove_empty_elements(
+        {
+            "labels": parse_labels(args.get("labels", "")) or None,
+            "nextRotationTime": _kms_parse_rotation_time(args.get("next_rotation_time")),
+            "rotationPeriod": args.get("rotation_period"),
+            "versionTemplate": {
+                "algorithm": args.get("algorithm"),
+                "protectionLevel": args.get("protection_level"),
+            },
+        }
+    )
 
-    if labels := args.get("labels"):
-        body["labels"] = parse_labels(labels)
-        update_mask.append("labels")
-    if next_rotation_time := _kms_parse_rotation_time(args.get("next_rotation_time")):
-        body["nextRotationTime"] = next_rotation_time
-        update_mask.append("nextRotationTime")
-    if rotation_period := args.get("rotation_period"):
-        body["rotationPeriod"] = rotation_period
-        update_mask.append("rotationPeriod")
-    if algorithm := args.get("algorithm"):
-        body.setdefault("versionTemplate", {})["algorithm"] = algorithm
-        update_mask.append("versionTemplate.algorithm")
-    if protection_level := args.get("protection_level"):
-        body.setdefault("versionTemplate", {})["protectionLevel"] = protection_level
-        update_mask.append("versionTemplate.protectionLevel")
+    update_mask: list[str] = []
+    for field, value in body.items():
+        if field == "versionTemplate":
+            update_mask.extend(f"versionTemplate.{sub_field}" for sub_field in value)
+        else:
+            update_mask.append(field)
 
     if not update_mask:
         raise DemistoException(
