@@ -3094,12 +3094,12 @@ script:
       description: 'The machine type name for this instance, for example: n1-standard-1. The zone-qualified URL is built automatically from the zone and this value.'
       required: true
     - name: description
-      description: An optional description for the instance.
+      description: The optional description for the instance.
     - name: tags
-      description: A comma-separated list of network tags to apply to the instance.
+      description: The comma-separated list of network tags to apply to the instance.
       isArray: true
     - name: tags_fingerprint
-      description: A fingerprint hash of the tags contents, used for optimistic locking.
+      description: The fingerprint hash of the tags contents, used for optimistic locking.
     - name: can_ip_forward
       description: Whether the instance is allowed to send and receive packets with non-matching destination or source IPs.
       auto: PREDEFINED
@@ -3111,7 +3111,7 @@ script:
     - name: subnetwork
       description: The URL of the subnetwork resource for this instance.
     - name: network_ip
-      description: An IPv4 internal IP address to assign to the instance.
+      description: The IPv4 internal IP address to assign to the instance.
     - name: external_internet_access
       description: Whether to grant the instance external internet access by adding a ONE_TO_ONE_NAT access config.
       auto: PREDEFINED
@@ -3119,11 +3119,11 @@ script:
       - 'true'
       - 'false'
     - name: external_nat_ip
-      description: A static external IP address to assign to the instance. Requires external_internet_access.
+      description: The static external IP address to assign to the instance. Requires external_internet_access.
     - name: disk_source
       description: The URL of an existing persistent disk to attach to the instance.
     - name: disk_device_name
-      description: A unique device name for the attached disk, reflected in the /dev/disk/by-id/google-* tree.
+      description: The unique device name for the attached disk, reflected in the /dev/disk/by-id/google-* tree.
     - name: disk_boot
       description: Whether this is a boot disk. Only one boot disk can be attached to an instance.
       auto: PREDEFINED
@@ -3137,7 +3137,7 @@ script:
       - 'true'
       - 'false'
     - name: source_image
-      description: The source image URL to create the boot disk from, for example projects/debian-cloud/global/images/family/debian-11.
+      description: The source image URL to create the boot disk from, for example, projects/debian-cloud/global/images/family/debian-11.
     - name: disk_size_gb
       description: The size of the boot disk to create, in GB.
     - name: disk_type
@@ -3192,13 +3192,13 @@ script:
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format.
+      description: The time that this operation was requested. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      description: The time that this operation was started by the server. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format.
+      description: The time that this operation was completed. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: If errors are generated during processing of the operation, this field will be populated.
@@ -3226,6 +3226,7 @@ script:
       type: string
   - name: gcp-compute-instance-delete
     description: "Deletes the specified Compute Engine VM instance. Returns a zone Operation resource describing the asynchronous deletion. Required permission: compute.instances.delete."
+    execution: true
     arguments:
     - name: project_id
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -3235,7 +3236,7 @@ script:
       description: The name of the zone for this request.
       required: true
     - name: resource_name
-      description: Name of the instance resource to delete.
+      description: The name of the instance resource to delete.
       required: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
@@ -3272,13 +3273,13 @@ script:
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format.
+      description: The time that this operation was requested. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      description: The time that this operation was started by the server. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format.
+      description: The time that this operation was completed. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: If errors are generated during processing of the operation, this field will be populated.
@@ -3306,6 +3307,7 @@ script:
       type: string
   - name: gcp-compute-instance-reset
     description: "Performs a hard reset on the specified Compute Engine VM instance. Returns a zone Operation resource describing the asynchronous reset. Required permission: compute.instances.reset."
+    execution: true
     arguments:
     - name: project_id
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -3315,7 +3317,7 @@ script:
       description: The name of the zone for this request.
       required: true
     - name: resource_name
-      description: Name of the instance resource to reset.
+      description: The name of the instance resource to reset.
       required: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
@@ -3352,13 +3354,13 @@ script:
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format.
+      description: The time that this operation was requested. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      description: The time that this operation was started by the server. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format.
+      description: The time that this operation was completed. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: If errors are generated during processing of the operation, this field will be populated.
@@ -3395,7 +3397,7 @@ script:
       description: The name of the zone for this request.
       required: true
     - name: resource_name
-      description: Name of the instance resource for which to set metadata.
+      description: The name of the instance resource for which to set metadata.
       required: true
     - name: metadata_fingerprint
       description: A fingerprint hash of the metadata's contents, used for optimistic locking. If not provided, the current fingerprint is fetched automatically from the instance (requires the compute.instances.get permission).
@@ -3436,13 +3438,13 @@ script:
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format.
+      description: The time that this operation was requested. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      description: The time that this operation was started by the server. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format.
+      description: The time that this operation was completed. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: If errors are generated during processing of the operation, this field will be populated.
@@ -3479,10 +3481,10 @@ script:
       description: The name of the zone for this request.
       required: true
     - name: resource_name
-      description: Name of the instance resource for which to set the machine type.
+      description: The name of the instance resource for which to set the machine type.
       required: true
     - name: machine_type
-      description: 'The full or partial URL of the machine type resource, for example: zones/zone/machineTypes/n1-standard-1.'
+      description: 'The machine type. Can be a bare name (for example, n1-standard-1), in which case the zone-qualified URL is built automatically, or a full/partial URL (for example, zones/zone/machineTypes/n1-standard-1).'
       required: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
@@ -3519,13 +3521,13 @@ script:
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format.
+      description: The time that this operation was requested. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      description: The time that this operation was started by the server. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format.
+      description: The time that this operation was completed. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: If errors are generated during processing of the operation, this field will be populated.
@@ -3559,14 +3561,14 @@ script:
       required: false
       required:platform: true
     - name: filters
-      description: A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.
+      description: The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.
     - name: limit
-      description: 'The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive.'
+      description: 'The maximum number of results per page that should be returned. Acceptable values are 1 to 500, inclusive.'
       defaultValue: '50'
     - name: order_by
-      description: Sorts list results in a specific order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
+      description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
     - name: page_token
-      description: Specifies a page token. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+      description: The page token. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.Instances.kind
       description: Type of the resource. Always compute#instance for instances.
@@ -3575,7 +3577,7 @@ script:
       description: The unique identifier of the resource.
       type: String
     - contextPath: GCP.Compute.Instances.creationTimestamp
-      description: Creation timestamp in RFC3339 text format.
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: String
     - contextPath: GCP.Compute.Instances.name
       description: The name of the resource, provided by the client when the resource is first created.

@@ -6671,6 +6671,8 @@ def test_compute_instance_insert_success(mocker):
         "zone": "us-central1-a",
         "name": "My-Instance",
         "machine_type": "n1-standard-1",
+        "tags": "web-server,database",
+        "tags_fingerprint": "tags-fp-123",
         "network": "global/networks/default",
         "external_internet_access": "true",
         "metadata_items": "key=foo,value=bar",
@@ -6695,6 +6697,7 @@ def test_compute_instance_insert_success(mocker):
     body = call_kwargs["body"]
     assert body["name"] == "my-instance"
     assert body["machineType"] == "zones/us-central1-a/machineTypes/n1-standard-1"
+    assert body["tags"] == {"items": ["web-server", "database"], "fingerprint": "tags-fp-123"}
     assert body["networkInterfaces"][0]["network"] == "global/networks/default"
     assert body["networkInterfaces"][0]["accessConfigs"][0]["type"] == "ONE_TO_ONE_NAT"
     assert body["metadata"]["items"] == [{"key": "foo", "value": "bar"}]
@@ -7008,6 +7011,32 @@ def test_compute_instance_machine_type_set_success(mocker):
     call_kwargs = mock_instances.setMachineType.call_args[1]
     assert call_kwargs["body"] == {"machineType": "zones/us-central1-a/machineTypes/n1-standard-2"}
     assert call_kwargs["instance"] == "instance-1"
+
+
+def test_compute_instance_machine_type_set_bare_name_builds_url(mocker):
+    """
+    Given: A bare machine type name (no slash) instead of a full URL.
+    When: compute_instance_machine_type_set is called.
+    Then: The zone-qualified machineType URL is built automatically, consistent with insert.
+    """
+    from GCP import compute_instance_machine_type_set
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "resource_name": "instance-1",
+        "machine_type": "e2-small",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setMachineType.return_value.execute.return_value = {"id": "op-mt", "status": "RUNNING"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_machine_type_set(mocker.Mock(spec=Credentials), args)
+
+    body = mock_instances.setMachineType.call_args[1]["body"]
+    assert body == {"machineType": "zones/us-central1-a/machineTypes/e2-small"}
 
 
 def test_compute_instance_machine_type_set_permission_error(mocker):

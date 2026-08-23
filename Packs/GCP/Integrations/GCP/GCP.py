@@ -2115,13 +2115,13 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
         body["description"] = description
 
     if tags := args.get("tags"):
-        body.setdefault("tags", [{}])[0]["items"] = argToList(tags)
+        body.setdefault("tags", {})["items"] = argToList(tags)
 
     if (can_ip_forward := args.get("can_ip_forward")) is not None:
         body["canIpForward"] = argToBoolean(can_ip_forward)
 
     if tags_fingerprint := args.get("tags_fingerprint"):
-        body.setdefault("tags", [{}])[0]["fingerprint"] = tags_fingerprint
+        body.setdefault("tags", {})["fingerprint"] = tags_fingerprint
 
     body["machineType"] = f"zones/{zone}/machineTypes/{args.get('machine_type')}"
 
@@ -2344,7 +2344,12 @@ def compute_instance_machine_type_set(creds: Credentials, args: dict[str, Any]) 
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
     resource_name = args.get("resource_name")
-    machine_type = args.get("machine_type")
+    machine_type = args.get("machine_type", "")
+
+    # Accept either a bare machine type name (e.g. n1-standard-1) or a full/partial URL
+    # (e.g. zones/zone/machineTypes/n1-standard-1), consistent with gcp-compute-instance-insert.
+    if "/" not in machine_type:
+        machine_type = f"zones/{zone}/machineTypes/{machine_type}"
 
     body = {"machineType": machine_type}
 
