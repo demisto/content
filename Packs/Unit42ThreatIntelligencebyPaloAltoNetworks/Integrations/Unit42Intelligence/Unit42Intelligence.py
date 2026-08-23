@@ -1304,6 +1304,9 @@ def file_command(client: Client, args: dict[str, Any]) -> CommandResults:
 def main() -> None:
     """Main function, parses params and runs command functions"""
 
+    global _UCP_AUTH_PARAMS_INJECTED
+    _UCP_AUTH_PARAMS_INJECTED = True
+
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
