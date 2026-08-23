@@ -1224,7 +1224,7 @@ def main():  # pragma: no cover
     """
     The main function parses the params and runs the command functions
     """
-    
+
     global _UCP_AUTH_PARAMS_INJECTED
     _UCP_AUTH_PARAMS_INJECTED = True
 
