@@ -146,7 +146,7 @@ Configures security settings for GKE clusters, including access controls and vis
 | resource_name | Name of the GKE cluster. | Required |
 | enable_intra_node_visibility | Enable intra-node visibility. Possible values are: true, false. | Optional |
 | enable_master_authorized_networks | Enable Master Authorized Networks. Possible values are: true, false. | Optional |
-| cidrs | A comma-separated list of up to 50 CIDR blocks (for example, "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/> | Optional |
+| cidrs | A comma-separated list of up to 50 CIDR blocks (for example, "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
 | enable_binary_authorization | Whether to enable Binary Authorization on the cluster. Possible values are: true, false. | Optional |
 | enable_http_load_balancing | Whether to enable the HTTP load balancing add-on on the cluster. Possible values are: true, false. | Optional |
 | enable_kubernetes_dashboard | Whether to enable the Kubernetes dashboard add-on on the cluster. Possible values are: true, false. | Optional |
@@ -177,7 +177,7 @@ Configures security settings for GKE clusters, including access controls and vis
 | GCP.Container.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
 | GCP.Container.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
 | GCP.Container.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
-| GCP.Container.Operations.nodePools | List | The list of node pools in the cluster, with their configuration and security settings. |
+| GCP.Container.Operations.nodePools | Unknown | The list of node pools in the cluster, with their configuration and security settings. |
 | GCP.Container.Operations.privateClusterConfig.enablePrivateNodes | Boolean | Whether private nodes are enabled in the cluster. |
 | GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
 | GCP.Container.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
