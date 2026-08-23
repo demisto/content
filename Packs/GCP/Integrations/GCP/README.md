@@ -1676,14 +1676,14 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
 
-### gcp-kms-keyring-list
+### gcp-kms-key-ring-list
 
 ***
 Lists the Cloud KMS key rings in a given location, or across all locations. Required Permissions: cloudkms.keyRings.list.
 
 #### Base Command
 
-`gcp-kms-keyring-list`
+`gcp-kms-key-ring-list`
 
 #### Input
 
@@ -1706,14 +1706,14 @@ Lists the Cloud KMS key rings in a given location, or across all locations. Requ
 | GCP.KMS.KeyRing.CreationTime | Date | The time at which the key ring was created. The format is YYYY-MM-DD HH:MM:SS (for example, 2024-01-15 12:34:56). |
 | GCP.KMS.KeyRingsNextPageToken | String | The token to pass as the page_token argument to retrieve the next page of key rings. |
 
-### gcp-kms-key-list
+### gcp-kms-keys-list
 
 ***
 Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloudkms.cryptoKeys.list.
 
 #### Base Command
 
-`gcp-kms-key-list`
+`gcp-kms-keys-list`
 
 #### Input
 
@@ -1744,14 +1744,14 @@ Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloud
 | GCP.KMS.CryptoKey.PrimaryCryptoKeyVersion | Unknown | The primary crypto key version, containing the Name, State, CreationTime, ProtectionLevel, Algorithm, and GenerateTime fields. |
 | GCP.KMS.CryptoKeysNextPageToken | String | The token to use when requesting the next set of crypto keys. |
 
-### gcp-kms-key-list-all
+### gcp-kms-keys-list-all
 
 ***
 Lists every crypto key across all key rings in a location, or across all locations. Required Permissions: cloudkms.keyRings.list, cloudkms.cryptoKeys.list.
 
 #### Base Command
 
-`gcp-kms-key-list-all`
+`gcp-kms-keys-list-all`
 
 #### Input
 
@@ -1761,7 +1761,7 @@ Lists every crypto key across all key rings in a location, or across all locatio
 | location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
 | all_locations | Whether to return the crypto keys from all supported locations. When set to true, the location argument is ignored. Possible values are: true, false. Default is false. | Optional |
 | key_state | Returns only keys whose primary crypto key version is in this state. Leave empty to return all keys. Possible values are: ENABLED, DISABLED, DESTROYED, DESTROY_SCHEDULED, PENDING_GENERATION, PENDING_IMPORT, IMPORT_FAILED. | Optional |
-| limit | The maximum number of crypto keys to return per key ring. Valid range 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-key-list to page through a single key ring. Default is 50. | Optional |
+| limit | The maximum number of crypto keys to return per key ring. Valid range 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-keys-list to page through a single key ring. Default is 50. | Optional |
 
 #### Context Output
 
@@ -2037,6 +2037,7 @@ Returns the public key of a given asymmetric crypto key version. Required Permis
 | GCP.KMS.PublicKey.CryptoKeyVersion | String | The resource name of the crypto key version. |
 | GCP.KMS.PublicKey.PEM | String | The public key in PEM format. |
 | GCP.KMS.PublicKey.Algorithm | String | The algorithm of the public key. |
+| GCP.KMS.PublicKey.FullResponse | Unknown | The full API response returned by the getPublicKey operation. |
 
 ### gcp-kms-symmetric-encrypt
 
@@ -2067,6 +2068,7 @@ Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.crypt
 | GCP.KMS.SymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
 | GCP.KMS.SymmetricEncrypt.ResourceName | String | The full resource name of the crypto key used for the encryption. |
 | GCP.KMS.SymmetricEncrypt.Ciphertext | String | The Base64-encoded encrypted ciphertext. |
+| GCP.KMS.SymmetricEncrypt.FullResponse | Unknown | The full API response returned by the encrypt operation. |
 
 ### gcp-kms-symmetric-decrypt
 
@@ -2096,6 +2098,7 @@ Decrypts data that was encrypted with a symmetric crypto key. Required Permissio
 | GCP.KMS.SymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
 | GCP.KMS.SymmetricDecrypt.ResourceName | String | The full resource name of the crypto key used for the decryption. |
 | GCP.KMS.SymmetricDecrypt.Plaintext | String | The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
+| GCP.KMS.SymmetricDecrypt.FullResponse | Unknown | The full API response returned by the decrypt operation. |
 
 ### gcp-kms-asymmetric-encrypt
 
@@ -2126,6 +2129,7 @@ Encrypts data with the public key of an asymmetric crypto key version. The encry
 | GCP.KMS.AsymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
 | GCP.KMS.AsymmetricEncrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the encryption. |
 | GCP.KMS.AsymmetricEncrypt.Ciphertext | String | The Base64-encoded encrypted ciphertext. |
+| GCP.KMS.AsymmetricEncrypt.FullResponse | Unknown | The full API response of the public key used for the encryption. |
 
 ### gcp-kms-asymmetric-decrypt
 
@@ -2155,3 +2159,4 @@ Decrypts data using an asymmetric crypto key version. Required Permissions: clou
 | GCP.KMS.AsymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
 | GCP.KMS.AsymmetricDecrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the decryption. |
 | GCP.KMS.AsymmetricDecrypt.Plaintext | String | The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
+| GCP.KMS.AsymmetricDecrypt.FullResponse | Unknown | The full API response returned by the decrypt operation. |

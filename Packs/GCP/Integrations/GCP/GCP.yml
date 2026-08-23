@@ -2051,7 +2051,7 @@ script:
       - contextPath: GCP.BigQuery.Datasets.catalogSource
         description: The origin of the dataset.
         type: String
-  - name: gcp-kms-keyring-list
+  - name: gcp-kms-key-ring-list
     description: "Lists the Cloud KMS key rings in a given location, or across all locations. Required Permissions: cloudkms.keyRings.list."
     arguments:
     - name: project_id
@@ -2096,7 +2096,7 @@ script:
       - contextPath: GCP.KMS.KeyRingsNextPageToken
         description: The token to pass as the page_token argument to retrieve the next page of key rings.
         type: String
-  - name: gcp-kms-key-list
+  - name: gcp-kms-keys-list
     description: "Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloudkms.cryptoKeys.list."
     arguments:
     - name: project_id
@@ -2169,7 +2169,7 @@ script:
       - contextPath: GCP.KMS.CryptoKeysNextPageToken
         description: The token to use when requesting the next set of crypto keys.
         type: String
-  - name: gcp-kms-key-list-all
+  - name: gcp-kms-keys-list-all
     description: "Lists every crypto key across all key rings in a location, or across all locations. Required Permissions: cloudkms.keyRings.list, cloudkms.cryptoKeys.list."
     arguments:
     - name: project_id
@@ -2201,7 +2201,7 @@ script:
       - PENDING_IMPORT
       - IMPORT_FAILED
     - name: limit
-      description: The maximum number of crypto keys to return per key ring. Valid range 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-key-list to page through a single key ring.
+      description: The maximum number of crypto keys to return per key ring. Valid range 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-keys-list to page through a single key ring.
       required: false
       defaultValue: '50'
     outputs:
@@ -2668,6 +2668,9 @@ script:
       - contextPath: GCP.KMS.PublicKey.Algorithm
         description: The algorithm of the public key.
         type: String
+      - contextPath: GCP.KMS.PublicKey.FullResponse
+        description: The full API response returned by the getPublicKey operation.
+        type: Unknown
   - name: gcp-kms-symmetric-encrypt
     description: "Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToEncrypt."
     arguments:
@@ -2709,6 +2712,9 @@ script:
       - contextPath: GCP.KMS.SymmetricEncrypt.Ciphertext
         description: The Base64-encoded encrypted ciphertext.
         type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.FullResponse
+        description: The full API response returned by the encrypt operation.
+        type: Unknown
   - name: gcp-kms-symmetric-decrypt
     description: "Decrypts data that was encrypted with a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
     arguments:
@@ -2746,6 +2752,9 @@ script:
       - contextPath: GCP.KMS.SymmetricDecrypt.Plaintext
         description: The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
         type: String
+      - contextPath: GCP.KMS.SymmetricDecrypt.FullResponse
+        description: The full API response returned by the decrypt operation.
+        type: Unknown
   - name: gcp-kms-asymmetric-encrypt
     description: "Encrypts data with the public key of an asymmetric crypto key version. The encryption is performed locally using the retrieved public key. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey."
     arguments:
@@ -2788,6 +2797,9 @@ script:
       - contextPath: GCP.KMS.AsymmetricEncrypt.Ciphertext
         description: The Base64-encoded encrypted ciphertext.
         type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.FullResponse
+        description: The full API response of the public key used for the encryption.
+        type: Unknown
   - name: gcp-kms-asymmetric-decrypt
     description: "Decrypts data using an asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
     arguments:
@@ -2826,6 +2838,9 @@ script:
       - contextPath: GCP.KMS.AsymmetricDecrypt.Plaintext
         description: The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
         type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.FullResponse
+        description: The full API response returned by the decrypt operation.
+        type: Unknown
 
 # The command is currently unsupported.
 #  - name: gcp-iam-project-deny-policy-create
