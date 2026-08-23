@@ -658,6 +658,7 @@ script:
       description: The AWS account ID that owns the Amazon S3 bucket specified in the location parameter.
     - name: tags
       description: 'The tags to be added to a new ThreatEntitySet resource. A comma-separated list of key=value pairs. For example: key1=value1,key2=value2.'
+      isArray: true
     - name: region
       description: The AWS Region, if not specified the default region will be used.
     - name: roleArn
