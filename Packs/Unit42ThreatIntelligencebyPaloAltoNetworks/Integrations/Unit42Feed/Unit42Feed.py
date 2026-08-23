@@ -1226,7 +1226,7 @@ def main():  # pragma: no cover
     """
 
     global _UCP_AUTH_PARAMS_INJECTED
-    _UCP_AUTH_PARAMS_INJECTED = True
+    _UCP_AUTH_PARAMS_INJECTED = True  # type: ignore[name-defined]  # noqa: F821
 
     params = demisto.params()
 

@@ -1305,7 +1305,7 @@ def main() -> None:
     """Main function, parses params and runs command functions"""
 
     global _UCP_AUTH_PARAMS_INJECTED
-    _UCP_AUTH_PARAMS_INJECTED = True
+    _UCP_AUTH_PARAMS_INJECTED = True  # type: ignore[name-defined]  # noqa: F821
 
     params = demisto.params()
     args = demisto.args()
