@@ -1020,7 +1020,7 @@ script:
       description: Enable Master Authorized Networks.
     - name: cidrs
       description: |
-        Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
+        A comma-separated list of up to 50 CIDR blocks (for example, "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
         If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
       isArray: true
     - name: enable_binary_authorization
@@ -1036,21 +1036,21 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to enable the HTTP load balancing addon on the cluster.
+      description: Whether to enable the HTTP load balancing add-on on the cluster.
     - name: enable_kubernetes_dashboard
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether to enable the Kubernetes dashboard addon on the cluster.
+      description: Whether to enable the Kubernetes dashboard add-on on the cluster.
     - name: enable_network_policy
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether to enable the network policy addon on the cluster.
+      description: Whether to enable the network policy add-on on the cluster.
     - name: enable_basic_auth
       required: false
       auto: PREDEFINED
@@ -1116,7 +1116,7 @@ script:
       description: The cluster’s IPv4 CIDR block.
       type: String
     - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
-      description: List of authorized CIDR blocks that can access the GKE cluster master.
+      description: The list of authorized CIDR blocks that can access the GKE cluster master.
       type: List
     - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
       description: Whether master authorized networks are enabled for the cluster.
@@ -1134,7 +1134,7 @@ script:
       description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
       type: String
     - contextPath: GCP.Container.Operations.nodePools
-      description: A list of node pools in the cluster, with their configuration and security settings.
+      description: The list of node pools in the cluster, with their configuration and security settings.
       type: List
     - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
       description: Whether private nodes are enabled in the cluster.

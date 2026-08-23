@@ -166,13 +166,13 @@ Configures security settings for GKE clusters, including access controls and vis
 | GCP.Container.Operations.enableBinaryAuthorization | Boolean | Whether Binary Authorization is enabled for the cluster. |
 | GCP.Container.Operations.enableLegacyABAC | Boolean | Whether legacy ABAC is enabled for the cluster. |
 | GCP.Container.Operations.clusterIpv4Cidr | String | The cluster’s IPv4 CIDR block. |
-| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | List | List of authorized CIDR blocks that can access the GKE cluster master. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | List | The list of authorized CIDR blocks that can access the GKE cluster master. |
 | GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled | Boolean | Whether master authorized networks are enabled for the cluster. |
 | GCP.Container.Operations.network | String | The network to which the GKE cluster belongs. |
 | GCP.Container.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
 | GCP.Container.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
-| GCP.Container.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
-| GCP.Container.Operations.nodePools | List | A list of node pools in the cluster, with their configuration and security settings. |
+| GCP.Container.Operations.monitoringService | String | The monitoring service used for the cluster \(for example, "monitoring.googleapis.com"\). |
+| GCP.Container.Operations.nodePools | List | The list of node pools in the cluster, with their configuration and security settings. |
 | GCP.Container.Operations.privateClusterConfig.enablePrivateNodes | Boolean | Whether private nodes are enabled in the cluster. |
 | GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
 | GCP.Container.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
