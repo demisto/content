@@ -656,6 +656,15 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "68b40840-ed24-11f0-9509-45873decf476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -752,7 +761,6 @@
     "group": "incident",
     "id": "GIB Attacks DDOS Layout",
     "name": "GIB Attacks DDOS Layout",
-    "system": false,
     "version": -1,
     "fromVersion": "6.10.0"
 }

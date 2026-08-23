@@ -8,6 +8,7 @@ from ldap3 import (
     ALL_ATTRIBUTES,
     AUTO_BIND_NO_TLS,
     AUTO_BIND_TLS_BEFORE_BIND,
+    BASE,
     NTLM,
     SUBTREE,
     Connection,
@@ -132,14 +133,10 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
         # For establishing a secure connection via SSL/TLS protocol - use the 'SSL' option.
         # For establishing a secure connection via Start TLS - use the 'Start TLS' option.
         demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
-        if unsecure:
-            # Add support for all CIPHERS_STRING
-            tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING, version=get_ssl_version(ssl_version))
-        else:
-            tls = Tls(validate=ssl.CERT_NONE, version=get_ssl_version(ssl_version))
+        tls = get_tls_object(unsecure, ssl_version)
         if port:
-            return Server(host, port=port, use_ssl=unsecure, tls=tls)
-        return Server(host, use_ssl=unsecure, tls=tls)
+            return Server(host, port=port, use_ssl=True, tls=tls)
+        return Server(host, use_ssl=True, tls=tls)
 
     if secure_connection == SSL:  # Secure connection (SSL\TLS)
         demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
@@ -286,14 +283,39 @@ def group_entry(group_object, custom_attributes):
     return group
 
 
-def base_dn_verified(base_dn):
-    # search AD with a simple query to test base DN is configured correctly
+def base_dn_verified(base_dn: str) -> bool:
+    """
+    Verifies the base DN is configured correctly.
+    Uses BASE scope, size limit of 1, and 'no attributes' OID for maximum performance.
+
+    This function performs an optimized LDAP search that only checks if the base DN entry itself exists,
+    rather than searching the entire directory tree. This reduces the complexity from O(n) to O(1).
+
+    Args:
+        base_dn: The base DN to verify (e.g., 'dc=example,dc=com')
+
+    Returns:
+        bool: True if the base DN is valid and accessible, False otherwise
+    """
+    assert connection is not None
     try:
-        search("(objectClass=*)", base_dn, size_limit=1)
+        # Optimized search with three performance improvements:
+        # 1. search_scope=BASE: Only looks at the DN itself (O(1) complexity)
+        # 2. size_limit=1: Safety guard to ensure only one record is processed
+        # 3. attributes=['1.1']: Special OID meaning 'return no attributes' (minimal data transfer)
+        success = connection.search(
+            search_base=base_dn, search_filter="(objectClass=*)", search_scope=BASE, size_limit=1, attributes=["1.1"]
+        )
+
+        if not success:
+            demisto.info(f"Base DN verification failed. Result: {connection.result}")
+            return False
+
+        return True
+
     except Exception as e:
-        demisto.info(str(e))
+        demisto.error(f"Error during Base DN verification: {e}\n{traceback.format_exc()}")
         return False
-    return True
 
 
 def generate_unique_cn(default_base_dn, cn):
@@ -1203,6 +1225,45 @@ def create_group():
 """ UPDATE OBJECT """
 
 
+def prepare_attribute_value(attribute_value: str | None, attribute_type: str | None) -> bytes | str | None:
+    """
+    Converts an attribute value string to the appropriate Python type for the LDAP modify call.
+
+    When *attribute_type* is ``"byte"``, the value is interpreted as a comma-separated list of
+    decimal integers (0-255) and converted to a raw :class:`bytes` object so that ldap3 sends a
+    proper Octet String over the wire.  This is required for binary AD attributes such as
+    ``logonHours``, ``objectSID``, and ``objectGUID``.
+
+    For all other attribute types the value is returned unchanged as a plain string.
+
+    :param attribute_value: The raw string value supplied by the caller.
+    :param attribute_type: Optional type hint.  Pass ``"byte"`` for binary/Octet String attributes.
+    :return: A :class:`bytes` object for binary attributes, or the original string otherwise.
+    :raises ValueError: If *attribute_type* is ``"byte"`` but the value cannot be parsed as a
+        comma-separated list of integers in the range 0-255.
+    """
+    if not (attribute_type and attribute_type.lower() == "byte"):
+        demisto.debug(f"attribute-type argument is not 'byte', returning value as string: {attribute_value}")
+        return attribute_value
+
+    if not attribute_value:
+        raise DemistoException("attribute-value must be provided when attribute-type is 'byte'.")
+    try:
+        byte_values = argToList(attribute_value, transform=int)
+    except ValueError:
+        raise DemistoException(
+            f"attribute-value '{attribute_value}' cannot be parsed as a comma-separated list of integers. "
+            "When attribute-type is 'byte', provide values as comma-separated decimal integers, "
+            "e.g. '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'."
+        )
+    if any(b < 0 or b > 255 for b in byte_values):
+        raise DemistoException(
+            f"attribute-value contains out-of-range integers. Each byte must be between 0 and 255, got: {byte_values}"
+        )
+    demisto.debug(f"attribute-type is 'byte', returning value as bytes: {byte_values}")
+    return bytes(byte_values)
+
+
 def modify_object(dn, modification):
     """
     modifies object in the DIT
@@ -1220,11 +1281,12 @@ def update_user(default_base_dn):
     sam_account_name = args.get("username")
     attribute_name = args.get("attribute-name")
     attribute_value = args.get("attribute-value")
+    attribute_type = args.get("attribute-type")
     search_base = args.get("base-dn") or default_base_dn
     dn = user_dn(sam_account_name, search_base)
 
     modification = {}
-    modification[attribute_name] = [("MODIFY_REPLACE", attribute_value)]
+    modification[attribute_name] = [("MODIFY_REPLACE", prepare_attribute_value(attribute_value, attribute_type))]
 
     # modify user
     modify_object(dn, modification)
@@ -1243,10 +1305,11 @@ def update_group(default_base_dn):
     sam_account_name = args.get("groupname")
     attribute_name = args.get("attributename")
     attribute_value = args.get("attributevalue")
+    attribute_type = args.get("attribute-type")
     search_base = args.get("basedn") or default_base_dn
     dn = group_dn(sam_account_name, search_base)
 
-    modification = {attribute_name: [("MODIFY_REPLACE", attribute_value)]}
+    modification = {attribute_name: [("MODIFY_REPLACE", prepare_attribute_value(attribute_value, attribute_type))]}
     modify_object(dn, modification)
 
     demisto_entry = {
@@ -1261,8 +1324,11 @@ def update_contact():
     args = demisto.args()
 
     contact_dn = args.get("contact-dn")
+    attribute_name = args.get("attribute-name")
+    attribute_value = args.get("attribute-value")
+    attribute_type = args.get("attribute-type")
     modification = {}
-    modification[args.get("attribute-name")] = [("MODIFY_REPLACE", args.get("attribute-value"))]
+    modification[attribute_name] = [("MODIFY_REPLACE", prepare_attribute_value(attribute_value, attribute_type))]
 
     # modify
     modify_object(contact_dn, modification)
@@ -1270,7 +1336,7 @@ def update_contact():
     demisto_entry = {
         "ContentsFormat": formats["text"],
         "Type": entryTypes["note"],
-        "Contents": "Updated contact's {} to: {} ".format(args.get("attribute-name"), args.get("attribute-value")),
+        "Contents": f"Updated contact's {attribute_name} to: {attribute_value} ",
     }
     demisto.results(demisto_entry)
 
@@ -1805,10 +1871,10 @@ def main():
     server_ip = params.get("server_ip")
     username = params.get("credentials")["identifier"]
     password = params.get("credentials")["password"]
-    default_base_dn = params.get("base_dn")
+    default_base_dn = params.get("base_dn", "")
     secure_connection = params.get("secure_connection")
     ssl_version = params.get("ssl_version", "None")
-    default_page_size = int(params.get("page_size"))
+    default_page_size = int(params.get("page_size") or 500)
     ntlm_auth = params.get("ntlm")
     insecure = params.get("unsecure", False)
     port = params.get("port")
@@ -1817,6 +1883,7 @@ def main():
     create_if_not_exists = params.get("create-if-not-exists")
     mapper_in = params.get("mapper-in", DEFAULT_INCOMING_MAPPER)
     mapper_out = params.get("mapper-out", DEFAULT_OUTGOING_MAPPER)
+    verify_base_dn = params.get("verify_base_dn", True) or command == "test-module"
 
     if port:
         # port was configured, cast to int
@@ -1863,16 +1930,17 @@ def main():
 
         demisto.info(f"Established connection with AD LDAP server.\nLDAP Connection Details: {connection}")
 
-        if not base_dn_verified(default_base_dn):
-            message = (
-                f"Failed to verify the base DN configured for the instance.\n"
-                f"Last connection result: {json.dumps(connection.result)}\n"
-                f"Last error from LDAP server: {json.dumps(connection.last_error)}"
-            )
-            return_error(message)
-            return None
-
-        demisto.info(f'Verified base DN "{default_base_dn}"')
+        if verify_base_dn:
+            demisto.info(f'Starting to verify base DN "{default_base_dn}"')
+            if not base_dn_verified(default_base_dn):
+                message = (
+                    f"Failed to verify the base DN configured for the instance.\n"
+                    f"Last connection result: {json.dumps(connection.result)}\n"
+                    f"Last error from LDAP server: {json.dumps(connection.last_error)}"
+                )
+                return_error(message)
+                return None
+            demisto.info(f'Verified base DN "{default_base_dn}"')
 
         """ COMMAND EXECUTION """
 

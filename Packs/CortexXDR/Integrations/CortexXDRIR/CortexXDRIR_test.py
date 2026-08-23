@@ -2141,8 +2141,9 @@ def test_get_remote_data_command_exclude_fields(mocker):
             "request_data": {
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
-                "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
                 "full_alert_fields": True,
+                "search_from": 0,
+                "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
             }
         },
         headers=client.headers,
@@ -2159,9 +2160,10 @@ def test_get_remote_data_command_exclude_fields(mocker):
             "request_data": {
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
+                "full_alert_fields": True,
+                "search_from": 0,
                 "alert_fields_to_exclude": ["fieldA", "fieldB"],
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
-                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2177,9 +2179,10 @@ def test_get_remote_data_command_exclude_fields(mocker):
             "request_data": {
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
+                "full_alert_fields": True,
+                "search_from": 0,
                 "drop_nulls": True,
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
-                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -2195,10 +2198,11 @@ def test_get_remote_data_command_exclude_fields(mocker):
             "request_data": {
                 "search_to": 100,
                 "sort": {"field": "creation_time", "keyword": "asc"},
+                "full_alert_fields": True,
+                "search_from": 0,
                 "alert_fields_to_exclude": ["fieldA", "fieldB"],
                 "drop_nulls": True,
                 "filters": [{"field": "incident_id_list", "operator": "in", "value": ["1"]}],
-                "full_alert_fields": True,
             }
         },
         headers=client.headers,
@@ -3018,7 +3022,7 @@ def test_automation_playbook_delete_command(mocker, field, value):
 
 
 @pytest.mark.parametrize(
-    "args, expected_filters, expected_sort",
+    "args, expected_filters, expected_sort, expected_search_from, expected_search_to",
     [
         (
             {"case_id": "100", "status": "new"},
@@ -3027,27 +3031,51 @@ def test_automation_playbook_delete_command(mocker, field, value):
                 {"field": "status_progress", "operator": "in", "value": ["new"]},
             ],
             {},
+            # automatic pagination: no page/page_size -> window [0, default limit=50)
+            0,
+            50,
         ),
         (
             {"severity": "high", "sort_field": "creation_time", "sort_order": "asc"},
             [{"field": "severity", "operator": "in", "value": ["high"]}],
             {"field": "creation_time", "keyword": "asc"},
+            0,
+            50,
         ),
         (
             {"case_domain": "example.com", "limit": "10"},
             [{"field": "case_domain", "operator": "in", "value": ["example.com"]}],
             {},
+            # automatic pagination driven by limit -> window [0, 10)
+            0,
+            10,
+        ),
+        (
+            # manual pagination with page + page_size -> limit is ignored
+            {"case_domain": "example.com", "limit": "10", "page": "2", "page_size": "5"},
+            [{"field": "case_domain", "operator": "in", "value": ["example.com"]}],
+            {},
+            10,
+            15,
+        ),
+        (
+            # manual pagination with only page -> page_size falls back to limit (default 50)
+            {"case_domain": "example.com", "page": "1"},
+            [{"field": "case_domain", "operator": "in", "value": ["example.com"]}],
+            {},
+            50,
+            100,
         ),
     ],
 )
-def test_case_list_command(args, expected_filters, expected_sort):
+def test_case_list_command(args, expected_filters, expected_sort, expected_search_from, expected_search_to):
     """
     Given:
         - args for case list command
     When:
         - Running case_list_command
     Then:
-        - Verify the client.search_cases is called with correct arguments
+        - Verify the client.search_cases is called with correct filters, sort and pagination window
     """
     from CortexXDRIR import Client, case_list_command
 
@@ -3058,19 +3086,96 @@ def test_case_list_command(args, expected_filters, expected_sort):
         call_args = mock_search.call_args[0][0]
         assert call_args["request_data"]["filters"] == expected_filters
         assert call_args["request_data"]["sort"] == expected_sort
+        assert call_args["request_data"]["search_from"] == expected_search_from
+        assert call_args["request_data"]["search_to"] == expected_search_to
+
+
+@pytest.mark.parametrize(
+    "args, expected_search_from, expected_limit",
+    [
+        # automatic pagination: default limit=50, no page/page_size -> window [0, 50)
+        ({"extra_data": "true"}, 0, 50),
+        # automatic pagination driven by limit -> window [0, 10)
+        ({"extra_data": "true", "limit": "10"}, 0, 10),
+        # manual pagination with page + page_size -> limit ignored, window [10, 15)
+        ({"extra_data": "true", "limit": "10", "page": "2", "page_size": "5"}, 10, 15),
+    ],
+    ids=["auto-default", "auto-limit", "manual-paged"],
+)
+def test_case_list_command_extra_data_pagination(mocker, args, expected_search_from, expected_limit):
+    """
+    Given:
+        - args for case list command with extra_data=true
+    When:
+        - Running case_list_command (extra data path)
+    Then:
+        - Verify client.get_multiple_incidents_extra_data is called with a paging window
+          that respects manual ('page'/'page_size') vs automatic ('limit') pagination
+    """
+    from CortexXDRIR import Client, case_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_extra_data = mocker.patch.object(Client, "get_multiple_incidents_extra_data", return_value=[])
+
+    case_list_command(client, args)
+
+    call_kwargs = mock_extra_data.call_args.kwargs
+    assert call_kwargs["search_from"] == expected_search_from
+    assert call_kwargs["limit"] == expected_limit
 
 
 @pytest.mark.parametrize(
     "args, expected_update_data",
     [
-        ({"case_id": "100", "status": "new"}, {"status_progress": "NEW"}),
+        # status mapping to the exact API strings
+        ({"case_id": "100", "status": "new"}, {"status_progress": "New"}),
+        ({"case_id": "100", "status": "under_investigation"}, {"status_progress": "In Progress"}),
+        # notes-only update (operational comment, e.g. a ServiceNow ticket id)
+        ({"case_id": "100", "notes": "SNOW-12345"}, {"notes": "SNOW-12345"}),
+        # assigned_user update
+        ({"case_id": "100", "assigned_user": "analyst@example.com"}, {"assigned_user": "analyst@example.com"}),
+        # user_severity update
+        ({"case_id": "100", "user_severity": "high"}, {"user_severity": "high"}),
+        # clearing user_severity with an explicit empty string
+        ({"case_id": "100", "user_severity": ""}, {"user_severity": ""}),
+        # each resolve_reason mapping (requires status Resolved)
         (
-            {"case_id": "100", "resolve_reason": "resolved_known_issue", "resolve_comment": "done"},
-            {"resolve_reason": "Resolved - Known Issue", "resolve_comment": "done"},
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_known_issue"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - Known Issue"},
         ),
         (
-            {"case_id": "100", "status": "closed", "resolve_reason": "resolved_other"},
-            {"status_progress": "CLOSED", "resolve_reason": "Resolved - Other"},
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_duplicate"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - Duplicate Case"},
+        ),
+        (
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_false_positive"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - False Positive"},
+        ),
+        (
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_true_positive"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - True Positive"},
+        ),
+        (
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_security_testing"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - Security Testing"},
+        ),
+        (
+            {"case_id": "100", "status": "resolved", "resolve_reason": "resolved_other"},
+            {"status_progress": "Resolved", "resolve_reason": "Resolved - Other"},
+        ),
+        # resolving with a resolve_comment as well
+        (
+            {
+                "case_id": "100",
+                "status": "resolved",
+                "resolve_reason": "resolved_known_issue",
+                "resolve_comment": "done",
+            },
+            {
+                "status_progress": "Resolved",
+                "resolve_reason": "Resolved - Known Issue",
+                "resolve_comment": "done",
+            },
         ),
     ],
 )
@@ -3081,7 +3186,7 @@ def test_case_update_command(args, expected_update_data):
     When:
         - Running case_update_command
     Then:
-        - Verify the client.update_case is called with correct arguments
+        - Verify the client.update_case is called with the correct update_data payload
     """
     from CortexXDRIR import Client, case_update_command
 
@@ -3091,6 +3196,115 @@ def test_case_update_command(args, expected_update_data):
 
         assert res.readable_output == f"Case {args['case_id']} updated successfully"
         mock_update.assert_called_with(args["case_id"], request_data={"request_data": {"update_data": expected_update_data}})
+
+
+@pytest.mark.parametrize(
+    "args, expected_error",
+    [
+        # resolving without a resolve_reason
+        (
+            {"case_id": "100", "status": "resolved"},
+            "The 'resolve_reason' argument is required when resolving a case",
+        ),
+        # resolve_reason provided without status Resolved
+        (
+            {"case_id": "100", "resolve_reason": "resolved_other"},
+            "can only be provided when 'status' is set to 'Resolved'",
+        ),
+        # resolve_comment provided without status Resolved
+        (
+            {"case_id": "100", "resolve_comment": "some comment"},
+            "can only be provided when 'status' is set to 'Resolved'",
+        ),
+        # empty update (no updatable fields)
+        ({"case_id": "100"}, "No fields to update were provided"),
+    ],
+)
+def test_case_update_command_errors(args, expected_error):
+    """
+    Given:
+        - args that violate the case update conditional rules
+    When:
+        - Running case_update_command
+    Then:
+        - A DemistoException is raised with a clear message and no API call is made
+    """
+    from CortexXDRIR import Client, case_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "update_case") as mock_update:
+        with pytest.raises(DemistoException, match=expected_error):
+            case_update_command(client, args)
+        mock_update.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "args, expected_update_data",
+    [
+        # custom_fields valid JSON object only -> merged keys appear in update_data
+        (
+            {"case_id": "100", "custom_fields": '{"my_custom_field": "value", "another_field": 42}'},
+            {"my_custom_field": "value", "another_field": 42},
+        ),
+        # custom_fields combined with a standard field (notes) -> both present
+        (
+            {"case_id": "100", "notes": "see ticket", "custom_fields": '{"my_custom_field": "value"}'},
+            {"notes": "see ticket", "my_custom_field": "value"},
+        ),
+        # custom_fields key colliding with a standard field name must NOT override the standard value
+        (
+            {"case_id": "100", "notes": "authoritative", "custom_fields": '{"notes": "override-attempt", "extra": 1}'},
+            {"notes": "authoritative", "extra": 1},
+        ),
+    ],
+)
+def test_case_update_command_custom_fields(args, expected_update_data):
+    """
+    Given:
+        - args for case update command including a custom_fields JSON object
+    When:
+        - Running case_update_command
+    Then:
+        - Verify the parsed custom_fields are merged into update_data and standard fields win on collision
+    """
+    from CortexXDRIR import Client, case_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "update_case") as mock_update:
+        res = case_update_command(client, args)
+
+        assert res.readable_output == f"Case {args['case_id']} updated successfully"
+        mock_update.assert_called_with(args["case_id"], request_data={"request_data": {"update_data": expected_update_data}})
+
+
+@pytest.mark.parametrize(
+    "custom_fields_value",
+    [
+        # invalid JSON string
+        "{not valid json}",
+        # valid JSON but not an object (a list)
+        "[1, 2, 3]",
+        # valid JSON but not an object (a bare string)
+        '"a string"',
+    ],
+)
+def test_case_update_command_custom_fields_errors(custom_fields_value):
+    """
+    Given:
+        - args with a custom_fields value that is not a valid JSON object
+    When:
+        - Running case_update_command
+    Then:
+        - A DemistoException is raised with a clear message and no API call is made
+    """
+    from CortexXDRIR import Client, case_update_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    args = {"case_id": "100", "custom_fields": custom_fields_value}
+    with patch.object(Client, "update_case") as mock_update:
+        with pytest.raises(DemistoException, match="The 'custom_fields' argument must be a valid JSON object."):
+            case_update_command(client, args)
+        mock_update.assert_not_called()
 
 
 @pytest.mark.parametrize(
@@ -3866,3 +4080,375 @@ def test_endpoint_triage_command(mocker, args, expected_request_data):
     assert result.outputs == mock_reply
     assert result.raw_response == mock_reply
     assert "Triage Endpoint Results" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "args, expected_filters, expected_sort",
+    [
+        (
+            {"issue_id": "100", "status": "new"},
+            [
+                {"field": "id", "operator": "in", "value": [100]},
+                {"field": "status.progress", "operator": "in", "value": ["New"]},
+            ],
+            {},
+        ),
+        (
+            {"severity": "high", "sort_field": "severity", "sort_order": "desc"},
+            [{"field": "severity", "operator": "in", "value": ["high"]}],
+            {"field": "severity", "keyword": "desc"},
+        ),
+        (
+            {"domain": "network", "limit": "10"},
+            [{"field": "issue_domain", "operator": "in", "value": ["network"]}],
+            {},
+        ),
+        (
+            {"external_id": "ext-1,ext-2"},
+            [{"field": "external_id", "operator": "in", "value": ["ext-1", "ext-2"]}],
+            {},
+        ),
+        (
+            {"detection_method": "xdr_agent"},
+            [{"field": "detection.method", "operator": "in", "value": ["xdr_agent"]}],
+            {},
+        ),
+        (
+            {"sort_field": "issue_id", "sort_order": "asc"},
+            [],
+            {"field": "id", "keyword": "asc"},
+        ),
+    ],
+)
+def test_list_issues_command(args, expected_filters, expected_sort):
+    """
+    Given:
+        - args for issue list command
+    When:
+        - Running list_issues_command
+    Then:
+        - Verify the client.list_issues is called with correct filters and sort arguments
+    """
+    from CortexXDRIR import Client, list_issues_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "list_issues", return_value=[{"id": 1, "name": "test issue"}]) as mock_list:
+        result = list_issues_command(client, args)
+
+        call_args = mock_list.call_args[0][0]
+        if expected_filters:
+            assert call_args["request_data"]["filters"] == expected_filters
+        else:
+            assert "filters" not in call_args["request_data"]
+        if expected_sort:
+            assert call_args["request_data"]["sort"] == expected_sort
+        else:
+            assert "sort" not in call_args["request_data"]
+        assert result.outputs_prefix == "PaloAltoNetworksXDR.Issue"
+        assert result.outputs_key_field == "id"
+        assert "Issues" in result.readable_output
+
+
+@pytest.mark.parametrize(
+    "args, expected_issue_data",
+    [
+        (
+            {
+                "name": "Test Issue",
+                "description": "A test issue",
+                "observation_time": "2024-01-01T00:00:00Z",
+                "domain": "network",
+                "category": "security",
+                "severity": "high",
+            },
+            {
+                "name": "Test Issue",
+                "description": "A test issue",
+                "issue_domain": "network",
+                "category": "security",
+                "severity": "HIGH",
+            },
+        ),
+        (
+            {
+                "name": "Issue with extras",
+                "description": "Extended issue",
+                "observation_time": "2024-01-01T00:00:00Z",
+                "domain": "identity",
+                "category": "compliance",
+                "severity": "medium",
+                "type": "misconfiguration",
+                "is_excluded": "true",
+                "is_starred": "false",
+                "assigned_to": "admin@example.com",
+                "asset_id": "asset-1,asset-2",
+            },
+            {
+                "name": "Issue with extras",
+                "description": "Extended issue",
+                "issue_domain": "identity",
+                "category": "compliance",
+                "severity": "MEDIUM",
+                "type": "misconfiguration",
+                "is_excluded": True,
+                "is_starred": False,
+                "assigned_to": "admin@example.com",
+                "asset_ids": ["asset-1", "asset-2"],
+            },
+        ),
+    ],
+)
+def test_create_issue_command(args, expected_issue_data):
+    """
+    Given:
+        - args for issue create command
+    When:
+        - Running create_issue_command
+    Then:
+        - Verify the client.create_issue is called with correct issue data
+        - Verify the returned CommandResults contains the expected outputs
+    """
+    from CortexXDRIR import Client, create_issue_command
+
+    mock_reply = {"external_id": "ext-123", "id": 1}
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "create_issue", return_value=mock_reply) as mock_create:
+        result = create_issue_command(client, args)
+
+        call_args = mock_create.call_args[0][0]
+        issue_data = call_args["request_data"]["issue"]
+        for key, value in expected_issue_data.items():
+            assert issue_data[key] == value
+        assert result.outputs_prefix == "PaloAltoNetworksXDR.Issue"
+        assert result.outputs_key_field == "external_id"
+        assert result.outputs == mock_reply
+        assert "Created Issue" in result.readable_output
+
+
+def test_create_issue_command_invalid_json():
+    """
+    Given:
+        - args with invalid JSON in normalized_fields_json
+    When:
+        - Running create_issue_command
+    Then:
+        - Verify a DemistoException is raised for invalid JSON
+    """
+    from CortexXDRIR import Client, create_issue_command
+
+    args = {
+        "name": "Test",
+        "description": "desc",
+        "observation_time": "2024-01-01T00:00:00Z",
+        "domain": "network",
+        "category": "security",
+        "severity": "high",
+        "normalized_fields_json": "invalid-json{",
+    }
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with pytest.raises(DemistoException, match="Invalid JSON format in field"):
+        create_issue_command(client, args)
+
+
+@pytest.mark.parametrize(
+    "args, expected_update_data",
+    [
+        (
+            {"issue_id": "100", "status": "new"},
+            {"status_progress": "New"},
+        ),
+        (
+            {"issue_id": "200", "severity": "high"},
+            {"severity": "HIGH"},
+        ),
+        (
+            {
+                "issue_id": "300",
+                "status": "resolved",
+                "resolve_reason": "resolved_false_positive",
+                "resolve_comment": "Not a real issue",
+            },
+            {
+                "status_progress": "Resolved",
+                "status_resolution_reason": "resolved - false positive",
+                "status_resolution_comment": "Not a real issue",
+            },
+        ),
+        (
+            {"issue_id": "400", "status": "in_progress", "severity": "low"},
+            {"severity": "LOW", "status_progress": "In Progress"},
+        ),
+        (
+            {
+                "issue_id": "500",
+                "resolve_reason": "resolved_known_issue",
+            },
+            {
+                "status_resolution_reason": "resolved - known issue",
+            },
+        ),
+    ],
+)
+def test_update_issue_command(args, expected_update_data):
+    """
+    Given:
+        - args for issue update command
+    When:
+        - Running update_issue_command
+    Then:
+        - Verify the client.update_issue is called with correct arguments
+        - Verify the readable output confirms the update
+    """
+    from CortexXDRIR import Client, update_issue_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    with patch.object(Client, "update_issue") as mock_update:
+        result = update_issue_command(client, args)
+
+        assert result.readable_output == f"Issue with ID {args['issue_id']} updated successfully"
+        mock_update.assert_called_with(args["issue_id"], {"request_data": {"update_data": expected_update_data}})
+
+
+def test_normalize_case_data_record_maps_fields_and_nests_data():
+    """
+    Given:
+        - A raw record from the get_multiple_incidents_extra_data endpoint, wrapped in an
+          "incident" key and containing nested alerts, file_artifacts and network_artifacts.
+    When:
+        - Running normalize_case_data_record (used by the xdr-case-list extra_data path).
+    Then:
+        - Incident fields are renamed to their case-shaped equivalents (e.g. incident_id -> case_id).
+        - Nested alerts/artifacts are surfaced under Issues/FileArtifacts/NetworkArtifacts.
+        - Each nested record inherits the parent case_id when one is not already set.
+    """
+    from CortexXDRIR import normalize_case_data_record
+
+    incident_record = {
+        "incident": {
+            "incident_id": "100",
+            "incident_name": "My Case",
+            "status": "new",
+            "incident_domain": "example.com",
+            "alert_count": 3,
+            "description": "some description",
+        },
+        "alerts": {"data": [{"alert_id": "a1"}, {"alert_id": "a2", "case_id": "999"}]},
+        "file_artifacts": {"data": [{"name": "file.exe"}]},
+        "network_artifacts": {"data": [{"ip": "1.2.3.4"}]},
+    }
+
+    case = normalize_case_data_record(incident_record)
+
+    # Renamed incident fields.
+    assert case["case_id"] == "100"
+    assert case["case_name"] == "My Case"
+    assert case["status_progress"] == "new"
+    assert case["case_domain"] == "example.com"
+    assert case["issue_count"] == 3
+    # Fields without a mapping are kept as-is.
+    assert case["description"] == "some description"
+    assert "incident_id" not in case
+
+    # Nested data surfaced under the case-shaped keys.
+    assert case["Issues"] == [
+        {"alert_id": "a1", "case_id": "100"},
+        {"alert_id": "a2", "case_id": "999"},
+    ]
+    assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
+    assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
+
+
+def test_normalize_case_data_record_flat_record_without_nested_data():
+    """
+    Given:
+        - A flat record (no "incident" wrapper) and without any nested alerts/artifacts.
+    When:
+        - Running normalize_case_data_record.
+    Then:
+        - The flat fields are mapped and no Issues/FileArtifacts/NetworkArtifacts keys are added.
+    """
+    from CortexXDRIR import normalize_case_data_record
+
+    case = normalize_case_data_record({"incident_id": "200", "incident_name": "Flat Case"})
+
+    assert case["case_id"] == "200"
+    assert case["case_name"] == "Flat Case"
+    assert "Issues" not in case
+    assert "FileArtifacts" not in case
+    assert "NetworkArtifacts" not in case
+
+
+def test_case_list_command_extra_data_returns_normalized_cases(mocker):
+    """
+    Given:
+        - args for the case list command with extra_data=true.
+        - The client returns raw extra-data records with nested alerts/artifacts.
+    When:
+        - Running case_list_command.
+    Then:
+        - The extra-data client method is used (search_cases is NOT called).
+        - The outputs are normalized into case-shaped records (mapped fields + nested data).
+        - The CommandResults metadata (outputs_prefix, key field, raw_response) is correct.
+    """
+    from CortexXDRIR import Client, case_list_command
+
+    raw_records = [
+        {
+            "incident": {
+                "incident_id": "100",
+                "incident_name": "My Case",
+                "status": "new",
+                "incident_domain": "example.com",
+            },
+            "alerts": {"data": [{"alert_id": "a1"}]},
+            "file_artifacts": {"data": [{"name": "file.exe"}]},
+            "network_artifacts": {"data": [{"ip": "1.2.3.4"}]},
+        }
+    ]
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_extra_data = mocker.patch.object(Client, "get_multiple_incidents_extra_data", return_value=raw_records)
+    mock_search = mocker.patch.object(Client, "search_cases")
+
+    result = case_list_command(client, {"extra_data": "true", "case_id": "100"})
+
+    # The extra-data path was taken, not the regular search path.
+    mock_extra_data.assert_called_once()
+    mock_search.assert_not_called()
+
+    assert result.outputs_prefix == "PaloAltoNetworksXDR.Case"
+    assert result.outputs_key_field == "case_id"
+    assert result.raw_response == raw_records
+
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    case = result.outputs[0]
+    assert case["case_id"] == "100"
+    assert case["case_name"] == "My Case"
+    assert case["case_domain"] == "example.com"
+    assert case["Issues"] == [{"alert_id": "a1", "case_id": "100"}]
+    assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
+    assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
+
+
+def test_case_list_command_extra_data_maps_sort_field(mocker):
+    """
+    Given:
+        - args for the case list command with extra_data=true and sort_field=case_id.
+    When:
+        - Running case_list_command.
+    Then:
+        - The case-shaped sort field is translated to the incident-shaped sort field
+          (case_id -> incident_id) before calling the extra-data client method.
+    """
+    from CortexXDRIR import Client, case_list_command
+
+    client = Client(base_url=f"{XDR_URL}/public_api/v1", verify=False, timeout=120, proxy=False)
+    mock_extra_data = mocker.patch.object(Client, "get_multiple_incidents_extra_data", return_value=[])
+
+    case_list_command(client, {"extra_data": "true", "sort_field": "case_id", "sort_order": "asc"})
+
+    call_kwargs = mock_extra_data.call_args.kwargs
+    assert call_kwargs["sort_field"] == "incident_id"
+    assert call_kwargs["sort_order"] == "asc"

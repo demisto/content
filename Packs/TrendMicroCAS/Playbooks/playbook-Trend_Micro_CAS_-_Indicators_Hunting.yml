@@ -41,7 +41,7 @@ tasks:
     task:
       id: 95435a23-0dae-4169-8812-d0e6aa2f8ec6
       version: -1
-      name: Is Trend Micro Cloud App Security enabled?
+      name: Is TrendAI™ Cloud App Security enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition

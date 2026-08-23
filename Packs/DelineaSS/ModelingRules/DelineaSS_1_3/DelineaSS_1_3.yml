@@ -1,6 +1,9 @@
 fromversion: 6.10.0
+toversion: 8.14.0
 id: Delinea Secret Server
 name: Delinea Secret Server
 rules: ''
 schema: ''
 tags: Delinea Secret Server
+supportedModules:
+- xsiam

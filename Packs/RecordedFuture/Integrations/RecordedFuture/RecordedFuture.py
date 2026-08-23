@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 """Recorded Future Integration for Demisto."""
 
 import copy
+from dataclasses import dataclass
 import platform
 from typing import *
 
@@ -15,24 +16,84 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = "2.5.2"
+__version__ = "2.6.0"
 
+DEFAULT_THRESHOLD_BAD = 65
+DEFAULT_THRESHOLD_SUSPICIOUS = 25
 
 # === === === === === === === === === === === === === === ===
 # === === === === === === HELPERS === === === === === === ===
 # === === === === === === === === === === === === === === ===
 
 
-def translate_score(score: int, threshold: int) -> int:
-    """Translate Recorded Future score to DBot score."""
-    RISK_SCORE_THRESHOLD = 25
+@dataclass(frozen=True)
+class DBotScoreDetails:
+    score: int
+    description: str
+
+
+@dataclass(frozen=True)
+class IndicatorThresholds:
+    bad: Dict[str, int]
+    suspicious: Dict[str, int]
+
+
+def translate_score(*, score: int, threshold_bad: int, threshold_suspicious: int, benign: bool = False) -> DBotScoreDetails:
+    """Translate Recorded Future score to DBot score and description."""
     # See https://support.recordedfuture.com/hc/en-us/articles/115000894468-Vulnerability-Risk-Rules.  # noqa
-    if score >= threshold:
-        return Common.DBotScore.BAD
-    elif score >= RISK_SCORE_THRESHOLD:
-        return Common.DBotScore.SUSPICIOUS
-    else:
-        return Common.DBotScore.NONE
+    if score >= threshold_bad:
+        return DBotScoreDetails(
+            score=Common.DBotScore.BAD,
+            description=f"Score above {threshold_bad}",
+        )
+    elif score >= threshold_suspicious:
+        return DBotScoreDetails(
+            score=Common.DBotScore.SUSPICIOUS,
+            description=f"Score above {threshold_suspicious}",
+        )
+    elif benign:
+        # The Recorded Future SOAR API reported "No Risk Observed" (noKnownRisk)
+        # for this entity, a deterministic benign signal. See RFPD-112104.
+        return DBotScoreDetails(
+            score=Common.DBotScore.GOOD,
+            description="No Risk Observed",
+        )
+
+    return DBotScoreDetails(score=Common.DBotScore.NONE, description="")
+
+
+def get_indicator_thresholds(demisto_params: Dict[str, Any]) -> IndicatorThresholds:
+    """Return malicious and suspicious thresholds for supported indicator types."""
+
+    def get_threshold(param_name: str, default_value: int) -> int:
+        raw_value = demisto_params.get(param_name, default_value)
+        if raw_value in ("", None):
+            return default_value
+
+        try:
+            return int(raw_value)
+        except (TypeError, ValueError) as err:
+            raise DemistoException(
+                f"Invalid threshold configuration for {param_name!r}. "
+                "Please set this integration parameter to a valid integer value."
+            ) from err
+
+    return IndicatorThresholds(
+        bad={
+            "file": get_threshold("file_threshold", DEFAULT_THRESHOLD_BAD),
+            "ip": get_threshold("ip_threshold", DEFAULT_THRESHOLD_BAD),
+            "domain": get_threshold("domain_threshold", DEFAULT_THRESHOLD_BAD),
+            "url": get_threshold("url_threshold", DEFAULT_THRESHOLD_BAD),
+            "cve": get_threshold("cve_threshold", DEFAULT_THRESHOLD_BAD),
+        },
+        suspicious={
+            "file": get_threshold("file_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS),
+            "ip": get_threshold("ip_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS),
+            "domain": get_threshold("domain_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS),
+            "url": get_threshold("url_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS),
+            "cve": get_threshold("cve_threshold_suspicious", DEFAULT_THRESHOLD_SUSPICIOUS),
+        },
+    )
 
 
 def determine_hash(hash_value: str) -> str:
@@ -58,22 +119,25 @@ def create_indicator(
     score: int,
     description: str = "",
     location: Dict[str, Any] = None,
+    benign: bool = False,
 ) -> Common.Indicator:
-    """Create an Indicator object."""
+    """Create an Indicator object.
+
+    ``benign`` is set by the backend when the SOAR API reports "No Risk Observed"
+    for the entity (RFPD-112104).
+    """
     demisto_params = demisto.params()
 
     if location is None:
         location = {}
 
-    thresholds = {
-        "file": int(demisto_params.get("file_threshold", 65)),
-        "ip": int(demisto_params.get("ip_threshold", 65)),
-        "domain": int(demisto_params.get("domain_threshold", 65)),
-        "url": int(demisto_params.get("url_threshold", 65)),
-        "cve": int(demisto_params.get("cve_threshold", 65)),
-    }
-    dbot_score = translate_score(score, thresholds[entity_type])
-    dbot_description = f"Score above {thresholds[entity_type]}" if dbot_score == Common.DBotScore.BAD else ""
+    indicator_thresholds = get_indicator_thresholds(demisto_params)
+    dbot_score_details = translate_score(
+        score=score,
+        threshold_bad=indicator_thresholds.bad[entity_type],
+        threshold_suspicious=indicator_thresholds.suspicious[entity_type],
+        benign=benign,
+    )
     dbot_vendor = "Recorded Future v2"
     if entity_type == "ip":
         return Common.IP(
@@ -82,8 +146,8 @@ def create_indicator(
                 entity,
                 DBotScoreType.IP,
                 dbot_vendor,
-                dbot_score,
-                dbot_description,
+                dbot_score_details.score,
+                dbot_score_details.description,
                 reliability=demisto.params().get("integrationReliability"),
             ),
             asn=location.get("asn", None),
@@ -96,8 +160,8 @@ def create_indicator(
                 entity,
                 DBotScoreType.DOMAIN,
                 dbot_vendor,
-                dbot_score,
-                dbot_description,
+                dbot_score_details.score,
+                dbot_score_details.description,
                 reliability=demisto.params().get("integrationReliability"),
             ),
         )
@@ -106,8 +170,8 @@ def create_indicator(
             entity,
             DBotScoreType.FILE,
             dbot_vendor,
-            dbot_score,
-            dbot_description,
+            dbot_score_details.score,
+            dbot_score_details.description,
             reliability=demisto.params().get("integrationReliability"),
         )
         hash_type = determine_hash(entity)
@@ -130,13 +194,37 @@ def create_indicator(
                 entity,
                 DBotScoreType.URL,
                 dbot_vendor,
-                dbot_score,
-                dbot_description,
+                dbot_score_details.score,
+                dbot_score_details.description,
                 reliability=demisto.params().get("integrationReliability"),
             ),
         )
     else:
         raise Exception(f"Could not create indicator for this type of entity: {entity_type}")
+
+
+# Entity types for which the Recorded Future SOAR API exposes a deterministic
+# "No Risk Observed" (noKnownRisk) benign signal. See RFPD-112104.
+BENIGN_ELIGIBLE_TYPES = ("file", "url", "domain")
+
+
+def is_benign_action(action: Dict[str, Any]) -> bool:
+    """Detect the "No Risk Observed" (noKnownRisk) benign signal in a result action.
+
+    The reputation lookup surfaces this signal for ``file`` (hash), ``url`` and
+    ``domain`` entities with a zero risk score. It rides through the existing
+    response as an Evidence entry whose ``ruleid`` is ``noKnownRisk``.
+    """
+    create = action.get("create_indicator") or {}
+    if create.get("entity_type") not in BENIGN_ELIGIBLE_TYPES:
+        return False
+    if create.get("score", 0) != 0:
+        return False
+    outputs = (action.get("CommandResults") or {}).get("outputs")
+    if not isinstance(outputs, dict):
+        return False
+    evidence = outputs.get("Evidence") or []
+    return any(item.get("ruleid") == "noKnownRisk" for item in evidence)
 
 
 # === === === === === === === === === === === === === === ===
@@ -342,7 +430,9 @@ class Actions:
         command_results: List[CommandResults] = []
         for action in result_actions:
             if "create_indicator" in action:
-                indicator = create_indicator(**action["create_indicator"])
+                create_kwargs = dict(action["create_indicator"])
+                create_kwargs["benign"] = is_benign_action(action)
+                indicator = create_indicator(**create_kwargs)
                 if "CommandResults" in action:
                     # Custom CommandResults.
                     command_results_kwargs = action["CommandResults"]
@@ -468,7 +558,7 @@ def main() -> None:  # pragma: no cover
             "X-RF-User-Agent": (
                 f"RecordedFuture.py/{__version__} ({platform.platform()}) "
                 f"XSOAR/{__version__} "
-                f'RFClient/{__version__} (Cortex_XSOAR_{demisto.demistoVersion()["version"]})'
+                f"RFClient/{__version__} (Cortex_XSOAR_{demisto.demistoVersion()['version']})"
             ),
         }
         client = Client(base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy)

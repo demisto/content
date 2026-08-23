@@ -14,6 +14,8 @@ Amazon Web Services Elastic Compute Cloud (EC2).
 | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
 | PrivateLink service URL |  | False |
 | STS PrivateLink URL |  | False |
+| AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
+| STS Region | The AWS region used to create the STS client. Set this explicitly when STS calls must target a fixed region regardless of the command's target region. | False |
 | AWS organization accounts | A comma-separated list of AWS Organization accounts to use when running EC2 commands. A role name for cross-organization account access must be provided to use this feature. This feature is explained below. | False |
 | Role name for cross-organization account access | The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided. This feature is explained below. | False |
 | Max concurrent command calls | The maximum number of concurrent calls to allow when running a command on all accounts provided in "AWS Organization accounts". | False |

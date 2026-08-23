@@ -3,3 +3,5 @@ id: CyberArkEPV_ModelingRule
 name: CyberArkEPV Modeling Rule
 rules: ''
 schema: ''
+supportedModules:
+- xsiam

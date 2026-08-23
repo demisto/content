@@ -194,8 +194,30 @@
                 "State": {
                     "simple": "state"
                 },
+                "Last Update Time": {
+                    "simple": "updated_timestamp"
+                },
                 "name": {
-                    "simple": "event_id"
+                    "complex": {
+                        "filters": [],
+                        "root": "composite_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Indicator of Attack ID: "
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
                 },
                 "dbotMirrorDirection": {
                     "simple": "mirror_direction"

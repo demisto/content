@@ -1001,3 +1001,220 @@ def test_search_users_with_msDSUserAccountControlComputed(mocker):
         .get("PASSWORD_EXPIRED")
         is True
     )
+
+
+def test_base_dn_verified_success(mocker):
+    """
+    Given:
+        A valid base DN and a successful LDAP connection.
+    When:
+        Running the 'base_dn_verified' function.
+    Then:
+        Verify that the function returns True and uses BASE scope with optimized parameters.
+    """
+    import Active_Directory_Query
+    from ldap3 import BASE
+
+    search_args = []
+    search_kwargs = {}
+
+    class ConnectionMocker:
+        result = {"description": "success"}
+
+        def search(self, *args, **kwargs):
+            nonlocal search_args, search_kwargs
+            search_args = args
+            search_kwargs = kwargs
+            return True
+
+    Active_Directory_Query.connection = ConnectionMocker()
+    mocker.patch.object(demisto, "info")
+
+    result = Active_Directory_Query.base_dn_verified("dc=example,dc=com")
+
+    # Verify the function returns True
+    assert result is True
+
+    # Verify the search was called with optimized parameters
+    assert search_kwargs.get("search_base") == "dc=example,dc=com"
+    assert search_kwargs.get("search_filter") == "(objectClass=*)"
+    assert search_kwargs.get("search_scope") == BASE  # Verify BASE scope is used
+    assert search_kwargs.get("size_limit") == 1  # Verify size limit is 1
+    assert search_kwargs.get("attributes") == ["1.1"]  # Verify no attributes are fetched
+
+
+def test_base_dn_verified_failure(mocker):
+    """
+    Given:
+        An invalid base DN that causes the LDAP search to fail.
+    When:
+        Running the 'base_dn_verified' function.
+    Then:
+        Verify that the function returns False and logs the failure.
+    """
+    import Active_Directory_Query
+
+    class ConnectionMocker:
+        result = {"description": "noSuchObject"}
+
+        def search(self, *args, **kwargs):
+            return False
+
+    Active_Directory_Query.connection = ConnectionMocker()
+    info_mock = mocker.patch.object(demisto, "info")
+
+    result = Active_Directory_Query.base_dn_verified("dc=invalid,dc=com")
+
+    # Verify the function returns False
+    assert result is False
+
+    # Verify that the failure was logged
+    assert info_mock.call_count == 1
+    assert "Base DN verification failed" in info_mock.call_args[0][0]
+
+
+def test_base_dn_verified_exception(mocker):
+    """
+    Given:
+        A base DN that causes an exception during LDAP search.
+    When:
+        Running the 'base_dn_verified' function.
+    Then:
+        Verify that the function returns False and logs the error.
+    """
+    import Active_Directory_Query
+
+    class ConnectionMocker:
+        def search(self, *args, **kwargs):
+            raise Exception("Connection timeout")
+
+    Active_Directory_Query.connection = ConnectionMocker()
+    error_mock = mocker.patch.object(demisto, "error")
+
+    result = Active_Directory_Query.base_dn_verified("dc=example,dc=com")
+
+    # Verify the function returns False
+    assert result is False
+
+    # Verify that the error was logged
+    assert error_mock.call_count == 1
+    assert "Error during Base DN verification" in error_mock.call_args[0][0]
+    assert "Connection timeout" in error_mock.call_args[0][0]
+
+
+# ===== Tests for prepare_attribute_value =====
+
+
+@pytest.mark.parametrize(
+    "attribute_value, attribute_type, expected",
+    [
+        pytest.param("displayName", None, "displayName", id="no-type-returns-string"),
+        pytest.param("some value", "", "some value", id="empty-type-returns-string"),
+        pytest.param(
+            "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+            "byte",
+            bytes(21),
+            id="byte-type-21-zeros-logonHours-full-lockout",
+        ),
+        pytest.param("0, 255, 128", "byte", bytes([0, 255, 128]), id="byte-type-with-whitespace"),
+        pytest.param("1,2,3", "BYTE", bytes([1, 2, 3]), id="byte-type-case-insensitive"),
+    ],
+)
+def test_prepare_attribute_value_success(attribute_value, attribute_type, expected):
+    """
+    Given:
+        A valid attribute value and an optional attribute type.
+    When:
+        Calling prepare_attribute_value.
+    Then:
+        The correct Python object is returned (bytes for 'byte' type, str otherwise).
+    """
+    from Active_Directory_Query import prepare_attribute_value
+
+    result = prepare_attribute_value(attribute_value, attribute_type)
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "attribute_value, attribute_type, expected_error_fragment",
+    [
+        pytest.param(
+            "[byte[]](0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)",
+            "byte",
+            "cannot be parsed as a comma-separated list of integers",
+            id="byte-type-powershell-syntax-rejected",
+        ),
+        pytest.param("0,256,0", "byte", "out-of-range integers", id="byte-type-value-above-255"),
+        pytest.param("0,-1,0", "byte", "out-of-range integers", id="byte-type-negative-value"),
+        pytest.param(None, "byte", "attribute-value must be provided", id="byte-type-none-value"),
+        pytest.param("", "byte", "attribute-value must be provided", id="byte-type-empty-string"),
+    ],
+)
+def test_prepare_attribute_value_errors(attribute_value, attribute_type, expected_error_fragment):
+    """
+    Given:
+        An invalid attribute value for the given attribute type.
+    When:
+        Calling prepare_attribute_value.
+    Then:
+        A DemistoException is raised with a descriptive message.
+    """
+    from CommonServerPython import DemistoException
+
+    from Active_Directory_Query import prepare_attribute_value
+
+    with pytest.raises(DemistoException, match=expected_error_fragment):
+        prepare_attribute_value(attribute_value, attribute_type)
+
+
+def test_update_user_with_byte_attribute(mocker):
+    """
+    Given:
+        The ad-update-user command is called with attribute-type='byte' and a comma-separated
+        list of integers representing logonHours (21 zero bytes = full lockout).
+    When:
+        update_user() is executed.
+    Then:
+        The LDAP modify call receives a raw bytes object (not a string) as the attribute value,
+        which is what the AD server requires for Octet String attributes.
+    """
+    import Active_Directory_Query
+
+    class MockConnection:
+        result = {"description": "success", "result": 0}
+        last_dn: str = ""
+        last_modification: dict = {}
+
+        def modify(self, dn, modification):
+            self.last_dn = dn
+            self.last_modification = modification
+            self.result = {"description": "success", "result": 0}
+            return True
+
+    mock_conn = MockConnection()
+    Active_Directory_Query.connection = mock_conn
+
+    # Mock user_dn so we skip the LDAP search entirely
+    mocker.patch.object(
+        Active_Directory_Query,
+        "user_dn",
+        return_value="CN=Test User,DC=example,DC=com",
+    )
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "username": "testuser",
+            "attribute-name": "logonHours",
+            "attribute-value": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+            "attribute-type": "byte",
+        },
+    )
+    mocker.patch.object(demisto, "results")
+
+    Active_Directory_Query.update_user("dc=example,dc=com")
+
+    # The value sent to LDAP must be raw bytes, not a string
+    sent_value = mock_conn.last_modification["logonHours"][0][1]
+    assert isinstance(sent_value, bytes), f"Expected bytes, got {type(sent_value)}"
+    assert sent_value == bytes(21)

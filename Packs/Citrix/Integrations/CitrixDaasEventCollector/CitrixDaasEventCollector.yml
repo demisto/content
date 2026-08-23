@@ -89,7 +89,7 @@ script:
       - 'LastMonth'
       - 'LastThreeMonths'
       - 'LastSixMonths'
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
   script: '-'
   subtype: python3
@@ -101,3 +101,5 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 6.8.0
+supportedModules:
+- xsiam

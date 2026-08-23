@@ -152,12 +152,9 @@ def get_commits_files(client: Client, base_commit, head_commit, is_first_fetch: 
     Returns:
         tuple[list[dict], str]: A tuple containing a list of relevant file information and the SHA of the current repository head.
     """
-    try:
-        all_commits_files, current_repo_head_sha = client.get_files_between_commits(base_commit, head_commit, is_first_fetch)
-        relevant_files = filter_out_files_by_status(all_commits_files)
-        return relevant_files, current_repo_head_sha
-    except IndexError:
-        return [], base_commit
+    all_commits_files, current_repo_head_sha = client.get_files_between_commits(base_commit, head_commit, is_first_fetch)
+    relevant_files = filter_out_files_by_status(all_commits_files)
+    return relevant_files, current_repo_head_sha
 
 
 def parse_and_map_yara_content(content_item: dict[str, str]) -> list:
@@ -450,6 +447,10 @@ def fetch_indicators(
     Args:
         client (Client): The GitHub client used to fetch indicators.
         last_commit_fetch: The last commit fetched from the repository.
+            Used as the base SHA only when the feed is configured as incremental
+            (``feedIncremental`` = true). When non-incremental, the base is always
+            recomputed from the configured "First fetch time" so every cycle
+            returns the full current indicator set.
         tlp_color (Optional[str]): The Traffic Light Protocol (TLP) color to assign to the fetched indicators.
         feed_tags (List): Tags to associate with the fetched indicators.
         limit (int): The maximum number of indicators to fetch. Default is -1 (fetch all).
@@ -460,8 +461,20 @@ def fetch_indicators(
     demisto.debug(f"Before fetch command last commit sha run: {last_commit_fetch}")
     since = params.get("fetch_since", "90 days ago")
     until = "now"
-    is_first_fetch = not last_commit_fetch
-    base_commit_sha = last_commit_fetch or client.get_commits_between_dates(since, until)[-1]
+    is_incremental = argToBoolean(params.get("feedIncremental", True))
+
+    if is_incremental and last_commit_fetch:
+        base_commit_sha = last_commit_fetch
+        is_first_fetch = False
+    else:
+        base_commit_sha = client.get_commits_between_dates(since, until)[-1]
+        is_first_fetch = True
+
+    demisto.debug(
+        f"Fetch mode: {'incremental' if is_incremental else 'full'}; "
+        f"base_commit_sha={base_commit_sha}; is_first_fetch={is_first_fetch}"
+    )
+
     head_commit = params.get("branch_head", "")
     iterator, last_commit_info = get_indicators(client, params, base_commit_sha, head_commit, is_first_fetch)
     indicators = []

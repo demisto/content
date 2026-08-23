@@ -25,7 +25,9 @@ from MicrosoftGraphSecurity import (
     create_search_alerts_filters,
     create_url_assessment_request_command,
     created_by_fields_to_hr,
+    fetch_alerts,
     fetch_incidents,
+    fetch_incidents_and_alerts,
     get_alert_details_command,
     get_list_security_incident_command,
     get_message_user,
@@ -41,6 +43,7 @@ from MicrosoftGraphSecurity import (
     release_ediscovery_custodian_command,
     reopen_ediscovery_case_command,
     search_alerts_command,
+    set_url_suffix_list_incidents,
     to_msg_command_results,
     update_ediscovery_case_command,
     update_ediscovery_search_command,
@@ -56,8 +59,6 @@ from MicrosoftGraphSecurity import (
     export_result_ediscovery_data_command,
 )
 
-API_V2 = "Alerts v2"
-API_V1 = "Legacy Alerts"
 client_mocker = MsGraphClient(
     tenant_id="tenant_id",
     auth_id="auth_id",
@@ -115,34 +116,24 @@ def mock_request(method, url_suffix, params):
     return params
 
 
-@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2", "test_case_3"])
+@pytest.mark.parametrize("test_case", ["test_case_3"])
 def test_get_alert_details_command(mocker, test_case):
     """
     Given:
     - test case that point to the relevant test case in the json test data which include:
-      args including alert_id and fields_to_include, response mock, expected hr and ec outputs, and api version.
-    - Case 1: args with all fields to include in fields_to_include, response of a Legacy Alerts alert and,
-              api version Legacy Alerts flag.
-    - Case 2: args with only FileStates to include in fields_to_include, response of a Legacy Alerts alert and,
-              api version Legacy Alerts flag.
-    - Case 3: args with only FileStates to include in fields_to_include, response of a Legacy Alerts alert and,
-              api version Alerts v2 flag.
+      args including alert_id, response mock, expected hr and ec outputs.
+    - Case 3: args with alert_id, response of an Alerts v2 alert.
 
     When:
     - Running get_alert_details_command.
 
     Then:
     - Ensure that the alert was parsed correctly and right HR and EC outputs are returned.
-    - Case 1: Should parse all the response information into the HR,
-              and only the relevant fields from the response into the ec.
-    - Case 2: Should parse only the FileStates section from the response into the HR,
-              and only the relevant fields from the response into the ec.
-    - Case 3: Should ignore the the fields_to_include argument and parse all the response information into the HR,
+    - Case 3: Should parse all the response information into the HR,
               and all fields from the response into the ec.
     """
     test_data = load_json("./test_data/test_get_alert_details_command.json").get(test_case)
     mocker.patch.object(client_mocker, "get_alert_details", return_value=test_data.get("mock_response"))
-    mocker.patch("MicrosoftGraphSecurity.API_VER", test_data.get("api_version"))
     hr, ec, _ = get_alert_details_command(client_mocker, test_data.get("args"))
     assert hr == test_data.get("expected_hr")
     assert ec == test_data.get("expected_ec")
@@ -151,7 +142,6 @@ def test_get_alert_details_command(mocker, test_case):
 @pytest.mark.parametrize(
     "test_case",
     [
-        "test_case_1",
         "test_case_2",
     ],
 )
@@ -159,26 +149,20 @@ def test_search_alerts_command(mocker, test_case):
     """
     Given:
     - test case that point to the relevant test case in the json test data which include:
-      args, api version, response mock, expected hr and ec outputs.
-    - Case 1: args with medium severity and limit of 50 incidents, response of a Legacy Alerts search_alert command results,
-              and a Legacy Alerts api version flag.
-    - Case 2: args with limit of 1 incident, response of a Legacy Alerts search_alert command results with 2 alerts,
-              and a Alerts v2 api version flag.
+      args, response mock, expected hr and ec outputs.
+    - Case 2: args with limit of 1 incident, response of a search_alert command results with 2 alerts.
 
     When:
     - Running search_alerts_command.
 
     Then:
     - Ensure that the response was parsed correctly and right HR and EC outputs are returned.
-    - Case 1: Should parse all the response information into the HR,
-              and only the relevant fields from the response into the ec.
     - Case 2: Should concat the second incident from the response,
               parse all only the first incident response information into the HR,
               and all fields from the first incident response into the ec.
     """
     test_data = load_json("./test_data/test_search_alerts_command.json").get(test_case)
     mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
-    mocker.patch("MicrosoftGraphSecurity.API_VER", test_data.get("api_version"))
     hr, ec, _ = search_alerts_command(client_mocker, test_data.get("args"))
     assert hr == test_data.get("expected_hr")
     assert ec == test_data.get("expected_ec")
@@ -190,117 +174,349 @@ def test_search_alerts_command(mocker, test_case):
         "test_case_1",
     ],
 )
-def test_fetch_incidents_command(mocker, test_case):
+def test_fetch_alerts_command(mocker, test_case):
     """
     Given:
     - test case that point to the relevant test case in the json test data which include a response mock.
-    - Case 1: Response of a Legacy Alerts search_alert command results.
+    - Case 1: Response of a search_alert command results.
+
+    When:
+    - Running fetch_alerts.
+
+    Then:
+    - Ensure that the length of the results and the different fields of the fetched alerts are returned correctly.
+    - Case 1: Ensure that the len of the alerts returned in the first iteration is 3, then 1 and then 0.
+    """
+    mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19 08:14:21", "never mind"))
+    test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
+    mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", service_sources="", last_run={})
+    assert len(alerts) == 3
+    assert alerts[0].get("severity") == 2
+    assert alerts[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
+
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=1, extra_filter="", service_sources="", last_run={})
+    assert len(alerts) == 1
+    assert alerts[0].get("name") == "test alert - da637218501473413212_-1554891308"
+
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=0, extra_filter="", service_sources="", last_run={})
+    assert len(alerts) == 0
+
+
+def test_fetch_incidents_command(mocker):
+    """
+    Given:
+    - A mocked /security/incidents response with two incidents, each embedding its alerts.
+
+    When:
+    - Running fetch_incidents with an empty last_run.
+
+    Then:
+    - Both incidents are mapped to XSOAR incidents (name/occurred/severity/rawJSON).
+    - The severity is mapped via SEVERITY_MAP and the embedded alerts are kept in rawJSON.
+    - The returned last_run advances to the newest incident's createdDateTime.
+    """
+    mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19T08:14:21.000000Z", "never mind"))
+    mock_response = {
+        "value": [
+            {
+                "id": "1",
+                "displayName": "Incident One",
+                "createdDateTime": "2020-04-20T10:00:00.0000000Z",
+                "severity": "medium",
+                "alerts": [{"id": "a1", "title": "alert one"}],
+            },
+            {
+                "id": "2",
+                "displayName": "Incident Two",
+                "createdDateTime": "2020-04-20T11:00:00.0000000Z",
+                "severity": "informational",
+                "alerts": [{"id": "a2", "title": "alert two"}],
+            },
+        ]
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
+
+    incidents, new_last_run = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run={})
+
+    assert len(incidents) == 2
+    assert incidents[0].get("name") == "Incident One - 1"
+    assert incidents[0].get("severity") == 2
+    assert incidents[1].get("severity") == 0.5
+    assert '"alerts"' in incidents[0].get("rawJSON")
+    assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
+
+
+def test_fetch_incidents_command_dedup_by_last_run(mocker):
+    """
+    Given:
+    - A last_run cursor set to the first incident's createdDateTime.
 
     When:
     - Running fetch_incidents.
 
     Then:
-    - Ensure that the length of the results and the different fields of the fetched incidents are returned correctly.
-    - Case 1: Ensure that the len of the incidents returned in the first iteration is 3, then 1 and then 0.
+    - Only the newer incident (created after the cursor) is returned.
     """
-    mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19 08:14:21", "never mind"))
-    test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
-    mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
-    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, providers="", filter="", service_sources="")
-    assert len(incidents) == 3
-    assert incidents[0].get("severity") == 2
-    assert incidents[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
+    mock_response = {
+        "value": [
+            {"id": "1", "displayName": "Old", "createdDateTime": "2020-04-20T10:00:00.0000000Z", "severity": "low"},
+            {"id": "2", "displayName": "New", "createdDateTime": "2020-04-20T11:00:00.0000000Z", "severity": "high"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
 
-    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=1, providers="", filter="", service_sources="")
+    incidents, _ = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        last_run={"time": "2020-04-20T10:00:00.0000000Z"},
+    )
+
     assert len(incidents) == 1
-    assert incidents[0].get("name") == "test alert - da637218501473413212_-1554891308"
+    assert incidents[0].get("name") == "New - 2"
 
-    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=0, providers="", filter="", service_sources="")
-    assert len(incidents) == 0
+
+def test_fetch_incidents_and_alerts_selection_gating(mocker):
+    """
+    Given:
+    - The "Fetch incidents type" parameter set to "Incidents" only.
+
+    When:
+    - Running fetch_incidents_and_alerts.
+
+    Then:
+    - Only fetch_incidents is called (alerts are not fetched).
+    - The combined last run is persisted under the per-type "incidents_last_run" key.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    fetch_alerts_mock = mocker.patch(
+        "MicrosoftGraphSecurity.fetch_alerts", return_value=([{"name": "alert"}], {"time": "alerts_cursor"})
+    )
+    fetch_incidents_mock = mocker.patch(
+        "MicrosoftGraphSecurity.fetch_incidents", return_value=([{"name": "incident"}], {"time": "incidents_cursor"})
+    )
+
+    result = fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": "Incidents"})
+
+    assert fetch_alerts_mock.call_count == 0
+    assert fetch_incidents_mock.call_count == 1
+    assert result == [{"name": "incident"}]
+    set_last_run.assert_called_once_with({"incidents_last_run": {"time": "incidents_cursor"}})
+
+
+def test_fetch_incidents_and_alerts_both_types(mocker):
+    """
+    Given:
+    - The "Fetch incidents type" parameter set to both "Alerts,Incidents".
+
+    When:
+    - Running fetch_incidents_and_alerts.
+
+    Then:
+    - Both fetchers are called and their results combined.
+    - Each type's cursor is stored under its own last-run key.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch("MicrosoftGraphSecurity.fetch_alerts", return_value=([{"name": "alert"}], {"time": "alerts_cursor"}))
+    mocker.patch("MicrosoftGraphSecurity.fetch_incidents", return_value=([{"name": "incident"}], {"time": "incidents_cursor"}))
+
+    result = fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": "Alerts,Incidents"})
+
+    assert {"name": "alert"} in result
+    assert {"name": "incident"} in result
+    set_last_run.assert_called_once_with(
+        {"alerts_last_run": {"time": "alerts_cursor"}, "incidents_last_run": {"time": "incidents_cursor"}}
+    )
+
+
+def test_fetch_incidents_and_alerts_migrates_old_flat_last_run(mocker):
+    """
+    Given:
+    - An instance that was upgraded from a version storing the old flat last_run format: {"time": "..."}.
+
+    When:
+    - Running fetch_incidents_and_alerts for both types.
+
+    Then:
+    - The old flat cursor is migrated to the new nested format and passed to both fetchers,
+      so the whole fetch window is not re-fetched (preventing duplicate incidents).
+    """
+    old_time = "2020-04-20T10:00:00.0000000Z"
+    mocker.patch.object(demisto, "getLastRun", return_value={"time": old_time})
+    mocker.patch.object(demisto, "setLastRun")
+    fetch_alerts_mock = mocker.patch("MicrosoftGraphSecurity.fetch_alerts", return_value=([], {"time": old_time}))
+    fetch_incidents_mock = mocker.patch("MicrosoftGraphSecurity.fetch_incidents", return_value=([], {"time": old_time}))
+
+    fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": "Alerts,Incidents"})
+
+    assert fetch_alerts_mock.call_args.kwargs["last_run"] == {"time": old_time}
+    assert fetch_incidents_mock.call_args.kwargs["last_run"] == {"time": old_time}
 
 
 @pytest.mark.parametrize(
-    "args, expected_params, is_fetch, api_version",
+    "extra_data, should_expand",
+    [("true", True), ("false", False), (None, False)],
+)
+def test_set_url_suffix_list_incidents_extra_data(extra_data, should_expand):
+    """
+    Given:
+    - The msg-list-security-incident args, with the extra_data arg set to true/false/unset.
+
+    When:
+    - Building the request URL suffix.
+
+    Then:
+    - $expand=alerts is included only when extra_data is true.
+    """
+    args = {"limit": "50"}
+    if extra_data is not None:
+        args["extra_data"] = extra_data
+
+    url_suffix = set_url_suffix_list_incidents(args)
+
+    assert ("$expand=alerts" in url_suffix) is should_expand
+
+
+def test_set_url_suffix_list_incidents_extra_data_with_filter():
+    """
+    Given:
+    - extra_data=true together with a typed filter (severity).
+
+    When:
+    - Building the request URL suffix.
+
+    Then:
+    - Both $expand=alerts and the $filter clause are present.
+    """
+    args = {"limit": "50", "extra_data": "true", "severity": "high"}
+
+    url_suffix = set_url_suffix_list_incidents(args)
+
+    assert "$expand=alerts" in url_suffix
+    assert "$filter=severity eq 'high'" in url_suffix
+
+
+def test_fetch_incidents_does_not_mutate_last_run(mocker):
+    """
+    Given:
+    - A last_run dict passed to fetch_incidents.
+
+    When:
+    - Running fetch_incidents and it advances the cursor.
+
+    Then:
+    - The original last_run argument is not mutated (a copy is returned instead).
+    """
+    mock_response = {
+        "value": [
+            {"id": "2", "displayName": "New", "createdDateTime": "2020-04-20T11:00:00.0000000Z", "severity": "high"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
+
+    original_last_run = {"time": "2020-04-20T10:00:00.0000000Z"}
+    _, new_last_run = fetch_incidents(
+        client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run=original_last_run
+    )
+
+    assert original_last_run == {"time": "2020-04-20T10:00:00.0000000Z"}
+    assert new_last_run is not original_last_run
+    assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
+
+
+def test_fetch_alerts_does_not_mutate_last_run(mocker):
+    """
+    Given:
+    - A last_run dict passed to fetch_alerts.
+
+    When:
+    - Running fetch_alerts and it advances the cursor.
+
+    Then:
+    - The original last_run argument is not mutated (a copy is returned instead).
+    """
+    mock_response = {
+        "value": [
+            {"id": "2", "title": "New", "createdDateTime": "2020-04-20T11:00:00.0000000Z", "severity": "high"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "search_alerts", return_value=mock_response)
+
+    original_last_run = {"time": "2020-04-20T10:00:00.0000000Z"}
+    _, new_last_run = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        service_sources="",
+        last_run=original_last_run,
+    )
+
+    assert original_last_run == {"time": "2020-04-20T10:00:00.0000000Z"}
+    assert new_last_run is not original_last_run
+    assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
+
+
+@pytest.mark.parametrize(
+    "args, expected_params, is_fetch",
     [
-        (
-            {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-            {"$filter": "Category eq 'Malware' and Severity eq 'High'"},
-            True,
-            API_V1,
-        ),
         (
             {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
             {"$filter": "Category eq 'Malware' and Severity eq 'High' and status eq 'resolved'"},
             True,
-            API_V2,
         ),
         (
             {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-            {"$top": "50", "$filter": "Category eq 'Malware' and Severity eq 'High'"},
+            {"$top": "50", "$filter": "Category eq 'Malware' and Severity eq 'High' and status eq 'resolved'"},
             False,
-            API_V1,
         ),
-        ({"page": "2"}, {"$top": "50", "$skip": 100, "$filter": ""}, False, API_V1),
+        ({"page": "2"}, {"$top": "50", "$skip": 100, "$filter": ""}, False),
     ],
 )
-def test_create_search_alerts_filters(mocker, args, expected_params, is_fetch, api_version):
+def test_create_search_alerts_filters(args, expected_params, is_fetch):
     """
     Given:
-    - args, expected_params results, is_fetch flag, and a api_version flag.
-    - Case 1: args with filter and status (relevant only for Alerts v2) fields, is_fetch is True and,
-              API version flag is Legacy Alerts.
-    - Case 2: args with filter and status (relevant only for Alerts v2) fields, is_fetch is True and,
-              API version flag is Alerts v2.
-    - Case 3: args with filter and status (relevant only for Alerts v2) fields, is_fetch is False and,
-              API version flag is Legacy Alerts.
-    - Case 4: args with only page field, is_fetch is False and API version flag is Legacy Alerts.
+    - args, expected_params results, and is_fetch flag.
+    - Case 1: args with filter and status fields, is_fetch is True.
+    - Case 2: args with filter and status fields, is_fetch is False.
+    - Case 3: args with only page field, is_fetch is False.
 
     When:
     - Running create_search_alerts_filters.
 
     Then:
     - Ensure that the right fields were parsed into the query.
-    - Case 1: Should include only the value of the filter field from the args.
-    - Case 2: Should include both the value of the filter field from the args and the status.
-    - Case 3: Should include only the value of the filter field from the args in the $filter field in the params,
-      and 50 in the $top field.
-    - Case 4: Should return a params dict with empty $filter field, 50 in the $top field, and 100 in the $skip field.
+    - Case 1: Should include both the value of the filter field from the args and the status.
+    - Case 2: Should include the filter and status in the $filter field, and 50 in the $top field.
+    - Case 3: Should return a params dict with empty $filter field, 50 in the $top field, and 100 in the $skip field.
     """
-    mocker.patch("MicrosoftGraphSecurity.API_VER", api_version)
     params = create_search_alerts_filters(args, is_fetch=is_fetch)
     assert params == expected_params
 
 
 @pytest.mark.parametrize(
-    "args, expected_error, api_version",
+    "args, expected_error",
     [
-        ({"page_size": "1001"}, "Please note that the page size limit for Legacy Alerts is 1000", API_V1),
-        (
-            {"page_size": "1000", "page": "3"},
-            "Please note that the maximum amount of alerts you can skip in Legacy Alerts is 500",
-            API_V1,
-        ),
-        ({"page_size": "2001"}, "Please note that the page size limit for Alerts v2 is 2000", API_V2),
+        ({"page_size": "2001"}, "Please note that the page size limit is 2000"),
     ],
 )
-def test_create_search_alerts_filters_errors(mocker, args, expected_error, api_version):
+def test_create_search_alerts_filters_errors(args, expected_error):
     """
     Given:
-    - args, expected_error, and a api_version flag.
-    - Case 1: Args with page_size = 1001, and API version flag is Legacy Alerts.
-    - Case 2: Args with page_size = 1000 and page = 3 (total of page=3000) and API version flag is Legacy Alerts.
-    - Case 3: Args with page_size = 2001, and API version flag is Alerts v2.
+    - args and expected_error.
+    - Case 1: Args with page_size = 2001.
 
     When:
     - Running create_search_alerts_filters.
 
     Then:
     - Ensure that the right error was thrown.
-    - Case 1: Should throw an error for page_size too big for Legacy Alerts limitations.
-    - Case 2: Should throw an error for too many alerts to skip for Legacy Alerts limitations.
-    - Case 3: Should throw an error for page_size too big for Alerts v2 limitations.
+    - Case 1: Should throw an error for page_size too big.
     """
-    mocker.patch("MicrosoftGraphSecurity.API_VER", api_version)
     with pytest.raises(DemistoException) as e:
         create_search_alerts_filters(args, is_fetch=False)
     assert str(e.value.message) == expected_error
@@ -340,116 +556,62 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
 
 
 @pytest.mark.parametrize(
-    "args, expected_results, api_version",
+    "args, expected_results",
     [
+        ({"status": "new"}, {"status": "new"}),
+        ({"assigned_to": "someone", "status": "inProgress"}, {"assignedTo": "someone", "status": "inProgress"}),
         (
-            {
-                "vendor_information": "vendor_information",
-                "provider_information": "provider_information",
-                "assigned_to": "someone",
-            },
-            {"vendorInformation": {"provider": "provider_information", "vendor": "vendor_information"}, "assignedTo": "someone"},
-            API_V1,
+            {"determination": "malware", "classification": "truePositive"},
+            {"determination": "malware", "classification": "truePositive"},
         ),
-        (
-            {"vendor_information": "vendor_information", "provider_information": "provider_information", "comments": "comment"},
-            {"vendorInformation": {"provider": "provider_information", "vendor": "vendor_information"}, "comments": ["comment"]},
-            API_V1,
-        ),
-        ({"comments": "comment", "status": "new"}, {"status": "new"}, API_V2),
     ],
 )
-def test_create_data_to_update(mocker, args, expected_results, api_version):
+def test_create_data_to_update(args, expected_results):
     """
     Given:
-    - args, expected_results, and a api_version flag.
-    - Case 1: args with vendor_information, provider information, and assigned_to fields.
-              And API version flag is Legacy Alerts.
-    - Case 2: args with vendor_information, provider information, and comment (relevant only for Legacy Alerts) fields,
-              and API version flag is Legacy Alerts.
-    - Case 3: args with status ('new' which is supported only by Alerts v2) and comment (relevant only for Legacy Alerts),
-              and API version flag is Alerts v2.
+    - args and expected_results.
+    - Case 1: args with status field.
+    - Case 2: args with assigned_to and status fields.
+    - Case 3: args with determination and classification fields.
 
     When:
     - Running create_data_to_update.
 
     Then:
     - Ensure that the right fields were parsed into the data dict.
-    - Case 1: Should parse vendor_information and provider information fields into an inner dictionary,
-              and add the assigned_to as assignedTo into the data dict.
-    - Case 2: Should parse vendor_information and provider information fields into an inner dictionary,
-              and add the comments as a list into the data dict.
-    - Case 3: Should parse only status into the data dict.
+    - Case 1: Should parse only status into the data dict.
+    - Case 2: Should parse assigned_to as assignedTo and status into the data dict.
+    - Case 3: Should parse determination and classification into the data dict.
     """
-    mocker.patch("MicrosoftGraphSecurity.API_VER", api_version)
     data = create_data_to_update(args)
     assert data == expected_results
 
 
 @pytest.mark.parametrize(
-    "args, expected_error, api_version",
+    "args, expected_error",
     [
         (
-            {"assigned_to": "someone"},
-            "When using Legacy Alerts, both vendor_information and provider_information must be provided.",
-            API_V1,
-        ),
-        (
             {"closed_date_time": "now"},
-            "No data relevant for Alerts v2 to update was provided, please provide at least one of the "
+            "No data to update was provided, please provide at least one of the "
             "following: assigned_to, determination, classification, status.",
-            API_V2,
         ),
     ],
 )
-def test_create_data_to_update_errors(mocker, args, expected_error, api_version):
+def test_create_data_to_update_errors(args, expected_error):
     """
     Given:
-    - args, expected_error, and a api_version flag.
-    - Case 1: args with only assigned_to field, and API version flag is Legacy Alerts.
-    - Case 2: Args with only 'closed_date_time' field (relevant only for Legacy Alerts),  and API version flag is Alerts v2.
+    - args and expected_error.
+    - Case 1: Args with only 'closed_date_time' field (not a valid update field).
 
     When:
     - Running create_data_to_update.
 
     Then:
     - Ensure that the right error was thrown.
-    - Case 1: Should throw an error for missing vendor and provider information.
-    - Case 2: Should throw an error for missingAlerts v2 relevant data to update.
+    - Case 1: Should throw an error for missing relevant data to update.
     """
-    mocker.patch("MicrosoftGraphSecurity.API_VER", api_version)
     with pytest.raises(DemistoException) as e:
         create_data_to_update(args)
-    assert str(e.value.message) == expected_error
-
-
-@pytest.mark.parametrize(
-    "args, expected_error, api_version",
-    [
-        (
-            {"alert_id": "alert_id", "comment": "comment"},
-            "This command is available only for Alerts v2."
-            " If you wish to add a comment to an alert with Legacy Alerts please use 'msg-update-alert' command.",
-            API_V1,
-        )
-    ],
-)
-def test_create_alert_comment_command_error(mocker, args, expected_error, api_version):
-    """
-    Given:
-    - args, expected_error, and a api_version flag.
-    - Case 1: args with alert_id and a comment to add, and API version flag is Legacy Alerts.
-
-    When:
-    - Running create_alert_comment_command.
-
-    Then:
-    - Ensure that the right error was thrown.
-    - Case 1: Should throw an error for running the command using Legacy Alerts of the API.
-    """
-    mocker.patch("MicrosoftGraphSecurity.API_VER", api_version)
-    with pytest.raises(DemistoException) as e:
-        create_alert_comment_command(client_mocker, args)
     assert str(e.value.message) == expected_error
 
 
@@ -477,48 +639,38 @@ def test_create_alert_comment_command(mocker, test_case):
 
 
 @pytest.mark.parametrize(
-    "param, providers_param, service_sources_param, expected_results, api_version",
+    "param, service_sources_param, expected_results",
     [
-        ("param", "providers_param", "service_sources_param", "param", API_V1),
-        ("param", "providers_param", "service_sources_param", "param", API_V2),
-        ("", "providers_param", "service_sources_param", "vendorInformation/provider eq 'providers_param'", API_V1),
-        ("", "providers_param", "service_sources_param", "serviceSource in ('service_sources_param')", API_V2),
+        ("param", "service_sources_param", "param"),
+        ("", "service_sources_param", "serviceSource in ('service_sources_param')"),
         (
             "",
-            "providers_param",
             "service_source1,service_source2",
             "serviceSource in ('service_source1','service_source2')",
-            API_V2,
         ),
-        ("", "", "", "", API_V2),
+        ("", "", ""),
     ],
 )
-def test_create_filter_query(mocker, param, providers_param, service_sources_param, expected_results, api_version):
+def test_create_filter_query(param, service_sources_param, expected_results):
     """
     Given:
-    - param, providers_param, service_sources_param function arguments,
-      expected_results, and a api_version flag.
-    - Case 1: param, providers_param, and service_sources_param function arguments filled,
-              and API version flag is Legacy Alerts.
-    - Case 2: param, providers_param, and service_sources_param function arguments filled, and API version flag is Alerts v2.
-    - Case 3: Only providers_param and service_sources_param function arguments filled, and API version flag is Legacy Alerts.
-    - Case 4: Only providers_param and service_sources_param function arguments filled, and API version flag is Alerts v2.
-    - Case 5: param, providers_param, and service_sources_param function arguments Empty, and API version flag is Alerts v2.
-    - Case 6: Multiple service sources are provided, and API version flag is Alerts v2.
+    - param and service_sources_param function arguments, and expected_results.
+    - Case 1: param and service_sources_param function arguments filled.
+    - Case 2: Only service_sources_param function argument filled.
+    - Case 3: Multiple service sources are provided.
+    - Case 4: All arguments empty.
+
     When:
     - Running create_filter_query.
 
     Then:
     - Ensure that the right option was returned.
     - Case 1: Should return param.
-    - Case 2: Should return param.
-    - Case 3: Should return providers_param.
-    - Case 4: Should return service_sources_param.
-    - Case 5: Should return an empty string.
-    - Case 6: Should return service_sources_param as query operator $in and not $eq.
+    - Case 2: Should return service_sources_param as query.
+    - Case 3: Should return service_sources_param as query operator $in.
+    - Case 4: Should return an empty string.
     """
-    mocker.patch("MicrosoftGraphSecurity.API_VER", api_version)
-    filter_query = create_filter_query(param, providers_param, service_sources_param)
+    filter_query = create_filter_query(param, service_sources_param)
     assert filter_query == expected_results
 
 
@@ -677,8 +829,55 @@ def test_test_auth_code_command(mocker, command_to_check):
 
 
 def test_purge_ediscovery_data_command(mocker):
+    """
+    Given:
+        A purge response with no Location header.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the status is success and the null Operation ID is removed from the
+        context outputs.
+    """
     mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={}))
-    assert purge_ediscovery_data_command(client_mocker, {}).readable_output == "eDiscovery purge status is success."
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.readable_output == "eDiscovery purge status is success.\n- Operation ID: None"
+    assert result.outputs == {"Status": "success"}
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Purge"
+
+
+def test_purge_ediscovery_data_command_with_operation_id(mocker):
+    """
+    Given:
+        A purge response that includes a Location header with an operation ID.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the Operation ID is extracted and returned to the context outputs.
+    """
+    location = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_456"
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location}))
+    mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded"})
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs == {"OperationID": "op_456", "Status": "succeeded"}
+    assert "op_456" in result.readable_output
+
+
+def test_purge_ediscovery_data_command_with_malformed_location(mocker):
+    """
+    Given:
+        A purge response that includes a Location header without a parseable operation ID.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the null Operation ID is removed from the context outputs and the
+        readable output shows None.
+    """
+    location = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/"
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location}))
+    mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded"})
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs == {"Status": "succeeded"}
+    assert result.readable_output == "eDiscovery purge status is succeeded.\n- Operation ID: None"
 
 
 def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
@@ -1267,6 +1466,10 @@ def test_export_result_ediscovery_data_command(mocker):
 
     assert "eDiscovery export request was submitted successfully" in result.readable_output
     assert "op_123" in result.readable_output
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Export"
+    assert result.outputs["OperationID"] == "op_123"
+    assert result.outputs["CaseID"] == "case_123"
+    assert result.outputs["Location"] == mock_response.headers["Location"]
 
 
 # ==========================================
@@ -1397,3 +1600,43 @@ def test_download_operation_export_file_errors(mocker, mock_attrs, expected_erro
         _download_operation_export_file(client_mocker, operation)
 
     assert expected_error_msg in str(e.value)
+
+
+def test_download_export_file_resets_token_to_default_scope(mocker):
+    """
+    Given:
+        A client downloading an eDiscovery export file (which uses a non-default Purview scope).
+    When:
+        Calling download_export_file.
+    Then:
+        The download uses the Purview scope, and afterwards a default-scope token is fetched
+        to reset the shared refresh token and avoid token-scope drift (XSUP-71559).
+    """
+    mock_response = MagicMock()
+    http_request = mocker.patch.object(client_mocker.ms_client, "http_request", return_value=mock_response)
+    get_access_token = mocker.patch.object(client_mocker.ms_client, "get_access_token")
+
+    result = client_mocker.download_export_file("https://fake-url.com/data")
+
+    assert result is mock_response
+    assert http_request.call_args.kwargs["scope"] == "b26e684c-5068-4120-a679-64a5d2c909d9/.default"
+    get_access_token.assert_called_once_with(scope=client_mocker.ms_client.scope)
+
+
+def test_download_export_file_reset_uses_default_not_purview_scope(mocker):
+    """
+    Given:
+        A client downloading an eDiscovery export file.
+    When:
+        Calling download_export_file.
+    Then:
+        The post-download token reset requests the client's default scope, not the Purview scope.
+    """
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=MagicMock())
+    get_access_token = mocker.patch.object(client_mocker.ms_client, "get_access_token")
+
+    client_mocker.download_export_file("https://fake-url.com/data")
+
+    reset_scope = get_access_token.call_args.kwargs["scope"]
+    assert reset_scope == client_mocker.ms_client.scope
+    assert reset_scope != "b26e684c-5068-4120-a679-64a5d2c909d9/.default"

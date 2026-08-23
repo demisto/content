@@ -538,6 +538,8 @@ Update the incident with the given ID.
 
 ### microsoft-365-defender-advanced-hunting
 
+NOTE: This endpoint will be deprecated by Microsoft on January 31, 2027. We recommend switching to the [Microsoft Graph Security Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph) and using the msg-advanced-hunting command. For more information, see the [Microsoft documentation](https://learn.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#migrate-from-the-older-apis).
+
 ***
 Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender.
 Details on how to write queries you can find [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide).

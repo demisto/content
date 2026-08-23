@@ -1,3 +1,4 @@
+import html as html_module
 from datetime import datetime as dt
 from zoneinfo import ZoneInfo
 
@@ -711,7 +712,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
             attachments = argToList(attachments)
 
         if attachments:
-            attachment_names = [attachment.get("name") for attachment in attachments]
+            attachment_names = [html_module.escape(attachment.get("name") or "") for attachment in attachments]
             reply_body += f"Attachments: {attachment_names}\n\n"
 
         entry_note = json.dumps([{"Type": 1, "ContentsFormat": "html", "Contents": reply_body, "tags": ["email-thread"]}])

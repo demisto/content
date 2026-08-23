@@ -4,3 +4,5 @@ name: Bitbucket Modeling Rule
 rules: ''
 schema: ''
 tags: Bitbucket
+supportedModules:
+- xsiam

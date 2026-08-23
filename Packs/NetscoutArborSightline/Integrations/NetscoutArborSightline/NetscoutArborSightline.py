@@ -1,11 +1,11 @@
 from time import sleep
+from datetime import datetime, timedelta
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 from copy import deepcopy
 import requests
-from datetime import UTC
 import urllib3
 
 # Disable insecure warnings
@@ -66,6 +66,7 @@ class NetscoutClient(BaseClient):
         first_fetch,
         headers=None,
         max_fetch=None,
+        look_back=None,
         alert_class=None,
         alert_type=None,
         classification=None,
@@ -74,6 +75,7 @@ class NetscoutClient(BaseClient):
     ):
         self.first_fetch = first_fetch
         self.max_fetch = max_fetch
+        self.look_back = look_back
         self.alert_class = alert_class
         self.alert_type = alert_type
         self.classification = classification
@@ -136,34 +138,6 @@ class NetscoutClient(BaseClient):
 
         except ValueError:
             raise DemistoException(f"Could not parse error returned from Netscout Arbor Sightline server:\n{str(res.content)}")
-
-    def calculate_amount_of_incidents(self, start_time: str, params_dict: dict) -> int:
-        """
-        Perform an API call with page size = 1 (perPage=1) to calculate the amount of incidents (#pages will be equal to
-        #incidents).
-
-        Arguments:
-            start_time (str): Starting time to search by
-            params_dict (dict): The params configured by the user to perform the fetch with.
-
-        Returns:
-            (int) The amount of pages (incidents) in total in the given query, 0 if none.
-        """
-        time_attributes_dict = assign_params(start_time=start_time, start_time_operator=">")
-        params_dict.update(time_attributes_dict)
-        data_attribute_filter = self.build_data_attribute_filter(params_dict)
-        page_size = 1
-        results = self.list_alerts(page_size=page_size, search_filter=data_attribute_filter, status_list_to_retry=[500])
-        last_page_link = results.get("links", {}).get("last")
-        if last_page_link:
-            last_page_number_matcher = re.match(r".*&page=(\d+)", last_page_link)
-            if not last_page_number_matcher:
-                raise DemistoException(f"Could not calculate page size, last page number was not found:\n{last_page_link}")
-            last_page_number = last_page_number_matcher.group(1)
-        else:
-            last_page_number = 0
-
-        return int(last_page_number)
 
     def build_relationships(self, **kwargs) -> dict:
         """
@@ -229,62 +203,86 @@ class NetscoutClient(BaseClient):
                 param_list.append(f"/data/attributes/{key + operator + val}")
         return " AND ".join(param_list)
 
-    def fetch_incidents(self, params_dict: dict) -> tuple[list, str]:
-        """
-        Perform fetch incidents process.
-        1.  We first save the current time to know what was the time at the beginning of the incidents counting process.
-        2.  We calculate the amount of incidents we need to fetch by performing a query for all incident newer
-            than last run (or first fetch), we do this by setting the page size to 1, which makes the amount of returned
-            pages to be equal to the amount of incidents.
-        3.  Then, to get the relevant incidents, we query for all incidents *older* then the time we sampled in the
-            step 1, with page size equal to the amount of incidents from step 2. This ensures that the first page in
-            this search will have all of the incidents created after the given start time and only them.
-        4.  Finally out of the relevant incidents we take the older ones (from the end of the list) and set the new
-            start time to the creation time of the first incidnt in the list.
+    def fetch_incidents(self, params_dict: dict) -> tuple[list, dict]:
+        """Perform fetch incidents process.
+
         Args:
             params_dict (dict): The params configured by the user to perform the fetch with.
         Returns:
-            (list, str): List of incidents to save and string representing the creation time of the latest incident to
-                be saved.
+            (list, dict): List of incidents to save and last run state.
         """
         last_run = demisto.getLastRun()
-        new_last_start_time = last_start_time = last_run.get("LastFetchTime", self.first_fetch)
-        demisto.debug(f"Last fetch time to use is: {last_start_time}")
 
-        # We calculate the page size to query, by performing an incidents query with page size = 1, the amount of
-        # returned pages will equal to amount of incidents
-        now = datetime.now(UTC).isoformat()
-        amount_of_incidents = self.calculate_amount_of_incidents(start_time=last_start_time, params_dict=params_dict)
+        fetch_limit = last_run.get("limit") or self.max_fetch
+
+        # end_time is now (and not extremely useful), but update_last_run_object wants it.
+        start_time, end_time = get_fetch_run_time_range(
+            last_run=last_run,
+            first_fetch=self.first_fetch,
+            look_back=self.look_back,
+            date_format=DATE_FORMAT,
+        )
+
+        # We can only filter using '> start_time' not '>= start_time'. Adjust by one second instead.
+        tmp_start_time = datetime.strptime(start_time, DATE_FORMAT)
+        tmp_start_time - timedelta(seconds=1)
+        start_time = tmp_start_time.strftime(DATE_FORMAT)
+
+        demisto.debug(f"Fetching incidents between {start_time} and {end_time}")
+
         incidents: list = []
 
-        if amount_of_incidents:
-            time_attributes_dict = assign_params(start_time=now, start_time_operator="<")
-            params_dict.update(time_attributes_dict)
-            data_attribute_filter = self.build_data_attribute_filter(params_dict)
-            demisto.debug(
-                f"NetscoutArborSightline fetch params are: page_size={amount_of_incidents}, "
-                f"search_filter={data_attribute_filter}"
+        time_attributes_dict = assign_params(start_time=start_time, start_time_operator=">")
+        params_dict.update(time_attributes_dict)
+        data_attribute_filter = self.build_data_attribute_filter(params_dict)
+        demisto.debug(f"NetscoutArborSightline fetch params are: search_filter={data_attribute_filter}")
+
+        # We use the status_list_to_retry since in some rare cases the API returns 500 error on consecutive API
+        # calls.
+        all_alerts = self.fetch_paged_alerts(
+            fetch_limit=fetch_limit, search_filter=data_attribute_filter, status_list_to_retry=[500]
+        )
+        demisto.debug(f"Got {len(all_alerts)} incidents from the API, before filtering")
+
+        filtered_alerts = filter_incidents_by_duplicates_and_limit(
+            incidents_res=all_alerts, last_run=last_run, fetch_limit=fetch_limit, id_field="id"
+        )
+        demisto.debug(f"After filtering, there are {len(filtered_alerts)} incidents")
+
+        for alert in filtered_alerts:
+            id_ = alert.get("id")
+            attributes = alert.get("attributes", {})
+            alert_type = attributes.get("alert_type")
+            start_time = attributes.get("start_time")
+            if start_time.endswith("+00:00"):
+                start_time = start_time.removesuffix("+00:00") + "Z"
+
+            incidents.append(
+                {
+                    "name": f"{alert_type}: {id_}",
+                    "occurred": start_time,
+                    "dbotMirrorId": id_,
+                    "rawJSON": json.dumps(alert),
+                }
             )
 
-            # We use the status_list_to_retry since in some rare cases the API returns 500 error on consecutive API
-            # calls.
-            results = self.list_alerts(
-                page_size=amount_of_incidents, search_filter=data_attribute_filter, status_list_to_retry=[500]
-            )
-            all_alerts = results.get("data", [])
-            short_alert_list = all_alerts[-1 * self.max_fetch :]
-            if short_alert_list:
-                new_last_start_time = short_alert_list[0].get("attributes", {}).get("start_time")
+        last_run = update_last_run_object(
+            last_run=last_run,
+            incidents=incidents,
+            fetch_limit=self.max_fetch,
+            start_fetch_time=start_time,
+            end_fetch_time=end_time,
+            look_back=self.look_back,
+            created_time_field="occurred",
+            id_field="dbotMirrorId",
+            date_format=DATE_FORMAT,
+            increase_last_run_time=False,
+        )
+        demisto.debug(f"Last run after the fetch run: {last_run}")
 
-                for alert in reversed(short_alert_list):
-                    start_time = alert.get("attributes", {}).get("start_time")
-                    alert_type = alert.get("attributes", {}).get("alert_type")
-                    incidents.append(
-                        {"name": f"{alert_type}: {alert.get('id')}", "occurred": start_time, "rawJSON": json.dumps(alert)}
-                    )
-        return incidents, new_last_start_time
+        return incidents, last_run
 
-    def fetch_incidents_loop(self) -> tuple[list, str]:
+    def fetch_incidents_loop(self) -> tuple[list, dict]:
         """
         Calls the fetch incidents function to pull incidents with for each alert_type/alert_class separately.
 
@@ -314,17 +312,63 @@ class NetscoutClient(BaseClient):
             demisto.debug(f"No condition was matched {key=} {class_type_list=}")
 
         if self.alert_class or self.alert_type:
-            new_last_start_time = ""
             for item in class_type_list:
                 params_dict[key] = item
 
-                last_incidents, new_last_start_time = self.fetch_incidents(params_dict)
+                last_incidents, last_run = self.fetch_incidents(params_dict)
                 incidents += last_incidents
                 sleep(5)
         else:
-            incidents, new_last_start_time = self.fetch_incidents(params_dict)
+            incidents, last_run = self.fetch_incidents(params_dict)
 
-        return incidents, new_last_start_time
+        return incidents, last_run
+
+    def fetch_paged_alerts(
+        self,
+        fetch_limit: int,
+        search_filter: Optional[str] = None,
+        status_list_to_retry: list = None,
+    ) -> list[dict]:
+        """Fetch alerts using API paging and combine the results into a single list."""
+        # Fetch an initial page to get the metadata about total matching alerts.
+        first_page = self.list_alerts(search_filter=search_filter, status_list_to_retry=status_list_to_retry)
+
+        meta = first_page.get("meta", {})
+        pagination = meta.get("pagination", {})
+        # Pagniation object returns null when no results are returned.
+        total_count = pagination.get("totalCount") or 0
+        per_page = pagination.get("perPage") or 1
+
+        # Jump ahead if we don't need all the pages.
+        first_index = total_count - fetch_limit + 1
+        first_page_num = first_index // per_page
+        if first_page_num > 1:
+            first_page = self.list_alerts(
+                page=first_page_num, page_size=per_page, search_filter=search_filter, status_list_to_retry=status_list_to_retry
+            )
+
+        pages = [first_page]
+
+        # Loop over all the pages.
+        while True:
+            prev_links = pages[-1].get("links", {})
+            next_link = prev_links.get("next")
+            if next_link is None:
+                break
+
+            # Fetch the next page of results.
+            page = self._http_request(
+                method="GET",
+                full_url=next_link,
+                status_list_to_retry=status_list_to_retry,
+            )
+            pages.append(page)
+
+        # Reverse the results so the oldest is first.
+        alerts: list[dict] = []
+        for page in reversed(pages):
+            alerts.extend(reversed(page.get("data", [])))
+        return alerts
 
     def list_alerts(
         self,
@@ -335,7 +379,7 @@ class NetscoutClient(BaseClient):
     ) -> dict:
         return self.http_request(
             method="GET",
-            url_suffix="alerts",
+            url_suffix="alerts/",
             status_list_to_retry=status_list_to_retry,
             params=assign_params(page=page, perPage=page_size, filter=search_filter),
         )
@@ -344,7 +388,7 @@ class NetscoutClient(BaseClient):
         return self.http_request(method="GET", url_suffix=f"alerts/{alert_id}")
 
     def get_annotations(self, alert_id: str) -> dict:
-        return self.http_request(method="GET", url_suffix=f"alerts/{alert_id}/annotations")
+        return self.http_request(method="GET", url_suffix=f"alerts/{alert_id}/annotations/")
 
     def list_mitigations(self, mitigation_id: str, page: Optional[int] = None, page_size: Optional[int] = None) -> dict:
         return self.http_request(
@@ -490,9 +534,9 @@ def test_module(client: NetscoutClient) -> str:
 
 
 def fetch_incidents_command(client: NetscoutClient):
-    incidents, last_start_time = client.fetch_incidents_loop()
+    incidents, last_run = client.fetch_incidents_loop()
     demisto.incidents(incidents)
-    demisto.setLastRun({"LastFetchTime": last_start_time})
+    demisto.setLastRun(last_run)
 
 
 def list_alerts_command(client: NetscoutClient, args: dict):
@@ -724,6 +768,7 @@ def main() -> None:
         if first_fetch_dt := arg_to_datetime(params.get("first_fetch", "3 days")):
             first_fetch = first_fetch_dt.isoformat()
         max_fetch = min(arg_to_number(params.get("max_fetch")) or 50, 100)
+        look_back = arg_to_number(params.get("look_back")) or 1
         alert_class = argToList(params.get("alert_class"))
         alert_type = argToList(params.get("alert_type"))
         if alert_class and alert_type:
@@ -746,6 +791,7 @@ def main() -> None:
             proxy=proxy,
             first_fetch=first_fetch,
             max_fetch=max_fetch,
+            look_back=look_back,
             alert_class=alert_class,
             alert_type=alert_type,
             classification=classification,

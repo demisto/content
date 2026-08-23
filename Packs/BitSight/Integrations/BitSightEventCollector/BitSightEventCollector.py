@@ -295,7 +295,7 @@ def main():
     api_key = params.get("credentials", {}).get("identifier", "")
 
     # Extract command-specific variables
-    max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
+    max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH)) or DEFAULT_MAX_FETCH
     should_push = argToBoolean(args.get("should_push_events", "false")) if args.get("should_push_events") else False
     limit = arg_to_number(args.get("limit")) or 5
     last_run = demisto.getLastRun() or {}

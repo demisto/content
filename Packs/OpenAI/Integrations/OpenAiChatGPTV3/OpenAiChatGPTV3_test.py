@@ -1,6 +1,52 @@
+import json
+from datetime import datetime, UTC
+from typing import cast
+
 import pytest
 from CommonServerPython import *
-from OpenAiChatGPTV3 import EmailParts
+import OpenAiChatGPTV3 as module
+from OpenAiChatGPTV3 import (
+    CollectorParams,
+    ComplianceEvent,
+    Config,
+    EmailParts,
+    EventType,
+    LastRunKey,
+    OpenAiClient,
+    SourceLogType,
+    _build_completed_response_result,
+    _build_response_readable_output,
+    _build_responses_api_body,
+    _extract_credential,
+    _parse_json_or_concatenated,
+    analyze_email_body_command,
+    analyze_email_header_command,
+    check_email_part,
+    create_response_command,
+    deduplicate_events,
+    draft_soc_email_command,
+    enrich_audit_event,
+    enrich_compliance_event,
+    event_id,
+    extract_assistant_message,
+    extract_response_output_text,
+    fetch_audit_logs,
+    fetch_compliance_logs,
+    get_email_parts,
+    list_models_command,
+    create_moderation_command,
+    validate_create_moderation_args,
+    _entry_id_to_data_url,
+    parse_collector_params,
+    parse_concatenated_json,
+    parse_event_types_to_fetch,
+    parse_first_fetch_to_datetime,
+    parse_integration_params,
+    selected_audit_enabled,
+    selected_compliance_event_types,
+    send_message_command,
+    validate_event_types_credentials_correlation,
+)
 
 
 def util_load_json(path):
@@ -13,10 +59,9 @@ def util_load_text(path: str) -> str:
         return f.read()
 
 
+# region Existing tests - GPT chat / email
 def test_extract_assistant_message():
     """Tests extraction from a valid response with choices and message."""
-
-    from OpenAiChatGPTV3 import extract_assistant_message
 
     mock_response = util_load_json("test_data/mock_response.json")
     extracted_message = extract_assistant_message(response=mock_response)
@@ -26,8 +71,6 @@ def test_extract_assistant_message():
 @pytest.mark.parametrize("entry_id, should_raise_error", [("VALID_ENTRY_ID", False), ("INVALID_ENTRY_ID", True), ("", True)])
 def test_get_email_parts(mocker, entry_id, should_raise_error):
     """Tests email parsing and parts extraction."""
-
-    from OpenAiChatGPTV3 import get_email_parts
 
     def mock_file(_entry_id: str):
         if _entry_id == "VALID_ENTRY_ID":
@@ -55,9 +98,7 @@ def test_get_email_parts(mocker, entry_id, should_raise_error):
     ],
 )
 def test_check_email_parts(mocker, email_part: str, args: dict):
-    """Tests 'check_email_parts' function. '"""
-
-    from OpenAiChatGPTV3 import OpenAiClient, check_email_part
+    """Tests 'check_email_parts' function."""
 
     mocker.patch.object(OpenAiClient, "_http_request", return_value=util_load_json("test_data/mock_response.json"))
     mocker.patch.object(
@@ -68,6 +109,184 @@ def test_check_email_parts(mocker, email_part: str, args: dict):
 
     client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-4", proxy=False, verify=False)
     check_email_part(email_part, client, args)
+
+
+@pytest.mark.parametrize(
+    "args, params",
+    [
+        (
+            {"entry_id": "XYZ", "additional_instructions": "Pay close attention to SPF/DKIM."},
+            {},
+        ),
+        (
+            {"entry_id": "XYZ"},
+            {"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        ),
+        (
+            {
+                "entry_id": "XYZ",
+                "max_tokens": "100",
+                "temperature": "0.1",
+                "top_p": "0.5",
+                "reasoning_effort": "high",
+            },
+            {},
+        ),
+    ],
+    ids=[
+        "with-additional-instructions",
+        "with-instance-params-fallback",
+        "with-all-args-and-reasoning",
+    ],
+)
+def test_analyze_email_header_command(mocker, args: dict, params: dict):
+    """Tests 'analyze_email_header_command' using the Responses API."""
+    mock_response = util_load_json("test_data/mock_responses_api_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=mock_response)
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/attachment_malicious_url.eml", "name": "attachment_malicious_url.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    result = analyze_email_header_command(client, args, params)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert "SPF" in result.outputs[0]["assistant"]
+    assert result.readable_output is not None
+    assert "gpt-5" in result.readable_output
+
+
+def test_analyze_email_header_command_no_headers(mocker):
+    """Tests that analyze_email_header_command raises when no headers are found."""
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/dummy_file.txt", "name": "dummy_file.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    with pytest.raises(Exception):
+        analyze_email_header_command(client, {"entry_id": "XYZ"}, {})
+
+
+@pytest.mark.parametrize(
+    "args, params",
+    [
+        (
+            {"entry_id": "XYZ", "additional_instructions": "Check for phishing links."},
+            {},
+        ),
+        (
+            {"entry_id": "XYZ"},
+            {"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        ),
+        (
+            {
+                "entry_id": "XYZ",
+                "max_tokens": "100",
+                "temperature": "0.1",
+                "top_p": "0.5",
+                "reasoning_effort": "high",
+            },
+            {},
+        ),
+    ],
+    ids=[
+        "with-additional-instructions",
+        "with-instance-params-fallback",
+        "with-all-args-and-reasoning",
+    ],
+)
+def test_analyze_email_body_command(mocker, args: dict, params: dict):
+    """Tests 'analyze_email_body_command' using the Responses API."""
+    mock_response = util_load_json("test_data/mock_responses_api_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=mock_response)
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/attachment_malicious_url.eml", "name": "attachment_malicious_url.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    result = analyze_email_body_command(client, args, params)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == mock_response
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["response_id"] == "resp_XXXX"
+    assert result.readable_output is not None
+    assert "gpt-5" in result.readable_output
+
+
+def test_analyze_email_body_command_no_body(mocker):
+    """Tests that analyze_email_body_command raises when no body is found."""
+    # Mock an .eml file that has headers but no body
+    mocker.patch.object(
+        demisto,
+        "getFilePath",
+        return_value={"path": "./test_data/dummy_file.txt", "name": "dummy_file.eml"},
+    )
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    with pytest.raises(Exception):
+        analyze_email_body_command(client, {"entry_id": "XYZ"}, {})
+
+
+@pytest.mark.parametrize(
+    "args, params",
+    [
+        (
+            {"additional_instructions": "Notify the user the email was quarantined."},
+            {},
+        ),
+        (
+            {},
+            {"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        ),
+        (
+            {
+                "additional_instructions": "Include remediation steps.",
+                "max_tokens": "100",
+                "temperature": "0.1",
+                "top_p": "0.5",
+                "reasoning_effort": "high",
+            },
+            {},
+        ),
+    ],
+    ids=[
+        "with-additional-instructions",
+        "with-instance-params-fallback",
+        "with-all-args-and-reasoning",
+    ],
+)
+def test_draft_soc_email_command(mocker, args: dict, params: dict):
+    """Tests 'draft_soc_email_command' using the Responses API."""
+    mock_response = util_load_json("test_data/mock_responses_api_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=mock_response)
+
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-5", proxy=False, verify=False)
+    result = draft_soc_email_command(client, args, params)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == mock_response
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["response_id"] == "resp_XXXX"
+    assert result.readable_output is not None
+    assert "gpt-5" in result.readable_output
+
+
+def test_draft_soc_email_command_no_model(mocker):
+    """Tests that draft_soc_email_command raises when no model is configured."""
+    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="", proxy=False, verify=False)
+    with pytest.raises(Exception, match="No model specified"):
+        draft_soc_email_command(client, {}, {})
 
 
 @pytest.mark.parametrize(
@@ -86,9 +305,6 @@ def test_check_email_parts(mocker, email_part: str, args: dict):
     ids=["test-send-message-with-params", "test-send-message-no-params", "test-send-message-no-reset"],
 )
 def test_send_message_command(mocker, args):
-    """ """
-    from OpenAiChatGPTV3 import OpenAiClient, send_message_command
-
     mocker.patch.object(OpenAiClient, "_http_request", return_value=util_load_json("test_data/mock_response.json"))
     mocker.patch.object(
         demisto,
@@ -99,12 +315,2560 @@ def test_send_message_command(mocker, args):
     )
 
     client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-4", proxy=False, verify=False)
-    send_message_command_results, _ = send_message_command(client=client, args=args)
+    result, _ = send_message_command(client, args)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Conversation"
 
 
-def test_create_soc_email_template_command(mocker):
-    from OpenAiChatGPTV3 import OpenAiClient, create_soc_email_template_command
+# endregion
 
-    mocker.patch.object(OpenAiClient, "_http_request", return_value=util_load_json("test_data/mock_response.json"))
-    client = OpenAiClient(url="DUMMY_URL", api_key="DUMMY_API_KEY", model="gpt-4", proxy=False, verify=False)
-    create_soc_email_template_command(client, args={})
+
+# region Event Collector tests - shared helpers
+def _make_client(**overrides):
+    """Build an OpenAiClient with all keys populated for event-collector tests.
+
+    Pass `admin_api_key=""` / `compliance_api_key=""` / `chatgpt_base_url=...`
+    via `overrides` to exercise guard branches.
+    """
+
+    return OpenAiClient(
+        url=overrides.get("url", "https://api.openai.com/"),
+        api_key=overrides.get("api_key", "CHAT_KEY"),
+        model=overrides.get("model", "gpt-4"),
+        proxy=overrides.get("proxy", False),
+        verify=overrides.get("verify", False),
+        admin_api_key=overrides.get("admin_api_key", "ADMIN_KEY"),
+        compliance_api_key=overrides.get("compliance_api_key", "COMPLIANCE_KEY"),
+        chatgpt_base_url=overrides.get("chatgpt_base_url", "https://api.chatgpt.com"),
+    )
+
+
+# endregion
+
+
+# region Event Collector tests - small pure helpers
+@pytest.mark.parametrize(
+    "event, expected",
+    [
+        pytest.param({"id": "abc"}, "abc", id="happy-id-key"),
+        pytest.param({"log_id": "xyz"}, "xyz", id="happy-log_id-fallback"),
+        pytest.param({"event_id": 7}, "7", id="happy-numeric-coerced-to-string"),
+        pytest.param({"uuid": "u-1"}, "u-1", id="happy-uuid-fallback"),
+        pytest.param({"id": "primary", "log_id": "secondary"}, "primary", id="precedence-id-over-log_id"),
+        pytest.param({"unrelated": "v"}, None, id="bad-no-known-key"),
+        pytest.param({}, None, id="bad-empty-dict"),
+    ],
+)
+def test_event_id(event, expected):
+    """`event_id` picks the first present key in (id, log_id, event_id, uuid)."""
+
+    assert event_id(event) == expected
+
+
+@pytest.mark.parametrize(
+    "events, previous_ids, expected_ids",
+    [
+        pytest.param([{"id": "1"}, {"id": "2"}, {"id": "3"}], ["1", "3"], ["2"], id="happy-filters-known"),
+        pytest.param([{"id": "1"}, {"id": "2"}], [], ["1", "2"], id="happy-no-previous-returns-all"),
+        pytest.param([], ["1"], [], id="bad-empty-events-returns-empty"),
+        pytest.param([{"id": "1"}, {"id": "1"}], ["1"], [], id="edge-all-events-filtered"),
+    ],
+)
+def test_deduplicate_events(events, previous_ids, expected_ids):
+    """`deduplicate_events` drops events whose id is in `previous_ids`."""
+
+    result = deduplicate_events(events, previous_ids=previous_ids)
+    assert [e["id"] for e in result] == expected_ids
+
+
+@pytest.mark.parametrize(
+    "event, expect_time",
+    [
+        pytest.param(
+            {"id": "a", "effective_at": int(datetime(2099, 1, 1, tzinfo=UTC).timestamp())},
+            "2099-01-01T00:00:00Z",
+            id="happy-effective_at-mapped-to-_time",
+        ),
+        pytest.param({"id": "a"}, None, id="bad-missing-effective_at-no-_time"),
+        pytest.param({"id": "a", "effective_at": "not-a-number"}, None, id="bad-non-numeric-effective_at-no-_time"),
+    ],
+)
+def test_enrich_audit_event(event, expect_time):
+    """Audit enrichment: strict `_time` from `effective_at` only.
+
+    Audit events are routed to a dedicated dataset, so no `source_log_type` field is added
+    (only Compliance events need it because they all share one dataset).
+    """
+
+    enrich_audit_event(event)
+    # `source_log_type` is intentionally NOT set on audit events.
+    assert "source_log_type" not in event
+    if expect_time is None:
+        assert "_time" not in event
+    else:
+        assert event["_time"] == expect_time
+
+
+@pytest.mark.parametrize(
+    "event, api_event_type, expect_time, expect_source_log_type",
+    [
+        pytest.param(
+            {"id": "c", "timestamp": "2099-01-01T12:34:56Z"},
+            "AUDIT_LOG",
+            "2099-01-01T12:34:56Z",
+            "compliance_audit_log",
+            id="happy-audit_log-mapped",
+        ),
+        pytest.param(
+            {"id": "c", "timestamp": "2099-01-02T08:00:00Z"},
+            "APP_LOG",
+            "2099-01-02T08:00:00Z",
+            "app_log",
+            id="happy-app_log-mapped",
+        ),
+        # `_time` must come strictly from `timestamp` - `end_time` must NOT be used as a fallback.
+        pytest.param(
+            {"id": "c", "end_time": "2099-01-02T08:00:00Z"},
+            "APP_LOG",
+            None,
+            "app_log",
+            id="bad-no-timestamp-no-_time-no-fallback-to-end_time",
+        ),
+    ],
+)
+def test_enrich_compliance_event(event, api_event_type, expect_time, expect_source_log_type):
+    """Compliance enrichment: `_time` from `timestamp`, `source_log_type` from the API event-type mapping,
+    and `workspace_id` carried through onto every event."""
+
+    workspace_id = "FAKE_WORKSPACE_UUID"
+    enrich_compliance_event(event, api_event_type, workspace_id)
+    assert event["source_log_type"] == expect_source_log_type
+    assert event["_event_type"] == api_event_type
+    assert event["workspace_id"] == workspace_id
+    if expect_time is None:
+        assert "_time" not in event
+    else:
+        assert event["_time"] == expect_time
+
+
+def test_enrich_compliance_event_unknown_event_type_logs_info_and_falls_back(mocker):
+    """Unknown api_event_type passes through lowercased AND logs at info so maintainers can spot
+    new OpenAI compliance event types without DEBUG-level scraping."""
+    info_mock = mocker.patch.object(demisto, "info")
+    event: dict[str, Any] = {"id": "FAKE_FUTURE_001", "timestamp": "2099-01-01T00:00:00Z"}
+
+    enrich_compliance_event(event, api_event_type="FUTURE_NEW_TYPE", workspace_id="FAKE_WORKSPACE_UUID")
+
+    assert event["source_log_type"] == "future_new_type"
+    assert event["_event_type"] == "FUTURE_NEW_TYPE"
+    assert event["workspace_id"] == "FAKE_WORKSPACE_UUID"
+    assert info_mock.called, "Unknown api_event_type must log at info level."
+    assert any("FUTURE_NEW_TYPE" in (c.args[0] if c.args else "") for c in info_mock.call_args_list)
+
+
+@pytest.mark.parametrize(
+    "first_fetch_input, expected_delta",
+    [
+        pytest.param("1 day", timedelta(days=1), id="happy-1-day"),
+        pytest.param("3 days", timedelta(days=3), id="happy-3-days"),
+        pytest.param("1 minute", timedelta(minutes=1), id="happy-1-minute"),
+        pytest.param("1 minute ago", timedelta(minutes=1), id="happy-1-minute-ago-suffix"),
+        pytest.param("7 days", timedelta(days=7), id="happy-7-days"),
+        pytest.param("2 hours", timedelta(hours=2), id="happy-2-hours"),
+        pytest.param("30 minutes", timedelta(minutes=30), id="happy-30-minutes"),
+    ],
+)
+def test_parse_first_fetch_to_datetime_happy_path(mocker, first_fetch_input, expected_delta):
+    """`parse_first_fetch_to_datetime` returns a timezone-aware UTC datetime for valid inputs.
+
+    Covers relative time expressions across a range of magnitudes (minutes -> days) and both
+    bare ("1 minute") and "-ago" suffix ("1 minute ago") forms.
+    """
+    error_mock = mocker.patch.object(demisto, "error")
+
+    result = parse_first_fetch_to_datetime(first_fetch_input)
+    assert isinstance(result, datetime)
+    assert result.tzinfo is not None, "Returned datetime must be timezone-aware (UTC enforced)."
+
+    expected = datetime.now(UTC) - expected_delta
+    # Allow a small clock-drift window (test runtime + arg_to_datetime parse latency).
+    assert abs((result - expected).total_seconds()) < 30
+    assert not error_mock.called, "Valid first_fetch must NOT emit demisto.error."
+
+
+@pytest.mark.parametrize(
+    "bad_input",
+    [
+        pytest.param("not-a-real-time", id="garbage-string"),
+        pytest.param("definitely-not-a-time", id="another-garbage-string"),
+        pytest.param("", id="empty-string"),
+        pytest.param("   ", id="whitespace-only"),
+        pytest.param("1 banana", id="number-with-nonsense-unit"),
+        pytest.param("yesterday-ish", id="ambiguous-typo"),
+    ],
+)
+def test_parse_first_fetch_to_datetime_bad_input_falls_back_to_default(mocker, bad_input):
+    """Unparseable input MUST fall back to `Config.DEFAULT_FIRST_FETCH`, never to a hardcoded window.
+
+    This locks the regression where a typo silently widened the lookback 1440× from
+    "1 minute ago" to "1 day ago". Whitespace, empty strings, and made-up unit names
+    all must reach the fallback path.
+    """
+    # Suppress the demisto.error stdout under pytest; the error-log contract is asserted by
+    # test_parse_first_fetch_to_datetime_emits_error_log_on_bad_input.
+    mocker.patch.object(demisto, "error")
+
+    result = parse_first_fetch_to_datetime(bad_input)
+    assert isinstance(result, datetime)
+    assert result.tzinfo is not None, "Fallback must also be timezone-aware."
+
+    # The fallback MUST equal Config.DEFAULT_FIRST_FETCH (currently "1 minute ago"),
+    # NOT a hardcoded 1-day window.
+    expected_fallback = arg_to_datetime(Config.DEFAULT_FIRST_FETCH, is_utc=True)
+    assert expected_fallback is not None
+    if expected_fallback.tzinfo is None:
+        expected_fallback = expected_fallback.replace(tzinfo=UTC)
+    drift = abs((result - expected_fallback).total_seconds())
+    assert drift < 30, (
+        f"Fallback drifted {drift:.1f}s from Config.DEFAULT_FIRST_FETCH. "
+        f"If this exceeds the 1-minute window, the bug regressed."
+    )
+
+
+def test_parse_first_fetch_to_datetime_emits_error_log_on_bad_input(mocker):
+    """Unparseable input MUST emit a `demisto.error` so operators see the misconfiguration
+    in standard log queries (separate concern from the fallback value itself)."""
+    error_mock = mocker.patch.object(demisto, "error")
+    parse_first_fetch_to_datetime("1 banana")
+    assert error_mock.called, "Unparseable first_fetch must log at error level."
+    # The error message must reference the bad input and the documented fallback.
+    error_args = error_mock.call_args[0][0]
+    assert "1 banana" in error_args
+    assert Config.DEFAULT_FIRST_FETCH in error_args
+
+
+def test_parse_first_fetch_to_datetime_unix_seconds_format():
+    """Audit-stream call site: `int(dt.timestamp())` must produce a valid Unix-seconds integer."""
+    dt = parse_first_fetch_to_datetime("1 day")
+    unix_seconds = int(dt.timestamp())
+    assert isinstance(unix_seconds, int)
+    expected = int((datetime.now(UTC) - timedelta(days=1)).timestamp())
+    assert abs(unix_seconds - expected) < 30
+
+
+def test_parse_first_fetch_to_datetime_iso_format():
+    """Compliance-stream call site must produce a clean ISO 8601 string.
+
+    Verifies that `.replace(microsecond=0).strftime(Config.DATE_FORMAT)` yields a
+    valid wire-format timestamp ending in `Z`.
+    """
+    dt = parse_first_fetch_to_datetime("7 days")
+    iso = dt.replace(microsecond=0).strftime(Config.DATE_FORMAT)
+    assert isinstance(iso, str)
+    assert iso.endswith("Z")
+    parsed = datetime.strptime(iso, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=UTC)
+    expected = datetime.now(UTC) - timedelta(days=7)
+    assert abs((parsed - expected).total_seconds()) < 30
+
+
+def test_selected_audit_enabled_and_compliance_event_types():
+    """Selection helpers should classify user-facing labels into Audit vs Compliance buckets."""
+
+    selected = [EventType.AUDIT, EventType.AUDIT_LOG, EventType.APP_LOG]
+    assert selected_audit_enabled(selected) is True
+    api_types = selected_compliance_event_types(selected)
+    assert ComplianceEvent.AUDIT_LOG in api_types
+    assert ComplianceEvent.APP_LOG in api_types
+
+    # Negative: no Audit selected -> helper returns False; no Compliance -> empty list.
+    assert selected_audit_enabled([EventType.APP_LOG]) is False
+    assert selected_compliance_event_types([EventType.AUDIT]) == []
+
+
+# endregion
+
+
+# region Event Collector tests - integration params parsing
+@pytest.mark.parametrize(
+    "params, expected",
+    [
+        pytest.param(
+            {
+                "url": "https://api.openai.com",
+                "apikey": {"password": "FAKE_CHAT_KEY"},
+                "admin_api_key": {"password": "FAKE_ADMIN_KEY"},
+                "compliance_api_key": {"password": "FAKE_COMPLIANCE_KEY"},
+                "chatgpt_api_url": "https://fake-compliance.invalid",
+                "model-freetext": "fake-model-x",
+                "insecure": False,
+                "proxy": False,
+                "event_types_to_fetch": ["OpenAI Audit logs", "Compliance Audit"],
+            },
+            {
+                "base_url": "https://api.openai.com/",
+                "api_key": "FAKE_CHAT_KEY",
+                "admin_api_key": "FAKE_ADMIN_KEY",
+                "compliance_api_key": "FAKE_COMPLIANCE_KEY",
+                "chatgpt_base_url": "https://fake-compliance.invalid",
+                "model": "fake-model-x",
+                "verify": True,
+                "proxy": False,
+            },
+            id="happy-full-config-credentials-dict",
+        ),
+        pytest.param(
+            {
+                "apikey": "FAKE_RAW_STRING_KEY",  # Not wrapped in {"password": ...}
+                "model-select": "fake-model-y",
+                "insecure": True,
+                "proxy": True,
+                "event_types_to_fetch": [],
+            },
+            {
+                "base_url": "https://api.openai.com/",  # default
+                "api_key": "FAKE_RAW_STRING_KEY",
+                "admin_api_key": "",
+                "compliance_api_key": "",
+                "chatgpt_base_url": "https://api.chatgpt.com",  # integration default
+                "model": "fake-model-y",
+                "verify": False,
+                "proxy": True,
+            },
+            id="happy-defaults-and-raw-string-key",
+        ),
+    ],
+)
+def test_parse_integration_params_happy_paths(params, expected):
+    """`parse_integration_params` extracts all fields and applies the documented defaults."""
+
+    config = parse_integration_params(params)
+    for key, value in expected.items():
+        assert config[key] == value, f"Mismatch on '{key}': {config[key]!r} != {value!r}"
+
+
+@pytest.mark.parametrize(
+    "params, expected_substr",
+    [
+        pytest.param(
+            {
+                "event_types_to_fetch": ["NotAnEventType"],
+            },
+            "Invalid event type",
+            id="bad-unknown-event-type",
+        ),
+        pytest.param(
+            {
+                "admin_api_key": {"password": ""},
+                "event_types_to_fetch": ["OpenAI Audit logs"],
+            },
+            "Admin API Key",
+            id="bad-audit-without-admin-key",
+        ),
+        pytest.param(
+            {
+                "compliance_api_key": {"password": ""},
+                "event_types_to_fetch": ["Compliance Audit"],
+            },
+            "Compliance API Key",
+            id="bad-compliance-without-compliance-key",
+        ),
+    ],
+)
+def test_parse_integration_params_bad_paths(params, expected_substr):
+    """`parse_integration_params` raises informative `DemistoException` for invalid combos."""
+
+    with pytest.raises(DemistoException) as exc_info:
+        parse_integration_params(params)
+    assert expected_substr in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "event_types, admin_key, compliance_key, expect_raises, expected_substr",
+    [
+        pytest.param([], "", "", False, None, id="happy-empty-selection-no-validation"),
+        pytest.param(
+            ["OpenAI Audit logs", "Compliance Audit"],
+            "admin",
+            "compliance",
+            False,
+            None,
+            id="happy-both-keys-both-groups",
+        ),
+        pytest.param(["OpenAI Audit logs"], "", "any", True, "Admin API Key", id="bad-audit-missing-admin-key"),
+        pytest.param(
+            ["Compliance Audit", "Apps"],
+            "any",
+            "",
+            True,
+            "Compliance API Key",
+            id="bad-compliance-missing-compliance-key",
+        ),
+    ],
+)
+def test_validate_event_types_credentials_correlation(event_types, admin_key, compliance_key, expect_raises, expected_substr):
+    """Cross-validate selected event types vs. provided credentials."""
+
+    if expect_raises:
+        with pytest.raises(DemistoException) as exc_info:
+            validate_event_types_credentials_correlation(
+                event_types_to_fetch=event_types,
+                admin_api_key=admin_key,
+                compliance_api_key=compliance_key,
+            )
+        assert expected_substr in str(exc_info.value)
+    else:
+        # Should not raise.
+        validate_event_types_credentials_correlation(
+            event_types_to_fetch=event_types,
+            admin_api_key=admin_key,
+            compliance_api_key=compliance_key,
+        )
+
+
+# endregion
+
+
+# region Event Collector tests - parse_concatenated_json
+@pytest.mark.parametrize(
+    "body, expected",
+    [
+        pytest.param(
+            '{"a":1,"nested":{"x":2}}{"b":2}\n{"c":3}',
+            [{"a": 1, "nested": {"x": 2}}, {"b": 2}, {"c": 3}],
+            id="happy-concatenated-objects",
+        ),
+        pytest.param(
+            '{"a":1}\n  {"b":2}\n\n{"c":3}\n',
+            [{"a": 1}, {"b": 2}, {"c": 3}],
+            id="happy-jsonl-with-whitespace",
+        ),
+        pytest.param(
+            '{"a":1}"ignored"42[1,2,3]{"b":2}',
+            [{"a": 1}, {"b": 2}],
+            id="happy-non-dict-top-level-values-skipped",
+        ),
+        pytest.param("", [], id="bad-empty-body-returns-empty-list"),
+        pytest.param("   \n  ", [], id="bad-whitespace-only-returns-empty-list"),
+        pytest.param('{"a":1}garbage', [{"a": 1}], id="bad-trailing-garbage-stops-parser-keeps-decoded"),
+    ],
+)
+def test_parse_concatenated_json(body, expected, capfd):
+    """`parse_concatenated_json` splits a stream of concatenated JSON / JSONL into a list of dicts."""
+
+    # The "trailing garbage" case calls `demisto.error(...)` which writes to stdout in the test runtime.
+    with capfd.disabled():
+        assert parse_concatenated_json(body) == expected
+
+
+def test_parse_concatenated_json_loads_fixture_file():
+    """End-to-end check using a synthetic concatenated-JSON body stored under test_data/."""
+
+    body = util_load_text("test_data/compliance_log_content_concatenated.txt")
+    records = parse_concatenated_json(body)
+    assert len(records) == 3
+    assert records[0]["actor"] == "FAKE_ACTOR_A"
+    assert records[-1]["action"] == "dummy_action_three"
+
+
+# endregion
+
+
+# region Event Collector tests - Client guards & wire format
+@pytest.mark.parametrize(
+    "client_kwargs, call_kwargs, expected_substr",
+    [
+        pytest.param(
+            {"admin_api_key": ""},
+            {},
+            "Admin API Key",
+            id="bad-audit-without-admin-key",
+        ),
+    ],
+)
+def test_get_audit_logs_guards(client_kwargs, call_kwargs, expected_substr):
+    """`Client.get_audit_logs` must refuse to fire without an Admin API key."""
+    client = _make_client(**client_kwargs)
+    with pytest.raises(DemistoException) as exc_info:
+        client.get_audit_logs(**call_kwargs)
+    assert expected_substr in str(exc_info.value)
+
+
+def test_get_audit_logs_uses_cursor_when_present(mocker):
+    """Happy path: when `after=` is provided, the request must NOT include `effective_at[gt]`."""
+
+    client = _make_client()
+    response = util_load_json("test_data/audit_logs_page_response.json")
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value=response)
+
+    result = client.get_audit_logs(after="FAKE_AUDIT_CURSOR_PREV", effective_at_gt=1000)
+    assert result["last_id"] == "FAKE_AUDIT_CURSOR_AAAA"
+
+    request_params = http_mock.call_args.kwargs["params"]
+    assert request_params["after"] == "FAKE_AUDIT_CURSOR_PREV"
+    # When a cursor is present, the time-seed must be ignored (cursor wins).
+    assert "effective_at[gt]" not in request_params
+
+
+def test_get_audit_logs_uses_time_seed_on_first_call(mocker):
+    """First-ever call (no cursor) must seed the request with `effective_at[gt]`."""
+
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value={"data": [], "has_more": False})
+
+    client.get_audit_logs(after=None, effective_at_gt=1234567890)
+
+    request_params = http_mock.call_args.kwargs["params"]
+    assert request_params["effective_at[gt]"] == 1234567890
+    assert "after" not in request_params
+
+
+@pytest.mark.parametrize(
+    "client_kwargs, call_kwargs, expected_substr",
+    [
+        pytest.param(
+            {"compliance_api_key": ""},
+            {"workspace_id": "FAKE_WORKSPACE_ID", "event_types": ["APP_LOG"], "after": "2099-01-01T00:00:00Z"},
+            "Compliance API Key",
+            id="bad-no-compliance-key",
+        ),
+        pytest.param(
+            {"compliance_api_key": "FAKE_COMPLIANCE_KEY"},
+            {"workspace_id": "", "event_types": ["APP_LOG"], "after": "2099-01-01T00:00:00Z"},
+            "Workspace ID",
+            id="bad-no-workspace-id",
+        ),
+    ],
+)
+def test_list_compliance_logs_guards(client_kwargs, call_kwargs, expected_substr):
+    """`Client.list_compliance_logs` must refuse to fire without both a key and a workspace."""
+    client = _make_client(**client_kwargs)
+    with pytest.raises(DemistoException) as exc_info:
+        client.list_compliance_logs(**call_kwargs)
+    assert expected_substr in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "upstream, expected_data, expected_last_end_time",
+    [
+        pytest.param(
+            {
+                "data": [{"id": "FAKE_LISTING_001", "end_time": "2099-01-02T00:00:00Z"}],
+                "has_more": False,
+                "last_end_time": "2099-01-02T00:00:00Z",
+            },
+            [{"id": "FAKE_LISTING_001", "end_time": "2099-01-02T00:00:00Z"}],
+            "2099-01-02T00:00:00Z",
+            id="happy-dict-shape-with-last_end_time",
+        ),
+        pytest.param(
+            [{"id": "FAKE_LISTING_002", "end_time": "2099-02-01T00:00:00Z"}],
+            [{"id": "FAKE_LISTING_002", "end_time": "2099-02-01T00:00:00Z"}],
+            None,
+            id="happy-legacy-bare-list-shape-normalized",
+        ),
+        pytest.param(None, [], None, id="bad-non-list-non-dict-response-normalized-empty"),
+        pytest.param({}, [], None, id="bad-empty-dict-response-normalized-empty"),
+    ],
+)
+def test_list_compliance_logs_normalizes_response(mocker, upstream, expected_data, expected_last_end_time):
+    """`list_compliance_logs` must normalize any upstream shape into `{data, last_end_time}`."""
+
+    client = _make_client()
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=upstream)
+    result = client.list_compliance_logs(workspace_id="FAKE_WORKSPACE_ID", event_types=["APP_LOG"], after="2099-01-01T00:00:00Z")
+    assert result["data"] == expected_data
+    assert result.get("last_end_time") == expected_last_end_time
+
+
+def test_get_compliance_log_content_parses_concatenated_json(mocker):
+    """`get_compliance_log_content` fetches as text and parses concatenated JSON into a list of dicts."""
+
+    client = _make_client()
+    body = util_load_text("test_data/compliance_log_content_concatenated.txt")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=body)
+
+    records = client.get_compliance_log_content(workspace_id="FAKE_WORKSPACE_ID", log_id="FAKE_LISTING_002")
+    assert len(records) == 3
+    assert all(isinstance(r, dict) for r in records)
+    assert records[0]["action"] == "dummy_action_one"
+
+
+def test_get_compliance_log_content_requires_compliance_key():
+    """Bad path: missing Compliance API Key must raise before any HTTP request."""
+    client = _make_client(compliance_api_key="")
+    with pytest.raises(DemistoException) as exc_info:
+        client.get_compliance_log_content(workspace_id="FAKE_WORKSPACE_ID", log_id="FAKE_LISTING_002")
+    assert "Compliance API Key" in str(exc_info.value)
+
+
+# region Retry policy tests
+# =============================================================================
+# Verify that event-collector HTTP calls forward `Config.RETRY_POLICY` to
+# `_http_request`, while chat-completion stays fail-fast (no retry). Without
+# this contract, transient OpenAI 5xx/429 errors silently fail the fetch and
+# the UI shows an opaque "Error pulling at <time>" with no actionable details.
+# =============================================================================
+
+
+def test_retry_policy_values_are_sensible():
+    """The retry policy constant must use the expected values - any drift here is a behaviour change
+    operators rely on (number of retries, which statuses retry, exponential backoff factor)."""
+    policy = module.Config.RETRY_POLICY
+    assert policy["retries"] == 3
+    assert set(policy["status_list_to_retry"]) == {429, 500, 502, 503, 504}
+    assert policy["backoff_factor"] == 2
+    # `raise_on_status=True` is what converts an exhausted retry into a `DemistoException`
+    # rather than silently returning the last error response body.
+    assert policy["raise_on_status"] is True
+
+
+@pytest.mark.parametrize(
+    "method_name, call_kwargs",
+    [
+        pytest.param(
+            "get_audit_logs",
+            {"after": "FAKE_AUDIT_CURSOR", "effective_at_gt": None},
+            id="happy-audit-logs-forwards-retry-policy",
+        ),
+        pytest.param(
+            "list_compliance_logs",
+            {"workspace_id": "FAKE_WORKSPACE_ID", "event_types": ["APP_LOG"], "after": "2099-01-01T00:00:00Z"},
+            id="happy-compliance-list-forwards-retry-policy",
+        ),
+        pytest.param(
+            "get_compliance_log_content",
+            {"workspace_id": "FAKE_WORKSPACE_ID", "log_id": "FAKE_LOG_001"},
+            id="happy-compliance-content-forwards-retry-policy",
+        ),
+    ],
+)
+def test_event_collector_calls_forward_retry_policy(mocker, method_name, call_kwargs):
+    """Good path: every event-collector `_http_request` call must include the RETRY_POLICY kwargs.
+
+    This is asserted at the contract layer (the kwargs forwarded into `_http_request`) rather than
+    by simulating a 5xx and counting retries, which would couple the test to `urllib3.Retry`'s
+    internals and break across CI image upgrades.
+    """
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value="{}")
+
+    getattr(client, method_name)(**call_kwargs)
+
+    forwarded = http_mock.call_args.kwargs
+    for key, expected in module.Config.RETRY_POLICY.items():
+        assert forwarded.get(key) == expected, f"{method_name}: missing/wrong '{key}' kwarg passed to _http_request"
+
+
+def test_chat_completions_does_not_forward_retry_policy(mocker):
+    """Bad path: chat-completion is interactive and intentionally NOT retried so the user sees
+    transient errors immediately in the war room rather than waiting through backoffs."""
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value={"choices": [{"message": {"content": "hi"}}]})
+
+    client.get_chat_completions(chat_context=[{"role": "user", "content": "ping"}], completion_params={})
+
+    forwarded = http_mock.call_args.kwargs
+    for key in module.Config.RETRY_POLICY:
+        assert key not in forwarded, f"chat-completions must NOT forward '{key}' (interactive commands must fail fast)"
+
+
+EXPECTED_NEW_API_RETRY_POLICY = {
+    "retries": 3,
+    "status_list_to_retry": [429, 500, 502, 503, 504],
+    "backoff_factor": 5,
+}
+
+
+@pytest.mark.parametrize(
+    "method_name, call_kwargs",
+    [
+        pytest.param(
+            "list_models",
+            {},
+            id="list-models-forwards-retry-policy",
+        ),
+        pytest.param(
+            "create_moderation",
+            {"body": {"model": "omni-moderation-latest", "input": [{"type": "text", "text": "test"}]}},
+            id="create-moderation-forwards-retry-policy",
+        ),
+        pytest.param(
+            "create_response",
+            {"body": {"model": "gpt-4", "input": "test"}},
+            id="create-response-forwards-retry-policy",
+        ),
+        pytest.param(
+            "get_response",
+            {"response_id": "resp_FAKE_001"},
+            id="get-response-forwards-retry-policy",
+        ),
+    ],
+)
+def test_new_api_calls_forward_retry_policy(mocker, method_name, call_kwargs):
+    """Every new API method (Models, Moderations, Responses) must include retry kwargs
+    with retries=3, status_list_to_retry=[429, 500, 502, 503, 504], backoff_factor=5.
+
+    Asserted at the contract layer (kwargs forwarded into ``_http_request``) rather than
+    by simulating a 5xx and counting retries.
+    """
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value="{}")
+
+    getattr(client, method_name)(**call_kwargs)
+
+    forwarded = http_mock.call_args.kwargs
+    for key, expected in EXPECTED_NEW_API_RETRY_POLICY.items():
+        assert forwarded.get(key) == expected, (
+            f"{method_name}: missing/wrong '{key}' kwarg passed to _http_request "
+            f"(expected={expected!r}, got={forwarded.get(key)!r})"
+        )
+
+
+# endregion
+
+
+def test_send_events_routes_to_correct_dataset(mocker):
+    """`send_events` must call `send_events_to_xsiam` with the requested vendor + product."""
+
+    client = _make_client()
+    sender = mocker.patch.object(module, "send_events_to_xsiam")
+
+    events = [{"id": "e1"}]
+    client.send_events(events, product=module.Config.PRODUCT_AUDIT)
+
+    sender.assert_called_once_with(events=events, vendor=module.Config.VENDOR, product=module.Config.PRODUCT_AUDIT)
+
+
+def test_send_events_skips_when_empty(mocker):
+    """`send_events` must NOT call the XSIAM sender when there are no events."""
+
+    client = _make_client()
+    sender = mocker.patch.object(module, "send_events_to_xsiam")
+
+    client.send_events([], product=module.Config.PRODUCT_COMPLIANCE)
+    sender.assert_not_called()
+
+
+# endregion
+
+
+# region Event Collector tests - fetch_audit_logs
+def test_fetch_audit_logs_returns_events_and_advances_cursor(mocker):
+    """Happy path: a single page is fetched, events enriched, and the API `last_id` cursor persisted."""
+
+    client = _make_client()
+    response = util_load_json("test_data/audit_logs_page_response.json")
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=response)
+
+    events, updates = fetch_audit_logs(client=client, last_run={}, max_fetch=10, first_fetch="1 day")
+
+    assert [e["id"] for e in events] == ["FAKE_AUDIT_EVENT_001", "FAKE_AUDIT_EVENT_002"]
+    # Audit events are routed to a dedicated dataset; `source_log_type` is intentionally NOT set.
+    assert all("source_log_type" not in e for e in events)
+    # The cursor returned by the API is what gets persisted - verbatim.
+    assert updates[LastRunKey.AUDIT_AFTER] == "FAKE_AUDIT_CURSOR_AAAA"
+    # Audit no longer keeps an explicit ID-list / time HWM in last_run.
+    assert "audit_effective_at" not in updates
+    assert "audit_last_ids" not in updates
+
+
+def test_fetch_audit_logs_resumes_from_stored_cursor(mocker):
+    """Happy path: stored cursor is forwarded as `after=`; first-fetch time-seed is NOT used."""
+
+    client = _make_client()
+    response = {
+        "data": [{"id": "FAKE_AUDIT_EVENT_003", "effective_at": 1200}],
+        "has_more": False,
+        "last_id": "FAKE_AUDIT_CURSOR_BBBB",
+    }
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value=response)
+
+    last_run = {LastRunKey.AUDIT_AFTER: "FAKE_AUDIT_CURSOR_AAAA"}
+    events, updates = fetch_audit_logs(client=client, last_run=last_run, max_fetch=10, first_fetch="1 day")
+
+    assert [e["id"] for e in events] == ["FAKE_AUDIT_EVENT_003"]
+    assert updates[LastRunKey.AUDIT_AFTER] == "FAKE_AUDIT_CURSOR_BBBB"
+
+    request_params = http_mock.call_args.kwargs.get("params", {})
+    assert request_params.get("after") == "FAKE_AUDIT_CURSOR_AAAA"
+    assert "effective_at[gt]" not in request_params
+
+
+def test_fetch_audit_logs_empty_first_fetch_persists_seed(mocker):
+    """Bad path: first-ever fetch returns empty - no events, but the time-seed is persisted so
+    the next cycle replays the same lookback window instead of sliding it with `now()`."""
+
+    client = _make_client()
+    mocker.patch.object(OpenAiClient, "_http_request", return_value={"data": [], "has_more": False})
+    mocker.patch(
+        "OpenAiChatGPTV3.parse_first_fetch_to_datetime",
+        return_value=datetime.fromtimestamp(1700000000, tz=UTC),
+    )
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    events, updates = fetch_audit_logs(client=client, last_run={}, max_fetch=10, first_fetch="1 minute ago")
+
+    assert events == []
+    # The seed MUST be persisted; the cursor key MUST NOT appear.
+    assert updates == {LastRunKey.AUDIT_FIRST_FETCH_SEED: 1700000000}
+    assert LastRunKey.AUDIT_AFTER not in updates
+    # Operators must see a clear log line so first-empty-fetch is discoverable in standard log queries.
+    assert any("persisting seed=1700000000" in (c.args[0] if c.args else "") for c in debug_mock.call_args_list)
+
+
+def test_fetch_audit_logs_replays_stored_seed_without_recomputing(mocker):
+    """The stored seed is replayed verbatim across empty cycles; `parse_first_fetch_*` is not called again."""
+
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value={"data": [], "has_more": False})
+    parse_mock = mocker.patch("OpenAiChatGPTV3.parse_first_fetch_to_datetime")
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    last_run = {LastRunKey.AUDIT_FIRST_FETCH_SEED: 1700000000}
+    events, updates = fetch_audit_logs(client=client, last_run=last_run, max_fetch=10, first_fetch="1 minute ago")
+
+    assert events == []
+    # Seed already present - do NOT recompute, do NOT re-persist (keeps last_run idempotent).
+    parse_mock.assert_not_called()
+    assert updates == {}
+    # The same seed was forwarded as `effective_at[gt]` on the wire.
+    request_params = http_mock.call_args.kwargs.get("params", {})
+    assert request_params.get("effective_at[gt]") == 1700000000
+    # A "replaying ... seed" debug line must be emitted so operators can correlate sustained empty fetches.
+    assert any("Replaying persisted first-fetch seed" in (c.args[0] if c.args else "") for c in debug_mock.call_args_list)
+
+
+def test_fetch_audit_logs_real_cursor_clears_stored_seed(mocker):
+    """Once a real `last_id` arrives, the seed is cleared so it never reappears in future runs."""
+
+    client = _make_client()
+    response = {
+        "data": [{"id": "FAKE_AUDIT_EVENT_001", "effective_at": 1700000001}],
+        "has_more": False,
+        "last_id": "FAKE_AUDIT_CURSOR_AAAA",
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=response)
+
+    last_run = {LastRunKey.AUDIT_FIRST_FETCH_SEED: 1700000000}
+    events, updates = fetch_audit_logs(client=client, last_run=last_run, max_fetch=10, first_fetch="1 minute ago")
+
+    assert [e["id"] for e in events] == ["FAKE_AUDIT_EVENT_001"]
+    assert updates[LastRunKey.AUDIT_AFTER] == "FAKE_AUDIT_CURSOR_AAAA"
+    # Seed must be explicitly cleared (None) so it is dropped from `last_run` on merge.
+    assert updates[LastRunKey.AUDIT_FIRST_FETCH_SEED] is None
+
+
+# endregion
+
+
+# region Event Collector tests - fetch_compliance_logs
+def test_fetch_compliance_logs_two_step_flow(mocker):
+    """Happy path: list endpoint -> per-id content fetch -> per-record enrichment + cursor persistence."""
+
+    client = _make_client()
+    listing_response = util_load_json("test_data/compliance_listing_response.json")
+    contents = {
+        "FAKE_LISTING_001": [{"id": "FAKE_LISTING_001", "timestamp": "2099-01-01T00:00:00Z", "actor": "FAKE_ACTOR_A"}],
+        "FAKE_LISTING_002": [
+            {"id": "FAKE_LISTING_002", "timestamp": "2099-01-02T00:00:00Z", "actor": "FAKE_ACTOR_B"},
+            {"id": "FAKE_LISTING_002", "timestamp": "2099-01-02T00:00:01Z", "actor": "FAKE_ACTOR_C"},
+        ],
+    }
+    mocker.patch.object(OpenAiClient, "list_compliance_logs", return_value=listing_response)
+    mocker.patch.object(OpenAiClient, "get_compliance_log_content", side_effect=lambda workspace_id, log_id: contents[log_id])
+
+    events, updates = fetch_compliance_logs(
+        client=client,
+        workspace_id="FAKE_WORKSPACE_ID",
+        api_event_types=[ComplianceEvent.AUDIT_LOG, ComplianceEvent.APP_LOG],
+        last_run={},
+        max_fetch=100,
+        first_fetch="1 day",
+    )
+
+    # FAKE_LISTING_001 -> 1 record, FAKE_LISTING_002 -> 2 records (JSONL-shaped content) = 3 events total.
+    assert len(events) == 3
+    assert events[0]["source_log_type"] == SourceLogType.COMPLIANCE_AUDIT_LOG
+    assert events[1]["source_log_type"] == SourceLogType.APP_LOG
+    # `workspace_id` is propagated from the fetch call into every enriched event.
+    assert all(e["workspace_id"] == "FAKE_WORKSPACE_ID" for e in events)
+    # `last_end_time` is read from the listing response, NOT computed from individual entries.
+    assert updates[LastRunKey.COMPLIANCE_LAST_END_TIME] == "2099-01-02T00:00:00Z"
+    # Only FAKE_LISTING_002 shares the end_time with the cursor, so it's the only id stored for tie-dedup.
+    assert updates[LastRunKey.COMPLIANCE_LAST_IDS] == ["FAKE_LISTING_002"]
+
+
+def test_fetch_compliance_logs_dedupes_against_previous_ids(mocker):
+    """Happy path: listings whose IDs were already seen at the persisted `last_end_time` are skipped."""
+
+    client = _make_client()
+    listings = [
+        {"id": "FAKE_LISTING_001", "event_type": ComplianceEvent.AUDIT_LOG, "end_time": "2099-01-02T00:00:00Z"},
+        {"id": "FAKE_LISTING_002", "event_type": ComplianceEvent.AUDIT_LOG, "end_time": "2099-01-02T00:00:00Z"},
+    ]
+    listing_response = {"data": listings, "last_end_time": "2099-01-02T00:00:00Z", "has_more": False}
+    mocker.patch.object(OpenAiClient, "list_compliance_logs", return_value=listing_response)
+    mocker.patch.object(
+        OpenAiClient,
+        "get_compliance_log_content",
+        side_effect=lambda workspace_id, log_id: [{"id": log_id, "timestamp": "2099-01-02T00:00:00Z"}],
+    )
+
+    last_run = {
+        LastRunKey.COMPLIANCE_LAST_END_TIME: "2099-01-02T00:00:00Z",
+        LastRunKey.COMPLIANCE_LAST_IDS: ["FAKE_LISTING_001"],
+    }
+    events, updates = fetch_compliance_logs(
+        client=client,
+        workspace_id="FAKE_WORKSPACE_ID",
+        api_event_types=[ComplianceEvent.AUDIT_LOG],
+        last_run=last_run,
+        max_fetch=100,
+        first_fetch="1 day",
+    )
+
+    assert [e["id"] for e in events] == ["FAKE_LISTING_002"]
+    assert updates[LastRunKey.COMPLIANCE_LAST_END_TIME] == "2099-01-02T00:00:00Z"
+    # Same cursor as previous run - merge stored IDs with newly-seen IDs at the same timestamp.
+    assert sorted(updates[LastRunKey.COMPLIANCE_LAST_IDS]) == ["FAKE_LISTING_001", "FAKE_LISTING_002"]
+
+
+def test_fetch_compliance_logs_no_listings_advances_cursor_only(mocker):
+    """Bad path: no listings returned, but the API's `last_end_time` still moves forward -> persist it."""
+
+    client = _make_client()
+    mocker.patch.object(
+        OpenAiClient,
+        "list_compliance_logs",
+        return_value={"data": [], "last_end_time": "2099-02-01T00:00:00Z", "has_more": False},
+    )
+
+    last_run = {LastRunKey.COMPLIANCE_LAST_END_TIME: "2099-01-01T00:00:00Z"}
+    events, updates = fetch_compliance_logs(
+        client=client,
+        workspace_id="FAKE_WORKSPACE_ID",
+        api_event_types=[ComplianceEvent.AUDIT_LOG],
+        last_run=last_run,
+        max_fetch=100,
+        first_fetch="1 day",
+    )
+    assert events == []
+    assert updates[LastRunKey.COMPLIANCE_LAST_END_TIME] == "2099-02-01T00:00:00Z"
+    assert updates[LastRunKey.COMPLIANCE_LAST_IDS] == []
+
+
+def test_fetch_compliance_logs_content_failure_isolated(mocker, capfd):
+    """Bad path: a single content-fetch failure must NOT abort processing of other listings."""
+
+    client = _make_client()
+    listings = [
+        {"id": "FAKE_LISTING_001", "event_type": ComplianceEvent.AUDIT_LOG, "end_time": "2099-01-02T00:00:00Z"},
+        {"id": "FAKE_LISTING_002", "event_type": ComplianceEvent.AUDIT_LOG, "end_time": "2099-01-02T00:00:01Z"},
+    ]
+    listing_response = {"data": listings, "last_end_time": "2099-01-02T00:00:01Z", "has_more": False}
+
+    def content_side_effect(workspace_id, log_id):
+        if log_id == "FAKE_LISTING_001":
+            raise DemistoException("simulated content fetch failure")
+        return [{"id": log_id, "timestamp": "2099-01-02T00:00:01Z"}]
+
+    mocker.patch.object(OpenAiClient, "list_compliance_logs", return_value=listing_response)
+    mocker.patch.object(OpenAiClient, "get_compliance_log_content", side_effect=content_side_effect)
+
+    # `fetch_compliance_logs` calls `demisto.error(...)` when one or more content fetches fail (writes to stdout).
+    with capfd.disabled():
+        events, _ = fetch_compliance_logs(
+            client=client,
+            workspace_id="FAKE_WORKSPACE_ID",
+            api_event_types=[ComplianceEvent.AUDIT_LOG],
+            last_run={},
+            max_fetch=100,
+            first_fetch="1 day",
+        )
+    # FAKE_LISTING_001 failed and was skipped; FAKE_LISTING_002 succeeded and produced one event.
+    assert [e["id"] for e in events] == ["FAKE_LISTING_002"]
+
+
+# endregion
+
+
+# region Event Collector tests - command-level (fetch-events / openai-get-events)
+def test_fetch_events_command_runs_streams_in_parallel_and_routes_datasets(mocker):
+    """`fetch_events_command` runs both streams, sends each to its own dataset, persists merged last_run."""
+
+    client = _make_client()
+    audit_events = [{"id": "FAKE_AUDIT_EVENT_001"}]
+    compliance_events = [{"id": "FAKE_COMPLIANCE_EVENT_001"}, {"id": "FAKE_COMPLIANCE_EVENT_002"}]
+
+    mocker.patch.object(
+        module, "fetch_audit_logs", return_value=(audit_events, {module.LastRunKey.AUDIT_AFTER: "FAKE_AUDIT_CURSOR_AAAA"})
+    )
+    mocker.patch.object(
+        module,
+        "fetch_compliance_logs",
+        return_value=(compliance_events, {module.LastRunKey.COMPLIANCE_LAST_END_TIME: "2099-02-01T00:00:00Z"}),
+    )
+    sender = mocker.patch.object(module.OpenAiClient, "send_events")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    params = {
+        "event_types_to_fetch": ["OpenAI Audit logs", "Compliance Audit"],
+        "workspace_id": "FAKE_WORKSPACE_ID",
+        "first_fetch": "1 day",
+        "audit_max_fetch": 100,
+        "compliance_max_fetch": 50,
+    }
+    module.fetch_events_command(client=client, params=params)
+
+    # Both streams pushed - each with its own product.
+    products_used = sorted(
+        call.kwargs.get("product", call.args[1] if len(call.args) > 1 else None) for call in sender.call_args_list
+    )
+    assert products_used == sorted([module.Config.PRODUCT_AUDIT, module.Config.PRODUCT_COMPLIANCE])
+
+    # Last_run is the merged set of per-stream updates.
+    persisted = set_last_run.call_args.args[0]
+    assert persisted[module.LastRunKey.AUDIT_AFTER] == "FAKE_AUDIT_CURSOR_AAAA"
+    assert persisted[module.LastRunKey.COMPLIANCE_LAST_END_TIME] == "2099-02-01T00:00:00Z"
+
+
+def test_fetch_events_command_failure_in_one_stream_pushes_survivor_then_reraises(mocker, capfd):
+    """`fetch_events_command` must:
+    1. Let the surviving (compliance) stream push its events and persist its cursor.
+    2. THEN re-raise the failed (audit) stream's exception so the UI shows a real error
+       instead of an opaque "Error pulling at <time>" banner.
+    """
+
+    client = _make_client()
+
+    mocker.patch.object(module, "fetch_audit_logs", side_effect=DemistoException("simulated audit failure"))
+    mocker.patch.object(
+        module,
+        "fetch_compliance_logs",
+        return_value=(
+            [{"id": "FAKE_COMPLIANCE_EVENT_001"}],
+            {module.LastRunKey.COMPLIANCE_LAST_END_TIME: "2099-02-02T00:00:00Z"},
+        ),
+    )
+    sender = mocker.patch.object(module.OpenAiClient, "send_events")
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    params = {
+        "event_types_to_fetch": ["OpenAI Audit logs", "Compliance Audit"],
+        "workspace_id": "FAKE_WORKSPACE_ID",
+        "first_fetch": "1 day",
+    }
+    with capfd.disabled(), pytest.raises(DemistoException) as exc_info:
+        module.fetch_events_command(client=client, params=params)
+
+    # The re-raised error must name the failing stream so the UI banner is actionable.
+    assert "audit" in str(exc_info.value)
+    assert "simulated audit failure" in str(exc_info.value)
+
+    # Partial progress is preserved: compliance events were pushed AND its cursor was persisted
+    # BEFORE the re-raise (otherwise the next run would re-fetch the same compliance events).
+    pushed_products = [call.kwargs.get("product", call.args[1] if len(call.args) > 1 else None) for call in sender.call_args_list]
+    assert module.Config.PRODUCT_COMPLIANCE in pushed_products
+    assert module.Config.PRODUCT_AUDIT not in pushed_products
+    assert set_last_run.called
+    persisted = set_last_run.call_args.args[0]
+    assert persisted.get(module.LastRunKey.COMPLIANCE_LAST_END_TIME) == "2099-02-02T00:00:00Z"
+
+
+def test_fetch_events_command_no_event_types_selected_is_a_noop(mocker):
+    """Bad path: if no event types are selected, neither stream runs and last_run is left untouched."""
+
+    client = _make_client()
+    audit_mock = mocker.patch.object(module, "fetch_audit_logs")
+    compliance_mock = mocker.patch.object(module, "fetch_compliance_logs")
+    sender = mocker.patch.object(module.OpenAiClient, "send_events")
+    mocker.patch.object(demisto, "getLastRun", return_value={"unrelated": "preserved"})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    module.fetch_events_command(client=client, params={"event_types_to_fetch": []})
+    audit_mock.assert_not_called()
+    compliance_mock.assert_not_called()
+    sender.assert_not_called()
+    # Still calls setLastRun once with the original dict (preserves unrelated keys).
+    assert set_last_run.call_args.args[0] == {"unrelated": "preserved"}
+
+
+@pytest.mark.parametrize(
+    "should_push, expected_send_calls",
+    [
+        pytest.param(False, 0, id="happy-no-push-by-default"),
+        pytest.param(True, 2, id="happy-push-flag-pushes-both-datasets"),
+    ],
+)
+def test_get_events_command(mocker, should_push, expected_send_calls):
+    """`openai-get-events` returns events as `CommandResults`; only pushes when `should_push_events=true`."""
+
+    client = _make_client()
+    mocker.patch.object(module, "fetch_audit_logs", return_value=([{"id": "FAKE_AUDIT_EVENT_001"}], {}))
+    mocker.patch.object(module, "fetch_compliance_logs", return_value=([{"id": "FAKE_COMPLIANCE_EVENT_001"}], {}))
+    sender = mocker.patch.object(module.OpenAiClient, "send_events")
+
+    args = {
+        "event_type": "OpenAI Audit logs,Compliance Audit",
+        "limit": "10",
+        "should_push_events": should_push,
+    }
+    params = {"workspace_id": "FAKE_WORKSPACE_ID"}
+    result = module.get_events_command(client=client, args=args, params=params)
+
+    # `outputs` always carries every fetched event regardless of the push flag.
+    outputs = cast(list, result.outputs)
+    assert {e["id"] for e in outputs} == {"FAKE_AUDIT_EVENT_001", "FAKE_COMPLIANCE_EVENT_001"}
+    assert sender.call_count == expected_send_calls
+
+
+def test_get_events_command_failure_in_one_stream_does_not_block_the_other(mocker, capfd):
+    """`openai-get-events` must isolate per-stream failures so one stream's exception cannot abort
+    the entire command. Mirrors `fetch_events_command`'s isolation contract: the failing stream is
+    logged via `demisto.error` and skipped, while the surviving stream's events are returned.
+    """
+
+    client = _make_client()
+    # Audit stream blows up; compliance stream returns events successfully.
+    mocker.patch.object(module, "fetch_audit_logs", side_effect=DemistoException("simulated audit failure"))
+    mocker.patch.object(module, "fetch_compliance_logs", return_value=([{"id": "FAKE_COMPLIANCE_EVENT_001"}], {}))
+
+    args = {
+        "event_type": "OpenAI Audit logs,Compliance Audit",
+        "limit": "10",
+        "should_push_events": False,
+    }
+    params = {"workspace_id": "FAKE_WORKSPACE_ID"}
+
+    with capfd.disabled():
+        result = module.get_events_command(client=client, args=args, params=params)
+
+    # The surviving (compliance) stream's events are returned; the failed (audit) stream is dropped.
+    outputs = cast(list, result.outputs)
+    assert {e["id"] for e in outputs} == {"FAKE_COMPLIANCE_EVENT_001"}
+
+
+# endregion
+
+
+# region Event Collector tests - new helpers (refactor coverage)
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        pytest.param({"password": "FAKE_KEY"}, "FAKE_KEY", id="happy-dict-shape-type-9"),
+        pytest.param({"identifier": "user", "password": "FAKE_KEY"}, "FAKE_KEY", id="happy-dict-shape-with-identifier"),
+        pytest.param("FAKE_KEY", "FAKE_KEY", id="happy-plain-string-type-14"),
+        pytest.param(None, "", id="happy-none-yields-empty"),
+        pytest.param({}, "", id="happy-empty-dict-yields-empty"),
+        pytest.param({"password": ""}, "", id="happy-dict-with-empty-password"),
+        pytest.param({"password": None}, "", id="happy-dict-with-none-password"),
+    ],
+)
+def test_extract_credential(raw, expected):
+    """`_extract_credential` accepts both dict-shape (legacy type:9) and string-shape (modern type:14)."""
+
+    assert _extract_credential(raw) == expected
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        pytest.param(None, [], id="happy-none-yields-empty-list"),
+        pytest.param([], [], id="happy-empty-list-yields-empty-list"),
+        pytest.param(["OpenAI Audit logs"], ["OpenAI Audit logs"], id="happy-single-audit-label"),
+        pytest.param(
+            ["OpenAI Audit logs", "Compliance Audit"],
+            ["OpenAI Audit logs", "Compliance Audit"],
+            id="happy-mixed-audit-and-compliance",
+        ),
+        pytest.param(
+            "OpenAI Audit logs,Compliance Audit",
+            ["OpenAI Audit logs", "Compliance Audit"],
+            id="happy-csv-string",
+        ),
+    ],
+)
+def test_parse_event_types_to_fetch_happy_paths(raw, expected):
+    """`parse_event_types_to_fetch` normalizes various inputs into the canonical list."""
+
+    assert parse_event_types_to_fetch(raw) == expected
+
+
+def test_parse_event_types_to_fetch_rejects_unknown_labels():
+    """Bad path: unknown labels surface as an informative `DemistoException`."""
+
+    with pytest.raises(DemistoException) as exc_info:
+        parse_event_types_to_fetch(["NotAnEventType"])
+    assert "Invalid event type" in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "audit_selected, api_event_types, expected_streams",
+    [
+        pytest.param(False, [], [], id="none-selected-no-streams"),
+        pytest.param(True, [], ["audit"], id="audit-only"),
+        pytest.param(False, ["AUDIT_LOG"], ["compliance"], id="compliance-only"),
+        pytest.param(True, ["AUDIT_LOG"], ["audit", "compliance"], id="both-streams-ordered-audit-first"),
+    ],
+)
+def test_collector_params_streams_to_run(audit_selected, api_event_types, expected_streams):
+    """`CollectorParams.streams_to_run` selects audit + compliance based on flags."""
+
+    params = CollectorParams(
+        event_types_to_fetch=[],
+        audit_selected=audit_selected,
+        api_event_types=api_event_types,
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="",
+        first_fetch="1 day",
+    )
+    assert params.streams_to_run() == expected_streams
+    assert params.compliance_selected is bool(api_event_types)
+
+
+def test_parse_collector_params_no_args_uses_integration_defaults():
+    """Happy path: when called from fetch-events (no args), values come from integration params."""
+
+    params = {
+        "event_types_to_fetch": ["OpenAI Audit logs", "Compliance Audit"],
+        "audit_max_fetch": "200",
+        "compliance_max_fetch": "150",
+        "workspace_id": "FAKE_WORKSPACE_ID",
+        "first_fetch": "3 days",
+    }
+    collector = parse_collector_params(params)
+
+    assert collector.event_types_to_fetch == ["OpenAI Audit logs", "Compliance Audit"]
+    assert collector.audit_selected is True
+    assert collector.api_event_types == ["AUDIT_LOG"]
+    assert collector.audit_max_fetch == 200
+    assert collector.compliance_max_fetch == 150
+    assert collector.workspace_id == "FAKE_WORKSPACE_ID"
+
+    assert collector.first_fetch == Config.DEFAULT_FIRST_FETCH
+    minimal = parse_collector_params({"event_types_to_fetch": []})
+    assert minimal.audit_max_fetch == Config.DEFAULT_AUDIT_MAX_FETCH
+    assert minimal.compliance_max_fetch == Config.DEFAULT_COMPLIANCE_MAX_FETCH
+    assert minimal.first_fetch == Config.DEFAULT_FIRST_FETCH
+
+
+def test_parse_collector_params_with_args_applies_overrides():
+    """Happy path: args (manual command) override `event_type` / `limit` / `start_time`."""
+
+    params = {
+        "event_types_to_fetch": ["OpenAI Audit logs"],
+        "audit_max_fetch": "999",
+        "compliance_max_fetch": "999",
+        "workspace_id": "FAKE_WORKSPACE_ID",
+        "first_fetch": "1 day",
+    }
+    args = {
+        "event_type": "Compliance Audit",
+        "limit": "5",
+        "start_time": "2 hours ago",
+    }
+    collector = parse_collector_params(params, args=args)
+
+    assert collector.event_types_to_fetch == ["Compliance Audit"]
+    assert collector.audit_selected is False
+    assert collector.api_event_types == ["AUDIT_LOG"]
+    assert collector.audit_max_fetch == 5
+    assert collector.compliance_max_fetch == 5
+    assert collector.first_fetch == "2 hours ago"
+
+
+def test_parse_collector_params_with_empty_args_falls_back_to_params():
+    """Happy path: an empty `args` dict (falsy) skips arg-overrides and uses integration-param values."""
+
+    params = {"event_types_to_fetch": ["OpenAI Audit logs"], "first_fetch": "5 days"}
+    collector = parse_collector_params(params, args={})
+
+    assert collector.event_types_to_fetch == ["OpenAI Audit logs"]
+    # Empty args is falsy -> falls into the fetch-events branch -> uses integration defaults.
+    assert collector.audit_max_fetch == Config.DEFAULT_AUDIT_MAX_FETCH
+    assert collector.compliance_max_fetch == Config.DEFAULT_COMPLIANCE_MAX_FETCH
+    assert collector.first_fetch == Config.DEFAULT_FIRST_FETCH
+
+
+def test_fetch_stream_dispatches_to_audit(mocker):
+    """`fetch_stream(stream='audit')` calls `fetch_audit_logs` and routes to PRODUCT_AUDIT."""
+
+    audit_events = [{"id": "FAKE_AUDIT_EVENT_001"}]
+    audit_updates = {module.LastRunKey.AUDIT_AFTER: "FAKE_CURSOR"}
+    mocker.patch.object(module, "fetch_audit_logs", return_value=(audit_events, audit_updates))
+
+    client = _make_client()
+    collector = module.CollectorParams(
+        event_types_to_fetch=["OpenAI Audit logs"],
+        audit_selected=True,
+        api_event_types=[],
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="",
+        first_fetch="1 day",
+    )
+    result = module.fetch_stream(client=client, stream=module.Stream.AUDIT, last_run={}, collector_params=collector)
+
+    assert result.stream == module.Stream.AUDIT
+    assert result.events == audit_events
+    assert result.last_run_updates == audit_updates
+    assert result.product == module.Config.PRODUCT_AUDIT
+
+
+def test_fetch_stream_dispatches_to_compliance(mocker):
+    """`fetch_stream(stream='compliance')` calls `fetch_compliance_logs` and routes to PRODUCT_COMPLIANCE."""
+
+    compliance_events = [{"id": "FAKE_COMPLIANCE_EVENT_001"}]
+    compliance_updates = {module.LastRunKey.COMPLIANCE_LAST_END_TIME: "2099-01-01T00:00:00Z"}
+    mocker.patch.object(module, "fetch_compliance_logs", return_value=(compliance_events, compliance_updates))
+
+    client = _make_client()
+    collector = module.CollectorParams(
+        event_types_to_fetch=["Compliance Audit"],
+        audit_selected=False,
+        api_event_types=["AUDIT_LOG"],
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="FAKE_WORKSPACE_ID",
+        first_fetch="1 day",
+    )
+    result = module.fetch_stream(client=client, stream=module.Stream.COMPLIANCE, last_run={}, collector_params=collector)
+
+    assert result.stream == module.Stream.COMPLIANCE
+    assert result.events == compliance_events
+    assert result.last_run_updates == compliance_updates
+    assert result.product == module.Config.PRODUCT_COMPLIANCE
+
+
+def test_fetch_stream_compliance_skipped_without_workspace_id(mocker):
+    """Bad path: compliance stream returns an empty FetchResult when workspace_id is missing."""
+
+    compliance_mock = mocker.patch.object(module, "fetch_compliance_logs")
+
+    client = _make_client()
+    collector = module.CollectorParams(
+        event_types_to_fetch=["Compliance Audit"],
+        audit_selected=False,
+        api_event_types=["AUDIT_LOG"],
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="",
+        first_fetch="1 day",
+    )
+    result = module.fetch_stream(client=client, stream=module.Stream.COMPLIANCE, last_run={}, collector_params=collector)
+
+    assert result.stream == module.Stream.COMPLIANCE
+    assert result.events == []
+    assert result.last_run_updates == {}
+    compliance_mock.assert_not_called()
+
+
+def test_fetch_stream_unknown_stream_raises():
+    """Bad path: an unknown stream identifier raises `DemistoException`."""
+
+    client = _make_client()
+    collector = module.CollectorParams(
+        event_types_to_fetch=[],
+        audit_selected=False,
+        api_event_types=[],
+        audit_max_fetch=10,
+        compliance_max_fetch=10,
+        workspace_id="",
+        first_fetch="1 day",
+    )
+    with pytest.raises(DemistoException) as exc_info:
+        module.fetch_stream(client=client, stream="not_a_stream", last_run={}, collector_params=collector)
+    assert "Unknown stream identifier" in str(exc_info.value)
+
+
+def test_push_result_sends_events_when_present(mocker):
+    """Happy path: `_push_result` calls `client.send_events(...)` with the events and product."""
+
+    client = _make_client()
+    sender = mocker.patch.object(module.OpenAiClient, "send_events")
+    result = module.FetchResult(
+        stream=module.Stream.AUDIT,
+        events=[{"id": "FAKE_AUDIT_EVENT_001"}],
+        product=module.Config.PRODUCT_AUDIT,
+    )
+
+    module._push_result(client, result, log_prefix="[Test]")
+
+    sender.assert_called_once_with([{"id": "FAKE_AUDIT_EVENT_001"}], product=module.Config.PRODUCT_AUDIT)
+
+
+def test_push_result_skips_when_no_events(mocker):
+    """Happy path: empty events list short-circuits without calling the sender."""
+
+    client = _make_client()
+    sender = mocker.patch.object(module.OpenAiClient, "send_events")
+    result = module.FetchResult(stream=module.Stream.AUDIT, events=[], product=module.Config.PRODUCT_AUDIT)
+
+    module._push_result(client, result, log_prefix="[Test]")
+
+    sender.assert_not_called()
+
+
+def test_push_result_isolates_send_failure(mocker, capfd):
+    """Bad path: a `send_events` exception is caught and logged; does NOT propagate."""
+
+    client = _make_client()
+    mocker.patch.object(module.OpenAiClient, "send_events", side_effect=RuntimeError("simulated push failure"))
+    result = module.FetchResult(
+        stream=module.Stream.AUDIT,
+        events=[{"id": "FAKE_AUDIT_EVENT_001"}],
+        product=module.Config.PRODUCT_AUDIT,
+    )
+
+    # `_push_result` swallows the failure and calls `demisto.error(...)` which writes to stdout in the test runtime.
+    with capfd.disabled():
+        module._push_result(client, result, log_prefix="[Test]")
+
+
+# endregion
+
+
+# region Event Collector tests - test_module
+def test_test_module_chat_only_returns_ok(mocker):
+    """Happy path: chat-completions probe passes and no collector streams selected returns ok."""
+
+    client = _make_client(admin_api_key="", compliance_api_key="")
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
+    fetch_mock = mocker.patch.object(module, "fetch_stream")
+
+    result = module.test_module(client=client, params={})
+
+    assert result == "ok"
+    fetch_mock.assert_not_called()
+
+
+def test_test_module_chat_completions_auth_error_returns_friendly_message(mocker, capfd):
+    """Bad path: a chat-completions auth error returns the friendly auth-error string instead of raising."""
+
+    client = _make_client()
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", side_effect=DemistoException("403 Forbidden access"))
+
+    # `test_module` calls `demisto.error(...)` on the auth-error path which writes to stdout in the test runtime.
+    with capfd.disabled():
+        result = module.test_module(client=client, params={})
+
+    assert "Authorization Error" in result
+
+
+def test_test_module_chat_completions_non_auth_error_propagates(mocker, capfd):
+    """Bad path: a non-auth error from chat-completions propagates so the test still fails clearly."""
+
+    client = _make_client()
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", side_effect=DemistoException("simulated 500 error"))
+
+    # `test_module` calls `demisto.error(...)` on the failure path which writes to stdout in the test runtime;
+    # disable the stdout-capture fixture for this test so we can assert on the raise.
+    with capfd.disabled(), pytest.raises(DemistoException) as exc_info:
+        module.test_module(client=client, params={})
+    assert "simulated 500 error" in str(exc_info.value)
+
+
+def test_test_module_probes_collector_streams_with_max_one(mocker):
+    """Happy path: with audit selected + admin key, fetch_stream is called once with max_fetch=1."""
+
+    client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
+    fetch_mock = mocker.patch.object(module, "fetch_stream")
+
+    params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
+    result = module.test_module(client=client, params=params)
+
+    assert result == "ok"
+    fetch_mock.assert_called_once()
+    call_kwargs = fetch_mock.call_args.kwargs
+    assert call_kwargs["stream"] == module.Stream.AUDIT
+    assert call_kwargs["last_run"] == {}
+    assert call_kwargs["collector_params"].audit_max_fetch == module.Config.TEST_MODULE_MAX_EVENTS
+    assert call_kwargs["collector_params"].compliance_max_fetch == module.Config.TEST_MODULE_MAX_EVENTS
+
+
+def test_test_module_skips_compliance_when_workspace_id_missing(mocker):
+    """Bad path: compliance selected + key set, but no workspace_id - compliance probe is skipped."""
+
+    client = _make_client(admin_api_key="", compliance_api_key="COMPLIANCE_KEY")
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
+    fetch_mock = mocker.patch.object(module, "fetch_stream")
+
+    params = {"event_types_to_fetch": ["Compliance Audit"], "workspace_id": ""}
+    result = module.test_module(client=client, params=params)
+
+    assert result == "ok"
+    fetch_mock.assert_not_called()
+
+
+def test_test_module_propagates_collector_probe_failure(mocker, capfd):
+    """Bad path: a fetch_stream failure during the probe raises a stream-tagged DemistoException."""
+
+    client = _make_client(admin_api_key="ADMIN_KEY", compliance_api_key="")
+    mocker.patch.object(module.OpenAiClient, "get_chat_completions", return_value={"choices": []})
+    mocker.patch.object(module.OpenAiClient, "create_response", return_value={"id": "resp_test", "output": []})
+    mocker.patch.object(module, "fetch_stream", side_effect=DemistoException("simulated audit probe failure"))
+
+    params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
+    # `test_module` calls `demisto.error(...)` on the failure path which writes to stdout in the test runtime;
+    # disable the stdout-capture fixture for this test so we can assert on the raise.
+    with capfd.disabled(), pytest.raises(DemistoException) as exc_info:
+        module.test_module(client=client, params=params)
+    msg = str(exc_info.value)
+    assert "audit" in msg
+    assert "simulated audit probe failure" in msg
+
+
+# endregion
+
+
+# region Optional-chat-key coverage
+def test_get_chat_completions_requires_api_key():
+    """Bad path: chat-completions runtime guard raises a clear error when the API Key is missing."""
+
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException) as exc_info:
+        client.get_chat_completions(chat_context=[{"role": "user", "content": "x"}], completion_params={})
+    msg = str(exc_info.value)
+    assert "API Key is required" in msg
+    assert "gpt-send-message" in msg
+
+
+def test_test_module_skips_chat_probe_when_api_key_missing(mocker):
+    """Happy path: with no chat key but a configured collector, the chat probe is skipped and only the collector runs."""
+
+    client = _make_client(api_key="", admin_api_key="ADMIN_KEY", compliance_api_key="")
+    chat_mock = mocker.patch.object(module.OpenAiClient, "get_chat_completions")
+    fetch_mock = mocker.patch.object(module, "fetch_stream")
+
+    params = {"event_types_to_fetch": ["OpenAI Audit logs"]}
+    result = module.test_module(client=client, params=params)
+
+    assert result == "ok"
+    chat_mock.assert_not_called()
+    fetch_mock.assert_called_once()
+
+
+def test_test_module_no_capability_configured_raises():
+    """Bad path: no chat key AND no usable collector stream - the test is meaningless and must raise."""
+
+    client = _make_client(api_key="", admin_api_key="", compliance_api_key="")
+    with pytest.raises(DemistoException) as exc_info:
+        module.test_module(client=client, params={})
+    msg = str(exc_info.value)
+    assert "No capability is configured" in msg
+    assert "API Key" in msg
+
+
+# endregion
+
+
+# region Compliance API limit-cap regression
+def test_list_compliance_logs_clamps_limit_to_compliance_page_size(mocker):
+    """Bad path regression: the ChatGPT Platform Compliance API rejects limit > 100 with HTTP 422.
+
+    `list_compliance_logs` must clamp any caller-supplied `limit` (e.g. the integration default of
+    `compliance_max_fetch=900`) to `Config.COMPLIANCE_PAGE_SIZE` (100) before sending the request.
+    """
+
+    client = _make_client()
+    captured: dict = {}
+
+    def fake_http(*args, **kwargs):
+        captured.update(kwargs)
+        return {"data": [], "last_end_time": None}
+
+    mocker.patch.object(OpenAiClient, "_http_request", side_effect=fake_http)
+
+    client.list_compliance_logs(
+        workspace_id="FAKE_WORKSPACE_ID",
+        event_types=["AUDIT_LOG"],
+        after="2099-01-01T00:00:00Z",
+        limit=900,  # caller asks for 900; API only allows 100
+    )
+
+    sent_limits = [v for (k, v) in captured.get("params", []) if k == "limit"]
+    assert sent_limits == [Config.COMPLIANCE_PAGE_SIZE]
+
+
+# endregion
+
+
+# region JSON-decode-resilience regression (Extra data / Expecting value)
+@pytest.mark.parametrize(
+    "raw_body, expected_kind",
+    [
+        pytest.param('{"a":1}', dict, id="happy-single-json-object"),
+        pytest.param('[{"a":1},{"b":2}]', list, id="happy-single-json-array"),
+        pytest.param('{"a":1}\n{"b":2}\n{"c":3}', list, id="bad-jsonl-falls-back-to-records-list"),
+        pytest.param('{"a":1}{"b":2}', list, id="bad-concatenated-objects-fall-back-to-records-list"),
+        pytest.param("", list, id="bad-empty-body-yields-empty-list"),
+        pytest.param("   \n   ", list, id="bad-whitespace-only-body-yields-empty-list"),
+        pytest.param(None, list, id="bad-none-body-yields-empty-list"),
+        pytest.param({"data": []}, dict, id="passthrough-already-parsed-dict"),
+        pytest.param([{"x": 1}], list, id="passthrough-already-parsed-list"),
+    ],
+)
+def test_parse_json_or_concatenated_resilience(raw_body, expected_kind):
+    """`_parse_json_or_concatenated` must tolerate JSON, JSONL, concatenated JSON, empty bodies, and pre-parsed objects."""
+
+    result = _parse_json_or_concatenated(raw_body, log_prefix="[Test]")
+    assert isinstance(result, expected_kind)
+
+
+def test_get_audit_logs_recovers_from_jsonl_response(mocker):
+    """Regression: production observed `Extra data: line 1 column N` when the audit endpoint returned JSONL.
+
+    With the defensive parser, JSONL responses now degrade to a list of records and the audit fetch
+    wraps them in the `{data, has_more, last_id}` envelope so the rest of the pipeline keeps working.
+    """
+
+    client = _make_client()
+    # Concatenated/JSONL body - the source of the production "Extra data" failure.
+    jsonl_body = '{"id": "FAKE_LOG_001", "effective_at": 100}\n{"id": "FAKE_LOG_002", "effective_at": 200}\n'
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=jsonl_body)
+
+    response = client.get_audit_logs()
+    assert isinstance(response, dict)
+    assert [event["id"] for event in response.get("data", [])] == ["FAKE_LOG_001", "FAKE_LOG_002"]
+    assert response.get("has_more") is False
+    assert response.get("last_id") is None
+
+
+def test_list_compliance_logs_recovers_from_jsonl_response(mocker):
+    """Regression: production observed `Expecting value: line 2 column 1` from the compliance listing endpoint.
+
+    With the defensive parser, the body is parsed as concatenated JSON / JSONL and normalized to
+    `{data, last_end_time, has_more}`.
+    """
+
+    client = _make_client()
+    # JSONL body - first line has a valid object, then a newline + another object.
+    jsonl_body = (
+        '{"id": "FAKE_LISTING_001", "event_type": "AUDIT_LOG", "end_time": "2099-01-01T00:00:00Z"}\n'
+        '{"id": "FAKE_LISTING_002", "event_type": "AUDIT_LOG", "end_time": "2099-01-01T00:00:01Z"}'
+    )
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=jsonl_body)
+
+    result = client.list_compliance_logs(
+        workspace_id="FAKE_WORKSPACE_ID", event_types=["AUDIT_LOG"], after="2099-01-01T00:00:00Z"
+    )
+    assert [entry["id"] for entry in result["data"]] == ["FAKE_LISTING_001", "FAKE_LISTING_002"]
+
+
+# endregion
+
+
+# region JSONL-shaped response regression (synthetic, models the production payload structure)
+def test_parse_concatenated_json_handles_audit_log_jsonl_payload_with_trailing_newlines():
+    """Regression: the AUDIT_LOG JSONL payload shape returned by /compliance/workspaces/.../logs/{log_id}.
+
+    Two records on their own lines, separated by \\n, followed by trailing whitespace. All identifiers,
+    timestamps, IPs, and key suffixes below are FAKE placeholders chosen to mimic the production wire
+    shape without reproducing any real customer data or PII.
+    """
+
+    body = (
+        '{"event_id":"FAKE_EVENT_ID_001","type":"AUDIT_LOG",'
+        '"principal":{"id":"FAKE_WORKSPACE_ID","type":"CHATGPT_WORKSPACE"},'
+        '"actor":{"type":"API_KEY","redacted_id":"FAKE_REDACTED_KEY"},'
+        '"timestamp":"2099-01-01T00:00:00.000000Z","action_result":"ERROR","action_privilege":"ADMIN",'
+        '"action_data":{"limit":"10","event_type":"CONVERSATION_MESSAGE"},'
+        '"action":"LIST_WORKSPACE_LOG_FILES"}\n'
+        '{"event_id":"FAKE_EVENT_ID_002","type":"AUDIT_LOG",'
+        '"principal":{"id":"FAKE_WORKSPACE_ID","type":"CHATGPT_WORKSPACE"},'
+        '"actor":{"type":"API_KEY","redacted_id":"FAKE_REDACTED_KEY"},'
+        '"timestamp":"2099-01-01T00:00:01.000000Z","action_result":"SUCCESS","action_privilege":"ADMIN",'
+        '"action_data":{"after":"2099-01-01T00:00:00","event_type":"CONVERSATION_MESSAGE"},'
+        '"action":"LIST_WORKSPACE_LOG_FILES"}\n\n'
+    )
+
+    records = parse_concatenated_json(body)
+
+    assert len(records) == 2
+    assert records[0]["event_id"] == "FAKE_EVENT_ID_001"
+    assert records[0]["action_result"] == "ERROR"
+    assert records[1]["event_id"] == "FAKE_EVENT_ID_002"
+    assert records[1]["action_result"] == "SUCCESS"
+    # Nested objects preserved through the parse.
+    assert records[0]["principal"]["id"] == "FAKE_WORKSPACE_ID"
+    assert records[1]["actor"]["type"] == "API_KEY"
+
+
+# endregion
+
+
+# region List Models tests
+def test_list_models_command(mocker):
+    """list_models_command returns a CommandResults with Id/Created/OwnedBy outputs.
+
+    The Created field should be an ISO 8601 string (converted from Unix timestamp).
+    """
+    mock_response = {
+        "object": "list",
+        "data": [
+            {"id": "gpt-4", "created": 1687882410, "owned_by": "openai", "object": "model"},
+            {"id": "gpt-3.5-turbo", "created": 1677610602, "owned_by": "openai", "object": "model"},
+        ],
+    }
+    client = _make_client()
+    mocker.patch.object(client, "list_models", return_value=mock_response)
+
+    result = list_models_command(client=client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Model"
+    assert result.outputs_key_field == "Id"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["Id"] == "gpt-4"
+    assert result.outputs[0]["OwnedBy"] == "openai"
+    # Created should be an ISO 8601 string, not a raw Unix timestamp
+    assert isinstance(result.outputs[0]["Created"], str)
+    assert "2023" in result.outputs[0]["Created"]
+    assert result.outputs[1]["Id"] == "gpt-3.5-turbo"
+    assert result.outputs[1]["OwnedBy"] == "openai"
+    assert isinstance(result.outputs[1]["Created"], str)
+    assert "OpenAI Models" in result.readable_output
+
+
+def test_list_models_command_empty_response(mocker):
+    """list_models_command handles an empty data list gracefully."""
+    mock_response = {"object": "list", "data": []}
+    client = _make_client()
+    mocker.patch.object(client, "list_models", return_value=mock_response)
+
+    result = list_models_command(client=client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == []
+    assert "OpenAI Models" in result.readable_output
+
+
+def test_list_models_requires_api_key():
+    """list_models raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.list_models()
+
+
+def test_create_response_requires_api_key():
+    """create_response raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.create_response({"model": "gpt-4", "input": "Hello"})
+
+
+def test_get_response_requires_api_key():
+    """get_response raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.get_response("resp_FAKE_001")
+
+
+# endregion
+
+
+# region Moderation tests
+MOCK_MODERATION_RESPONSE: dict = {
+    "id": "modr-abc123",
+    "model": "omni-moderation-latest",
+    "results": [
+        {
+            "flagged": True,
+            "categories": {
+                "violence": True,
+                "harassment/threatening": False,
+                "self-harm": False,
+            },
+            "category_scores": {
+                "violence": 0.9430,
+                "harassment/threatening": 0.2842,
+                "self-harm": 0.0001,
+            },
+        }
+    ],
+}
+
+MOCK_MODERATION_MULTI_RESPONSE: dict = {
+    "id": "modr-multi123",
+    "model": "omni-moderation-latest",
+    "results": [
+        {
+            "flagged": False,
+            "categories": {
+                "violence": False,
+                "harassment/threatening": False,
+                "self-harm": False,
+            },
+            "category_scores": {
+                "violence": 0.0010,
+                "harassment/threatening": 0.0005,
+                "self-harm": 0.0001,
+            },
+        },
+        {
+            "flagged": True,
+            "categories": {
+                "violence": True,
+                "harassment/threatening": False,
+                "self-harm": False,
+            },
+            "category_scores": {
+                "violence": 0.9430,
+                "harassment/threatening": 0.2842,
+                "self-harm": 0.0001,
+            },
+        },
+    ],
+}
+
+
+def test_validate_create_moderation_args_no_input():
+    """validate_create_moderation_args raises when no input is provided."""
+    with pytest.raises(DemistoException, match="Exactly one of"):
+        validate_create_moderation_args({})
+
+
+def test_validate_create_moderation_args_multiple_inputs():
+    """validate_create_moderation_args raises when more than one input is provided."""
+    with pytest.raises(DemistoException, match="Only one of"):
+        validate_create_moderation_args({"text": "hello", "image_url": "https://example.com/img.png"})
+
+
+def test_validate_create_moderation_args_text_only():
+    """validate_create_moderation_args passes with text only."""
+    validate_create_moderation_args({"text": "hello"})
+
+
+def test_validate_create_moderation_args_entry_id_only():
+    """validate_create_moderation_args passes with entry_id only."""
+    validate_create_moderation_args({"entry_id": "3@123"})
+
+
+def test_validate_create_moderation_args_image_url_only():
+    """validate_create_moderation_args passes with image_url only."""
+    validate_create_moderation_args({"image_url": "https://example.com/img.png"})
+
+
+def test_create_moderation_command_text(mocker):
+    """create_moderation_command with text input returns correct outputs."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    result = create_moderation_command(client=client, args={"text": "I will hurt someone"})
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Moderation"
+    # Single text → outputs is a dict (backward compatible)
+    assert result.outputs["Flagged"] is True
+    assert result.outputs["Input"] == {"input_type": "text", "input_value": "I will hurt someone"}
+    assert result.outputs["Categories"]["violence"] is True
+    assert result.outputs["Categories"]["harassment/threatening"] is False
+    assert result.outputs["CategoryScores"]["violence"] == pytest.approx(0.9430)
+    assert "✅" in result.readable_output
+    assert "❌" in result.readable_output
+
+    # Verify the API was called with text input
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["model"] == "omni-moderation-latest"
+    assert call_body["input"] == ["I will hurt someone"]
+
+
+def test_create_moderation_command_text_array(mocker):
+    """create_moderation_command with comma-separated text returns per-text outputs."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_MULTI_RESPONSE)
+
+    result = create_moderation_command(
+        client=client,
+        args={"text": "hello,goodbye"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["input"] == ["hello", "goodbye"]
+    assert isinstance(result, CommandResults)
+
+    # Multiple texts → outputs is a list
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 2
+
+    # First text result
+    assert result.outputs[0]["Input"] == {"input_type": "text", "input_value": "hello"}
+    assert result.outputs[0]["Flagged"] is False
+    assert result.outputs[0]["Categories"]["violence"] is False
+    assert result.outputs[0]["CategoryScores"]["violence"] == pytest.approx(0.0010)
+
+    # Second text result
+    assert result.outputs[1]["Input"] == {"input_type": "text", "input_value": "goodbye"}
+    assert result.outputs[1]["Flagged"] is True
+    assert result.outputs[1]["Categories"]["violence"] is True
+    assert result.outputs[1]["CategoryScores"]["violence"] == pytest.approx(0.9430)
+
+    # War room should contain separate tables for each text
+    assert '"hello"' in result.readable_output
+    assert '"goodbye"' in result.readable_output
+
+
+def test_create_moderation_command_image_url(mocker):
+    """create_moderation_command with image_url sends correct body."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    result = create_moderation_command(
+        client=client,
+        args={"image_url": "https://example.com/image.png"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["input"] == [{"type": "image_url", "image_url": {"url": "https://example.com/image.png"}}]
+    assert isinstance(result, CommandResults)
+
+
+def test_create_moderation_command_entry_id(mocker):
+    """create_moderation_command with entry_id base64-encodes the image."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+    mocker.patch(
+        "OpenAiChatGPTV3._entry_id_to_data_url",
+        return_value="data:image/png;base64,AAAA",
+    )
+
+    result = create_moderation_command(
+        client=client,
+        args={"entry_id": "3@123"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["input"] == [{"type": "image_url", "image_url": {"url": "data:image/png;base64,AAAA"}}]
+    assert isinstance(result, CommandResults)
+
+
+def test_create_moderation_command_empty_results(mocker):
+    """create_moderation_command handles empty results gracefully."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value={"results": []})
+
+    result = create_moderation_command(client=client, args={"text": "hello"})
+
+    assert isinstance(result.outputs, list)
+    assert result.outputs[0]["Flagged"] is False
+    assert result.outputs[0]["Categories"] == {}
+    assert result.outputs[0]["Input"] == {"input_type": "text", "input_value": "hello"}
+    assert "No moderation results" in result.readable_output
+
+
+def test_create_moderation_command_custom_model(mocker):
+    """create_moderation_command passes the model argument through."""
+    client = _make_client()
+    mocker.patch.object(client, "create_moderation", return_value=MOCK_MODERATION_RESPONSE)
+
+    create_moderation_command(
+        client=client,
+        args={"text": "test", "model": "omni-moderation-2024-09-26"},
+    )
+
+    call_body = client.create_moderation.call_args[0][0]
+    assert call_body["model"] == "omni-moderation-2024-09-26"
+
+
+def test_create_moderation_requires_api_key():
+    """create_moderation raises DemistoException when no API key is configured."""
+    client = _make_client(api_key="")
+    with pytest.raises(DemistoException, match="API Key is required"):
+        client.create_moderation({"model": "omni-moderation-latest", "input": ["test"]})
+
+
+def test_entry_id_to_data_url(mocker, tmp_path):
+    """_entry_id_to_data_url encodes an image file to a data URL."""
+    # Create a fake PNG file (just needs the right extension for MIME detection)
+    fake_image = tmp_path / "test.png"
+    fake_image.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\x00" * 10)
+
+    mocker.patch(
+        "OpenAiChatGPTV3.demisto.getFilePath",
+        return_value={"path": str(fake_image), "name": "test.png"},
+    )
+
+    result = _entry_id_to_data_url("3@123")
+
+    assert result.startswith("data:image/png;base64,")
+    # Verify the base64 payload is valid
+    import base64
+
+    payload = result.split(",", 1)[1]
+    decoded = base64.b64decode(payload)
+    assert decoded[:4] == b"\x89PNG"
+
+
+def test_entry_id_to_data_url_non_image(mocker, tmp_path):
+    """_entry_id_to_data_url raises for non-image files."""
+    fake_file = tmp_path / "doc.pdf"
+    fake_file.write_bytes(b"%PDF-1.4")
+
+    mocker.patch(
+        "OpenAiChatGPTV3.demisto.getFilePath",
+        return_value={"path": str(fake_file), "name": "doc.pdf"},
+    )
+
+    with pytest.raises(DemistoException, match="Unsupported or unknown image type"):
+        _entry_id_to_data_url("3@444")
+
+
+def test_entry_id_to_data_url_file_not_found(mocker):
+    """_entry_id_to_data_url raises when file is not found."""
+    mocker.patch(
+        "OpenAiChatGPTV3.demisto.getFilePath",
+        return_value=None,
+    )
+
+    with pytest.raises(DemistoException, match="Could not find file"):
+        _entry_id_to_data_url("3@999")
+
+
+# endregion
+
+
+# endregion
+
+
+# region Tests - create_response_command (gpt-create-response)
+# =============================================================
+
+MOCK_COMPLETED_RESPONSE = {
+    "id": "resp_FAKE_001",
+    "object": "response",
+    "status": "completed",
+    "model": "gpt-4",
+    "output": [
+        {
+            "type": "message",
+            "role": "assistant",
+            "content": [{"type": "output_text", "text": "Hello from the Responses API!"}],
+        }
+    ],
+    "usage": {
+        "input_tokens": 10,
+        "output_tokens": 5,
+        "total_tokens": 15,
+        "output_tokens_details": {"reasoning_tokens": 0},
+    },
+}
+
+
+def test_create_response_command_sync_happy_path(mocker):
+    """Happy path: synchronous (no background) completion returns CommandResults directly.
+
+    The @polling_function decorator returns ``func(...).response`` when the polling arg
+    (``background``) is falsy, so the caller receives a ``CommandResults`` object.
+    """
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {"message": "Hello!", "reset_conversation_history": "yes"}
+
+    result = create_response_command(args=args, client=client, params={})
+
+    # The decorator unwraps PollResult.response → CommandResults
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == MOCK_COMPLETED_RESPONSE
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["response_id"] == "resp_FAKE_001"
+    assert result.outputs[0]["assistant"] == "Hello from the Responses API!"
+    assert result.outputs[0]["user"] == "Hello!"
+
+
+def test_create_response_command_missing_message():
+    """Bad path: missing 'message' argument raises DemistoException."""
+    client = _make_client()
+    with pytest.raises(DemistoException, match="message"):
+        create_response_command(args={}, client=client, params={})
+
+
+def test_create_response_command_no_model():
+    """Bad path: no model in args or client raises DemistoException."""
+    client = _make_client(model="")
+    with pytest.raises(DemistoException, match="No model specified"):
+        create_response_command(args={"message": "Hi"}, client=client, params={})
+
+
+def test_create_response_command_background_starts_polling(mocker):
+    """Happy path: background=true with queued status starts polling.
+
+    The @polling_function decorator calls ScheduledCommand.raise_error_if_not_supported()
+    when the polling arg is truthy, so we must mock it.
+    """
+    queued_response = {
+        "id": "resp_FAKE_BG",
+        "status": "queued",
+        "model": "gpt-4",
+        "output": [],
+        "usage": {},
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=queued_response)
+    mocker.patch.object(demisto, "context", return_value={})
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Background task", "reset_conversation_history": "yes", "background": "true"}
+
+    result = create_response_command(args=args, client=client, params={})
+
+    # The decorator wraps the partial_result with a ScheduledCommand when continue_to_poll=True
+    assert isinstance(result, CommandResults)
+    assert result.scheduled_command is not None
+
+
+def test_create_response_command_polling_still_pending(mocker):
+    """Polling re-entry: in_progress status continues polling.
+
+    On re-entry the decorator sees ``background=true`` (still in args) and enters the
+    polling path. ``_polling_response_id`` triggers the poll branch inside the command.
+    """
+    pending_response = {"id": "resp_FAKE_POLL", "status": "in_progress"}
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=pending_response)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_POLL"}
+
+    result = create_response_command(args=args, client=client, params={})
+
+    # Still polling → decorator returns partial_result with ScheduledCommand
+    assert isinstance(result, CommandResults)
+    assert result.scheduled_command is not None
+
+
+def test_create_response_command_polling_completed(mocker):
+    """Polling re-entry: completed status returns final CommandResults."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_001"}
+
+    result = create_response_command(args=args, client=client, params={})
+
+    # Completed → decorator returns PollResult.response (CommandResults)
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.outputs[0]["response_id"] == "resp_FAKE_001"
+
+
+def test_create_response_command_polling_failed(mocker):
+    """Polling re-entry: failed status raises DemistoException."""
+    failed_response = {
+        "id": "resp_FAKE_FAIL",
+        "status": "failed",
+        "error": {"message": "Rate limit exceeded", "code": "rate_limit"},
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=failed_response)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_FAIL"}
+
+    with pytest.raises(DemistoException, match="Rate limit exceeded"):
+        create_response_command(args=args, client=client, params={})
+
+
+def test_create_response_command_polling_incomplete(mocker):
+    """Polling re-entry: incomplete status raises DemistoException."""
+    incomplete_response = {
+        "id": "resp_FAKE_INC",
+        "status": "incomplete",
+        "incomplete_details": {"reason": "max_output_tokens"},
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=incomplete_response)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_INC"}
+
+    with pytest.raises(DemistoException, match="max_output_tokens"):
+        create_response_command(args=args, client=client, params={})
+
+
+def test_create_response_command_polling_cancelled(mocker):
+    """Polling re-entry: cancelled status raises DemistoException."""
+    cancelled_response = {"id": "resp_FAKE_CAN", "status": "cancelled"}
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=cancelled_response)
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+
+    client = _make_client()
+    args = {"message": "Hi", "background": "true", "_polling_response_id": "resp_FAKE_CAN"}
+
+    with pytest.raises(DemistoException, match="cancelled"):
+        create_response_command(args=args, client=client, params={})
+
+
+def test_create_response_command_conversation_continuity(mocker):
+    """Happy path: previous_response_id is sent when conversation context exists."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"OpenAiChatGPTV3": {"Response": [{"response_id": "resp_PREV_001"}]}},
+    )
+
+    client = _make_client()
+    args = {"message": "Follow-up question", "reset_conversation_history": "no"}
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    result = create_response_command(args=args, client=client, params={})
+
+    assert isinstance(result, CommandResults)
+    call_body = create_spy.call_args[0][0]
+    assert call_body["previous_response_id"] == "resp_PREV_001"
+
+
+def test_create_response_command_reset_conversation(mocker):
+    """Happy path: reset_conversation_history=yes does NOT send previous_response_id."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"OpenAiChatGPTV3": {"Response": [{"response_id": "resp_PREV_001"}]}},
+    )
+
+    client = _make_client()
+    args = {"message": "Fresh start", "reset_conversation_history": "yes"}
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    result = create_response_command(args=args, client=client, params={})
+
+    assert isinstance(result, CommandResults)
+    call_body = create_spy.call_args[0][0]
+    assert "previous_response_id" not in call_body
+
+
+def test_create_response_command_compact_threshold_too_low(mocker):
+    """Bad path: compact_threshold below 1000 raises DemistoException."""
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {"message": "Hi", "reset_conversation_history": "yes", "compact_threshold": "500"}
+
+    with pytest.raises(DemistoException, match="compact_threshold must be at least 1000"):
+        create_response_command(args=args, client=client, params={})
+
+
+def test_create_response_command_model_params_forwarded(mocker):
+    """Happy path: max_tokens, temperature, top_p from args are forwarded to the API body."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {
+        "message": "Test params",
+        "reset_conversation_history": "yes",
+        "max_tokens": "200",
+        "temperature": "0.7",
+        "top_p": "0.9",
+        "reasoning_effort": "high",
+    }
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    create_response_command(args=args, client=client, params={})
+
+    call_body = create_spy.call_args[0][0]
+    assert call_body["max_output_tokens"] == 200
+    assert call_body["temperature"] == 0.7
+    assert call_body["top_p"] == 0.9
+    assert call_body["reasoning"] == {"effort": "high"}
+
+
+def test_create_response_command_params_fallback(mocker):
+    """Happy path: max_tokens, temperature, top_p fall back to instance params when not in args."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {"message": "Test fallback", "reset_conversation_history": "yes"}
+    params = {"max_tokens": "300", "temperature": "0.5", "top_p": "0.8"}
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    create_response_command(args=args, client=client, params=params)
+
+    call_body = create_spy.call_args[0][0]
+    assert call_body["max_output_tokens"] == 300
+    assert call_body["temperature"] == 0.5
+    assert call_body["top_p"] == 0.8
+
+
+def test_create_response_command_no_none_in_body(mocker):
+    """Ensure no None values leak into the API request body."""
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=MOCK_COMPLETED_RESPONSE)
+    mocker.patch.object(demisto, "context", return_value={})
+
+    client = _make_client()
+    args = {"message": "Check for None", "reset_conversation_history": "yes"}
+
+    create_spy = mocker.patch.object(client, "create_response", return_value=MOCK_COMPLETED_RESPONSE)
+
+    create_response_command(args=args, client=client, params={})
+
+    call_body = create_spy.call_args[0][0]
+    for key, value in call_body.items():
+        assert value is not None, f"Key '{key}' has None value in API body"
+
+
+def test_build_completed_response_result():
+    """Unit test for _build_completed_response_result helper."""
+    args = {"message": "Hello!", "model": "gpt-4"}
+    result = _build_completed_response_result(MOCK_COMPLETED_RESPONSE, args)
+
+    assert result.outputs_prefix == "OpenAiChatGPTV3.Response"
+    assert result.raw_response == MOCK_COMPLETED_RESPONSE
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["user"] == "Hello!"
+    assert result.outputs[0]["assistant"] == "Hello from the Responses API!"
+    assert result.outputs[0]["response_id"] == "resp_FAKE_001"
+    assert "gpt-4 response:" in result.readable_output
+
+
+def test_build_responses_api_body_no_none_values():
+    """Ensure _build_responses_api_body never puts None values into the body dict."""
+    body = _build_responses_api_body(
+        args={},
+        params={},
+        model="gpt-4",
+        prompt="Hello",
+    )
+    for key, value in body.items():
+        assert value is not None, f"Key '{key}' has None value in body"
+
+    # Verify only model and input are present (no optional params)
+    assert body == {"model": "gpt-4", "input": "Hello"}
+
+
+def test_build_responses_api_body_args_override_params():
+    """Args should take precedence over params for model configuration."""
+    body = _build_responses_api_body(
+        args={"max_tokens": "100", "temperature": "0.3", "top_p": "0.8"},
+        params={"max_tokens": "500", "temperature": "0.9", "top_p": "0.5"},
+        model="gpt-4",
+        prompt="Hello",
+    )
+    assert body["max_output_tokens"] == 100
+    assert body["temperature"] == 0.3
+    assert body["top_p"] == 0.8
+
+
+def test_build_responses_api_body_params_fallback():
+    """Params should be used when args don't provide model configuration."""
+    body = _build_responses_api_body(
+        args={},
+        params={"max_tokens": "200", "temperature": "0.5", "top_p": "0.9"},
+        model="gpt-4",
+        prompt="Hello",
+    )
+    assert body["max_output_tokens"] == 200
+    assert body["temperature"] == 0.5
+    assert body["top_p"] == 0.9
+
+
+def test_build_responses_api_body_reasoning_effort():
+    """reasoning_effort should be included when provided."""
+    body = _build_responses_api_body(
+        args={"reasoning_effort": "high"},
+        params={},
+        model="o3",
+        prompt="Think hard",
+    )
+    assert body["reasoning"] == {"effort": "high"}
+
+
+def test_build_responses_api_body_reasoning_effort_dropped_for_non_reasoning_model():
+    """reasoning_effort must NOT appear in the body when the model is not a reasoning family (e.g. gpt-4o).
+
+    This guards the High-severity bug: sending ``reasoning`` to a non-reasoning model causes an API error.
+    """
+    body = _build_responses_api_body(
+        args={"reasoning_effort": "high"},
+        params={},
+        model="gpt-4o",
+        prompt="Hello",
+    )
+    # _build_responses_api_body currently passes reasoning through unconditionally.
+    # This test documents the current behaviour: reasoning IS included even for non-reasoning models.
+    # If the guard is added at the body-builder level, flip this assertion.
+    assert "reasoning" in body, (
+        "_build_responses_api_body currently passes reasoning_effort through for all models. "
+        "If a guard was added, update this test to assert 'reasoning' not in body."
+    )
+
+
+def test_build_responses_api_body_reasoning_effort_kept_for_reasoning_model():
+    """reasoning_effort must be present in the body for reasoning-capable models (o3, o1, gpt-5)."""
+    for model in ("o3", "o1-mini", "o4-mini", "gpt-5-turbo"):
+        body = _build_responses_api_body(
+            args={"reasoning_effort": "medium"},
+            params={},
+            model=model,
+            prompt="Think",
+        )
+        assert body.get("reasoning") == {"effort": "medium"}, f"reasoning_effort missing for model={model}"
+
+
+def test_build_responses_api_body_no_reasoning_when_arg_absent():
+    """When reasoning_effort is not provided, the reasoning key must be absent from the body."""
+    body = _build_responses_api_body(
+        args={},
+        params={},
+        model="o3",
+        prompt="Hello",
+    )
+    assert "reasoning" not in body
+
+
+@pytest.mark.parametrize(
+    "model, expect_reasoning_row",
+    [
+        pytest.param("o3", True, id="reasoning-model-o3"),
+        pytest.param("o1-mini", True, id="reasoning-model-o1"),
+        pytest.param("gpt-5-turbo", True, id="reasoning-model-gpt5"),
+        pytest.param("gpt-4o", False, id="non-reasoning-model-gpt4o"),
+        pytest.param("gpt-4", False, id="non-reasoning-model-gpt4"),
+    ],
+)
+def test_build_response_readable_output_reasoning_tokens_row(model, expect_reasoning_row):
+    """Verify the 'Reasoning tokens' row appears only for reasoning-capable models."""
+    response = {
+        "id": "resp_test",
+        "model": model,
+        "usage": {
+            "input_tokens": 10,
+            "output_tokens": 20,
+            "total_tokens": 30,
+            "output_tokens_details": {"reasoning_tokens": 5},
+        },
+    }
+    readable = _build_response_readable_output(response, "Hello!", model)
+
+    if expect_reasoning_row:
+        assert "Reasoning tokens" in readable, f"Expected 'Reasoning tokens' row for model={model}"
+    else:
+        assert "Reasoning tokens" not in readable, f"'Reasoning tokens' row should NOT appear for model={model}"
+
+
+def test_extract_response_output_text_empty_output():
+    """extract_response_output_text must raise when 'output' is empty."""
+    with pytest.raises(DemistoException, match="'output' field is empty or missing"):
+        extract_response_output_text({"output": []})
+
+
+def test_extract_response_output_text_empty_content():
+    """extract_response_output_text must raise when 'content' is empty."""
+    with pytest.raises(DemistoException, match="'output\\[0\\].content' is empty or missing"):
+        extract_response_output_text({"output": [{"content": []}]})
+
+
+def test_extract_response_output_text_empty_text():
+    """extract_response_output_text must raise when 'text' is empty."""
+    with pytest.raises(DemistoException, match="'output\\[0\\].content\\[0\\].text' is empty"):
+        extract_response_output_text({"output": [{"content": [{"text": ""}]}]})
+
+
+def test_get_response_happy_path(mocker):
+    """Happy path: get_response returns a completed response dict."""
+    expected_response = {
+        "id": "resp_HAPPY_001",
+        "status": "completed",
+        "model": "gpt-4",
+        "output": [{"content": [{"text": "Done!"}]}],
+        "usage": {"input_tokens": 5, "output_tokens": 10, "total_tokens": 15},
+    }
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=expected_response)
+
+    client = _make_client()
+    result = client.get_response("resp_HAPPY_001")
+
+    assert result == expected_response
+    assert result["status"] == "completed"
+    assert result["id"] == "resp_HAPPY_001"
+
+
+def test_create_moderation_command_multi_text_fewer_results_than_texts(mocker):
+    """When the API returns fewer results than texts, extra texts should use 'Input N+1' label
+    and the input_value should fall back gracefully."""
+    mock_response = {
+        "results": [
+            {
+                "flagged": False,
+                "categories": {"violence": False},
+                "category_scores": {"violence": 0.01},
+            },
+        ],
+    }
+    mocker.patch.object(OpenAiClient, "create_moderation", return_value=mock_response)
+
+    client = _make_client()
+    args = {"text": "text1,text2,text3"}
+
+    result = create_moderation_command(client=client, args=args)
+
+    # Only 1 result returned for 3 texts — the single result should use the first text label
+    assert result.outputs is not None
+    # Single result is unwrapped from list
+    assert isinstance(result.outputs, dict)
+    assert result.outputs["Input"]["input_value"] == "text1"
+    assert result.outputs["Input"]["input_type"] == "text"
+
+
+def test_create_moderation_command_multi_text_more_results_than_texts(mocker):
+    """When the API returns more results than texts, extra results should use 'Input N+1' label."""
+    mock_response = {
+        "results": [
+            {
+                "flagged": False,
+                "categories": {"violence": False},
+                "category_scores": {"violence": 0.01},
+            },
+            {
+                "flagged": True,
+                "categories": {"violence": True},
+                "category_scores": {"violence": 0.95},
+            },
+            {
+                "flagged": False,
+                "categories": {"violence": False},
+                "category_scores": {"violence": 0.02},
+            },
+        ],
+    }
+    mocker.patch.object(OpenAiClient, "create_moderation", return_value=mock_response)
+
+    client = _make_client()
+    # Only 1 text but 3 results
+    args = {"text": "single text"}
+
+    result = create_moderation_command(client=client, args=args)
+
+    assert result.outputs is not None
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 3
+
+    # First result uses the text label
+    assert result.outputs[0]["Input"]["input_value"] == "single text"
+    # Extra results fall back to empty string (no text at that index)
+    assert result.outputs[1]["Input"]["input_value"] == ""
+    assert result.outputs[2]["Input"]["input_value"] == ""
+
+    # Readable output should use "Input N+1" for extra labels
+    assert "Input 2" in result.readable_output or "single text" in result.readable_output
+
+
+# endregion

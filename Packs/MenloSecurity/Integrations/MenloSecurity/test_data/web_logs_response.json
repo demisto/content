@@ -1,0 +1,63 @@
+{
+    "timestamp": "2024-01-15T10:00:02.599Z",
+    "result": {
+        "metrics": [
+            "last_access",
+            "rows"
+        ],
+        "events": [
+            {
+                "event": {
+                    "top_url": "http://example.com",
+                    "egress_country": "US",
+                    "domain": "example.com",
+                    "protocol": "http",
+                    "risk_tally": "-1",
+                    "origin_ip": "8.8.8.8",
+                    "has_password": "NA",
+                    "file_size": "NA",
+                    "origin_country": "FR",
+                    "x-client-country": "US",
+                    "browser_and_version": "Chrome_72",
+                    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36",
+                    "egress_ip": "1.2.3.4",
+                    "threats": "cats_Phishing & Fraud",
+                    "severity": "5",
+                    "event_time": "2024-01-15T10:00:40.548000",
+                    "dst": "8.8.8.8",
+                    "filename": "NA",
+                    "risk_score": "low",
+                    "version": "2.0",
+                    "sha256": "fd1aee671d92aba0f9f0a8a6d5c6b843e09c8295ced9bb85e16d97360b4d7b3a",
+                    "soph_dlp_ref": "NA",
+                    "tab_id": "1",
+                    "xff_ip": "NA",
+                    "product": "MSIP",
+                    "vendor": "Menlo Security",
+                    "request_type": "GET",
+                    "pe_reason": "6c6ea27d-5350",
+                    "categories": "Education",
+                    "x-client-ip": "1.1.1.1",
+                    "name": "page_request",
+                    "url": "http://example.com",
+                    "response_code": "200",
+                    "userid": "admin@menlosecurity.com",
+                    "full_session_id": "KbJQIDPS-1",
+                    "pe_action": "isolate",
+                    "threat_types": "Phishing",
+                    "ua_type": "supported_browser",
+                    "content-type": "text/html; charset=iso-8859-1",
+                    "is_iframe": "true",
+                    "region": "us-west-1b"
+                }
+            }
+        ],
+        "pagingIdentifiers": {
+            "next_time": "2024-01-15T10:00:00.000Z",
+            "hashes": {
+                "f21fdde7b4e3baa896d2154184bd451f": 0
+            },
+            "last_iteration": true
+        }
+    }
+}

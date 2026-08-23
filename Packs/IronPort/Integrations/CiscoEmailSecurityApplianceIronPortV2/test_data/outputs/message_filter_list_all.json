@@ -1,0 +1,31 @@
+{
+    "meta": {
+        "count": 3
+    },
+    "data": [
+        {
+            "name": "F1",
+            "rules_and_actions": "if (recv-listener == \"InboundMail\") OR (recv-int ==\"notmain\") { alt-src-host (\"outbound\"); skip-filters(); } else { skip-filters(); }",
+            "invalid_reason": "Listener 'InboundMail' unknown; Interface 'notmain' unknown; Interface 'outbound' unknown",
+            "valid": "false",
+            "active": "true", 
+            "order": 1
+        },
+        {
+            "name": "F2",
+            "rules_and_actions": "if (recv-listener == \"InboundMail1\") OR (recv-int ==\"notmain1\") { alt-src-host (\"outbound1\"); skip-filters(); } else { skip-filters(); }",
+            "valid": "true",
+            "active": "true", 
+            "order": 2
+        },
+        {
+
+            "name": "F3",
+            "rules_and_actions": "if (recv-listener == \"InboundMail3\") OR (recv-int ==\"notmain3\") { alt-src-host (\"outbound3\"); skip-filters(); } else { skip-filters(); }",
+            "invalid_reason": "Listener 'InboundMail3' unknown; Interface 'notmain3' unknown; Interface 'outbound3' unknown",
+            "valid": "false",
+            "active": "true", 
+            "order": 3
+        }
+    ]
+}

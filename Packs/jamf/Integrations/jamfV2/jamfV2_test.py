@@ -43,12 +43,12 @@ def test_get_computers_command(mocker):
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
     args = {}
-    mock_response = util_load_json("test_data/get_computer/get_computer_raw_response.json")
+    mock_response = util_load_json("test_data/get_computer/get_computers_raw_response.json")
 
-    mocker.patch.object(client, "get_computers_request", return_value=mock_response)
+    mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
 
     computer_response = get_computers_command(client, args)
-    expected_response = util_load_json("test_data/get_computer/get_computer_context.json")
+    expected_response = util_load_json("test_data/get_computer/get_computers_context.json")
     assert computer_response[0].outputs == expected_response
 
 
@@ -66,12 +66,12 @@ def test_get_computers_limit_command(mocker):
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
     args = {"limit": 10, "page": 2}
-    mock_response = util_load_json("test_data/get_computer/get_computer_raw_response.json")
+    mock_response = util_load_json("test_data/get_computer/get_computers_limit_raw_response.json")
 
-    mocker.patch.object(client, "get_computers_request", return_value=mock_response)
+    mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
 
     response = get_computers_command(client, args)
-    expected_response = util_load_json("test_data/get_computer/get_computer_limit_context.json")
+    expected_response = util_load_json("test_data/get_computer/get_computers_limit_context.json")
     assert response[0].outputs == expected_response
 
 
@@ -91,7 +91,7 @@ def test_get_computers_by_id_command(mocker):
     args = {"id": 1}
     mock_response = util_load_json("test_data/get_computer/get_computer_by_id_raw_response.json")
 
-    mocker.patch.object(client, "get_computers_request", return_value=mock_response)
+    mocker.patch.object(client, "get_computer_inventory_detail_request", return_value=mock_response)
 
     response = get_computer_by_id_command(client, args)
     expected_response = util_load_json("test_data/get_computer/get_computer_by_id_context.json")
@@ -107,16 +107,16 @@ def test_get_computers_by_match_command(mocker):
     Then
     - Ensure the result are according to the id and match args.
     """
-    from jamfV2 import Client, get_computers_command
+    from jamfV2 import Client, get_computer_by_match_command
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {"match": "564D26*"}
+    args = {"filter": "udid==CA40F812-60A3-11E4-90B8-12DF261F2C7E"}
     mock_response = util_load_json("test_data/get_computer/get_computer_by_match_raw_response.json")
 
-    mocker.patch.object(client, "get_computers_request", return_value=mock_response)
+    mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
 
-    response = get_computers_command(client, args)
+    response = get_computer_by_match_command(client, args)
     expected_response = util_load_json("test_data/get_computer/get_computer_by_match_context.json")
     assert response[0].outputs == expected_response
 
@@ -135,13 +135,39 @@ def test_get_computer_general_subset_command(mocker):
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
     args = {"identifier": "name", "identifier_value": "Computer 95"}
-    mock_response_general_subset = util_load_json(
-        "test_data/get_computer_subset/get_computer_by_name_general_subset_raw_response.json"
-    )
-    mocker.patch.object(client, "get_computer_subset_request", return_value=mock_response_general_subset)
+
+    mock_response = util_load_json("test_data/get_computer/get_computer_general_subset_raw_response.json")
+
+    mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
 
     computer_response = get_computer_subset_command(client, args, "General")
+    expected_response = util_load_json("test_data/get_computer/get_computer_general_subset_context.json")
+
+    assert computer_response.outputs == expected_response
+
+
+def test_get_computer_general_subset_deprecated_command(mocker):
+    """
+    Given
+    - Name of the computer and subset arguments.
+    When
+    - Run get computer subset command
+    Then
+    - Ensure the command output matched the given query.
+    """
+    from jamfV2 import Client, get_computer_subset_deprecated_command
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+    args = {"identifier": "name", "identifier_value": "Computer 95"}
+
+    mock_response = util_load_json("test_data/get_computer_subset/get_computer_by_name_general_subset_raw_response.json")
+
+    mocker.patch.object(client, "get_computer_subset_deprecated_request", return_value=mock_response)
+
+    computer_response = get_computer_subset_deprecated_command(client, args, "General")
     expected_response = util_load_json("test_data/get_computer_subset/get_computer_by_name_general_subset_context.json")
+
     assert computer_response.outputs == expected_response
 
 
@@ -421,6 +447,35 @@ def test_mobile_device_erase_command(mocker):
     assert computer_response.outputs == expected_response
 
 
+def test_computers_endpoint_request(mocker):
+    """
+    test helper function for the endpoint command.
+    """
+    from jamfV2 import Client, computers_endpoint_request
+
+    mocker.patch.object(Client, "_get_token")
+    client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
+
+    mock_response = util_load_json("test_data/get_computer/get_computer_general_subset_raw_response.json")
+
+    mocker.patch.object(client, "get_computers_inventory_request", return_value=mock_response)
+
+    mapped_response_list, _ = computers_endpoint_request(client, filter_query="id==1")
+
+    expected_mapped_response_list = [
+        {
+            "id": "1",
+            "name": "Computer 95",
+            "ip": "123.243.192.20",
+            "platform": "Mac",
+            "mac_address": "68:5B:35:CA:12:56",
+            "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+        }
+    ]
+
+    assert mapped_response_list == expected_mapped_response_list
+
+
 def test_endpoint_command(mocker):
     """
     Given:
@@ -436,20 +491,37 @@ def test_endpoint_command(mocker):
 
     mocker.patch.object(Client, "_get_token")
     client = Client(base_url="https://paloaltonfr3.jamfcloud.com", verify=False)
-    args = {"id": "id", "hostname": "hostname"}
-    endpoint_response = util_load_json("test_data/get_computer_subset/get_computer_by_name_general_subset_raw_response.json")
-    mocker.patch.object(client, "get_computer_subset_request", return_value=endpoint_response)
+    args = {"id": "1", "ip": "123.243.192.20", "hostname": "Computer 95"}
+
+    mock_mapped_response = [
+        {
+            "id": "1",
+            "name": "Computer 95",
+            "ip": "123.243.192.20",
+            "platform": "Mac",
+            "mac_address": "68:5B:35:CA:12:56",
+            "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+        }
+    ]
+
+    mocker.patch("jamfV2.computers_endpoint_request", return_value=(mock_mapped_response, []))
 
     outputs = endpoint_command(client, args)
 
     get_endpoints_response = {
         Common.Endpoint.CONTEXT_PATH: [
-            {"ID": 1, "Hostname": "Computer 95", "OS": "Mac", "Vendor": "JAMF v2", "MACAddress": "12:5B:35:CA:12:56"}
+            {
+                "ID": "1",
+                "Hostname": "Computer 95",
+                "OS": "Mac",
+                "Vendor": "JAMF v2",
+                "MACAddress": "68:5B:35:CA:12:56",
+                "IPAddress": "123.243.192.20",
+            }
         ]
     }
+
     results = outputs[0].to_context()
-    for key, _val in results.get("EntryContext").items():
-        assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
     assert len(outputs) == 1
 
@@ -646,3 +718,126 @@ def test_get_mobile_configuration_profiles_by_id(mocker):
 
     outputs = get_profile_configuration_mobile(client, args)
     assert outputs.outputs["general"]["id"] == 1
+
+
+@pytest.mark.parametrize(
+    "query, expected",
+    [
+        pytest.param(
+            "general.name=='MacBook'",
+            ["GENERAL"],
+            id="Simple single keyword (Full Path)",
+        ),
+        pytest.param(
+            "hardware.serialNumber=='XYZ123'",
+            ["HARDWARE"],
+            id="Simple single keyword (Full Path - Updated from Alias)",
+        ),
+        pytest.param(
+            "HARDWARE.MACADDRESS=='00:00:00:00'",
+            ["HARDWARE"],
+            id="Case Insensitivity check",
+        ),
+        pytest.param(
+            "general.assetTag=='123' and general.barcode1=='456'",
+            ["GENERAL"],
+            id="Multiple keywords same section",
+        ),
+        pytest.param(
+            "hardware.model=='MacBook Pro' and operatingsystem.version=='14.1'",
+            ["HARDWARE", "OPERATING_SYSTEM"],
+            id="Multiple keywords different sections (Full Paths)",
+        ),
+        pytest.param(
+            "userandlocation.buildingId=in=(1, 2, 3)",
+            ["USER_AND_LOCATION"],
+            id="Using the =in= operator",
+        ),
+        pytest.param(
+            "purchasing.purchased!='2023-01-01'",
+            ["PURCHASING"],
+            id="Using the != operator",
+        ),
+        pytest.param(
+            "general.remoteManagement.managed==true",
+            ["GENERAL"],
+            id="Deeply nested full path",
+        ),
+        pytest.param(
+            "udid=='550e8400-e29b'",
+            [],
+            id="Key with no mapped section (udid)",
+        ),
+        pytest.param(
+            "id==10 and hardware.appleSilicon==true",
+            ["HARDWARE"],
+            id="Combination of mapped and unmapped keys",
+        ),
+        pytest.param(
+            "userandlocation.email=='test@me.com' or (hardware.make=='Apple' and userandlocation.departmentId==5)",
+            ["HARDWARE", "USER_AND_LOCATION"],
+            id="Complex query OR/AND",
+        ),
+        pytest.param(
+            "operatingsystem.activeDirectoryStatus=='Bound' or operatingsystem.fileVault2Status=='All'",
+            ["OPERATING_SYSTEM"],
+            id="Operating System specific keys",
+        ),
+        pytest.param(
+            "security.firewallEnabled==true and diskencryption.fileVault2Enabled==true",
+            ["DISK_ENCRYPTION", "SECURITY"],
+            id="Security and Disk Encryption",
+        ),
+        pytest.param(
+            "general.lastLoggedInUsernameSelfService=='admin'",
+            ["GENERAL"],
+            id="Deeply nested names",
+        ),
+        pytest.param(
+            "purchasing.lifeExpectancy>=3",
+            ["PURCHASING"],
+            id="Numeric operators",
+        ),
+        pytest.param(
+            "purchasing.warrantyDate<'2025-01-01' and general.reportDate>'2024-01-01'",
+            ["GENERAL", "PURCHASING"],
+            id="Date based fields",
+        ),
+        pytest.param(
+            "hardware.model=='Air' and hardware.macAddress=='00' and hardware.appleSilicon==false",
+            ["HARDWARE"],
+            id="Duplicate sections deduplication",
+        ),
+        pytest.param(
+            "OPERATINGSYSTEM.SUPPLEMENTALBUILDVERSION=='23F80' AND operatingsystem.build=='23F70'",
+            ["OPERATING_SYSTEM"],
+            id="Mixed casing in operators and keys",
+        ),
+        pytest.param(
+            "general.name=='X' and hardware.serialNumber=='Y' and operatingsystem.version=='Z' and "
+            "security.activationLockEnabled==true and userandlocation.email=='A' and "
+            "diskencryption.fileVault2Enabled==true and purchasing.vendor=='B'",
+            ["DISK_ENCRYPTION", "GENERAL", "HARDWARE", "OPERATING_SYSTEM", "PURCHASING", "SECURITY", "USER_AND_LOCATION"],
+            id="Universal query (All sections using Full Paths)",
+        ),
+        pytest.param(
+            "unknownField=='foo' and 123==456",
+            [],
+            id="Unrelated or unknown fields",
+        ),
+    ],
+)
+def test_get_sections_from_query(query, expected):
+    """
+    Given:
+        - A query string
+    When:
+        - get_rsql_sections is called
+    Then:
+        - Ensure the function returns the correct output
+    """
+    from jamfV2 import get_sections_from_query
+
+    actual_sections = get_sections_from_query(query)
+
+    assert set(actual_sections) == set(expected), f"Failed for query: {query}\nExpected: {expected}\nActual: {actual_sections}"

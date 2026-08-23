@@ -4,5 +4,5 @@ name: Microsoft Azure Events Hub Parsing Rule
 rules: ''
 samples: ''
 supportedModules:
-- agentix
+- xsiam
 tags: []

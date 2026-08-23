@@ -5,3 +5,5 @@ rules: ''
 schema: ''
 tags: Microsoft System Center Configuration Manager sccm
 toversion: 6.9.9
+supportedModules:
+- xsiam

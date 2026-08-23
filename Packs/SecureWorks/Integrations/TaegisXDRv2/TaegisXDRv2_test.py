@@ -25,6 +25,7 @@ from TaegisXDRv2 import (
     update_alert_status_command,
     add_evidence_to_investigation_command,
     create_sharelink_command,
+    fetch_events_command,
     test_module as connectivity_test,
 )
 
@@ -672,3 +673,49 @@ def test_create_sharelink(requests_mock):
     client = mock_client(requests_mock, {"errors": [{"message": "Unknown Error"}]})
     with pytest.raises(ValueError, match="Failed to create ShareLink"):
         assert create_sharelink_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_fetch_events(requests_mock):
+    """Tests taegis-fetch-events command function"""
+
+    client = mock_client(requests_mock, FETCH_EVENTS_RESPONSE)
+
+    # Successful query with default cql_query (no args)
+    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+    assert response.outputs == FETCH_EVENTS_RESPONSE["data"]["eventsServiceSearch"]
+    assert len(response.outputs) == 1
+    assert response.outputs[0] == TAEGIS_EVENT
+
+    # Successful query with explicit cql_query
+    args = {
+        "cql_query": "FROM process EARLIEST=-1d | head 10",
+        "limit": 10,
+        "offset": 0,
+    }
+    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == FETCH_EVENTS_RESPONSE["data"]["eventsServiceSearch"]
+    # next cursor is embedded in the last event object
+    assert response.outputs[0].get("next") is None
+
+    # Query with next page token returned
+    client = mock_client(requests_mock, FETCH_EVENTS_NEXT_PAGE_RESPONSE)
+    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0].get("next") == TAEGIS_EVENT_NEXT_PAGE
+    assert len(response.outputs) == 1
+
+    # Fetch by IDs
+    client = mock_client(requests_mock, FETCH_EVENTS_BY_ID_RESPONSE)
+    args_by_id = {"ids": [TAEGIS_EVENT["id"]]}
+    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args_by_id)
+    assert response.outputs == FETCH_EVENTS_BY_ID_RESPONSE["data"]["eventsServiceRetrieveEventsById"]
+
+    # Fetch next page using cursor
+    client = mock_client(requests_mock, FETCH_EVENTS_PAGE_RESPONSE)
+    args_next = {"next": TAEGIS_EVENT_NEXT_PAGE}
+    response = fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args_next)
+    assert response.outputs == FETCH_EVENTS_PAGE_RESPONSE["data"]["eventsServiceEventPage"]
+
+    # Query failure
+    client = mock_client(requests_mock, FETCH_EVENTS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to fetch events: invalid CQL query"):
+        assert fetch_events_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)

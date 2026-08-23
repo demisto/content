@@ -658,7 +658,7 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
 @pytest.mark.parametrize(
     "mime_content, expected_data, expected_attachmentSHA256",
     [
-        (b"\xc400", "\r\nÄ00", "90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8"),
+        (b"\xc400", "\r\nД00", "90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8"),
         (
             "Hello, this is a sample email with non-ASCII characters: é, ñ, ü.",
             "\r\nHello, this is a sample email with non-ASCII characters: é, ñ, ü.",
@@ -1365,6 +1365,70 @@ def test_fetch_attachments_for_message_output(mocker):
             False,
             id="empty_exclude_ids_not_duplicate",
         ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="partial_right_bracket_stored_is_duplicate",
+        ),
+        pytest.param(
+            "abc",
+            "2021-01-01T12:00:00Z",
+            {"<abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="partial_left_bracket_stored_is_duplicate",
+        ),
+        pytest.param(
+            "<abc>",
+            "2021-01-01T12:00:00Z",
+            {"abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_full_brackets_stored_right_bracket_is_duplicate",
+        ),
+        pytest.param(
+            "<abc>",
+            "2021-01-01T12:00:00Z",
+            {"<abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_full_brackets_stored_left_bracket_is_duplicate",
+        ),
+        pytest.param(
+            "abc>",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_right_bracket_stored_clean_is_duplicate",
+        ),
+        pytest.param(
+            "<abc",
+            "2021-01-01T12:00:00Z",
+            {"abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            True,
+            id="item_left_bracket_stored_clean_is_duplicate",
+        ),
+        pytest.param(
+            "abc>",
+            "2021-01-01T13:00:00Z",
+            {"abc>": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="partial_right_bracket_item_newer_not_duplicate",
+        ),
+        pytest.param(
+            "<abc",
+            "2021-01-01T13:00:00Z",
+            {"<abc": "2021-01-01T12:00:00Z"},
+            "received-time",
+            False,
+            id="partial_left_bracket_item_newer_not_duplicate",
+        ),
     ],
 )
 def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, expected_result):
@@ -1390,6 +1454,7 @@ def test_is_item_duplicate(message_id, item_time, exclude_ids, incident_filter, 
         6. No ID match - not duplicate
         7. Modified-time filter behavior
         8. Edge cases (no message_id, empty exclude_ids)
+        9. Partial bracket forms (right-only, left-only) - duplicate detection
     """
     item_datetime = EWSDateTime.from_string(item_time)
     msg = Message(

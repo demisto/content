@@ -26,10 +26,12 @@ class MsGraphClient:
         private_key: str | None = None,
         managed_identities_client_id: str | None = None,
     ):
+        # Build a dynamic permission scope for the Microsoft Graph API based on the selected Azure cloud.
+        scope = azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/") + "/.default"
         client_args = {
             "base_url": azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"),
             "auth_id": app_id,
-            "scope": Scopes.graph,
+            "scope": scope,
             "enc_key": app_secret,
             "tenant_id": tenant_id,
             "verify": verify,

@@ -1,0 +1,8 @@
+[file:SupernaZeroTrust.yml]
+ignore=BA129
+
+[file:README.md]
+ignore=RM104
+
+[file:Integrations/SupernaZeroTrust/README.md]
+ignore=RM110

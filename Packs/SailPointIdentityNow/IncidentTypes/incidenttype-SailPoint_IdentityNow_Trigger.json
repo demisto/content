@@ -19,5 +19,9 @@
     "disabled": false,
     "reputationCalc": 0,
     "layout": "SailPoint IdentityNow Trigger Layout",
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

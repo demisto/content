@@ -13,6 +13,7 @@ ABSOLUTE_URL_TO_API_URL = {
     "https://cc.us.absolute.com": "https://api.us.absolute.com",
     "https://cc.eu2.absolute.com": "https://api.eu2.absolute.com",
     "https://cc.fr1.absolutegov.com": "https://api.fr1.absolutegov.com",
+    "https://cc.in1.absolute.com": "https://api.in1.absolute.com",
 }
 
 ABSOLUTE_AGET_STATUS = {

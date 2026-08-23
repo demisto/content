@@ -6,6 +6,7 @@ commonfields:
 configuration:
 - display: Username
   name: gsuite_credentials
+  hiddenpassword: true
   required: true
   type: 9
   section: Connect
@@ -549,7 +550,7 @@ script:
     - contextPath: GoogleVault.Matter.Export.Results.To
       description: The address the message was sent to.
       type: string
-  dockerimage: demisto/googleapi-python3:1.0.0.2933170
+  dockerimage: demisto/googleapi-python3:1.0.0.10182333
   runonce: false
   script: '-'
   subtype: python3

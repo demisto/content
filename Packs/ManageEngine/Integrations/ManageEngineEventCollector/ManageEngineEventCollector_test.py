@@ -100,6 +100,41 @@ def test_get_access_token_code(client: Client, mocker):
     assert stored["refresh_token"] == "code_refresh"
 
 
+def test_get_access_token_refresh_updates_rotating_token(client: Client, mocker):
+    """
+    Given:
+        - An integration context with an expired access token and an old refresh token ("old_rtoken").
+        - The Zoho OAuth server returns a NEW refresh token ("new_rtoken") alongside the new access token
+          (Zoho uses rotating refresh tokens — each refresh invalidates the previous token).
+    When:
+        - Calling `get_access_token()`.
+    Then:
+        - The NEW refresh token from the API response ("new_rtoken") is stored in the integration context,
+          NOT the old one from context ("old_rtoken").
+        - Failing to update would cause the integration to stop ingesting events after Zoho invalidates
+          the old token (typically within a few days).
+    """
+    past = "2000-01-01T00:00:00"
+    ctx = {"access_token": "old_token", "refresh_token": "old_rtoken", "expire_date": past}
+    mocker.patch("ManageEngineEventCollector.demisto.getIntegrationContext", return_value=ctx)
+    stored = {}
+    mocker.patch("ManageEngineEventCollector.demisto.setIntegrationContext", side_effect=lambda x: stored.update(x))
+
+    mocker.patch.object(
+        client,
+        "_http_request",
+        return_value={"access_token": "new_token", "refresh_token": "new_rtoken", "expires_in": "3600"},
+    )
+
+    token = client.get_access_token()
+
+    assert token == "new_token"
+    # The NEW refresh token from the response must be stored, not the old one from context
+    assert (
+        stored["refresh_token"] == "new_rtoken"
+    ), "Rotating refresh token from API response must overwrite the old token in context"
+
+
 # ─────── Tests for test_module ────────────────────────────────────────────────
 
 
@@ -202,6 +237,41 @@ def test_get_events_no_push(client: Client, mocker):
     assert isinstance(results, CommandResults)
 
     assert results.readable_output == result_markdown
+
+
+def test_get_events_default_dates_start_before_end(mocker):
+    """
+    Given:
+        - No start_date or end_date are provided in args.
+    When:
+        - Calling `get_events()`.
+    Then:
+        - The start_date passed to search_events is BEFORE end_date (start = now-60s, end = now).
+        - Previously the defaults were swapped (start=now, end=now-60s), causing start > end
+          and the API returning no events.
+    """
+    from ManageEngineEventCollector import get_events
+
+    captured = {}
+
+    def fake_search_events(start_time, end_time, limit):
+        captured["start_time"] = int(start_time)
+        captured["end_time"] = int(end_time)
+        return []
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.search_events.side_effect = fake_search_events
+
+    mocker.patch("ManageEngineEventCollector.send_events_to_xsiam")
+
+    get_events(mock_client, {"should_push_events": "false"})
+
+    assert captured["start_time"] < captured["end_time"], (
+        "start_time must be less than end_time when no dates are provided; "
+        "previously the defaults were swapped causing no events to be returned"
+    )
+    # start should be approximately 60 seconds (60000ms) before end
+    assert captured["end_time"] - captured["start_time"] == pytest.approx(60 * 1000, abs=500)
 
 
 def test_fetch_events_all_new_events_updates_to_max(client, mocker):

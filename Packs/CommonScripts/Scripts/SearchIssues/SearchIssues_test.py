@@ -5,66 +5,6 @@ import pytest
 
 from Packs.CommonScripts.Scripts.SearchIssues import SearchIssues
 from SearchIssues import *
-import dateparser
-
-
-def test_prepare_start_end_time_end_time_without_start_time():
-    """Test that providing end_time without start_time raises DemistoException."""
-    args = {"end_time": "2023-01-01T12:00:00"}
-    with pytest.raises(DemistoException, match="When end time is provided start_time must be provided as well."):
-        prepare_start_end_time(args)
-
-
-def test_prepare_start_end_time_valid_start_and_end_time():
-    """Test that providing both valid start_time and end_time sets time_frame to custom."""
-    args = {"start_time": "2023-01-01T10:00:00", "end_time": "2023-01-01T12:00:00"}
-    prepare_start_end_time(args)
-    assert args["time_frame"] == "custom"
-    assert args["start_time"] == "2023-01-01T10:00:00"
-    assert args["end_time"] == "2023-01-01T12:00:00"
-
-
-def test_prepare_start_end_time_only_start_time_provided(mocker):
-    """Test that providing only start_time sets end_time to current time."""
-    args = {"start_time": "2023-01-01T10:00:00"}
-    mock_datetime = mocker.patch("SearchIssues.datetime")
-    mock_datetime.now.return_value = dateparser.parse("2023-01-01T15:00:00")
-    prepare_start_end_time(args)
-    assert args["time_frame"] == "custom"
-    assert args["start_time"] == "2023-01-01T10:00:00"
-    assert args["end_time"] == "2023-01-01T15:00:00"
-
-
-def test_prepare_start_end_time_empty_strings():
-    """Test that empty string values for start_time and end_time don't modify args."""
-    args = {"start_time": "", "end_time": ""}
-    original_args = args.copy()
-    prepare_start_end_time(args)
-    assert args == original_args
-
-
-def test_prepare_start_end_time_no_time_parameters():
-    """Test that missing start_time and end_time parameters don't modify args."""
-    args = {"other_param": "value"}
-    original_args = args.copy()
-    prepare_start_end_time(args)
-    assert args == original_args
-
-
-def test_prepare_start_end_time_preserves_existing_args():
-    """Test that existing arguments are preserved when setting time parameters."""
-    args = {
-        "start_time": "2023-01-01T10:00:00",
-        "end_time": "2023-01-01T12:00:00",
-        "existing_param": "existing_value",
-        "another_param": 123,
-    }
-    prepare_start_end_time(args)
-    assert args["time_frame"] == "custom"
-    assert args["start_time"] == "2023-01-01T10:00:00"
-    assert args["end_time"] == "2023-01-01T12:00:00"
-    assert args["existing_param"] == "existing_value"
-    assert args["another_param"] == 123
 
 
 def test_create_sha_search_field_query_single_value():
@@ -233,3 +173,96 @@ def test_main_with_sha256_filter(monkeypatch, sha_values):
     actual_dict = json.loads(called_args["custom_filter"])
 
     assert actual_dict == expected_dict, "custom_filter structure does not match expected"
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        # empty string values are dropped
+        ({"status": "", "severity": "high"}, {"severity": "high"}),
+        # all empty → empty result
+        ({"status": "", "page": ""}, {}),
+        # empty input dict
+        ({}, {}),
+        # non-empty regular args are kept as-is
+        ({"status": "active", "severity": "low"}, {"status": "active", "severity": "low"}),
+    ],
+)
+def test_remove_empty_string_values_general(args, expected):
+    assert remove_empty_string_values(args) == expected
+
+
+@pytest.mark.parametrize(
+    "key, value, should_keep",
+    [
+        ("page", "1", True),
+        ("page", "0", True),
+        ("page_size", "100", True),
+        ("page", " 3 ", True),
+        ("page_size", " 10 ", True),
+        ("page", "n/a", False),
+        ("page", "invalid_offset", False),
+        ("page", "1.5", False),
+        ("page", "-1", False),
+        ("page", "abc", False),
+        ("page_size", "bad", False),
+        ("page", "", False),
+        ("page_size", "", False),
+    ],
+)
+def test_remove_empty_string_values_numeric_args(key, value, should_keep):
+    result = remove_empty_string_values({key: value})
+    if should_keep:
+        assert result == {key: value}
+    else:
+        assert result == {}
+
+
+@pytest.mark.parametrize(
+    "value, should_keep",
+    [
+        ("42", True),
+        ("1,2,3", True),
+        (["10", "20"], True),
+        ("n/a", False),
+        ("abc", False),
+        ("1,abc,3", False),
+        (["10", "n/a"], False),
+        ("", False),
+    ],
+)
+def test_remove_empty_string_values_numeric_list_args(value, should_keep):
+    result = remove_empty_string_values({"issue_id": value})
+    if should_keep:
+        assert result == {"issue_id": value}
+    else:
+        assert result == {}
+
+
+@pytest.mark.parametrize(
+    "args, expected",
+    [
+        (
+            # valid regular + valid numeric + valid list
+            {"status": "active", "page": "2", "issue_id": "7,8"},
+            {"status": "active", "page": "2", "issue_id": "7,8"},
+        ),
+        (
+            # empty string dropped, invalid numeric dropped, valid list kept
+            {"severity": "", "page_size": "bad", "issue_id": "1,2"},
+            {"issue_id": "1,2"},
+        ),
+        (
+            # all three categories invalid → empty result
+            {"severity": "", "page": "n/a", "issue_id": "abc"},
+            {},
+        ),
+        (
+            # numeric arg valid, list arg invalid, regular arg kept
+            {"page": "5", "issue_id": "x,y", "status": "closed"},
+            {"page": "5", "status": "closed"},
+        ),
+    ],
+)
+def test_remove_empty_string_values_mixed(args, expected):
+    assert remove_empty_string_values(args) == expected

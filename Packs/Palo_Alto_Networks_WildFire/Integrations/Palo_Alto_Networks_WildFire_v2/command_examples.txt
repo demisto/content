@@ -1,4 +1,4 @@
-!wildfire-upload upload=<entry_id>
+!wildfire-upload upload='<entry_id>'
 !wildfire-upload-file-url upload=http://www.software995.net/bin/pdf995s.exe
 !wildfire-upload-url upload=https://www.demisto.com
 !wildfire-report url=https://www.demisto.com

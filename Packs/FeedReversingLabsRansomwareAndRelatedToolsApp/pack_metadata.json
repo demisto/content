@@ -1,8 +1,10 @@
 {
-    "name": "ReversingLabs Ransomware and Related Tools Feed",
-    "description": "A timely and curated threat intel list containing recent indicators extracted from ransomware and the tools used to deploy ransomware which are suitable for threat hunting or deployment to security controls.",
+    "name": "ReversingLabs Ransomware and Related Tools Feed (Deprecated)",
+    "description": "Deprecated. Use TAXII 2 Feed instead.",
     "support": "partner",
-    "currentVersion": "1.0.8",
+    "hidden": true,
+    "deprecated": true,
+    "currentVersion": "1.0.10",
     "author": "ReversingLabs",
     "url": "https://www.reversinglabs.com",
     "email": "support@reversinglabs.com",
