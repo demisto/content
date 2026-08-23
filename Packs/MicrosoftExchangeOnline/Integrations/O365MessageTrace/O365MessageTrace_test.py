@@ -249,6 +249,21 @@ class TestGetMessageTracesPage:
         assert "receivedDateTime ge 2025-01-01T00:00:00Z" in params["$filter"]
         assert "receivedDateTime le 2025-01-01T01:00:00Z" in params["$filter"]
 
+    def test_default_top_is_documented_maximum(self, mock_client):
+        """The default ``$top`` must be the Graph-documented maximum page size (5000) to
+        minimize round-trips per window. Guards against regressing back to 1000."""
+        assert Config.DEFAULT_PAGE_SIZE == 5000
+
+        mock_client.ms_client.http_request.return_value = {"value": []}
+
+        mock_client.get_message_traces_page(
+            start_date="2025-01-01T00:00:00Z",
+            end_date="2025-01-01T01:00:00Z",
+        )
+
+        params = mock_client.ms_client.http_request.call_args.kwargs["params"]
+        assert params["$top"] == 5000
+
 
 # ============================================================================
 # parse_integration_params tests

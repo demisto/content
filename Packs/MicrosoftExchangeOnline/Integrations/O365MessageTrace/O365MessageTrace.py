@@ -30,7 +30,7 @@ class Config:
     DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
     DEFAULT_MAX_EVENTS = 50000
-    DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
+    DEFAULT_PAGE_SIZE = 5000  # API maximum per page ($top range is 1-5000)
     DEFAULT_FIRST_FETCH_MINUTES = 1
 
     # Each fetch cycle only scans this many minutes starting from ``last_fetch``.
