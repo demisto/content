@@ -10268,6 +10268,6 @@ Gets rule hit counts from the firewall.  When connected to Panorama this command
 
 The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
 
-- Fetch incidents
+* Fetch incidents
 
 </~PLATFORM>

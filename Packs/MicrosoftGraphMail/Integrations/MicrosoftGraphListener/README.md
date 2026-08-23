@@ -716,6 +716,6 @@ In case of a **hash verification** error:
 
 The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
 
-- Fetch incidents
+* Fetch incidents
 
 </~PLATFORM>
