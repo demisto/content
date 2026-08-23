@@ -5,7 +5,7 @@ args:
 - description: The username of the Cortex XSOAR incident owner. This will look up the incident owner's email address.
   name: owner
   required: true
-comment: This script gets the email address of the incident owner and then returns the incident owner username in Bonusly.
+comment: This script gets the JSON key value lookup, fetches the email address of the incident owner and then returns the incident owner username in Bonusly.
 commonfields:
   id: IncOwnerToBonuslyUser
   version: -1
