@@ -9,7 +9,7 @@ from CommonServerUserPython import *  # noqa: F401
 
 """ CONSTANTS """
 
-SUPPORTED_BRANDS = ["Panorama"]  # v1 supports Panorama only; extended in the multi-brand follow-up.
+SUPPORTED_BRANDS = ["Panorama"]
 
 OBJECT_NAME_PREFIX = "Cortex-"
 # PAN-OS object names are limited to 63 characters. Reserve room for the prefix and a hash suffix on overflow.
@@ -18,7 +18,7 @@ HASH_SUFFIX_LENGTH = 8
 # Characters that are not allowed in a PAN-OS object name are normalised to a hyphen.
 OBJECT_NAME_SANITIZE_REGEX = re.compile(r"[^A-Za-z0-9.\-]")
 
-PRE_POST = "pre-rulebase"  # Q2: hard-coded for v1 (may become an argument later).
+PRE_POST = "pre-rulebase"
 
 # A permissive FQDN matcher: labels of alphanumerics/hyphens separated by dots, at least one dot.
 FQDN_REGEX = re.compile(r"^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\.(?!-)[A-Za-z0-9-]{1,63}(?<!-))+$")
@@ -42,6 +42,10 @@ ACTION_SIGNIFICANCE = {ACTION_UNCHANGED: 0, ACTION_MODIFIED: 1, ACTION_CREATED: 
 # Controls the polling loop, mirroring the BlockExternalIp pattern. It starts False and is only
 # switched on by a polling function when a job is actually in flight.
 POLLING = False
+
+# A single searchable tag for every log line emitted by this script. Grep the tenant logs for
+# "[BlockDomain]" to trace a run end-to-end and confirm the code is healthy.
+LOG_TAG = "[BlockDomain]"
 
 """ INPUT-VALIDATION / NAMING HELPERS """
 
@@ -189,7 +193,7 @@ def get_enabled_brands() -> set:
     """
     modules = demisto.getModules()
     enabled_brands = {module.get("brand") for module in modules.values() if module.get("state") == "active"}
-    demisto.debug(f"BlockDomain: the enabled modules are: {enabled_brands=}")
+    demisto.debug(f"{LOG_TAG} the enabled modules are: {enabled_brands=}")
     return enabled_brands
 
 
@@ -205,10 +209,10 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
     Returns:
         The raw list of command entries.
     """
-    demisto.debug(f"BlockDomain: Executing command: {command_name} with {args=}")
-    res = demisto.executeCommand(command_name, args)
-    demisto.debug(f"BlockDomain: The response of {command_name} is {res}")
-    return res
+    # Note: intentionally no debug line here to avoid double-logging with execute_or_raise, which
+    # already logs entry / success / failure for every command that goes through it. Callers that
+    # bypass execute_or_raise (e.g. context probes) still get one entry log through demisto.executeCommand.
+    return demisto.executeCommand(command_name, args)
 
 
 def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | list:
@@ -313,6 +317,10 @@ class PanOs:
         self.log_forwarding_name = args.get("log_forwarding_name", "")
         self.domains: list = args.get("domains", [])
         self.responses: list = []
+        # Tracks whether the deny rule has been ensured this run. The rule create is deferred to
+        # after the address-group exists (pan-os-create-rule validates that the destination
+        # references an existing object), so the write may happen mid-loop from ensure_domain.
+        self._rule_ensured: bool = False
 
     # ---- execution helper ----------------------------------------------
 
@@ -326,10 +334,13 @@ class PanOs:
         Returns:
             The raw command entries.
         """
+        demisto.debug(f"{LOG_TAG} Executing command '{command_name}' with args={command_args}")
         res = run_execute_command(command_name, command_args)
         self.responses.append(res)
         if is_error(res):
+            demisto.debug(f"{LOG_TAG} Command '{command_name}' failed: {get_error(res)}")
             raise DemistoException(f"{error_prefix}: {get_error(res)}")
+        demisto.debug(f"{LOG_TAG} Command '{command_name}' succeeded.")
         return res
 
     # ---- context probes -------------------------------------------------
@@ -345,7 +356,7 @@ class PanOs:
         res = run_execute_command("pan-os-get-address", {"name": object_name})
         if is_error(res):
             # get-address raises when the object is absent; treat that as 'does not exist'.
-            demisto.debug(f"BlockDomain: address '{object_name}' not found ({get_error(res)}).")
+            demisto.debug(f"{LOG_TAG} address '{object_name}' not found ({get_error(res)}).")
             return False
         self.responses.append(res)
         context = get_relevant_context(res[0].get("EntryContext", {}), "Panorama.Addresses")
@@ -384,26 +395,47 @@ class PanOs:
 
     # ---- single-run writes (group + rule are singletons) ----------------
 
-    def ensure_group(self, group_context: dict | None) -> None:
-        """Ensure the static address-group exists, aborting if it is dynamic.
+    def ensure_group(self, group_context: dict | None) -> bool:
+        """Validate the address-group state without creating it.
+
+        We do NOT create the group here: pan-os-create-address-group refuses to create a static
+        group with no members, so creation is deferred until we have the first address-object
+        (see create_group_with_member). This method only detects whether the group already exists
+        and aborts the run if it exists but is dynamic (customer-managed).
 
         Args:
             group_context (dict | None): The existing group context, or None if missing.
+        Returns:
+            True if the (static) group already exists, False if it needs to be created lazily.
         """
         if group_context is None:
-            create_args: dict = {"name": self.address_group, "type": "static"}
-            if self.tag:
-                create_args["tags"] = self.tag
-            self.execute_or_raise(
-                "pan-os-create-address-group", create_args, f"Failed to create address-group '{self.address_group}'"
-            )
-            return
+            demisto.debug(f"{LOG_TAG} Address-group '{self.address_group}' not found; will create on first object.")
+            return False
         group_type = (group_context.get("Type") or "").lower()
+        demisto.debug(f"{LOG_TAG} Address-group '{self.address_group}' already exists (type={group_type or 'static'}).")
         if group_type == "dynamic":
             raise DynamicGroupError(
                 f"Address-group '{self.address_group}' already exists as dynamic; "
                 f"will not modify a customer-managed dynamic group."
             )
+        return True
+
+    def create_group_with_member(self, object_name: str) -> None:
+        """Create the static address-group seeded with a first member (required by PAN-OS).
+
+        pan-os-create-address-group rejects a static group without at least one address. Callers
+        must ensure the address-object exists on the firewall before invoking this method.
+
+        Args:
+            object_name (str): The address-object to include as the initial group member.
+        """
+        demisto.debug(f"{LOG_TAG} Creating address-group '{self.address_group}' seeded with member '{object_name}'.")
+        create_args: dict = {"name": self.address_group, "type": "static", "addresses": object_name}
+        if self.tag:
+            create_args["tags"] = self.tag
+        self.execute_or_raise(
+            "pan-os-create-address-group", create_args, f"Failed to create address-group '{self.address_group}'"
+        )
 
     def ensure_rule(self, rule_present: bool, rule_destinations: list) -> None:
         """Ensure the deny rule exists, points at the group, and sits at the top.
@@ -413,6 +445,7 @@ class PanOs:
             rule_destinations (list): The rule's current destination list.
         """
         if not rule_present:
+            demisto.debug(f"{LOG_TAG} Rule '{self.rule_name}' not found; creating deny rule ({PRE_POST}, where=top).")
             create_rule_args: dict = {
                 "rulename": self.rule_name,
                 "action": "deny",
@@ -430,6 +463,9 @@ class PanOs:
             self.execute_or_raise("pan-os-create-rule", create_rule_args, f"Failed to create rule '{self.rule_name}'")
         elif self.address_group not in rule_destinations:
             # The rule exists but does not yet reference our group - add it without replacing existing destinations.
+            demisto.debug(
+                f"{LOG_TAG} Rule '{self.rule_name}' exists but missing group '{self.address_group}'; adding destination."
+            )
             self.execute_or_raise(
                 "pan-os-edit-rule",
                 {
@@ -448,19 +484,38 @@ class PanOs:
             f"Failed to move rule '{self.rule_name}' to top",
         )
 
-    def ensure_domain(self, domain: str, current_members: list) -> tuple[str, str]:
+    def ensure_domain(
+        self,
+        domain: str,
+        current_members: list,
+        group_exists: bool,
+        rule_present: bool,
+        rule_destinations: list,
+    ) -> tuple[str, str, bool]:
         """Ensure a single domain's address-object exists and belongs to the group.
+
+        PAN-OS ordering constraints handled here:
+          * pan-os-create-address-group refuses to create an empty static group, so the group is
+            created lazily using the first domain's address-object as the initial member.
+          * pan-os-create-rule validates that ``destination`` references an existing object, so the
+            rule is also created after the group first appears (see _ensure_rule_once).
 
         Args:
             domain (str): The domain to block.
-            current_members (list): The group's current member names.
+            current_members (list): The group's current member names (mutated in place).
+            group_exists (bool): Whether the target address-group currently exists on the firewall.
+            rule_present (bool): Whether the deny rule already existed at the start of the run.
+            rule_destinations (list): The rule's current destinations, when it already exists.
         Returns:
-            A tuple of (action, message) describing the effect for this domain.
+            A tuple of (action, message, group_exists_after) describing the effect for this domain
+            and the up-to-date group-existence flag for the next iteration.
         """
         object_name = derive_object_name(domain)
+        demisto.debug(f"{LOG_TAG} Ensuring domain '{domain}' -> object '{object_name}'.")
         actions: list = []
         messages: list = []
 
+        # 1. Ensure the FQDN address-object exists on the firewall.
         if self.address_object_exists(object_name):
             actions.append(ACTION_UNCHANGED)
             messages.append(f"Address-object '{object_name}' already exists.")
@@ -475,7 +530,17 @@ class PanOs:
             actions.append(ACTION_CREATED)
             messages.append(f"Address-object '{object_name}' created for '{domain}'.")
 
-        if object_name in current_members:
+        # 2. Ensure the object is a member of the target group (creating the group on first use).
+        if not group_exists:
+            # First object seeds the group; create-address-group requires at least one member.
+            self.create_group_with_member(object_name)
+            current_members.append(object_name)
+            group_exists = True
+            actions.append(ACTION_CREATED)
+            messages.append(f"Address-group '{self.address_group}' created with member '{object_name}'.")
+            # 3. Now that the group exists, it is safe to create the rule that references it.
+            self._ensure_rule_once(rule_present, rule_destinations)
+        elif object_name in current_members:
             actions.append(ACTION_UNCHANGED)
             messages.append(f"Already a member of '{self.address_group}'.")
         else:
@@ -488,7 +553,21 @@ class PanOs:
             actions.append(ACTION_MODIFIED)
             messages.append(f"Added to '{self.address_group}'.")
 
-        return most_significant_action(actions), " ".join(messages)
+        final_action = most_significant_action(actions)
+        demisto.debug(f"{LOG_TAG} Domain '{domain}' processed with action '{final_action}'.")
+        return final_action, " ".join(messages), group_exists
+
+    def _ensure_rule_once(self, rule_present: bool, rule_destinations: list) -> None:
+        """Call ensure_rule at most once per run. Safe to invoke from the per-domain loop.
+
+        Args:
+            rule_present (bool): Whether the deny rule already existed at run start.
+            rule_destinations (list): The rule's current destinations, when it already exists.
+        """
+        if self._rule_ensured:
+            return
+        self.ensure_rule(rule_present, rule_destinations)
+        self._rule_ensured = True
 
     # ---- orchestration --------------------------------------------------
 
@@ -499,19 +578,25 @@ class PanOs:
             The list of BlockDomainResults rows for the processed domains.
         """
         rows: list = []
+        demisto.debug(f"{LOG_TAG} process_domains started for {len(self.domains)} domain(s): {self.domains}")
         try:
             group_context = self.get_address_group()
-            self.ensure_group(group_context)
+            group_exists = self.ensure_group(group_context)
             current_members = []
             if group_context is not None:
                 members = group_context.get("Addresses")
                 current_members = list(members) if isinstance(members, list) else [members] if members else []
 
             rule_present, rule_destinations = self.rule_destinations()
-            self.ensure_rule(rule_present, rule_destinations)
+            # If the group already exists, it's safe to ensure the rule up front (its destination
+            # will resolve). Otherwise, defer to after the first domain seeds the group.
+            if group_exists:
+                self._ensure_rule_once(rule_present, rule_destinations)
 
             for domain in self.domains:
-                action, message = self.ensure_domain(domain, current_members)
+                action, message, group_exists = self.ensure_domain(
+                    domain, current_members, group_exists, rule_present, rule_destinations
+                )
                 rows.append(
                     build_result_row(
                         domain=domain,
@@ -606,10 +691,14 @@ class PanOs:
         commit_job_id = self.args.get("commit_job_id") or demisto.get(incident_context, "commit_job_id")
         push_job_id = demisto.get(incident_context, "push_job_id")
 
+        demisto.debug(f"{LOG_TAG} manage_pan_os_flow dispatch: {commit_job_id=}, {push_job_id=}")
         if push_job_id:
+            demisto.debug(f"{LOG_TAG} Push job in flight ({push_job_id}); polling push status.")
             return self.handle_push_in_flight(push_job_id)
         if commit_job_id:
+            demisto.debug(f"{LOG_TAG} Commit job in flight ({commit_job_id}); polling commit status.")
             return self.handle_commit_in_flight(commit_job_id)
+        demisto.debug(f"{LOG_TAG} No job in flight; starting object/group/rule flow.")
         return self.start_flow()
 
     def handle_push_in_flight(self, push_job_id: str) -> Any:  # pragma: no cover
@@ -624,7 +713,9 @@ class PanOs:
         self.args["push_job_id"] = push_job_id
         res_push_status = pan_os_push_status(self.args, self.responses)
         if not POLLING:
+            demisto.debug(f"{LOG_TAG} Push job {push_job_id} finished; finalizing run.")
             return self.finish()
+        demisto.debug(f"{LOG_TAG} Push job {push_job_id} still running; re-scheduling.")
         self.save_responses()
         return res_push_status
 
@@ -640,15 +731,20 @@ class PanOs:
         self.restore_responses()
         poll_commit_status = pan_os_commit_status(self.args, self.responses)
         if POLLING:
+            demisto.debug(f"{LOG_TAG} Commit job {commit_job_id} still running; re-scheduling.")
             self.save_responses()
             return poll_commit_status
+        demisto.debug(f"{LOG_TAG} Commit job {commit_job_id} finished.")
         # Commit finished - push to the device group if this is a Panorama instance.
         if self.pan_os_is_panorama():
+            demisto.debug(f"{LOG_TAG} Instance is Panorama; starting push-to-device-group.")
             poll_push = pan_os_push_to_device(self.args, self.responses)
             if not POLLING:
+                demisto.debug(f"{LOG_TAG} Push completed synchronously; finalizing run.")
                 return self.finish()
             self.save_responses()
             return poll_push
+        demisto.debug(f"{LOG_TAG} Instance is not Panorama; no push needed. Finalizing run.")
         return self.finish()
 
     def start_flow(self) -> Any:  # pragma: no cover
@@ -661,12 +757,16 @@ class PanOs:
         demisto.setContext("block_domain_rows", str(rows))
         made_changes = any(row["Status"] == STATUS_DONE for row in rows)
         auto_commit = argToBoolean(self.args.get("auto_commit", True))
+        demisto.debug(f"{LOG_TAG} start_flow: {made_changes=}, {auto_commit=}, {len(rows)} row(s) produced.")
         if made_changes and auto_commit:
+            demisto.debug(f"{LOG_TAG} Changes made and auto_commit enabled; starting commit.")
             poll_commit = pan_os_commit(self.args, self.responses)
             if not POLLING:
+                demisto.debug(f"{LOG_TAG} Commit completed synchronously; finalizing run.")
                 return self.finish()
             self.save_responses()
             return poll_commit
+        demisto.debug(f"{LOG_TAG} No commit needed (no changes or auto_commit disabled); returning rows.")
         return rows
 
     def finish(self) -> list:  # pragma: no cover
@@ -678,6 +778,7 @@ class PanOs:
         Returns:
             The list of BlockDomainResults rows accumulated for the run.
         """
+        demisto.debug(f"{LOG_TAG} finish: clearing polling context and returning final rows.")
         rows_raw = demisto.context().get("block_domain_rows", "[]")
         # Preserve responses on the instance for verbose output before clearing context.
         stored = demisto.context().get("panorama_responses", "")
@@ -842,7 +943,7 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
 def main():  # pragma: no cover
     try:
         args = demisto.args()
-        demisto.debug(f"The script block-domain was called with the arguments {args=}")
+        demisto.debug(f"{LOG_TAG} block-domain invoked with arguments {args=}")
 
         domain_list = argToList(args.get("domain_list", []))
         rule_name = args.get("rule_name", "Cortex - Block Domain")
@@ -852,16 +953,17 @@ def main():  # pragma: no cover
         auto_commit = argToBoolean(args.get("auto_commit", True))
         verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get("brands", ",".join(SUPPORTED_BRANDS)))
-        demisto.debug(f"BlockDomain: {verbose=}, {brands_to_run=}")
+        demisto.debug(f"{LOG_TAG} {verbose=}, {brands_to_run=}")
 
         if not domain_list:
             return_error("domain_list argument is required.")
 
         valid_domains, failed_rows = validate_domains(domain_list)
-        demisto.debug(f"BlockDomain: {valid_domains=}, {len(failed_rows)} entries failed validation.")
+        demisto.debug(f"{LOG_TAG} {valid_domains=}, {len(failed_rows)} entries failed validation.")
 
         enabled_brands = get_enabled_brands()
         brands_to_run = brands_to_run or list(SUPPORTED_BRANDS)
+        demisto.debug(f"{LOG_TAG} {enabled_brands=}, {brands_to_run=}")
 
         runnable_brands = [b for b in brands_to_run if b in SUPPORTED_BRANDS and b in enabled_brands]
         if not runnable_brands:
@@ -912,16 +1014,22 @@ def main():  # pragma: no cover
                     }
                 )
                 pan_os_result = pan_os.manage_pan_os_flow()
-                if isinstance(pan_os_result, PollResult):
-                    # A commit/push job is in flight; let the platform re-invoke the script.
+                # manage_pan_os_flow returns a list[dict] (per-domain rows) only when the run is
+                # complete. Anything else (PollResult, CommandResults from a freshly-started commit
+                # job) means a job is in flight - hand it straight to return_results so the
+                # platform re-invokes the script for the next polling cycle.
+                if not isinstance(pan_os_result, list):
+                    demisto.debug(f"{LOG_TAG} PAN-OS flow returned non-list ({type(pan_os_result).__name__}); polling in flight.")
                     return_results(pan_os_result)
                     return
                 results.extend(pan_os_result)
                 command_responses.extend(pan_os.responses)
 
+        demisto.debug(f"{LOG_TAG} Run complete; returning {len(results)} result row(s).")
         return_results(build_final_command_results(results, verbose, command_responses))
 
     except Exception as ex:
+        demisto.debug(f"{LOG_TAG} block-domain failed with error: {ex!s}")
         return_error(f"Failed to execute block-domain. Error: {ex!s}")
 
 

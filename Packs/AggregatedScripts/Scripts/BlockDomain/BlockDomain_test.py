@@ -144,18 +144,18 @@ def _mock_execute(monkeypatch, side_effect):
 
 
 def test_process_domains_create_everything(monkeypatch):
-    # Group missing -> create group; rule missing -> create + move; address missing -> create + add.
+    # Group missing + rule missing: address is created first, then group is seeded with that
+    # object, then rule is created (destination must resolve to an existing group), then move.
     _mock_execute(
         monkeypatch,
         [
             [ok_entry({"Panorama.AddressGroups": []})],  # list-address-groups (missing)
-            [ok_entry()],  # create-address-group (static, empty)
             [ok_entry({"Panorama.SecurityRule": []})],  # list-rules (missing)
-            [ok_entry()],  # create-rule
-            [ok_entry()],  # move-rule
             [err_entry("not found")],  # get-address (missing)
             [ok_entry()],  # create-address
-            [ok_entry()],  # edit-address-group (add member)
+            [ok_entry()],  # create-address-group (seeded with first member)
+            [ok_entry()],  # create-rule (destination = the now-existing group)
+            [ok_entry()],  # move-rule
         ],
     )
     rows = _pan_os(["evil.example.com"]).process_domains()
@@ -166,13 +166,60 @@ def test_process_domains_create_everything(monkeypatch):
     assert rows[0]["RuleName"] == "Cortex - Block Domain"
 
 
+def test_process_domains_missing_group_created_lazily_with_first_object(monkeypatch):
+    # Regression for two PAN-OS ordering rules:
+    #   1. pan-os-create-address-group refuses a static group without members -> must be created
+    #      AFTER pan-os-create-address, and seeded with the first object.
+    #   2. pan-os-create-rule validates that `destination` references an existing object -> must
+    #      be created AFTER pan-os-create-address-group.
+    calls: list = []
+
+    def _capture(name, args):
+        calls.append((name, args))
+        seq = {
+            "pan-os-list-address-groups": [ok_entry({"Panorama.AddressGroups": []})],
+            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": []})],
+            "pan-os-create-rule": [ok_entry()],
+            "pan-os-move-rule": [ok_entry()],
+            "pan-os-get-address": [err_entry("not found")],
+            "pan-os-create-address": [ok_entry()],
+            "pan-os-create-address-group": [ok_entry()],
+        }
+        return seq.get(name, [ok_entry()])
+
+    import BlockDomain
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+
+    _pan_os(["evil.example.com"]).process_domains()
+
+    names = [c[0] for c in calls]
+    # Ordering constraint 1: address must be created before the group.
+    assert names.index("pan-os-create-address") < names.index("pan-os-create-address-group")
+    # Ordering constraint 2: group must exist before the rule is created (destination resolves).
+    assert names.index("pan-os-create-address-group") < names.index("pan-os-create-rule")
+    # Group create carries the seed member (never an empty static group).
+    group_create_args = next(args for name, args in calls if name == "pan-os-create-address-group")
+    assert group_create_args["type"] == "static"
+    assert group_create_args["addresses"] == "Cortex-evil.example.com"
+    # Rule create destination points at the group.
+    rule_create_args = next(args for name, args in calls if name == "pan-os-create-rule")
+    assert rule_create_args["destination"] == "Blocked Domains - Cortex"
+    # No pan-os-edit-address-group was called for the first (seed) domain.
+    assert "pan-os-edit-address-group" not in names
+
+
 def test_process_domains_all_unchanged(monkeypatch):
     obj = "Cortex-evil.example.com"
     _mock_execute(
         monkeypatch,
         [
             [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj]}]})],
-            [ok_entry({"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]})],
+            [
+                ok_entry(
+                    {"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]}
+                )
+            ],
             [ok_entry()],  # move-rule
             [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],  # get-address (exists)
         ],
@@ -187,7 +234,11 @@ def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
         monkeypatch,
         [
             [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": []}]})],
-            [ok_entry({"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]})],
+            [
+                ok_entry(
+                    {"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]}
+                )
+            ],
             [ok_entry()],  # move-rule
             [err_entry("not found")],  # get-address (missing)
             [ok_entry()],  # create-address
@@ -234,13 +285,10 @@ def test_process_domains_failure_marks_row_failed(monkeypatch):
     _mock_execute(
         monkeypatch,
         [
-            [ok_entry({"Panorama.AddressGroups": []})],  # list-address-groups
-            [ok_entry()],  # create-address-group
-            [ok_entry({"Panorama.SecurityRule": []})],  # list-rules
-            [ok_entry()],  # create-rule
-            [ok_entry()],  # move-rule
+            [ok_entry({"Panorama.AddressGroups": []})],  # list-address-groups (missing, deferred)
+            [ok_entry({"Panorama.SecurityRule": []})],  # list-rules (missing, deferred)
             [err_entry("not found")],  # get-address (missing)
-            [err_entry("permission denied")],  # create-address fails
+            [err_entry("permission denied")],  # create-address fails before group/rule are touched
         ],
     )
     rows = _pan_os(["evil.example.com"]).process_domains()
@@ -266,8 +314,18 @@ def test_build_verbose_human_readable_empty_when_no_hr():
 
 
 def test_build_final_command_results_non_verbose_is_table_only():
-    rows = [{"Domain": "a.com", "Brand": "Panorama", "Instance": "", "Status": STATUS_DONE,
-             "Result": RESULT_SUCCESS, "Action": ACTION_CREATED, "RuleName": "Cortex - Block Domain", "Message": "ok"}]
+    rows = [
+        {
+            "Domain": "a.com",
+            "Brand": "Panorama",
+            "Instance": "",
+            "Status": STATUS_DONE,
+            "Result": RESULT_SUCCESS,
+            "Action": ACTION_CREATED,
+            "RuleName": "Cortex - Block Domain",
+            "Message": "ok",
+        }
+    ]
     responses = [[{"Type": 1, "Contents": "c", "HumanReadable": "HR", "EntryContext": {}}]]
 
     result = build_final_command_results(rows, verbose=False, responses=responses)
@@ -278,8 +336,18 @@ def test_build_final_command_results_non_verbose_is_table_only():
 
 
 def test_build_final_command_results_verbose_appends_command_hr():
-    rows = [{"Domain": "a.com", "Brand": "Panorama", "Instance": "", "Status": STATUS_DONE,
-             "Result": RESULT_SUCCESS, "Action": ACTION_CREATED, "RuleName": "Cortex - Block Domain", "Message": "ok"}]
+    rows = [
+        {
+            "Domain": "a.com",
+            "Brand": "Panorama",
+            "Instance": "",
+            "Status": STATUS_DONE,
+            "Result": RESULT_SUCCESS,
+            "Action": ACTION_CREATED,
+            "RuleName": "Cortex - Block Domain",
+            "Message": "ok",
+        }
+    ]
     responses = [[{"Type": 1, "Contents": "c", "HumanReadable": "HR-one", "EntryContext": {}}]]
 
     result = build_final_command_results(rows, verbose=True, responses=responses)
