@@ -2,3 +2,11 @@
 !aws-iam-account-password-policy-update account_id=test-account
 !aws-s3-public-access-block-update account_id=test-account bucket=test-bucket region=us-east-1
 !aws-ec2-instance-metadata-options-modify account_id=test-account instance_id=test-instance region=us-east-1 http_endpoint=enabled http_tokens=optional
+!aws-network-firewall-logging-configuration-describe account_id=test-account region=us-east-1 firewall_name=test-firewall
+!aws-network-firewall-logging-configuration-update account_id=test-account region=us-east-1 firewall_name=test-firewall log_type=FLOW log_destination_type=S3 log_destination_key=bucketName log_destination_value=test-bucket
+!aws-network-firewall-tags-for-resource-list account_id=test-account region=us-east-1 resource_arn=arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall
+!aws-network-firewall-resource-tag account_id=test-account region=us-east-1 resource_arn=arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall tags="key=env,value=test"
+!aws-network-firewall-resource-untag account_id=test-account region=us-east-1 resource_arn=arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall tag_keys=env
+!aws-network-firewall-resource-policy-put account_id=test-account region=us-east-1 resource_arn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rulegroup policy="{\"Statement\":[]}"
+!aws-network-firewall-resource-policy-describe account_id=test-account region=us-east-1 resource_arn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rulegroup
+!aws-network-firewall-resource-policy-delete account_id=test-account region=us-east-1 resource_arn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/test-rulegroup
