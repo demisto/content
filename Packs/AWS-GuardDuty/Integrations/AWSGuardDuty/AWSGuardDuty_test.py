@@ -126,7 +126,7 @@ class MockedBoto3Client:
     def list_threat_entity_sets(self, **kwargs):
         pass
 
-    def get_paginator(self, **kwargs):
+    def get_paginator(self, operation_name=None, **kwargs):
         pass
 
 
