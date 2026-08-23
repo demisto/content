@@ -1986,8 +1986,16 @@ def test_generic_file_get_command_success(requests_mock):
     assert result.outputs_prefix == "FileContent"
     assert result.outputs["Id"] == "2097159"
     assert result.outputs["Title"] == "test_page"
-    assert result.outputs["Type"] == "text/html"
-    assert result.outputs["Content"] == "<p>This is the page content</p>"
+    assert result.outputs["Type"] == "text/markdown"
+    # Content is the storage-format HTML converted to Markdown.
+    assert isinstance(result.outputs["Content"], str)
+    content = result.outputs["Content"]
+    assert "Heading" in content
+    assert "This is the page content" in content
+    assert "Item one" in content
+    assert "Item two" in content
+    assert "<p>" not in content
+    assert "<h1>" not in content
     assert result.outputs["Url"] == args["url"]
 
 
