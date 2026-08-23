@@ -823,7 +823,6 @@ class ThreatIntel:
         ATTACK_PATTERN = 2
         REPORT = 3
         MALWARE = 3
-        COURSE_OF_ACTION = 0
         INTRUSION_SET = 3
         TOOL = 2
         THREAT_ACTOR = 3
