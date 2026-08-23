@@ -70,6 +70,19 @@ configuration:
   section: Collect
   advanced: true
   hidden: true
+- display: Indicator Reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  name: feedReputation
+  type: 18
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  defaultvalue: None
+  required: false
+  section: Collect
+  advanced: true
 - display: Source Reliability
   additionalinfo: Reliability of the source providing the intelligence context.
   name: feedReliability
