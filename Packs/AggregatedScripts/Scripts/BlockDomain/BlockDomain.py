@@ -200,6 +200,23 @@ def get_enabled_brands() -> set:
 """ EXECUTE-COMMAND / CONTEXT HELPERS """
 
 
+def get_instance_from_result(res: dict) -> str:
+    """Extract the integration instance name from a demisto.executeCommand response entry.
+
+    Each entry that comes back from ``demisto.executeCommand`` carries the instance that produced
+    it under ``Metadata.instance`` (also exposed as ``Metadata.brand`` for the brand). Mirrors the
+    helper used by other aggregated scripts such as ExpirePassword and get-user-data.
+
+    Args:
+        res (dict): A single entry from the list returned by ``demisto.executeCommand``.
+    Returns:
+        The instance name, or an empty string if the entry doesn't carry one (e.g. context probes
+        that never actually ran a command).
+    """
+    value = dict_safe_get(res, ["Metadata", "instance"])
+    return str(value) if value else ""
+
+
 def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
     """Execute a command and return its raw entries.
 
@@ -325,6 +342,11 @@ class PanOs:
         # after the address-group exists (pan-os-create-rule validates that the destination
         # references an existing object), so the write may happen mid-loop from ensure_domain.
         self._rule_ensured: bool = False
+        # Instance name of the Panorama integration that actually served the calls this run.
+        # Captured lazily from the first response that carries Metadata.instance (usually the
+        # very first pan-os-list-address-groups call). Falls back to "" if nothing responds
+        # (e.g. an aborted brand run before any command completes).
+        self.instance_name: str = ""
 
     # ---- execution helper ----------------------------------------------
 
@@ -344,6 +366,14 @@ class PanOs:
         if is_error(res):
             demisto.debug(f"{LOG_TAG} Command '{command_name}' failed: {get_error(res)}")
             raise DemistoException(f"{error_prefix}: {get_error(res)}")
+        # Capture the serving instance name from the first successful response we see so that
+        # every row this run produces can be attributed to the right integration instance (matches
+        # the ExpirePassword pattern). Subsequent responses may come from the same instance so
+        # only overwrite if we still don't have one.
+        if not self.instance_name and res:
+            self.instance_name = get_instance_from_result(res[0])
+            if self.instance_name:
+                demisto.debug(f"{LOG_TAG} Captured instance_name={self.instance_name!r} from '{command_name}'.")
         demisto.debug(f"{LOG_TAG} Command '{command_name}' succeeded.")
         return res
 
@@ -608,6 +638,7 @@ class PanOs:
                         status=STATUS_DONE,
                         result=RESULT_SUCCESS,
                         action=action,
+                        instance=self.instance_name,
                         rule_name=self.rule_name,
                         message=f"{message} Rule '{self.rule_name}' enforced at top.",
                     )
@@ -622,6 +653,7 @@ class PanOs:
                         status=STATUS_SKIPPED,
                         result=RESULT_SUCCESS,
                         action=ACTION_UNCHANGED,
+                        instance=self.instance_name,
                         rule_name="",
                         message=str(dyn_err),
                     )
@@ -635,6 +667,7 @@ class PanOs:
                         status=STATUS_FAILED,
                         result=RESULT_FAILED,
                         action=ACTION_UNCHANGED,
+                        instance=self.instance_name,
                         rule_name=self.rule_name,
                         message=f"Failed to block '{domain}' on Panorama: {ex!s}",
                     )
@@ -788,7 +821,12 @@ class PanOs:
         """
         rows = self.process_domains()
         demisto.setContext("block_domain_rows", str(rows))
-        made_changes = any(row["Status"] == STATUS_DONE for row in rows)
+        # A commit/push is only worth kicking off when at least one row actually mutated
+        # Panorama state (Created or Modified). A run that returned exclusively `Unchanged`
+        # rows means every address was already in the group and the rule was already at top,
+        # so there's nothing in the candidate config to commit or push - skipping saves a
+        # commit job + a potentially-multi-minute push polling loop for idempotent re-runs.
+        made_changes = any(row.get("Action") in (ACTION_CREATED, ACTION_MODIFIED) for row in rows)
         auto_commit = argToBoolean(self.args.get("auto_commit", True))
         demisto.debug(f"{LOG_TAG} start_flow: {made_changes=}, {auto_commit=}, {len(rows)} row(s) produced.")
         if made_changes and auto_commit:
@@ -799,7 +837,10 @@ class PanOs:
                 return self.finish()
             self.save_responses()
             return poll_commit
-        demisto.debug(f"{LOG_TAG} No commit needed (no changes or auto_commit disabled); returning rows.")
+        if not made_changes:
+            demisto.debug(f"{LOG_TAG} All rows Unchanged; skipping commit and push (idempotent no-op run).")
+        else:
+            demisto.debug(f"{LOG_TAG} auto_commit disabled; skipping commit and push - changes remain uncommitted.")
         return rows
 
     def finish(self) -> list:  # pragma: no cover

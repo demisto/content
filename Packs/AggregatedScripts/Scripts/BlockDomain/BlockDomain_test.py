@@ -21,9 +21,17 @@ from BlockDomain import (
 )
 
 
-def ok_entry(entry_context=None, contents="ok"):
-    """Build a minimal successful execute_command entry."""
-    return {"Type": 1, "Contents": contents, "HumanReadable": "", "EntryContext": entry_context or {}}
+def ok_entry(entry_context=None, contents="ok", instance=None, brand="Panorama"):
+    """Build a minimal successful execute_command entry.
+
+    When ``instance`` is provided, includes a ``Metadata`` block matching what the platform
+    actually returns (``Metadata.instance`` / ``Metadata.brand``) so tests can assert that the
+    aggregate script correctly captures the serving-instance name from response entries.
+    """
+    entry: dict = {"Type": 1, "Contents": contents, "HumanReadable": "", "EntryContext": entry_context or {}}
+    if instance is not None:
+        entry["Metadata"] = {"instance": instance, "brand": brand}
+    return entry
 
 
 def err_entry(contents="error"):
@@ -164,6 +172,114 @@ def test_process_domains_create_everything(monkeypatch):
     assert rows[0]["Result"] == RESULT_SUCCESS
     assert rows[0]["Action"] == ACTION_CREATED
     assert rows[0]["RuleName"] == "Cortex - Block Domain"
+
+
+def test_start_flow_skips_commit_when_all_actions_unchanged(monkeypatch):
+    """Idempotent re-runs (every row Unchanged) must skip the commit+push cycle entirely.
+
+    Without this optimisation a re-run that changed nothing still triggers pan-os-commit and
+    pan-os-push-to-device-group, which on a busy Panorama can add several minutes of polling
+    for zero benefit (nothing in the candidate config to commit).
+    """
+    import BlockDomain
+
+    calls: list = []
+
+    def _capture(name, args):
+        calls.append((name, args))
+        seq = {
+            "pan-os-list-address-groups": [ok_entry({"Panorama.AddressGroups": [
+                {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": ["Cortex-evil.example.com"]}
+            ]})],
+            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": [
+                {"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}
+            ]})],
+            "pan-os-get-address": [ok_entry({"Panorama.Addresses": {"Name": "Cortex-evil.example.com"}})],
+            "pan-os-move-rule": [ok_entry()],  # move is idempotent noop but still executed
+        }
+        return seq.get(name, [ok_entry()])
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+    # Guard: if the code decides to commit despite all Unchanged, this stub raises loudly.
+    monkeypatch.setattr(BlockDomain, "pan_os_commit", lambda *a, **k: pytest.fail(
+        "pan_os_commit must not be called when all rows are Unchanged"
+    ))
+    # setContext calls are harmless in tests; stub to avoid touching real state.
+    monkeypatch.setattr(BlockDomain.demisto, "setContext", lambda *a, **k: None)
+
+    result = _pan_os(["evil.example.com"]).start_flow()
+
+    # start_flow returns the rows directly (no polling), all Unchanged.
+    assert isinstance(result, list)
+    assert len(result) == 1
+    assert result[0]["Action"] == ACTION_UNCHANGED
+    # No pan-os-commit was executed.
+    assert "pan-os-commit" not in [c[0] for c in calls]
+
+
+def test_start_flow_commits_when_at_least_one_row_modified(monkeypatch):
+    """A run with any Created/Modified action must still trigger the commit flow."""
+    import BlockDomain
+
+    # Track whether the commit polling helper was invoked.
+    commit_called: list = []
+    # Signal that pan_os_commit finished synchronously so start_flow returns rows (no polling).
+    def _fake_commit(args, responses):
+        commit_called.append(True)
+        # Mimic "no job started" -> not polling -> finish() path.
+        BlockDomain.POLLING = False
+        # Return a plain CommandResults; the caller will fall through to self.finish().
+        return BlockDomain.CommandResults(readable_output="fake commit ok")
+
+    def _capture(name, args):
+        seq = {
+            "pan-os-list-address-groups": [ok_entry({"Panorama.AddressGroups": [
+                {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": []}
+            ]})],
+            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": [
+                {"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}
+            ]})],
+            "pan-os-get-address": [err_entry("not found")],
+            "pan-os-create-address": [ok_entry()],
+            "pan-os-edit-address-group": [ok_entry()],
+            "pan-os-move-rule": [ok_entry()],
+        }
+        return seq.get(name, [ok_entry()])
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+    monkeypatch.setattr(BlockDomain.demisto, "setContext", lambda *a, **k: None)
+    monkeypatch.setattr(BlockDomain, "pan_os_commit", _fake_commit)
+    # After commit finishes synchronously, start_flow calls self.finish() which touches context.
+    # Feed it an empty stored rows blob so it returns [].
+    monkeypatch.setattr(BlockDomain.demisto, "context", lambda: {"block_domain_rows": "[]"})
+
+    _pan_os(["evil.example.com"]).start_flow()
+
+    assert commit_called, "pan_os_commit must be called when at least one row is Created/Modified"
+
+
+def test_process_domains_captures_instance_name_from_response_metadata(monkeypatch):
+    # Every row this run produces must be attributed to the integration instance that actually
+    # served the PAN-OS calls. The platform exposes it in Metadata.instance on every entry.
+    _mock_execute(
+        monkeypatch,
+        [
+            # First response carries the Metadata.instance; the class should capture it and
+            # propagate it into every row. Subsequent responses may or may not carry it.
+            [ok_entry({"Panorama.AddressGroups": []}, instance="Panorama_QA")],
+            [ok_entry({"Panorama.SecurityRule": []})],
+            [err_entry("not found")],  # get-address
+            [ok_entry()],  # create-address
+            [ok_entry()],  # create-address-group (seeded)
+            [ok_entry()],  # create-rule
+            [ok_entry()],  # move-rule
+        ],
+    )
+    pan_os = _pan_os(["evil.example.com"])
+    rows = pan_os.process_domains()
+    assert pan_os.instance_name == "Panorama_QA"
+    assert len(rows) == 1
+    assert rows[0]["Instance"] == "Panorama_QA"
 
 
 def test_process_domains_missing_group_created_lazily_with_first_object(monkeypatch):
