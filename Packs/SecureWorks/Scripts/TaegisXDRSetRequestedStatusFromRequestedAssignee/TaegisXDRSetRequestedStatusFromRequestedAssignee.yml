@@ -7,10 +7,11 @@ type: python
 subtype: python3
 dockerimage: demisto/python3:3.12.13.10325753
 tags:
-  - incident-action-button
+- incident-action-button
 enabled: true
 comment: "Run after update: when Taegis Requested Assignee changes, set Taegis Requested Status (ACTIVE vs AWAITING_ACTION) using same logic as TaegisXDRSetStatusFromAssignee."
 runas: DBotRole
 runonce: false
-fromversion: 6.0.0
-description: "Runs when Taegis Requested Assignee is updated. Sets Taegis Requested Status: @secureworks/@customer -> AWAITING_ACTION; specific user taking from queue -> ACTIVE; handoff (one user to another) -> AWAITING_ACTION. Uses current Taegis assignee for handoff detection. Attach to taegisrequestedassignee as 'Run script after update'."
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -202,73 +202,73 @@ script:
   type: python
   commands:
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    - description: Tenant ID
+    - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Fetch a specific investigation or list of investigations
+    description: Fetch a specific investigation or list of investigations.
     name: taegis-fetch-investigation
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    - description: Tenant ID
+    - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Fetch comments by Investigation ID
+    description: Fetch comments by Investigation ID.
     name: taegis-fetch-comments
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    - description: Comment text
+    - description: Comment text.
       name: comment
       required: true
-    - description: Tenant ID
+    - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Create a comment on an investigation
+    description: Create a comment on an investigation.
     name: taegis-create-comment
   - arguments:
-    - description: Comment ID
+    - description: Comment ID.
       name: id
       required: true
-    - description: New comment text
+    - description: New comment text.
       name: comment
       required: true
-    description: Update an existing comment
+    description: Update an existing comment.
     name: taegis-update-comment
   - arguments:
-    - description: Comment ID
+    - description: Comment ID.
       name: id
       required: true
-    description: Fetch a specific comment by ID
+    description: Fetch a specific comment by ID.
     name: taegis-fetch-comment
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    - description: Comma-separated alert IDs to add as evidence
+    - description: Comma-separated alert IDs to add as evidence.
       name: alerts
       required: false
-    - description: Comma-separated event IDs to add as evidence
+    - description: Comma-separated event IDs to add as evidence.
       name: events
       required: false
-    - description: CQL query selecting alerts to add as evidence
+    - description: CQL query selecting alerts to add as evidence.
       name: alert_query
       required: false
     description: Add evidence (alerts, events, or a CQL alert query) to an investigation. At least one of alerts, events, or alert_query is required.
     name: taegis-add-evidence-to-investigation
   - arguments:
-    - description: Investigation title
+    - description: Investigation title.
       name: title
       required: true
-    - description: Investigation priority (1-4)
+    - description: Investigation priority (1-4).
       name: priority
       required: false
-    - description: Investigation status
+    - description: Investigation status.
       name: status
       required: false
       predefined:
@@ -283,13 +283,13 @@ script:
       - CLOSED_INFORMATIONAL
       - CLOSED_NOT_VULNERABLE
       - CLOSED_THREAT_MITIGATED
-    - description: Comma-separated alert IDs to associate with the new investigation
+    - description: Comma-separated alert IDs to associate with the new investigation.
       name: alerts
       required: false
-    - description: Key findings
+    - description: Key findings.
       name: key_findings
       required: false
-    - description: Investigation type
+    - description: Investigation type.
       name: type
       required: false
       predefined:
@@ -300,19 +300,19 @@ script:
       - CTU_THREAT_HUNT
       - MANAGED_XDR_ELITE_THREAT_HUNT
       - SECUREWORKS_INCIDENT_RESPONSE
-    - description: Assignee to set on the new investigation. Use @customer, @secureworks, auth0|..., or a tenant user UUID
+    - description: Assignee to set on the new investigation. Use @customer, @secureworks, auth0|..., or a tenant user UUID.
       name: assignee_id
       required: false
-    - description: Comma-separated tags
+    - description: Comma-separated tags.
       name: tags
       required: false
-    description: Create a new investigation
+    description: Create a new investigation.
     name: taegis-create-investigation
   - arguments:
-    - description: ID of the investigation, alert, or other object to create a ShareLink for
+    - description: ID of the investigation, alert, or other object to create a ShareLink for.
       name: id
       required: true
-    - description: Type of object the ShareLink points to
+    - description: Type of object the ShareLink points to.
       name: type
       required: true
       predefined:
@@ -326,131 +326,131 @@ script:
       - playbookTemplateId
       - playbookInstanceId
       - playbookExecutionId
-    - description: Tenant ID
+    - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Create a ShareLink to an investigation, alert, or other Taegis object
+    description: Create a ShareLink to an investigation, alert, or other Taegis object.
     name: taegis-create-sharelink
   - arguments:
-    - description: Playbook instance ID to execute
+    - description: Playbook instance ID to execute.
       name: id
       required: true
-    - description: JSON object of optional playbook inputs
+    - description: JSON object of optional playbook inputs.
       name: inputs
       required: false
-    description: Execute a Taegis playbook instance
+    description: Execute a Taegis playbook instance.
     execution: true
     name: taegis-execute-playbook
   - arguments:
-    - description: CQL query selecting alerts. Ignored if ids is provided
+    - description: CQL query selecting alerts. Ignored if ids is provided.
       name: cql_query
       required: false
-    - description: Maximum number of alerts to return
+    - description: Maximum number of alerts to return.
       name: limit
       required: false
-    - description: Pagination offset
+    - description: Pagination offset.
       name: offset
       required: false
-    - description: Comma-separated specific alert IDs to fetch (e.g. alert://id1,alert://id2). Overrides cql_query
+    - description: Comma-separated specific alert IDs to fetch (e.g. alert://id1,alert://id2). Overrides cql_query.
       name: ids
       required: false
-    description: Fetch alerts by CQL query or by specific alert IDs
+    description: Fetch alerts by CQL query or by specific alert IDs.
     name: taegis-fetch-alerts
   - arguments:
-    - description: Page number (0-based)
+    - description: Page number (0-based).
       name: page
       required: false
-    - description: Number of assets to return per page
+    - description: Number of assets to return per page.
       name: page_size
       required: false
-    - description: Filter by endpoint type
+    - description: Filter by endpoint type.
       name: endpoint_type
       required: false
-    - description: Filter by host ID
+    - description: Filter by host ID.
       name: host_id
       required: false
-    - description: Filter by hostname
+    - description: Filter by hostname.
       name: hostname
       required: false
-    - description: Filter by investigation ID
+    - description: Filter by investigation ID.
       name: investigation_id
       required: false
-    - description: Filter by IP address
+    - description: Filter by IP address.
       name: ip_address
       required: false
-    - description: Filter by MAC address
+    - description: Filter by MAC address.
       name: mac_address
       required: false
-    - description: Filter by OS family
+    - description: Filter by OS family.
       name: os_family
       required: false
-    - description: Filter by OS version
+    - description: Filter by OS version.
       name: os_version
       required: false
-    - description: Filter by sensor version
+    - description: Filter by sensor version.
       name: sensor_version
       required: false
-    - description: Filter by username
+    - description: Filter by username.
       name: username
       required: false
-    description: Search Taegis assets
+    description: Search Taegis assets.
     name: taegis-fetch-assets
   - arguments:
-    - description: Asset/host ID
+    - description: Asset/host ID.
       name: id
       required: true
-    description: Fetch endpoint isolation status and health information for an asset
+    description: Fetch endpoint isolation status and health information for an asset.
     name: taegis-fetch-endpoint
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    - description: Page number (0-based)
+    - description: Page number (0-based).
       name: page
       required: false
-    - description: Number of alerts to return per page
+    - description: Number of alerts to return per page.
       name: page_size
       required: false
-    description: Fetch alerts associated with an investigation
+    description: Fetch alerts associated with an investigation.
     name: taegis-fetch-investigation-alerts
   - arguments:
-    - description: Playbook execution ID
+    - description: Playbook execution ID.
       name: id
       required: true
-    description: Fetch a playbook execution by ID
+    description: Fetch a playbook execution by ID.
     name: taegis-fetch-playbook-execution
   - arguments:
-    - description: Taegis user ID in 'auth0|...' format. If provided, other filters are ignored
+    - description: Taegis user ID in 'auth0|...' format. If provided, other filters are ignored.
       name: id
       required: false
-    - description: Filter by email address
+    - description: Filter by email address.
       name: email
       required: false
-    - description: Filter by user status
+    - description: Filter by user status.
       name: status
       required: false
-    - description: Page number (0-based)
+    - description: Page number (0-based).
       name: page
       required: false
-    - description: Number of users to return per page
+    - description: Number of users to return per page.
       name: page_size
       required: false
-    description: Fetch Taegis tenant users by ID or by search filters
+    description: Fetch Taegis tenant users by ID or by search filters.
     name: taegis-fetch-users
   - arguments:
-    - description: Asset ID to isolate
+    - description: Asset ID to isolate.
       name: id
       required: true
-    - description: Reason for isolating the asset
+    - description: Reason for isolating the asset.
       name: reason
       required: true
-    description: Isolate an asset/endpoint in Taegis
+    description: Isolate an asset/endpoint in Taegis.
     name: taegis-isolate-asset
   - arguments:
-    - description: Comma-separated alert IDs
+    - description: Comma-separated alert IDs.
       name: ids
       required: true
-    - description: New resolution status for the alert(s)
+    - description: New resolution status for the alert(s).
       name: status
       required: true
       predefined:
@@ -461,46 +461,46 @@ script:
       - TRUE_POSITIVE_MALICIOUS
       - OTHER
       - SUPPRESSED
-    - description: Reason for the status change
+    - description: Reason for the status change.
       name: reason
       required: false
-    description: Update the resolution status of one or more alerts
+    description: Update the resolution status of one or more alerts.
     name: taegis-update-alert-status
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    description: Archive an investigation
+    description: Archive an investigation.
     name: taegis-archive-investigation
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    description: Unarchive a previously archived investigation
+    description: Unarchive a previously archived investigation.
     name: taegis-unarchive-investigation
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    - description: Investigation status
+    - description: Investigation status.
       name: status
       required: false
-    - description: Investigation priority (1-4)
+    - description: Investigation priority (1-4).
       name: priority
       required: false
-    - description: Key findings
+    - description: Key findings.
       name: key_findings
       required: false
-    - description: Tenant ID
+    - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Update an investigation
+    description: Update an investigation.
     name: taegis-update-investigation
   - arguments:
-    - description: Investigation ID (optional; defaults to current incident dbotMirrorId)
+    - description: Investigation ID (optional; defaults to current incident dbotMirrorId).
       name: id
       required: false
-    - description: Tenant ID (optional; from incident if not set)
+    - description: Tenant ID (optional; from incident if not set).
       name: tenant_id
       required: false
     - description: Assignee to set in Taegis. Use @customer, @secureworks, or assignee display name (e.g. Sam Johnson). Optional when run from layout button; if omitted, uses current incident assignee.
@@ -517,68 +517,68 @@ script:
     description: Push assignee and/or case status to Taegis. Run from an incident; use the form to select requested Assignee and Status, or leave blank to use current incident values. Refresh the incident to see the update reflected.
     name: taegis-push-assignee-status
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    - description: Close status (e.g. CLOSED_INCONCLUSIVE, CLOSED_INFORMATIONAL)
+    - description: Close status (e.g. CLOSED_INCONCLUSIVE, CLOSED_INFORMATIONAL).
       name: status
       required: true
-    - description: Close reason / notes (default Closed from Cortex XSOAR)
+    - description: Close reason / notes (default Closed from Cortex XSOAR).
       name: reason
       required: false
-    - description: Alerts resolution status (e.g. TRUE_POSITIVE_BENIGN)
+    - description: Alerts resolution status (e.g. TRUE_POSITIVE_BENIGN).
       name: alerts_resolution_status
       required: false
-    - description: Taegis XDR detection status (same as alertsResolutionStatus; e.g. TRUE_POSITIVE_BENIGN)
+    - description: Taegis XDR detection status (same as alertsResolutionStatus; e.g. TRUE_POSITIVE_BENIGN).
       name: taegisxdrdetectionstatus
       required: false
-    - description: Tenant ID
+    - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Close an investigation via closeInvestigation mutation
+    description: Close an investigation via closeInvestigation mutation.
     name: taegis-close-investigation
   - arguments:
-    - description: Last update timestamp - automatically provided by XSOAR
+    - description: Last update timestamp - automatically provided by XSOAR.
       name: lastUpdate
       required: false
-    description: Get modified remote data for mirroring optimization (automatically called by XSOAR)
+    description: Get modified remote data for mirroring optimization (automatically called by XSOAR).
     name: get-modified-remote-data
   - arguments:
-    - description: Investigation ID (remoteId) - required for manual calls, automatically provided by XSOAR
+    - description: Investigation ID (remoteId) - required for manual calls, automatically provided by XSOAR.
       name: id
       required: false
-    - description: Last update timestamp - automatically provided by XSOAR
+    - description: Last update timestamp - automatically provided by XSOAR.
       name: lastUpdate
       required: false
-    - description: Tenant ID
+    - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Get remote data for mirroring (automatically called by XSOAR)
+    description: Get remote data for mirroring (automatically called by XSOAR).
     name: get-remote-data
-  - description: Update remote system for mirroring (automatically called by XSOAR)
+  - description: Update remote system for mirroring (automatically called by XSOAR).
     name: update-remote-system
-  - description: Get mapping fields for schema selection (required for mappable integrations)
+  - description: Get mapping fields for schema selection (required for mappable integrations).
     name: get-mapping-fields
   - arguments:
-    - description: Investigation ID (remoteId)
+    - description: Investigation ID (remoteId).
       name: remoteId
       required: true
-    - description: Incident data changes (JSON format)
+    - description: Incident data changes (JSON format).
       name: data
       required: false
-    - description: Tenant ID
+    - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Manually test update remote system for mirroring
+    description: Manually test update remote system for mirroring.
     name: taegis-update-remote-system
   - arguments:
-    - description: Investigation ID
+    - description: Investigation ID.
       name: id
       required: true
-    - description: Tenant ID
+    - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Manually test get remote data for mirroring
+    description: Manually test get remote data for mirroring.
     name: taegis-get-remote-data
   dockerimage: demisto/python3:3.12.8.3296088
   isFetchSamples: true
@@ -593,4 +593,3 @@ defaultmapperout: TaegisXDR-Case-Outgoing-Mapper
 fromversion: 6.13.0
 tests:
 - No tests (auto formatted)
-signature: oczlxhQKoSPFsOcBz109jK+6VKyQmQ3y5DS6+hcv/pFlDPtaQ6ZKdMj/aAp1X9BcSIYbn73aRbClPTBy0p6wSsjLCQMA0TVNhQY2IFAPyiWscvU/92tkXO7jFerAvg9SKrv808xmzsaIrelO8Oo5ZQOgXmP5o80i1JlbWyCBpCUlB8VXG8FiXOIVcJCX58Plt6rMKiLS4JYe6oUewPaYEx5bbHGXAI4VjW6Znx5nO1ylY6p0zn5Fjc2bwb7XTaTfCaSPu9aF33C5EqfpQsWM4kpc5G15jSBvN1U1U6Y1vvPZQG3OPj+T0h842ix847YcI8y1tgxElU6t6mzFPKOCmA==

@@ -1,16 +1,8 @@
 id: Taegis XDR Case Playbook
 fromversion: 5.0.0
-version: 3
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Default
-    itemVersion: 2.0.16
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Taegis XDR Case Playbook
 description: Abbreviated triage playbook for Taegis XDR cases. Assigns an analyst, prompts manual review, and optionally closes the investigation.
 starttaskid: "0"
@@ -25,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -124,6 +117,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -157,4 +151,5 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: playbook0
+tests:
+- No tests (auto formatted)

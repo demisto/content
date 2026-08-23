@@ -59,6 +59,7 @@ Fetch a specific investigation or list of investigations
 #### Context Output
 
 There is no context output for this command.
+
 ### taegis-fetch-comments
 
 ***
@@ -78,6 +79,7 @@ Fetch comments by Investigation ID
 #### Context Output
 
 There is no context output for this command.
+
 ### taegis-create-comment
 
 ***
@@ -98,6 +100,7 @@ Create a comment on an investigation
 #### Context Output
 
 There is no context output for this command.
+
 ### taegis-update-investigation
 
 ***
@@ -120,6 +123,7 @@ Update an investigation
 #### Context Output
 
 There is no context output for this command.
+
 ### taegis-push-assignee-status
 
 ***
@@ -141,6 +145,7 @@ Push assignee and/or case status to Taegis. Run from an incident; use the form t
 #### Context Output
 
 There is no context output for this command.
+
 ### taegis-close-investigation
 
 ***
@@ -164,6 +169,7 @@ Close an investigation via closeInvestigation mutation
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***
@@ -182,6 +188,7 @@ Get modified remote data for mirroring optimization (automatically called by Cor
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
@@ -202,6 +209,7 @@ Get remote data for mirroring (automatically called by Cortex XSOAR)
 #### Context Output
 
 There is no context output for this command.
+
 ### update-remote-system
 
 ***
@@ -218,6 +226,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
 
 ***
@@ -234,6 +243,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### taegis-update-remote-system
 
 ***
@@ -254,6 +264,7 @@ Manually test update remote system for mirroring
 #### Context Output
 
 There is no context output for this command.
+
 ### taegis-get-remote-data
 
 ***
@@ -273,10 +284,12 @@ Manually test get remote data for mirroring
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Taegis XDR corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
