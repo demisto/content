@@ -1,12 +1,11 @@
 commonfields:
-  id: SophosTaegis
+  id: TaegisXDRv3
   version: -1
-name: SophosTaegis
-display: Taegis XDR
-brand: Sophos
+name: TaegisXDRv3
+display: Taegis XDR v3
 category: Data Enrichment & Threat Intelligence
 provider: Sophos
-description: For integration with the Sophos Taegis XDR platform.
+description: For integration with the Secureworks Taegis XDR platform.
 supportlevelheader: partner
 configuration:
 - display: Client ID

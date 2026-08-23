@@ -196,7 +196,7 @@ class Client(BaseClient):
                     raise
                 wait_s = _taegis_rate_limit_sleep_seconds(e, self._rate_limit_base_delay, attempt)
                 demisto.debug(
-                    f"SophosTaegis: API rate limit (attempt {attempt + 1}/{max_attempts}), sleeping {wait_s}s before retry"
+                    f"TaegisXDRv3: API rate limit (attempt {attempt + 1}/{max_attempts}), sleeping {wait_s}s before retry"
                 )
                 time.sleep(wait_s)
         raise DemistoException(

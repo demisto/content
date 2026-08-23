@@ -1,6 +1,6 @@
 import demistomock as demisto
 import pytest
-from SophosTaegis import (
+from TaegisXDRv3 import (
     Client,
     _format_single_comment_for_note,
     _friendly_owner_label,
@@ -498,7 +498,7 @@ def test_taegis_push_assignee_status_command_pushes_explicit_args(mocker):
     assert result.outputs["status"] == "AWAITING_ACTION"
 
 
-# --- previously yml-undeclared commands (now wired into SophosTaegis.yml) ---
+# --- previously yml-undeclared commands (now wired into TaegisXDRv3.yml) ---
 
 
 def test_update_comment_command_success(mocker):

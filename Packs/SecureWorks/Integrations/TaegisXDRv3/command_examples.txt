@@ -1,6 +1,6 @@
 # ============================================================
 # command_examples.txt
-# Used by: demisto-sdk generate-docs -i SophosTaegis.yml -e command_examples.txt
+# Used by: demisto-sdk generate-docs -i TaegisXDRv3.yml -e command_examples.txt
 # The SDK RUNS each active line against your live XSOAR instance and embeds the
 # real output into README.md. Requires DEMISTO_BASE_URL / DEMISTO_API_KEY /
 # XSIAM_AUTH_ID env vars (same v8 auth as the build guide) + a working instance.

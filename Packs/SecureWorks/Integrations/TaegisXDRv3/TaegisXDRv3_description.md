@@ -1,6 +1,6 @@
-## Sophos Taegis XDR Help
+## Secureworks Taegis XDR Help
 
-This integration connects Cortex XSOAR to the Sophos Taegis XDR platform for case ingestion, bi-directional mirroring, assignee/status management, and threat investigation.
+This integration connects Cortex XSOAR to the Secureworks Taegis XDR platform for case ingestion, bi-directional mirroring, assignee/status management, and threat investigation.
 
 ### Generate a Client ID and Client Secret
 

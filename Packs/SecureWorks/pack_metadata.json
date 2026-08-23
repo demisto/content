@@ -1,28 +1,50 @@
 {
     "name": "Secureworks",
-    "description": "Provides access to the Secureworks CTP and Taegis XDR systems",
+    "description": "Provides access to the Secureworks CTP and Sophos Taegis XDR systems, including Taegis XDR case ingestion, bi-directional mirroring, and assignee and status management.",
     "support": "partner",
-    "currentVersion": "5.0.16",
+    "currentVersion": "5.1.0",
     "author": "Secureworks",
     "url": "https://ctpx.secureworks.com",
     "email": "support@secureworks.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
+        "Case Management",
+        "Data Enrichment & Threat Intelligence",
         "Forensics & Malware Analysis"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "taegis",
+        "xdr",
+        "secops",
+        "soc",
+        "case",
+        "detection",
+        "management"
+    ],
+    "useCases": [
+        "Case Management"
+    ],
     "keywords": [
-        "Secureworks"
+        "taegis",
+        "xdr",
+        "secureworks"
     ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
         "platform"
     ],
-    "defaultDataSource": "Dell Secureworks",
+    "defaultDataSource": "TaegisXDRv3",
     "supportedModules": [
         "agentix",
         "xsiam"
+    ],
+    "devEmail": [
+        "micah.pegman@sophos.com"
+    ],
+    "githubUser": [
+        "mpegman-scwx",
+        "brandonchartersophos",
+        "scwxsljohnson"
     ]
 }

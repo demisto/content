@@ -1,6 +1,6 @@
 For integration with the Secureworks Taegis XDR platform.
 
-## Configure Taegis XDR in Cortex
+## Configure Taegis XDR v3 in Cortex
 
 
 | **Parameter** | **Description** | **Required** |

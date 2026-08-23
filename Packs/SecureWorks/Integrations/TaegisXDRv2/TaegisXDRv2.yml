@@ -5,10 +5,11 @@ commonfields:
   id: TaegisXDRv2
   version: -1
 name: TaegisXDRv2
-display: TaegisXDR v2
+display: TaegisXDR v2 (Deprecated)
+deprecated: true
 category: Data Enrichment & Threat Intelligence
 provider: Sophos
-description: For integration with the Secureworks Taegis XDR platform.
+description: Deprecated. Use Taegis XDR v3 instead.
 configuration:
 - display: Taegis Environment
   name: environment
