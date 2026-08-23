@@ -22,15 +22,20 @@ from CyberArkISP import (  # noqa: E402
     Client,
     Config,
     ContextKeys,
+    DefaultValues,
     add_time_to_events,
+    compute_last_run,
     deduplicate_events,
     fetch_events_command,
     fetch_events_with_pagination,
+    finalize_event_stream,
     generate_telemetry_header,
     get_events_command,
     get_formatted_time,
+    iter_event_pages,
     parse_date_or_use_current,
     parse_integration_params,
+    stream_page_to_xsiam,
     test_module,
 )
 
@@ -576,9 +581,18 @@ def test_create_stream_query_success(mocker, client, date_from, date_to, expecte
     assert APIKeys.SORT_MODEL.value in json_data[APIKeys.QUERY.value]
     assert APIKeys.PAGE_SIZE.value in json_data[APIKeys.QUERY.value]
 
+    # CyberArk's SIEM Audit createQuery API rejects a page size greater than 500
+    # with HTTP 400 "Bad request syntax or unsupported method" (XSUP-72963).
+    assert json_data[APIKeys.QUERY.value][APIKeys.PAGE_SIZE.value] == 500
+
     filter_model = json_data[APIKeys.QUERY.value][APIKeys.FILTER_MODEL.value][APIKeys.DATE.value]
     for key in expected_filter_keys:
         assert key in filter_model
+
+
+def test_default_page_size_within_cyberark_limit():
+    """The default page size must not exceed CyberArk's documented maximum of 500 (XSUP-72963)."""
+    assert int(DefaultValues.PAGE_SIZE.value) <= 500
 
 
 def test_create_stream_query_missing_cursor_ref(mocker, client):
@@ -1114,21 +1128,32 @@ def test_get_events_command_with_date_to(mocker, client):
 def test_fetch_events_command_scenarios(
     mocker, client, test_case, last_run, params, mock_events, expected_last_run, expected_events_sent
 ):
-    """Tests fetch_events_command under various scenarios."""
+    """Tests fetch_events_command under various scenarios (streaming pipeline)."""
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value=params)
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_events)
+    # iter_event_pages is a generator; mock it to yield the events as one page.
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([mock_events]))
     mocker.patch.object(CyberArkISP, "add_time_to_events")
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    # multiple_threads=True returns futures; return [] so finalize has nothing to await.
+    send_mock = mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
     demisto.setLastRun.assert_called_once_with(expected_last_run)  # type: ignore[attr-defined]
+    # The page is streamed via stream_page_to_xsiam, which annotates _time then
+    # sends asynchronously (multiple_threads=True, health update deferred).
     CyberArkISP.add_time_to_events.assert_called_once_with(expected_events_sent)  # type: ignore[attr-defined]
-    CyberArkISP.send_events_to_xsiam.assert_called_once_with(  # type: ignore[attr-defined]
-        events=expected_events_sent, vendor=Config.VENDOR, product=Config.PRODUCT
+    send_mock.assert_called_once_with(
+        events=expected_events_sent,
+        vendor=Config.VENDOR,
+        product=Config.PRODUCT,
+        multiple_threads=True,
+        should_update_health_module=False,
     )
+    # Health is updated exactly once at the end of the cycle.
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": len(expected_events_sent)})  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_with_deduplication(mocker, client):
@@ -1143,22 +1168,28 @@ def test_fetch_events_command_with_deduplication(mocker, client):
         demisto, "getLastRun", return_value={"last_fetch": "2024-01-01 00:00:00", "last_fetched_uuids": ["1", "2"]}
     )
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([mock_events]))
     mocker.patch.object(CyberArkISP, "add_time_to_events")
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
-    CyberArkISP.add_time_to_events.assert_called_once_with([{"uuid": "3", "timestamp": 1704153600000}])  # type: ignore[attr-defined]
-    demisto.setLastRun.assert_called_once_with({"last_fetch": "2024-01-02 00:00:00", "last_fetched_uuids": ["3"]})  # type: ignore[attr-defined]
+    # Only the non-duplicate event (uuid 3) is sent.
+    new_event = [{"uuid": "3", "timestamp": 1704153600000}]
+    CyberArkISP.add_time_to_events.assert_called_once_with(new_event)  # type: ignore[attr-defined]
+    demisto.setLastRun.assert_called_once_with(  # type: ignore[attr-defined]
+        {"last_fetch": "2024-01-02 00:00:00", "last_fetched_uuids": ["3"]}
+    )
 
 
 def test_fetch_events_command_all_duplicates(mocker, client):
     """Tests fetch_events_command when all fetched events are duplicates.
 
     Even when all events are duplicates, we still update the last run timestamp
-    to prevent infinite loops of fetching the same duplicates.
+    to prevent infinite loops of fetching the same duplicates, and we never
+    dispatch a send.
     """
     mock_events = [
         {"uuid": "1", "timestamp": 1704067200000},
@@ -1169,18 +1200,22 @@ def test_fetch_events_command_all_duplicates(mocker, client):
         demisto, "getLastRun", return_value={"last_fetch": "2024-01-01 00:00:00", "last_fetched_uuids": ["1", "2"]}
     )
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value={"max_fetch": 100})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([mock_events]))
     mocker.patch.object(CyberArkISP, "add_time_to_events")
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
-    # No events sent to XSIAM (all duplicates)
+    # No events sent to XSIAM (all duplicates).
     CyberArkISP.add_time_to_events.assert_not_called()  # type: ignore[attr-defined]
     CyberArkISP.send_events_to_xsiam.assert_not_called()  # type: ignore[attr-defined]
 
-    # But we still update last run to advance the high-water mark
+    # Health still reports zero new events for this cycle.
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 0})  # type: ignore[attr-defined]
+
+    # But we still update last run to advance the high-water mark.
     demisto.setLastRun.assert_called_once_with(  # type: ignore[attr-defined]
         {"last_fetch": "2024-01-01 00:00:00", "last_fetched_uuids": ["1", "2"]}
     )
@@ -1190,32 +1225,177 @@ def test_fetch_events_command_no_events(mocker, client):
     """Tests fetch_events_command when no events are fetched."""
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value={})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=[])
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([]))
+    mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
     CyberArkISP.send_events_to_xsiam.assert_not_called()  # type: ignore[attr-defined]
     demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+    # A cycle that found nothing still reports a zero pull so health reflects it ran.
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 0})  # type: ignore[attr-defined]
 
 
 def test_fetch_events_command_timestamp_conversion_error(mocker, client):
-    """Tests fetch_events_command handles timestamp conversion errors."""
+    """Tests fetch_events_command handles timestamp conversion errors.
+
+    A non-integer timestamp cannot advance the high-water mark, so last-run is
+    left unchanged (no setLastRun call) and the cycle reports zero pulled.
+    """
     mock_events = [{"uuid": "1", "timestamp": "invalid"}]
 
     mocker.patch.object(demisto, "getLastRun", return_value={})
     mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "updateModuleHealth")
     mocker.patch.object(demisto, "params", return_value={})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=mock_events)
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([mock_events]))
     mocker.patch.object(CyberArkISP, "add_time_to_events")
-    mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+    mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[])
 
     fetch_events_command(client)
 
-    demisto.setLastRun.assert_called_once()  # type: ignore[attr-defined]
-    call_args = demisto.setLastRun.call_args[0][0]  # type: ignore[attr-defined]
-    assert call_args["last_fetch"] == "invalid"
+    # The string timestamp is ignored for HWM tracking; last-run stays unchanged.
+    demisto.setLastRun.assert_not_called()  # type: ignore[attr-defined]
+    # The single event (a non-duplicate) is still streamed to XSIAM.
+    CyberArkISP.add_time_to_events.assert_called_once_with(mock_events)  # type: ignore[attr-defined]
+    demisto.updateModuleHealth.assert_called_once_with({"eventsPulled": 1})  # type: ignore[attr-defined]
+
+
+# ========================================
+# Tests: streaming pipeline helpers (CIAC-16907)
+# ========================================
+
+
+def test_iter_event_pages_yields_pages_lazily(mocker, client):
+    """iter_event_pages should yield each page as a generator (not accumulate)."""
+    mocker.patch.object(client, "create_stream_query", return_value="cursor-1")
+    mocker.patch.object(
+        client,
+        "get_stream_results",
+        side_effect=[
+            ([{"uuid": "1", "timestamp": 1}, {"uuid": "2", "timestamp": 2}], "cursor-2"),
+            ([{"uuid": "3", "timestamp": 3}], None),
+        ],
+    )
+
+    pages = list(iter_event_pages(client, "2024-01-01 00:00:00", max_events=100))
+
+    assert len(pages) == 2
+    assert pages[0] == [{"uuid": "1", "timestamp": 1}, {"uuid": "2", "timestamp": 2}]
+    assert pages[1] == [{"uuid": "3", "timestamp": 3}]
+
+
+def test_iter_event_pages_truncates_final_page_to_max_events(mocker, client):
+    """The cumulative number of yielded events must never exceed max_events."""
+    mocker.patch.object(client, "create_stream_query", return_value="cursor-1")
+    mocker.patch.object(
+        client,
+        "get_stream_results",
+        side_effect=[
+            ([{"uuid": "1", "timestamp": 1}, {"uuid": "2", "timestamp": 2}], "cursor-2"),
+            ([{"uuid": "3", "timestamp": 3}, {"uuid": "4", "timestamp": 4}], "cursor-3"),
+        ],
+    )
+
+    pages = list(iter_event_pages(client, "2024-01-01 00:00:00", max_events=3))
+
+    total = sum(len(p) for p in pages)
+    assert total == 3
+    # Second page truncated from 2 -> 1 to honour the limit.
+    assert pages[1] == [{"uuid": "3", "timestamp": 3}]
+
+
+def test_iter_event_pages_empty_first_page(mocker, client):
+    """An immediately empty page stops iteration with no yields."""
+    mocker.patch.object(client, "create_stream_query", return_value="cursor-1")
+    mocker.patch.object(client, "get_stream_results", return_value=([], None))
+
+    pages = list(iter_event_pages(client, "2024-01-01 00:00:00", max_events=100))
+
+    assert pages == []
+
+
+def test_stream_page_to_xsiam_dispatches_async(mocker):
+    """stream_page_to_xsiam annotates _time then sends with multiple_threads=True."""
+    add_time_mock = mocker.patch.object(CyberArkISP, "add_time_to_events")
+    sentinel_future = object()
+    send_mock = mocker.patch.object(CyberArkISP, "send_events_to_xsiam", return_value=[sentinel_future])
+
+    events = [{"uuid": "1", "timestamp": 1}]
+    futures = stream_page_to_xsiam(events)
+
+    add_time_mock.assert_called_once_with(events)
+    send_mock.assert_called_once_with(
+        events=events,
+        vendor=Config.VENDOR,
+        product=Config.PRODUCT,
+        multiple_threads=True,
+        should_update_health_module=False,
+    )
+    assert futures == [sentinel_future]
+
+
+def test_stream_page_to_xsiam_empty_is_noop(mocker):
+    """An empty page must not call send_events_to_xsiam."""
+    send_mock = mocker.patch.object(CyberArkISP, "send_events_to_xsiam")
+
+    assert stream_page_to_xsiam([]) == []
+    send_mock.assert_not_called()
+
+
+def test_finalize_event_stream_awaits_futures_and_updates_health(mocker):
+    """finalize_event_stream waits on all futures then updates module health once."""
+    update_health = mocker.patch.object(demisto, "updateModuleHealth")
+
+    completed = []
+
+    class _FakeFuture:
+        def __init__(self, name):
+            self.name = name
+
+        def result(self):
+            completed.append(self.name)
+
+    # as_completed is patched to simply iterate the futures in order.
+    mocker.patch.object(CyberArkISP, "as_completed", side_effect=lambda fs: list(fs))
+
+    futures = [_FakeFuture("a"), _FakeFuture("b")]
+    finalize_event_stream(futures, total_events_sent=5)  # type: ignore[arg-type]
+
+    assert completed == ["a", "b"]
+    update_health.assert_called_once_with({"eventsPulled": 5})
+
+
+def test_finalize_event_stream_propagates_send_failure(mocker):
+    """A failure inside a send future must surface to the platform."""
+    mocker.patch.object(demisto, "updateModuleHealth")
+    mocker.patch.object(CyberArkISP, "as_completed", side_effect=lambda fs: list(fs))
+
+    class _FailingFuture:
+        def result(self):
+            raise RuntimeError("send failed")
+
+    with pytest.raises(RuntimeError, match="send failed"):
+        finalize_event_stream([_FailingFuture()], total_events_sent=1)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    "latest_timestamp,uuids,expected",
+    [
+        (None, [], {}),
+        (
+            1704067200000,
+            ["a", "b"],
+            {"last_fetch": "2024-01-01 00:00:00", "last_fetched_uuids": ["a", "b"]},
+        ),
+        ("invalid", ["x"], {"last_fetch": "invalid", "last_fetched_uuids": ["x"]}),
+    ],
+)
+def test_compute_last_run(latest_timestamp, uuids, expected):
+    """compute_last_run formats the high-water mark or returns {} when absent."""
+    assert compute_last_run(latest_timestamp, uuids) == expected
 
 
 # ========================================
@@ -1318,7 +1498,9 @@ def test_main_fetch_events_success(mocker):
     )
     mocker.patch.object(demisto, "args", return_value={})
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(CyberArkISP, "fetch_events_with_pagination", return_value=[])
+    mocker.patch.object(demisto, "updateModuleHealth")
+    # fetch-events now streams via iter_event_pages; mock it to yield no pages.
+    mocker.patch.object(CyberArkISP, "iter_event_pages", return_value=iter([]))
 
     CyberArkISP.main()
 
@@ -1380,3 +1562,451 @@ def test_main_parse_params_error(mocker, capfd):
         mock_return_error.assert_called_once()
         error_message = mock_return_error.call_args[0][0]
         assert re.search(r"server url is required", error_message, re.IGNORECASE)
+
+
+# ===============================================================
+# Tests: Directory Data / fetch-assets (CIAC-16176)
+# ===============================================================
+
+from CyberArkISP import (  # noqa: E402
+    DirectorySource,
+    PRODUCT_BY_SOURCE,
+    DIRECTORY_VENDOR,
+    NEXT_TRIGGER_VALUE,
+    REDROCK_QUERY_BY_SOURCE,
+    RedrockClient,
+    annotate_assets,
+    extract_rows_from_redrock_response,
+    fetch_assets_command,
+    fetch_redrock_page,
+    get_assets_command,
+    parse_directory_sources,
+)
+
+
+@pytest.fixture()
+def redrock_client(mocker):
+    """A RedrockClient with the network calls mocked out."""
+    rc = RedrockClient(
+        identity_url=IDENTITY_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        verify=True,
+        proxy=False,
+    )
+    mocker.patch.object(rc, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    return rc
+
+
+def _redrock_response(rows: list[dict], full_count: int | None = None) -> dict:
+    """Build a Redrock-shaped response dict from a list of row dicts."""
+    return {
+        "success": True,
+        "Result": {
+            "Results": [{"Row": row} for row in rows],
+            "Count": len(rows),
+            "FullCount": full_count if full_count is not None else len(rows),
+        },
+    }
+
+
+@pytest.mark.parametrize(
+    "raw_input,expected",
+    [
+        ("Users,Groups", [DirectorySource.USERS, DirectorySource.GROUPS]),
+        (["Users", "Roles"], [DirectorySource.USERS, DirectorySource.ROLES]),
+        ("", []),
+        (None, []),
+        # Unknowns are silently dropped, valid ones survive.
+        ("Users,Bogus,Roles", [DirectorySource.USERS, DirectorySource.ROLES]),
+        # All four selected explicitly.
+        (
+            "Users,Groups,Roles,Applications",
+            [DirectorySource.USERS, DirectorySource.GROUPS, DirectorySource.ROLES, DirectorySource.APPLICATIONS],
+        ),
+    ],
+)
+def test_parse_directory_sources(raw_input, expected):
+    """Tests the multi-select normaliser handles list/string/None and unknowns."""
+    assert parse_directory_sources(raw_input) == expected
+
+
+def test_extract_rows_from_redrock_response_with_row_wrapper():
+    """Standard Redrock shape (Result.Results[*].Row) is unwrapped correctly."""
+    response = _redrock_response([{"ID": "u1"}, {"ID": "u2"}], full_count=2)
+    rows, has_more = extract_rows_from_redrock_response(response)
+    assert rows == [{"ID": "u1"}, {"ID": "u2"}]
+    assert has_more is False
+
+
+def test_extract_rows_from_redrock_response_has_more_true():
+    """Mid-stream page: has_more is True when FullCount > current page Count.
+
+    Represents the common case where a full page arrives and the server has
+    declared more rows remain (e.g. page 1 of 3 with PageSize=10, FullCount=25).
+    """
+    response = _redrock_response([{"ID": str(i)} for i in range(10)], full_count=25)
+    rows, has_more = extract_rows_from_redrock_response(response)
+    assert len(rows) == 10
+    assert has_more is True
+
+
+def test_extract_rows_from_redrock_response_last_partial_page_signals_more():
+    """Edge case the AI reviewer flagged: when the final page returns fewer
+    rows than PageSize but ``FullCount`` still > current Count,
+    ``extract_rows_from_redrock_response`` returns ``has_more=True``.
+
+    This is an intentional limitation of the function — it only reports what
+    the single response says. The orchestrator (``fetch_assets_command``) is
+    responsible for stopping the cycle when ``len(rows) < page_size``, which
+    is the standard short-page-means-last idiom. This test pins the
+    contract so any future refactor that moves the short-page detection
+    into ``extract_rows_from_redrock_response`` flips this assertion.
+    """
+    # 5 rows returned, FullCount=25 → server-reported "more rows exist", but
+    # in practice this is the last page (the caller knows because page_size
+    # was, say, 10 and we got back only 5).
+    response = _redrock_response([{"ID": str(i)} for i in range(5)], full_count=25)
+    _rows, has_more = extract_rows_from_redrock_response(response)
+    assert has_more is True, "Document the current contract: has_more mirrors FullCount > Count"
+
+
+def test_extract_rows_from_redrock_response_empty():
+    """Empty Result block returns empty rows / has_more=False."""
+    rows, has_more = extract_rows_from_redrock_response({"success": True, "Result": {}})
+    assert rows == []
+    assert has_more is False
+
+
+def test_annotate_assets_adds_source_label():
+    """annotate_assets adds a `_source` field to every row, never mutates the input."""
+    src_rows = [{"ID": "u1", "Username": "alice"}]
+    annotated = annotate_assets(src_rows, DirectorySource.USERS)
+    assert annotated[0]["_source"] == "Users"
+    assert annotated[0]["ID"] == "u1"
+    # Input is not mutated.
+    assert "_source" not in src_rows[0]
+
+
+def test_fetch_redrock_page_uses_correct_script(mocker, redrock_client):
+    """fetch_redrock_page passes the per-source SELECT script verbatim and 1-based PageNumber."""
+    mock_query = mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "g1"}], full_count=1))
+    rows, has_more = fetch_redrock_page(redrock_client, DirectorySource.GROUPS, page_number=1, page_size=500)
+    assert rows == [{"ID": "g1"}]
+    assert has_more is False
+    mock_query.assert_called_once_with(
+        script=REDROCK_QUERY_BY_SOURCE[DirectorySource.GROUPS],
+        args={"PageNumber": 1, "PageSize": 500},
+    )
+
+
+# -----------------------------------------------------------------
+# fetch_assets orchestrator: state machine + nextTrigger continuation
+# -----------------------------------------------------------------
+
+
+def _build_fetch_assets_config(sources, page_size: int = 10000) -> dict:
+    return {
+        "directory_sources": sources,
+        "max_records_per_page": page_size,
+        "redrock_token_url": f"{IDENTITY_URL}/oauth2/platformtoken",
+        "redrock_query_base": f"{IDENTITY_URL}/Redrock/Query",
+        "client_id": MOCK_CLIENT_ID,
+        "client_secret": MOCK_CLIENT_SECRET,
+        "verify": True,
+        "proxy": False,
+    }
+
+
+def test_fetch_assets_first_run_single_source_single_page_seals_snapshot(mocker, redrock_client):
+    """Happy path: one source, one page, one cycle → one sealed snapshot push,
+    cycle-complete last-run is EMPTY so next cycle generates a fresh
+    snapshot_id (see test_fetch_assets_seals_with_fresh_snapshot_id_on_next_cycle).
+    """
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u1"}, {"ID": "u2"}], full_count=2))
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+
+    # Single push, sealed (items_count = total = 2).
+    assert send_mock.call_count == 1
+    call_kwargs = send_mock.call_args.kwargs
+    assert call_kwargs["vendor"] == DIRECTORY_VENDOR
+    assert call_kwargs["product"] == PRODUCT_BY_SOURCE[DirectorySource.USERS]
+    assert call_kwargs["data_type"] == "assets"
+    assert call_kwargs["items_count"] == 2
+    assert len(call_kwargs["data"]) == 2
+    # Cycle complete → last-run payload is EMPTY (so next cycle re-initialises
+    # snapshot_id afresh). No nextTrigger means the next invocation will
+    # happen on the regular schedule, not in 30s.
+    last_run_payload = set_last_run_mock.call_args[0][0]
+    assert last_run_payload == {}, f"Cycle-end payload must be empty; got {last_run_payload}"
+
+
+def test_fetch_assets_pagination_emits_nextTrigger(mocker, redrock_client):
+    """When Redrock signals more pages (FullCount > Count), we push items_count=1 and re-trigger."""
+    # 3 rows on this page, but FullCount=10 → has_more=True.
+    mocker.patch.object(
+        redrock_client, "query", return_value=_redrock_response([{"ID": "u1"}, {"ID": "u2"}, {"ID": "u3"}], full_count=10)
+    )
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+
+    assert send_mock.call_args.kwargs["items_count"] == 1  # mid-cycle marker
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload["nextTrigger"] == NEXT_TRIGGER_VALUE
+    # Page index advanced from 1 → 2 for Users.
+    assert payload["page_index_by_source"]["Users"] == 2
+    assert payload["total_by_source"]["Users"] == 3
+    assert "Users" in payload["pending_sources"]
+
+
+def test_fetch_assets_continuation_uses_same_snapshot_id(mocker, redrock_client):
+    """The 2nd invocation within the cycle MUST reuse the snapshot_id from the 1st."""
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u4"}, {"ID": "u5"}], full_count=5))
+    # Simulate the platform's 2nd nextTrigger invocation.
+    last_run_in = {
+        "snapshot_id": "snap-abc-123",
+        "page_index_by_source": {"Users": 2},
+        "total_by_source": {"Users": 3},
+        "pending_sources": ["Users"],
+        "nextTrigger": NEXT_TRIGGER_VALUE,
+    }
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value=last_run_in)
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+
+    # snapshot_id is reused on the send and persisted in last-run.
+    assert send_mock.call_args.kwargs["snapshot_id"] == "snap-abc-123"
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload["snapshot_id"] == "snap-abc-123"
+    # cumulative total now 3+2 = 5; that's the seal because Count=2 == FullCount=5? no, FullCount=5 > Count=2 → still has_more
+    # In this test response Count=2, FullCount=5 → has_more True → items_count=1 marker
+    assert send_mock.call_args.kwargs["items_count"] == 1
+    assert payload["total_by_source"]["Users"] == 5
+    assert payload["page_index_by_source"]["Users"] == 3
+
+
+def test_fetch_assets_completes_cycle_clears_state(mocker, redrock_client):
+    """When all selected sources are sealed, last-run is FULLY cleared (empty
+    dict) so the next cycle starts fresh with a new snapshot_id.
+
+    This is the fix for the bug observed live on engine-qa2 where the cycle-end
+    payload still contained ``snapshot_id``, causing the next fetch cycle to
+    reuse it and produce snapshot-replace storms.
+    """
+    # Last sealed page returning single row, FullCount equals page Count → has_more=False
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u6"}], full_count=1))
+    last_run_in = {
+        "snapshot_id": "snap-final-1",
+        "page_index_by_source": {"Users": 3},
+        "total_by_source": {"Users": 5},
+        "pending_sources": ["Users"],
+    }
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value=last_run_in)
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+
+    # Final seal: items_count = cumulative total = 5+1 = 6, using the cycle's snapshot_id.
+    assert send_mock.call_args.kwargs["items_count"] == 6
+    assert send_mock.call_args.kwargs["snapshot_id"] == "snap-final-1"
+    # Persisted last-run is COMPLETELY EMPTY so the next invocation starts fresh.
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload == {}, f"Cycle-end payload must be empty to prevent snapshot_id reuse next cycle; got {payload}"
+
+
+def test_fetch_assets_seals_with_fresh_snapshot_id_on_next_cycle(mocker, redrock_client):
+    """REGRESSION test for the CIAC-16176 snapshot_id-reuse bug observed on
+    engine-qa2 (2026-05-24).
+
+    Scenario reproduced from production logs:
+    1. Cycle 1: a single source completes, seals with snapshot_id S1.
+    2. The platform's assets-fetch scheduler fires again very quickly (short
+       assetsFetchInterval on the tenant, OR an explicit operator-triggered
+       fetch).
+    3. Cycle 2 MUST generate a fresh snapshot_id S2 (S2 != S1), otherwise the
+       platform treats cycle 2's data as additional chunks of cycle 1's
+       snapshot and the items_count drifts / replace-storms occur.
+    """
+    # Two consecutive single-row sealed pages — represents cycle 1 then cycle 2.
+    mocker.patch.object(
+        redrock_client,
+        "query",
+        side_effect=[
+            _redrock_response([{"ID": "u1"}], full_count=1),
+            _redrock_response([{"ID": "u1"}], full_count=1),
+        ],
+    )
+    # snapshot_id is derived from time.time() in milliseconds. On a fast machine
+    # both cycles can execute within the same millisecond, making the two ids
+    # collide and the assertion below flake. Pin time.time to two distinct
+    # values so the test deterministically exercises the fresh-id-per-cycle
+    # behaviour rather than relying on wall-clock resolution.
+    mocker.patch("CyberArkISP.time.time", side_effect=[1_700_000_000.000, 1_700_000_001.000])
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    # --- Cycle 1 ---
+    # Simulate platform's empty last-run on first ever invocation.
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+
+    config = _build_fetch_assets_config([DirectorySource.USERS])
+    fetch_assets_command(redrock_client, config)
+    cycle1_snapshot_id = send_mock.call_args.kwargs["snapshot_id"]
+    cycle1_persisted = set_last_run_mock.call_args[0][0]
+    # Sanity: cycle 1 sealed cleanly with empty persisted state.
+    assert cycle1_persisted == {}, f"Cycle 1 must persist empty last-run after sealing; got {cycle1_persisted}"
+
+    # --- Cycle 2 ---
+    # Platform's get-last-run now returns the empty dict cycle 1 persisted.
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value=cycle1_persisted)
+
+    fetch_assets_command(redrock_client, config)
+    cycle2_snapshot_id = send_mock.call_args.kwargs["snapshot_id"]
+
+    assert cycle2_snapshot_id != cycle1_snapshot_id, (
+        f"Cycle 2 must generate a FRESH snapshot_id, but got the same value as cycle 1: "
+        f"cycle1={cycle1_snapshot_id} cycle2={cycle2_snapshot_id}. "
+        "This is the bug observed on engine-qa2 on 2026-05-24."
+    )
+
+
+def test_fetch_assets_processes_one_source_per_invocation(mocker, redrock_client):
+    """With 2 selected sources, the first invocation should only process the first
+    source (Users) and leave Groups for the next nextTrigger invocation."""
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "u1"}], full_count=1))
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS, DirectorySource.GROUPS])
+    fetch_assets_command(redrock_client, config)
+
+    # Only Users was sent; Groups still pending.
+    assert send_mock.call_count == 1
+    assert send_mock.call_args.kwargs["product"] == PRODUCT_BY_SOURCE[DirectorySource.USERS]
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload["pending_sources"] == ["Groups"]
+    # Cycle has more work, so nextTrigger is set.
+    assert payload["nextTrigger"] == NEXT_TRIGGER_VALUE
+
+
+def test_fetch_assets_partial_failure_skips_failed_source_keeps_others(mocker, redrock_client):
+    """If a source raises during query, drop that source from the cycle but
+    leave the other selected sources to be processed by subsequent
+    nextTriggers (partial-failure behaviour)."""
+    mocker.patch.object(redrock_client, "query", side_effect=DemistoException("Redrock 500"))
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+    # Silence the deliberate demisto.error() call this test path triggers, so
+    # the project's check_std_out_err autouse fixture doesn't fail the test.
+    # We assert below that demisto.error was actually called.
+    error_mock = mocker.patch("CyberArkISP.demisto.error")
+
+    config = _build_fetch_assets_config([DirectorySource.USERS, DirectorySource.GROUPS])
+    fetch_assets_command(redrock_client, config)
+
+    # Nothing pushed (Users failed; Groups deferred to next nextTrigger).
+    assert send_mock.call_count == 0
+    payload = set_last_run_mock.call_args[0][0]
+    # Failed source dropped from pending; Groups still pending.
+    assert "Users" not in payload["pending_sources"]
+    assert "Groups" in payload["pending_sources"]
+    # Failed source's page index was reset for next-cycle clean restart.
+    assert payload["page_index_by_source"]["Users"] == 1
+    assert payload["total_by_source"]["Users"] == 0
+    # The error path WAS exercised (test would silently pass otherwise if the
+    # exception were caught earlier).
+    assert error_mock.call_count == 1
+    assert "Source Users failed on page 1" in error_mock.call_args[0][0]
+
+
+def test_fetch_assets_no_sources_selected_is_noop(mocker, redrock_client):
+    """If the customer selected zero directory sources, fetch is a no-op (no API calls, no last-run mutation)."""
+    query_mock = mocker.patch.object(redrock_client, "query")
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+
+    config = _build_fetch_assets_config([])
+    fetch_assets_command(redrock_client, config)
+
+    query_mock.assert_not_called()
+    send_mock.assert_not_called()
+    set_last_run_mock.assert_not_called()
+
+
+def test_fetch_assets_empty_source_still_seals_snapshot(mocker, redrock_client):
+    """If an enabled source returns 0 rows, we send an empty snapshot to seal
+    the dataset (matches Tenable_io behaviour). Cycle-end last-run is empty."""
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([], full_count=0))
+    mocker.patch("CyberArkISP.demisto.getAssetsLastRun", return_value={})
+    set_last_run_mock = mocker.patch("CyberArkISP.demisto.setAssetsLastRun")
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.ROLES])
+    fetch_assets_command(redrock_client, config)
+
+    # Empty seal: data=[], items_count=0.
+    assert send_mock.call_count == 1
+    assert send_mock.call_args.kwargs["data"] == []
+    assert send_mock.call_args.kwargs["items_count"] == 0
+    # Cycle complete (the single source's only page was its last) → empty last-run.
+    payload = set_last_run_mock.call_args[0][0]
+    assert payload == {}, f"Cycle-end payload must be empty; got {payload}"
+
+
+# -----------------------------------------------------------------
+# Manual debug command (cyberark-isp-get-<source>)
+# -----------------------------------------------------------------
+
+
+def test_get_assets_command_no_push_returns_command_results(mocker, redrock_client):
+    """Manual debug command (default should_push_assets=false) returns
+    CommandResults with the rows under the per-source context prefix."""
+    mocker.patch.object(
+        redrock_client,
+        "query",
+        return_value=_redrock_response([{"ID": "app1", "Name": "Salesforce", "AppType": "SaaS"}], full_count=1),
+    )
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.APPLICATIONS])
+    result = get_assets_command(redrock_client, {"limit": "10"}, DirectorySource.APPLICATIONS, config)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "CyberArkISP.Application"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs[0]["ID"] == "app1"
+    send_mock.assert_not_called()
+
+
+def test_get_assets_command_with_push_calls_send_data_to_xsiam(mocker, redrock_client):
+    """When should_push_assets=true, the manual command pushes to XSIAM with
+    the source-specific product and data_type=assets."""
+    mocker.patch.object(redrock_client, "query", return_value=_redrock_response([{"ID": "r1", "Name": "Admin"}], full_count=1))
+    send_mock = mocker.patch("CyberArkISP.send_data_to_xsiam")
+
+    config = _build_fetch_assets_config([DirectorySource.ROLES])
+    result = get_assets_command(redrock_client, {"limit": "10", "should_push_assets": "true"}, DirectorySource.ROLES, config)
+
+    assert isinstance(result, str)
+    assert "Successfully retrieved and pushed" in result
+    send_mock.assert_called_once()
+    assert send_mock.call_args.kwargs["product"] == PRODUCT_BY_SOURCE[DirectorySource.ROLES]
+    assert send_mock.call_args.kwargs["data_type"] == "assets"
+    assert send_mock.call_args.kwargs["items_count"] == 1

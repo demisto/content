@@ -47,8 +47,8 @@ This script is used in the following playbooks and scripts.
 | FileEnrichment.Hashes.ImpHash | The file ImpHash hash if exists. | String |
 | FileEnrichment.MaxScore | The max score of all the indicators found. | Number |
 | FileEnrichment.MaxVerdict | The max verdict of all the indicators found. | String |
-| FileEnrichment.Results | List of all indicators found for the URL. | Array |
-| FileEnrichment.TIMScore | The TIM score of the URL. | Number |
+| FileEnrichment.Results | List of all indicators found for the File. | Array |
+| FileEnrichment.TIMScore | The TIM score of the File. | Number |
 | FileEnrichment.Status | The status of the indicator: "Manual" if the score was changed manually, "Fresh" if modified within the last week, "Stale" if modified more than a week ago, and "None" if never modified. | String |
 | FileEnrichment.ModifiedTime | The time the indicator was last modified. | Date |
 | FileEnrichment.Results.Brand | The brand of the indicator. | String |

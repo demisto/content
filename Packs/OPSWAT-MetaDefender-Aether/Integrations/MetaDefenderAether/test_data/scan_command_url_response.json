@@ -1,0 +1,1271 @@
+{
+    "flow_id": "69d648b7799d5bf325f2754a",
+    "userId": "None",
+    "allFinished": true,
+    "allFilesDownloadFinished": true,
+    "allAdditionalStepsDone": true,
+    "reportsAmount": 1,
+    "priority": "max",
+    "pollPause": 5,
+    "state": "finished",
+    "scanStartedDate": "04/08/2026, 12:23:19",
+    "fileSize": 0,
+    "reports": {
+        "641f5c49-e2f7-4b38-a275-cdbaa240cf02": {
+            "finalVerdict": {
+                "verdict": "NO_THREAT",
+                "threatLevel": 0.25,
+                "confidence": 1.0,
+                "verdictLabel": "no_threat_detected"
+            },
+            "allTags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0,
+                            "verdictLabel": "no_threat_detected"
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "ba057dda89a609454438be247037b0b0c7083b05e93d9d307faf22436a1944ea",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0,
+                            "verdictLabel": "undetermined"
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "html",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0,
+                            "verdictLabel": "undetermined"
+                        }
+                    }
+                },
+                {
+                    "source": "SIGNAL",
+                    "sourceIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                    "isRootTag": false,
+                    "tag": {
+                        "name": "soft-404",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0,
+                            "verdictLabel": "no_threat_detected"
+                        }
+                    }
+                }
+            ],
+            "overallState": "success_partial",
+            "taskReference": {
+                "name": "transform-file",
+                "additionalInfo": {
+                    "submitName": "008ec4453ff31513f43893cba7aa31c8",
+                    "digests": {
+                        "SHA-256": "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57"
+                    }
+                },
+                "ID": "658ac46e-10c3-4608-8b2a-67f53e528cbd",
+                "state": "SUCCESS",
+                "resourceReference": {
+                    "type": "TRANSFORM_FILE",
+                    "name": "file",
+                    "ID": "d722856d-2883-43eb-9003-042115c366b8"
+                },
+                "opcount": 1.0,
+                "processTime": 67737.0
+            },
+            "subtaskReferences": [
+                {
+                    "name": "osint-ex",
+                    "additionalInfo": "URL",
+                    "ID": "d43f75e2-f292-4ace-a429-fb8434f6dcce",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "b13381c1-bd82-4198-a2cc-1b49f692d5ce"
+                    },
+                    "opcount": 2.0,
+                    "processTime": 1007.0
+                },
+                {
+                    "name": "url-render",
+                    "additionalInfo": 1.0,
+                    "ID": "2d7ab2fc-fa83-4ab3-acf3-52d838822f11",
+                    "state": "FAILED",
+                    "resourceReference": {
+                        "type": "URL_RENDER",
+                        "name": "url-render",
+                        "ID": "c3a5353e-5c5e-4ce4-b2f2-9c32a55787b6"
+                    },
+                    "opcount": 0.0,
+                    "processTime": 60864.0
+                },
+                {
+                    "name": "domain-resolve",
+                    "additionalInfo": 1.0,
+                    "ID": "9dc6b01b-9489-40e1-9bab-2c02830d7820",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "DOMAIN_RESOLVE",
+                        "name": "domain-resolve",
+                        "ID": "cca8c56d-872f-469f-9b4b-7e7d43ebab3f"
+                    },
+                    "opcount": 1.0,
+                    "processTime": 7.0
+                },
+                {
+                    "name": "file-download",
+                    "additionalInfo": 152.0,
+                    "ID": "60d844cc-e69f-455d-bdbc-00454eb69fd8",
+                    "state": "SUCCESS_PARTIAL",
+                    "resourceReference": {
+                        "type": "FILE_DOWNLOAD",
+                        "name": "file-download",
+                        "ID": "44aba9f6-5c95-4f81-9c55-e59f34af5dfd"
+                    },
+                    "opcount": 10.0,
+                    "processTime": 24258.0
+                },
+                {
+                    "name": "osint-ex",
+                    "additionalInfo": "URL",
+                    "ID": "12d19943-b5e8-46dc-8f91-5299c3d8a67b",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "51de685a-6869-40cf-b7d8-cedbef8df5a4"
+                    },
+                    "opcount": 120.0,
+                    "processTime": 6216.0
+                },
+                {
+                    "name": "osint-ex",
+                    "additionalInfo": "IP",
+                    "ID": "bcf5e9b8-00fe-4a07-9d46-52712a8b4d32",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "d4df6882-1042-4855-a808-940956e623f5"
+                    },
+                    "opcount": 2.0,
+                    "processTime": 404.0
+                },
+                {
+                    "name": "osint-ex",
+                    "additionalInfo": "DOMAIN",
+                    "ID": "51513b0a-d9d7-4338-9df2-80b228a1dd53",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "101a716a-1e89-471f-aa15-33afbf7b7d69"
+                    },
+                    "opcount": 0.0,
+                    "processTime": 4.0
+                },
+                {
+                    "name": "osint-fuzzyhash",
+                    "additionalInfo": "FILE_HASH_SHA256",
+                    "ID": "13520265-426e-4aed-a17d-28613b53fee3",
+                    "state": "SUCCESS",
+                    "resourceReference": {
+                        "type": "OSINT",
+                        "name": "osint",
+                        "ID": "b5689876-d24a-4158-a6f7-8df5cd9ce44a"
+                    },
+                    "opcount": 0.0,
+                    "processTime": 3.0
+                }
+            ],
+            "allSignalGroups": [
+                {
+                    "identifier": "HTML004",
+                    "description": "HTML page contains user input field",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.1,
+                        "confidence": 1.0,
+                        "verdictLabel": "no_threat_detected"
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found input field with name: \"query-builder-test\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found input field with name: \"custom_scope_name\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found input field with name: \"custom_scope_query\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found input field with name: \"user_email\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                },
+                {
+                    "identifier": "HTML007",
+                    "description": "Found embedded content within HTML script context",
+                    "averageSignalStrength": 0.25,
+                    "peakSignalStrength": 0.25,
+                    "finalSignalStrength": 0.25,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.25,
+                        "confidence": 1.0,
+                        "verdictLabel": "no_threat_detected"
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/high-contrast-cookie-fed1d93364101384.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/wp-runtime-7b8f8203e2985297.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/fetch-utilities-78a4114cfa572239.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/85924-e131bec5f99667e1.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/28839-734cb6d8a7150172.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/34646-edd5528648c197b1.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/environment-51c0968cf21c176d.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/runtime-helpers-3bb6f7d6b7a2f531.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/2966-f6796bfd155feae1.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/96232-69d46a31854353d4.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/41013-7a6deee6d6ff15eb.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/51210-3abb7238871a5b29.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/64247-7de91c52a8aca0eb.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/31721-17b28a26ab4c2e02.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/46740-6606b1026a237412.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/39130-334926c8365e947c.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/github-elements-459d4cd7a0f718d7.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/element-registry-4ca58e06683111bd.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/react-core-9efb35432aeb5ac0.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/react-lib-a4cf89fce9a1300a.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/7053-fe40037405b8998b.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/79039-2565b539a6ebc09b.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/61110-93cf7706e5dc8bfa.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/2887-47ac9a4b8862e6bf.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/26533-4df1172b25427069.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/66385-9fabdb6ffe6a94cf.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/93716-c0d708c7899c4298.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/60481-1a8127058c27e9af.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/46287-ba2ddd25bb86186f.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/2498-7a413c8209222158.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/61025-65c40451bea578e1.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/89627-fbbd31c43d83e10c.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/49029-32f138b26aa15ad8.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/99328-5e06da57c4622e21.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/behaviors-ea20a2c6238da250.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/4244-d5dcb589fae0ecbf.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/notifications-global-206312e9c9776c21.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/87903-17ef16991d8bcfc7.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/22445-1d247a8bf5b6a1d5.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/marketing-essentials-9a86288f791548e3.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/primer-react-72d2ec7521017972.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/octicons-react-a181826f33dcd4d8.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/87376-a8280ed29a57d4c3.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/37869-a873e81f0fcb98e2.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/68751-fe5cb40b5547c377.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/70641-5a6ec3de78151c22.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/46752-46c707717fcbe6a9.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/85897-345989e6728659d7.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/71236-ed1398bff632952c.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/90018-d35ce3c32806d709.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/48761-4941fce410205fe2.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/18382-3d41da96c8d4b890.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/6572-01263ee51465ffb1.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/63991-125a5c660965e63e.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/55077-5c9ca4985817e0f1.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/37826-b3ebde81e7762221.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/28174-86d8b64c92c04430.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/63050-6bfa87fb71a6dcbe.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/39250-d8a25e2693e66f05.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/49957-92efef4240df7e52.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/landing-pages-c18ba2fdd1c5392f.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/global-banner-disable-c5d230875ac0a28a.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/86735-f3e914a229b8e278.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Script source found: \"https://github.githubassets.com/assets/sessions-2f8b9c6ac9ed412d.js\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                },
+                {
+                    "identifier": "HTML008",
+                    "description": "HTML page contains images",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.1,
+                        "confidence": 1.0,
+                        "verdictLabel": "no_threat_detected"
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "The number of the embedded images: \"24\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                },
+                {
+                    "identifier": "U020",
+                    "description": "URL download failed or resulted in incomplete data",
+                    "averageSignalStrength": 0.0,
+                    "peakSignalStrength": 0.0,
+                    "finalSignalStrength": 0.0,
+                    "verdict": {
+                        "verdict": "UNKNOWN",
+                        "threatLevel": 0.0,
+                        "confidence": 1.0,
+                        "verdictLabel": "undetermined"
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.0,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "URL \"https://api.githubcopilot.com\" threw a 404 Not Found error",
+                            "originPath": "file.extractedUrls.references",
+                            "originType": "EXTERNAL_PARSER",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "dataUUID": "d0fa6e70-d726-43fd-8f34-34bab2343c4d",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                },
+                {
+                    "identifier": "HTML012",
+                    "description": "HTML page contains hidden input values",
+                    "averageSignalStrength": 0.25,
+                    "peakSignalStrength": 0.25,
+                    "finalSignalStrength": 0.25,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.25,
+                        "confidence": 1.0,
+                        "verdictLabel": "no_threat_detected"
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found hidden input value: \"9cB+lZNBC0UM6hfd9hiBDE/Yz1+NY6I2Zsq6v3G4prruaPvU6XEkqEebEXJjtPvnWh2QxkUrRNTs8k2zy6qgzQ==\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found hidden input value: \"cDOFZ8Y1NgrUe+c/WjCBF1YtBcr0I9zOsejSSRpN6RfnaT2l/StE8KmrRyzJ8IwmccnOyIbu37ynMg8kQhTQTQ==\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found hidden input value: \"2FkBXYLkEYHDsd6ASBZSHtruVIaoGyjSaIU+T8mALQ5uPlIfSG03kNhicihixoqSm4uVq1dK3r86nWjkBftceg==\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "Found hidden input value: \"form-home-signup\"",
+                            "originPath": "file.extendedData",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                },
+                {
+                    "identifier": "I001",
+                    "description": "OSINT source detected benign resource(s)",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.1,
+                        "confidence": 1.0,
+                        "verdictLabel": "no_threat_detected"
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "OSINT provider \"URL_REPUTATION_PREDICTOR\" detected resource \"https://github.com/\" as \"NO_THREAT\"",
+                            "additionalInfo": "https://github.com/",
+                            "originPath": "osint.results.verdict",
+                            "originType": "INPUT_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                },
+                {
+                    "identifier": "D001",
+                    "description": "Found a domain referencing a social media service",
+                    "allMitreTechniques": [
+                        {
+                            "ID": "T1102.002",
+                            "relatedTactic": {
+                                "ID": "TA0011",
+                                "name": "Command and Control"
+                            },
+                            "name": "Bidirectional Communication"
+                        }
+                    ],
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.1,
+                        "confidence": 1.0,
+                        "verdictLabel": "no_threat_detected"
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "Found domain \"instagram.com\"",
+                            "originPath": "file.extractedDomains.references",
+                            "originType": "EXTRACTED_FILE",
+                            "originIdentifier": "f55a6619de460ceedbff65bd77dab6f58bffb0d63adfebacbd8e4d3c9d419574",
+                            "dataUUID": "6886917f-35db-4628-bbde-0c0c0011a125",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        },
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "Found domain \"linkedin.com\"",
+                            "originPath": "file.extractedDomains.references",
+                            "originType": "EXTRACTED_FILE",
+                            "originIdentifier": "f55a6619de460ceedbff65bd77dab6f58bffb0d63adfebacbd8e4d3c9d419574",
+                            "dataUUID": "d52c6473-b5a6-412c-8a5b-5e58b42e280c",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                },
+                {
+                    "identifier": "HTML031",
+                    "description": "HTML document showed a soft 404 page",
+                    "averageSignalStrength": 0.1,
+                    "peakSignalStrength": 0.1,
+                    "finalSignalStrength": 0.1,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.1,
+                        "confidence": 1.0,
+                        "verdictLabel": "no_threat_detected"
+                    },
+                    "allTags": [
+                        {
+                            "source": "SIGNAL",
+                            "sourceIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "isRootTag": false,
+                            "tag": {
+                                "name": "soft-404",
+                                "synonyms": [],
+                                "descriptions": [],
+                                "verdict": {
+                                    "verdict": "NO_THREAT",
+                                    "threatLevel": 0.1,
+                                    "confidence": 1.0,
+                                    "verdictLabel": "no_threat_detected"
+                                }
+                            }
+                        }
+                    ],
+                    "signals": [
+                        {
+                            "strength": 0.1,
+                            "isStrictlyBasedOnInputData": true,
+                            "signalReadable": "HTML document showed a soft 404 page at URL",
+                            "originPath": "file.extendedData.isSoft404",
+                            "originType": "DOWNLOADED_FILE",
+                            "originIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                            "tags": [
+                                {
+                                    "source": "SIGNAL",
+                                    "sourceIdentifier": "be968284711273cf642add18502c60a052abe2370e867075e04d63a6c8b6ec27",
+                                    "isRootTag": false,
+                                    "tag": {
+                                        "name": "soft-404",
+                                        "synonyms": [],
+                                        "descriptions": [],
+                                        "verdict": {
+                                            "verdict": "NO_THREAT",
+                                            "threatLevel": 0.1,
+                                            "confidence": 1.0,
+                                            "verdictLabel": "no_threat_detected"
+                                        }
+                                    }
+                                }
+                            ],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                },
+                {
+                    "identifier": "U011",
+                    "description": "Found an URL to download an executable file",
+                    "allMitreTechniques": [
+                        {
+                            "ID": "T1105",
+                            "relatedTactic": {
+                                "ID": "TA0011",
+                                "name": "Command and Control"
+                            },
+                            "name": "Ingress Tool Transfer"
+                        }
+                    ],
+                    "averageSignalStrength": 0.25,
+                    "peakSignalStrength": 0.25,
+                    "finalSignalStrength": 0.25,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.25,
+                        "confidence": 1.0,
+                        "verdictLabel": "no_threat_detected"
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "The URL ends with an executable suffix \"https://github.com/cli/cli/releases/download/v2.89.0/gh_2.89.0_windows_amd64.msi\"",
+                            "originPath": "file.extractedUrls.references",
+                            "originType": "EXTERNAL_PARSER",
+                            "originIdentifier": "b10aa76a84d549671f6334adb830611ed2bfc81f4b5f765599c8775c2e11d7b2",
+                            "dataUUID": "a7881026-a0b7-4e15-a57c-ebae525a6619",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                },
+                {
+                    "identifier": "S050",
+                    "description": "Contains a HTTP refresh header",
+                    "averageSignalStrength": 0.25,
+                    "peakSignalStrength": 0.25,
+                    "finalSignalStrength": 0.25,
+                    "verdict": {
+                        "verdict": "NO_THREAT",
+                        "threatLevel": 0.25,
+                        "confidence": 1.0,
+                        "verdictLabel": "no_threat_detected"
+                    },
+                    "allTags": [],
+                    "signals": [
+                        {
+                            "strength": 0.25,
+                            "isStrictlyBasedOnInputData": false,
+                            "signalReadable": "Found artifact \"meta http-equiv=\"refresh\"\" in string \"<meta http-equiv=\\\"refresh\\\" content=\\\"360\\\"></head>\"",
+                            "originPath": "file.strings.references",
+                            "originType": "EXTRACTED_FILE",
+                            "originIdentifier": "ba057dda89a609454438be247037b0b0c7083b05e93d9d307faf22436a1944ea",
+                            "dataUUID": "4bfd6e23-9759-45fa-a062-03716fcc46cb",
+                            "tags": [],
+                            "mbcBehaviorsSet": []
+                        }
+                    ]
+                }
+            ],
+            "file": {
+                "name": "https://github.com/",
+                "hash": "09a8b930c8b79e7c313e5e741e1d59c39ae91bc1f10cdefa68b47bf77519be57",
+                "type": "other"
+            },
+            "filesDownloadFinished": true,
+            "allScanStepsDone": true,
+            "additionalStepsRunning": [],
+            "additionalStepsDone": true,
+            "created_date": "2026-04-08T12:23:19.844000",
+            "defaultOptionsUsed": true,
+            "peEmulationFileMetadata": [],
+            "scanOptions": {
+                "rapid_mode": false,
+                "early_termination": false,
+                "osint": true,
+                "extended_osint": true,
+                "extracted_files_osint": true,
+                "visualization": true,
+                "files_download": true,
+                "resolve_domains": true,
+                "input_file_yara": true,
+                "extracted_files_yara": true,
+                "whois": false,
+                "ips_meta": null,
+                "images_ocr": true,
+                "certificates": true,
+                "url_analysis": true,
+                "extract_strings": true,
+                "ocr_qr": true,
+                "phishing_detection": true
+            },
+            "scanEngine": "internal",
+            "aiData": [],
+            "estimatedTime": "11.0"
+        }
+    }
+}

@@ -11,11 +11,16 @@ There Are 2 integration flows:
 - Navigate to [service accounts](https://app.wiz.io/settings/service-accounts) to create a Service Account
 - Take note of the **Authentication Endpoint** shown on the screen. You'll need to use that in the Wiz Integration setup in XSOAR
 - Click on Add Service Account
-- Scope the permissions for least privileged access:
-    - **Resources** > **read:resources**
-    - **Issues** > **read:issues**
-    - **Issues** > **update:issues** (for bi-directional Issue management)
-    - **Projects** > **read:projects**
+- **Recommended:** choose the **"Cortex XSOAR"** integration template — Wiz will grant the scopes this integration needs.
+- If creating manually, scope the permissions as follows:
+    - **Resources** > `read:resources`
+    - **Projects** > `read:projects`
+    - **Issues** > `read:issues`, `read:threat_issues`
+    - **Issues** > `write:issue_status`, `write:threat_issue_status`
+    - **Issues** > `write:issue_ignore`
+    - **Issues** > `write:issue_comments`, `write:threat_issue_comments`
+    - **Issues** > `write:issue_due_at`, `write:threat_issue_due_at`
+    - **Resources** > `admin:run_copy_resource_forensics` (only if you use `wiz-copy-to-forensics-account`)
 - In the Cortex XSOAR Integration instance configuration window:
     - Check **Fetches incidents** radio button
     - Choose **Wiz Classifier** as your classifier

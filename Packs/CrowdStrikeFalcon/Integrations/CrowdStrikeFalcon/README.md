@@ -8,37 +8,39 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Client ID |  | False |
 | Secret |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
-| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR only. | False |
-| Max incidents per fetch | Supported in Cortex XSOAR only. Input a value between 1-500. Default is 15. | False |
-| Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IDP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| Mobile Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IOM filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| IOA filter query | In the query parameter format: 'cloud_provider=aws&amp;amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html\#keyword-arguments-13 | False |
-| Detections from On-Demand Scans filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| OFP Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| Third Party Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM Detection fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM automated leads fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM cases fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
-| NGSIEM incidents fetch query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
 | Fetch incidents |  | False |
-| Fetch events |  | False |
+| Incident Fetch types | Choose what incident types to fetch - You can choose any combination. Note:<br/>Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
 | Incident type |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | Supported in Cortex XSOAR and Cortex Platform. | False |
+| Max incidents per fetch | Supported in Cortex XSOAR and Cortex Platform. Input a value between 1-500. Default is 15. | False |
+| Incidents Fetch Interval | Supported in Cortex XSOAR and Cortex Platform. | False |
+| Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
+| Endpoint Detections filter query | Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html | False |
+| IDP Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Mobile Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOM filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| IOA filter query | The Indicator of Attack \(IOA\) fetch query. This is an FQL filter that is combined with the time-range filter using AND. For example: cloud_provider:'aws'. For more information, see the Falcon Query Language \(FQL\) documentation at: https://www.falconpy.io/Usage/Falcon-Query-Language.html. | False |
+| Detections from On-Demand Scans filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| OFP Detections filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Third Party Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM Detection fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM automated leads fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM cases fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| NGSIEM incidents fetch query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
+| Recon filter query | Use Falcon Query Language \(FQL\) to filter results. For more information, see the \[FQL Syntax Documentation\]\(https://www.falconpy.io/Usage/Falcon-Query-Language.html\). | False |
 | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex XSOAR\). | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
 | Close Mirrored XSOAR Incident | When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR. | False |
 | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored. | False |
-| Fetch types | Choose what to fetch -  You can choose any combination. Note:<br/>Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
-| Fetch types | Choose what to fetch -  You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
-| Fetch Asset types | The asset sources to ingest into the Cortex Unified Asset Inventory. | False |
 | Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
-| Incidents Fetch Interval | Supported in Cortex XSOAR only. | False |
+| Fetch events |  | False |
+| Event Fetch types | Choose what event types to fetch - You can choose any combination. Note: Records from the detection endpoint of the CrowdStrike Falcon UI could be of types: 'Endpoint Detection' and 'OFP Detection'. | False |
 | Events Fetch Interval |  | False |
-| Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
 | Advanced: Time in minutes to look back when fetching events and detections | Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created. | False |
+| Fetch assets and vulnerabilities |  | False |
+| Fetch Asset types | The asset sources to ingest into the Cortex Unified Asset Inventory. | False |
 | Assets Fetch Interval | The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 ### Required API client scope
 
@@ -64,6 +66,7 @@ In order to use the CrowdStrike Falcon integration, the API client must have the
 - Identity Protection Assessment - Read
 - Falcon Container Image - Read
 - Recon - Read and Write
+- Workflow - Read and Write
 
 ## Incident Mirroring (Cortex XSOAR Only)
 
@@ -130,32 +133,14 @@ For example: `cloud_provider: 'aws'+account_id: 'my_id'`
 
 ### Indicator of Attack (IOA) Fetch Query
 
-The IOA fetch query uses a query parameter format: `param1=val1&param2=val2`
-
-Using multiple values for the same parameter is not supported.
-
-Available parameters:
-
-- `cloud_provider` (required by every query)
-- `account_id`
-- `aws_account_id`
-- `azure_subscription_id`
-- `azure_tenant_id`
-- `severity`
-- `region`
-- `service`
-- `state`
-
-For example: `cloud_provider=aws&region=eu-west-2`
-
-For more information, refer to the [documentation on CSPM Registration Keyword Arguments](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
+Indicator of Attack (IOA) fetch query. An FQL filter that will be combined with the time-range filter using AND. For example: `cloud_provider:'aws'`. For more information, see the [FQL Syntax Documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html).
 
 ## Fetch Assets
 
-CrowdStrike Falcon assets and vulnerabilities can be fetched and ingested into the Cortex XSIAM Unified Asset Inventory (UAI).
+CrowdStrike Falcon assets and vulnerabilities can be fetched and ingested into the Cortex XSIAM [Unified Asset Inventory (UAI)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Unified-Asset-Inventory).
 Select the desired method in the Fetch Assets Type parameter:
 
-- Spotlight: Fetches vulnerabilities from the Spotlight Vulnerabilities Endpoint and enriches them with the associated host details. Both the vulnerabilities and the corresponding assets are ingested into the XSIAM UAI.
+- Spotlight: Fetches vulnerabilities from the Spotlight Vulnerabilities Endpoint and enriches them with the associated host details. Both the vulnerabilities and the corresponding assets are ingested into the Unified Asset Inventory. Only vulnerabilities updated within the last 100 days are retrieved, keeping each collection focused on recent data.
 - CNAPP Alerts: Fetches Cloud Native Application Protection Platform (CNAPP) alerts as assets.
 
 ## Commands
@@ -182,7 +167,7 @@ Searches for a device that matches the query.
 | offset | The offset to start retrieving records from. | Optional |
 | ids | A comma-separated list of device IDs to limit the results. | Optional |
 | status | The status of the device. Possible values are: normal, containment_pending, contained, lift_containment_pending. | Optional |
-| hostname | The hostname of the device. Possible values are: . | Optional |
+| hostname | The hostname of the device. | Optional |
 | platform_name | The platform name of the device. Possible values are: Windows, Mac, Linux. | Optional |
 | site_name | The site name of the device. | Optional |
 | sort | The property to sort by (e.g., status.desc or hostname.asc). | Optional |
@@ -277,86 +262,6 @@ Searches for a device that matches the query.
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
 
-### cs-falcon-get-behavior
-
-***
-Searches for and fetches the behavior that matches the query. Deprecated - No replacement available.
-
-#### Base Command
-
-`cs-falcon-get-behavior`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| behavior_id | The ID of the behavior. The ID of the behavior can be retrieved by running the cs-falcon-search-detection or cs-falcon-get-detections-for-incident command. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.Behavior.FileName | String | The filename of the behavior. |
-| CrowdStrike.Behavior.Scenario | String | The scenario name of the behavior. |
-| CrowdStrike.Behavior.MD5 | String | The MD5 hash of the IOC in the behavior. |
-| CrowdStrike.Behavior.SHA256 | String | The SHA256 hash of the IOC in the behavior. |
-| CrowdStrike.Behavior.IOCType | String | The type of the indicator of compromise. |
-| CrowdStrike.Behavior.IOCValue | String | The value of the indicator of compromise. |
-| CrowdStrike.Behavior.CommandLine | String | The command line executed in the behavior. |
-| CrowdStrike.Behavior.UserName | String | The username related to the behavior. |
-| CrowdStrike.Behavior.SensorID | String | The sensor ID related to the behavior. |
-| CrowdStrike.Behavior.ParentProcessID | String | The ID of the parent process. |
-| CrowdStrike.Behavior.ProcessID | String | The process ID of the behavior. |
-| CrowdStrike.Behavior.ID | String | The ID of the behavior. |
-
-#### Command Example
-
-`!cs-falcon-get-behavior behavior_id=3206`
-
-#### Context Example
-
-```json
-    {
-        "CrowdStrike.Behavior": [
-            {
-                "IOCType": "sha256", 
-                "ProcessID": "197949010450449117", 
-                "Scenario": "known_malware", 
-                "CommandLine": "/Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn", 
-                "UserName": "user@u-MacBook-Pro-2.local", 
-                "FileName": "spokeshave.jn", 
-                "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
-                "ID": "3206", 
-                "IOCValue": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
-                "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
-            }, 
-            {
-                "IOCType": "sha256", 
-                "ProcessID": "197949016741905142", 
-                "Scenario": "known_malware", 
-                "ParentProcessID": "197949014644753130", 
-                "CommandLine": "./xSf", 
-                "UserName": "root@u-MacBook-Pro-2.local", 
-                "FileName": "xSf", 
-                "SensorID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
-                "SHA256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
-                "ID": "3206", 
-                "IOCValue": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1", 
-                "MD5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
-            }
-        ]
-    }
-```
-
-#### Human Readable Output
-
->### Behavior ID: 3206
-
->| ID | File Name | Command Line | Scenario | IOC Type | IOC Value | User Name | SHA256 | MD5 | Process ID |
->| ------ | --------------- | ----------------------------------------------------------------------- | ---------------- | ---------- | ------------------------------------------------------------------ | --------------------------------------- | ------------------------------------------------------------------ | ---------------------------------- | -------------------- |
->| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | <user@u-MacBook-Pro-2.local> |   a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   197949010450449117|
->|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   <root@u-MacBook-Pro-2.local>|          a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |197949016741905142|
-
 ### cs-falcon-search-detection
 
 ***
@@ -371,7 +276,7 @@ Search for details of specific detections, either using a filter query, or by pr
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of IDs of the detections to search. If provided, will override other arguments. | Optional |
-| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>Default is "product:'epp'+type:'ldt'.Applies only if the ids argument is not supplied.<br/>For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch. | Optional |
+| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch. Default is product:'epp'+type:'ldt'. | Optional |
 | extended_data | Whether to get additional data such as device and behaviors processed. Possible values are: Yes, No. | Optional |
 
 #### Context Output
@@ -388,7 +293,8 @@ Search for details of specific detections, either using a filter query, or by pr
 | CrowdStrike.Detection.Behavior.UserName | String | The username related to the behavior. |
 | CrowdStrike.Detection.Behavior.SensorID | String | The sensor ID related to the behavior. |
 | CrowdStrike.Detection.Behavior.ParentProcessID | String | The ID of the parent process. |
-| CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior.|
+| CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior. |
+| CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. |
 | CrowdStrike.Detection.System | String | The system name of the detection. |
 | CrowdStrike.Detection.CustomerID | String | The ID of the customer \(CID\). |
 | CrowdStrike.Detection.MachineDomain | String | The name of the domain of the detection machine. |
@@ -521,11 +427,12 @@ Resolves and updates a detection using the provided arguments. At least one opti
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of one or more IDs to resolve. | Required |
-| status | The status to transition a detection to. **Possible** values are: new, in_progress, closed, reopened. | Optional |
+| status | The status to transition a detection to. Possible values are: new, in_progress, closed, reopened. | Optional |
 | assigned_to_uuid | A user ID, for example: 1234567855512345678. username and assigned_to_uuid are mutually exclusive. | Optional |
 | comment | Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users. | Optional |
 | show_in_ui | If true, displays the detection in the UI. Possible values are: true, false. | Optional |
 | username | Username to assign the detections to. (This is usually the user's email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive. | Optional |
+| tag | The tag to add to the detection, supported only for API V3. | Optional |
 
 #### Context Output
 
@@ -553,7 +460,7 @@ There is no context output for this command.
 ### cs-falcon-lift-host-containment
 
 ***
-Lifts containment on the host, which returns its network communications to normal.
+Lifts containment on the host, which returns its network communications to normal. When lift_filesystem_containment_all is set to true, lifts filesystem containment instead.
 
 #### Base Command
 
@@ -564,10 +471,19 @@ Lifts containment on the host, which returns its network communications to norma
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection. | Required |
+| lift_filesystem_containment_all | Whether to lift filesystem containment instead of network containment. When set to true, uses the lift_filesystem_containment_all action to remove filesystem containment from the specified hosts. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-lift-host-containment ids="a]1234567890abcdef12345678"```
+
+#### Human Readable Output
+
+>Containment has been lifted off host 'a]1234567890abcdef12345678'
 
 ### cs-falcon-run-command
 
@@ -658,6 +574,10 @@ Uploads a script to Falcon CrowdStrike.
 | permission_type | The permission type for the custom script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. Possible values are: private, group, public. Default is private. | Optional |
 | content | The content of the PowerShell script. | Required |
 
+#### Context Output
+
+There is no context output for this command.
+
 #### Command Example
 
 `!cs-falcon-upload-script name=greatscript content="Write-Output 'Hello, World!'"`
@@ -685,6 +605,10 @@ Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command)
 | --- | --- | --- |
 | entry_id | The file entry ID to upload. | Required |
 
+#### Context Output
+
+There is no context output for this command.
+
 #### Command Example
 
 `!cs-falcon-upload-file entry_id=4@4`
@@ -700,7 +624,7 @@ There is no context output for this command.
 ### cs-falcon-delete-file
 
 ***
-Deletes a file based on the provided ID. Can delete only one file at a time.
+Deletes a file based on the provided ID or name. Can delete only one file at a time.
 
 #### Base Command
 
@@ -710,7 +634,12 @@ Deletes a file based on the provided ID. Can delete only one file at a time.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The ID of the file to delete. The ID of the file can be retrieved by running the 'cs-falcon-list-files' command. | Required |
+| file_id | The ID of the file to delete. Either this argument or file_name is required. When both are specified, file_id takes precedence. | Optional |
+| file_name | The name of the file to delete. Either this argument or file_id is required. When both are specified, file_id takes precedence. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
 
 #### Command Example
 
@@ -799,6 +728,11 @@ Returns a list of put-file IDs that are available for the user in the 'put' comm
 #### Base Command
 
 `cs-falcon-list-files`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -939,6 +873,10 @@ Deletes a custom-script based on the provided ID. Can delete only one script at 
 | --- | --- | --- |
 | script_id | The script ID to delete. The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command. | Required |
 
+#### Context Output
+
+There is no context output for this command.
+
 #### Command Example
 
 `!cs-falcon-delete-script script_id=le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
@@ -959,6 +897,11 @@ Returns a list of custom script IDs that are available for the user in the 'runs
 #### Base Command
 
 `cs-falcon-list-scripts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -1079,7 +1022,6 @@ Runs a script on the agent host.
 
 ***
 Batch executes 'get' command across hosts to retrieve files.
-The running status you requested in the get command can be checked with cs-falcon-status-get-command.
 
 #### Base Command
 
@@ -1288,6 +1230,10 @@ Gets the RTR extracted file contents for the specified session and SHA256 hash.
 | sha256 | The SHA256 hash of the file. | Required |
 | filename | The filename to use for the archive name and the file within the archive. | Optional |
 
+#### Context Output
+
+There is no context output for this command.
+
 #### Command Example
 
 `!cs-falcon-get-extracted-file host_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" sha256="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"`
@@ -1387,6 +1333,10 @@ Refresh a session timeout on a single host.
 | --- | --- | --- |
 | host_id | The ID of the host to extend the session for. | Required |
 
+#### Context Output
+
+There is no context output for this command.
+
 #### Command Example
 
 `!cs-falcon-refresh-session host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
@@ -1437,6 +1387,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. |
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. |
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 | CrowdStrike.NextPageToken | unknown | A pagination token used with the limit parameter to manage pagination of results. |
 
 #### Command Example
@@ -1530,6 +1481,7 @@ Gets the full definition of one or more indicators that you are watching.
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. |
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. |
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
@@ -1542,6 +1494,7 @@ Gets the full definition of one or more indicators that you are watching.
     "CrowdStrike": {
         "IOC": {
             "Action": "no_action",
+            "MobileAction": "no_action",
             "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
             "CreatedTime": "2022-02-16T14:25:22.968603813Z",
             "Expiration": "2022-02-17T17:55:09Z",
@@ -1588,7 +1541,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | ioc_type | The type of the indicator. Possible values are: sha256, md5, domain, ipv4, ipv6. | Required |
 | value | A comma-separated list of indicators.<br/>More than one value can be supplied to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments). | Required |
 | action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity &gt; Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. Possible values are: no_action, allow, prevent_no_ui, prevent, detect. | Required |
-| platforms | A comma-separated list of the platforms that the indicator applies to. Possible values are: mac, windows, linux. | Required |
+| platforms | A comma-separated list of the platforms that the indicator applies to. Possible values are: mac, windows, linux, android, ios. | Required |
 | severity | The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action. Possible values are: informational, low, medium, high, critical. | Optional |
 | expiration | The datetime the indicator will become inactive (ISO 8601 format, i.e., YYYY-MM-DDThh:mm:ssZ). | Optional |
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional |
@@ -1597,6 +1550,7 @@ Uploads an indicator for CrowdStrike to monitor.
 | host_groups | A comma-separated list of host group IDs that the indicator applies to. The list of host group IDs can be retrieved by running the 'cs-falcon-list-host-groups' command. Either applied_globally or host_groups must be provided. | Optional |
 | tags | A comma-separated list of tags to apply to the indicator. | Optional |
 | file_name | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | Optional |
+| mobile_action | The action to take on mobile devices when a host observes the custom IOC.<br/>Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument.<br/>- no_action: The indicator is saved for future use, but no action is taken (no severity required).<br/>- allow: The indicator is allowed and not detected (severity does not apply and should not be provided).<br/>- detect: The connection is allowed and a detection is generated.<br/>- prevent: The indicator is blocked and shown as a detection. Possible values are: no_action, allow, detect, prevent. | Optional |
 
 #### Context Output
 
@@ -1617,10 +1571,11 @@ Uploads an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. |
 | CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. |
 | CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
-```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac"```
+```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac" mobile_action="no_action"```
 
 #### Context Example
 
@@ -1634,6 +1589,7 @@ Uploads an indicator for CrowdStrike to monitor.
             "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
             "ModifiedTime": "2020-10-02T13:55:26Z",
             "Action": "prevent",
+            "MobileAction": "no_action",
             "Severity": "high",
             "Source": "Demisto playbook",
             "Type": "domain",
@@ -1673,6 +1629,7 @@ Updates an indicator for CrowdStrike to monitor.
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional |
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional |
 | file_name | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | Optional |
+| mobile_action | The action to take on mobile devices when a host observes the custom IOC.<br/>Note: To use this argument, a mobile platform (android or ios) must be included in the platforms argument.<br/>- no_action: The indicator is saved for future use, but no action is taken (no severity required).<br/>- allow: The indicator is allowed and not detected (severity does not apply and should not be provided).<br/>- detect: The connection is allowed and a detection is generated.<br/>- prevent: The indicator is blocked and shown as a detection. Possible values are: no_action, allow, detect, prevent. | Optional |
 
 #### Context Output
 
@@ -1691,6 +1648,7 @@ Updates an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. |
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
 | CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
@@ -1708,6 +1666,7 @@ Updates an indicator for CrowdStrike to monitor.
             "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
             "ModifiedTime": "2020-10-02T13:55:26Z",
             "Action": "prevent",
+            "MobileAction": "no_action",
             "Severity": "high",
             "Source": "Demisto playbook",
             "Type": "domain",
@@ -2017,7 +1976,6 @@ Lists detection summaries.
 | CrowdStrike.Detections.device.modified_timestamp | Date | The datetime the device was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. |
 | CrowdStrike.Detections.behaviors.device_id | String | The ID of the device associated with the behavior. |
 | CrowdStrike.Detections.behaviors.timestamp | Date | The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. |
-| CrowdStrike.Detections.behaviors.behavior_id | String | The ID of the behavior. |
 | CrowdStrike.Detections.behaviors.filename | String | The filename of the triggering process. |
 | CrowdStrike.Detections.behaviors.alleged_filetype | String | The file extension of the behavior's filename. |
 | CrowdStrike.Detections.behaviors.cmdline | String | The command line of the triggering process. |
@@ -2190,69 +2148,6 @@ Lists detection summaries.
 >|detection_id|created_time|status|max_severity|
 >|---|---|---|---|
 >| ldt:ldt:ldt | 2020-07-06T08:10:55.538668036Z | new | Low |
-
-### cs-falcon-list-incident-summaries
-
-***
-Lists incident summaries.
-
-#### Base Command
-
-`cs-falcon-list-incident-summaries`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| fetch_query | The query used to filter the results. | Optional |
-| ids | A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.Incidents.incident_id | String | The ID of the incident. |
-| CrowdStrike.Incidents.cid | String | The organization's customer ID \(CID\). |
-| CrowdStrike.Incidents.host_ids | String | The device IDs of all the hosts on which the incident occurred. |
-| CrowdStrike.Incidents.hosts.device_id | String | The device ID as seen by CrowdStrike. |
-| CrowdStrike.Incidents.hosts.cid | String | The host's organization's customer ID \(CID\). |
-| CrowdStrike.Incidents.hosts.agent_load_flags | String | The CrowdStrike agent load flags. |
-| CrowdStrike.Incidents.hosts.agent_local_time | Date | The local time of the sensor. |
-| CrowdStrike.Incidents.hosts.agent_version | String | The version of the agent that the device is running. For example: 5.32.11406.0. |
-| CrowdStrike.Incidents.hosts.bios_manufacturer | String | The BIOS manufacturer. |
-| CrowdStrike.Incidents.hosts.bios_version | String | The BIOS version of the device. |
-| CrowdStrike.Incidents.hosts.config_id_base | String | The base of the sensor that the device is running. |
-| CrowdStrike.Incidents.hosts.config_id_build | String | The version of the sensor that the device is running. For example: 11406. |
-| CrowdStrike.Incidents.hosts.config_id_platform | String | The platform ID of the sensor that the device is running. |
-| CrowdStrike.Incidents.hosts.external_ip | String | The external IP address of the host. |
-| CrowdStrike.Incidents.hosts.hostname | String | The name of the host. |
-| CrowdStrike.Incidents.hosts.first_seen | Date | The datetime the host was first seen by CrowdStrike Falcon. |
-| CrowdStrike.Incidents.hosts.last_seen | Date | The datetime the host was last seen by CrowdStrike Falcon. |
-| CrowdStrike.Incidents.hosts.local_ip | String | The device local IP address. |
-| CrowdStrike.Incidents.hosts.mac_address | String | The device MAC address. |
-| CrowdStrike.Incidents.hosts.major_version | String | The major version of the operating system. |
-| CrowdStrike.Incidents.hosts.minor_version | String | The minor version of the operating system. |
-| CrowdStrike.Incidents.hosts.os_version | String | The operating system of the host. |
-| CrowdStrike.Incidents.hosts.platform_id | String | The platform ID of the device that runs the sensor. |
-| CrowdStrike.Incidents.hosts.platform_name | String | The platform name of the host. |
-| CrowdStrike.Incidents.hosts.product_type_desc | String | The value indicating the product type. For example, 1 = Workstation, 2 = Domain Controller, 3 = Server. |
-| CrowdStrike.Incidents.hosts.status | String | The incident status as a number. For example, 20 = New, 25 = Reopened, 30 = In Progress, 40 = Closed. |
-| CrowdStrike.Incidents.hosts.system_manufacturer | String | The system manufacturer of the device. |
-| CrowdStrike.Incidents.hosts.system_product_name | String | The product name of the system. |
-| CrowdStrike.Incidents.hosts.modified_timestamp | Date | The datetime a user modified the incident in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. |
-| CrowdStrike.Incidents.created | Date | The datetime that the incident was created. |
-| CrowdStrike.Incidents.start | Date | The recorded datetime of the earliest incident. |
-| CrowdStrike.Incidents.end | Date | The recorded datetime of the latest incident. |
-| CrowdStrike.Incidents.state | String | The state of the incident. |
-| CrowdStrike.Incidents.status | Number | The status of the incident. |
-| CrowdStrike.Incidents.name | String | The name of the incident. |
-| CrowdStrike.Incidents.description | String | The description of the incident. |
-| CrowdStrike.Incidents.tags | String | The tags of the incident. |
-| CrowdStrike.Incidents.fine_score | Number | The incident score. |
-
-#### Command Example
-
-```!cs-falcon-list-incident-summaries```
 
 ### endpoint
 
@@ -3282,40 +3177,6 @@ Remove host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### cs-falcon-resolve-incident
-
-***
-Resolve and update incidents using the specified settings.
-
-#### Base Command
-
-`cs-falcon-resolve-incident`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ids | A comma-separated list of incident IDs. | Required |
-| status | The new status of the incident. Possible values are: New, In Progress, Reopened, Closed. | Optional |
-| assigned_to_uuid | UUID of a user to assign the incident to. Mutually exclusive with the 'username' argument. | Optional |
-| username | Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user. | Optional |
-| add_tag | Add a new tag to the incidents. | Optional |
-| remove_tag | Remove a tag from the incidents. | Optional |
-| add_comment | Add a comment to the incident. Comment is limited to 1024 characters. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-
-```!cs-falcon-resolve-incident ids="inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" status="Closed"```
-
-#### Human Readable Output
-
->inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
->inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
-
 ### cs-falcon-batch-upload-custom-ioc
 
 ***
@@ -3350,6 +3211,7 @@ Uploads a batch of indicators.
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. |
 | CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. |
 | CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. |
+| CrowdStrike.IOC.MobileAction | string | The action to take on mobile devices when a host observes the custom IOC. |
 
 #### Command Example
 
@@ -3805,68 +3667,19 @@ Gets the RTR extracted file contents for the specified file path.
 
 > Waiting for the polling execution
 
-### cs-falcon-get-detections-for-incident
+### get-mapping-fields
 
 ***
-Gets the detections for a specific incident.
+Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
-`cs-falcon-get-detections-for-incident`
+`get-mapping-fields`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The incident ID to get detections for. A list of all available incident IDs can be retrieved by running the 'cs-falcon-list-incident-summaries' command. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.IncidentDetection.incident_id | String | The incident ID. |
-| CrowdStrike.IncidentDetection.behavior_id | String | The behavior ID connected to the incident. |
-| CrowdStrike.IncidentDetection.detection_ids | String | A list of detection IDs connected to the incident. |
-
-#### Command Example
-
-```!cs-falcon-get-detections-for-incident incident_id=`inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1````
-
-#### Context Example
-
-```json
-{
-    "CrowdStrike": {
-        "IncidentDetection": {
-            "behavior_id": "ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162589633341-10303-6705920",
-            "detection_ids": [
-                "ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38655034604"
-            ],
-            "incident_id": "inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Detection For Incident
-
->|behavior_id|detection_ids|incident_id|
->|---|---|---|
->| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162590282130-10303-6707968 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38656254663 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
->| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162596456872-10303-6710016 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38657629548 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
->| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162597577534-10305-6712576 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38658614774 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
->| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162589633341-10303-6705920 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38655034604 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
-
-### get-mapping-fields
-
-***
-Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes. Note that this command is supported on Cortex XSOAR only.
-
-#### Base Command
-
-`get-mapping-fields`
 
 #### Context Output
 
@@ -3875,7 +3688,7 @@ There is no context output for this command.
 ### get-remote-data
 
 ***
-Gets remote data from a remote incident or detection. When executing manually, this method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
+Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -3895,7 +3708,7 @@ There is no context output for this command.
 ### get-modified-remote-data
 
 ***
-Gets the list of incidents and detections that were modified since the last update time. When executing manually, this method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
+Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
@@ -3914,11 +3727,16 @@ There is no context output for this command.
 ### update-remote-system
 
 ***
-Updates the remote incident or detection with local incident or detection changes. When executing manually, this method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
+Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection. Note that this command is supported in Cortex XSOAR only.
 
 #### Base Command
 
 `update-remote-system`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
@@ -4180,7 +3998,7 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see the [FQL syntax documentation](https://www.falconpy.io/Usage/Falcon-Query-Language.html). | Optional |
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | Optional |
 | value | The value by which the exclusions should be filtered. | Optional |
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value. | Optional |
 | limit | The maximum number of records to return. [1-500]. Applies only if the ids argument is not supplied. | Optional |
@@ -4699,7 +4517,6 @@ Retrieve ODS scan details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| wait_for_result | Whether to poll for results. Possible values are: true, false. Default is false. | Optional |
 | filter | Valid CS-Falcon-FQL filter to query with. | Optional |
 | ids | Comma-separated list of scan IDs to retrieve details about. If set, will override all other arguments. | Optional |
 | initiated_from | Comma-separated list of scan initiation sources to filter by. | Optional |
@@ -4709,9 +4526,6 @@ Retrieve ODS scan details.
 | scan_completed_on | UTC-format of the scan completion time to filter by. | Optional |
 | offset | Starting index of overall result set from which to return IDs. | Optional |
 | limit | Maximum number of resources to return. | Optional |
-| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
-| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
-| hide_polling_output | Whether to hide the polling message and only print the final status at the end (automatically filled by polling. Can be used for testing purposes). Default is True. | Optional |
 
 #### Context Output
 
@@ -5235,9 +5049,9 @@ Create an ODS scan and wait for the results.
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional |
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
-| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
-| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
-| polling | Whether to poll for scan results. Default is True. | Optional |
+| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). Possible values are: 0, 1, 2, 3, 4. | Optional |
+| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). Possible values are: 0, 1, 2, 3, 4. | Optional |
+| polling | Whether to use polling to wait for the scan result. If set to false, the command will only create the scan and return immediately without waiting for results. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
@@ -5280,8 +5094,8 @@ Create an ODS scan and wait for the results.
 | CrowdStrike.ODSScan.created_on | Date | The timestamp when the scan was created. |
 | CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. |
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. |
-| CrowdStrike.ODSScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
-| CrowdStrike.ODSScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
+| CrowdStrike.ODSScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs \(PUPs\) Adware detection level. |
+| CrowdStrike.ODSScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs \(PUPs\) Adware prevention level. |
 
 #### Command Example
 
@@ -5387,8 +5201,8 @@ Create an ODS scheduled scan.
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional |
 | schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tomorrow" or "in an hour". | Required |
 | schedule_interval | The schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required |
-| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
-| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). | Optional |
+| cloud_pup_adware_level_detection | Potentially unwanted programs (PUPs) adware detection level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). Possible values are: 0, 1, 2, 3, 4. | Optional |
+| cloud_pup_adware_level_prevention | Potentially unwanted programs (PUPs) adware prevention level. Possible values are 0–4 (0 = Disabled). If not specified, CrowdStrike applies the default behavior (Disabled). Possible values are: 0, 1, 2, 3, 4. | Optional |
 
 #### Context Output
 
@@ -5421,8 +5235,8 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. |
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. |
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. |
-| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs (PUPs) Adware prevention level. |
-| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs (PUPs) Adware detection level. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_detection | Number | Potentially unwanted programs \(PUPs\) Adware detection level. |
+| CrowdStrike.ODSScheduledScan.cloud_pup_adware_level_prevention | Number | Potentially unwanted programs \(PUPs\) Adware prevention level. |
 
 #### Command Example
 
@@ -5587,16 +5401,16 @@ List identity entities.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.IDPEntity.IsHuman | Boolean | Whether the identity entity is human made. |
-| CrowdStrike.IDPEntity.IsProgrammatic | Boolean | Whether the identity entity is programmatic made. |
-| CrowdStrike.IDPEntity.IsAdmin | String | Whether the identity entity is admin made. |
-| CrowdStrike.IDPEntity.PrimaryDisplayName | String | The identity entity primary display name. |
-| CrowdStrike.IDPEntity.RiskFactors.Type | Unknown | The identity entity risk factor type. |
-| CrowdStrike.IDPEntity.RiskFactors.Severity | Unknown | The identity entity risk factor severity. |
-| CrowdStrike.IDPEntity.RiskScore | Number | The identity entity risk score. |
-| CrowdStrike.IDPEntity.RiskScoreSeverity | String | The identity entity risk score severity. |
-| CrowdStrike.IDPEntity.SecondaryDisplayName | String | The identity entity secondary display name. |
-| CrowdStrike.IDPEntity.EmailAddresses | String | The identity entity email address. |
+| CrowdStrike.IDPEntity.Ishuman | Boolean | Whether the identity entity is human made. |
+| CrowdStrike.IDPEntity.Isprogrammatic | Boolean | Whether the identity entity is programmatic made. |
+| CrowdStrike.IDPEntity.Isadmin | String | Whether the identity entity is admin made. |
+| CrowdStrike.IDPEntity.Primarydisplayname | String | The identity entity primary display name. |
+| CrowdStrike.IDPEntity.Riskfactors.Type | Unknown | The identity entity risk factor type. |
+| CrowdStrike.IDPEntity.Riskfactors.Severity | Unknown | The identity entity risk factor severity. |
+| CrowdStrike.IDPEntity.Riskscore | Number | The identity entity risk score. |
+| CrowdStrike.IDPEntity.Riskscoreseverity | String | The identity entity risk score severity. |
+| CrowdStrike.IDPEntity.Secondarydisplayname | String | The identity entity secondary display name. |
+| CrowdStrike.IDPEntity.Emailaddresses | String | The identity entity email address. |
 
 ### cs-falcon-cspm-list-policy-details
 
@@ -6099,69 +5913,6 @@ List users.
 | CrowdStrike.Users.last_login_at | String | The timestamp of the user's last login. |
 | CrowdStrike.Users.created_at | String | The timestamp of the user's creation. |
 
-### cs-falcon-get-incident-behavior
-
-***
-Get incident behavior information.
-
-#### Base Command
-
-`cs-falcon-get-incident-behavior`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| behavior_ids | A comma-separated list of ID(s) of behaviors to list. Behavior IDs can be retrieved by running the 'cs-falcon-get-detections-for-incident' command. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.IncidentBehavior.behavior_id | String | The behavior ID. |
-| CrowdStrike.IncidentBehavior.cid | String | The customer ID. |
-| CrowdStrike.IncidentBehavior.aid | String | The agent ID. |
-| CrowdStrike.IncidentBehavior.incident_id | String | The incident ID. |
-| CrowdStrike.IncidentBehavior.incident_ids | List | The incident IDs. |
-| CrowdStrike.IncidentBehavior.pattern_id | Number | The pattern ID. |
-| CrowdStrike.IncidentBehavior.template_instance_id | Number | The template instance ID. |
-| CrowdStrike.IncidentBehavior.timestamp | String | The timestamp. |
-| CrowdStrike.IncidentBehavior.cmdline | String | The command line. |
-| CrowdStrike.IncidentBehavior.filepath | String | The file path. |
-| CrowdStrike.IncidentBehavior.domain | String | The domain. |
-| CrowdStrike.IncidentBehavior.pattern_disposition | Number | The pattern disposition. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.indicator | Boolean | Whether the pattern disposition is an indicator. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.detect | Boolean | Whether the pattern disposition is a detect. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.inddet_mask | Boolean | The pattern disposition indicator detect mask. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.sensor_only | Boolean | Whether the pattern disposition is sensor only. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.rooting | Boolean | Whether the pattern disposition is rooting. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_process | Boolean | Whether the process was killed. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_subprocess | Boolean | Whether the subprocess was killed. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_machine | Boolean | Whether the machine was quarantined. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.quarantine_file | Boolean | Whether the file was quarantined. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.policy_disabled | Boolean | Whether the policy was disabled. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_parent | Boolean | Whether the parent was killed. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.operation_blocked | Boolean | Whether the operation was blocked. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.process_blocked | Boolean | Whether the process was blocked. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.registry_operation_blocked | Boolean | Whether the registry operation was blocked. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.critical_process_disabled | Boolean | Whether the critical process was disabled. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.bootup_safeguard_enabled | Boolean | Whether the bootup safeguard was enabled. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.fs_operation_blocked | Boolean | Whether the file system operation was blocked. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.handle_operation_downgraded | Boolean | Whether the handle operation was downgraded. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.kill_action_failed | Boolean | Whether the kill action failed. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.blocking_unsupported | Boolean | Whether the blocking is unsupported. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_process | Boolean | Whether the process was suspended. |
-| CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_parent | Boolean | Whether the parent was suspended. |
-| CrowdStrike.IncidentBehavior.sha256 | String | The SHA256 hash. |
-| CrowdStrike.IncidentBehavior.user_name | String | The username. |
-| CrowdStrike.IncidentBehavior.tactic | String | The tactic used. |
-| CrowdStrike.IncidentBehavior.tactic_id | String | The tactic ID. |
-| CrowdStrike.IncidentBehavior.technique | String | The technique used. |
-| CrowdStrike.IncidentBehavior.technique_id | String | The technique ID. |
-| CrowdStrike.IncidentBehavior.display_name | String | The display name. |
-| CrowdStrike.IncidentBehavior.objective | String | The objective. |
-| CrowdStrike.IncidentBehavior.compound_tto | String | The compound Time to Operate \(TTO\). |
-
 ### cs-falcon-get-ioarules
 
 ***
@@ -6204,8 +5955,6 @@ Get IOA Rules.
 | CrowdStrike.IOARules.ruletype_id | String | The IOA rule's rule type ID. |
 | CrowdStrike.IOARules.ruletype_name | String | The IOA rule's rule type name. |
 | CrowdStrike.IOARules.version_ids | String | The IOA rule's version ID. |
-
-# Spotlight
 
 ### Using Spotlight APIs
 
@@ -6260,7 +6009,8 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
 | display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional |
 | display_host_info | Whether to return host information type of data for each vulnerability entity. Possible values are: True, False. Default is False. | Optional |
-| limit | Maximum number of items to return (1-5000). Default is 50. | Optional |
+| limit | The maximum number of items to return (1-2500). Use `next_token` to retrieve additional pages. Default is 50. | Optional |
+| next_token | Pagination cursor from a previous run's `CrowdStrike.VulnerabilityNextToken` output. Provide this value to fetch the next page of vulnerabilities. Expires in 120 seconds. | Optional |
 
 #### Context Output
 
@@ -6313,6 +6063,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | CrowdStrike.Vulnerability.cve.spotlight_published_date | Date | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability. |
 | CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. |
 | CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. |
+| CrowdStrike.VulnerabilityNextToken | String | Pagination cursor returned by CrowdStrike when more results are available. Pass this value back as the \`next_token\` argument on the next invocation. Absent when no more pages exist. Expires in 120 seconds. |
 
 #### Command Example
 
@@ -6368,7 +6119,9 @@ Retrieve vulnerability details according to the selected filter. Each request re
                 "vector": "vendor"
             }
         }
-    ]
+    ],
+    "VulnerabilityNextToken": "next_token"
+    
 }
 ```
 
@@ -6708,17 +6461,17 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | The repository to run the query against. Possible values are: search-all, third-party, falcon_for_it_view, forensics_view, investigate_view. Default is search-all. | Optional |
-| query | The CQL query to use for the search. Note: Double quotes and backslashes in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\"", For more details see: https://library.humio.com/data-analysis/syntax.html. | Required |
-| start | The start of the search window, based on the event timestamp.<br/>Note: 'end' must be laetr than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
-| end | The end of the search window, based on the event timestamp.<br/>Note: 'end' must be laetr than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
+| repository | The repository to run the query against.<br/>. Possible values are: search-all, third-party, falcon_for_it_view, forensics_view, investigate_view. Default is search-all. | Optional |
+| query | The CQL query to use for the search. Note: Double quotes (“) and backslashes (\) in the queryString must be escaped with a backslash to ensure they are properly interpreted. Example: query="#event_simpleName = \"Event_name\""", For more details see: https://library.humio.com/data-analysis/syntax.html. | Required |
+| start | The start of the search window, based on the event timestamp.<br/>Note: 'end' must be later than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).<br/>. | Optional |
+| end | The end of the search window, based on the event timestamp.<br/>Note: 'end' must be later than 'start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).<br/>. | Optional |
 | around_event_id | The ID of the event to search around. Must be provided together with around_timestamp. | Optional |
 | around_number_events_before | Number of events to return before the target event. Requires around_event_id and around_timestamp. | Optional |
 | around_number_events_after | Number of events to return after the target event. Requires around_event_id and around_timestamp. | Optional |
 | around_timestamp | Timestamp for around search. Must be provided together with around_event_id. | Optional |
-| ingest_start | The start of the search window, based on the event ingesttimestamp.<br/>Note: 'ingest_end' must be laetr than 'ingest_start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
-| ingest_end | The end of the search window, based on the event ingesttimestamp.<br/>Note: 'ingest_end' must be laetr than 'ingest_start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000). | Optional |
-| use_ingest_time | When true, the server uses ingest_start/ingest_end as the query window. When false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND). Possible values are: true, false. | Optional |
+| ingest_start | The start of the search window, based on the event ingesttimestamp.<br/>Note: 'ingest_end' must be later than 'ingest_start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).<br/>. | Optional |
+| ingest_end | The end of the search window, based on the event ingesttimestamp.<br/>Note: 'ingest_end' must be later than 'ingest_start'.<br/>If both start/end and ingest_start/ingest_end are provided, the server applies BOTH windows (AND).<br/>Supports relative durations (e.g., "1d", "2h", "30m", "1month"), ISO8601 timestamps (e.g., "2026-01-01T00:00:00Z"; if no time zone is provided, assumes UTC), and epoch timestamps (e.g., 1767225600000).<br/>. | Optional |
+| use_ingest_time | When true, the server uses ingest_start/ingest_end as the query window. when false (or not set), it uses start/end. If both windows are provided, results are constrained by BOTH (AND). Possible values are: true, false. | Optional |
 | limit | Maximum number of events to return. Ignored when around_number_events_before or around_number_events_after parameters are specified. Default is 50. | Optional |
 | interval_in_seconds | Interval between polling attempts in seconds. To prevent search timeouts, set this value within the 60–90 second range. Default is 60. | Optional |
 | timeout_in_seconds | Timeout for polling in seconds. Default is 600. | Optional |
@@ -6728,8 +6481,8 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CrowdStrike.NGSiemEvent | Array | The list of all events returned from the search. |
-| CrowdStrike.NGSiemEvent.timestamp | String | Event timestamp. |
 | CrowdStrike.NGSiemEvent.id | String | The event ID. |
+| CrowdStrike.NGSiemEvent.timestamp | String | Event timestamp. |
 
 #### Command Example
 
@@ -6763,3 +6516,141 @@ Search NGSIEM historical events. Requires NGSIEM scope with read and write permi
   }
 }
 ```
+
+## Workflow Commands
+
+The following commands are available from the CrowdStrike Falcon integration. Note that for these commands, the required API client scope is: `Workflows - Read and Write`.
+
+### cs-falcon-list-workflow-definitions
+
+***
+Lists workflow definitions from CrowdStrike Falcon.
+
+#### Base Command
+
+`cs-falcon-list-workflow-definitions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html. For a list of available properties, see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3. | Optional |
+| definition_id | The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| activity_id | The activity ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| name | The workflow name to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| description | The workflow description to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| offset | The offset to start retrieving records from. Default is 0. | Optional |
+| limit | The maximum number of records to return. Max is 500. Default is 50. | Optional |
+| sort | A comma-separated list of properties to sort by in the format property.direction (for example  name.desc, time.asc, created_at.desc). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-list-workflow-definitions limit=5`
+
+### cs-falcon-workflow-execute
+
+***
+Executes an on-demand workflow. Use cs-falcon-list-workflow-definitions to find workflows to run. Note: This command executes on-demand workflows only.
+
+#### Base Command
+
+`cs-falcon-workflow-execute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| definition_id | A comma-separated list of workflow definition IDs to execute. Either definition_id or name must be provided. | Optional |
+| name | The workflow name to execute. Either definition_id or name must be provided. | Optional |
+| execution_cid | A comma-separated list of CID(s) to execute the workflow on. | Optional |
+| key | The key used for deduplication of workflow executions. If not set, a new UUID is used. | Optional |
+| source_event_url | The URL of the source that triggered the workflow execution. | Optional |
+| body | The JSON body to pass to the workflow execution. Can be an empty object {}. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-workflow-execute definition_id="abc123" body="{}"`
+
+### cs-falcon-list-workflow-executions
+
+***
+Lists workflow executions from CrowdStrike Falcon. Use cs-falcon-workflow-execute to find executions IDs.
+
+#### Base Command
+
+`cs-falcon-list-workflow-executions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filter | Filters results using a query in Falcon Query Language (FQL). For more information, see the FQL Syntax Documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html. For a list of available properties, see Workflow execution FQL filters - https://falcon.crowdstrike.com/documentation/page/z028de1a/fusion-workflow-apis#zec519e3. | Optional |
+| definition_id | The workflow definition ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| definition_name | The workflow definition name to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| execution_id | The execution ID to filter by. If 'filter' is provided, this argument is ignored. | Optional |
+| offset | The offset to start retrieving records from. Default is 0. | Optional |
+| limit | The maximum number of records to return. Max is 500. Default is 50. | Optional |
+| sort | A comma-separated list of properties to sort by in the format property.direction (for example  name.desc, time.asc, created_at.desc). | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-list-workflow-executions limit=10`
+
+### cs-falcon-list-workflow-execution-results
+
+***
+Gets detailed results for specific workflow executions. Use cs-falcon-list-workflow-executions to find execution IDs.
+
+#### Base Command
+
+`cs-falcon-list-workflow-execution-results`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of workflow execution IDs to retrieve results for. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-list-workflow-execution-results ids="exec_id_1,exec_id_2"`
+
+### cs-falcon-workflow-execution-action
+
+***
+Performs an action (cancel or resume) on one or more workflow executions. Use cs-falcon-list-workflow-execution-results to find execution activity status.
+
+#### Base Command
+
+`cs-falcon-workflow-execution-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of workflow execution IDs to perform the action on. Get the workflow execution ID using cs-falcon-list-workflow-executions. | Required |
+| action_name | The action to perform on the workflow executions. Possible values are: cancel, resume. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+`!cs-falcon-workflow-execution-action ids="exec_id_1" action_name="cancel"`

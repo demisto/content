@@ -1,0 +1,126 @@
+This integration enables automated retrieval of attack path findings from BloodHound into Cortex XSOAR, streamlining incident creation and investigation.
+This integration was integrated and tested with version 1.0.0 of SpecterOps BloodHound Enterprise.
+
+## Configure SpecterOps BloodHound Enterprise in Cortex
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| BloodHound Enterprise Domain | BloodHound Enterprise Domain URL | True |
+| Token ID / Token Key | BloodHound Enterprise API token ID and key | True |
+| Proxy URL | Proxy server url  | False |
+| Proxy URL Username | Proxy server url username | False |
+| Proxy URL Password | Proxy server url password | False |
+| Finding Environment | The environment from which to fetch attack paths. Default is all. | False |
+| Finding Category | The category of attack paths to fetch. Default is all. | False |
+| Fetch incidents | Enable automatic fetching of attack path findings from BloodHound Enterprise. | False |
+| Incidents Fetch Interval | The interval for fetching attack paths | False |
+| Incident type | The incident type to assign to fetched attack path findings. Recommended: SpecterOps BloodHound Enterprise Attack Path. | False |
+
+## Commands
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### bloodhound-object-id-get
+
+***
+Fetches the object ID using the object name.
+
+#### Base Command
+
+`bloodhound-object-id-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_names | The object name associated with object ID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SpecterOpsBloodHoundEnterprise.Object.Status | string | The status of the object ID lookup \(success or error\). |
+| SpecterOpsBloodHoundEnterprise.Object.Message | string | The message describing the result of the lookup. |
+| SpecterOpsBloodHoundEnterprise.Object.ObjectID | string | The unique object ID of the found object. |
+|  SpecterOpsBloodHoundEnterprise.Object.ObjectName | string | The name of the object that was searched. |
+
+#### Command Example
+
+`!bloodhound-object-id-get object_names="OBJECTNAME@example.com"`
+
+#### Human Readable Output
+
+| **Object Name** | **Status** | **Message** | **Object ID** |
+| --- | --- | --- | --- |
+| OBJECTNAME@example.com | success | Object ID found. | 12345678-1234-1234-1234-123456789abc |
+
+### bloodhound-asset-info-get
+
+***
+Fetches asset information using the object ID.
+
+#### Base Command
+
+`bloodhound-asset-info-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_ids | The object ID to fetch asset information. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SpecterOpsBloodHoundEnterprise.Asset.Status | string | The status of the asset information fetch \(success or error\). |
+| SpecterOpsBloodHoundEnterprise.Asset.Message | string | The message describing the result of the asset information fetch. |
+| SpecterOpsBloodHoundEnterprise.Asset.ObjectID | string | The object ID for which asset information was fetched. |
+| SpecterOpsBloodHoundEnterprise.Asset.Data | json | The raw asset data containing all asset information fields \(name, type, objectid, domain, enabled, email, and other properties\). |
+
+#### Command Example
+
+`!bloodhound-asset-info-get object_ids="12345678-1234-1234-1234-123456789abc,87654321-4321-4321-4321-cba987654321"`
+
+#### Human Readable Output
+
+| **Object ID** | **Status** | **Message** | **Raw Data** |
+| --- | --- | --- | --- |
+| 12345678-1234-1234-1234-123456789abc | success | Asset information retrieved successfully. | `{"name": "OBJECTNAME@example.com", "type": "User", "objectid": "12345678-1234-1234-1234-123456789abc", "domain": "example.com", "enabled": true}` |
+
+### bloodhound-path-exist
+
+***
+Checks if a path exists between the two nodes.
+
+#### Base Command
+
+`bloodhound-path-exist`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| from_principal | The start node. | Optional |
+| to_principal | The end node. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SpecterOpsBloodHoundEnterprise.Path.FromPrincipal | string | The start node \(from principal\) used in the path check. |
+| SpecterOpsBloodHoundEnterprise.Path.ToPrincipal | string | The end node \(to principal\) used in the path check. |
+| SpecterOpsBloodHoundEnterprise.Path.Status | string | The status of the path check \(success or error\). |
+| SpecterOpsBloodHoundEnterprise.Path.Message | string | The message describing the result of the path check. |
+| SpecterOpsBloodHoundEnterprise.Path.Data | Boolean | Whether a path exists between the nodes \(True or False\). |
+
+#### Command Example
+
+`!bloodhound-path-exist from_principal="12345678-1234-1234-1234-123456789abc" to_principal="87654321-4321-4321-4321-cba987654321"`
+
+#### Human Readable Output
+
+| **From Principal** | **To Principal** | **Status** | **Message** | **Path Exists** |
+| --- | --- | --- | --- | --- |
+| 12345678-1234-1234-1234-123456789abc | 87654321-4321-4321-4321-cba987654321 | success | Path exists between nodes. | True |

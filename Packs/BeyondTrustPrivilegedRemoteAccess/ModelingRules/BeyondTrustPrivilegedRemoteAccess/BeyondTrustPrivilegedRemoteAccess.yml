@@ -4,3 +4,5 @@ name: BeyondTrust Privileged Remote Access Modeling Rule
 rules: ''
 schema: ''
 tags: BeyondTrust
+supportedModules:
+- xsiam

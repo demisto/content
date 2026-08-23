@@ -3,19 +3,20 @@ This integration was integrated and tested with version 2.0.0 of Zoom_IAM.
 
 ## Configure Zoom_IAM in Cortex
 
-| **Parameter**                      | **Description**                          | **Required** |
-| ---------------------------------- | ---------------------------------------- | ------------ |
-| Account ID (OAuth)                 |                                          | False        |
-| Client ID (OAuth)                  |                                          | False        |
-| Client Secret (OAuth)              |                                          | False        |
-| API Key (JWT-Deprecated)           | This authentication method is deprecated. | False        |
-| API Secret (JWT-Deprecated)        | This authentication method is deprecated. | False        |
-| Use system proxy settings          |                                          | False        |
-| Trust any certificate (not secure) |                                          | False        |
-| Allow disabling users              |                                          | False        |
-| Allow enabling users               |                                          | False        |
-| Incoming Mapper                    |                                          | True         |
-| Outgoing Mapper                    |                                          | True         |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., 'https://api.zoom.us/v2/') |  | False |
+| Account ID (OAuth) |  | False |
+| Client ID (OAuth) |  | False |
+| Client Secret (OAuth) |  | False |
+| API Key (JWT-Deprecated) | This authentication method is deprecated. | False |
+| API Secret (JWT-Deprecated) | This authentication method is deprecated. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Allow disabling users |  | False |
+| Allow enabling users |  | False |
+| Incoming Mapper |  | False |
+| Outgoing Mapper | Cortex XSOAR only parameter. | False |
 
 ## Commands
 

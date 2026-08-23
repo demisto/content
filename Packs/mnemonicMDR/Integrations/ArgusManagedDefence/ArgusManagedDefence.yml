@@ -1,6 +1,9 @@
 commonfields:
   id: ArgusManagedDefence
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: ArgusManagedDefence
 display: mnemonic MDR - Argus Managed Defence
 category: Data Enrichment & Threat Intelligence
@@ -11,26 +14,31 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: API URL
   name: api_url
   defaultvalue: https://api.mnemonic.no
   type: 0
   required: true
   additionalinfo: "URL to Argus' API Endpoint."
+  section: Connect
 - display: API Key
   name: api_key
   type: 4
   required: true
   additionalinfo: "API Key of API user in Argus."
+  section: Connect
 - display: Minimum severity of alerts to fetch
   name: min_severity
   defaultvalue: Low
   type: 15
   required: true
+  section: Collect
   options:
   - Low
   - Medium
@@ -43,17 +51,20 @@ configuration:
   type: 0
   additionalinfo: "How far back should the first run fetch open cases in Argus."
   required: false
+  section: Collect
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "0"
   type: 0
   additionalinfo: "Maximum number of cases to be fetched from Argus. 0 means up to system limit (100 000)"
   required: false
+  section: Collect
 - display: Fetch incidents exclude tag
   name: exclude_tag
   type: 0
   additionalinfo: 'Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a comma-separated string.'
   required: false
+  section: Collect
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: Incoming And Outgoing
@@ -68,6 +79,7 @@ configuration:
   - marketplacev2
   - platform
   required: false
+  section: Collect
 - display: Mirroring tag
   name: mirror_tag
   type: 0
@@ -77,6 +89,7 @@ configuration:
   - marketplacev2
   - platform
   required: false
+  section: Collect
 - display: Close Argus Case
   name: close_argus_case
   defaultvalue: "true"
@@ -86,11 +99,13 @@ configuration:
   - marketplacev2
   - platform
   required: false
+  section: Collect
 - display: Close XSOAR Incident
   name: close_incident
   defaultvalue: "true"
   type: 8
   additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR Incident'
+  section: Collect
   hidden:
   - marketplacev2
   - platform
@@ -100,11 +115,13 @@ configuration:
   type: 8
   additionalinfo: "Skip HTTPS certification verification."
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   additionalinfo: "Use system proxy settings."
   required: false
+  section: Connect
 script:
   script: ''
   type: python

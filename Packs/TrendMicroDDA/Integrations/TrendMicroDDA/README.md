@@ -127,7 +127,7 @@ Checks the analysis status of the submissions
 ### trendmicro-dda-upload-url
 
 ***
-Upload a URL to Trend Micro DDA
+Upload a URL to TrendAI™ DDA
 
 #### Base Command
 
@@ -149,7 +149,7 @@ Upload a URL to Trend Micro DDA
 ### trendmicro-dda-upload-file
 
 ***
-Upload a file to Trend Micro DDA
+Upload a file to TrendAI™ DDA
 
 #### Base Command
 

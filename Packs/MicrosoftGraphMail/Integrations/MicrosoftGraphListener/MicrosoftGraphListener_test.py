@@ -309,6 +309,10 @@ def test_build_message(client, tmp_path, mocker):
     attachment = tmp_path / attachment_name
     attachment.touch()
     mocker.patch.object(demisto, "getFilePath", return_value={"path": str(attachment), "name": attachment_name})
+    # attach_ids contains the War Room file ID, attach_cids contains the CID label
+    # mapped positionally to the file in attach_ids
+    attach_id = str(attachment)
+    cid_label = "inline_cid_label"
     message_input = {
         "to_recipients": ["dummy@recipient.com"],  # disable-secrets-detection
         "cc_recipients": ["dummyCC@recipient.com"],  # disable-secrets-detection
@@ -320,9 +324,9 @@ def test_build_message(client, tmp_path, mocker):
         "flag": "flagged",
         "importance": "Normal",
         "internet_message_headers": None,
-        "attach_ids": [],
+        "attach_ids": [attach_id],
         "attach_names": [],
-        "attach_cids": [str(attachment)],
+        "attach_cids": [cid_label],
         "manual_attachments": [],
     }
 
@@ -347,7 +351,7 @@ def test_build_message(client, tmp_path, mocker):
                 "isInline": True,
                 "name": attachment_name,
                 "size": 0,
-                "contentId": str(attachment),
+                "contentId": cid_label,
             }
         ],
     }

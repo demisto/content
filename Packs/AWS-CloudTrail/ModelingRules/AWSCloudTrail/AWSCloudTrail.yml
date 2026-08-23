@@ -4,3 +4,5 @@ name: Amazon AWS CloudTrail Modeling Rule
 rules: ''
 schema: ''
 tags:
+supportedModules:
+- xsiam

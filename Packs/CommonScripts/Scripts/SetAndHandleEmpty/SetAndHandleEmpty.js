@@ -26,7 +26,10 @@ function main() {
         let humanReadable = '';
         let contextEntry = {};
 
-        if (value || force) {
+        // Treat null, undefined and empty string as "no value".
+        // Falsy values such as 0 or false should be treated as valid values.
+        const isEmpty = value === null || value === undefined || value === '';
+        if (!isEmpty || force) {
             humanReadable = `Key ${keys[i]} set`;
             contextEntry = { [keys[i]]: value };
         } else {

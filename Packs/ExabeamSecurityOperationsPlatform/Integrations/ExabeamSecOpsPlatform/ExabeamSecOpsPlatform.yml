@@ -45,7 +45,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
@@ -66,7 +66,7 @@ configuration:
   hidden:
   - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
 - display: Maximum Incidents Per Fetch
   additionalinfo: This value should not exceed 3,000 due to product's API limitations.
   name: max_fetch  # for fetch-incidents on XSOAR
@@ -84,7 +84,7 @@ configuration:
   hidden:
     - xsoar
   supportedModules:
-  - "xsiam"
+  - xsiam
 - display: Fetch query
   additionalinfo: 'In the `key:value` format. For example: `NOT stage:"CLOSED"`.'
   name: fetch_query
@@ -667,7 +667,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.10116658
   # Fetch incidents
   isfetch: true
   isfetch:marketplacev2: false
@@ -679,5 +679,3 @@ fromversion: 6.10.0
 tests:
 - ExabeamSecurityOperationsPlatform-test
 defaultmapperin: "Exabeam Platform - Incoming Mapper"
-supportedModules:
-- xsiam

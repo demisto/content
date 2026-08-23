@@ -1,0 +1,23 @@
+{
+  "uid": "svc-tcp-uid-1234",
+  "name": "test-tcp-service",
+  "type": "service-tcp",
+  "port": "8080",
+  "domain": {
+    "uid": "domain-uid-5678",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "groups": [],
+  "comments": "",
+  "color": "black",
+  "icon": "Services/TCPService",
+  "tags": [],
+  "meta-info": {
+    "lock": "unlocked",
+    "validation-state": "ok",
+    "last-modifier": "admin",
+    "creator": "admin"
+  },
+  "read-only": false
+}

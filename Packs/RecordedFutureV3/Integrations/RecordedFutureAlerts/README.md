@@ -6,6 +6,7 @@ XSOAR.
 The integration allows you to:
 
 * Search and fetch alerts from the Recorded Future platform.
+* Look up full alert details for a single Classic Alert or Playbook Alert by ID.
 * Update alert status, assignee and comment/note from inside XSOAR.
 * Automatically fetch screenshots that accompany the alert.
 
@@ -104,7 +105,7 @@ List Classic or Playbook alerts.
         "created": "2025-05-17T16:06:00Z",
         "updated": "2025-05-17T17:14:12Z",
         "playbook_alert_category": "domain_abuse",
-        "playbook_alert_priority": "High"
+        "playbook_alert_priority": "High",
         "classic_alert_rule_name": null,
         "classic_alert_rule_id": null
       },
@@ -117,11 +118,112 @@ List Classic or Playbook alerts.
         "created": "2025-05-17T15:58:30Z",
         "updated": "2025-05-17T16:40:00Z",
         "classic_alert_rule_name": "Alert rule name 1",
-        "classic_alert_rule_id": "fDasdfwea"
+        "classic_alert_rule_id": "fDasdfwea",
         "playbook_alert_category": null,
         "playbook_alert_priority": null
       }
     ]
+  }
+}
+```
+
+### rf-alert-lookup
+
+***
+Look up a single Recorded Future alert by ID.
+
+#### Base Command
+
+`rf-alert-lookup`
+
+#### Input
+
+| **Argument Name** | **Description**       | **Required** |
+|-------------------|-----------------------|--------------|
+| alert_id          | ID of the alert.      | Required     |
+
+#### Context Output
+
+| **Path**                                           | **Type** | **Description**                                                                                                                 |
+|----------------------------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------|
+| RecordedFutureAlerts.Alert.id                      | string   | Unique ID of the alert in Recorded Future.                                                                                      |
+| RecordedFutureAlerts.Alert.title                   | string   | Title of the alert.                                                                                                             |
+| RecordedFutureAlerts.Alert.type                    | string   | Alert type (classic-alert / playbook-alert).                                                                                    |
+| RecordedFutureAlerts.Alert.subtype                 | string   | Alert subtype / category.                                                                                                       |
+| RecordedFutureAlerts.Alert.status                  | string   | Current status of the alert.                                                                                                    |
+| RecordedFutureAlerts.Alert.created                 | string   | Timestamp when the alert was created in ISO 8601 format, for example, `2025-05-17T16:06:00Z`.                                   |
+| RecordedFutureAlerts.Alert.updated                 | string   | Timestamp when the alert was last updated in ISO 8601 format, for example, `2025-05-17T16:06:00Z`.                              |
+| RecordedFutureAlerts.Alert.markdown                | string   | Markdown-formatted summary of the alert details.                                                                                |
+| RecordedFutureAlerts.Alert.images                  | Unknown  | Image IDs attached to the alert.                                                                                                |
+| RecordedFutureAlerts.Alert.classic_alert_rule_name | string   | If alert is a Classic Alert, name of the rule that triggered the alert.                                                         |
+| RecordedFutureAlerts.Alert.classic_alert_rule_id   | string   | If alert is a Classic Alert, ID of the rule that triggered the alert.                                                           |
+| RecordedFutureAlerts.Alert.portal_url              | string   | If alert is a Classic Alert, portal URL for the alert.                                                                          |
+| RecordedFutureAlerts.Alert.ai_insights             | string   | If alert is a Classic Alert, AI-generated insight summary.                                                                      |
+| RecordedFutureAlerts.Alert.review.status           | string   | If alert is a Classic Alert, review status.                                                                                     |
+| RecordedFutureAlerts.Alert.review.assignee         | string   | If alert is a Classic Alert, assignee.                                                                                          |
+| RecordedFutureAlerts.Alert.review.note             | string   | If alert is a Classic Alert, review note.                                                                                       |
+| RecordedFutureAlerts.Alert.entities                | Unknown  | If alert is a Classic Alert, entities referenced in the alert.                                                                  |
+| RecordedFutureAlerts.Alert.fragments               | Unknown  | If alert is a Classic Alert, text fragments from the alert hits.                                                                |
+| RecordedFutureAlerts.Alert.documents               | Unknown  | If alert is a Classic Alert, documents associated with alert hits.                                                              |
+| RecordedFutureAlerts.Alert.analyst_notes           | Unknown  | If alert is a Classic Alert, analyst-note URLs linked in the alert.                                                             |
+| RecordedFutureAlerts.Alert.triggered_by            | Unknown  | If alert is a Classic Alert, entities or paths that triggered the alert.                                                        |
+| RecordedFutureAlerts.Alert.playbook_alert_category | string   | If alert is a Playbook Alert, category of the alert.                                                                            |
+| RecordedFutureAlerts.Alert.playbook_alert_priority | string   | If alert is a Playbook Alert, priority of the alert.                                                                            |
+| RecordedFutureAlerts.Alert.entity_name             | string   | If alert is a Playbook Alert, primary entity name.                                                                              |
+| RecordedFutureAlerts.Alert.targets                 | Unknown  | If alert is a Playbook Alert, target names associated with the alert.                                                           |
+| RecordedFutureAlerts.Alert.log_entries             | Unknown  | If alert is a Playbook Alert, alert activity log entries.                                                                       |
+| RecordedFutureAlerts.Alert.log_entries.created     | string   | If alert is a Playbook Alert, timestamp when the log entry was created in ISO 8601 format, for example, `2025-05-17T16:06:00Z`. |
+| RecordedFutureAlerts.Alert.log_entries.author_name | string   | If alert is a Playbook Alert, name of the log entry author.                                                                     |
+| RecordedFutureAlerts.Alert.log_entries.author_id   | string   | If alert is a Playbook Alert, ID of the log entry author.                                                                       |
+| RecordedFutureAlerts.Alert.log_entries.changes     | Unknown  | If alert is a Playbook Alert, raw change records from the alert activity log.                                                   |
+| RecordedFutureAlerts.Alert.details                 | Unknown  | If alert is a Playbook Alert, category-specific detailed panel data.                                                            |
+
+#### Command Example
+
+```bash
+!rf-alert-lookup alert_id=task:75ac1730-3811-44be-8ea7-de7916166c10
+```
+
+#### Context Example
+
+```json
+{
+  "RecordedFutureAlerts": {
+    "Alert": {
+      "id": "task:75ac1730-3811-44be-8ea7-de7916166c10",
+      "title": "RF Playbook Alert - Vulnerability CVE-2021-44228",
+      "type": "playbook-alert",
+      "subtype": "cyber_vulnerability",
+      "status": "New",
+      "created": "2025-05-14T02:31:00Z",
+      "updated": "2025-05-14T03:40:10Z",
+      "markdown": "## Vulnerability\n\n### Summary\n\n**ID:** task:75ac1730-3811-44be-8ea7-de7916166c10",
+      "playbook_alert_category": "cyber_vulnerability",
+      "playbook_alert_priority": "Moderate",
+      "entity_name": "CVE-2021-44228",
+      "log_entries": [
+        {
+          "created": "2025-05-14T02:36:04Z",
+          "author_name": "RF PI test Phantom modules",
+          "author_id": "uhash:60ptFTXURB",
+          "changes": [
+            {
+              "type": "status_change",
+              "old": "New",
+              "new": "Resolved"
+            },
+            {
+              "type": "comment_change",
+              "comment": "This has been handled."
+            }
+          ]
+        }
+      ],
+      "details": {
+        "type": "cyber_vulnerability",
+        "lifecycle_stage": "Exploitation"
+      }
+    }
   }
 }
 ```

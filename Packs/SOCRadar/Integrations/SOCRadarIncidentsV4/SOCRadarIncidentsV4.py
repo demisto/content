@@ -76,6 +76,7 @@ class Client(BaseClient):
         # hardcoded to "true" and test_fetch_command passed it as a kwarg which
         # caused a TypeError since search_incidents did not accept it.
         include_total_records: bool = True,
+        include_company_id: bool = False,
     ) -> dict[str, Any]:
         """
         Search incidents from SOCRadar API
@@ -94,6 +95,7 @@ class Client(BaseClient):
             limit: Number of results per page (max 100)
             page: Page number for pagination
             include_total_records: Whether to request total record counts from the API
+            include_company_id: Whether to request company_id in alarm data from the API
 
         API Response Structure:
         {
@@ -134,6 +136,8 @@ class Client(BaseClient):
             params["excluded_alarm_main_types"] = excluded_alarm_main_types
         if excluded_alarm_sub_types:
             params["excluded_alarm_sub_types"] = excluded_alarm_sub_types
+        if include_company_id:
+            params["include_company_id"] = "true"
 
         url_suffix = f"/company/{self.company_id}/incidents/v4"
 
@@ -142,7 +146,12 @@ class Client(BaseClient):
 
         try:
             response = self._http_request(
-                method="GET", url_suffix=url_suffix, params=params, headers=self._get_headers(), timeout=60, resp_type="json"
+                method="GET",
+                url_suffix=url_suffix,
+                params=params,
+                headers=self._get_headers(),
+                timeout=60,
+                resp_type="json",
             )
 
             demisto.debug(f"[SOCRadar] Response type: {type(response)}")
@@ -157,9 +166,16 @@ class Client(BaseClient):
 
                 data_obj = response.get("data", {})
 
-                alarms = data_obj.get("alarms", [])
-                total_pages = data_obj.get("total_pages", 1)
-                total_records = data_obj.get("total_records", len(alarms))
+                # When include_total_records is false, API returns data as a list
+                # instead of a dict with "alarms", "total_pages", "total_records" keys.
+                if isinstance(data_obj, list):
+                    alarms = data_obj
+                    total_pages = 1
+                    total_records = len(alarms)
+                else:
+                    alarms = data_obj.get("alarms", [])
+                    total_pages = data_obj.get("total_pages", 1)
+                    total_records = data_obj.get("total_records", len(alarms))
 
                 demisto.debug(f"[SOCRadar] Received {len(alarms)} alarms from page {page}")
                 demisto.debug(f"[SOCRadar] Total records: {total_records}, Total pages: {total_pages}")
@@ -228,7 +244,13 @@ class Client(BaseClient):
             raise DemistoException(f"API Error: {response.get('message')}")
         return response
 
-    def add_alarm_comment(self, alarm_id: int, user_email: str, comment: str, company_id: str | None = None) -> dict[str, Any]:
+    def add_alarm_comment(
+        self,
+        alarm_id: int,
+        user_email: str,
+        comment: str,
+        company_id: str | None = None,
+    ) -> dict[str, Any]:
         """Add comment to an alarm"""
         effective_company_id = company_id or self.company_id
         if not effective_company_id:
@@ -237,7 +259,11 @@ class Client(BaseClient):
         url_suffix = f"/company/{effective_company_id}/alarm/add/comment/v2"
         json_data = {"alarm_id": alarm_id, "user_email": user_email, "comment": comment}
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers=self._get_headers(),
+            timeout=60,
         )
 
     def add_alarm_assignee(
@@ -261,7 +287,11 @@ class Client(BaseClient):
             json_data["user_emails"] = user_emails
 
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers=self._get_headers(),
+            timeout=60,
         )
 
     def add_remove_tag(self, alarm_id: int, tag: str, company_id: str | None = None) -> dict[str, Any]:
@@ -273,7 +303,11 @@ class Client(BaseClient):
         url_suffix = f"/company/{effective_company_id}/alarm/tag"
         json_data = {"alarm_id": alarm_id, "tag": tag}
         return self._http_request(
-            method="POST", url_suffix=url_suffix, json_data=json_data, headers=self._get_headers(), timeout=60
+            method="POST",
+            url_suffix=url_suffix,
+            json_data=json_data,
+            headers=self._get_headers(),
+            timeout=60,
         )
 
 
@@ -374,7 +408,19 @@ def format_value(value, indent=0):
 # FIX: Added show_content parameter. Previously the function referenced a
 # variable 'show_content' that was never defined in scope, causing a NameError
 # at runtime. Now it is explicitly passed in from the YAML checkbox parameter.
-def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[str, Any]:
+def alarm_to_incident(
+    alarm: dict[str, Any],
+    show_content: bool = True,
+    include_mitigation: bool = False,
+    include_response: bool = False,
+    include_detection_and_analysis: bool = False,
+    include_post_incident_analysis: bool = False,
+    include_related_assets: bool = False,
+    include_related_entities: bool = False,
+    include_company_id: bool = False,
+    include_incident_link: bool = False,
+    configured_company_id: str = "",
+) -> dict[str, Any]:
     """
     Convert SOCRadar alarm to Demisto incident
 
@@ -382,6 +428,14 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
         alarm: Raw alarm dict from the SOCRadar API
         show_content: Whether to include full alarm content in incident details
                       (controlled by the show_content checkbox in YAML config)
+        include_mitigation: Whether to include mitigation plan in custom fields
+        include_response: Whether to include response steps in custom fields
+        include_detection_and_analysis: Whether to include detection & analysis in custom fields
+        include_post_incident_analysis: Whether to include post-incident analysis in custom fields
+        include_related_assets: Whether to include related assets in custom fields
+        include_related_entities: Whether to include related entities in custom fields
+        include_company_id: Whether to include company ID in custom fields
+        configured_company_id: Company ID from integration configuration (fallback when alarm has no company_id)
 
     IMPORTANT: The 'content' field structure varies by alarm type:
     - Impersonating Domain: has dns_information, whois_information, domain_status
@@ -391,7 +445,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
 
     We safely extract common fields and include full content in rawJSON.
     """
-    company_id = alarm.get("company_id")
+    company_id = alarm.get("company_id") or configured_company_id
     alarm_id = alarm.get("alarm_id")
     alarm_risk_level = alarm.get("alarm_risk_level", "UNKNOWN")
     alarm_asset = alarm.get("alarm_asset", "N/A")
@@ -420,6 +474,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
         incident_name += f" - {alarm_sub_type}"
     incident_name += f" [{alarm_asset}]"
 
+    # Build related entities string
     related_entities = alarm.get("alarm_related_entities", [])
     if not isinstance(related_entities, list):
         related_entities = []
@@ -431,6 +486,61 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
             value = entity.get("value", "")
             if key and value:
                 entity_info.append(f"{key}: {value}")
+
+    related_entities_str = "\n".join(entity_info)
+
+    # Build related assets string
+    related_assets = alarm.get("alarm_related_assets", [])
+    if not isinstance(related_assets, list):
+        related_assets = []
+
+    asset_info = []
+    for asset in related_assets:
+        if isinstance(asset, dict):
+            asset_key = asset.get("key", "")
+            asset_value = asset.get("value", "")
+            if asset_key and asset_value:
+                if isinstance(asset_value, list):
+                    asset_value = [str(v) for v in asset_value if v]
+                    if asset_value:
+                        asset_info.append(f"{asset_key}: {' || '.join(asset_value)}")
+                else:
+                    asset_info.append(f"{asset_key}: {asset_value}")
+
+    related_assets_str = "\n".join(asset_info)
+
+    # Extract enrichment fields from alarm_type_details
+    alarm_mitigation = alarm_type_details.get("alarm_default_mitigation_plan", "")
+    alarm_response = alarm.get("alarm_response", "")
+    alarm_detection_analysis = alarm_type_details.get("alarm_detection_and_analysis", "")
+    alarm_post_incident = alarm_type_details.get("alarm_post_incident_analysis", "")
+
+    # Promote to top-level rawJSON only when include is enabled
+    if include_mitigation and alarm_mitigation:
+        alarm["alarm_mitigation"] = alarm_mitigation
+    if include_response and alarm_response:
+        alarm["alarm_response_plan"] = alarm_response
+    if include_detection_and_analysis and alarm_detection_analysis:
+        alarm["alarm_detection_and_analysis"] = alarm_detection_analysis
+    if include_post_incident_analysis and alarm_post_incident:
+        alarm["alarm_post_incident_analysis"] = alarm_post_incident
+
+    # Build incident content string from content dict
+    incident_content = ""
+    if show_content and content:
+        try:
+            content_parts = format_value(content)
+            incident_content = "\n".join(content_parts)
+        except Exception as e:
+            incident_content = f"Content parsing error: {str(e)}"
+
+    # Build incident link
+    incident_link = ""
+    if company_id and alarm_id:
+        incident_link = (
+            f"https://platform.socradar.com/app/company/{company_id}"
+            f"/alarm-management?tab=approved&field=alarmId&operator=equals&value={alarm_id}"
+        )
 
     alarm_text = alarm.get("alarm_text", "")
 
@@ -450,7 +560,7 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
     if entity_info:
         details_parts.append("\n Related Entities:")
         for info in entity_info:
-            # FIX: Replaced Unicode bullet '•' (U+2022) with ASCII dash '-'.
+            # FIX: Replaced Unicode bullet with ASCII dash.
             # XSOAR uses Latin-1 encoding for HTTP responses which cannot
             # encode U+2022, causing 'latin-1 codec can't encode character' error.
             details_parts.append(f"  - {info}")
@@ -472,20 +582,44 @@ def alarm_to_incident(alarm: dict[str, Any], show_content: bool = True) -> dict[
 
     full_details = "\n".join(details_parts)
 
+    custom_fields: dict[str, Any] = {
+        "socradaralarmid": str(alarm_id) if alarm_id else "unknown",
+        "socradarstatus": alarm_status,
+        "socradarasset": alarm_asset,
+        "socradaralarmtype": alarm_main_type,
+        "socradartags": tags_str,
+    }
+
+    if include_mitigation and alarm_mitigation:
+        custom_fields["socradarmitigation"] = alarm_mitigation
+    if include_response and alarm_response:
+        custom_fields["socradarresponse"] = alarm_response
+    if include_detection_and_analysis and alarm_detection_analysis:
+        custom_fields["socradardetectionandanalysis"] = alarm_detection_analysis
+    if include_post_incident_analysis and alarm_post_incident:
+        custom_fields["socradarpostincidentanalysis"] = alarm_post_incident
+    if include_related_assets and related_assets_str:
+        custom_fields["socradarrelatedassets"] = related_assets_str
+    if include_related_entities and related_entities_str:
+        custom_fields["socradarrelatedentities"] = related_entities_str
+    if include_company_id:
+        if "company_id" not in alarm:
+            alarm["company_id"] = str(company_id) if company_id else ""
+        custom_fields["socradarcompanyid"] = str(company_id) if company_id else ""
+    if include_incident_link:
+        if incident_link:
+            alarm["incident_link"] = incident_link
+        custom_fields["socradarincidentlink"] = incident_link
+        custom_fields["socradarincidentcontent"] = incident_content
+
     incident = {
         "name": incident_name,
-        "occurred": occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z",
+        "occurred": (occurred_time.isoformat() + "Z" if occurred_time else datetime.now().isoformat() + "Z"),
         "rawJSON": json.dumps(alarm),
         "severity": convert_to_demisto_severity(alarm_risk_level),
         "details": full_details,
         "dbotMirrorId": str(alarm_id) if alarm_id else None,
-        "CustomFields": {
-            "socradaralarmid": str(alarm_id) if alarm_id else "unknown",
-            "socradarstatus": alarm_status,
-            "socradarasset": alarm_asset,
-            "socradaralarmtype": alarm_main_type,
-            "socradartags": tags_str,
-        },
+        "CustomFields": custom_fields,
     }
 
     demisto.debug(f"[SOCRadar] Created incident: Alarm {alarm_id} - {alarm_main_type} (Risk: {alarm_risk_level})")
@@ -502,6 +636,15 @@ def fetch_incidents(
     first_fetch_time: str,
     fetch_interval_minutes: int = 1,
     show_content: bool = True,
+    include_mitigation: bool = False,
+    include_response: bool = False,
+    include_detection_and_analysis: bool = False,
+    include_post_incident_analysis: bool = False,
+    include_related_assets: bool = False,
+    include_related_entities: bool = False,
+    include_company_id: bool = False,
+    include_incident_link: bool = False,
+    configured_company_id: str = "",
     status: list[str] | None = None,
     severities: list[str] | None = None,
     alarm_main_types: list[str] | None = None,
@@ -612,6 +755,7 @@ def fetch_incidents(
                 end_date=end_date,
                 limit=per_page,
                 page=current_page,
+                include_company_id=include_company_id,
             )
 
             alarms = response.get("data", [])
@@ -639,7 +783,19 @@ def fetch_incidents(
                     continue
                 if total_incidents_created < max_results:
                     # FIX: Pass show_content parameter to alarm_to_incident
-                    incident = alarm_to_incident(alarm, show_content=show_content)
+                    incident = alarm_to_incident(
+                        alarm,
+                        show_content=show_content,
+                        include_mitigation=include_mitigation,
+                        include_response=include_response,
+                        include_detection_and_analysis=include_detection_and_analysis,
+                        include_post_incident_analysis=include_post_incident_analysis,
+                        include_related_assets=include_related_assets,
+                        include_related_entities=include_related_entities,
+                        include_company_id=include_company_id,
+                        include_incident_link=include_incident_link,
+                        configured_company_id=configured_company_id,
+                    )
                     page_incidents.append(incident)
                     total_incidents_created += 1
                     last_alarm_ids.add(alarm.get("alarm_id"))
@@ -743,7 +899,10 @@ def change_status_command(client: Client, args: dict[str, str]) -> CommandResult
         email,
     )
 
-    return CommandResults(readable_output=f"Status changed for {len(alarm_ids)} alarm(s)", raw_response=response)
+    return CommandResults(
+        readable_output=f"Status changed for {len(alarm_ids)} alarm(s)",
+        raw_response=response,
+    )
 
 
 def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -755,10 +914,16 @@ def mark_as_false_positive_command(client: Client, args: dict[str, str]) -> Comm
         raise ValueError("alarm_id is required")
 
     response = client.change_alarm_status(
-        [int(alarm_id)], "FALSE_POSITIVE", args.get("comments", "Marked as false positive"), company_id
+        [int(alarm_id)],
+        "FALSE_POSITIVE",
+        args.get("comments", "Marked as false positive"),
+        company_id,
     )
 
-    return CommandResults(readable_output=f"Alarm {alarm_id} marked as false positive", raw_response=response)
+    return CommandResults(
+        readable_output=f"Alarm {alarm_id} marked as false positive",
+        raw_response=response,
+    )
 
 
 def mark_as_resolved_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -769,7 +934,12 @@ def mark_as_resolved_command(client: Client, args: dict[str, str]) -> CommandRes
     if not alarm_id:
         raise ValueError("alarm_id is required")
 
-    response = client.change_alarm_status([int(alarm_id)], "RESOLVED", args.get("comments", "Marked as resolved"), company_id)
+    response = client.change_alarm_status(
+        [int(alarm_id)],
+        "RESOLVED",
+        args.get("comments", "Marked as resolved"),
+        company_id,
+    )
 
     return CommandResults(readable_output=f"Alarm {alarm_id} marked as resolved", raw_response=response)
 
@@ -826,7 +996,10 @@ def add_tag_command(client: Client, args: dict[str, str]) -> CommandResults:
 
     response = client.add_remove_tag(alarm_id, tag, company_id)
 
-    return CommandResults(readable_output=f"Tag '{tag}' added/removed for alarm {alarm_id}", raw_response=response)
+    return CommandResults(
+        readable_output=f"Tag '{tag}' added/removed for alarm {alarm_id}",
+        raw_response=response,
+    )
 
 
 def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
@@ -898,7 +1071,7 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
                     "Status": incident.get("status", "UNKNOWN"),
                     "Asset": incident.get("alarm_asset", "N/A"),
                     "Type": alarm_type_display,
-                    "Date": incident.get("date", "")[:19] if incident.get("date") else "N/A",
+                    "Date": (incident.get("date", "")[:19] if incident.get("date") else "N/A"),
                     "Extra": entity_summary,
                 }
             )
@@ -939,13 +1112,20 @@ def test_fetch_command(client: Client, args: dict[str, str]) -> CommandResults:
         message += f"- Date parsing (tried to parse: '{args.get('first_fetch', '3 days')}')\n\n"
         message += f"Full error:\n{traceback.format_exc()}"
 
-        return CommandResults(readable_output=message, raw_response={"error": error_msg, "traceback": traceback.format_exc()})
+        return CommandResults(
+            readable_output=message,
+            raw_response={"error": error_msg, "traceback": traceback.format_exc()},
+        )
 
 
 def main() -> None:
     """Main execution function"""
     params = demisto.params()
-    api_key = params.get("apikey")
+    api_key_param = params.get("apikey")
+    if isinstance(api_key_param, dict):
+        api_key = api_key_param.get("password", "")
+    else:
+        api_key = api_key_param
     company_id = params.get("company_id")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
@@ -979,6 +1159,15 @@ def main() -> None:
             show_content = params.get("show_content", True)
             if isinstance(show_content, str):
                 show_content = show_content.lower() in ("true", "1", "yes")
+
+            include_mitigation = argToBoolean(params.get("include_mitigation", False))
+            include_response = argToBoolean(params.get("include_response", False))
+            include_detection_and_analysis = argToBoolean(params.get("include_detection_and_analysis", False))
+            include_post_incident_analysis = argToBoolean(params.get("include_post_incident_analysis", False))
+            include_related_assets = argToBoolean(params.get("include_related_assets", False))
+            include_related_entities = argToBoolean(params.get("include_related_entities", False))
+            include_company_id = argToBoolean(params.get("include_company_id", False))
+            include_incident_link = argToBoolean(params.get("include_incident_link", False))
 
             alarm_type_ids_str = params.get("alarm_type_ids", "")
             alarm_type_ids = None
@@ -1035,6 +1224,15 @@ def main() -> None:
                 first_fetch_time=params.get("first_fetch", "3 days"),
                 fetch_interval_minutes=fetch_interval_minutes,
                 show_content=show_content,
+                include_mitigation=include_mitigation,
+                include_response=include_response,
+                include_detection_and_analysis=include_detection_and_analysis,
+                include_post_incident_analysis=include_post_incident_analysis,
+                include_related_assets=include_related_assets,
+                include_related_entities=include_related_entities,
+                include_company_id=include_company_id,
+                include_incident_link=include_incident_link,
+                configured_company_id=company_id or "",
                 status=argToList(params.get("status")),
                 severities=argToList(params.get("severities")),
                 alarm_main_types=argToList(params.get("alarm_main_types")),

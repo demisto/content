@@ -1,0 +1,777 @@
+{
+  "GoogleDrive.DriveActivity": [
+    {
+      "primaryActionDetail": {
+        "create": {
+          "new": true,
+          "upload": true,
+          "copy": {
+            "originalObject": {
+              "driveItem": {
+                "name": "item/title1",
+                "title": "title1",
+                "file": true,
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": true,
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/title1",
+                "title": "DRIVE title1"
+              }
+            }
+          }
+        },
+        "edit": true,
+        "move": {
+          "addedParents": [
+            {
+              "driveItem": {
+                "name": "item/test name move",
+                "title": "test name move",
+                "file": true,
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": true,
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/test name move",
+                "title": "drive title1 move"
+              }
+            },
+            {
+              "driveItem": {
+                "name": "item/test name 2",
+                "title": "test name 2",
+                "file": true,
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": true,
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/test name move",
+                "title": "drive title1 move"
+              }
+            }
+          ],
+          "removedParents": [
+            {
+              "driveItem": {
+                "name": "item/test name move",
+                "title": "test name move",
+                "file": true,
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": true,
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/test name move",
+                "title": "drive title1 move"
+              }
+            },
+            {
+              "driveItem": {
+                "name": "item/test name 2",
+                "title": "test name 2",
+                "file": true,
+                "folder": {
+                  "type": "DEPRICATED FROM API folder type"
+                },
+                "driveFile": true,
+                "driveFolder": {
+                  "type": "DRIVE folder type"
+                }
+              },
+              "drive": {
+                "name": "DRIVE item/test name move",
+                "title": "drive title1 move"
+              }
+            }
+          ]
+        },
+        "rename": {
+          "oldTitle": "OLD TITLE RENAMED",
+          "newTitle": "NEW TITLE RENAMED"
+        },
+        "delete": {
+          "type": "DELETE TYPE"
+        },
+        "restore": {
+          "type": "RESTORE TYPE"
+        },
+        "permissionChange": {
+          "addedPermissions": [
+            {
+              "role": "EDITOR PERMISSION ROLE",
+              "allowDiscovery": true,
+              "user": {
+                "knownUser": {
+                  "personName": "string personName",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "group": {
+                "email": "group email string",
+                "title": "group title string"
+              },
+              "domain": {
+                "name": "domain name string",
+                "legacyId": "legacyId 12333333333string"
+              },
+              "anyone": true
+            },
+            {
+              "role": "EDITOR PERMISSION ROLE 22222222222",
+              "allowDiscovery": true,
+              "user": {
+                "knownUser": {
+                  "personName": "string personName 222222222222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "group": {
+                "email": "group email string 2222222",
+                "title": "group title string"
+              },
+              "domain": {
+                "name": "domain name string 222222222",
+                "legacyId": "legacyId 12333333333string"
+              },
+              "anyone": true
+            }
+          ],
+          "removedPermissions": [
+            {
+              "role": "removedPermissionsEDITOR PERMISSION ROLE",
+              "allowDiscovery": true,
+              "user": {
+                "knownUser": {
+                  "personName": "removedPermissionsstring personName",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "group": {
+                "email": "removedPermissionsgroup email string",
+                "title": "removedPermissionsgroup title string"
+              },
+              "domain": {
+                "name": "removedPermissionsdomain name string",
+                "legacyId": "removedPermissionslegacyId 12333333333string"
+              },
+              "anyone": true
+            },
+            {
+              "role": "removedPermissionsEDITOR PERMISSION ROLE 22222222222",
+              "allowDiscovery": true,
+              "user": {
+                "knownUser": {
+                  "personName": "removedPermissionsstring personName 222222222222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "group": {
+                "email": "removedPermissionsgroup email string 2222222",
+                "title": "removedPermissionsgroup title string"
+              },
+              "domain": {
+                "name": "removedPermissionsdomain name string 222222222",
+                "legacyId": "removedPermissionslegacyId 12333333333string"
+              },
+              "anyone": true
+            }
+          ]
+        },
+        "comment": {
+          "mentionedUsers": [
+            {
+              "knownUser": {
+                "personName": "commentstring personName 1111",
+                "isCurrentUser": false
+              },
+              "deletedUser": true,
+              "unknownUser": true
+            }
+          ],
+          "post": {
+            "subtype": "POST SUBTYPE"
+          },
+          "assignment": {
+            "subtype": "assignment enum (Subtype)",
+            "assignedUser": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              }
+            }
+          },
+          "suggestion": {
+            "subtype": "suggestionenum (Subtype)"
+          }
+        },
+        "dlpChange": {
+          "type": "dlpChange TYPE_UNSPECIFIED"
+        },
+        "reference": {
+          "type": "reference LINK"
+        },
+        "settingsChange": {
+          "restrictionChanges": [
+            {
+              "feature": "feature enum (Feature)",
+              "newRestriction": "newRestriction enum (Restriction)"
+            }
+          ]
+        }
+      },
+      "actors": [
+        {
+          "user": {
+            "knownUser": {
+              "personName": "removedPermissionsstring personName",
+              "isCurrentUser": false
+            },
+            "deletedUser": true,
+            "unknownUser": true
+          },
+          "anonymous": true,
+          "impersonation": {
+            "impersonatedUser": {
+              "knownUser": {
+                "personName": "removedPermissionsstring personName",
+                "isCurrentUser": false
+              },
+              "deletedUser": true,
+              "unknownUser": true
+            }
+          },
+          "system": {
+            "type": "TYPE_UNSPECIFIED system"
+          },
+          "administrator": true
+        },
+        {
+          "user": {
+            "knownUser": {
+              "personName": "removedPermissionsstring personName 222222",
+              "isCurrentUser": false
+            },
+            "deletedUser": true,
+            "unknownUser": true
+          }
+        }
+      ],
+      "actions": [
+        {
+          "detail": {
+            "create": {
+              "new": true,
+              "upload": true,
+              "copy": {
+                "originalObject": {
+                  "driveItem": {
+                    "name": "item/title1",
+                    "title": "title1",
+                    "file": true,
+                    "folder": {
+                      "type": "DEPRICATED FROM API folder type"
+                    },
+                    "driveFile": true,
+                    "driveFolder": {
+                      "type": "DRIVE folder type"
+                    }
+                  },
+                  "drive": {
+                    "name": "DRIVE item/title1",
+                    "title": "DRIVE title1"
+                  }
+                }
+              }
+            },
+            "edit": true,
+            "move": {
+              "addedParents": [
+                {
+                  "driveItem": {
+                    "name": "item/test name move",
+                    "title": "test name move",
+                    "file": true,
+                    "folder": {
+                      "type": "DEPRICATED FROM API folder type"
+                    },
+                    "driveFile": true,
+                    "driveFolder": {
+                      "type": "DRIVE folder type"
+                    }
+                  },
+                  "drive": {
+                    "name": "DRIVE item/test name move",
+                    "title": "drive title1 move"
+                  }
+                },
+                {
+                  "driveItem": {
+                    "name": "item/test name 2",
+                    "title": "test name 2",
+                    "file": true,
+                    "folder": {
+                      "type": "DEPRICATED FROM API folder type"
+                    },
+                    "driveFile": true,
+                    "driveFolder": {
+                      "type": "DRIVE folder type"
+                    }
+                  },
+                  "drive": {
+                    "name": "DRIVE item/test name move",
+                    "title": "drive title1 move"
+                  }
+                }
+              ],
+              "removedParents": [
+                {
+                  "driveItem": {
+                    "name": "item/test name move",
+                    "title": "test name move",
+                    "file": true,
+                    "folder": {
+                      "type": "DEPRICATED FROM API folder type"
+                    },
+                    "driveFile": true,
+                    "driveFolder": {
+                      "type": "DRIVE folder type"
+                    }
+                  },
+                  "drive": {
+                    "name": "DRIVE item/test name move",
+                    "title": "drive title1 move"
+                  }
+                },
+                {
+                  "driveItem": {
+                    "name": "item/test name 2",
+                    "title": "test name 2",
+                    "file": true,
+                    "folder": {
+                      "type": "DEPRICATED FROM API folder type"
+                    },
+                    "driveFile": true,
+                    "driveFolder": {
+                      "type": "DRIVE folder type"
+                    }
+                  },
+                  "drive": {
+                    "name": "DRIVE item/test name move",
+                    "title": "drive title1 move"
+                  }
+                }
+              ]
+            },
+            "rename": {
+              "oldTitle": "OLD TITLE RENAMED",
+              "newTitle": "NEW TITLE RENAMED"
+            },
+            "delete": {
+              "type": "DELETE TYPE"
+            },
+            "restore": {
+              "type": "RESTORE TYPE"
+            },
+            "permissionChange": {
+              "addedPermissions": [
+                {
+                  "role": "EDITOR PERMISSION ROLE",
+                  "allowDiscovery": true,
+                  "user": {
+                    "knownUser": {
+                      "personName": "string personName",
+                      "isCurrentUser": false
+                    },
+                    "deletedUser": true,
+                    "unknownUser": true
+                  },
+                  "group": {
+                    "email": "group email string",
+                    "title": "group title string"
+                  },
+                  "domain": {
+                    "name": "domain name string",
+                    "legacyId": "legacyId 12333333333string"
+                  },
+                  "anyone": true
+                },
+                {
+                  "role": "EDITOR PERMISSION ROLE 22222222222",
+                  "allowDiscovery": true,
+                  "user": {
+                    "knownUser": {
+                      "personName": "string personName 222222222222",
+                      "isCurrentUser": false
+                    },
+                    "deletedUser": true,
+                    "unknownUser": true
+                  },
+                  "group": {
+                    "email": "group email string 2222222",
+                    "title": "group title string"
+                  },
+                  "domain": {
+                    "name": "domain name string 222222222",
+                    "legacyId": "legacyId 12333333333string"
+                  },
+                  "anyone": true
+                }
+              ],
+              "removedPermissions": [
+                {
+                  "role": "removedPermissionsEDITOR PERMISSION ROLE",
+                  "allowDiscovery": true,
+                  "user": {
+                    "knownUser": {
+                      "personName": "removedPermissionsstring personName",
+                      "isCurrentUser": false
+                    },
+                    "deletedUser": true,
+                    "unknownUser": true
+                  },
+                  "group": {
+                    "email": "removedPermissionsgroup email string",
+                    "title": "removedPermissionsgroup title string"
+                  },
+                  "domain": {
+                    "name": "removedPermissionsdomain name string",
+                    "legacyId": "removedPermissionslegacyId 12333333333string"
+                  },
+                  "anyone": true
+                },
+                {
+                  "role": "removedPermissionsEDITOR PERMISSION ROLE 22222222222",
+                  "allowDiscovery": true,
+                  "user": {
+                    "knownUser": {
+                      "personName": "removedPermissionsstring personName 222222222222",
+                      "isCurrentUser": false
+                    },
+                    "deletedUser": true,
+                    "unknownUser": true
+                  },
+                  "group": {
+                    "email": "removedPermissionsgroup email string 2222222",
+                    "title": "removedPermissionsgroup title string"
+                  },
+                  "domain": {
+                    "name": "removedPermissionsdomain name string 222222222",
+                    "legacyId": "removedPermissionslegacyId 12333333333string"
+                  },
+                  "anyone": true
+                }
+              ]
+            },
+            "comment": {
+              "mentionedUsers": [
+                {
+                  "knownUser": {
+                    "personName": "commentstring personName 1111",
+                    "isCurrentUser": false
+                  },
+                  "deletedUser": true,
+                  "unknownUser": true
+                }
+              ],
+              "post": {
+                "subtype": "POST SUBTYPE"
+              },
+              "assignment": {
+                "subtype": "assignment enum (Subtype)",
+                "assignedUser": {
+                  "user": {
+                    "knownUser": {
+                      "personName": "commentstring personName 22222",
+                      "isCurrentUser": false
+                    },
+                    "deletedUser": true,
+                    "unknownUser": true
+                  }
+                }
+              },
+              "suggestion": {
+                "subtype": "suggestionenum (Subtype)"
+              }
+            },
+            "dlpChange": {
+              "type": "dlpChange TYPE_UNSPECIFIED"
+            },
+            "reference": {
+              "type": "reference LINK"
+            },
+            "settingsChange": {
+              "restrictionChanges": [
+                {
+                  "feature": "feature enum (Feature)",
+                  "newRestriction": "newRestriction enum (Restriction)"
+                }
+              ]
+            }
+          },
+          "actor": {
+            "user": {
+              "knownUser": {
+                "personName": "removedPermissionsstring personName",
+                "isCurrentUser": false
+              },
+              "deletedUser": true,
+              "unknownUser": true
+            },
+            "anonymous": true,
+            "impersonation": {
+              "impersonatedUser": {
+                "knownUser": {
+                  "personName": "removedPermissionsstring personName",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              }
+            },
+            "system": {
+              "type": "TYPE_UNSPECIFIED system"
+            },
+            "administrator": true
+          },
+          "target": {
+            "driveItem": {
+              "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+              "title": "Copy of conf.json",
+              "file": true,
+              "mimeType": "application/json",
+              "owner": {
+                "user": {
+                  "knownUser": {
+                    "personName": "commentstring personName 22222",
+                    "isCurrentUser": false
+                  },
+                  "deletedUser": true,
+                  "unknownUser": true
+                },
+                "domain": {
+                  "name": "nimbledata.io",
+                  "legacyId": "103399509076537965360"
+                },
+                "drive": {
+                  "name": "string",
+                  "title": "string"
+                }
+              },
+              "driveFile": true,
+              "driveFolder": {
+                "type": "drive folder type"
+              }
+            },
+            "drive": {
+              "name": "string",
+              "title": "string",
+              "root": {
+                "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+                "title": "Copy of conf.json",
+                "file": true,
+                "mimeType": "mimeType string",
+                "owner": {
+                  "domain": {
+                    "name": "string",
+                    "legacyId": "string"
+                  },
+                  "user": {
+                    "knownUser": {
+                      "personName": "commentstring personName 22222",
+                      "isCurrentUser": false
+                    },
+                    "deletedUser": true,
+                    "unknownUser": true
+                  },
+                  "drive": {
+                    "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+                    "title": "Copy of conf.json"
+                  }
+                },
+                "driveFile": true,
+                "driveFolder": {
+                  "type": "drive folder type"
+                }
+              }
+            },
+            "fileComment": {
+              "legacyCommentId": "string legacyCommentId",
+              "legacyDiscussionId": "string legacyDiscussionId",
+              "linkToDiscussion": "string linkToDiscussion",
+              "parent": {
+                "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+                "title": "Copy of conf.json",
+                "file": true,
+                "mimeType": "mimeType string",
+                "owner": {
+                  "domain": {
+                    "name": "string",
+                    "legacyId": "string"
+                  },
+                  "user": {
+                    "knownUser": {
+                      "personName": "commentstring personName 22222",
+                      "isCurrentUser": false
+                    },
+                    "deletedUser": true,
+                    "unknownUser": true
+                  },
+                  "drive": {
+                    "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+                    "title": "Copy of conf.json"
+                  }
+                },
+                "driveFile": true,
+                "driveFolder": {
+                  "type": "drive folder type"
+                }
+              }
+            }
+          },
+          "timestamp": "2020-09-19T18:07:00.406Z",
+          "timeRange": {
+            "startTime": "startTime string",
+            "endTime": "endTime string"
+          }
+        }
+      ],
+      "targets": [
+        {
+          "driveItem": {
+            "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+            "title": "Copy of conf.json",
+            "file": true,
+            "mimeType": "application/json",
+            "owner": {
+              "user": {
+                "knownUser": {
+                  "personName": "commentstring personName 22222",
+                  "isCurrentUser": false
+                },
+                "deletedUser": true,
+                "unknownUser": true
+              },
+              "domain": {
+                "name": "nimbledata.io",
+                "legacyId": "103399509076537965360"
+              },
+              "drive": {
+                "name": "string",
+                "title": "string"
+              }
+            },
+            "driveFile": true,
+            "driveFolder": {
+              "type": "drive folder type"
+            }
+          },
+          "drive": {
+            "name": "string",
+            "title": "string",
+            "root": {
+              "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+              "title": "Copy of conf.json",
+              "file": true,
+              "mimeType": "mimeType string",
+              "owner": {
+                "domain": {
+                  "name": "string",
+                  "legacyId": "string"
+                },
+                "user": {
+                  "knownUser": {
+                    "personName": "commentstring personName 22222",
+                    "isCurrentUser": false
+                  },
+                  "deletedUser": true,
+                  "unknownUser": true
+                },
+                "drive": {
+                  "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+                  "title": "Copy of conf.json"
+                }
+              },
+              "driveFile": true,
+              "driveFolder": {
+                "type": "drive folder type"
+              }
+            }
+          },
+          "fileComment": {
+            "legacyCommentId": "string legacyCommentId",
+            "legacyDiscussionId": "string legacyDiscussionId",
+            "linkToDiscussion": "string linkToDiscussion",
+            "parent": {
+              "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+              "title": "Copy of conf.json",
+              "file": true,
+              "mimeType": "mimeType string",
+              "owner": {
+                "domain": {
+                  "name": "string",
+                  "legacyId": "string"
+                },
+                "user": {
+                  "knownUser": {
+                    "personName": "commentstring personName 22222",
+                    "isCurrentUser": false
+                  },
+                  "deletedUser": true,
+                  "unknownUser": true
+                },
+                "drive": {
+                  "name": "items/1GngIm9AnaWdQjlvtCtcIA-st9NHYiJ-U",
+                  "title": "Copy of conf.json"
+                }
+              },
+              "driveFile": true,
+              "driveFolder": {
+                "type": "drive folder type"
+              }
+            }
+          }
+        }
+      ],
+      "timestamp": "2020-09-19T18:07:00.406Z",
+      "timeRange": {
+        "startTime": "startTime string",
+        "endTime": "endTime string"
+      }
+    }
+  ],
+  "GoogleDrive.PageToken.DriveActivity": {
+    "nextPageToken": "string nextPageToken"
+  }
+}

@@ -1544,6 +1544,35 @@ def _platformAPICall(path=None, method=None, params=None, data=None, timeout=Non
     return {}
 
 
+def unifiedConnectorMetadata():
+    """Returns the unified connector metadata for UCP-enabled integrations.
+
+    When running in UCP mode, the backend populates this with connector
+    information including connection profiles, connector ID, handler ID,
+    and instance ID.
+
+    Returns:
+        dict: Connector metadata dict, or empty dict when not in UCP mode.
+    """
+    return {}
+
+
+def getUCPCredentials(method_unique_id=None, from_cache=True):
+    """Fetches UCP credentials for the given method_unique_id.
+
+    In production, the backend returns credential dicts containing
+    type-specific sub-dicts (oauth2, api_key, etc.) with tokens/keys.
+
+    Args:
+        method_unique_id (str): The method_unique_id from a connection profile.
+        from_cache (bool): Whether to use cached credentials. Default True.
+
+    Returns:
+        dict: Credential dict, or empty dict in mock mode.
+    """
+    return {}
+
+
 def _Demisto__do(*args, **kwargs):
     """
     Mock for the internal _Demisto__do function.

@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Compromised Masked Card"
+    ],
+    "caseInsensitive": false,
+    "cliName": "gibownercity",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibownercity",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Owner City",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB Compromised Masked Card"
+    ]
+}

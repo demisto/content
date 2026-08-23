@@ -1,0 +1,19 @@
+[
+    {
+        "type": "File",
+        "value": "a5593da0e43c4879fc8c5eb7f92fbafa96d698a2",
+        "rawJSON": {
+            "value": "a5593da0e43c4879fc8c5eb7f92fbafa96d698a2",
+            "type": "File"
+        },
+        "fields": {
+            "firstseenbysource": "2025-04-10T19:52:57Z",
+            "lastseenbysource": "2025-04-10T19:52:57Z",
+            "collection_maintainer_name": "Abuse.ch-Hash",
+            "extra_info": {
+                "score": 30.0,
+                "seen_count": 1
+            }
+        }
+    }
+]

@@ -3,6 +3,7 @@
     "associatedTypes": [
         "GIB Compromised Account",
         "GIB Compromised Card",
+        "GIB Compromised Masked Card",
         "GIB Targeted Malware",
         "GIB Compromised Card Group",
         "GIB Attacks DDOS",
@@ -40,6 +41,7 @@
     "systemAssociatedTypes": [
         "GIB Compromised Account",
         "GIB Compromised Card",
+        "GIB Compromised Masked Card",
         "GIB Targeted Malware",
         "GIB Compromised Card Group",
         "GIB Attacks DDOS",

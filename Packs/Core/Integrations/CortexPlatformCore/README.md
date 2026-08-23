@@ -639,7 +639,7 @@ Retrieves asset from the Cortex platform using optional filter criteria.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page_size | The number of assets to return per page. Default is 100. | Optional |
+| page_size | The number of assets to return per page. Default is 100. Maximum is 5000. | Optional |
 | page_number | The page number for the assets to return for pagination. Default is 0. | Optional |
 | asset_names | Comma-separated list of asset names to search for. (e.g., "asset_name1,asset_name2"). | Optional |
 | asset_types | Comma-separated list of asset types to search for. (e.g., "asset_type1,asset_type2"). | Optional |

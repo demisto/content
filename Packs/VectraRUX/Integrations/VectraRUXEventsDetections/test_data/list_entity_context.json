@@ -1,0 +1,143 @@
+{
+  "Vectra.Entity(val.id && val.id == obj.id && val.type && val.type == obj.type)": [
+    {
+      "id": 334,
+      "name": "host_name",
+      "breadth_contrib": 2,
+      "entity_importance": 1,
+      "importance": 2,
+      "entity_type": "host",
+      "type": "host",
+      "is_prioritized": true,
+      "severity": "Critical",
+      "urgency_score": 100,
+      "velocity_contrib": 2,
+      "detection_set": [
+        "http://server_url.com/api/v3.3/detections/1933",
+        "http://server_url.com/api/v3.3/detections/1934"
+      ],
+      "last_detection_timestamp": "2023-05-15T09:39:24Z",
+      "last_modified_timestamp": "2023-07-18T09:44:24Z",
+      "notes": [],
+      "attack_rating": 10,
+      "privilege_level": null,
+      "privilege_category": null,
+      "attack_profile": "AWS Threat Actor",
+      "sensors": [
+        "test"
+      ],
+      "state": "active",
+      "tags": [
+        "test"
+      ],
+      "url": "http://server_url.com/api/v3.3/hosts/334",
+      "account_type": null,
+      "host_type": [
+        "o365"
+      ]
+    },
+    {
+      "id": 335,
+      "name": "account_name_1",
+      "breadth_contrib": 2,
+      "entity_importance": 1,
+      "importance": 2,
+      "entity_type": "account",
+      "type": "account",
+      "is_prioritized": true,
+      "severity": "Critical",
+      "urgency_score": 80,
+      "velocity_contrib": 2,
+      "detection_set": [
+        "http://server_url.com/api/v3.3/detections/1935",
+        "http://server_url.com/api/v3.3/detections/1937"
+      ],
+      "last_detection_timestamp": "2023-05-15T09:41:24Z",
+      "last_modified_timestamp": "2023-07-17T09:44:24Z",
+      "notes": [],
+      "attack_rating": 6,
+      "privilege_level": null,
+      "privilege_category": null,
+      "attack_profile": "attack1",
+      "sensors": [],
+      "state": "active",
+      "tags": [
+        "test",
+        "test1"
+      ],
+      "url": "http://server_url.com/api/v3.3/accounts/335",
+      "host_type": null,
+      "account_type": [
+        "o365"
+      ]
+    },
+    {
+      "id": 337,
+      "name": "account_name_2",
+      "breadth_contrib": 2,
+      "entity_importance": 1,
+      "importance": 1,
+      "entity_type": "account",
+      "type": "account",
+      "is_prioritized": true,
+      "severity": "Critical",
+      "urgency_score": 40,
+      "velocity_contrib": 2,
+      "detection_set": [
+        "http://server_url.com/api/v3.3/detections/1835",
+        "http://server_url.com/api/v3.3/detections/1837"
+      ],
+      "last_detection_timestamp": "2023-05-15T09:40:24Z",
+      "last_modified_timestamp": "2023-07-16T09:44:24Z",
+      "notes": [],
+      "attack_rating": 9,
+      "privilege_level": null,
+      "privilege_category": null,
+      "attack_profile": "attack2",
+      "sensors": [],
+      "state": "active",
+      "tags": [
+        "test1"
+      ],
+      "url": "http://server_url.com/api/v3.3/accounts/337",
+      "host_type": null,
+      "account_type": [
+        "aws"
+      ]
+    },
+    {
+      "id": 339,
+      "name": "account_name_3",
+      "breadth_contrib": 2,
+      "entity_importance": 1,
+      "importance": 2,
+      "entity_type": "account",
+      "type": "account",
+      "is_prioritized": true,
+      "severity": "Critical",
+      "urgency_score": 21,
+      "velocity_contrib": 2,
+      "detection_set": [
+        "http://server_url.com/api/v3.3/detections/1735",
+        "http://server_url.com/api/v3.3/detections/1737"
+      ],
+      "last_detection_timestamp": "2023-05-15T09:44:24Z",
+      "last_modified_timestamp": "2023-07-15T09:44:24Z",
+      "notes": [],
+      "attack_rating": 5,
+      "privilege_level": null,
+      "privilege_category": null,
+      "attack_profile": "attack3",
+      "sensors": [],
+      "state": "active",
+      "tags": [
+        "test"
+      ],
+      "url": "http://server_url.com/api/v3.3/accounts/339",
+      "host_type": null,
+      "account_type": [
+        "o365"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed unsupported values (DETECTION_EXPIRED, CONTROL_DISABLED, CONTROL_DELETED, OBJECT_DELETED, ISSUE_FIXED) from 'reject_reason' in 'wiz-reject-issue' command and removed unsupported values (DETECTION_EXPIRED, CONTROL_DISABLED, CONTROL_DELETED) from 'resolution_reason' in 'wiz-resolve-issue' command."
+}

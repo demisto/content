@@ -2,10 +2,11 @@ commonfields:
   id: MetaDefender Sandbox
   version: -1
 name: MetaDefender Sandbox
-display: MetaDefender Sandbox
+display: MetaDefender Sandbox (Deprecated)
 category: Forensics & Malware Analysis
 provider: OPSWAT
-description: Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction (previously known as OPSWAT Filescan Sandbox).
+description: Deprecated. Use MetaDefender Aether instead.
+deprecated: true
 configuration:
 - name: url
   display: Server URL (e.g. https://www.filescan.io/api)

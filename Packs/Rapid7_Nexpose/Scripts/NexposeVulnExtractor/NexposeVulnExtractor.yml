@@ -17,4 +17,12 @@ dependson:
   must:
   - nexpose
 timeout: 0s
+tests:
+- No tests (auto formatted)
 fromversion: 5.0.0
+supportedModules:
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security
