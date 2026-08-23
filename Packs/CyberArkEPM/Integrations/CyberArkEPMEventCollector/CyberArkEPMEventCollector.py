@@ -1,3 +1,4 @@
+import time
 from collections.abc import Callable
 from itertools import chain
 
@@ -16,11 +17,41 @@ DEFAULT_LIMIT = 250
 MAX_FETCH = 5000
 VENDOR = "CyberArk"
 PRODUCT = "EPM"
+
 XSIAM_EVENT_TYPE = {
     "policy_audits": "policy audit raw event details",
     "admin_audits": "set admin audit data",
     "detailed_events": "detailed raw",
 }
+
+
+class Config:
+    """Global static configuration for authentication, OAuth and command outputs."""
+
+    # Authentication methods
+    AUTH_METHOD_OAUTH = "Idira OAuth"
+    AUTH_METHOD_EPM = "EPM"
+    AUTH_METHOD_SAML = "SAML"
+
+    # OAuth (CyberArk Identity / Idira ISPSS) constants
+    GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
+    ACCESS_TOKEN = "access_token"
+    EXPIRES_IN = "expires_in"
+    VALID_UNTIL = "valid_until"
+    DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
+    CACHE_BUFFER_SECONDS = 60
+    # EPM SET API version segment used in the OAuth data-call paths, e.g.
+    # https://<tenant>/EPM/API/<version>/Sets. Only applies to the Idira OAuth flow.
+    EPM_API_VERSION = "26.7.0"
+
+    # Context outputs prefix per event type. The *-get-events commands expose the parsed/normalized
+    # events under these prefixes so operators can verify the normalization while debugging.
+    OUTPUTS_PREFIX = {
+        "policy_audits": "CyberArkEPM.PolicyAudit",
+        "admin_audits": "CyberArkEPM.AdminAudit",
+        "detailed_events": "CyberArkEPM.Event",
+    }
+
 
 """ CLIENT CLASS """
 
@@ -38,6 +69,10 @@ class Client(BaseClient):
         proxy=False,
         policy_audits_event_type=None,
         raw_events_event_type=None,
+        auth_method=None,
+        identity_url=None,
+        web_app_id=None,
+        server_url=None,
     ):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._headers = {
@@ -49,12 +84,155 @@ class Client(BaseClient):
         self.application_id = application_id
         self.authentication_url = authentication_url
         self.application_url = application_url
-        if self.authentication_url and self.application_url:
+        self.identity_url = identity_url
+        self.web_app_id = web_app_id
+        # `server_url` is the EPM server address used only for the Idira OAuth method (e.g.
+        # https://example.epm.cyberark.com/). For the EPM/SAML methods the base URL is resolved
+        # from the login response within the code.
+        self.server_url = server_url
+        # Resolve the authentication method. When `auth_method` is not provided (e.g. instances
+        # created before the parameter existed), fall back to the legacy behavior: SAML when both
+        # SAML URLs are set, otherwise EPM. This keeps existing instances backward compatible.
+        if not auth_method:
+            auth_method = (
+                Config.AUTH_METHOD_SAML if (self.authentication_url and self.application_url) else Config.AUTH_METHOD_EPM
+            )
+        self.auth_method = auth_method
+
+        if self.auth_method == Config.AUTH_METHOD_OAUTH:
+            self.oauth_auth_to_cyber_ark()
+        elif self.auth_method == Config.AUTH_METHOD_SAML:
             self.saml_auth_to_cyber_ark()
         else:
             self.epm_auth_to_cyber_ark()
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
+
+    def _get_access_token(self, force_refresh: bool = False) -> str:
+        """Get or refresh the OAuth2 access token, with caching in the integration context.
+
+        Args:
+            force_refresh: When True, ignore any cached token and always request a fresh one.
+                Used to reactively recover from a server-side 401 (e.g. the token was revoked,
+                rotated, or expired earlier than our computed `valid_until` due to clock skew).
+        """
+        current_timestamp = int(time.time())
+        cached_context = get_integration_context() or {}
+        cached_token = cached_context.get(Config.ACCESS_TOKEN)
+        cached_valid_until = cached_context.get(Config.VALID_UNTIL)
+
+        # Return the cached token if it is still valid (unless a forced refresh was requested).
+        if not force_refresh and cached_token and cached_valid_until:
+            try:
+                valid_until_timestamp = int(float(cached_valid_until))
+                if current_timestamp < valid_until_timestamp:
+                    demisto.debug("[Token Cache] Hit! Token is still valid.")
+                    return cached_token
+                demisto.debug("[Token Cache] Miss. Token expired.")
+            except (ValueError, TypeError):
+                demisto.debug("[Token Cache] Error parsing cache. Ignoring.")
+
+        if not self.identity_url or not self.web_app_id:
+            raise DemistoException("Identity URL and Web App ID are required for OAuth authentication.")
+        token_url = f"{self.identity_url.rstrip('/')}/oauth2/token/{self.web_app_id}"
+        demisto.debug(f"[Token Request] Requesting new token from {token_url}")
+
+        token_data = {"grant_type": Config.GRANT_TYPE_CLIENT_CREDENTIALS}
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
+        try:
+            # Use `super()._http_request` (not `self._http_request`) so the token request itself
+            # never enters the OAuth 401 retry logic. A 401 here means bad credentials, and it
+            # should surface directly as an auth failure rather than triggering a refresh-and-retry.
+            token_response = super()._http_request(
+                method="POST",
+                full_url=token_url,
+                data=token_data,
+                headers=headers,
+                auth=(self.username, self.password),
+                resp_type="json",
+            )
+        except DemistoException as error:
+            error_msg = str(error)
+            demisto.debug(f"[Token Request] Traceback: {traceback.format_exc()}")
+            demisto.error(f"[Token Request] Failed: {error_msg}")
+            raise DemistoException(f"Failed to obtain access token: {error_msg}")
+
+        access_token = token_response.get(Config.ACCESS_TOKEN)
+        if not access_token:
+            raise DemistoException("Failed to obtain access token. Response missing access_token.")
+
+        token_expires_in = arg_to_number(token_response.get(Config.EXPIRES_IN)) or Config.DEFAULT_TOKEN_TTL_SECONDS
+        token_valid_until = current_timestamp + token_expires_in - Config.CACHE_BUFFER_SECONDS
+        demisto.debug(f"[Token Request] Success. Expires in {token_expires_in}s.")
+
+        cached_context[Config.ACCESS_TOKEN] = access_token
+        cached_context[Config.VALID_UNTIL] = str(token_valid_until)
+        set_integration_context(cached_context)
+
+        return access_token
+
+    def oauth_auth_to_cyber_ark(self, force_refresh: bool = False) -> None:
+        # Reference: CyberArk Identity (Idira ISPSS) OAuth2 client_credentials flow.
+        # For the Idira OAuth method the EPM server address is provided directly via the
+        # `server_url` parameter, so there is no need to discover the tenant URL at runtime.
+        if not self.server_url:
+            raise DemistoException("Server URL is required for Idira OAuth authentication.")
+        access_token = self._get_access_token(force_refresh=force_refresh)
+        self._base_url = f"{self.server_url.rstrip('/')}/EPM/API/{Config.EPM_API_VERSION}/"
+        self._headers["Authorization"] = f"Bearer {access_token}"
+
+    def _refresh_oauth_token(self) -> None:
+        """Force a new OAuth token and update the Authorization header.
+
+        Clears the cached token/validity so `_get_access_token(force_refresh=True)` cannot
+        return the stale (now-rejected) token, then re-authenticates. Called reactively when
+        the server returns 401 for a token our cache still considered valid (early revocation,
+        rotation, clock skew, or a shorter-than-reported lifetime).
+        """
+        demisto.debug("[Token Refresh] Server rejected the token (401). Forcing a new token.")
+        cached_context = get_integration_context() or {}
+        cached_context.pop(Config.ACCESS_TOKEN, None)
+        cached_context.pop(Config.VALID_UNTIL, None)
+        set_integration_context(cached_context)
+        # Re-authenticating issues its own HTTP request (the token request). Guard against
+        # that request re-entering the 401 retry logic (which would recurse infinitely if the
+        # token endpoint itself returns 401, e.g. bad credentials).
+        self._is_authenticating = True
+        try:
+            self.oauth_auth_to_cyber_ark(force_refresh=True)
+        finally:
+            self._is_authenticating = False
+
+    def _http_request(self, *args, **kwargs):
+        """Wrap BaseClient._http_request to transparently recover from an expired OAuth token.
+
+        For the OAuth auth method, if a data request fails with 401 Unauthorized, force a token
+        refresh once and retry the request a single time. This complements the proactive
+        time-based refresh (the `CACHE_BUFFER_SECONDS` buffer) by covering cases where the token
+        becomes invalid before its computed expiry. Other auth methods keep the default behavior.
+        """
+        # Only apply the retry logic for OAuth data requests, and never while we are in the
+        # middle of (re)authenticating, to avoid recursive refresh attempts.
+        if self.auth_method != Config.AUTH_METHOD_OAUTH or getattr(self, "_is_authenticating", False):
+            return super()._http_request(*args, **kwargs)
+        try:
+            return super()._http_request(*args, **kwargs)
+        except DemistoException as error:
+            if not self._is_unauthorized_error(error):
+                raise
+            demisto.debug("[Token Refresh] Received 401 on a data request. Refreshing token and retrying once.")
+            self._refresh_oauth_token()
+            return super()._http_request(*args, **kwargs)
+
+    @staticmethod
+    def _is_unauthorized_error(error: DemistoException) -> bool:
+        """Return True if the given DemistoException represents an HTTP 401 Unauthorized."""
+        response = getattr(error, "res", None)
+        if response is not None and getattr(response, "status_code", None) == 401:
+            return True
+        # Fallback for cases where the response object is not attached to the exception.
+        return re.search(r"\b401\b", str(error)) is not None
 
     def epm_auth_to_cyber_ark(self):  # pragma: no cover
         data = {
@@ -284,7 +462,8 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         (dict) A dict of {set_id: events (list events associated with a list of set names)}.
     """
     demisto.debug(f"[get_set_ids_by_set_names] Requested set_names from config: {set_names}")
-    context_set_items = get_integration_context().get("set_items", {})
+    integration_context = get_integration_context() or {}
+    context_set_items = integration_context.get("set_items", {})
     demisto.debug(f"[get_set_ids_by_set_names] Cached set_items in context: {context_set_items}")
 
     if context_set_items.keys() != set(set_names):
@@ -311,7 +490,11 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
                 f"{unresolved_set_names}. These sets will not be fetched."
             )
 
-        set_integration_context({"set_items": context_set_items})
+        # Merge into the existing context instead of overwriting it, so we don't clobber
+        # other cached keys (e.g. the OAuth `access_token`/`valid_until` written by
+        # `_get_access_token`).
+        integration_context["set_items"] = context_set_items
+        set_integration_context(integration_context)
     else:
         demisto.debug("[get_set_ids_by_set_names] Using cached set_items from integration context")
 
@@ -417,7 +600,14 @@ def get_events_command(client: Client, event_type: str, last_run: dict, limit: i
 
     human_readable = tableToMarkdown(string_to_table_header(event_type), events_list)
 
-    return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
+    # Expose the parsed/normalized events in `outputs` so operators can verify the normalization
+    # while debugging (in addition to the raw response).
+    return events_list, CommandResults(
+        readable_output=human_readable,
+        outputs_prefix=Config.OUTPUTS_PREFIX[event_type],
+        outputs=events_list,
+        raw_response=events_list,
+    )
 
 
 def fetch_events(
@@ -501,6 +691,48 @@ def test_module(client: Client, last_run: dict) -> str:
 """ MAIN FUNCTION """
 
 
+def validate_params(
+    auth_method: str,
+    base_url: str | None,
+    authentication_url: str | None,
+    application_url: str | None,
+    identity_url: str | None,
+    web_app_id: str | None,
+    server_url: str | None,
+) -> None:
+    """Validate the authentication-related parameters based on the selected authentication method.
+
+    Args:
+        auth_method: The selected authentication method (one of Config.AUTH_METHOD_OAUTH,
+            Config.AUTH_METHOD_SAML, Config.AUTH_METHOD_EPM).
+        base_url: The SAML/EPM Logon URL.
+        authentication_url: The SAML Authentication URL.
+        application_url: The SAML Application URL.
+        identity_url: The Idira OAuth Identity URL.
+        web_app_id: The Idira OAuth Web App ID.
+        server_url: The Idira OAuth Server URL.
+
+    Raises:
+        SystemExit: Via `return_error` when the required parameters for the selected method are missing or invalid.
+    """
+    demisto.info(f"Authentication method is: {auth_method}")
+
+    if auth_method == Config.AUTH_METHOD_OAUTH:
+        if not server_url or not identity_url or not web_app_id:
+            return_error("Server URL, Identity URL, and Web App ID are required for Idira OAuth authentication.")
+        if "/oauth2/token" in (identity_url or ""):
+            return_error(
+                "Identity URL must be the bare FQDN (e.g. https://<sub-domain>.id.cyberark.cloud) "
+                "without a '/oauth2/token' suffix."
+            )
+    elif auth_method == Config.AUTH_METHOD_SAML:
+        if not base_url or not authentication_url or not application_url:
+            return_error("SAML/EPM Logon URL, Authentication URL, and Application URL are required for SAML authentication.")
+    else:  # AUTH_METHOD_EPM
+        if not base_url:
+            return_error("SAML/EPM Logon URL is required for EPM authentication.")
+
+
 def main():  # pragma: no cover
     args = demisto.args()
     params = demisto.params()
@@ -511,8 +743,23 @@ def main():  # pragma: no cover
     application_id = params.get("application_id")
     authentication_url = params.get("authentication_url")
     application_url = params.get("application_url")
+    auth_method = params.get("authentication_method") or Config.AUTH_METHOD_EPM
+    identity_url = params.get("identity_url")
+    web_app_id = params.get("web_app_id")
+    server_url = params.get("server_url")
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
+
+    validate_params(
+        auth_method=auth_method,
+        base_url=base_url,
+        authentication_url=authentication_url,
+        application_url=application_url,
+        identity_url=identity_url,
+        web_app_id=web_app_id,
+        server_url=server_url,
+    )
+
     set_names = argToList(params.get("set_name"))
     enable_admin_audits = argToBoolean(params.get("enable_admin_audits", False))
     policy_audits_event_type = argToList(params.get("policy_audits_event_type"))
@@ -545,13 +792,16 @@ def main():  # pragma: no cover
             application_url=application_url,
             policy_audits_event_type=policy_audits_event_type,
             raw_events_event_type=raw_events_event_type,
+            auth_method=auth_method,
+            identity_url=identity_url,
+            web_app_id=web_app_id,
+            server_url=server_url,
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)
         demisto.debug(f"[main] Resolved {len(set_ids)} set ID(s) from {len(set_names)} configured set name(s)")
         demisto.debug(f"[main] resolved {set_ids=}")
 
-        # Validate we got set IDs
         if not set_ids:
             raise DemistoException(
                 f"No set IDs were resolved from configured set names: {set_names}. "
@@ -602,14 +852,23 @@ def main():  # pragma: no cover
             demisto.debug(
                 f"[main] executing cyberarkepm-get-events with limit={max_limit}, "
                 f"from_date={args.get('from_date')}, "
-                f"raw_events_event_type={raw_events_event_type}, "
+                f"raw_events_event_type={raw_events_event_type}, {enable_admin_audits=}, "
                 f"should_push_events={argToBoolean(args.get('should_push_events', False))}"
             )
             events, command_result = get_events_command(client, "detailed_events", last_run, max_limit)  # type: ignore
+            command_results = [command_result]
+            # When admin audits are enabled in the instance configuration, also fetch and include
+            # them in this command's results (in addition to the detailed events). Keep the admin
+            # audits as their own CommandResults so their normalized `outputs` are preserved.
+            if enable_admin_audits:
+                admin_events, admin_command_result = get_events_command(client, "admin_audits", last_run, max_limit)  # type: ignore
+                demisto.debug(f"[cyberarkepm-get-events] admin audits enabled, fetched {len(admin_events)} admin audit(s)")
+                events = events + admin_events
+                command_results.append(admin_command_result)
             if argToBoolean(args.get("should_push_events", False)):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.debug(f"[cyberarkepm-get-events] send_events_to_xsiam: {len(events)} events, {events=}")
-            return_results(command_result)
+            return_results(command_results)
 
         elif command in "fetch-events":
             events, next_run = fetch_events(client, last_run, max_fetch, enable_admin_audits)  # type: ignore
@@ -617,8 +876,12 @@ def main():  # pragma: no cover
             demisto.debug(f"[fetch-events] send_events_to_xsiam: {len(events)} events, {events=}")
             demisto.setLastRun(next_run)
 
-    except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
+    except Exception as error:
+        error_msg = f"Failed to execute {command}. Error: {error!s}"
+        demisto.error(f"{error_msg}\n{traceback.format_exc()}")
+        return_error(error_msg)
+
+    demisto.debug("CyberArkEPMEventCollector integration finished")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

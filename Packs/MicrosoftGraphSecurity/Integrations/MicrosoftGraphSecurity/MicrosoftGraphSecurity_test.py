@@ -25,7 +25,9 @@ from MicrosoftGraphSecurity import (
     create_search_alerts_filters,
     create_url_assessment_request_command,
     created_by_fields_to_hr,
+    fetch_alerts,
     fetch_incidents,
+    fetch_incidents_and_alerts,
     get_alert_details_command,
     get_list_security_incident_command,
     get_message_user,
@@ -41,6 +43,7 @@ from MicrosoftGraphSecurity import (
     release_ediscovery_custodian_command,
     reopen_ediscovery_case_command,
     search_alerts_command,
+    set_url_suffix_list_incidents,
     to_msg_command_results,
     update_ediscovery_case_command,
     update_ediscovery_search_command,
@@ -171,33 +174,291 @@ def test_search_alerts_command(mocker, test_case):
         "test_case_1",
     ],
 )
-def test_fetch_incidents_command(mocker, test_case):
+def test_fetch_alerts_command(mocker, test_case):
     """
     Given:
     - test case that point to the relevant test case in the json test data which include a response mock.
     - Case 1: Response of a search_alert command results.
 
     When:
-    - Running fetch_incidents.
+    - Running fetch_alerts.
 
     Then:
-    - Ensure that the length of the results and the different fields of the fetched incidents are returned correctly.
-    - Case 1: Ensure that the len of the incidents returned in the first iteration is 3, then 1 and then 0.
+    - Ensure that the length of the results and the different fields of the fetched alerts are returned correctly.
+    - Case 1: Ensure that the len of the alerts returned in the first iteration is 3, then 1 and then 0.
     """
     mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19 08:14:21", "never mind"))
     test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
     mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
-    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", service_sources="")
-    assert len(incidents) == 3
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", service_sources="", last_run={})
+    assert len(alerts) == 3
+    assert alerts[0].get("severity") == 2
+    assert alerts[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
+
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=1, extra_filter="", service_sources="", last_run={})
+    assert len(alerts) == 1
+    assert alerts[0].get("name") == "test alert - da637218501473413212_-1554891308"
+
+    alerts, _ = fetch_alerts(client_mocker, fetch_time="1 hour", fetch_limit=0, extra_filter="", service_sources="", last_run={})
+    assert len(alerts) == 0
+
+
+def test_fetch_incidents_command(mocker):
+    """
+    Given:
+    - A mocked /security/incidents response with two incidents, each embedding its alerts.
+
+    When:
+    - Running fetch_incidents with an empty last_run.
+
+    Then:
+    - Both incidents are mapped to XSOAR incidents (name/occurred/severity/rawJSON).
+    - The severity is mapped via SEVERITY_MAP and the embedded alerts are kept in rawJSON.
+    - The returned last_run advances to the newest incident's createdDateTime.
+    """
+    mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19T08:14:21.000000Z", "never mind"))
+    mock_response = {
+        "value": [
+            {
+                "id": "1",
+                "displayName": "Incident One",
+                "createdDateTime": "2020-04-20T10:00:00.0000000Z",
+                "severity": "medium",
+                "alerts": [{"id": "a1", "title": "alert one"}],
+            },
+            {
+                "id": "2",
+                "displayName": "Incident Two",
+                "createdDateTime": "2020-04-20T11:00:00.0000000Z",
+                "severity": "informational",
+                "alerts": [{"id": "a2", "title": "alert two"}],
+            },
+        ]
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
+
+    incidents, new_last_run = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run={})
+
+    assert len(incidents) == 2
+    assert incidents[0].get("name") == "Incident One - 1"
     assert incidents[0].get("severity") == 2
-    assert incidents[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
+    assert incidents[1].get("severity") == 0.5
+    assert '"alerts"' in incidents[0].get("rawJSON")
+    assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
 
-    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=1, filter="", service_sources="")
+
+def test_fetch_incidents_command_dedup_by_last_run(mocker):
+    """
+    Given:
+    - A last_run cursor set to the first incident's createdDateTime.
+
+    When:
+    - Running fetch_incidents.
+
+    Then:
+    - Only the newer incident (created after the cursor) is returned.
+    """
+    mock_response = {
+        "value": [
+            {"id": "1", "displayName": "Old", "createdDateTime": "2020-04-20T10:00:00.0000000Z", "severity": "low"},
+            {"id": "2", "displayName": "New", "createdDateTime": "2020-04-20T11:00:00.0000000Z", "severity": "high"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
+
+    incidents, _ = fetch_incidents(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        last_run={"time": "2020-04-20T10:00:00.0000000Z"},
+    )
+
     assert len(incidents) == 1
-    assert incidents[0].get("name") == "test alert - da637218501473413212_-1554891308"
+    assert incidents[0].get("name") == "New - 2"
 
-    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=0, filter="", service_sources="")
-    assert len(incidents) == 0
+
+def test_fetch_incidents_and_alerts_selection_gating(mocker):
+    """
+    Given:
+    - The "Fetch incidents type" parameter set to "Incidents" only.
+
+    When:
+    - Running fetch_incidents_and_alerts.
+
+    Then:
+    - Only fetch_incidents is called (alerts are not fetched).
+    - The combined last run is persisted under the per-type "incidents_last_run" key.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    fetch_alerts_mock = mocker.patch(
+        "MicrosoftGraphSecurity.fetch_alerts", return_value=([{"name": "alert"}], {"time": "alerts_cursor"})
+    )
+    fetch_incidents_mock = mocker.patch(
+        "MicrosoftGraphSecurity.fetch_incidents", return_value=([{"name": "incident"}], {"time": "incidents_cursor"})
+    )
+
+    result = fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": "Incidents"})
+
+    assert fetch_alerts_mock.call_count == 0
+    assert fetch_incidents_mock.call_count == 1
+    assert result == [{"name": "incident"}]
+    set_last_run.assert_called_once_with({"incidents_last_run": {"time": "incidents_cursor"}})
+
+
+def test_fetch_incidents_and_alerts_both_types(mocker):
+    """
+    Given:
+    - The "Fetch incidents type" parameter set to both "Alerts,Incidents".
+
+    When:
+    - Running fetch_incidents_and_alerts.
+
+    Then:
+    - Both fetchers are called and their results combined.
+    - Each type's cursor is stored under its own last-run key.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch("MicrosoftGraphSecurity.fetch_alerts", return_value=([{"name": "alert"}], {"time": "alerts_cursor"}))
+    mocker.patch("MicrosoftGraphSecurity.fetch_incidents", return_value=([{"name": "incident"}], {"time": "incidents_cursor"}))
+
+    result = fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": "Alerts,Incidents"})
+
+    assert {"name": "alert"} in result
+    assert {"name": "incident"} in result
+    set_last_run.assert_called_once_with(
+        {"alerts_last_run": {"time": "alerts_cursor"}, "incidents_last_run": {"time": "incidents_cursor"}}
+    )
+
+
+def test_fetch_incidents_and_alerts_migrates_old_flat_last_run(mocker):
+    """
+    Given:
+    - An instance that was upgraded from a version storing the old flat last_run format: {"time": "..."}.
+
+    When:
+    - Running fetch_incidents_and_alerts for both types.
+
+    Then:
+    - The old flat cursor is migrated to the new nested format and passed to both fetchers,
+      so the whole fetch window is not re-fetched (preventing duplicate incidents).
+    """
+    old_time = "2020-04-20T10:00:00.0000000Z"
+    mocker.patch.object(demisto, "getLastRun", return_value={"time": old_time})
+    mocker.patch.object(demisto, "setLastRun")
+    fetch_alerts_mock = mocker.patch("MicrosoftGraphSecurity.fetch_alerts", return_value=([], {"time": old_time}))
+    fetch_incidents_mock = mocker.patch("MicrosoftGraphSecurity.fetch_incidents", return_value=([], {"time": old_time}))
+
+    fetch_incidents_and_alerts(client_mocker, {"fetch_incidents_type": "Alerts,Incidents"})
+
+    assert fetch_alerts_mock.call_args.kwargs["last_run"] == {"time": old_time}
+    assert fetch_incidents_mock.call_args.kwargs["last_run"] == {"time": old_time}
+
+
+@pytest.mark.parametrize(
+    "extra_data, should_expand",
+    [("true", True), ("false", False), (None, False)],
+)
+def test_set_url_suffix_list_incidents_extra_data(extra_data, should_expand):
+    """
+    Given:
+    - The msg-list-security-incident args, with the extra_data arg set to true/false/unset.
+
+    When:
+    - Building the request URL suffix.
+
+    Then:
+    - $expand=alerts is included only when extra_data is true.
+    """
+    args = {"limit": "50"}
+    if extra_data is not None:
+        args["extra_data"] = extra_data
+
+    url_suffix = set_url_suffix_list_incidents(args)
+
+    assert ("$expand=alerts" in url_suffix) is should_expand
+
+
+def test_set_url_suffix_list_incidents_extra_data_with_filter():
+    """
+    Given:
+    - extra_data=true together with a typed filter (severity).
+
+    When:
+    - Building the request URL suffix.
+
+    Then:
+    - Both $expand=alerts and the $filter clause are present.
+    """
+    args = {"limit": "50", "extra_data": "true", "severity": "high"}
+
+    url_suffix = set_url_suffix_list_incidents(args)
+
+    assert "$expand=alerts" in url_suffix
+    assert "$filter=severity eq 'high'" in url_suffix
+
+
+def test_fetch_incidents_does_not_mutate_last_run(mocker):
+    """
+    Given:
+    - A last_run dict passed to fetch_incidents.
+
+    When:
+    - Running fetch_incidents and it advances the cursor.
+
+    Then:
+    - The original last_run argument is not mutated (a copy is returned instead).
+    """
+    mock_response = {
+        "value": [
+            {"id": "2", "displayName": "New", "createdDateTime": "2020-04-20T11:00:00.0000000Z", "severity": "high"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=mock_response)
+
+    original_last_run = {"time": "2020-04-20T10:00:00.0000000Z"}
+    _, new_last_run = fetch_incidents(
+        client_mocker, fetch_time="1 hour", fetch_limit=10, extra_filter="", last_run=original_last_run
+    )
+
+    assert original_last_run == {"time": "2020-04-20T10:00:00.0000000Z"}
+    assert new_last_run is not original_last_run
+    assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
+
+
+def test_fetch_alerts_does_not_mutate_last_run(mocker):
+    """
+    Given:
+    - A last_run dict passed to fetch_alerts.
+
+    When:
+    - Running fetch_alerts and it advances the cursor.
+
+    Then:
+    - The original last_run argument is not mutated (a copy is returned instead).
+    """
+    mock_response = {
+        "value": [
+            {"id": "2", "title": "New", "createdDateTime": "2020-04-20T11:00:00.0000000Z", "severity": "high"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "search_alerts", return_value=mock_response)
+
+    original_last_run = {"time": "2020-04-20T10:00:00.0000000Z"}
+    _, new_last_run = fetch_alerts(
+        client_mocker,
+        fetch_time="1 hour",
+        fetch_limit=10,
+        extra_filter="",
+        service_sources="",
+        last_run=original_last_run,
+    )
+
+    assert original_last_run == {"time": "2020-04-20T10:00:00.0000000Z"}
+    assert new_last_run is not original_last_run
+    assert new_last_run.get("time") == "2020-04-20T11:00:00.0000000Z"
 
 
 @pytest.mark.parametrize(

@@ -1,19 +1,19 @@
 args:
-- description: JSON object
+- description: JSON object.
   name: value
-comment: Recursively un-escapes JSON data if escaped JSON is found
+comment: Recursively un-escapes JSON data if escaped JSON is found.
 commonfields:
   id: JsonUnescape
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3-deb:3.12.13.10404775
+dockerimage: demisto/python3-deb:3.12.13.11879924
 enabled: true
 name: JsonUnescape
 outputs:
 - contextPath: JsonUnescape
-  description: Unescaped JSON Data
+  description: Unescaped JSON Data.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
