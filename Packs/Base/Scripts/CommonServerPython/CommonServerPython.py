@@ -14379,8 +14379,8 @@ def safe_sleep(duration_seconds):
         run_duration = int(context.get('runDuration')) * 60
         time_left = run_duration - (datetime.now() - SAFE_SLEEP_START_TIME).total_seconds()
         if duration_seconds > time_left:
-            raise ValueError("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds."
-                             .format(duration_seconds, run_duration))
+            raise DemistoException("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds."
+                                   .format(duration_seconds, run_duration))
     else:
         demisto.info('Safe sleep is not supported in this server version, sleeping for the requested time.')
     time.sleep(duration_seconds)  # pylint: disable=E9003
