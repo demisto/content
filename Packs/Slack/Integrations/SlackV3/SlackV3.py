@@ -3491,7 +3491,11 @@ def resolve_conversation_id_from_name(channel_name):
         channel_id = conversation_info.get("id")
 
     if not channel_id:
-        raise DemistoException(f"Channel '{channel_name}' does not exist.")
+        raise CortexResourceNotFoundError(
+            resource_type="Slack channel",
+            identifier=channel_name,
+            override_message=(f"Channel '{channel_name}' does not exist."),
+        )
 
     return channel_id
 
@@ -3513,7 +3517,11 @@ def conversation_history() -> None:
     thread_id = args.get("thread_id")
 
     if not conversation_id and not conversation_name:
-        raise ValueError("Either conversation_id or conversation_name must be provided.")
+        raise CortexMissingArgError(
+            ["conversation_id", "conversation_name"],
+            require_one=True,
+            override_message=("Either conversation_id or conversation_name must be provided."),
+        )
 
     if not conversation_id:
         conversation_id = resolve_conversation_id_from_name(conversation_name)
@@ -3530,11 +3538,11 @@ def conversation_history() -> None:
     if page_token:
         body["cursor"] = page_token
 
-    raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
-
-    if not raw_response.get("ok"):
-        raise DemistoException(
-            f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
+    try:
+        raw_response = send_slack_request_sync(CLIENT, "conversations.history", http_verb="GET", body=body)
+    except SlackApiError as e:
+        raise CortexExternalApiError(
+            override_message=f"An error occurred while listing conversation history: {e.response.get('error')}"
         )
 
     messages: Any = raw_response.get("messages", [])
@@ -3545,8 +3553,8 @@ def conversation_history() -> None:
     if isinstance(messages, dict):
         messages = [messages]
     if not isinstance(messages, list):
-        raise DemistoException(
-            f'An error occurred while listing conversation history: {raw_response.get("error")}', res=raw_response
+        raise CortexExternalApiError(
+            override_message=f"An error occurred while listing conversation history: {raw_response.get('error')}"
         )
 
     context: List[Dict[str, Any]] = []
