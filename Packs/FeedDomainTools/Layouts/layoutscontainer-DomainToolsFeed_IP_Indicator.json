@@ -202,7 +202,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "domaintoolsfeedipallthreatsperecent",
+                                "fieldId": "domaintoolsfeedipallthreatspercent",
                                 "height": 22,
                                 "id": "dt-all-threats-pct",
                                 "index": 2,
@@ -497,7 +497,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "indicator_domaintoolsfeedipallthreatsperecent",
+                        "fieldId": "indicator_domaintoolsfeedipallthreatspercent",
                         "isVisible": true
                     },
                     {
@@ -1000,5 +1000,5 @@
     "name": "DomainToolsFeed IP Indicator",
     "system": false,
     "version": -1,
-    "fromVersion": "0.0.0"
+    "fromVersion": "6.0.0"
 }
