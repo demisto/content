@@ -2105,76 +2105,57 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
+    name = args.get("name")
+    metadata_items = args.get("metadata_items")
+    service_account_email = args.get("service_account_email")
+    service_account_scopes = args.get("service_account_scopes")
+    labels = args.get("labels")
 
-    body: dict[str, Any] = {}
-
-    if name := args.get("name"):
-        body["name"] = name.lower()
-
-    if description := args.get("description"):
-        body["description"] = description
-
-    if tags := args.get("tags"):
-        body.setdefault("tags", {})["items"] = argToList(tags)
-
-    if (can_ip_forward := args.get("can_ip_forward")) is not None:
-        body["canIpForward"] = argToBoolean(can_ip_forward)
-
-    if tags_fingerprint := args.get("tags_fingerprint"):
-        body.setdefault("tags", {})["fingerprint"] = tags_fingerprint
-
-    body["machineType"] = f"zones/{zone}/machineTypes/{args.get('machine_type')}"
-
-    if network := args.get("network"):
-        body.setdefault("networkInterfaces", [{}])[0]["network"] = network
-
-    if subnetwork := args.get("subnetwork"):
-        body.setdefault("networkInterfaces", [{}])[0]["subnetwork"] = subnetwork
-
-    if network_ip := args.get("network_ip"):
-        body.setdefault("networkInterfaces", [{}])[0]["networkIP"] = network_ip
-
+    access_config: dict[str, Any] = {"natIP": args.get("external_nat_ip")}
     if argToBoolean(args.get("external_internet_access", "false")):
-        access_config = body.setdefault("networkInterfaces", [{}])[0].setdefault("accessConfigs", [{}])[0]
         access_config.update({"type": "ONE_TO_ONE_NAT", "name": "External NAT"})
 
-    if external_nat_ip := args.get("external_nat_ip"):
-        body.setdefault("networkInterfaces", [{}])[0].setdefault("accessConfigs", [{}])[0]["natIP"] = external_nat_ip
-
-    if disk_source := args.get("disk_source"):
-        body.setdefault("disks", [{}])[0]["source"] = disk_source
-
-    if disk_device_name := args.get("disk_device_name"):
-        body.setdefault("disks", [{}])[0]["deviceName"] = disk_device_name
-
-    if (disk_boot := args.get("disk_boot")) is not None:
-        body.setdefault("disks", [{}])[0]["boot"] = argToBoolean(disk_boot)
-
-    if (disk_auto_delete := args.get("disk_auto_delete")) is not None:
-        body.setdefault("disks", [{}])[0]["autoDelete"] = argToBoolean(disk_auto_delete)
-
-    if source_image := args.get("source_image"):
-        body.setdefault("disks", [{}])[0].setdefault("initializeParams", {})["sourceImage"] = source_image
-
-    if disk_size_gb := arg_to_number(args.get("disk_size_gb")):
-        body.setdefault("disks", [{}])[0].setdefault("initializeParams", {})["diskSizeGb"] = disk_size_gb
-
-    if disk_type := args.get("disk_type"):
-        body.setdefault("disks", [{}])[0].setdefault("initializeParams", {})["diskType"] = disk_type
-
-    if metadata_items := args.get("metadata_items"):
-        body["metadata"] = {"items": parse_metadata_items(metadata_items)}
-
-    if (service_account_email := args.get("service_account_email")) and (
-        service_account_scopes := args.get("service_account_scopes")
-    ):
-        body["serviceAccounts"] = [{"email": service_account_email, "scopes": argToList(service_account_scopes)}]
-
-    if labels := args.get("labels"):
-        body["labels"] = parse_labels(labels)
-
-    if (deletion_protection := args.get("deletion_protection")) is not None:
-        body["deletionProtection"] = argToBoolean(deletion_protection)
+    # Build the full instance body, then recursively strip empty elements. Note that
+    # remove_empty_elements keeps False/0, so explicit boolean flags are preserved.
+    body = remove_empty_elements({
+        "name": name.lower() if name else None,
+        "description": args.get("description"),
+        "machineType": f"zones/{zone}/machineTypes/{args.get('machine_type')}",
+        "canIpForward": argToBoolean(args["can_ip_forward"]) if args.get("can_ip_forward") is not None else None,
+        "tags": {
+            "items": argToList(args.get("tags")),
+            "fingerprint": args.get("tags_fingerprint"),
+        },
+        "networkInterfaces": [
+            {
+                "network": args.get("network"),
+                "subnetwork": args.get("subnetwork"),
+                "networkIP": args.get("network_ip"),
+                "accessConfigs": [access_config],
+            }
+        ],
+        "disks": [
+            {
+                "source": args.get("disk_source"),
+                "deviceName": args.get("disk_device_name"),
+                "boot": argToBoolean(args["disk_boot"]) if args.get("disk_boot") is not None else None,
+                "autoDelete": argToBoolean(args["disk_auto_delete"]) if args.get("disk_auto_delete") is not None else None,
+                "initializeParams": {
+                    "sourceImage": args.get("source_image"),
+                    "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
+                    "diskType": args.get("disk_type"),
+                },
+            }
+        ],
+        "metadata": {"items": parse_metadata_items(metadata_items)} if metadata_items else None,
+        "serviceAccounts": [{"email": service_account_email, "scopes": argToList(service_account_scopes)}]
+        if service_account_email and service_account_scopes
+        else None,
+        "labels": parse_labels(labels) if labels else None,
+        "deletionProtection": argToBoolean(args["deletion_protection"])
+        if args.get("deletion_protection") is not None
+        else None,
+    })
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.instances().insert(project=project_id, zone=zone, body=body).execute()  # pylint: disable=E1101
