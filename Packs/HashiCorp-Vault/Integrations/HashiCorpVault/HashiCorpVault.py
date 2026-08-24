@@ -18,7 +18,7 @@ CACHE_TOKEN = argToBoolean(demisto.params().get("cache_token", "false") or "fals
 NAMESPACE = demisto.params().get("namespace")
 USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get("use_approle", "false") or "false")
 BASE_URL = demisto.params().get("server", "")
-SERVER_URL = BASE_URL + "/v1"
+SERVER_URL = urljoin(BASE_URL, "/v1")
 
 DEFAULT_STATUS_CODES = {429, 472, 473}
 TIME_BUFFER = 5
