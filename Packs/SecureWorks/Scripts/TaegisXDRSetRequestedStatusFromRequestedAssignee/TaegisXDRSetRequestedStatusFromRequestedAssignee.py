@@ -1,12 +1,12 @@
 """
-Run-after-update script for Taegis Requested Assignee (taegisrequestedassignee).
+Run-after-update script for Taegis XDR Requested Assignee (taegisxdrrequestedassignee).
 
-When the user changes the requested assignee, sets Taegis Requested Status so that
+When the user changes the requested assignee, sets Taegis XDR Requested Status so that
 pushing to Taegis uses the correct status. Uses taegisxdrassigneeid (primary) and
 taegisxdrassignee (fallback) to distinguish handoff vs take-from-queue vs customer
 take-ownership.
 
-Assignment behaviors (Taegis Requested Status):
+Assignment behaviors (Taegis XDR Requested Status):
 - Requested = @secureworks -> AWAITING_ACTION (queue for Secureworks).
 - Requested = @customer and current != @customer -> AWAITING_ACTION (queue for customer).
 - Current = @customer (by ID or display "customer") and Requested != @secureworks -> ACTIVE
@@ -20,8 +20,8 @@ from CommonServerPython import *
 
 STATUS_AWAITING_ACTION = "AWAITING_ACTION"
 STATUS_ACTIVE = "ACTIVE"
-REQUESTED_ASSIGNEE_FIELD = "taegisrequestedassignee"
-REQUESTED_STATUS_FIELD = "taegisrequestedstatus"
+REQUESTED_ASSIGNEE_FIELD = "taegisxdrrequestedassignee"
+REQUESTED_STATUS_FIELD = "taegisxdrrequestedstatus"
 CURRENT_ASSIGNEE_FIELD = "taegisxdrassignee"
 CURRENT_ASSIGNEE_ID_FIELD = "taegisxdrassigneeid"
 PLACEHOLDER_ASSIGNEE = "Select Assignee"
@@ -50,7 +50,7 @@ def _get_incident_id(incident):
 
 
 def _fetch_latest_incident(incident_id):
-    """Re-fetch incident so we see the new taegisrequestedassignee value."""
+    """Re-fetch incident so we see the new taegisxdrrequestedassignee value."""
     if not incident_id:
         return None
     try:

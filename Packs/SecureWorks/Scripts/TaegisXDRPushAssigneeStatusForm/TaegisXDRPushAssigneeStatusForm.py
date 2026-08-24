@@ -1,5 +1,5 @@
 """
-Reads Taegis Requested Assignee and Taegis Requested Status from the incident,
+Reads Taegis XDR Requested Assignee and Taegis XDR Requested Status from the incident,
 pushes to Taegis via the integration command, then sets fields to placeholders.
 Use with the "Update in Taegis" section: user selects from the human-friendly
 dropdowns (same options as current assignee), then clicks the button.
@@ -10,8 +10,8 @@ confused with the read-only Taegis XDR Assignee / Case Status.
 import demistomock as demisto
 from CommonServerPython import *
 
-REQUESTED_ASSIGNEE_KEY = "taegisrequestedassignee"
-REQUESTED_STATUS_KEY = "taegisrequestedstatus"
+REQUESTED_ASSIGNEE_KEY = "taegisxdrrequestedassignee"
+REQUESTED_STATUS_KEY = "taegisxdrrequestedstatus"
 PLACEHOLDER_ASSIGNEE = "Select Assignee"
 PLACEHOLDER_STATUS = "Select Status"
 
@@ -41,7 +41,7 @@ def main():
                 {
                     "Type": 1,
                     "ContentsFormat": "markdown",
-                    "Contents": "Select **Taegis Requested Assignee** and/or **Taegis Requested Status** in the \"Update in Taegis\" section above, then click the button again.",
+                    "Contents": "Select **Taegis XDR Requested Assignee** and/or **Taegis XDR Requested Status** in the \"Update in Taegis\" section above, then click the button again.",
                 }
             ]
         )

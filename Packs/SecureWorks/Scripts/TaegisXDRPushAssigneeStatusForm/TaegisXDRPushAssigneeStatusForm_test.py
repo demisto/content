@@ -16,21 +16,21 @@ def test_main_no_fields_selected_prompts_user(mocker):
     mocker.patch.object(
         demisto,
         "incident",
-        return_value={"CustomFields": {"taegisrequestedassignee": "Select Assignee", "taegisrequestedstatus": "Select Status"}},
+        return_value={"CustomFields": {"taegisxdrrequestedassignee": "Select Assignee", "taegisxdrrequestedstatus": "Select Status"}},
     )
     return_results_mock = mocker.patch("TaegisXDRPushAssigneeStatusForm.return_results")
 
     main()
 
     entries = return_results_mock.call_args[0][0]
-    assert "Select **Taegis Requested Assignee**" in entries[0]["Contents"]
+    assert "Select **Taegis XDR Requested Assignee**" in entries[0]["Contents"]
 
 
 def test_main_no_mirror_id_blocks_push(mocker):
     mocker.patch.object(
         demisto,
         "incident",
-        return_value={"CustomFields": {"taegisrequestedassignee": "userA"}},
+        return_value={"CustomFields": {"taegisxdrrequestedassignee": "userA"}},
     )
     return_results_mock = mocker.patch("TaegisXDRPushAssigneeStatusForm.return_results")
 
@@ -46,8 +46,8 @@ def test_main_pushes_assignee_and_status_then_resets_placeholders(mocker):
         "incident",
         return_value={
             "CustomFields": {
-                "taegisrequestedassignee": "userA",
-                "taegisrequestedstatus": "ACTIVE",
+                "taegisxdrrequestedassignee": "userA",
+                "taegisxdrrequestedstatus": "ACTIVE",
                 "dbotMirrorId": "inv-42",
             }
         },
@@ -62,7 +62,7 @@ def test_main_pushes_assignee_and_status_then_resets_placeholders(mocker):
     assert push_call.args == ("taegis-push-assignee-status", {"id": "inv-42", "assignee_id": "userA", "status": "ACTIVE"})
     assert reset_call.args == (
         "setIncident",
-        {"taegisrequestedassignee": "Select Assignee", "taegisrequestedstatus": "Select Status"},
+        {"taegisxdrrequestedassignee": "Select Assignee", "taegisxdrrequestedstatus": "Select Status"},
     )
     return_results_mock.assert_called_once_with(push_result)
 
@@ -71,7 +71,7 @@ def test_main_handles_failed_push(mocker):
     mocker.patch.object(
         demisto,
         "incident",
-        return_value={"CustomFields": {"taegisrequestedassignee": "userA", "dbotMirrorId": "inv-42"}},
+        return_value={"CustomFields": {"taegisxdrrequestedassignee": "userA", "dbotMirrorId": "inv-42"}},
     )
     mocker.patch.object(demisto, "executeCommand", return_value=None)
     return_results_mock = mocker.patch("TaegisXDRPushAssigneeStatusForm.return_results")

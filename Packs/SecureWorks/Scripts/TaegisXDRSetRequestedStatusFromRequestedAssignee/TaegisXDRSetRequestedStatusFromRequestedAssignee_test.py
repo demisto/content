@@ -69,7 +69,7 @@ def test_main_skips_when_no_requested_assignee(mocker):
 
 
 def test_main_skips_when_placeholder_assignee(mocker):
-    mocker.patch.object(demisto, "incident", return_value={"taegisrequestedassignee": "Select Assignee"})
+    mocker.patch.object(demisto, "incident", return_value={"taegisxdrrequestedassignee": "Select Assignee"})
     mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(demisto, "executeCommand")
 
@@ -82,67 +82,67 @@ def test_main_requested_secureworks_sets_awaiting_action(mocker):
     mocker.patch.object(
         demisto,
         "incident",
-        return_value={"taegisrequestedassignee": "@secureworks", "taegisxdrassigneeid": "uuid-real-user"},
+        return_value={"taegisxdrrequestedassignee": "@secureworks", "taegisxdrassigneeid": "uuid-real-user"},
     )
     mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(demisto, "executeCommand")
 
     main()
 
-    execute_command_mock.assert_called_once_with("setIncident", {"taegisrequestedstatus": "AWAITING_ACTION"})
+    execute_command_mock.assert_called_once_with("setIncident", {"taegisxdrrequestedstatus": "AWAITING_ACTION"})
 
 
 def test_main_requested_customer_from_secureworks_sets_awaiting_action(mocker):
     mocker.patch.object(
         demisto,
         "incident",
-        return_value={"taegisrequestedassignee": "@customer", "taegisxdrassigneeid": "@secureworks"},
+        return_value={"taegisxdrrequestedassignee": "@customer", "taegisxdrassigneeid": "@secureworks"},
     )
     mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(demisto, "executeCommand")
 
     main()
 
-    execute_command_mock.assert_called_once_with("setIncident", {"taegisrequestedstatus": "AWAITING_ACTION"})
+    execute_command_mock.assert_called_once_with("setIncident", {"taegisxdrrequestedstatus": "AWAITING_ACTION"})
 
 
 def test_main_customer_takes_ownership_sets_active(mocker):
     mocker.patch.object(
         demisto,
         "incident",
-        return_value={"taegisrequestedassignee": "userA", "taegisxdrassigneeid": "@customer"},
+        return_value={"taegisxdrrequestedassignee": "userA", "taegisxdrassigneeid": "@customer"},
     )
     mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(demisto, "executeCommand")
 
     main()
 
-    execute_command_mock.assert_called_once_with("setIncident", {"taegisrequestedstatus": "ACTIVE"})
+    execute_command_mock.assert_called_once_with("setIncident", {"taegisxdrrequestedstatus": "ACTIVE"})
 
 
 def test_main_handoff_between_specific_users_sets_awaiting_action(mocker):
     mocker.patch.object(
         demisto,
         "incident",
-        return_value={"taegisrequestedassignee": "userB", "taegisxdrassigneeid": "uuid-current-user"},
+        return_value={"taegisxdrrequestedassignee": "userB", "taegisxdrassigneeid": "uuid-current-user"},
     )
     mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(demisto, "executeCommand")
 
     main()
 
-    execute_command_mock.assert_called_once_with("setIncident", {"taegisrequestedstatus": "AWAITING_ACTION"})
+    execute_command_mock.assert_called_once_with("setIncident", {"taegisxdrrequestedstatus": "AWAITING_ACTION"})
 
 
 def test_main_take_from_queue_sets_active(mocker):
     mocker.patch.object(
         demisto,
         "incident",
-        return_value={"taegisrequestedassignee": "userA", "taegisxdrassigneeid": "@secureworks"},
+        return_value={"taegisxdrrequestedassignee": "userA", "taegisxdrassigneeid": "@secureworks"},
     )
     mocker.patch.object(demisto, "debug")
     execute_command_mock = mocker.patch.object(demisto, "executeCommand")
 
     main()
 
-    execute_command_mock.assert_called_once_with("setIncident", {"taegisrequestedstatus": "ACTIVE"})
+    execute_command_mock.assert_called_once_with("setIncident", {"taegisxdrrequestedstatus": "ACTIVE"})

@@ -687,7 +687,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 1,
-                                "fieldId": "incident_taegisrequestedstatus",
+                                "fieldId": "incident_taegisxdrrequestedstatus",
                                 "height": 53,
                                 "id": "update-taegis-requested-status",
                                 "index": 0,
@@ -713,7 +713,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "incident_taegisrequestedassignee",
+                                "fieldId": "incident_taegisxdrrequestedassignee",
                                 "height": 53,
                                 "id": "update-taegis-requested-assignee",
                                 "index": 1,

@@ -9,7 +9,7 @@ dockerimage: demisto/python3:3.12.13.10325753
 tags:
 - incident-action-button
 enabled: true
-comment: "Run after update: when Taegis Requested Assignee changes, set Taegis Requested Status (ACTIVE vs AWAITING_ACTION) using same logic as TaegisXDRSetStatusFromAssignee."
+comment: "Run after update: when Taegis XDR Requested Assignee changes, set Taegis XDR Requested Status (ACTIVE vs AWAITING_ACTION) using same logic as TaegisXDRSetStatusFromAssignee."
 runas: DBotRole
 runonce: false
 fromversion: 6.10.0
