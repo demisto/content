@@ -33,11 +33,8 @@ EVENT_TYPE_CONFIGS: dict[str, dict[str, Any]] = {
         "time_params": {"start_time": "starttime", "end_time": "endtime"},
         "count_field": "event_count:count(_id)",
     },
-    # The Netskope audit dataset (endpoint /events/data/audit) does NOT support the
-    # `fields=...:count()` aggregation - the count query always returns 0 regardless of the count
-    # field (there is also no /events/datasearch/audit endpoint). Relying on the count made the
-    # collector skip audit entirely (XSUP-74841). `supports_count=False` tells the fetch flow to
-    # skip the pre-flight count and page directly instead.
+    # Audit doesn't support the count() aggregation (always returns 0), so skip the count and page
+    # directly.
     "audit": {
         "endpoint": "/events/data/{type}",
         "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
@@ -499,15 +496,19 @@ async def fetch_and_send_events_async(
             return events
 
     def _page_result_len(page_result) -> int:
-        # _handle_page returns an int (send-and-flush path) or the events list (get-events path).
+        # _handle_page returns different shapes per flow:
+        #   - fetch-events path (send_to_xsiam=True): pages are streamed to XSIAM and freed, so it
+        #     returns an int (the page's event count).
+        #   - get-events path (send_to_xsiam=False): the caller needs the events to display, so it
+        #     returns the events list.
+        # Normalize both to a length so the sequential pager can detect the last (short) page.
         return page_result if isinstance(page_result, int) else len(page_result)
 
     async def _handle_all_pages_sequential():
         """Paginate without a pre-flight count.
 
-        Some Netskope datasets (e.g. `audit`) do NOT support the `fields=...:count()` aggregation -
-        the count query always returns 0, which made the collector skip fetching them entirely
-        (XSUP-74841). For these types we page directly with offset/limit until a page returns fewer
+        Some Netskope datasets (e.g. `audit`) do NOT support the `fields=...:count()` aggregation.
+        For these types we page directly with offset/limit until a page returns fewer
         rows than the requested page size (i.e. we've reached the last page for this window).
 
         Pages are fetched one at a time (we cannot pre-compute how many there are). Concurrency and

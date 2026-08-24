@@ -58,9 +58,7 @@ def test_populate_prepare_events():
     """
     from NetskopeEventCollector_v2 import prepare_events
 
-    # Load a FRESH copy from disk: other tests feed the shared EVENTS_RAW list straight into the fetch
-    # flow, which mutates each event in place (timestamp -> _time). Reusing EVENTS_RAW here would read
-    # an already-mutated event and make this test order-dependent, so we reload it instead.
+    # Load a fresh copy so we don't read an event already mutated in place by other tests.
     fresh_events = util_load_json("../NetskopeEventCollector/test_data/events_raw.json")
     event = fresh_events["result"][0]
     prepare_events([event], event_type="audit")
