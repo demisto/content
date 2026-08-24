@@ -12,18 +12,13 @@ provider: Sophos
 description: For integration with the Secureworks Taegis XDR platform.
 supportlevelheader: partner
 configuration:
-- display: Client ID
-  name: client_id
+- section: Connect
+  display: Client ID
+  displaypassword: Client Secret
+  name: credentials
   required: true
-  type: 4
-  section: Connect
-  additionalinfo: The Client ID from the Taegis XDR API credential this instance should authenticate as.
-- display: Client Secret
-  name: client_secret
-  required: true
-  type: 4
-  section: Connect
-  additionalinfo: The Client Secret generated alongside the Client ID. Taegis displays it only once, at creation.
+  type: 9
+  additionalinfo: The Taegis XDR API credential this instance authenticates as. Enter the Client ID as the username and the Client Secret as the password, or select a stored credential. Taegis displays the Client Secret only once, at creation.
 - display: API base URL
   name: api_base_url
   required: false

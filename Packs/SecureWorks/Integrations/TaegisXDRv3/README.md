@@ -5,8 +5,8 @@ This integration was integrated and tested with version xx of TaegisXDRv3.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Client ID | The Client ID from the Taegis XDR API credential this instance should authenticate as. | True |
-| Client Secret | The Client Secret generated alongside the Client ID. Taegis displays it only once, at creation. | True |
+| Client ID | The Taegis XDR API credential this instance authenticates as. Enter the Client ID as the username and the Client Secret as the password, or select a stored credential. Taegis displays the Client Secret only once, at creation. | True |
+| Client Secret |  | True |
 | API base URL | Taegis API base URL for your environment. Do not include a trailing slash. Required for all commands. | False |
 | XDR base URL | Taegis XDR \(UI\) base URL for your environment. Used for investigation/alert links. Do not include a trailing slash. Required for all commands. | False |
 | Tenant ID | Optional. Leave blank if the credential is scoped to a single tenant. For multi-tenant credentials, supply the Tenant ID this instance should act against. | False |

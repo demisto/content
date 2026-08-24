@@ -4315,9 +4315,11 @@ def main():
         verify_cert = not PARAMS.get("insecure", False)
         _rl_en, _rl_mr, _rl_bd = _taegis_rate_limit_params_from_dict(PARAMS)
 
+        credentials = PARAMS.get("credentials") or {}
+
         client = Client(
-            client_id=PARAMS.get("client_id"),
-            client_secret=PARAMS.get("client_secret"),
+            client_id=credentials.get("identifier"),
+            client_secret=credentials.get("password"),
             base_url=api_base_url,
             proxy=PARAMS.get("proxy", False),
             verify=verify_cert,

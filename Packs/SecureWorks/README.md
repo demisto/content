@@ -63,7 +63,7 @@ By design, ingested Taegis XDR cases are created in **Pending** status as a tria
 1. Install this content pack.
 2. Navigate to **Settings** -> **Integrations** and search for **Taegis XDR v3**.
 3. Create a new instance and configure:
-   - **Client ID** and **Client Secret** - your Taegis XDR API credentials.
+   - **Client ID** / **Client Secret** - your Taegis XDR API credential. Enter the Client ID as the username and the Client Secret as the password, or select a stored credential.
    - **API base URL** - the Taegis API endpoint for your environment.
    - **XDR base URL** - the Taegis XDR console URL for your environment.
    - **Mirroring** options as needed (incoming, outgoing, or both).
