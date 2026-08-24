@@ -190,6 +190,28 @@ REFERENCE_SETS_RAW_FORMATTED = {
 }
 REFERENCE_SET_DATA_RAW_FORMATTED = {"last_seen": "LastSeen", "source": "Source", "value": "Value", "first_seen": "FirstSeen"}
 
+REFERENCE_MAPS_RAW_FORMATTED = {
+    "number_of_elements": "NumberOfElements",
+    "name": "Name",
+    "creation_time": "CreationTime",
+    "element_type": "ElementType",
+    "namespace": "Namespace",
+    "collection_id": "CollectionID",
+    "data": "Data",
+    "key_label": "KeyLabel",
+    "value_label": "ValueLabel",
+    "time_to_live": "TimeToLive",
+    "timeout_type": "TimeoutType",
+}
+
+REFERENCE_MAP_DATA_RAW_FORMATTED = {
+    "last_seen": "LastSeen",
+    "source": "Source",
+    "value": "Value",
+    "first_seen": "FirstSeen",
+    "key": "Key",
+}
+
 DOMAIN_RAW_FORMATTED = {
     "asset_scanner_ids": "AssetScannerIDs",
     "custom_properties": "CustomProperties",
@@ -713,11 +735,25 @@ class Client(BaseClient):
         filter_: Optional[str] = None,
         fields: Optional[str] = None,
     ):
-        name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ""
+        name_suffix = f"/{parse.quote(ref_name, safe='')}" if ref_name else ""
         params = assign_params(filter=filter_, fields=fields)
         additional_headers = {"Range": range_}
         return self.http_request(
             method="GET", url_suffix=f"/reference_data/sets{name_suffix}", params=params, additional_headers=additional_headers
+        )
+
+    def reference_maps_list(
+        self,
+        range_: Optional[str] = None,
+        ref_name: Optional[str] = None,
+        filter_: Optional[str] = None,
+        fields: Optional[str] = None,
+    ):
+        name_suffix = f"/{parse.quote(ref_name, safe='')}" if ref_name else ""
+        params = assign_params(filter=filter_, fields=fields)
+        additional_headers = {"Range": range_}
+        return self.http_request(
+            method="GET", url_suffix=f"/reference_data/maps{name_suffix}", params=params, additional_headers=additional_headers
         )
 
     def reference_set_create(
@@ -739,15 +775,22 @@ class Client(BaseClient):
     def reference_set_delete(self, ref_name: str, purge_only: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
             method="DELETE",
-            url_suffix=f'/reference_data/sets/{parse.quote(parse.quote(ref_name, safe=""), safe="")}',
+            url_suffix=f"/reference_data/sets/{parse.quote(parse.quote(ref_name, safe=''), safe='')}",
             params=assign_params(purge_only=purge_only, fields=fields),
         )
 
     def reference_set_value_upsert(self, ref_name: str, value: str, source: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
             method="POST",
-            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
+            url_suffix=f"/reference_data/sets/{parse.quote(ref_name, safe='')}",
             params=assign_params(value=value, source=source, fields=fields),
+        )
+
+    def reference_map_value_upsert(self, ref_name: str, key: str, value: str, source: str | None = None):
+        return self.http_request(
+            method="POST",
+            url_suffix=f"/reference_data/maps/{parse.quote(ref_name, safe='')}",
+            params=assign_params(key=key, value=value, source=source),
         )
 
     def reference_set_value_delete(self, ref_name: str, value: str):
@@ -780,7 +823,7 @@ class Client(BaseClient):
             headers["fields"] = fields
         return self.http_request(
             method="POST",
-            url_suffix=f'/reference_data/sets/bulk_load/{parse.quote(ref_name, safe="")}',
+            url_suffix=f"/reference_data/sets/bulk_load/{parse.quote(ref_name, safe='')}",
             json_data=indicators,
             additional_headers=headers,
         )
@@ -875,7 +918,7 @@ class Client(BaseClient):
 
         return self.http_request(
             method="POST",
-            url_suffix="/staged_config/remote_networks" + (f'/{body.get("id")}' if update else ""),
+            url_suffix="/staged_config/remote_networks" + (f"/{body.get('id')}" if update else ""),
             json_data=body,
             additional_headers=headers,
         )
@@ -1091,7 +1134,7 @@ def insert_values_to_reference_set_polling(
         return PollResult(command_results, continue_to_poll=False)
     return PollResult(
         partial_result=CommandResults(
-            readable_output=f'Reference set {ref_name} is still being updated in task {args["task_id"]}'
+            readable_output=f"Reference set {ref_name} is still being updated in task {args['task_id']}"
         ),
         continue_to_poll=True,
         args_for_next_run=args,
@@ -1442,7 +1485,7 @@ def get_offense_types(client: Client, offenses: List[dict]) -> dict:
         offense_types_ids = {offense.get("offense_type") for offense in offenses if offense.get("offense_type") is not None}
         if not offense_types_ids:
             return {}
-        offense_types = client.offense_types(filter_=f"""id in ({','.join(map(str, offense_types_ids))})""", fields="id,name")
+        offense_types = client.offense_types(filter_=f"""id in ({",".join(map(str, offense_types_ids))})""", fields="id,name")
         return {offense_type.get("id"): offense_type.get("name") for offense_type in offense_types}
     except Exception as e:
         demisto.error(f"Encountered an issue while getting offense type: {e}")
@@ -1467,7 +1510,7 @@ def get_offense_closing_reasons(client: Client, offenses: List[dict]) -> dict:
         if not closing_reason_ids:
             return {}
         closing_reasons = client.closing_reasons_list(
-            filter_=f"""id in ({','.join(map(str, closing_reason_ids))})""", fields="id,text"
+            filter_=f"""id in ({",".join(map(str, closing_reason_ids))})""", fields="id,text"
         )
         return {closing_reason.get("id"): closing_reason.get("text") for closing_reason in closing_reasons}
     except Exception as e:
@@ -1600,7 +1643,7 @@ def get_offense_addresses(client: Client, offenses: List[dict], is_destination_a
 
     def get_addresses_for_batch(b: List):
         try:
-            return client.get_addresses(url_suffix, f"""id in ({','.join(map(str, b))})""", f"id,{address_field}")
+            return client.get_addresses(url_suffix, f"""id in ({",".join(map(str, b))})""", f"id,{address_field}")
         except Exception as e:
             demisto.error(f"Failed getting address barch with error: {e}")
             return []
@@ -1711,7 +1754,7 @@ def enrich_offenses_result(
 
     def create_enriched_offense(offense: dict) -> dict:
         link_to_offense_suffix = (
-            f"""/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}"""
+            f"""/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId={offense.get("id")}"""
         )
         offense_type = offense.get("offense_type")
         closing_reason_id = offense.get("closing_reason_id")
@@ -2346,7 +2389,7 @@ def is_incident_size_acceptable(incident: dict) -> bool:
     size_bytes = calculate_object_size(incident)
     if size_bytes > MAX_SAMPLE_SIZE_BYTES:
         print_debug_msg(
-            f"Incident {incident.get('name', 'Unknown')} size ({size_bytes / (1024*1024):.2f} MB) "
+            f"Incident {incident.get('name', 'Unknown')} size ({size_bytes / (1024 * 1024):.2f} MB) "
             f"exceeds maximum sample size ({MAX_SAMPLE_SIZE_MB} MB). Skipping from samples."
         )
         return False
@@ -2397,7 +2440,7 @@ def create_search_with_retry(
     for i in range(max_retries):
         search_id = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense["start_time"])
         if search_id == QueryStatus.ERROR.value:
-            print_debug_msg(f"Failed to create search for offense ID: {offense_id}. Retry number {i+1}/{max_retries}.")
+            print_debug_msg(f"Failed to create search for offense ID: {offense_id}. Retry number {i + 1}/{max_retries}.")
             print_debug_msg(traceback.format_exc())
         else:
             return search_id
@@ -2427,7 +2470,7 @@ def poll_offense_events(
                 return [], QueryStatus.SUCCESS.value
             print_debug_msg(f"Getting events for offense {offense_id}")
             search_results_response = client.search_results_get(search_id)
-            print_debug_msg(f'Http response: {search_results_response.get("http_response", "Not specified - ok")}')
+            print_debug_msg(f"Http response: {search_results_response.get('http_response', 'Not specified - ok')}")
             events = search_results_response.get("events", [])
             sanitized_events = sanitize_outputs(events)
             print_debug_msg(f"Fetched events for offense {offense_id}.")
@@ -2468,7 +2511,7 @@ def poll_offense_events_with_retry(
                            A failure message in case an error occurred.
     """
     for retry in range(max_retries):
-        print_debug_msg(f"Polling for events for offense {offense_id}. Retry number {retry+1}/{max_retries}")
+        print_debug_msg(f"Polling for events for offense {offense_id}. Retry number {retry + 1}/{max_retries}")
         events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
         if status == QueryStatus.SUCCESS.value:
             return events, ""
@@ -2521,7 +2564,7 @@ def enrich_offense_with_events(client: Client, offense: dict, fetch_mode: FetchM
             break
         print_debug_msg(
             f"Not enough events were fetched for offense {offense_id}. Retrying in {FAILURE_SLEEP} seconds."
-            f"Retry {retry+1}/{EVENTS_SEARCH_TRIES}"
+            f"Retry {retry + 1}/{EVENTS_SEARCH_TRIES}"
         )
         time_elapsed = int(time.time() - start_time)
         # wait for the rest of the time
@@ -2740,7 +2783,7 @@ def create_incidents_from_offenses(offenses: List[dict], incident_type: Optional
     return [
         {
             # NOTE: incident name will be updated in mirroring also with incoming mapper.
-            "name": f"""{offense.get('id')} {offense.get('description', '')}""",
+            "name": f"""{offense.get("id")} {offense.get("description", "")}""",
             "rawJSON": json.dumps(offense),
             "occurred": get_time_parameter(offense.get("start_time"), iso_format=True),
             "type": incident_type,
@@ -2863,8 +2906,7 @@ def perform_long_running_loop(
         safely_update_context_data_partial(partial_changes)
 
         print_debug_msg(
-            f'Successfully Created {len(incidents)} incidents. '
-            f'Incidents created: {[incident["name"] for incident in incidents]}'
+            f"Successfully Created {len(incidents)} incidents. Incidents created: {[incident['name'] for incident in incidents]}"
         )
 
 
@@ -2986,7 +3028,7 @@ def qradar_offenses_list_command(client: Client, args: dict) -> CommandResults:
         CommandResults.
     """
     offense_id = args.get("offense_id")
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
     ip_enrich, asset_enrich = get_offense_enrichment(args.get("enrichment", "None"))
@@ -3095,7 +3137,7 @@ def qradar_closing_reasons_list_command(client: Client, args: dict) -> CommandRe
     closing_reason_id = args.get("closing_reason_id")
     include_reserved = argToBoolean(args.get("include_reserved", False))
     include_deleted = argToBoolean(args.get("include_deleted", False))
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
 
@@ -3135,7 +3177,7 @@ def qradar_offense_notes_list_command(client: Client, args: dict) -> CommandResu
     """
     offense_id: int = int(args["offense_id"])
     note_id = args.get("note_id")
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
 
@@ -3210,7 +3252,7 @@ def qradar_rules_list_command(client: Client, args: dict) -> CommandResults:
     """
     rule_id = args.get("rule_id")
     rule_type = args.get("rule_type")
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
 
@@ -3251,7 +3293,7 @@ def qradar_rule_groups_list_command(client: Client, args: dict) -> CommandResult
         CommandResults.
     """
     rule_group_id = arg_to_number(args.get("rule_group_id"))
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
 
@@ -3289,7 +3331,7 @@ def qradar_assets_list_command(client: Client, args: dict) -> CommandResults:
         CommandResults.
     """
     asset_id = args.get("asset_id")
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
 
@@ -3311,7 +3353,7 @@ def qradar_assets_list_command(client: Client, args: dict) -> CommandResults:
         output["Asset"]["products"] = add_iso_entries_to_dict(output.get("Asset", {}).get("products", []))
         output["Asset"] = sanitize_outputs(output.get("Asset"), ASSET_RAW_FORMATTED)[0]
         assets_hr.append(output["Asset"])
-        assets_results[f"""QRadar.Asset(val.ID === "{output['Asset']['ID']}")"""] = output["Asset"]
+        assets_results[f"""QRadar.Asset(val.ID === "{output["Asset"]["ID"]}")"""] = output["Asset"]
         sanitized_endpoint = remove_empty_elements(output.get("Endpoint", {}))
         if sanitized_endpoint:
             endpoints.append(sanitized_endpoint)
@@ -3348,7 +3390,7 @@ def qradar_saved_searches_list_command(client: Client, args: dict) -> CommandRes
     """
     saved_search_id = args.get("saved_search_id")
     timeout: Optional[int] = arg_to_number(args.get("timeout", DEFAULT_TIMEOUT_VALUE))
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
 
@@ -3381,7 +3423,7 @@ def qradar_searches_list_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults.
     """
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
 
     # if this call fails, raise an error and stop command execution
@@ -3537,7 +3579,7 @@ def qradar_search_results_get_command(client: Client, args: dict) -> CommandResu
     search_id: str = args.get("search_id", "")
     output_path = args.get("output_path")
     # Using or instead of default value for QRadarFullSearch backward compatibility
-    range_ = f"""items={args.get('range') or DEFAULT_RANGE_VALUE}"""
+    range_ = f"""items={args.get("range") or DEFAULT_RANGE_VALUE}"""
 
     # if this call fails, raise an error and stop command execution
     response = client.search_results_get(search_id, range_)
@@ -3577,7 +3619,7 @@ def qradar_reference_sets_list_command(client: Client, args: dict) -> CommandRes
     """
     ref_name = args.get("ref_name")
     convert_date_value = argToBoolean(args.get("date_value", False))
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
 
@@ -3600,6 +3642,54 @@ def qradar_reference_sets_list_command(client: Client, args: dict) -> CommandRes
     return CommandResults(
         readable_output=tableToMarkdown("Reference Sets List", final_outputs, headers, removeNull=True),
         outputs_prefix="QRadar.Reference",
+        outputs_key_field="Name",
+        outputs=final_outputs,
+        raw_response=response,
+    )
+
+
+def qradar_reference_maps_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves list of reference maps from QRadar service.
+    possible arguments:
+    - ref_name: Retrieves details of the specific reference that corresponds to the reference name given.
+    - range: Range of reference maps to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: If used, will filter all fields except for the specified ones.
+              Use this parameter to specify which fields you would like to get back in the
+              response. Fields that are not explicitly named are excluded.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    ref_name = args.get("ref_name")
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
+    filter_ = args.get("filter")
+    fields = args.get("fields")
+    # if this call fails, raise an error and stop command execution
+    response = client.reference_maps_list(range_, ref_name, filter_, fields)
+    if ref_name:
+        outputs = dict(response)
+        # Reformat the data for better context layout, as maps are a dict of dicts
+        data = [{**value, "key": key} for key, value in outputs.get("data", {}).items()]
+        outputs["data"] = sanitize_outputs(data, REFERENCE_MAP_DATA_RAW_FORMATTED)
+    else:
+        outputs = response
+
+    final_outputs = sanitize_outputs(outputs, REFERENCE_MAPS_RAW_FORMATTED)
+    headers = ["Name", "ElementType", "Namespace", "CollectionID", "TimeoutType", "NumberOfElements", "CreationTime"]
+    readable = tableToMarkdown("Reference Maps List", final_outputs, headers, removeNull=True)
+    if ref_name and final_outputs:
+        readable = f'{readable}\n{tableToMarkdown("Reference Map Data", final_outputs[0].get("Data",[]), removeNull=True)}'
+
+    return CommandResults(
+        readable_output=readable,
+        outputs_prefix="QRadar.ReferenceMaps",
         outputs_key_field="Name",
         outputs=final_outputs,
         raw_response=response,
@@ -3676,8 +3766,8 @@ def qradar_reference_set_delete_command(client: Client, args: dict) -> CommandRe
     response = client.reference_set_delete(ref_name, purge_only, fields)
     return CommandResults(
         raw_response=response,
-        readable_output=f'Request to delete reference {ref_name} was submitted.'
-        f''' Current deletion status: {response.get('status', 'Unknown')}''',
+        readable_output=f"Request to delete reference {ref_name} was submitted."
+        f""" Current deletion status: {response.get("status", "Unknown")}""",
     )
 
 
@@ -3704,6 +3794,51 @@ def qradar_reference_set_value_upsert_command(args: dict, client: Client, params
     return insert_values_to_reference_set_polling(
         client, params.get("api_version", ""), args, values=argToList(args.get("value", ""))
     )
+
+
+def qradar_reference_map_value_upsert_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Update or insert new value to a reference map from QRadar service.
+    possible arguments:
+    - ref_name (Required): The name of the reference map to insert/update a value for.
+    - value (Required): The value to be inserted/updated.
+    - key: The key to update.
+    - source: An indication of where the data originated. Default is reference data api.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+
+    ref_name: str = args.get("ref_name", "")
+    if not ref_name:
+        raise DemistoException("ref_name must not be empty")
+
+    value: str = args.get("value", "")
+    key: str = args.get("key", "")
+    source: str | None = args.get("source")
+
+    if not value or not key:
+        raise DemistoException("key and value must not be empty")
+
+    try:
+        response = client.reference_map_value_upsert(ref_name, key, value, source)
+        # outputs = response
+        # final_outputs = sanitize_outputs(outputs, REFERENCE_MAPS_RAW_FORMATTED)
+        # headers = build_headers(
+        #    ["Name", "ElementType", "NumberOfElements", "CreationTime", "Namespace", "CollectionID"],
+        #    set(REFERENCE_MAPS_RAW_FORMATTED.values()),
+        # )
+        return CommandResults(
+            readable_output=f'Reference map "{ref_name}" successfully updated: "{key}" set to "{value}".',
+            raw_response=response,
+        )
+    except DemistoException as ex:
+        return CommandResults(
+            readable_output=f"Failed to insert or update {key} in {ref_name}: {ex.message}", entry_type=EntryType.ERROR
+        )
 
 
 def qradar_reference_set_value_delete_command(client: Client, args: dict) -> CommandResults:
@@ -3764,7 +3899,7 @@ def qradar_domains_list_command(client: Client, args: dict) -> CommandResults:
     """
     # backward compatibility for domain_id argument named is 'id' in QRadar v2.
     domain_id = args.get("domain_id") or args.get("id")
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
 
@@ -3837,7 +3972,7 @@ def qradar_geolocations_for_ip_command(client: Client, args: dict) -> CommandRes
         CommandResults.
     """
     ips = argToList(args.get("ip"))
-    filter_ = f"""ip_address IN ({','.join((f'"{ip!s}"' for ip in ips))})"""  # noqa: UP034
+    filter_ = f"""ip_address IN ({",".join((f'"{ip!s}"' for ip in ips))})"""  # noqa: UP034
     fields = args.get("fields")
 
     # if this call fails, raise an error and stop command execution
@@ -3913,7 +4048,7 @@ def qradar_log_sources_list_command(client: Client, args: dict) -> CommandResult
     qrd_encryption_algorithm: str = args.get("qrd_encryption_algorithm", "AES128")
     qrd_encryption_password: str = args.get("qrd_encryption_password", secrets.token_urlsafe(20))
     endpoint = "/config/event_sources/log_source_management/log_sources"
-    range_ = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_ = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_ = args.get("filter")
     fields = args.get("fields")
     additional_headers = {
@@ -3957,7 +4092,7 @@ def qradar_get_custom_properties_command(client: Client, args: dict) -> CommandR
         CommandResults.
     """
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT_VALUE))
-    range_ = f"items=0-{limit - 1}" if limit else f'items={args.get("range", DEFAULT_RANGE_VALUE)}'
+    range_ = f"items=0-{limit - 1}" if limit else f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
 
     like_names = argToList(args.get("like_name"))
     field_names = argToList(args.get("field_name"))
@@ -3965,7 +4100,7 @@ def qradar_get_custom_properties_command(client: Client, args: dict) -> CommandR
     fields = args.get("fields")
     if not filter_:
         if field_names:
-            filter_ += f"""name IN ({','.join(f'"{name!s}"' for name in field_names)})"""
+            filter_ += f"""name IN ({",".join(f'"{name!s}"' for name in field_names)})"""
         if like_names:
             filter_ += " or ".join(f' name ILIKE "%{like}%"' for like in like_names)
 
@@ -3993,7 +4128,7 @@ def perform_ips_command_request(client: Client, args: dict[str, Any], is_destina
     Returns:
         - Request response.
     """
-    range_: str = f"""items={args.get('range', DEFAULT_RANGE_VALUE)}"""
+    range_: str = f"""items={args.get("range", DEFAULT_RANGE_VALUE)}"""
     filter_: Optional[str] = args.get("filter")
     fields: Optional[str] = args.get("fields")
 
@@ -5704,6 +5839,12 @@ def main() -> None:  # pragma: no cover
 
         elif command == "qradar-print-context":
             return_results(qradar_print_context_command())
+
+        elif command == "qradar-reference-maps-list":
+            return_results(qradar_reference_maps_list_command(client, args))
+
+        elif command == "qradar-reference-map-value-upsert":
+            return_results(qradar_reference_map_value_upsert_command(client, args))
 
         else:
             raise NotImplementedError(f"""Command '{command}' is not implemented.""")
