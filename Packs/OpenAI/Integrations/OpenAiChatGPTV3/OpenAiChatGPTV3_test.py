@@ -2872,3 +2872,163 @@ def test_create_moderation_command_multi_text_more_results_than_texts(mocker):
 
 
 # endregion
+
+
+# region Compliance API authentication header (CIAC-17723)
+def test_compliance_headers_carry_bearer_scheme_and_accept():
+    """
+    Given: A client configured with a Compliance API key.
+    When: The shared compliance header helper builds the headers.
+    Then: Authorization carries the `Bearer` scheme and Accept requests JSON.
+    """
+    headers = _make_client()._compliance_headers()
+
+    assert headers == {"Authorization": "Bearer COMPLIANCE_KEY", "Accept": "application/json"}
+
+
+def test_list_compliance_logs_sends_bearer_authorization_header(mocker):
+    """
+    Given: A client configured with a valid Compliance API key.
+    When: Listing compliance logs.
+    Then: The Authorization header carries the `Bearer` scheme, which the ChatGPT Compliance
+          API requires. A bare key is rejected with 401 "Access token is missing" (CIAC-17723).
+    """
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value=json.dumps({"data": [], "last_end_time": None}))
+
+    client.list_compliance_logs(
+        workspace_id="FAKE_WORKSPACE_ID",
+        event_types=["AUDIT_LOG"],
+        after="2099-01-01T00:00:00Z",
+        limit=10,
+    )
+
+    assert http_mock.call_args.kwargs["headers"]["Authorization"] == "Bearer COMPLIANCE_KEY"
+
+
+def test_get_compliance_log_content_sends_bearer_authorization_header(mocker):
+    """
+    Given: A client configured with a valid Compliance API key.
+    When: Fetching the content of a single compliance log entry (step 2 of the two-step flow).
+    Then: The Authorization header carries the `Bearer` scheme (CIAC-17723).
+    """
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value="{}")
+
+    client.get_compliance_log_content(workspace_id="FAKE_WORKSPACE_ID", log_id="FAKE_LOG_ID")
+
+    assert http_mock.call_args.kwargs["headers"]["Authorization"] == "Bearer COMPLIANCE_KEY"
+
+
+def test_audit_and_compliance_use_their_own_keys_with_bearer(mocker):
+    """
+    Given: A client with distinct admin and compliance keys.
+    When: The audit endpoint and the compliance endpoint are each called.
+    Then: Each sends its own key, and both carry the `Bearer` scheme - the audit path must not
+          borrow the compliance credential, nor the reverse.
+    """
+    client = _make_client()
+
+    audit_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value={"data": [], "has_more": False})
+    client.get_audit_logs(after=None, effective_at_gt=1)
+    assert audit_mock.call_args.kwargs["headers"]["Authorization"] == "Bearer ADMIN_KEY"
+
+    compliance_mock = mocker.patch.object(
+        OpenAiClient, "_http_request", return_value=json.dumps({"data": [], "last_end_time": None})
+    )
+    client.list_compliance_logs(workspace_id="FAKE_WORKSPACE_ID", event_types=["AUDIT_LOG"], after="2099-01-01T00:00:00Z")
+    assert compliance_mock.call_args.kwargs["headers"]["Authorization"] == "Bearer COMPLIANCE_KEY"
+
+
+def test_compliance_request_never_sends_a_bare_key(mocker):
+    """
+    Bad path: the exact CIAC-17723 defect must not reappear in any form.
+
+    Given: A client with a Compliance API key.
+    When: The compliance listing is requested.
+    Then: The Authorization value is never the bare key, and never a doubled scheme.
+    """
+    client = _make_client()
+    http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value=json.dumps({"data": []}))
+
+    client.list_compliance_logs(workspace_id="FAKE_WORKSPACE_ID", event_types=["AUDIT_LOG"], after="2099-01-01T00:00:00Z")
+
+    sent = http_mock.call_args.kwargs["headers"]["Authorization"]
+    assert sent != "COMPLIANCE_KEY", "regression: the raw key was sent with no auth scheme (CIAC-17723)"
+    assert not sent.startswith("Bearer Bearer "), "the Bearer scheme was applied twice"
+    assert sent.startswith("Bearer ")
+
+
+@pytest.mark.parametrize(
+    "status_code, message",
+    [
+        pytest.param(401, "Unauthorized - Access token is missing", id="bad-401-unauthorized"),
+        pytest.param(403, "Forbidden", id="bad-403-forbidden"),
+        pytest.param(429, "Too Many Requests", id="bad-429-rate-limited"),
+        pytest.param(500, "Internal Server Error", id="bad-500-server-error"),
+    ],
+)
+def test_list_compliance_logs_propagates_api_errors(mocker, status_code, message):
+    """
+    Bad path: the Compliance API rejects or fails the request.
+
+    Given: The Compliance API returns an error status.
+    When: Listing compliance logs.
+    Then: The error surfaces to the caller rather than being swallowed into an empty result,
+          so the instance test reports a real failure instead of silently collecting nothing.
+    """
+    client = _make_client()
+    mocker.patch.object(
+        OpenAiClient, "_http_request", side_effect=DemistoException(f"Error in API call [{status_code}] - {message}")
+    )
+
+    with pytest.raises(DemistoException) as exc_info:
+        client.list_compliance_logs(workspace_id="FAKE_WORKSPACE_ID", event_types=["AUDIT_LOG"], after="2099-01-01T00:00:00Z")
+
+    assert str(status_code) in str(exc_info.value)
+
+
+def test_get_compliance_log_content_propagates_unauthorized(mocker):
+    """
+    Bad path: step 2 of the two-step flow is rejected.
+
+    Given: The compliance content endpoint returns 401.
+    When: Fetching the content of a log entry.
+    Then: The error surfaces rather than yielding an empty record list, which would look
+          like a log entry that legitimately had no content.
+    """
+    client = _make_client()
+    mocker.patch.object(
+        OpenAiClient,
+        "_http_request",
+        side_effect=DemistoException("Error in API call [401] - Unauthorized - Access token is missing"),
+    )
+
+    with pytest.raises(DemistoException) as exc_info:
+        client.get_compliance_log_content(workspace_id="FAKE_WORKSPACE_ID", log_id="FAKE_LOG_ID")
+
+    assert "401" in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        pytest.param("", id="bad-empty-body"),
+        pytest.param("   ", id="bad-whitespace-only-body"),
+    ],
+)
+def test_get_compliance_log_content_handles_empty_body(mocker, body):
+    """
+    Bad path: the content endpoint returns nothing at all.
+
+    Given: The compliance content response body is empty or whitespace.
+    When: Fetching the content of a log entry.
+    Then: An empty list is returned rather than raising, so one empty entry cannot abort a fetch.
+    """
+    client = _make_client()
+    mocker.patch.object(OpenAiClient, "_http_request", return_value=body)
+
+    assert client.get_compliance_log_content(workspace_id="FAKE_WORKSPACE_ID", log_id="FAKE_LOG_ID") == []
+
+
+# endregion

@@ -51,7 +51,7 @@ class Config:
     COMPLIANCE_PAGE_SIZE = 100
     MAX_PAGES_PER_FETCH = 50  # Safety cap on pagination loops.
 
-    DEFAULT_FIRST_FETCH = "1 minute ago"
+    DEFAULT_FIRST_FETCH = "1 day ago"
 
     # Test-module probe: per-stream max-events ceiling when test_module exercises the collector
     # via the same fetch_stream pipeline (mirrors Koi's TEST_MODULE_MAX_EVENTS=1).
@@ -490,6 +490,15 @@ class OpenAiClient(BaseClient):
     # endregion
 
     # region Event Collector - Compliance Logs (ChatGPT Platform - `Connect - Compliance` section)
+    def _compliance_headers(self) -> dict[str, str]:
+        """Build the auth headers for the ChatGPT Compliance API.
+
+        The credential MUST carry the `Bearer` scheme - a bare key is not a well-formed
+        `Authorization` value and the API rejects it with 401 "Access token is missing"
+        without ever evaluating the key (CIAC-17723).
+        """
+        return {"Authorization": f"Bearer {self.compliance_api_key}", "Accept": "application/json"}
+
     def list_compliance_logs(
         self,
         workspace_id: str,
@@ -519,10 +528,10 @@ class OpenAiClient(BaseClient):
             params.append(("limit", effective_limit))
 
         full_url = self.chatgpt_base_url + ApiPaths.compliance_logs(workspace_id)
-        headers = {"Authorization": self.compliance_api_key, "Accept": "application/json"}
+        headers = self._compliance_headers()
         demisto.debug(
-            f"[API Compliance List] Listing logs | event_types_count={len(event_types)} | "
-            f"after_set={bool(after)} | limit={limit}"
+            f"[API Compliance List] Listing logs | url={full_url} | auth_scheme=Bearer | "
+            f"event_types_count={len(event_types)} | after_set={bool(after)} | limit={limit}"
         )
 
         # Fetch as text first so we can defensively handle single-JSON, concatenated-JSON, and empty
@@ -565,8 +574,8 @@ class OpenAiClient(BaseClient):
             raise DemistoException("Compliance API Key is required to fetch OpenAI Compliance log content.")
 
         full_url = self.chatgpt_base_url + ApiPaths.compliance_log_content(workspace_id, log_id)
-        headers = {"Authorization": self.compliance_api_key, "Accept": "application/json"}
-        demisto.debug("[API Compliance Content] Fetching content for one log entry.")
+        headers = self._compliance_headers()
+        demisto.debug(f"[API Compliance Content] Fetching content for one log entry | url={full_url} | auth_scheme=Bearer")
 
         # The response body is a stream of concatenated JSON objects (or a JSONL file) - fetch raw text.
         raw_body = self._http_request(method="GET", full_url=full_url, headers=headers, resp_type="text", **Config.RETRY_POLICY)
