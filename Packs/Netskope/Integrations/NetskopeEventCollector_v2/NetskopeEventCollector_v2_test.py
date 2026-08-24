@@ -308,6 +308,72 @@ async def test_get_events_command_no_window_uses_real_last_run(mocker):
 
 
 @pytest.mark.asyncio
+async def test_get_events_command_end_time_only_builds_window(mocker):
+    """
+    Given: netskope-get-events with ONLY end_time (no start_time).
+    When: Running get_events_command_async.
+    Then: A window is still built (end_time not silently ignored); start defaults to 1 day ago.
+    """
+    from NetskopeEventCollector_v2 import get_events_command_async
+
+    fetch_mock = mocker.patch("NetskopeEventCollector_v2.handle_fetch_and_send_all_events", return_value=([], 0, {}))
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=["audit"])
+
+    real_last_run = {"audit": {"next_fetch_start_time": "12345", "failures": []}}
+    await get_events_command_async(
+        client, {"limit": 50, "end_time": "2026-08-12T00:00:00Z"}, real_last_run, should_push_events=False
+    )
+
+    passed_last_run = fetch_mock.call_args.kwargs["last_run"]
+    assert passed_last_run is not real_last_run, "end_time alone must build a window"
+    assert "next_fetch_start_time" in passed_last_run["audit"]
+    assert "next_fetch_end_time" in passed_last_run["audit"]
+
+
+@pytest.mark.asyncio
+async def test_get_events_command_malformed_time_returns_error(mocker):
+    """
+    Given: netskope-get-events with an unparseable start_time.
+    When: Running get_events_command_async.
+    Then: return_error is called (no AttributeError from a None datetime).
+    """
+    from NetskopeEventCollector_v2 import get_events_command_async
+
+    mocker.patch("NetskopeEventCollector_v2.handle_fetch_and_send_all_events", return_value=([], 0, {}))
+    return_error_mock = mocker.patch("NetskopeEventCollector_v2.return_error", side_effect=SystemExit)
+    client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=["audit"])
+
+    with pytest.raises(SystemExit):
+        await get_events_command_async(client, {"start_time": "not a real date"}, {}, should_push_events=False)
+    return_error_mock.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_audit_sequential_page_failure_is_recorded(mocker):
+    """
+    Given: The audit (no-count) path where a page fetch fails.
+    When: Fetching audit events sequentially.
+    Then: The failure is recorded (not silently swallowed) so the caller can checkpoint/retry.
+    """
+    from NetskopeEventCollector_v2 import Client, fetch_and_send_events_async
+
+    client = Client(BASE_URL, "token", False, False, ["audit"])
+    mocker.patch.object(client, "get_events_count", return_value=0)
+    full_page = {"result": [{"_id": "1", "timestamp": 1}, {"_id": "2", "timestamp": 2}]}
+    mocker.patch.object(client, "get_events_data_async", side_effect=[full_page, Exception("boom")])
+
+    success, failures = await fetch_and_send_events_async(
+        client,
+        "audit",
+        {"limit": 2, "insertionstarttime": "1", "insertionendtime": "2", "offset": 0},
+        limit=10000,
+        send_to_xsiam=False,
+    )
+
+    assert failures, "A failed sequential page must be recorded, not silently dropped"
+
+
+@pytest.mark.asyncio
 async def test_fetch_path_empty_page(mocker):
     """
     Given:
@@ -719,7 +785,6 @@ def test_populate_parsing_rule_fields():
             {
                 "endpoint": "/events/data/{type}",
                 "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-                "count_field": "event_count:count(id)",
                 "supports_count": False,
             },
         ),

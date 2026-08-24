@@ -38,7 +38,6 @@ EVENT_TYPE_CONFIGS: dict[str, dict[str, Any]] = {
     "audit": {
         "endpoint": "/events/data/{type}",
         "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
-        "count_field": "event_count:count(id)",
         "supports_count": False,
     },
 }
@@ -460,8 +459,9 @@ async def fetch_and_send_events_async(
                         retry_count += 1
                     else:
                         raise e
-            demisto.debug(f"[Fetch] Rate limit (429) for {type=} reached {MAX_RETRY=}, giving up on this page")
-            return {}
+            # Exhausted retries on a 429 - raise so the page is recorded as a failure (and retried
+            # next cycle).
+            raise DemistoException(f"Rate limit (429) for {type=} not resolved after {MAX_RETRY=} retries")
 
         async def _send_page_to_xsiam(events):
             # use_streaming_send=True streams+gzips one event at a time (consumes `events`), keeping memory flat.
@@ -496,23 +496,14 @@ async def fetch_and_send_events_async(
             return events
 
     def _page_result_len(page_result) -> int:
-        # _handle_page returns different shapes per flow:
-        #   - fetch-events path (send_to_xsiam=True): pages are streamed to XSIAM and freed, so it
-        #     returns an int (the page's event count).
-        #   - get-events path (send_to_xsiam=False): the caller needs the events to display, so it
-        #     returns the events list.
-        # Normalize both to a length so the sequential pager can detect the last (short) page.
+        # _handle_page returns an int (fetch-events: streamed & freed) or the events list (get-events).
         return page_result if isinstance(page_result, int) else len(page_result)
 
     async def _handle_all_pages_sequential():
-        """Paginate without a pre-flight count.
+        """Paginate without a pre-flight count (for datasets like `audit` that don't support count()).
 
-        Some Netskope datasets (e.g. `audit`) do NOT support the `fields=...:count()` aggregation.
-        For these types we page directly with offset/limit until a page returns fewer
-        rows than the requested page size (i.e. we've reached the last page for this window).
-
-        Pages are fetched one at a time (we cannot pre-compute how many there are). Concurrency and
-        peak memory are still bounded by ``client.page_semaphore`` inside ``_handle_page``.
+        Pages one at a time until a short page (last page) or `limit` events. Returns success items
+        and BaseException items (like return_exceptions=True) so failures are recorded, not swallowed.
         """
         init_offset = int(request_params.pop("offset", 0))
         request_limit = int(request_params.get("limit", MAX_EVENTS_PAGE_SIZE))
@@ -525,12 +516,19 @@ async def fetch_and_send_events_async(
         results: list = []
         offset = init_offset
         while offset < max_offset:
-            page_result = await _handle_page(request_params | {"offset": offset})
-            results.append(page_result)
-            if _page_result_len(page_result) < request_limit:
-                # short page => no more data available in this time window
+            # Cap total at `limit` so the caller's `events_count == limit` check checkpoints next_fetch_offset.
+            page_size = min(request_limit, max_offset - offset)
+            try:
+                page_result = await _handle_page(request_params | {"offset": offset, "limit": page_size})
+            except Exception as e:
+                # Record the failure (don't abort the window) so the caller checkpoints and retries this offset.
+                demisto.error(f"[Fetch] type={type}: sequential page failed at {offset=}: {str(e)}")
+                results.append(e)
                 break
-            offset += request_limit
+            results.append(page_result)
+            if _page_result_len(page_result) < page_size:
+                break  # short page => last page for this window
+            offset += page_size
         return results
 
     async def _handle_all_pages():
@@ -690,14 +688,15 @@ async def get_events_command_async(
     """
     limit = arg_to_number(args.get("limit")) or 10
 
-    # Optional manual time window. `end_time` defaults to "now" when only `start_time` is given.
-    # NOTE: for the audit type this window filters by INSERTION time (insertionstarttime/endtime),
-    # matching the field Netskope's audit data endpoint (and the customer's curl) uses.
-    start_arg = arg_to_datetime(args.get("start_time")) if args.get("start_time") else None
-    if start_arg:
-        end_arg = arg_to_datetime(args.get("end_time")) if args.get("end_time") else arg_to_datetime("now")
+    # Optional manual time window: used if either start_time or end_time is given (start defaults to
+    # 1 day ago, end to now). For audit this filters by insertion time (insertionstarttime/endtime).
+    if args.get("start_time") or args.get("end_time"):
+        start_arg = arg_to_datetime(args.get("start_time") or "1 day", arg_name="start_time")
+        end_arg = arg_to_datetime(args.get("end_time") or "now", arg_name="end_time")
+        if not start_arg or not end_arg:  # None only for unparseable input
+            return_error("Could not parse 'start_time'/'end_time'. Use a date, a relative time (e.g. '3 days'), or a Unix epoch.")
         start_epoch = str(int(start_arg.timestamp()))
-        end_epoch = str(int(end_arg.timestamp()))  # type: ignore[union-attr]
+        end_epoch = str(int(end_arg.timestamp()))
         last_run = {
             event_type: {"next_fetch_start_time": start_epoch, "next_fetch_end_time": end_epoch, "failures": []}
             for event_type in client.event_types_to_fetch
