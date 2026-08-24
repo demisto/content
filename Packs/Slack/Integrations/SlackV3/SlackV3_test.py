@@ -5514,7 +5514,7 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
     mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
     mocker.patch("SlackV3.get_conversation_by_name", return_value={})
 
-    with pytest.raises(CortexResourceNotFoundError, match="Slack channel 'nonexistent' does not exist in this workspace."):
+    with pytest.raises(CortexResourceNotFoundError, match="Channel 'nonexistent' does not exist."):
         resolve_conversation_id_from_name("nonexistent")
 
 

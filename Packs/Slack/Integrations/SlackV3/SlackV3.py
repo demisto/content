@@ -3494,7 +3494,7 @@ def resolve_conversation_id_from_name(channel_name):
         raise CortexResourceNotFoundError(
             resource_type="Slack channel",
             identifier=channel_name,
-            override_message=(f"Channel '{channel_name}' does not exist."),
+            override_message=f"Channel '{channel_name}' does not exist.",
         )
 
     return channel_id
@@ -3520,7 +3520,7 @@ def conversation_history() -> None:
         raise CortexMissingArgError(
             ["conversation_id", "conversation_name"],
             require_one=True,
-            override_message=("Either conversation_id or conversation_name must be provided."),
+            override_message="Either conversation_id or conversation_name must be provided.",
         )
 
     if not conversation_id:
