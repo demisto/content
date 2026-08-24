@@ -51,7 +51,7 @@ class Config:
     COMPLIANCE_PAGE_SIZE = 100
     MAX_PAGES_PER_FETCH = 50  # Safety cap on pagination loops.
 
-    DEFAULT_FIRST_FETCH = "1 day ago"
+    DEFAULT_FIRST_FETCH = "1 hour ago"
 
     # Test-module probe: per-stream max-events ceiling when test_module exercises the collector
     # via the same fetch_stream pipeline (mirrors Koi's TEST_MODULE_MAX_EVENTS=1).

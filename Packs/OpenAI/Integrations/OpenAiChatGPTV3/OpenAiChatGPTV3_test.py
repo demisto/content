@@ -509,9 +509,9 @@ def test_parse_first_fetch_to_datetime_happy_path(mocker, first_fetch_input, exp
 def test_parse_first_fetch_to_datetime_bad_input_falls_back_to_default(mocker, bad_input):
     """Unparseable input MUST fall back to `Config.DEFAULT_FIRST_FETCH`, never to a hardcoded window.
 
-    This locks the regression where a typo silently widened the lookback 1440× from
-    "1 minute ago" to "1 day ago". Whitespace, empty strings, and made-up unit names
-    all must reach the fallback path.
+    This locks the regression where a typo silently widened the lookback window beyond
+    the documented default. Whitespace, empty strings, and made-up unit names all must
+    reach the fallback path.
     """
     # Suppress the demisto.error stdout under pytest; the error-log contract is asserted by
     # test_parse_first_fetch_to_datetime_emits_error_log_on_bad_input.
@@ -521,17 +521,13 @@ def test_parse_first_fetch_to_datetime_bad_input_falls_back_to_default(mocker, b
     assert isinstance(result, datetime)
     assert result.tzinfo is not None, "Fallback must also be timezone-aware."
 
-    # The fallback MUST equal Config.DEFAULT_FIRST_FETCH (currently "1 minute ago"),
-    # NOT a hardcoded 1-day window.
+    # The fallback MUST equal Config.DEFAULT_FIRST_FETCH, never a hardcoded window.
     expected_fallback = arg_to_datetime(Config.DEFAULT_FIRST_FETCH, is_utc=True)
     assert expected_fallback is not None
     if expected_fallback.tzinfo is None:
         expected_fallback = expected_fallback.replace(tzinfo=UTC)
     drift = abs((result - expected_fallback).total_seconds())
-    assert drift < 30, (
-        f"Fallback drifted {drift:.1f}s from Config.DEFAULT_FIRST_FETCH. "
-        f"If this exceeds the 1-minute window, the bug regressed."
-    )
+    assert drift < 30, f"Fallback drifted {drift:.1f}s from Config.DEFAULT_FIRST_FETCH - the bug regressed."
 
 
 def test_parse_first_fetch_to_datetime_emits_error_log_on_bad_input(mocker):
