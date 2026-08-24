@@ -3,8 +3,8 @@ provider: PRODAFT
 sectionorder:
 - Connect
 - Collect
-description: 'USTA Account Takeover Prevention is designed to collect compromised credentials sourced from stealer malware attacks, helping organizations identify potential account takeovers and enhance their security posture. Provided by PRODAFT.'
-display: USTA Account Takeover Prevention
+description: 'USTAv4 Account Takeover Prevention is designed to collect compromised credentials sourced from stealer malware attacks, helping organizations identify potential account takeovers and enhance their security posture. Provided by PRODAFT.'
+display: USTAv4 Account Takeover Prevention
 name: USTA Account Takeover Prevention
 defaultclassifier: USTA Incident Classifier
 defaultmapperin: USTA Incident Mapper
