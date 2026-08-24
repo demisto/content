@@ -5,20 +5,20 @@ This integration was integrated and tested with version xx of TaegisXDRv3.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Client ID |  | True |
-| Client Secret |  | True |
+| Client ID | The Client ID from the Taegis XDR API credential this instance should authenticate as. | True |
+| Client Secret | The Client Secret generated alongside the Client ID. Taegis displays it only once, at creation. | True |
 | API base URL | Taegis API base URL for your environment. Do not include a trailing slash. Required for all commands. | False |
 | XDR base URL | Taegis XDR \(UI\) base URL for your environment. Used for investigation/alert links. Do not include a trailing slash. Required for all commands. | False |
-| Tenant ID |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Fetch incidents |  | False |
-| Incident type |  | False |
+| Tenant ID | Optional. Leave blank if the credential is scoped to a single tenant. For multi-tenant credentials, supply the Tenant ID this instance should act against. | False |
+| Trust any certificate (not secure) | Skip verification of the Taegis API server's TLS certificate. Not recommended outside troubleshooting. | False |
+| Use system proxy settings | Route requests through the system proxy configured on the Cortex XSOAR server. | False |
+| Fetch incidents | Enable to ingest Taegis XDR cases into Cortex XSOAR as incidents on each fetch interval. | False |
+| Incident type | The Cortex XSOAR incident type applied to ingested cases. Leave as Taegis XDR - Case unless you have created a custom type. | False |
 | Maximum number of incidents per fetch | The maximum limit is 200. | False |
 | Incidents Fetch Interval | The interval in minutes to fetch incidents. The default is 1 minute. | False |
-| First fetch timestamp |  | False |
+| First fetch timestamp | How far back to look for cases on the first fetch only, expressed as &lt;number&gt; &lt;time unit&gt;, for example 1 day, 12 hours, or 7 days. Later fetches resume from the previous run. | False |
 | Fetch Incident Type | The type of incidents to fetch. The default is investigations. | False |
-| Include Assets in Fetch |  | False |
+| Include Assets in Fetch | Include associated asset details when fetching. Enriches the incident but increases fetch duration. | False |
 | Fetch investigations - exclusion list (assignee emails or names) | EXCLUSION LIST: Comma-separated assignee emails, display names, or assignee IDs \(e.g. user@domain.com, Sophos, auth0\|xxx\). Investigations assigned to any matching assignee are EXCLUDED \(no Cortex XSOAR incident\). Match is by email, name, or assignee_id. If a team name \(e.g. Sophos\) does not match, check debug logs for assignee_id and add that ID to this list. Leave empty to fetch all. | False |
 | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from Taegis XDR to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Taegis XDR\), or Incoming And Outgoing \(bidirectional\). | False |
 | Comment Entry Tag To Taegis | Choose the tag to add to an entry to mirror it as a comment in Taegis XDR. | False |
