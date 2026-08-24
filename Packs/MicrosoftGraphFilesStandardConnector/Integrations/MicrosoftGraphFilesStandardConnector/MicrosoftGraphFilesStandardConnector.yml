@@ -1063,6 +1063,231 @@ script:
     - contextPath: MsGraphFiles.RemovedItemPermission.ObjectTypeId
       description: Echo of the object_type_id argument supplied to the command.
       type: String
+  - description: |-
+      Retrieves the metadata of a file or folder (driveItem). The item can be addressed by ID, by path relative to the drive root, or by a sharing URL. Exactly one of item_id, item_path, or share_url must be provided.
+      The returned ItemID is scoped to the drive that stores the item, which is returned as DriveId. A sharing URL that points to a personal file resolves against that user's OneDrive, so the ItemID it returns differs from the ID the same file has under a SharePoint site library.
+      Note: addressing the item by share_url requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
+    name: msgraph-driveitem-metadata-get
+    arguments:
+    - auto: PREDEFINED
+      description: The MS Graph resource. Required together with `object_type_id`, unless `share_url` is used.
+      name: object_type
+      predefined:
+      - drives
+      - groups
+      - sites
+      - users
+    - description: |-
+        MS Graph resource ID. Required together with `object_type`, unless `share_url` is used.
+        For resource type 'drives': use the **msgraph-list-drives-in-site** command to retrieve drive IDs.
+        For resource type 'groups': configure the 'Entra ID Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'sites': use the **msgraph-list-sharepoint-sites** command.
+        For resource type 'users': configure the 'Entra ID Users' integration and use the msgraph-user-list command.
+      name: object_type_id
+    - description: |-
+        The ID of the driveItem whose metadata to retrieve.
+        Provide exactly one of `item_id`, `item_path`, or `share_url`.
+        To get the ID, use the **msgraph-list-drive-content** command.
+      name: item_id
+    - description: |-
+        The path of the file or folder relative to the drive root, for example "Documents/report.docx".
+        Provide exactly one of `item_id`, `item_path`, or `share_url`.
+      name: item_path
+    - description: |-
+        A sharing URL pointing to the file, for example a "copy link" URL.
+        Provide exactly one of `item_id`, `item_path`, or `share_url`.
+        Note: This option requires the Files.ReadWrite.All application permission (or Files.ReadWrite delegated), which is higher than the Files.Read.All required by the item_id and item_path options, even though this command only reads data.
+      name: share_url
+    - auto: PREDEFINED
+      description: Whether to include the sharepointIds property, which contains the listItemUniqueId and listId values used to correlate the file with SharePoint list items. Microsoft Graph does not return this property as part of the driveItem, so when enabled the command issues an additional request and merges the result into a single output.
+      name: include_sharepoint_ids
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: MsGraphFiles.Files.ID
+      description: The unique identifier of the driveItem.
+      type: String
+    - contextPath: MsGraphFiles.Files.ItemID
+      description: The unique identifier of the driveItem. Duplicated from ID for convenience when correlating with other commands.
+      type: String
+    - contextPath: MsGraphFiles.Files.SiteID
+      description: The ID of the SharePoint site containing the item, lifted from the parent reference.
+      type: String
+    - contextPath: MsGraphFiles.Files.DriveId
+      description: The ID of the drive that stores the item, lifted from the parent reference. ItemID is only meaningful within this drive.
+      type: String
+    - contextPath: MsGraphFiles.Files.Name
+      description: The name of the file or folder.
+      type: String
+    - contextPath: MsGraphFiles.Files.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: MsGraphFiles.Files.WebUrl
+      description: The URL that displays the item in the browser.
+      type: String
+    - contextPath: MsGraphFiles.Files.CreatedDateTime
+      description: The date and time the item was created.
+      type: Date
+    - contextPath: MsGraphFiles.Files.LastModifiedDateTime
+      description: The date and time the item was last modified.
+      type: Date
+    - contextPath: MsGraphFiles.Files.CreatedBy.User.DisplayName
+      description: The display name of the user who created the item.
+      type: String
+    - contextPath: MsGraphFiles.Files.CreatedBy.User.Email
+      description: The email of the user who created the item.
+      type: String
+    - contextPath: MsGraphFiles.Files.CreatedBy.User.ID
+      description: The ID of the user who created the item.
+      type: String
+    - contextPath: MsGraphFiles.Files.LastModifiedBy.User.DisplayName
+      description: The display name of the user who last modified the item.
+      type: String
+    - contextPath: MsGraphFiles.Files.LastModifiedBy.User.Email
+      description: The email of the user who last modified the item.
+      type: String
+    - contextPath: MsGraphFiles.Files.LastModifiedBy.User.ID
+      description: The ID of the user who last modified the item.
+      type: String
+    - contextPath: MsGraphFiles.Files.ParentReference.ID
+      description: The ID of the parent folder.
+      type: String
+    - contextPath: MsGraphFiles.Files.ParentReference.SiteId
+      description: The ID of the site containing the parent folder.
+      type: String
+    - contextPath: MsGraphFiles.Files.SharepointIds.ListItemUniqueId
+      description: The unique identifier of the item within the SharePoint list. Used to correlate the driveItem with SharePoint list items.
+      type: String
+    - contextPath: MsGraphFiles.Files.SharepointIds.ListId
+      description: The identifier of the SharePoint list containing the item.
+      type: String
+    - contextPath: MsGraphFiles.Files.SharepointIds.SiteId
+      description: The SharePoint site identifier.
+      type: String
+  - description: |-
+      Retrieves the recent activities that took place on a file or folder (driveItem), such as who accessed it and when.
+      Activities are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the activities from the list item. This resolution is internal - only site_id and item_id are needed.
+      Note: Activity data is not available in all national deployments and is not supported for personal Microsoft accounts. When no activity has been recorded for the item, Microsoft Graph returns an empty result rather than an error.
+    name: msgraph-driveitem-activities-list
+    arguments:
+    - description: |-
+        The ID of the SharePoint site containing the item.
+        To get the ID, use the **msgraph-list-sharepoint-sites** command.
+      name: site_id
+      required: true
+    - description: |-
+        The ID of the driveItem whose activities to retrieve.
+        To get the ID, use the **msgraph-list-drive-content** or **msgraph-driveitem-metadata-get** command.
+        Note: This endpoint does not support addressing the item by path.
+      name: item_id
+      required: true
+    - description: The maximum number of activities to return. This endpoint does not support server-side paging parameters, so the limit is applied after the results are retrieved.
+      name: limit
+    - description: The URL for the next results page (the @odata.nextLink value from a previous response, surfaced under MsGraphFiles.ItemActivity.NextToken).
+      name: next_page_url
+    outputs:
+    - contextPath: MsGraphFiles.ItemActivity.Value.ID
+      description: The unique identifier of the activity.
+      type: String
+    - contextPath: MsGraphFiles.ItemActivity.Value.Times.RecordedDateTime
+      description: The date and time the activity was recorded.
+      type: Date
+    - contextPath: MsGraphFiles.ItemActivity.Value.Action
+      description: The action components of the activity, for example Access, Edit, Share, Rename, Move, Delete, Restore, Comment or Version. Each facet is present only when the activity included that action.
+      type: Unknown
+    - contextPath: MsGraphFiles.ItemActivity.Value.Action.Version.NewVersion
+      description: The resulting version number, when the activity created a new version.
+      type: String
+    - contextPath: MsGraphFiles.ItemActivity.Value.Actor.User.DisplayName
+      description: The display name of the user who performed the activity.
+      type: String
+    - contextPath: MsGraphFiles.ItemActivity.Value.Actor.User.Email
+      description: The email of the user who performed the activity.
+      type: String
+    - contextPath: MsGraphFiles.ItemActivity.Value.Actor.User.ID
+      description: The ID of the user who performed the activity.
+      type: String
+    - contextPath: MsGraphFiles.ItemActivity.Value.DriveItem.ID
+      description: The ID of the driveItem the activity relates to.
+      type: String
+    - contextPath: MsGraphFiles.ItemActivity.ItemId
+      description: Echo of the item_id argument supplied to the command (for context joining).
+      type: String
+    - contextPath: MsGraphFiles.ItemActivity.SiteID
+      description: Echo of the site_id argument supplied to the command.
+      type: String
+    - contextPath: MsGraphFiles.ItemActivity.OdataContext
+      description: The OData context.
+      type: String
+    - contextPath: MsGraphFiles.ItemActivity.NextToken
+      description: The @odata.nextLink value. Pass this to next_page_url to fetch the next page.
+      type: String
+  - arguments:
+    - description: |-
+        The ID of the SharePoint site containing the item.
+        To get the ID, use the **msgraph-list-sharepoint-sites** command.
+      name: site_id
+      required: true
+    - description: |-
+        The ID of the driveItem whose analytics to retrieve.
+        To get the ID, use the **msgraph-list-drive-content** or **msgraph-driveitem-metadata-get** command.
+        Note: This endpoint does not support addressing the item by path.
+      name: item_id
+      required: true
+    - description: The time range the statistics cover.
+      name: time_range
+      auto: PREDEFINED
+      predefined:
+      - allTime
+      - lastSevenDays
+      defaultValue: allTime
+    description: |-
+      Retrieves activity statistics for a file or folder (driveItem), such as how many times it was viewed and by how many people.
+      Analytics are stored against the SharePoint list representation of the item, so the command first resolves the item's SharePoint list identifiers and then reads the analytics from the list item. This resolution is internal - only site_id and item_id are needed.
+      Note: Analytics data is not available in all national deployments and is not supported for personal Microsoft accounts. When no analytics data has been collected for the item, Microsoft Graph returns an empty result rather than an error.
+    name: msgraph-driveitem-analytics-get
+    outputs:
+    - contextPath: MsGraphFiles.ItemAnalytics.ItemId
+      description: Echo of the item_id argument supplied to the command (for context joining).
+      type: String
+    - contextPath: MsGraphFiles.ItemAnalytics.SiteID
+      description: Echo of the site_id argument supplied to the command.
+      type: String
+    - contextPath: MsGraphFiles.ItemAnalytics.TimeRange
+      description: The time range the returned statistics cover.
+      type: String
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.StartDateTime
+      description: The start of the time range the statistics cover.
+      type: Date
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.EndDateTime
+      description: The end of the time range the statistics cover.
+      type: Date
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Access.ActionCount
+      description: The number of times the item was accessed.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Access.ActorCount
+      description: The number of distinct users who accessed the item.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Edit.ActionCount
+      description: The number of times the item was edited.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Edit.ActorCount
+      description: The number of distinct users who edited the item.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Create.ActionCount
+      description: The number of times the item was created. Present only when Microsoft Graph returns this facet.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Create.ActorCount
+      description: The number of distinct users who created the item. Present only when Microsoft Graph returns this facet.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Delete.ActionCount
+      description: The number of times the item was deleted. Present only when Microsoft Graph returns this facet.
+      type: Number
+    - contextPath: MsGraphFiles.ItemAnalytics.Stats.Delete.ActorCount
+      description: The number of distinct users who deleted the item. Present only when Microsoft Graph returns this facet.
+      type: Number
   - description: Tests connectivity to Microsoft.
     execution: false
     name: msgraph-files-auth-test
