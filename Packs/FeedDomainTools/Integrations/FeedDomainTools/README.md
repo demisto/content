@@ -9,7 +9,7 @@ Real-Time Threat Intelligence Feeds provide data on the different stages of the 
 | Session ID | The session id to serve as unique identifier. On it's initial use, it will retrieve data from the past 5 days. Defaults to 'dt-cortex-feeds'. | False |
 | After | The start of the query window in seconds, relative to the current time, inclusive. Defaults to -3600. | False |
 | Top | Limits the number of results in the response payload. Defaults to 5000. | False |
-| Feed Type | The DomainTools feed type fo fetch. Defaults to 'ALL'. | False |
+| Feed Type | The DomainTools feed type to fetch. Defaults to 'ALL'. | False |
 | Fetch indicators |  | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
@@ -41,11 +41,26 @@ Gets indicators from the feed.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | feed_type | The DomainTools integration feed type to fetch. Possible values are: nod, nad, noh, domainrdap, domaindiscovery, domainrisk, domainhotlist, iphotlist, iprisk. Default is nod. | Optional |
-| session_id | The session id to serve as unique indentifier. On it's initial use, it will retrieve data from the past 5 days. Default is dt-cortex-feeds. | Optional |
+| session_id | The session id to serve as unique identifier. On it's initial use, it will retrieve data from the past 5 days. Default is dt-cortex-feeds. | Optional |
 | domain | The top level domain to query (e.g. `*.com`). | Optional |
 | after | The start of the query window in seconds, relative to the current time, inclusive. Defaults to 3600 seconds (1h). Default is -3600. | Optional |
 | before | The end of the query window in seconds, relative to the current time, inclusive. | Optional |
 | top | Limits the number of results in the response payload. Default is 50. | Optional |
+| pdns_resolutions_min | IP Hotlist/IP Risk filter: minimum number of domains seen on this IP in the last 24 hours. | Optional |
+| bad_pdns_resolutions_min | IP Hotlist/IP Risk filter: minimum number of confirmed bad domains seen on this IP in the last 24 hours. | Optional |
+| total_domains_max | IP Hotlist/IP Risk filter: exclude IPs hosting more than this many total domains (removes superhosters). | Optional |
+| third_party_threats_min | IP Hotlist/IP Risk filter: minimum number of domains confirmed with threats on external feeds. | Optional |
+| all_threats_combined_percent_min | IP Hotlist/IP Risk filter: minimum percentage of confirmed or predicted malicious domains (0-100). | Optional |
+| combined_phishing_percent_min | IP Hotlist/IP Risk filter: minimum combined phishing threat percentage (0-100). | Optional |
+| combined_malware_percent_min | IP Hotlist/IP Risk filter: minimum combined malware threat percentage (0-100). | Optional |
+| combined_spam_percent_min | IP Hotlist/IP Risk filter: minimum combined spam threat percentage (0-100). | Optional |
+| asn | IP Hotlist/IP Risk filter: filter by autonomous system number (digits only). | Optional |
+| organization | IP Hotlist/IP Risk filter: exact match organization name filter. | Optional |
+| country_code | IP Hotlist/IP Risk filter: two-letter country code to filter by geographic location. | Optional |
+| percent_phishing_min | IP Hotlist/IP Risk filter: minimum confirmed phishing percentage (0-100). | Optional |
+| percent_malware_min | IP Hotlist/IP Risk filter: minimum confirmed malware percentage (0-100). | Optional |
+| percent_spam_min | IP Hotlist/IP Risk filter: minimum confirmed spam percentage (0-100). | Optional |
+| all_threats_percent_min | IP Risk filter: minimum percentage threshold for all threat classifications combined (0-100). | Optional |
 
 #### Context Output
 
