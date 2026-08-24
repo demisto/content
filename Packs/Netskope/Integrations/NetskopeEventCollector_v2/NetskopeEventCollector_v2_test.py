@@ -331,21 +331,19 @@ async def test_get_events_command_end_time_only_builds_window(mocker):
 
 
 @pytest.mark.asyncio
-async def test_get_events_command_malformed_time_returns_error(mocker):
+async def test_get_events_command_malformed_time_raises(mocker):
     """
     Given: netskope-get-events with an unparseable start_time.
     When: Running get_events_command_async.
-    Then: return_error is called (no AttributeError from a None datetime).
+    Then: arg_to_datetime raises a ValueError (surfaced to the user), no silent AttributeError.
     """
     from NetskopeEventCollector_v2 import get_events_command_async
 
     mocker.patch("NetskopeEventCollector_v2.handle_fetch_and_send_all_events", return_value=([], 0, {}))
-    return_error_mock = mocker.patch("NetskopeEventCollector_v2.return_error", side_effect=SystemExit)
     client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=["audit"])
 
-    with pytest.raises(SystemExit):
+    with pytest.raises(ValueError):
         await get_events_command_async(client, {"start_time": "not a real date"}, {}, should_push_events=False)
-    return_error_mock.assert_called_once()
 
 
 @pytest.mark.asyncio

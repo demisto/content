@@ -691,12 +691,15 @@ async def get_events_command_async(
     # Optional manual time window: used if either start_time or end_time is given (start defaults to
     # 1 day ago, end to now). For audit this filters by insertion time (insertionstarttime/endtime).
     if args.get("start_time") or args.get("end_time"):
+        # `arg_name` makes arg_to_datetime raise a clear ValueError (surfaced to the user) on
+        # unparseable input, so the values below are always valid datetimes.
         start_arg = arg_to_datetime(args.get("start_time") or "1 day", arg_name="start_time")
         end_arg = arg_to_datetime(args.get("end_time") or "now", arg_name="end_time")
-        if not start_arg or not end_arg:  # None only for unparseable input
-            return_error("Could not parse 'start_time'/'end_time'. Use a date, a relative time (e.g. '3 days'), or a Unix epoch.")
-        start_epoch = str(int(start_arg.timestamp()))
-        end_epoch = str(int(end_arg.timestamp()))
+        start_epoch = str(int(start_arg.timestamp()))  # type: ignore[union-attr]
+        end_epoch = str(int(end_arg.timestamp()))  # type: ignore[union-attr]
+        # Validate the time window
+        if args.get("start_time") and args.get("end_time") and int(end_epoch) <= int(start_epoch):
+            return_error(f"'end_time' ({end_epoch}) must be after 'start_time' ({start_epoch}).")
         last_run = {
             event_type: {"next_fetch_start_time": start_epoch, "next_fetch_end_time": end_epoch, "failures": []}
             for event_type in client.event_types_to_fetch
