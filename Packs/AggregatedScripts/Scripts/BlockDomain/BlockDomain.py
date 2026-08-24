@@ -1,4 +1,3 @@
-import ast
 import hashlib
 import re
 from typing import Any
@@ -669,11 +668,12 @@ class PanOs:
 
     def restore_responses(self) -> None:
         """Restore the accumulated responses that were serialized to context in a previous cycle."""
-        self.responses = ast.literal_eval(demisto.context().get("panorama_responses", "[]") or "[]")
+        stored = demisto.context().get("panorama_responses", "") or ""
+        self.responses = json.loads(stored) if stored else []
 
     def save_responses(self) -> None:
         """Serialize the accumulated responses to context for the next polling cycle."""
-        demisto.setContext("panorama_responses", str(self.reduce_responses()))
+        demisto.setContext("panorama_responses", json.dumps(self.reduce_responses()))
 
     def manage_pan_os_flow(self) -> Any:  # pragma: no cover
         """Dispatch the PAN-OS flow to the correct state.
@@ -763,7 +763,7 @@ class PanOs:
             A PollResult while the commit is running, or the final result rows when finished.
         """
         rows = self.process_domains()
-        demisto.setContext("block_domain_rows", str(rows))
+        demisto.setContext("block_domain_rows", json.dumps(rows))
         # Only commit/push when a row actually mutated Panorama state. Skipping on a pure
         # Unchanged run saves a commit job + a potentially multi-minute push polling loop.
         made_changes = any(row.get("Action") in (ACTION_CREATED, ACTION_MODIFIED) for row in rows)
@@ -786,21 +786,21 @@ class PanOs:
         Returns:
             The list of BlockDomainResults rows accumulated for the run.
         """
-        rows_raw = demisto.context().get("block_domain_rows", "[]")
+        rows_raw = demisto.context().get("block_domain_rows", "") or ""
         # Preserve responses on the instance for verbose output before clearing context.
-        stored = demisto.context().get("panorama_responses", "")
+        stored = demisto.context().get("panorama_responses", "") or ""
         if stored:
             try:
-                self.responses = ast.literal_eval(stored)
-            except (ValueError, SyntaxError):
+                self.responses = json.loads(stored)
+            except (ValueError, TypeError):
                 pass
         demisto.setContext("commit_job_id", "")
         demisto.setContext("push_job_id", "")
         demisto.setContext("panorama_responses", "")
         demisto.setContext("block_domain_rows", "")
         try:
-            return ast.literal_eval(rows_raw) if rows_raw else []
-        except (ValueError, SyntaxError):
+            return json.loads(rows_raw) if rows_raw else []
+        except (ValueError, TypeError):
             return []
 
 
@@ -939,10 +939,26 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
     Returns:
         The PollResult object.
     """
+    global POLLING
     push_job_id = args["push_job_id"]
     res_push_status = run_execute_command("pan-os-push-status", {"job_id": push_job_id})
     responses.append(res_push_status)
-    push_status = res_push_status[0].get("Contents", {}).get("response", {}).get("result", {}).get("job", {}).get("status", "")
+    # When pan-os-push-status errors, Contents is a plain string instead of the nested dict.
+    # Treat as a terminal failure to avoid a `.get()` crash on a string (mirrors pan_os_commit_status).
+    raw_contents = res_push_status[0].get("Contents", {}) if res_push_status else {}
+    if is_error(res_push_status) or not isinstance(raw_contents, dict):
+        push_output = {"JobID": push_job_id, "Status": "Failure"}
+        POLLING = False
+        return PollResult(
+            response=CommandResults(
+                outputs=push_output,
+                outputs_key_field="JobID",
+                readable_output=tableToMarkdown("Push to Device Group:", push_output, ["JobID", "Status"], removeNull=True),
+            ),
+            args_for_next_run=args,
+            continue_to_poll=False,
+        )
+    push_status = raw_contents.get("response", {}).get("result", {}).get("job", {}).get("status", "")
     continue_to_poll = bool(push_status and push_status != "FIN")
     context_output = {"Status": push_status, "JobID": push_job_id}
     push_cr = CommandResults(
@@ -950,7 +966,6 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
         outputs=context_output,
         readable_output=tableToMarkdown("Push to Device Group:", context_output, ["JobID", "Status"], removeNull=True),
     )
-    global POLLING
     POLLING = continue_to_poll
     return PollResult(
         response=push_cr,

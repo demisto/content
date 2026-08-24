@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from BlockDomain import (
     ACTION_CREATED,
@@ -17,6 +19,7 @@ from BlockDomain import (
     is_valid_fqdn,
     is_wildcard,
     most_significant_action,
+    pan_os_push_status,
     validate_domains,
 )
 
@@ -659,3 +662,173 @@ def test_build_final_command_results_verbose_appends_command_hr():
     assert result.outputs == rows
     assert "a.com" in result.readable_output
     assert result.readable_output.endswith("HR-one")
+
+
+def test_pan_os_push_status_error_contents_is_terminal_failure(monkeypatch):
+    """
+    Given:
+       - pan-os-push-status returns an error entry whose Contents is a plain string
+         (PAN-OS surfaces errors as a bare string instead of the nested status dict).
+    When:
+       - Calling pan_os_push_status.
+    Then:
+       - The function does NOT crash with 'str object has no attribute get'; it stops polling
+         (POLLING flipped to False) and reports a Failure status for the job.
+    """
+    import BlockDomain
+
+    monkeypatch.setattr(
+        BlockDomain.demisto,
+        "executeCommand",
+        lambda *a, **k: [err_entry("Failed to execute pan-os-push-status. Error: job not found")],
+    )
+
+    # The @polling_function decorator unwraps the PollResult and returns its CommandResults response
+    # at runtime, though the declared return type is still PollResult (hence the type: ignore below).
+    result = pan_os_push_status({"push_job_id": "123"}, [])
+
+    assert BlockDomain.POLLING is False
+    assert result.outputs == {"JobID": "123", "Status": "Failure"}  # type: ignore[attr-defined]
+
+
+def test_pan_os_push_status_fin_stops_polling(monkeypatch):
+    """
+    Given:
+       - pan-os-push-status returns a well-formed nested dict whose job status is 'FIN'.
+    When:
+       - Calling pan_os_push_status.
+    Then:
+       - Polling stops (POLLING flipped to False) and the reported job status is 'FIN'.
+    """
+    import BlockDomain
+
+    fin_entry = {
+        "Type": 1,
+        "Contents": {"response": {"result": {"job": {"status": "FIN"}}}},
+        "HumanReadable": "",
+        "EntryContext": {},
+    }
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", lambda *a, **k: [fin_entry])
+
+    result = pan_os_push_status({"push_job_id": "456"}, [])
+
+    assert BlockDomain.POLLING is False
+    assert result.outputs == {"Status": "FIN", "JobID": "456"}  # type: ignore[attr-defined]
+
+
+def _install_fake_context(monkeypatch):
+    """Back demisto.context()/setContext() with an in-memory dict, mirroring platform behavior.
+
+    Returns the backing store so tests can inspect exactly what was serialized to context.
+    """
+    import BlockDomain
+
+    store: dict = {}
+    monkeypatch.setattr(BlockDomain.demisto, "context", lambda: dict(store))
+    monkeypatch.setattr(BlockDomain.demisto, "setContext", lambda key, value: store.__setitem__(key, value))
+    return store
+
+
+def test_save_and_restore_responses_json_round_trip(monkeypatch):
+    """
+    Given:
+       - A PanOs instance whose accumulated responses contain the realistic PAN-OS entry shape
+         (nested Contents dict, Metadata, None HumanReadable) written to context as JSON.
+    When:
+       - Calling save_responses on one polling cycle and restore_responses on the next.
+    Then:
+       - The context value is valid JSON (not a Python repr), and the responses survive the
+         json.dumps -> json.loads round-trip byte-for-byte equal to the reduced form.
+    """
+    import BlockDomain
+
+    store = _install_fake_context(monkeypatch)
+
+    pan_os = _pan_os(["evil.example.com"])
+    pan_os.responses = [
+        [
+            {
+                "Type": 1,
+                "Contents": {"response": {"result": {"job": {"status": "FIN", "id": "42"}}}},
+                "HumanReadable": None,
+                "Metadata": {"instance": "Panorama_QA", "brand": "Panorama"},
+                "EntryContext": {"dropped": "not serialized"},
+            }
+        ]
+    ]
+    expected_reduced = pan_os.reduce_responses()
+
+    pan_os.save_responses()
+
+    # Stored value must be real JSON that json.loads can parse (would fail on a Python repr).
+    stored = store["panorama_responses"]
+    assert json.loads(stored) == expected_reduced
+
+    # A fresh instance restoring from the same context recovers the reduced responses exactly.
+    fresh = _pan_os(["evil.example.com"])
+    fresh.restore_responses()
+    assert fresh.responses == expected_reduced
+
+
+def test_finish_reads_rows_and_responses_as_json_then_clears_context(monkeypatch):
+    """
+    Given:
+       - Context holds block_domain_rows and panorama_responses that were written as JSON by a
+         previous polling cycle.
+    When:
+       - Calling finish().
+    Then:
+       - The rows are parsed back from JSON and returned; the accumulated responses are restored
+         onto the instance for verbose output; and all polling context keys are cleared.
+    """
+    import BlockDomain
+
+    store = _install_fake_context(monkeypatch)
+
+    rows = [
+        {
+            "Domain": "evil.example.com",
+            "Brand": "Panorama",
+            "Instance": "Panorama_QA",
+            "Status": STATUS_DONE,
+            "Result": RESULT_SUCCESS,
+            "Action": ACTION_CREATED,
+            "RuleName": "Cortex - Block Domain",
+            "Message": "ok",
+        }
+    ]
+    responses = [[{"HumanReadable": "HR", "Contents": "ok", "Type": 1, "Metadata": None}]]
+    store["block_domain_rows"] = json.dumps(rows)
+    store["panorama_responses"] = json.dumps(responses)
+    store["commit_job_id"] = "999"
+
+    pan_os = _pan_os(["evil.example.com"])
+    result = pan_os.finish()
+
+    assert result == rows
+    assert pan_os.responses == responses
+    # All polling context keys are cleared on finish.
+    assert store["commit_job_id"] == ""
+    assert store["push_job_id"] == ""
+    assert store["panorama_responses"] == ""
+    assert store["block_domain_rows"] == ""
+
+
+def test_finish_tolerates_corrupt_context_data(monkeypatch):
+    """
+    Given:
+       - Context holds a non-JSON (corrupt) block_domain_rows value.
+    When:
+       - Calling finish().
+    Then:
+       - finish() does not raise; it degrades to an empty list and still clears context.
+    """
+    store = _install_fake_context(monkeypatch)
+    store["block_domain_rows"] = "{not valid json"
+    store["panorama_responses"] = "also not json"
+
+    pan_os = _pan_os(["evil.example.com"])
+    result = pan_os.finish()
+
+    assert result == []
+    assert store["block_domain_rows"] == ""
