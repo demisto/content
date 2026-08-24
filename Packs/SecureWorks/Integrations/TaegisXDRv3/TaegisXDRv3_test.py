@@ -5,6 +5,7 @@ from TaegisXDRv3 import (
     _format_single_comment_for_note,
     _friendly_owner_label,
     _is_valid_assignee_id,
+    _taegis_credentials_from_params,
     _taegis_is_rate_limit_error,
     _taegis_rate_limit_params_from_dict,
     _taegis_rate_limit_sleep_seconds,
@@ -715,3 +716,63 @@ def test_unarchive_investigation_command_not_currently_archived(mocker):
     result = unarchive_investigation_command(c, "https://xdr.example.com", {"id": "inv-1"})
 
     assert result.outputs["status"] == "Investigation is not currently archived"
+
+
+# --- credentials parameter (type 9) reading and normalization ---
+
+
+def test_credentials_from_params_reads_identifier_and_password():
+    params = {"credentials": {"identifier": "AAAA1111", "password": "BBBB2222"}}
+
+    assert _taegis_credentials_from_params(params) == ("AAAA1111", "BBBB2222", "")
+
+
+def test_credentials_from_params_strips_surrounding_whitespace():
+    """A stray space or newline pasted into either field must not reach HTTP Basic auth."""
+    params = {"credentials": {"identifier": "  AAAA1111 ", "password": "\tBBBB2222\n"}}
+
+    assert _taegis_credentials_from_params(params) == ("AAAA1111", "BBBB2222", "")
+
+
+def test_credentials_from_params_reports_both_missing():
+    assert _taegis_credentials_from_params({}) == ("", "", "Client ID and Client Secret")
+
+
+def test_credentials_from_params_reports_missing_secret():
+    params = {"credentials": {"identifier": "AAAA1111"}}
+
+    assert _taegis_credentials_from_params(params)[2] == "Client Secret"
+
+
+def test_credentials_from_params_reports_missing_identifier():
+    params = {"credentials": {"password": "BBBB2222"}}
+
+    assert _taegis_credentials_from_params(params)[2] == "Client ID"
+
+
+def test_credentials_from_params_treats_whitespace_only_as_missing():
+    """Whitespace-only would otherwise send Basic auth with an empty username."""
+    params = {"credentials": {"identifier": "   ", "password": "BBBB2222"}}
+
+    assert _taegis_credentials_from_params(params)[2] == "Client ID"
+
+
+def test_credentials_from_params_tolerates_absent_or_malformed_container():
+    assert _taegis_credentials_from_params({"credentials": None})[2] == "Client ID and Client Secret"
+    assert _taegis_credentials_from_params({"credentials": "not-a-dict"})[2] == "Client ID and Client Secret"
+    assert _taegis_credentials_from_params(None)[2] == "Client ID and Client Secret"
+
+
+def test_credentials_from_params_ignores_the_empty_vault_subobject():
+    """XSOAR sends a nested empty credentials object alongside the manual values; ignore it."""
+    params = {
+        "credentials": {
+            "credential": "",
+            "credentials": {"user": "", "password": "", "name": ""},
+            "identifier": "AAAA1111",
+            "password": "BBBB2222",
+            "passwordChanged": False,
+        }
+    }
+
+    assert _taegis_credentials_from_params(params) == ("AAAA1111", "BBBB2222", "")

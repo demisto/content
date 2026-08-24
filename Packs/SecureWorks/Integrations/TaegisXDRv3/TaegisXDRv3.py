@@ -24,6 +24,26 @@ def _taegis_rate_limit_params_from_dict(params):
     return bool(en), mr, bd
 
 
+def _taegis_credentials_from_params(params):
+    """Read the Client ID and Client Secret from the type 9 credentials parameter.
+
+    Both values are stripped: a stray space or newline pasted into either field is invisible
+    in the instance settings but breaks HTTP Basic auth, surfacing only as an opaque 401.
+
+    Returns a (client_id, client_secret, missing) tuple, where missing is a human-readable
+    label of whichever values are absent, or an empty string when both are present.
+    """
+    credentials = params.get("credentials") if isinstance(params, dict) else None
+    if not isinstance(credentials, dict):
+        credentials = {}
+    client_id = (credentials.get("identifier") or "").strip()
+    client_secret = (credentials.get("password") or "").strip()
+    missing = " and ".join(
+        label for label, value in (("Client ID", client_id), ("Client Secret", client_secret)) if not value
+    )
+    return client_id, client_secret, missing
+
+
 def _taegis_status_code_from_exc(exc):
     res = getattr(exc, "res", None)
     if res is not None:
@@ -4315,11 +4335,21 @@ def main():
         verify_cert = not PARAMS.get("insecure", False)
         _rl_en, _rl_mr, _rl_bd = _taegis_rate_limit_params_from_dict(PARAMS)
 
-        credentials = PARAMS.get("credentials") or {}
+        client_id, client_secret, missing_credentials = _taegis_credentials_from_params(PARAMS)
+        if missing_credentials:
+            message = (
+                f"Missing {missing_credentials}. In the instance settings, enter the Client ID as the username "
+                "and the Client Secret as the password in the **Client ID** / **Client Secret** field, or select "
+                "a stored credential."
+            )
+            if command == "test-module":
+                return_results(message)
+                return
+            raise ValueError(message)
 
         client = Client(
-            client_id=credentials.get("identifier"),
-            client_secret=credentials.get("password"),
+            client_id=client_id,
+            client_secret=client_secret,
             base_url=api_base_url,
             proxy=PARAMS.get("proxy", False),
             verify=verify_cert,
@@ -4501,8 +4531,15 @@ def main():
         error_string = str(e)
         demisto.error(f"Error running command: {e}")
 
-        if "Unauthorized" in error_string:
-            error_string = "Invalid credentials (Client ID or Client Secret)"
+        if "Unauthorized" in error_string or "Forbidden" in error_string:
+            # Keep the original error: a 401 on a malformed secret, a 403 on an under-privileged
+            # credential, and a rejected token all reach here, and they need different fixes.
+            error_string = (
+                f"{error_string}\n\nTaegis rejected the request. Verify the Client ID and Client Secret, "
+                "and confirm the credential has the Tenant Analyst role. Some Taegis operations require "
+                "privileged client credentials: "
+                "https://docs.taegis.secureworks.com/apis/api_authenticate/#create-privileged-client-credentials-optional"
+            )
         return_error(f"Failed to execute {command} command. Error: {error_string}")
 
 
