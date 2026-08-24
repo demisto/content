@@ -762,12 +762,6 @@ async def main() -> None:  # pragma: no cover
 
         command_name = demisto.command()
         demisto.debug(f"Command being called is {command_name}")
-        # TEMPORARY BUILD MARKER (XSUP-74841) - remove before merge.
-        # Lets us confirm from the tenant logs which fix build is deployed. Bump the version suffix
-        # whenever a new build is pushed to the customer so old/new builds are distinguishable.
-        demisto.info(
-            "XSUP-74841 BUILD MARKER v3: audit skips count (sequential) + get-events manual start_time/end_time window deployed"
-        )
 
         event_types_to_fetch = handle_event_types_to_fetch(params.get("event_types_to_fetch"))
         demisto.debug(f"Event types that will be fetched in this instance: {event_types_to_fetch}")
