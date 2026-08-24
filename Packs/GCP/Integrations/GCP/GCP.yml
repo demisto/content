@@ -2702,25 +2702,6 @@ script:
       required: true
     description: "Deletes the specified image. Required permission: compute.images.delete."
     name: gcp-compute-image-delete
-    outputs:
-    - contextPath: GCP.Compute.Operations.id
-      description: Unique identifier for the operation resource, defined by the server.
-      type: String
-    - contextPath: GCP.Compute.Operations.name
-      description: Name of the operation resource.
-      type: String
-    - contextPath: GCP.Compute.Operations.kind
-      description: Type of the resource, for example compute#operation.
-      type: String
-    - contextPath: GCP.Compute.Operations.operationType
-      description: Type of operation, such as insert, update, or delete.
-      type: String
-    - contextPath: GCP.Compute.Operations.status
-      description: Current status of the operation.
-      type: String
-    - contextPath: GCP.Compute.Operations.progress
-      description: Progress of the operation as a percentage between 0 and 100.
-      type: Number
 
 # gcp-compute-image-labels-set
   - arguments:

@@ -2812,8 +2812,7 @@ def gcp_compute_image_delete(creds: Credentials, args: dict[str, Any]) -> Comman
         args (dict): Command arguments including 'project_id' and 'image'.
 
     Returns:
-        CommandResults: Object containing the operation details of the delete request,
-        with `GCP.Compute.Operations` context output.
+        CommandResults: Object containing the human-readable status of the delete operation.
     """
     project_id = args.get("project_id")
     image = args.get("image")
@@ -2830,9 +2829,6 @@ def gcp_compute_image_delete(creds: Credentials, args: dict[str, Any]) -> Comman
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Compute.Operations",
-        outputs_key_field="id",
-        outputs=response,
         raw_response=response,
     )
 

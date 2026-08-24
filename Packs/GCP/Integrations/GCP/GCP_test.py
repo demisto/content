@@ -6803,7 +6803,7 @@ def test_gcp_compute_image_delete_success(mocker):
     """
     Given: A mocked GCP compute client returning an operation.
     When: gcp_compute_image_delete is called with project_id and image.
-    Then: It returns CommandResults with the GCP.Compute.Operations prefix and calls delete.
+    Then: It calls delete and returns a readable status without any context outputs.
     """
     from GCP import gcp_compute_image_delete, GCPServices
 
@@ -6818,16 +6818,17 @@ def test_gcp_compute_image_delete_success(mocker):
     result = gcp_compute_image_delete(mocker.Mock(spec=Credentials), args)
 
     mock_images.delete.assert_called_once_with(project="p1", image="img-1")
-    assert result.outputs_prefix == "GCP.Compute.Operations"
-    assert result.outputs_key_field == "id"
-    assert result.outputs == mock_response
+    assert "Delete Operation Started Successfully" in result.readable_output
+    assert result.outputs is None
+    assert result.outputs_prefix is None
+    assert result.raw_response == mock_response
 
 
-def test_gcp_compute_image_delete_operation_fields(mocker):
+def test_gcp_compute_image_delete_no_context(mocker):
     """
     Given: A mocked GCP compute client returning a partial operation.
     When: gcp_compute_image_delete is called.
-    Then: The raw operation response is returned verbatim in outputs.
+    Then: No context outputs are set (delete returns status only), and the raw response is preserved.
     """
     from GCP import gcp_compute_image_delete, GCPServices
 
@@ -6838,7 +6839,8 @@ def test_gcp_compute_image_delete_operation_fields(mocker):
 
     result = gcp_compute_image_delete(mocker.Mock(spec=Credentials), args)
 
-    assert result.outputs == {"id": "op-2"}
+    assert result.outputs is None
+    assert result.raw_response == {"id": "op-2"}
 
 
 def test_gcp_compute_image_delete_error_propagates(mocker):
