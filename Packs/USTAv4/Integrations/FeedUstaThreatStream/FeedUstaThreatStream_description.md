@@ -1,7 +1,8 @@
 ## USTAv4 Threat Stream IOC Feed
-To obtain your USTAv4 API Token go to USTAv4 > Company Settings > My Company > Integrations > API Keys.
+To obtain your USTAv4 API Token:
+1. Go to **USTAv4** > **Company Settings** > **My Company** > **Integrations** > **API Keys**.
 
-Please get in touch with USTAv4 operators if you don't have an access to API Keys section.
+Please get in touch with USTAv4 operators if you don't have access to the API Keys section.
 
 ### How to Configure The Instance
 - **Name** : Name of the instance. Feel free to choose any name you would.
