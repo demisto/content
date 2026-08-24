@@ -2117,45 +2117,47 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
 
     # Build the full instance body, then recursively strip empty elements. Note that
     # remove_empty_elements keeps False/0, so explicit boolean flags are preserved.
-    body = remove_empty_elements({
-        "name": name.lower() if name else None,
-        "description": args.get("description"),
-        "machineType": f"zones/{zone}/machineTypes/{args.get('machine_type')}",
-        "canIpForward": argToBoolean(args["can_ip_forward"]) if args.get("can_ip_forward") is not None else None,
-        "tags": {
-            "items": argToList(args.get("tags")),
-            "fingerprint": args.get("tags_fingerprint"),
-        },
-        "networkInterfaces": [
-            {
-                "network": args.get("network"),
-                "subnetwork": args.get("subnetwork"),
-                "networkIP": args.get("network_ip"),
-                "accessConfigs": [access_config],
-            }
-        ],
-        "disks": [
-            {
-                "source": args.get("disk_source"),
-                "deviceName": args.get("disk_device_name"),
-                "boot": argToBoolean(args["disk_boot"]) if args.get("disk_boot") is not None else None,
-                "autoDelete": argToBoolean(args["disk_auto_delete"]) if args.get("disk_auto_delete") is not None else None,
-                "initializeParams": {
-                    "sourceImage": args.get("source_image"),
-                    "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
-                    "diskType": args.get("disk_type"),
-                },
-            }
-        ],
-        "metadata": {"items": parse_metadata_items(metadata_items)} if metadata_items else None,
-        "serviceAccounts": [{"email": service_account_email, "scopes": argToList(service_account_scopes)}]
-        if service_account_email and service_account_scopes
-        else None,
-        "labels": parse_labels(labels) if labels else None,
-        "deletionProtection": argToBoolean(args["deletion_protection"])
-        if args.get("deletion_protection") is not None
-        else None,
-    })
+    body = remove_empty_elements(
+        {
+            "name": name.lower() if name else None,
+            "description": args.get("description"),
+            "machineType": f"zones/{zone}/machineTypes/{args.get('machine_type')}",
+            "canIpForward": argToBoolean(args["can_ip_forward"]) if args.get("can_ip_forward") is not None else None,
+            "tags": {
+                "items": argToList(args.get("tags")),
+                "fingerprint": args.get("tags_fingerprint"),
+            },
+            "networkInterfaces": [
+                {
+                    "network": args.get("network"),
+                    "subnetwork": args.get("subnetwork"),
+                    "networkIP": args.get("network_ip"),
+                    "accessConfigs": [access_config],
+                }
+            ],
+            "disks": [
+                {
+                    "source": args.get("disk_source"),
+                    "deviceName": args.get("disk_device_name"),
+                    "boot": argToBoolean(args["disk_boot"]) if args.get("disk_boot") is not None else None,
+                    "autoDelete": argToBoolean(args["disk_auto_delete"]) if args.get("disk_auto_delete") is not None else None,
+                    "initializeParams": {
+                        "sourceImage": args.get("source_image"),
+                        "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
+                        "diskType": args.get("disk_type"),
+                    },
+                }
+            ],
+            "metadata": {"items": parse_metadata_items(metadata_items)} if metadata_items else None,
+            "serviceAccounts": [{"email": service_account_email, "scopes": argToList(service_account_scopes)}]
+            if service_account_email and service_account_scopes
+            else None,
+            "labels": parse_labels(labels) if labels else None,
+            "deletionProtection": argToBoolean(args["deletion_protection"])
+            if args.get("deletion_protection") is not None
+            else None,
+        }
+    )
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.instances().insert(project=project_id, zone=zone, body=body).execute()  # pylint: disable=E1101
