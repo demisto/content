@@ -3307,7 +3307,7 @@ def taegis_push_assignee_status_command(client: Client, xdr_base_url: str, args:
         parts.append(f"Assignee = {assignee_id}")
     if status:
         parts.append(f"Status = {status}")
-    readable = "Request change confirmed. Assignee and status updated in Taegis: " + "; ".join(parts) + ". Refresh the incident to see the update reflected in XSOAR."
+    readable = "Request change confirmed. Assignee and status updated in Taegis: " + "; ".join(parts) + ". Refresh the incident to see the update reflected in Cortex XSOAR."
     return CommandResults(
         readable_output=readable,
         outputs_prefix="TaegisXDR.PushAssigneeStatus",

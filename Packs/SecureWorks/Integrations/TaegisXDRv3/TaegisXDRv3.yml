@@ -82,7 +82,7 @@ configuration:
   required: false
   type: 0
   defaultvalue: Sophos, Secureworks, @secureworks
-  additionalinfo: 'EXCLUSION LIST: Comma-separated assignee emails, display names, or assignee IDs (e.g. user@domain.com, Sophos, auth0|xxx). Investigations assigned to any matching assignee are EXCLUDED (no XSOAR incident). Match is by email, name, or assignee_id. If a team name (e.g. Sophos) does not match, check debug logs for assignee_id and add that ID to this list. Leave empty to fetch all.'
+  additionalinfo: 'EXCLUSION LIST: Comma-separated assignee emails, display names, or assignee IDs (e.g. user@domain.com, Sophos, auth0|xxx). Investigations assigned to any matching assignee are EXCLUDED (no Cortex XSOAR incident). Match is by email, name, or assignee_id. If a team name (e.g. Sophos) does not match, check debug logs for assignee_id and add that ID to this list. Leave empty to fetch all.'
 - display: Incident Mirroring Direction
   name: mirror_direction
   options:
@@ -110,7 +110,7 @@ configuration:
   additionalinfo: Choose the tag to add to an entry to mirror it as a comment from Taegis XDR.
 - section: Collect
   advanced: true
-  display: Close XSOAR incident when Taegis investigation is closed
+  display: Close Cortex XSOAR incident when Taegis investigation is closed
   name: close_incident
   defaultvalue: 'true'
   type: 8
@@ -123,7 +123,7 @@ configuration:
   defaultvalue: 'true'
   type: 8
   required: false
-  additionalinfo: When enabled, setting Taegis XDR Case Status (taegisxdrcasestatus) to a closed value (e.g. CLOSED_INCONCLUSIVE) will close the investigation in Taegis via the closeInvestigation mutation (with reason). XSOAR incident status is not used to close Taegis.
+  additionalinfo: When enabled, setting Taegis XDR Case Status (taegisxdrcasestatus) to a closed value (e.g. CLOSED_INCONCLUSIVE) will close the investigation in Taegis via the closeInvestigation mutation (with reason). Cortex XSOAR incident status is not used to close Taegis.
 - section: Collect
   advanced: true
   display: How many investigations to mirror incoming each time
@@ -142,12 +142,12 @@ configuration:
   additionalinfo: Field used to determine when an investigation was last updated for mirroring. Default is updated_at. The investigationsSearch GraphQL API uses the Investigation type with snake_case (updated_at). Taegis v2 docs may show updatedAt for investigationV2/investigationsV2; use updated_at for investigationsSearch.
 - section: Collect
   advanced: true
-  display: XSOAR Taegis XDR Key Findings is master
+  display: Cortex XSOAR Taegis XDR Key Findings is master
   name: details_master_xsoar
   defaultvalue: 'false'
   type: 8
   required: false
-  additionalinfo: When enabled, XSOAR "Taegis XDR Key Findings" (taegisxdrkeyfindings) is always pushed to Taegis Key Findings on every update (XSOAR is master). When disabled (default), Key Findings are only pushed when the user explicitly changes that field in XSOAR, so Taegis edits are not overwritten (bidirectional-friendly).
+  additionalinfo: When enabled, Cortex XSOAR "Taegis XDR Key Findings" (taegisxdrkeyfindings) is always pushed to Taegis Key Findings on every update (Cortex XSOAR is master). When disabled (default), Key Findings are only pushed when the user explicitly changes that field in Cortex XSOAR, so Taegis edits are not overwritten (bidirectional-friendly).
 - section: Collect
   advanced: true
   display: Assign case to Sophos MDR team after comment
@@ -171,7 +171,7 @@ configuration:
   defaultvalue: 'false'
   type: 8
   required: false
-  additionalinfo: When enabled, reopening a closed XSOAR incident will automatically unarchive the associated Taegis XDR case before setting it back to ACTIVE. When disabled (default), archived cases cannot be reopened via XSOAR; the case must be unarchived manually in Taegis XDR first.
+  additionalinfo: When enabled, reopening a closed Cortex XSOAR incident will automatically unarchive the associated Taegis XDR case before setting it back to ACTIVE. When disabled (default), archived cases cannot be reopened via Cortex XSOAR; the case must be unarchived manually in Taegis XDR first.
 - section: Collect
   advanced: true
   display: Retry on Taegis API rate limit (429)
@@ -538,24 +538,24 @@ script:
     description: Close an investigation via closeInvestigation mutation.
     name: taegis-close-investigation
   - arguments:
-    - description: Last update timestamp - automatically provided by XSOAR.
+    - description: Last update timestamp - automatically provided by Cortex XSOAR.
       name: lastUpdate
       required: false
-    description: Get modified remote data for mirroring optimization (automatically called by XSOAR).
+    description: Get modified remote data for mirroring optimization (automatically called by Cortex XSOAR).
     name: get-modified-remote-data
   - arguments:
-    - description: Investigation ID (remoteId) - required for manual calls, automatically provided by XSOAR.
+    - description: Investigation ID (remoteId) - required for manual calls, automatically provided by Cortex XSOAR.
       name: id
       required: false
-    - description: Last update timestamp - automatically provided by XSOAR.
+    - description: Last update timestamp - automatically provided by Cortex XSOAR.
       name: lastUpdate
       required: false
     - description: Tenant ID.
       name: tenant_id
       required: false
-    description: Get remote data for mirroring (automatically called by XSOAR).
+    description: Get remote data for mirroring (automatically called by Cortex XSOAR).
     name: get-remote-data
-  - description: Update remote system for mirroring (automatically called by XSOAR).
+  - description: Update remote system for mirroring (automatically called by Cortex XSOAR).
     name: update-remote-system
   - description: Get mapping fields for schema selection (required for mappable integrations).
     name: get-mapping-fields

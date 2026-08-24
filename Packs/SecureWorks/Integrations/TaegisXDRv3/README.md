@@ -1,7 +1,7 @@
 For integration with the Secureworks Taegis XDR platform.
+This integration was integrated and tested with version xx of TaegisXDRv3.
 
 ## Configure Taegis XDR v3 in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -43,7 +43,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### taegis-fetch-investigation
 
 ***
-Fetch a specific investigation or list of investigations
+Fetch a specific investigation or list of investigations.
 
 #### Base Command
 
@@ -53,8 +53,8 @@ Fetch a specific investigation or list of investigations
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID. | Required | 
-| tenant_id | Tenant ID. | Optional | 
+| id | Investigation ID. | Required |
+| tenant_id | Tenant ID. | Optional |
 
 #### Context Output
 
@@ -63,7 +63,7 @@ There is no context output for this command.
 ### taegis-fetch-comments
 
 ***
-Fetch comments by Investigation ID
+Fetch comments by Investigation ID.
 
 #### Base Command
 
@@ -73,8 +73,8 @@ Fetch comments by Investigation ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID. | Required | 
-| tenant_id | Tenant ID. | Optional | 
+| id | Investigation ID. | Required |
+| tenant_id | Tenant ID. | Optional |
 
 #### Context Output
 
@@ -83,7 +83,7 @@ There is no context output for this command.
 ### taegis-create-comment
 
 ***
-Create a comment on an investigation
+Create a comment on an investigation.
 
 #### Base Command
 
@@ -93,9 +93,350 @@ Create a comment on an investigation
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID. | Required | 
-| comment | Comment text. | Required | 
-| tenant_id | Tenant ID. | Optional | 
+| id | Investigation ID. | Required |
+| comment | Comment text. | Required |
+| tenant_id | Tenant ID. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-update-comment
+
+***
+Update an existing comment.
+
+#### Base Command
+
+`taegis-update-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Comment ID. | Required |
+| comment | New comment text. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-fetch-comment
+
+***
+Fetch a specific comment by ID.
+
+#### Base Command
+
+`taegis-fetch-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Comment ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-add-evidence-to-investigation
+
+***
+Add evidence (alerts, events, or a CQL alert query) to an investigation. At least one of alerts, events, or alert_query is required.
+
+#### Base Command
+
+`taegis-add-evidence-to-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Investigation ID. | Required |
+| alerts | Comma-separated alert IDs to add as evidence. | Optional |
+| events | Comma-separated event IDs to add as evidence. | Optional |
+| alert_query | CQL query selecting alerts to add as evidence. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-create-investigation
+
+***
+Create a new investigation.
+
+#### Base Command
+
+`taegis-create-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| title | Investigation title. | Required |
+| priority | Investigation priority (1-4). | Optional |
+| status | Investigation status. Possible values are: OPEN, ACTIVE, AWAITING_ACTION, SUSPENDED, CLOSED_AUTHORIZED_ACTIVITY, CLOSED_CONFIRMED_SECURITY_INCIDENT, CLOSED_FALSE_POSITIVE_ALERT, CLOSED_INCONCLUSIVE, CLOSED_INFORMATIONAL, CLOSED_NOT_VULNERABLE, CLOSED_THREAT_MITIGATED. | Optional |
+| alerts | Comma-separated alert IDs to associate with the new investigation. | Optional |
+| key_findings | Key findings. | Optional |
+| type | Investigation type. Possible values are: SECURITY_INVESTIGATION, INCIDENT_RESPONSE, THREAT_HUNT, MANAGED_XDR_THREAT_HUNT, CTU_THREAT_HUNT, MANAGED_XDR_ELITE_THREAT_HUNT, SECUREWORKS_INCIDENT_RESPONSE. | Optional |
+| assignee_id | Assignee to set on the new investigation. Use @customer, @secureworks, auth0\|..., or a tenant user UUID. | Optional |
+| tags | Comma-separated tags. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-create-sharelink
+
+***
+Create a ShareLink to an investigation, alert, or other Taegis object.
+
+#### Base Command
+
+`taegis-create-sharelink`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the investigation, alert, or other object to create a ShareLink for. | Required |
+| type | Type of object the ShareLink points to. Possible values are: alertId, connectorId, connectionId, endpointDetails, eventId, investigationId, queryId, playbookTemplateId, playbookInstanceId, playbookExecutionId. | Required |
+| tenant_id | Tenant ID. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-execute-playbook
+
+***
+Execute a Taegis playbook instance.
+
+#### Base Command
+
+`taegis-execute-playbook`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Playbook instance ID to execute. | Required |
+| inputs | JSON object of optional playbook inputs. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-fetch-alerts
+
+***
+Fetch alerts by CQL query or by specific alert IDs.
+
+#### Base Command
+
+`taegis-fetch-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cql_query | CQL query selecting alerts. Ignored if ids is provided. | Optional |
+| limit | Maximum number of alerts to return. | Optional |
+| offset | Pagination offset. | Optional |
+| ids | Comma-separated specific alert IDs to fetch (e.g. alert://id1,alert://id2). Overrides cql_query. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-fetch-assets
+
+***
+Search Taegis assets.
+
+#### Base Command
+
+`taegis-fetch-assets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | Page number (0-based). | Optional |
+| page_size | Number of assets to return per page. | Optional |
+| endpoint_type | Filter by endpoint type. | Optional |
+| host_id | Filter by host ID. | Optional |
+| hostname | Filter by hostname. | Optional |
+| investigation_id | Filter by investigation ID. | Optional |
+| ip_address | Filter by IP address. | Optional |
+| mac_address | Filter by MAC address. | Optional |
+| os_family | Filter by OS family. | Optional |
+| os_version | Filter by OS version. | Optional |
+| sensor_version | Filter by sensor version. | Optional |
+| username | Filter by username. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-fetch-endpoint
+
+***
+Fetch endpoint isolation status and health information for an asset.
+
+#### Base Command
+
+`taegis-fetch-endpoint`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Asset/host ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-fetch-investigation-alerts
+
+***
+Fetch alerts associated with an investigation.
+
+#### Base Command
+
+`taegis-fetch-investigation-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Investigation ID. | Required |
+| page | Page number (0-based). | Optional |
+| page_size | Number of alerts to return per page. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-fetch-playbook-execution
+
+***
+Fetch a playbook execution by ID.
+
+#### Base Command
+
+`taegis-fetch-playbook-execution`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Playbook execution ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-fetch-users
+
+***
+Fetch Taegis tenant users by ID or by search filters.
+
+#### Base Command
+
+`taegis-fetch-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Taegis user ID in 'auth0\|...' format. If provided, other filters are ignored. | Optional |
+| email | Filter by email address. | Optional |
+| status | Filter by user status. | Optional |
+| page | Page number (0-based). | Optional |
+| page_size | Number of users to return per page. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-isolate-asset
+
+***
+Isolate an asset/endpoint in Taegis.
+
+#### Base Command
+
+`taegis-isolate-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Asset ID to isolate. | Required |
+| reason | Reason for isolating the asset. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-update-alert-status
+
+***
+Update the resolution status of one or more alerts.
+
+#### Base Command
+
+`taegis-update-alert-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | Comma-separated alert IDs. | Required |
+| status | New resolution status for the alert(s). Possible values are: FALSE_POSITIVE, NOT_ACTIONABLE, OPEN, TRUE_POSITIVE_BENIGN, TRUE_POSITIVE_MALICIOUS, OTHER, SUPPRESSED. | Required |
+| reason | Reason for the status change. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-archive-investigation
+
+***
+Archive an investigation.
+
+#### Base Command
+
+`taegis-archive-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Investigation ID. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### taegis-unarchive-investigation
+
+***
+Unarchive a previously archived investigation.
+
+#### Base Command
+
+`taegis-unarchive-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Investigation ID. | Required |
 
 #### Context Output
 
@@ -104,7 +445,7 @@ There is no context output for this command.
 ### taegis-update-investigation
 
 ***
-Update an investigation
+Update an investigation.
 
 #### Base Command
 
@@ -114,11 +455,11 @@ Update an investigation
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID. | Required | 
-| status | Investigation status. | Optional | 
-| priority | Investigation priority (1-4). | Optional | 
-| keyFindings | Key findings. | Optional | 
-| tenant_id | Tenant ID. | Optional | 
+| id | Investigation ID. | Required |
+| status | Investigation status. | Optional |
+| priority | Investigation priority (1-4). | Optional |
+| key_findings | Key findings. | Optional |
+| tenant_id | Tenant ID. | Optional |
 
 #### Context Output
 
@@ -137,10 +478,10 @@ Push assignee and/or case status to Taegis. Run from an incident; use the form t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID (optional; defaults to current incident dbotMirrorId). | Optional | 
-| tenant_id | Tenant ID (optional; from incident if not set). | Optional | 
-| assignee_id | Assignee to set in Taegis. Use @customer, @secureworks, or assignee display name (e.g. Sam Johnson). Optional when run from layout button; if omitted, uses current incident assignee. | Optional | 
-| status | Open status to set in Taegis (ACTIVE, AWAITING_ACTION, OPEN, SUSPENDED). Optional when run from layout button; if omitted, uses current incident status. Possible values are: ACTIVE, AWAITING_ACTION, OPEN, SUSPENDED. | Optional | 
+| id | Investigation ID (optional; defaults to current incident dbotMirrorId). | Optional |
+| tenant_id | Tenant ID (optional; from incident if not set). | Optional |
+| assignee_id | Assignee to set in Taegis. Use @customer, @secureworks, or assignee display name (e.g. Sam Johnson). Optional when run from layout button; if omitted, uses current incident assignee. | Optional |
+| status | Open status to set in Taegis (ACTIVE, AWAITING_ACTION, OPEN, SUSPENDED). Optional when run from layout button; if omitted, uses current incident status. Possible values are: ACTIVE, AWAITING_ACTION, OPEN, SUSPENDED. | Optional |
 
 #### Context Output
 
@@ -149,7 +490,7 @@ There is no context output for this command.
 ### taegis-close-investigation
 
 ***
-Close an investigation via closeInvestigation mutation
+Close an investigation via closeInvestigation mutation.
 
 #### Base Command
 
@@ -159,12 +500,12 @@ Close an investigation via closeInvestigation mutation
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID. | Required | 
-| status | Close status (e.g. CLOSED_INCONCLUSIVE, CLOSED_INFORMATIONAL). | Required | 
-| reason | Close reason / notes (default Closed from Cortex XSOAR). | Optional | 
-| alertsResolutionStatus | Alerts resolution status (e.g. TRUE_POSITIVE_BENIGN). | Optional | 
-| taegisxdrdetectionstatus | Taegis XDR detection status (same as alertsResolutionStatus; e.g. TRUE_POSITIVE_BENIGN). | Optional | 
-| tenant_id | Tenant ID. | Optional | 
+| id | Investigation ID. | Required |
+| status | Close status (e.g. CLOSED_INCONCLUSIVE, CLOSED_INFORMATIONAL). | Required |
+| reason | Close reason / notes (default Closed from Cortex XSOAR). | Optional |
+| alerts_resolution_status | Alerts resolution status (e.g. TRUE_POSITIVE_BENIGN). | Optional |
+| taegisxdrdetectionstatus | Taegis XDR detection status (same as alertsResolutionStatus; e.g. TRUE_POSITIVE_BENIGN). | Optional |
+| tenant_id | Tenant ID. | Optional |
 
 #### Context Output
 
@@ -173,7 +514,7 @@ There is no context output for this command.
 ### get-modified-remote-data
 
 ***
-Get modified remote data for mirroring optimization (automatically called by Cortex XSOAR)
+Get modified remote data for mirroring optimization (automatically called by Cortex XSOAR).
 
 #### Base Command
 
@@ -183,7 +524,7 @@ Get modified remote data for mirroring optimization (automatically called by Cor
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| lastUpdate | Last update timestamp - automatically provided by Cortex XSOAR. | Optional | 
+| lastUpdate | Last update timestamp - automatically provided by Cortex XSOAR. | Optional |
 
 #### Context Output
 
@@ -192,7 +533,7 @@ There is no context output for this command.
 ### get-remote-data
 
 ***
-Get remote data for mirroring (automatically called by Cortex XSOAR)
+Get remote data for mirroring (automatically called by Cortex XSOAR).
 
 #### Base Command
 
@@ -202,9 +543,9 @@ Get remote data for mirroring (automatically called by Cortex XSOAR)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID (remoteId) - required for manual calls, automatically provided by Cortex XSOAR. | Optional | 
-| lastUpdate | Last update timestamp - automatically provided by Cortex XSOAR. | Optional | 
-| tenant_id | Tenant ID. | Optional | 
+| id | Investigation ID (remoteId) - required for manual calls, automatically provided by Cortex XSOAR. | Optional |
+| lastUpdate | Last update timestamp - automatically provided by Cortex XSOAR. | Optional |
+| tenant_id | Tenant ID. | Optional |
 
 #### Context Output
 
@@ -213,7 +554,7 @@ There is no context output for this command.
 ### update-remote-system
 
 ***
-Update remote system for mirroring (automatically called by Cortex XSOAR)
+Update remote system for mirroring (automatically called by Cortex XSOAR).
 
 #### Base Command
 
@@ -230,7 +571,7 @@ There is no context output for this command.
 ### get-mapping-fields
 
 ***
-Get mapping fields for schema selection (required for mappable integrations)
+Get mapping fields for schema selection (required for mappable integrations).
 
 #### Base Command
 
@@ -247,7 +588,7 @@ There is no context output for this command.
 ### taegis-update-remote-system
 
 ***
-Manually test update remote system for mirroring
+Manually test update remote system for mirroring.
 
 #### Base Command
 
@@ -257,9 +598,9 @@ Manually test update remote system for mirroring
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| remoteId | Investigation ID (remoteId). | Required | 
-| data | Incident data changes (JSON format). | Optional | 
-| tenant_id | Tenant ID. | Optional | 
+| remoteId | Investigation ID (remoteId). | Required |
+| data | Incident data changes (JSON format). | Optional |
+| tenant_id | Tenant ID. | Optional |
 
 #### Context Output
 
@@ -268,7 +609,7 @@ There is no context output for this command.
 ### taegis-get-remote-data
 
 ***
-Manually test get remote data for mirroring
+Manually test get remote data for mirroring.
 
 #### Base Command
 
@@ -278,8 +619,8 @@ Manually test get remote data for mirroring
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Investigation ID. | Required | 
-| tenant_id | Tenant ID. | Optional | 
+| id | Investigation ID. | Required |
+| tenant_id | Tenant ID. | Optional |
 
 #### Context Output
 
@@ -287,7 +628,7 @@ There is no context output for this command.
 
 ## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and Taegis XDR corresponding events (available from Cortex XSOAR version 6.0.0).
+You can enable incident mirroring between Cortex XSOAR incidents and Taegis XDR v3 corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
 
 1. Enable *Fetching incidents* in your instance configuration.
@@ -296,13 +637,13 @@ To set up the mirroring:
     | **Option** | **Description** |
     | --- | --- |
     | None | Turns off incident mirroring. |
-    | Incoming | Any changes in Taegis XDR events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Taegis XDR events (outgoing mirrored fields). |
-    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Taegis XDR events will be reflected in both directions. |
+    | Incoming | Any changes in Taegis XDR v3 events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Taegis XDR v3 events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Taegis XDR v3 events will be reflected in both directions. |
 
 3. Optional: You can go to the mirroring tags parameter and select the tags used to mark incident entries to be mirrored. Available tags are: Comment Entry Tag To Taegis.
-4. Optional: Check the *Close Mirrored Cortex XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Taegis XDR.
-5. Optional: Check the *Close Mirrored Taegis XDR event* integration parameter to close them when the corresponding Cortex XSOAR incident is closed.
+4. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in Taegis XDR v3.
+5. Optional: Check the *Close Mirrored Taegis XDR v3 event* integration parameter to close them when the corresponding Cortex XSOAR incident is closed.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Taegis XDR.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Taegis XDR v3.
