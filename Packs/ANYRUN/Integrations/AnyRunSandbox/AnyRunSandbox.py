@@ -395,6 +395,7 @@ def main():  # pragma: no cover
         elif demisto.command() == "anyrun-detonate-file-android":
             detonate_file_android(params, args)
         elif demisto.command() == "anyrun-detonate-url-android":
+            args.pop("obj_ext_browser", None)
             detonate_url_android(params, args)
         elif demisto.command() == "anyrun-get-analysis-report":
             get_analysis_report(params, args)
