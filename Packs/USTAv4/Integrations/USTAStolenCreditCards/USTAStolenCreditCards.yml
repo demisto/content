@@ -50,6 +50,12 @@ configuration:
   type: 8
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  section: Collect
+  advanced: true
 - display: Incident type
   name: incidentType
   type: 13
