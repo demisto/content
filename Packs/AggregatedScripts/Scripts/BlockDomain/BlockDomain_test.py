@@ -1,6 +1,8 @@
 import json
 
 import pytest
+
+import BlockDomain
 from BlockDomain import (
     ACTION_CREATED,
     ACTION_MODIFIED,
@@ -222,8 +224,6 @@ def _pan_os(domains):
 
 def _mock_execute(monkeypatch, side_effect):
     """Patch BlockDomain.demisto.executeCommand to yield the given responses in order."""
-    import BlockDomain
-
     responses = iter(side_effect)
     monkeypatch.setattr(BlockDomain.demisto, "executeCommand", lambda *a, **k: next(responses))
 
@@ -271,8 +271,6 @@ def test_start_flow_skips_commit_when_all_actions_unchanged(monkeypatch):
        - pan_os_commit is never invoked; start_flow returns the Unchanged rows directly
          (skipping the multi-minute commit + push polling cycle on Panorama).
     """
-    import BlockDomain
-
     calls: list = []
 
     def _capture(name, args):
@@ -321,8 +319,6 @@ def test_start_flow_commits_when_at_least_one_row_modified(monkeypatch):
     Then:
        - pan_os_commit is invoked (candidate config was modified and must be pushed).
     """
-    import BlockDomain
-
     commit_called: list = []
 
     def _fake_commit(args, responses):
@@ -414,8 +410,6 @@ def test_process_domains_missing_group_created_lazily_with_first_object(monkeypa
             "pan-os-create-address-group": [ok_entry()],
         }
         return seq.get(name, [ok_entry()])
-
-    import BlockDomain
 
     monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
 
@@ -550,7 +544,8 @@ def test_process_domains_failure_marks_row_failed(monkeypatch):
     When:
        - Calling process_domains.
     Then:
-       - The resulting row is Failed / Failed and the error message from PAN-OS is surfaced.
+       - The resulting row is Failed / Failed and the error message from PAN-OS is surfaced,
+         and the full traceback is logged via demisto.error.
     """
     _mock_execute(
         monkeypatch,
@@ -561,10 +556,15 @@ def test_process_domains_failure_marks_row_failed(monkeypatch):
             [err_entry("permission denied")],
         ],
     )
+    # Capture the traceback log so it does not leak to stdout (conftest fails on any stdout).
+    errors: list = []
+    monkeypatch.setattr(BlockDomain.demisto, "error", lambda msg: errors.append(msg))
+
     rows = _pan_os(["evil.example.com"]).process_domains()
     assert rows[0]["Status"] == STATUS_FAILED
     assert rows[0]["Result"] == RESULT_FAILED
     assert "permission denied" in rows[0]["Message"]
+    assert any("process_domains failed" in msg for msg in errors)
 
 
 def test_build_verbose_human_readable_joins_with_blank_lines():
@@ -608,7 +608,7 @@ def test_build_final_command_results_non_verbose_is_table_only():
     When:
        - Calling build_final_command_results.
     Then:
-       - The returned CommandResults uses the BlockDomainResults context prefix, exposes the
+       - The returned CommandResults uses the BlockDomain context prefix, exposes the
          rows unchanged as outputs, renders the summary table containing the domain, and does
          NOT append any of the per-command verbose HR blocks.
     """
@@ -627,7 +627,7 @@ def test_build_final_command_results_non_verbose_is_table_only():
     responses = [[{"Type": 1, "Contents": "c", "HumanReadable": "HR", "EntryContext": {}}]]
 
     result = build_final_command_results(rows, verbose=False, responses=responses)
-    assert result.outputs_prefix == "BlockDomainResults"
+    assert result.outputs_prefix == "BlockDomain"
     assert result.outputs == rows
     assert "a.com" in result.readable_output
     assert "HR" not in result.readable_output
@@ -675,8 +675,6 @@ def test_pan_os_push_status_error_contents_is_terminal_failure(monkeypatch):
        - The function does NOT crash with 'str object has no attribute get'; it stops polling
          (POLLING flipped to False) and reports a Failure status for the job.
     """
-    import BlockDomain
-
     monkeypatch.setattr(
         BlockDomain.demisto,
         "executeCommand",
@@ -700,8 +698,6 @@ def test_pan_os_push_status_fin_stops_polling(monkeypatch):
     Then:
        - Polling stops (POLLING flipped to False) and the reported job status is 'FIN'.
     """
-    import BlockDomain
-
     fin_entry = {
         "Type": 1,
         "Contents": {"response": {"result": {"job": {"status": "FIN"}}}},
@@ -721,8 +717,6 @@ def _install_fake_context(monkeypatch):
 
     Returns the backing store so tests can inspect exactly what was serialized to context.
     """
-    import BlockDomain
-
     store: dict = {}
     monkeypatch.setattr(BlockDomain.demisto, "context", lambda: dict(store))
     monkeypatch.setattr(BlockDomain.demisto, "setContext", lambda key, value: store.__setitem__(key, value))
@@ -740,8 +734,6 @@ def test_save_and_restore_responses_json_round_trip(monkeypatch):
        - The context value is valid JSON (not a Python repr), and the responses survive the
          json.dumps -> json.loads round-trip byte-for-byte equal to the reduced form.
     """
-    import BlockDomain
-
     store = _install_fake_context(monkeypatch)
 
     pan_os = _pan_os(["evil.example.com"])
@@ -781,8 +773,6 @@ def test_finish_reads_rows_and_responses_as_json_then_clears_context(monkeypatch
        - The rows are parsed back from JSON and returned; the accumulated responses are restored
          onto the instance for verbose output; and all polling context keys are cleared.
     """
-    import BlockDomain
-
     store = _install_fake_context(monkeypatch)
 
     rows = [

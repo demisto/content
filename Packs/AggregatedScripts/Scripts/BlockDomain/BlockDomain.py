@@ -113,7 +113,7 @@ def build_result_row(
     instance: str = "",
     rule_name: str = "",
 ) -> dict:
-    """Assemble a single BlockDomainResults row.
+    """Assemble a single BlockDomain row.
 
     Args:
         domain (str): The processed domain.
@@ -264,12 +264,12 @@ def build_verbose_human_readable(responses: list) -> str:
 def build_final_command_results(rows: list, verbose: bool, responses: list) -> CommandResults:
     """Build the single final CommandResults for the run.
 
-    The CommandResults carries the aggregated BlockDomainResults context and a markdown summary table.
+    The CommandResults carries the aggregated BlockDomain context and a markdown summary table.
     When verbose is True, the per-command human-readable outputs are appended to the same readable
     output (blank-line separated), mirroring the ExpirePassword aggregated script.
 
     Args:
-        rows (list): The aggregated BlockDomainResults rows.
+        rows (list): The aggregated BlockDomain rows.
         verbose (bool): Whether to append per-command human-readable output.
         responses (list): The accumulated command responses (used only when verbose).
     Returns:
@@ -284,7 +284,7 @@ def build_final_command_results(rows: list, verbose: bool, responses: list) -> C
     if verbose:
         readable_output += build_verbose_human_readable(responses)
     return CommandResults(
-        outputs_prefix="BlockDomainResults",
+        outputs_prefix="BlockDomain",
         outputs_key_field=["Domain", "Brand", "Instance"],
         outputs=rows,
         readable_output=readable_output,
@@ -308,7 +308,7 @@ class PanOs:
     significant change.
     """
 
-    def __init__(self, args: dict):
+    def __init__(self, args: dict) -> None:
         """Initialize the PanOs flow.
 
         Args:
@@ -569,7 +569,7 @@ class PanOs:
         """Ensure the group and rule once, then loop over domains adding each object.
 
         Returns:
-            The list of BlockDomainResults rows for the processed domains.
+            The list of BlockDomain rows for the processed domains.
         """
         rows: list = []
         try:
@@ -618,6 +618,7 @@ class PanOs:
                     )
                 )
         except Exception as ex:
+            demisto.error(f"{LOG_TAG} process_domains failed: {traceback.format_exc()}")
             for domain in self.domains:
                 rows.append(
                     build_result_row(
@@ -784,7 +785,7 @@ class PanOs:
         instance so the caller can build verbose output before they are cleared from context.
 
         Returns:
-            The list of BlockDomainResults rows accumulated for the run.
+            The list of BlockDomain rows accumulated for the run.
         """
         rows_raw = demisto.context().get("block_domain_rows", "") or ""
         # Preserve responses on the instance for verbose output before clearing context.
@@ -792,8 +793,8 @@ class PanOs:
         if stored:
             try:
                 self.responses = json.loads(stored)
-            except (ValueError, TypeError):
-                pass
+            except (ValueError, TypeError) as err:
+                demisto.debug(f"{LOG_TAG} Could not parse stored responses from context; ignoring. Error: {err}")
         demisto.setContext("commit_job_id", "")
         demisto.setContext("push_job_id", "")
         demisto.setContext("panorama_responses", "")
@@ -977,7 +978,7 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
 """ MAIN FUNCTION """
 
 
-def main():  # pragma: no cover
+def main() -> None:  # pragma: no cover
     try:
         args = demisto.args()
         demisto.debug(f"{LOG_TAG} block-domain invoked with {args=}")
@@ -1059,6 +1060,7 @@ def main():  # pragma: no cover
         return_results(build_final_command_results(results, verbose, command_responses))
 
     except Exception as ex:
+        demisto.error(f"{LOG_TAG} block-domain failed: {traceback.format_exc()}")
         return_error(f"Failed to execute block-domain. Error: {ex!s}")
 
 
