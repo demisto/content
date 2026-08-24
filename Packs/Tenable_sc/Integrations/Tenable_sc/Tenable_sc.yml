@@ -63,6 +63,16 @@ configuration:
   required: false
   type: 19
   section: Collect
+- display: Fetch assets and vulnerabilities
+  name: isFetchAssets
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
+  - exposure_management
 - additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 12 hours. Interval lower then 1 hour is not supported.
   defaultvalue: '720'
   display: Assets fetch interval in minutes.
@@ -73,6 +83,9 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+  supportedModules:
+  - xsiam
+  - exposure_management
 description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous assessment of your security posture so you can find and fix vulnerabilities faster.
 display: Tenable.sc
 name: Tenable.sc
