@@ -12,6 +12,13 @@ from googleapiclient.errors import HttpError
 
 urllib3.disable_warnings()
 
+# Placeholder resource used by the Cloud Functions connectivity probe. That API exposes
+# testIamPermissions only at function scope, and returns an empty permission set (rather than
+# NOT_FOUND) for a resource that does not exist, so no real function has to be present.
+# A concrete location is used rather than the "-" wildcard, which is only accepted by list methods.
+CLOUD_FUNCTIONS_PROBE_LOCATION = "us-central1"
+CLOUD_FUNCTIONS_PROBE_FUNCTION = "connectivity-probe"
+
 
 def build_http_client(use_proxy: bool, verify_ssl: bool) -> httplib2.Http:
     """Builds an httplib2.Http honoring the given proxy and SSL settings.
@@ -72,6 +79,7 @@ class GCPServices(Enum):
     CONTAINER = ("container", "v1", "container.googleapis.com")
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
     BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
+    CLOUD_FUNCTIONS = ("cloudfunctions", "v2", "cloudfunctions.googleapis.com")
 
     # The following services are currently unsupported:
     # IAM_V1 = ("iam", "v1", "iam.googleapis.com")
@@ -138,11 +146,11 @@ class GCPServices(Enum):
     def test_connectivity(self, credentials, project_id: str) -> None:
         """Issues a lightweight, project-scoped API call to verify connectivity to this service.
 
-        Resource Manager uses ``testIamPermissions``, which succeeds for any authenticated
-        caller regardless of the roles granted (it returns the subset of granted permissions),
-        making it a permission-agnostic probe. The other services do not expose a project-level
-        ``testIamPermissions``, so a minimal ``list`` call is used instead. Each service exposes
-        the call on a different resource, so the correct shape is selected per service.
+        Resource Manager and Cloud Functions use ``testIamPermissions``, which succeeds for any
+        authenticated caller regardless of the roles granted (it returns the subset of granted
+        permissions), making it a permission-agnostic probe. The remaining services do not expose
+        ``testIamPermissions`` at all, so a minimal ``list`` call is used instead. Each service
+        exposes the call on a different resource, so the correct shape is selected per service.
 
         The call is allowed to raise so callers can inspect the error (e.g. distinguish a
         disabled-API 403 from a real failure). Use ``test_all_services`` for a non-raising,
@@ -175,6 +183,18 @@ class GCPServices(Enum):
         elif self == GCPServices.BIGQUERY:
             # BigQuery has no project-level testIamPermissions; a lightweight dataset list verifies connectivity.
             client.datasets().list(projectId=project_id, maxResults=1).execute()  # pylint: disable=E1101
+        elif self == GCPServices.CLOUD_FUNCTIONS:
+            # Cloud Functions exposes testIamPermissions only at function scope (the API requires a
+            # resource matching projects/*/locations/*/functions/*), so a placeholder function is used.
+            # Per the API contract a non-existent resource returns an empty permission set rather than
+            # NOT_FOUND, which keeps this probe permission-agnostic like the Resource Manager one.
+            client.projects().locations().functions().testIamPermissions(  # pylint: disable=E1101
+                resource=(
+                    f"projects/{project_id}/locations/{CLOUD_FUNCTIONS_PROBE_LOCATION}"
+                    f"/functions/{CLOUD_FUNCTIONS_PROBE_FUNCTION}"
+                ),
+                body={"permissions": ["cloudfunctions.functions.get"]},
+            ).execute()
         else:
             raise NotImplementedError(f"No connectivity probe defined for service {self.api_name}")
 
@@ -327,6 +347,19 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-iam-project-policy-binding-remove": (
         GCPServices.RESOURCE_MANAGER,
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
+    ),
+    # Cloud Run functions commands
+    "gcp-cloudrun-functions-list": (
+        GCPServices.CLOUD_FUNCTIONS,
+        ["cloudfunctions.functions.list"],
+    ),
+    "gcp-cloudrun-locations-list": (
+        GCPServices.CLOUD_FUNCTIONS,
+        ["cloudfunctions.locations.list"],
+    ),
+    "gcp-cloudrun-function-get": (
+        GCPServices.CLOUD_FUNCTIONS,
+        ["cloudfunctions.functions.get"],
     ),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
@@ -2402,12 +2435,17 @@ def validate_limit(limit):
     """
     Validates that the provided limit argument is within the allowed range.
 
+    A ``None`` limit means the argument was omitted, in which case the API applies its own
+    default page size, so there is nothing to validate.
+
     Args:
-        limit (int): The limit value to validate.
+        limit (int | None): The limit value to validate, or None when not provided.
 
     Raises:
-        DemistoException: If the limit is not set or is outside the allowed range (1-500 inclusive).
+        DemistoException: If the limit is outside the allowed range (1-500 inclusive).
     """
+    if limit is None:
+        return
     if limit > 500 or limit < 1:
         raise DemistoException(
             f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
@@ -2522,6 +2560,7 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
         GCPServices.STORAGE,
         GCPServices.CONTAINER,
         GCPServices.BIGQUERY,
+        GCPServices.CLOUD_FUNCTIONS,
     ]
 
     for service in services_to_try:
@@ -2944,6 +2983,163 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
 
 
+def cloud_run_function_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists Google Cloud Run functions in the specified project and region.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Cloud Functions API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str, optional): The region of the functions. Defaults to all regions ("-").
+            - limit (int, optional): Maximum number of results to return (1-500).
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed functions.
+            - order_by (str, optional): The sort order of the returned functions.
+
+    Returns:
+        CommandResults: Object containing the list of Cloud Functions under `GCP.CloudRun.Functions`,
+        with the continuation token under `GCP.CloudRun.FunctionsNextToken`.
+    """
+    project_id = args.get("project_id")
+    # "-" is the API's wildcard for "every location".
+    region = args.get("region") or "-"
+    limit = arg_to_number(args.get("limit"))
+    next_token = args.get("next_token")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "parent": f"projects/{project_id}/locations/{region}",
+        "pageSize": limit,
+        "pageToken": next_token,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+    }
+    remove_nulls_from_dictionary(params)
+    demisto.debug(f"[GCP: cloud_run_function_list] Listing functions with params: {params}")
+
+    service = GCPServices.CLOUD_FUNCTIONS.build(creds)
+    response = service.projects().locations().functions().list(**params).execute()  # pylint: disable=E1101
+    functions = response.get("functions", [])
+    if not functions:
+        return CommandResults(readable_output="No functions found.", raw_response=response)
+
+    next_page_token = response.get("nextPageToken")
+    display_region = "All" if region == "-" else region
+
+    # When listing across all locations, the API reports any locations it could not reach.
+    if unreachable := response.get("unreachable"):
+        demisto.debug(f"[GCP: cloud_run_function_list] Unreachable locations: {unreachable}")
+
+    headers = ["name", "state", "environment", "updateTime", "url", "labels"]
+    readable_output = tableToMarkdown(
+        f'GCP Cloud Functions in project "{project_id}" and region "{display_region}"',
+        functions,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    outputs = {
+        "GCP.CloudRun.Functions(val.name && val.name == obj.name)": functions,
+        "GCP.CloudRun(true)": {"FunctionsNextToken": next_page_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def cloud_run_location_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists all locations (regions) available for Google Cloud Run functions in the project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Cloud Functions API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500).
+            - next_token (str, optional): Token to retrieve the next page of results.
+
+    Returns:
+        CommandResults: Object containing the list of locations under `GCP.CloudRun.Locations`,
+        with the continuation token under `GCP.CloudRun.LocationsNextToken`.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit"))
+    next_token = args.get("next_token")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "name": f"projects/{project_id}",
+        "pageSize": limit,
+        "pageToken": next_token,
+    }
+    remove_nulls_from_dictionary(params)
+    demisto.debug(f"[GCP: cloud_run_location_list] Listing locations with params: {params}")
+
+    service = GCPServices.CLOUD_FUNCTIONS.build(creds)
+    response = service.projects().locations().list(**params).execute()  # pylint: disable=E1101
+    locations = response.get("locations", [])
+    if not locations:
+        return CommandResults(readable_output="No locations found.", raw_response=response)
+
+    next_page_token = response.get("nextPageToken")
+    readable_output = tableToMarkdown(
+        f'GCP Cloud Function Locations in project "{project_id}"',
+        locations,
+        headers=["locationId", "name", "labels"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    outputs = {
+        "GCP.CloudRun.Locations(val.locationId && val.locationId == obj.locationId)": locations,
+        "GCP.CloudRun(true)": {"LocationsNextToken": next_page_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def cloud_run_function_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the details of a specific Google Cloud Run function.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Cloud Functions API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): The region of the function.
+            - function_name (str): The name of the function to retrieve.
+
+    Returns:
+        CommandResults: Object containing the function details under `GCP.CloudRun.Functions`.
+    """
+    project_id = args.get("project_id")
+    region = args.get("region")
+    function_name = args.get("function_name")
+    name = f"projects/{project_id}/locations/{region}/functions/{function_name}"
+    demisto.debug(f"[GCP: cloud_run_function_get] Getting function: {name}")
+
+    service = GCPServices.CLOUD_FUNCTIONS.build(creds)
+    response = service.projects().locations().functions().get(name=name).execute()  # pylint: disable=E1101
+    readable_output = tableToMarkdown(
+        f"GCP Cloud Function: {function_name}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.CloudRun.Functions",
+        outputs_key_field="name",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -3006,6 +3202,10 @@ def main():  # pragma: no cover
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # BigQuery commands
             "gcp-bq-dataset-policy-remove": bq_dataset_policy_remove_command,
+            # Cloud Run functions commands
+            "gcp-cloudrun-functions-list": cloud_run_function_list,
+            "gcp-cloudrun-locations-list": cloud_run_location_list,
+            "gcp-cloudrun-function-get": cloud_run_function_get,
             # Quick Actions - Firewall
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy

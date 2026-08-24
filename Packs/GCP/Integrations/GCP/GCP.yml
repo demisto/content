@@ -4210,6 +4210,171 @@ script:
 #      description: Custom fields of the user.
 #      type: Unknown
 
+  - name: gcp-cloudrun-functions-list
+    description: "Lists Google Cloud Functions in the specified project and region. Required Permission: cloudfunctions.functions.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      description: The region of the Google Cloud functions. Default is all regions. You can get a full list of regions using the gcp-cloudrun-locations-list command.
+      required: false
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: next_token
+      description: The token for the next set of items to return, used for pagination.
+    - name: filter
+      description: 'A filter expression for the functions listed in the response. For example, to return only active functions, use state="ACTIVE".'
+    - name: order_by
+      description: 'The sort order of the returned functions, as a comma-separated list of fields. Append " desc" to a field to sort it in descending order. For example, name desc.'
+    outputs:
+    - contextPath: GCP.CloudRun.Functions.name
+      description: 'A user-defined name of the function. Function names are unique globally and match the pattern projects/*/locations/*/functions/*.'
+      type: String
+    - contextPath: GCP.CloudRun.Functions.description
+      description: User-provided description of the function.
+      type: String
+    - contextPath: GCP.CloudRun.Functions.buildConfig
+      description: The build step of the function that builds a container from the given source.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.serviceConfig
+      description: The service being deployed. Currently deploys services to Cloud Run (fully managed).
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.eventTrigger
+      description: An Eventarc trigger that fires events in response to a condition in another service.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.state
+      description: 'State of the function. Possible values are: STATE_UNSPECIFIED, ACTIVE, FAILED, DEPLOYING, DELETING, UNKNOWN, DETACHING, DETACH_FAILED.'
+      type: String
+    - contextPath: GCP.CloudRun.Functions.updateTime
+      description: The last update timestamp of the function.
+      type: Date
+    - contextPath: GCP.CloudRun.Functions.labels
+      description: Labels associated with this function.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.stateMessages
+      description: State messages for this function.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.environment
+      description: 'Whether the function is 1st Gen or 2nd Gen. Possible values are: ENVIRONMENT_UNSPECIFIED, GEN_1, GEN_2.'
+      type: String
+    - contextPath: GCP.CloudRun.Functions.upgradeInfo
+      description: Upgrade information for this function.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.url
+      description: The deployed URL of the function.
+      type: String
+    - contextPath: GCP.CloudRun.Functions.kmsKeyName
+      description: 'Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources. Matches the pattern projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}.'
+      type: String
+    - contextPath: GCP.CloudRun.Functions.satisfiesPzs
+      description: Reserved for future use.
+      type: Boolean
+    - contextPath: GCP.CloudRun.Functions.createTime
+      description: The create timestamp of the function. This is only applicable to 2nd Gen functions.
+      type: Date
+    - contextPath: GCP.CloudRun.Functions.satisfiesPzi
+      description: Reserved for future use.
+      type: Boolean
+    - contextPath: GCP.CloudRun.FunctionsNextToken
+      description: The token to retrieve the next page of Google Cloud Run functions.
+      type: String
+  - name: gcp-cloudrun-locations-list
+    description: "Lists all locations (regions) available for Google Cloud Functions in the project. Required Permission: cloudfunctions.locations.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: next_token
+      description: The token for the next set of items to return, used for pagination.
+    outputs:
+    - contextPath: GCP.CloudRun.Locations.name
+      description: 'Resource name for the location, which may vary between implementations. For example: projects/example-project/locations/us-east1.'
+      type: String
+    - contextPath: GCP.CloudRun.Locations.locationId
+      description: 'The canonical ID for this location. For example: us-east1.'
+      type: String
+    - contextPath: GCP.CloudRun.Locations.displayName
+      description: 'The friendly name for this location, typically a nearby city name. For example, Tokyo.'
+      type: String
+    - contextPath: GCP.CloudRun.Locations.labels
+      description: 'Cross-service attributes for the location. For example {"cloud.googleapis.com/region": "us-east1"}.'
+      type: Unknown
+    - contextPath: GCP.CloudRun.Locations.metadata
+      description: Service-specific metadata. For example the available capacity at the given location.
+      type: Unknown
+    - contextPath: GCP.CloudRun.LocationsNextToken
+      description: The token to retrieve the next page of locations.
+      type: String
+  - name: gcp-cloudrun-function-get
+    description: "Gets the details of a specific Google Cloud function. Required Permission: cloudfunctions.functions.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      description: The region of the Google Cloud function. You can get a full list of regions using the gcp-cloudrun-locations-list command.
+      required: true
+    - name: function_name
+      description: The name of the function.
+      required: true
+    outputs:
+    - contextPath: GCP.CloudRun.Functions.name
+      description: 'A user-defined name of the function. Function names are unique globally and match the pattern projects/*/locations/*/functions/*.'
+      type: String
+    - contextPath: GCP.CloudRun.Functions.description
+      description: User-provided description of the function.
+      type: String
+    - contextPath: GCP.CloudRun.Functions.buildConfig
+      description: The build step of the function that builds a container from the given source.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.serviceConfig
+      description: The service being deployed. Currently deploys services to Cloud Run (fully managed).
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.eventTrigger
+      description: An Eventarc trigger that fires events in response to a condition in another service.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.state
+      description: 'State of the function. Possible values are: STATE_UNSPECIFIED, ACTIVE, FAILED, DEPLOYING, DELETING, UNKNOWN, DETACHING, DETACH_FAILED.'
+      type: String
+    - contextPath: GCP.CloudRun.Functions.updateTime
+      description: The last update timestamp of the function.
+      type: Date
+    - contextPath: GCP.CloudRun.Functions.labels
+      description: Labels associated with this function.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.stateMessages
+      description: State messages for this function.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.environment
+      description: 'Whether the function is 1st Gen or 2nd Gen. Possible values are: ENVIRONMENT_UNSPECIFIED, GEN_1, GEN_2.'
+      type: String
+    - contextPath: GCP.CloudRun.Functions.upgradeInfo
+      description: Upgrade information for this function.
+      type: Unknown
+    - contextPath: GCP.CloudRun.Functions.url
+      description: The deployed URL of the function.
+      type: String
+    - contextPath: GCP.CloudRun.Functions.kmsKeyName
+      description: 'Resource name of a KMS crypto key (managed by the user) used to encrypt/decrypt function resources. Matches the pattern projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}.'
+      type: String
+    - contextPath: GCP.CloudRun.Functions.satisfiesPzs
+      description: Reserved for future use.
+      type: Boolean
+    - contextPath: GCP.CloudRun.Functions.createTime
+      description: The create timestamp of the function. This is only applicable to 2nd Gen functions.
+      type: Date
+    - contextPath: GCP.CloudRun.Functions.satisfiesPzi
+      description: Reserved for future use.
+      type: Boolean
+
 # The command is currently unsupported.
 #  - name: gcp-admin-user-signout
 #    description: Signs a user out of all web and device sessions and reset their sign-in cookies.

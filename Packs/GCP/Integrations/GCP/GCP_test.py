@@ -1,6 +1,7 @@
 import ast
 import json
 import pytest
+from CommonServerPython import DemistoException
 from google.oauth2.credentials import Credentials
 from unittest.mock import MagicMock
 import os
@@ -3262,6 +3263,18 @@ def test_gcp_compute_instance_label_set_command_add_labels_false(mocker):
     assert result.outputs == mock_operation_response
 
 
+def test_validate_limit_none_is_allowed():
+    """
+    Given: No limit value (the argument was omitted, so arg_to_number returned None).
+    When: validate_limit is called.
+    Then: It returns without raising, letting the API apply its own default page size.
+          Guards against the TypeError raised by comparing None to an int.
+    """
+    from GCP import validate_limit
+
+    validate_limit(None)
+
+
 def test_validate_limit_valid_input():
     """
     Given: A valid limit value (between 1 and 500 inclusive)
@@ -5786,6 +5799,39 @@ def test_test_connectivity_container_uses_clusters_list(mocker):
     )
 
 
+def test_test_connectivity_cloud_functions_uses_testiampermissions(mocker):
+    """
+    Given:
+        - The CLOUD_FUNCTIONS service and a built API client.
+    When:
+        - test_connectivity is called.
+    Then:
+        - The function-scoped testIamPermissions endpoint is invoked (rather than a functions list,
+          which would fail for a project that has not enabled the Cloud Functions API), using the
+          placeholder probe resource and a concrete location.
+    """
+    from GCP import CLOUD_FUNCTIONS_PROBE_FUNCTION, CLOUD_FUNCTIONS_PROBE_LOCATION, GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.CLOUD_FUNCTIONS, "build", return_value=mock_client)
+
+    GCPServices.CLOUD_FUNCTIONS.test_connectivity(creds, "dummy-project-id")
+
+    functions = mock_client.projects.return_value.locations.return_value.functions.return_value
+    functions.testIamPermissions.assert_called_once_with(
+        resource=(
+            f"projects/dummy-project-id/locations/{CLOUD_FUNCTIONS_PROBE_LOCATION}" f"/functions/{CLOUD_FUNCTIONS_PROBE_FUNCTION}"
+        ),
+        body={"permissions": ["cloudfunctions.functions.get"]},
+    )
+    # The previous list-based probe must not be used: it 403s on projects with the API disabled.
+    functions.list.assert_not_called()
+    # The wildcard location is only valid for list methods, not for a resource-scoped call.
+    assert CLOUD_FUNCTIONS_PROBE_LOCATION != "-"
+
+
 def test_test_all_services_wraps_results_into_tuples(mocker):
     """
     Given:
@@ -6652,3 +6698,291 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# Cloud Functions (migrated from the legacy GoogleCloudFunctions integration)
+# ---------------------------------------------------------------------------
+
+
+def test_cloud_run_function_list_success(mocker):
+    """
+    Given: Valid credentials and a project_id/region plus pagination arguments.
+    When: cloud_run_function_list is called.
+    Then: It builds the correct parent, forwards limit/next_token as pageSize/pageToken,
+          and returns the functions plus the continuation token in the outputs.
+    """
+    from GCP import cloud_run_function_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_functions = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.functions.return_value = mock_functions
+    mock_functions.list.return_value.execute.return_value = {
+        "functions": [{"name": "projects/mock_project_id/locations/us-central1/functions/fn-1", "state": "ACTIVE"}],
+        "nextPageToken": "tok",
+    }
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1", "limit": "10", "next_token": "prev"}
+    result = cloud_run_function_list(mock_creds, args)
+
+    called_kwargs = mock_functions.list.call_args[1]
+    assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1"
+    assert called_kwargs["pageSize"] == 10
+    assert called_kwargs["pageToken"] == "prev"
+    functions = result.outputs["GCP.CloudRun.Functions(val.name && val.name == obj.name)"]
+    assert functions[0]["state"] == "ACTIVE"
+    assert result.outputs["GCP.CloudRun(true)"]["FunctionsNextToken"] == "tok"
+    assert "fn-1" in result.readable_output
+
+
+def test_cloud_run_function_list_defaults_to_all_regions(mocker):
+    """
+    Given: No region argument.
+    When: cloud_run_function_list is called.
+    Then: The parent uses the "-" wildcard so functions from every location are listed,
+          and no pagination keys are sent when limit/next_token are omitted.
+    """
+    from GCP import cloud_run_function_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_functions = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.functions.return_value = mock_functions
+    mock_functions.list.return_value.execute.return_value = {"functions": [{"name": "fn-1"}]}
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    result = cloud_run_function_list(mock_creds, {"project_id": "mock_project_id"})
+
+    called_kwargs = mock_functions.list.call_args[1]
+    assert called_kwargs["parent"] == "projects/mock_project_id/locations/-"
+    assert "pageSize" not in called_kwargs
+    assert "pageToken" not in called_kwargs
+    assert result.outputs["GCP.CloudRun(true)"]["FunctionsNextToken"] is None
+
+
+def test_cloud_run_function_list_invalid_limit_raises(mocker):
+    """
+    Given: A limit above the documented maximum.
+    When: cloud_run_function_list is called.
+    Then: A DemistoException is raised and no API call is made.
+    """
+    from GCP import cloud_run_function_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    with pytest.raises(DemistoException, match="acceptable values of the argument limit"):
+        cloud_run_function_list(mock_creds, {"project_id": "mock_project_id", "limit": "501"})
+
+    mock_service.projects.return_value.locations.return_value.functions.return_value.list.assert_not_called()
+
+
+def test_cloud_run_function_list_empty(mocker):
+    """
+    Given: A Cloud Run functions service returning no functions.
+    When: cloud_run_function_list is called.
+    Then: A human-readable "No functions found." message is returned.
+    """
+    from GCP import cloud_run_function_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.functions.return_value.list.return_value.execute.return_value = {
+        "functions": []
+    }
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    result = cloud_run_function_list(mock_creds, {"project_id": "mock_project_id"})
+    assert "No functions found." in result.readable_output
+
+
+def test_cloud_run_location_list_success(mocker):
+    """
+    Given: Valid credentials and a project_id plus pagination arguments.
+    When: cloud_run_location_list is called.
+    Then: It builds the correct name, forwards limit/next_token as pageSize/pageToken,
+          and returns the locations plus the continuation token in the outputs.
+    """
+    from GCP import cloud_run_location_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_locations = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value = mock_locations
+    mock_locations.list.return_value.execute.return_value = {
+        "locations": [{"locationId": "us-central1", "name": "projects/mock_project_id/locations/us-central1"}],
+        "nextPageToken": "tok",
+    }
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    result = cloud_run_location_list(mock_creds, {"project_id": "mock_project_id", "limit": "5", "next_token": "prev"})
+
+    called_kwargs = mock_locations.list.call_args[1]
+    assert called_kwargs["name"] == "projects/mock_project_id"
+    assert called_kwargs["pageSize"] == 5
+    assert called_kwargs["pageToken"] == "prev"
+    locations = result.outputs["GCP.CloudRun.Locations(val.locationId && val.locationId == obj.locationId)"]
+    assert locations[0]["locationId"] == "us-central1"
+    assert result.outputs["GCP.CloudRun(true)"]["LocationsNextToken"] == "tok"
+    assert "us-central1" in result.readable_output
+
+
+def test_cloud_run_location_list_empty(mocker):
+    """
+    Given: A Cloud Run functions service returning no locations.
+    When: cloud_run_location_list is called.
+    Then: A human-readable "No locations found." message is returned.
+    """
+    from GCP import cloud_run_location_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.list.return_value.execute.return_value = {"locations": []}
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    result = cloud_run_location_list(mock_creds, {"project_id": "mock_project_id"})
+    assert "No locations found." in result.readable_output
+
+
+def test_cloud_run_function_get_success(mocker):
+    """
+    Given: An existing function name.
+    When: cloud_run_function_get is called.
+    Then: The fully-qualified resource name is passed to the API and the function
+          details are returned under the GCP.CloudRun.Functions prefix.
+    """
+    from GCP import cloud_run_function_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_functions = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.functions.return_value = mock_functions
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    mock_functions.get.return_value.execute.return_value = {
+        "name": "projects/mock_project_id/locations/us-central1/functions/fn-1",
+        "state": "ACTIVE",
+    }
+    res = cloud_run_function_get(mock_creds, {"project_id": "mock_project_id", "region": "us-central1", "function_name": "fn-1"})
+
+    assert res.outputs_prefix == "GCP.CloudRun.Functions"
+    assert res.outputs_key_field == "name"
+    called_kwargs = mock_functions.get.call_args[1]
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1/functions/fn-1"
+
+
+def test_cloud_run_function_get_not_found_propagates(mocker):
+    """
+    Given: A function that does not exist, so the API raises a 404 HttpError.
+    When: cloud_run_function_get is called.
+    Then: The HttpError propagates to main(), which routes it through
+          handle_permission_error, rather than being swallowed by the command.
+    """
+    from GCP import cloud_run_function_get
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_functions = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.functions.return_value = mock_functions
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    resp = mocker.MagicMock()
+    resp.status = 404
+    mock_functions.get.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "The resource fn-2 was not found"}}'
+    )
+
+    with pytest.raises(HttpError):
+        cloud_run_function_get(mock_creds, {"project_id": "mock_project_id", "region": "us-central1", "function_name": "fn-2"})
+
+
+def test_cloud_run_function_list_permission_error_propagates(mocker):
+    """
+    Given: A caller lacking cloudfunctions.functions.list, so the API raises a 403 HttpError.
+    When: cloud_run_function_list is called.
+    Then: The HttpError propagates out of the command so main() can route it through
+          handle_permission_error, rather than being swallowed into a success result.
+    """
+    from GCP import cloud_run_function_list
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_functions = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.functions.return_value = mock_functions
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_functions.list.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Permission \'cloudfunctions.functions.list\' denied on resource"}}'
+    )
+
+    with pytest.raises(HttpError):
+        cloud_run_function_list(mock_creds, {"project_id": "mock_project_id"})
+
+
+def test_cloud_run_location_list_permission_error_propagates(mocker):
+    """
+    Given: A caller lacking cloudfunctions.locations.list, so the API raises a 403 HttpError.
+    When: cloud_run_location_list is called.
+    Then: The HttpError propagates out of the command so main() can route it through
+          handle_permission_error.
+    """
+    from GCP import cloud_run_location_list
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_locations = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value = mock_locations
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_locations.list.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Permission \'cloudfunctions.locations.list\' denied on resource"}}'
+    )
+
+    with pytest.raises(HttpError):
+        cloud_run_location_list(mock_creds, {"project_id": "mock_project_id"})
+
+
+@pytest.mark.parametrize(
+    "command_name, permission",
+    [
+        ("gcp-cloudrun-functions-list", "cloudfunctions.functions.list"),
+        ("gcp-cloudrun-locations-list", "cloudfunctions.locations.list"),
+        ("gcp-cloudrun-function-get", "cloudfunctions.functions.get"),
+    ],
+)
+def test_cloud_run_permission_error_reports_declared_permission(mocker, command_name, permission):
+    """
+    Given: A 403 HttpError naming the permission a Cloud Run command requires.
+    When: handle_permission_error is called for that command.
+    Then: The permission is matched against COMMAND_REQUIREMENTS and reported by name,
+          proving each Cloud Run command is wired into the permission registry.
+    """
+    from GCP import handle_permission_error
+    from googleapiclient.errors import HttpError
+
+    mock_resp = mocker.MagicMock()
+    mock_resp.status = 403
+    mock_resp.get.return_value = "application/json"
+
+    error_content = {"error": {"message": f"Permission '{permission}' denied on resource"}}
+    http_error = HttpError(mock_resp, json.dumps(error_content).encode())
+
+    mocker.patch("GCP.demisto.debug")
+    mock_return_error = mocker.patch("GCP.return_multiple_permissions_error")
+
+    handle_permission_error(http_error, "mock_project_id", command_name)
+
+    error_entries = mock_return_error.call_args[0][0]
+    assert len(error_entries) == 1
+    assert error_entries[0]["account_id"] == "mock_project_id"
+    assert error_entries[0]["name"] == permission
