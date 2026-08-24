@@ -593,6 +593,16 @@ script:
       defaultValue: '120'
       required: false
       type: String
+    - auto: PREDEFINED
+      description: 'Browser name.'
+      name: obj_ext_browser
+      defaultValue: 'Google Chrome'
+      required: false
+      type: String
+      hidden: true
+      predefined:
+      - 'Google Chrome'
+      - 'Mozilla Firefox'
     name: anyrun-detonate-url-android
     description: 'Perform URL analysis using Android VM.'
     outputs:
