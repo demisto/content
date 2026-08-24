@@ -857,7 +857,7 @@ IPHOTLIST_RESPONSE = [
 
 _IP_FIELDS_NONE = {
     "domaintoolsfeedipallthreatscombinedpercent": None,
-    "domaintoolsfeedipallthreatsperecent": None,
+    "domaintoolsfeedipallthreatspercent": None,
     "domaintoolsfeedipcombinedphishingpercent": None,
     "domaintoolsfeedipcombinedmalwarepercent": None,
     "domaintoolsfeedipcombinedspampercent": None,

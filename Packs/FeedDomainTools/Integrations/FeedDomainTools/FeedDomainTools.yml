@@ -294,6 +294,14 @@ script:
       default: false
       required: false
       secret: false
+    - name: create_indicators
+      description: "If true, create indicators in the database. Set to false to inspect results without populating the database."
+      type: Boolean
+      defaultValue: "false"
+      isArray: false
+      default: false
+      required: false
+      secret: false
   dockerimage: demisto/vendors-sdk:1.0.0.11778894
   feed: true
   isfetch: false

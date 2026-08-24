@@ -1,9 +1,9 @@
 {
-    "id": "indicator_domaintoolsfeedipallthreatsperecent",
+    "id": "indicator_domaintoolsfeedipallthreatspercent",
     "version": -1,
     "name": "DomainToolsFeed IP All Threats Percent",
     "ownerOnly": false,
-    "cliName": "domaintoolsfeedipallthreatsperecent",
+    "cliName": "domaintoolsfeedipallthreatspercent",
     "type": "number",
     "closeForm": false,
     "editForm": true,

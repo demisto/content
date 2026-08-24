@@ -443,7 +443,7 @@ def fetch_indicators(client: DomainToolsClient, feed_type: str = "nod", dt_feed_
                 indicator_obj["fields"]["domaintoolsfeedipallthreatscombinedpercent"] = ip_threat_data_.get(
                     "all_threats_combined_percent"
                 )
-                indicator_obj["fields"]["domaintoolsfeedipallthreatsperecent"] = ip_threat_data_.get("all_threats_percent")
+                indicator_obj["fields"]["domaintoolsfeedipallthreatspercent"] = ip_threat_data_.get("all_threats_percent")
                 indicator_obj["fields"]["domaintoolsfeedipcombinedphishingpercent"] = ip_threat_data_.get(
                     "combined_phishing_percent"
                 )
@@ -515,6 +515,8 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
         "all_threats_percent_min": arg_to_number(args.get("all_threats_percent_min")),
     }
 
+    create_indicators = argToBoolean(args.get("create_indicators", "false"))
+
     demisto.debug(f"Fetching feed indicators by feed_type: {feed_type}")
     indicators = fetch_indicators(client, feed_type=feed_type, dt_feed_kwargs=dt_feeds_kwargs)
 
@@ -525,7 +527,8 @@ def get_indicators_command(client: DomainToolsClient, args: dict[str, str], para
         removeNull=True,
     )
 
-    batch_create_indicators(indicators, batch_size=100)
+    if create_indicators:
+        batch_create_indicators(indicators, batch_size=100)
 
     return CommandResults(readable_output=human_readable, raw_response=indicators, ignore_auto_extract=True)
 
