@@ -2874,7 +2874,7 @@ def test_create_moderation_command_multi_text_more_results_than_texts(mocker):
 # endregion
 
 
-# region Compliance API authentication header (CIAC-17723)
+# region Compliance API authentication header
 def test_compliance_headers_carry_bearer_scheme_and_accept():
     """
     Given: A client configured with a Compliance API key.
@@ -2891,7 +2891,7 @@ def test_list_compliance_logs_sends_bearer_authorization_header(mocker):
     Given: A client configured with a valid Compliance API key.
     When: Listing compliance logs.
     Then: The Authorization header carries the `Bearer` scheme, which the ChatGPT Compliance
-          API requires. A bare key is rejected with 401 "Access token is missing" (CIAC-17723).
+          API requires. A bare key is rejected with 401 "Access token is missing".
     """
     client = _make_client()
     http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value=json.dumps({"data": [], "last_end_time": None}))
@@ -2910,7 +2910,7 @@ def test_get_compliance_log_content_sends_bearer_authorization_header(mocker):
     """
     Given: A client configured with a valid Compliance API key.
     When: Fetching the content of a single compliance log entry (step 2 of the two-step flow).
-    Then: The Authorization header carries the `Bearer` scheme (CIAC-17723).
+    Then: The Authorization header carries the `Bearer` scheme.
     """
     client = _make_client()
     http_mock = mocker.patch.object(OpenAiClient, "_http_request", return_value="{}")
@@ -2942,7 +2942,7 @@ def test_audit_and_compliance_use_their_own_keys_with_bearer(mocker):
 
 def test_compliance_request_never_sends_a_bare_key(mocker):
     """
-    Bad path: the exact CIAC-17723 defect must not reappear in any form.
+    Bad path: a bare, scheme-less credential must not reappear in any form.
 
     Given: A client with a Compliance API key.
     When: The compliance listing is requested.
@@ -2954,7 +2954,7 @@ def test_compliance_request_never_sends_a_bare_key(mocker):
     client.list_compliance_logs(workspace_id="FAKE_WORKSPACE_ID", event_types=["AUDIT_LOG"], after="2099-01-01T00:00:00Z")
 
     sent = http_mock.call_args.kwargs["headers"]["Authorization"]
-    assert sent != "COMPLIANCE_KEY", "regression: the raw key was sent with no auth scheme (CIAC-17723)"
+    assert sent != "COMPLIANCE_KEY", "regression: the raw key was sent with no auth scheme"
     assert not sent.startswith("Bearer Bearer "), "the Bearer scheme was applied twice"
     assert sent.startswith("Bearer ")
 

@@ -495,7 +495,7 @@ class OpenAiClient(BaseClient):
 
         The credential MUST carry the `Bearer` scheme - a bare key is not a well-formed
         `Authorization` value and the API rejects it with 401 "Access token is missing"
-        without ever evaluating the key (CIAC-17723).
+        without ever evaluating the key.
         """
         return {"Authorization": f"Bearer {self.compliance_api_key}", "Accept": "application/json"}
 
