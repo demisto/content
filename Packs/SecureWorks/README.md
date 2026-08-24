@@ -42,7 +42,8 @@ Taegis XDR is a cloud-native security solution that combines the power of human 
 
 - Cortex XSOAR 6.13.0 or later (8.x supported).
 - A Secureworks Taegis XDR tenant with API access enabled.
-- A Taegis XDR API client ID and client secret. See the [Taegis XDR API documentation](https://docs.taegis.secureworks.com/apis/api_authenticate/) for credential generation and region-specific base URLs.
+- A Taegis XDR API client ID and client secret, assigned the **Tenant Analyst** role. Tenant Analyst is the least-privilege role that covers every command in this integration, including asset isolation and executing an existing Taegis XDR Automation. See the [Taegis XDR API documentation](https://docs.taegis.secureworks.com/apis/api_authenticate/) for credential generation and region-specific base URLs.
+- Any Taegis XDR Automation you intend to run from Cortex XSOAR must already exist as a configured Playbook Instance. Tenant Analyst can execute one but cannot create one, so a Tenant Admin needs to set it up first.
 
 ## Key Capabilities
 
