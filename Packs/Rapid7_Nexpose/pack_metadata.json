@@ -13,7 +13,8 @@
     "tags": [],
     "useCases": [],
     "keywords": [
-        "nexpose"
+        "nexpose",
+        "Rapid7"
     ],
     "dependencies": {
         "CVESearch": {
