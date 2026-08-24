@@ -97,6 +97,58 @@ def send_request(path, method="get", body=None, params=None, headers=None):
     return ""
 
 
+def build_kv2_path(engine_path: str, kind: str, secret_path: str) -> str:
+    """
+    Build a normalized KV V2 API path, tolerating leading/trailing slashes on both inputs.
+    Args:
+        engine_path (str): The KV V2 engine path, e.g., "kv", "kv/" or "/kv/".
+        kind (str): The KV V2 endpoint kind. Either "data" or "metadata".
+        secret_path (str): The secret path, e.g., "my-secret" or "/folder/my-secret".
+    Returns:
+        str: The normalized path, e.g., "kv/data/folder/my-secret".
+    """
+    stripped_engine_path = str(engine_path or "").strip("/")
+    stripped_secret_path = str(secret_path or "").strip("/")
+    return f"{stripped_engine_path}/{kind}/{stripped_secret_path}"
+
+
+def parse_json_object_arg(raw: Any, arg_name: str) -> dict:
+    """
+    Parse a command argument that is expected to hold a JSON object (a key/value map).
+    Args:
+        raw (Any): The raw argument value, as received from the user.
+        arg_name (str): The name of the argument, used in error messages.
+    Returns:
+        dict: The parsed JSON object.
+    Raises:
+        DemistoException: If the value is not valid JSON, or if it is valid JSON but not an object.
+    """
+    try:
+        parsed = json.loads(raw)
+    except Exception as err:
+        raise DemistoException(f'Failed to parse the "{arg_name}" argument. It must be a valid JSON object.', err)
+
+    if not isinstance(parsed, dict):
+        raise DemistoException(
+            f'The "{arg_name}" argument must be a JSON object (a key/value map), not a {type(parsed).__name__}.'
+        )
+
+    return parsed
+
+
+def merge_patch_headers() -> dict:
+    """
+    Build the headers for a JSON merge patch request.
+    Starts from the default headers (so that X-Vault-Token / X-Vault-Namespace / X-Vault-Request are preserved)
+    and overrides only the Content-Type.
+    Returns:
+        dict: The default headers with a "application/merge-patch+json" Content-Type.
+    """
+    headers = get_headers()
+    headers["Content-Type"] = "application/merge-patch+json"
+    return headers
+
+
 """ FUNCTIONS """
 
 
@@ -275,6 +327,54 @@ def get_secret_metadata(engine_path, secret_path):
     path = engine_path + "/metadata/" + secret_path
 
     return send_request(path, "get")
+
+
+def build_secret_data_body(args: dict) -> dict:
+    """
+    Build the request body for the KV V2 data endpoints (create / update secret).
+    Args:
+        args (dict): The command arguments. Expects a "data" JSON object argument and an optional "cas" number.
+    Returns:
+        dict: The request body, e.g., {"data": {"foo": "bar"}, "options": {"cas": 0}}.
+              The "options" key is omitted entirely when "cas" was not supplied.
+    """
+    body: dict = {"data": parse_json_object_arg(args.get("data"), "data")}
+
+    cas = arg_to_number(args.get("cas"))
+    if cas is not None:
+        body["options"] = {"cas": cas}
+
+    return body
+
+
+def build_secret_metadata_body(args: dict) -> dict:
+    """
+    Build the request body for the KV V2 metadata endpoints (create / update secret metadata).
+    Args:
+        args (dict): The command arguments. Supports "max_versions", "cas_required",
+            "delete_version_after" and "custom_metadata", all optional.
+    Returns:
+        dict: The flat request body.
+    """
+    body: dict = {}
+
+    max_versions = arg_to_number(args.get("max_versions"))
+    if max_versions is not None:
+        body["max_versions"] = max_versions
+
+    cas_required = args.get("cas_required")
+    if cas_required not in (None, ""):
+        body["cas_required"] = argToBoolean(cas_required)
+
+    delete_version_after = args.get("delete_version_after")
+    if delete_version_after:
+        body["delete_version_after"] = delete_version_after
+
+    custom_metadata = args.get("custom_metadata")
+    if custom_metadata:
+        body["custom_metadata"] = parse_json_object_arg(custom_metadata, "custom_metadata")
+
+    return body
 
 
 def delete_secret_command():  # pragma: no cover
