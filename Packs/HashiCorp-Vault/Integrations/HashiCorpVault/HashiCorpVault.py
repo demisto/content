@@ -377,6 +377,121 @@ def build_secret_metadata_body(args: dict) -> dict:
     return body
 
 
+def create_secret_command():
+    """
+    Create a new version of a secret at the specified location in a KV V2 engine.
+    The whole data map is replaced - keys that are not supplied are not carried over from the previous version.
+    Args:
+        args (dict): A dictionary containing the following keys:
+            - 'engine' (required): The KV V2 engine path, e.g., "kv/".
+            - 'secret_path' (required): The secret path, e.g., "my-secret".
+            - 'data' (required): A JSON object with the contents of the secret, e.g., {"foo": "bar"}.
+            - 'cas': Check-And-Set. When set, the write only succeeds if it matches the current version of the secret.
+    Returns:
+        CommandResults: The command results object containing a success message as readable output.
+    """
+    args = demisto.args()
+    engine_path = args.get("engine")
+    secret_path = args.get("secret_path")
+
+    path = build_kv2_path(engine_path, "data", secret_path)
+    body = build_secret_data_body(args)
+
+    # TODO: Currently the `post` method overwrites existing entries! Must address it via documentation or other means.
+    send_request(path, "post", body=body)
+
+    return_results(CommandResults(readable_output=f'Secret "{secret_path}" was successfully written to engine "{engine_path}"'))
+
+
+def update_secret_command():
+    """
+    Patch an existing secret at the specified location in a KV V2 engine, using a JSON merge patch.
+    Keys that are not supplied are preserved from the current version.
+    Requires Vault 1.9 or later and the "patch" ACL capability on the secret path.
+    Args:
+        args (dict): A dictionary containing the following keys:
+            - 'engine' (required): The KV V2 engine path, e.g., "kv/".
+            - 'secret_path' (required): The secret path, e.g., "my-secret".
+            - 'data' (required): A JSON object with the keys to merge into the secret, e.g., {"foo": "bar"}.
+            - 'cas': Check-And-Set. When set, the write only succeeds if it matches the current version of the secret.
+    Returns:
+        CommandResults: The command results object containing a success message as readable output.
+    """
+    args = demisto.args()
+    engine_path = args.get("engine")
+    secret_path = args.get("secret_path")
+
+    if not parse_json_object_arg(args.get("data"), "data"):
+        raise DemistoException('The "data" argument must contain at least one key when updating an existing secret.')
+
+    cas = arg_to_number(args.get("cas"))
+    if cas is not None and cas <= 0:
+        raise DemistoException(f'The "cas" argument must be greater than 0 when updating an existing secret, but got {cas}.')
+
+    path = build_kv2_path(engine_path, "data", secret_path)
+    body = build_secret_data_body(args)
+
+    send_request(path, "patch", body=body, headers=merge_patch_headers())
+
+    return_results(CommandResults(readable_output=f'Secret "{secret_path}" was successfully written to engine "{engine_path}"'))
+
+
+def create_secret_metadata_command():
+    """
+    Create or replace the metadata of a secret at the specified location in a KV V2 engine.
+    Fields that are not supplied are reset to their server defaults.
+    Args:
+        args (dict): A dictionary containing the following keys:
+            - 'engine' (required): The KV V2 engine path, e.g., "kv/".
+            - 'secret_path' (required): The secret path, e.g., "my-secret".
+            - 'max_versions': The number of versions to keep per key.
+            - 'cas_required': Whether the cas parameter is required on all write requests to this key.
+            - 'delete_version_after': A duration, e.g., "3h25m19s", after which new versions are deleted.
+            - 'custom_metadata': A JSON object of user-provided metadata, e.g., {"foo": "abc"}.
+    Returns:
+        CommandResults: The command results object containing a success message as readable output.
+    """
+    args = demisto.args()
+    engine_path = args.get("engine")
+    secret_path = args.get("secret_path")
+
+    path = build_kv2_path(engine_path, "metadata", secret_path)
+    body = build_secret_metadata_body(args)
+
+    # TODO: Currently the `post` method overwrites existing entries! Must address it via documentation or other means.
+    send_request(path, "post", body=body)
+
+    return_results(CommandResults(readable_output=f'Secret "{secret_path}" was successfully written to engine "{engine_path}"'))
+
+
+def update_secret_metadata_command():
+    """
+    Patch an existing metadata entry of a secret at the specified location in a KV V2 engine,
+    using a JSON merge patch. Fields that are not supplied are left untouched.
+    Requires Vault 1.9 or later and the "patch" ACL capability on the metadata path.
+    Args:
+        args (dict): A dictionary containing the following keys:
+            - 'engine' (required): The KV V2 engine path, e.g., "kv/".
+            - 'secret_path' (required): The secret path, e.g., "my-secret".
+            - 'max_versions': The number of versions to keep per key.
+            - 'cas_required': Whether the cas parameter is required on all write requests to this key.
+            - 'delete_version_after': A duration, e.g., "3h25m19s", after which new versions are deleted.
+            - 'custom_metadata': A JSON object of user-provided metadata, e.g., {"foo": "abc"}.
+    Returns:
+        CommandResults: The command results object containing a success message as readable output.
+    """
+    args = demisto.args()
+    engine_path = args.get("engine")
+    secret_path = args.get("secret_path")
+
+    path = build_kv2_path(engine_path, "metadata", secret_path)
+    body = build_secret_metadata_body(args)
+
+    send_request(path, "patch", body=body, headers=merge_patch_headers())
+
+    return_results(CommandResults(readable_output=f'Secret "{secret_path}" was successfully written to engine "{engine_path}"'))
+
+
 def delete_secret_command():  # pragma: no cover
     engine_path = demisto.args()["engine_path"]
     secret_path = demisto.args()["secret_path"]
@@ -968,6 +1083,14 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
             get_policy_command()
         elif command == "hashicorp-get-secret-metadata":
             get_secret_metadata_command()
+        elif command == "hashicorp-create-secret":
+            create_secret_command()
+        elif command == "hashicorp-update-secret":
+            update_secret_command()
+        elif command == "hashicorp-create-secret-metadata":
+            create_secret_metadata_command()
+        elif command == "hashicorp-update-secret-metadata":
+            update_secret_metadata_command()
         elif command == "hashicorp-delete-secret":
             delete_secret_command()
         elif command == "hashicorp-undelete-secret":
