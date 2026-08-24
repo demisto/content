@@ -355,6 +355,8 @@ async def test_audit_sequential_page_failure_is_recorded(mocker):
     """
     from NetskopeEventCollector_v2 import Client, fetch_and_send_events_async
 
+    # The failure path logs via demisto.error; mock it so it doesn't write to stdout (conftest forbids it).
+    mocker.patch.object(demisto, "error")
     client = Client(BASE_URL, "token", False, False, ["audit"])
     mocker.patch.object(client, "get_events_count", return_value=0)
     full_page = {"result": [{"_id": "1", "timestamp": 1}, {"_id": "2", "timestamp": 2}]}
