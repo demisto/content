@@ -1,0 +1,32 @@
+{
+    "fromVersion": "6.10.0",
+    "id": "incident_taegisxdrtenantid",
+    "version": -1,
+    "name": "Taegis XDR Tenant ID",
+    "ownerOnly": false,
+    "description": "The Taegis XDR tenant the case belongs to. Useful when one Cortex XSOAR instance ingests cases from multiple tenants.",
+    "cliName": "taegisxdrtenantid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Taegis XDR - Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

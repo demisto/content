@@ -44,6 +44,9 @@
                 "Taegis XDR Assignee ID": {
                     "simple": "assignee_id"
                 },
+                "Taegis XDR Case Comments Synced IDs": {
+                    "simple": "taegisxdrcasecommentsyncedids"
+                },
                 "Taegis XDR Case Detections": {
                     "complex": {
                         "filters": [],
@@ -67,17 +70,17 @@
                 "Taegis XDR Key Findings": {
                     "simple": "key_findings"
                 },
+                "Taegis XDR Tenant ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tenant_id",
+                        "transformers": []
+                    }
+                },
                 "Tags": {
                     "complex": {
                         "filters": [],
                         "root": "tags",
-                        "transformers": []
-                    }
-                },
-                "Tenant ID": {
-                    "complex": {
-                        "filters": [],
-                        "root": "tenant_id",
                         "transformers": []
                     }
                 },
@@ -95,6 +98,13 @@
                 },
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
+                },
+                "occurred": {
+                    "complex": {
+                        "root": "created_at",
+                        "filters": [],
+                        "transformers": []
+                    }
                 },
                 "severity": {
                     "complex": {
@@ -119,23 +129,6 @@
                                 "operator": "MapValuesTransformer"
                             }
                         ]
-                    }
-                },
-                "taegisxdrcasecommentsyncedids": {
-                    "simple": "taegisxdrcasecommentsyncedids"
-                },
-                "taegisxdrcasedetections": {
-                    "complex": {
-                        "filters": [],
-                        "root": "taegisxdrcasedetections",
-                        "transformers": []
-                    }
-                },
-                "taegisxdrcaseentities": {
-                    "complex": {
-                        "filters": [],
-                        "root": "taegisxdrcaseentities",
-                        "transformers": []
                     }
                 }
             }
@@ -174,17 +167,34 @@
                         "transformers": []
                     }
                 },
+                "Taegis XDR Case Comments Synced IDs": {
+                    "simple": "taegisxdrcasecommentsyncedids"
+                },
+                "Taegis XDR Case Detections": {
+                    "complex": {
+                        "filters": [],
+                        "root": "taegisxdrcasedetections",
+                        "transformers": []
+                    }
+                },
+                "Taegis XDR Case Entities": {
+                    "complex": {
+                        "filters": [],
+                        "root": "taegisxdrcaseentities",
+                        "transformers": []
+                    }
+                },
+                "Taegis XDR Tenant ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tenant_id",
+                        "transformers": []
+                    }
+                },
                 "Tags": {
                     "complex": {
                         "filters": [],
                         "root": "tags",
-                        "transformers": []
-                    }
-                },
-                "Tenant ID": {
-                    "complex": {
-                        "filters": [],
-                        "root": "tenant_id",
                         "transformers": []
                     }
                 },
@@ -202,6 +212,13 @@
                 },
                 "dbotMirrorTags": {
                     "simple": "mirror_tags"
+                },
+                "occurred": {
+                    "complex": {
+                        "root": "created_at",
+                        "filters": [],
+                        "transformers": []
+                    }
                 },
                 "severity": {
                     "complex": {
@@ -226,23 +243,6 @@
                                 "operator": "MapValuesTransformer"
                             }
                         ]
-                    }
-                },
-                "taegisxdrcasecommentsyncedids": {
-                    "simple": "taegisxdrcasecommentsyncedids"
-                },
-                "taegisxdrcasedetections": {
-                    "complex": {
-                        "filters": [],
-                        "root": "taegisxdrcasedetections",
-                        "transformers": []
-                    }
-                },
-                "taegisxdrcaseentities": {
-                    "complex": {
-                        "filters": [],
-                        "root": "taegisxdrcaseentities",
-                        "transformers": []
                     }
                 }
             }

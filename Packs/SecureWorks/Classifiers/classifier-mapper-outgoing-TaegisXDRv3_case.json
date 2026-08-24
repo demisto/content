@@ -15,12 +15,6 @@
                     }
                 },
                 "closeNotes": {
-                    "simple": "closenotes"
-                },
-                "close_notes": {
-                    "simple": "close_notes"
-                },
-                "closenotes": {
                     "simple": "closeNotes"
                 },
                 "id": {
@@ -70,13 +64,6 @@
                     "complex": {
                         "filters": [],
                         "root": "taegisxdrdetectionstatus",
-                        "transformers": []
-                    }
-                },
-                "tenant_id": {
-                    "complex": {
-                        "filters": [],
-                        "root": "tenantid",
                         "transformers": []
                     }
                 }
