@@ -9,6 +9,7 @@ from tempfile import mkdtemp
 
 import demistomock as demisto
 import pytest
+import EDL as edl
 from EDL import (
     DONT_COLLAPSE,
     check_platform_and_version,
@@ -142,7 +143,11 @@ class TestHelperFunctions:
 
         expected_edl = "8.8.8.8"
         edl_log_line = "\nAdded | 8.8.8.8 | 8.8.8.8 | Found new Domain."
-        ctx = {edl.EDL_ON_DEMAND_KEY: True, edl.RequestArguments.CTX_QUERY_KEY: "*"}
+        ctx = {
+            edl.EDL_ON_DEMAND_KEY: True,
+            edl.RequestArguments.CTX_QUERY_KEY: "*",
+            edl.RequestArguments.CTX_FIELDS_TO_PRESENT: "name,type",
+        }
         tmp_dir = mkdtemp()
         edl.EDL_ON_DEMAND_CACHE_PATH = os.path.join(tmp_dir, "cache")
         mocker.patch.object(edl, "get_integration_context", return_value=ctx)
@@ -525,7 +530,9 @@ class TestHelperFunctions:
 
         with open("test_data/demisto_url_iocs.json") as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query="", drop_invalids=True, url_port_stripping=True, url_protocol_stripping=True)
+            request_args = RequestArguments(
+                query="", drop_invalids=True, url_port_stripping=True, url_protocol_stripping=True, fields_to_present="name,type"
+            )
             returned_output = ""
             not_first_call = False
             for ioc in iocs_json:
@@ -1488,19 +1495,166 @@ def test_store_log_data(mocker, wip_exist):
     "out_format, fields_to_present, expected",
     [
         # Case 1: use_legacy_query returns ""
-        (FORMAT_TEXT, "use_legacy_query", ""),
+        pytest.param(FORMAT_TEXT, "use_legacy_query", "", id="legacy_query_mode"),
         # Case 2: FORMAT_CSV with 'all' returns ""
-        (FORMAT_CSV, "all", ""),
+        pytest.param(FORMAT_CSV, "all", "", id="csv_all_fields"),
         # Case 3: FORMAT_JSON with 'value' replaced to 'name'
-        (FORMAT_JSON, "value,type", "name,type"),
+        pytest.param(FORMAT_JSON, "value,type", "name,type", id="json_value_to_name"),
         # Case 4: FORMAT_MWG with no fields_to_present
-        (FORMAT_MWG, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_MWG),
+        pytest.param(FORMAT_MWG, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_MWG, id="mwg_default_fields"),
         # Case 5: FORMAT_PROXYSG with no fields_to_present
-        (FORMAT_PROXYSG, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_PROXYSG),
+        pytest.param(FORMAT_PROXYSG, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_PROXYSG, id="proxysg_default_fields"),
         # Case 6: Unknown format fallback to FILTER_FIELDS_ON_FORMAT_TEXT
-        ("unknown_format", "", RequestArguments.FILTER_FIELDS_ON_FORMAT_TEXT),
+        pytest.param("unknown_format", "", RequestArguments.FILTER_FIELDS_ON_FORMAT_TEXT, id="unknown_format_fallback"),
+        # Case 7: Empty string returns "" (fix for XSUP-67083 - legacy mode preservation)
+        pytest.param(FORMAT_TEXT, "", "", id="empty_string_returns_empty"),
     ],
 )
 def test_get_fields_to_present(out_format, fields_to_present, expected):
+    """
+    Given:
+        - Various output formats and fields_to_present values
+    When:
+        - Creating RequestArguments with different field configurations
+    Then:
+        - Ensure get_fields_to_present returns the correct field list
+        - Ensure empty string is treated as legacy query mode (returns "")
+    """
     args = RequestArguments(out_format=out_format, fields_to_present=fields_to_present)
     assert args.fields_to_present == expected
+
+
+@pytest.mark.parametrize(
+    "indicator_value, indicator_type, expected_output",
+    [
+        pytest.param("*.example.org", "DomainGlob", ["example.org", "*.example.org"], id="domainglob_with_wildcard_prefix"),
+        pytest.param("*.example.org", "URL", ["example.org", "*.example.org"], id="url_with_wildcard_prefix"),
+        pytest.param("example.com", "Domain", ["example.com"], id="domain_without_wildcard"),
+    ],
+)
+def test_domain_glob_wildcard_expansion(indicator_value: str, indicator_type: str, expected_output: list):
+    """
+    Given:
+        - Indicators with different types (DomainGlob, URL, Domain) and values
+    When:
+        - Processing indicators through create_text_out_format for PAN-OS text output
+    Then:
+        - Ensure DomainGlob indicators produce both wildcard and bare domain forms
+        - Ensure URL wildcards are handled correctly
+        - Ensure regular domains produce only the domain itself
+        - Ensure DomainGlob type triggers expansion even without "*." prefix
+    """
+    import json
+    from io import StringIO
+    from EDL import create_text_out_format
+
+    # Create indicator data in memory (no file writing)
+    indicator_json = json.dumps({"value": indicator_value, "indicator_type": indicator_type})
+    indicators_data = StringIO(indicator_json + "\n")
+
+    # Create request arguments for PAN-OS text format
+    request_args = RequestArguments(out_format=FORMAT_TEXT)
+
+    # Process the indicator
+    output, _ = create_text_out_format(indicators_data, request_args)
+
+    # Parse the output - seek to beginning and read
+    output.seek(0)
+    output_content = output.read().strip()
+    output_lines = output_content.split("\n") if output_content else []
+
+    # Verify the output matches expected
+    assert sorted(output_lines) == sorted(expected_output)
+
+
+def test_get_request_id_without_request_context(mocker):
+    """
+    Given:
+      - get_request_id is called outside of an active Flask request context.
+    When:
+      - Accessing request.headers raises a RuntimeError.
+    Then:
+      - A fresh 12-char hex id is generated and a debug log is emitted.
+    """
+    mock_request = mocker.MagicMock()
+    mock_request.headers.get.side_effect = RuntimeError("Working outside of request context.")
+    mocker.patch.object(edl, "request", mock_request)
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    request_id = edl.get_request_id()
+
+    assert len(request_id) == 12
+    assert all(c in "0123456789abcdef" for c in request_id)
+    debug_mock.assert_called_once()
+
+
+def test_get_request_id_reuses_forwarded_header(mocker):
+    """
+    Given:
+      - get_request_id is called within a request context that carries X-Request-ID.
+    When:
+      - The forwarded header is present.
+    Then:
+      - The forwarded id is reused as-is (so it can be grepped across NGINX -> WSGI -> EDL).
+    """
+    mock_request = mocker.MagicMock()
+    mock_request.headers.get.return_value = "forwarded-id-123"
+    mocker.patch.object(edl, "request", mock_request)
+
+    assert edl.get_request_id() == "forwarded-id-123"
+    mock_request.headers.get.assert_called_once_with("X-Request-ID")
+
+
+def test_get_indicators_to_format_restores_stdout_lock_timeout(mocker):
+    """
+    Given:
+      - A server runtime that exposes demisto._stdout_lock_timeout.
+    When:
+      - get_indicators_to_format iterates over indicators (temporarily raising the timeout).
+    Then:
+      - The original _stdout_lock_timeout value is restored after the iteration completes.
+    """
+    demisto._stdout_lock_timeout = 60
+    try:
+        indicator_searcher = IndicatorsSearcher(4)
+        request_args = edl.RequestArguments(
+            out_format="TEXT",
+            query="",
+            limit=3,
+            url_port_stripping=True,
+            url_protocol_stripping=True,
+            url_truncate=True,
+        )
+
+        get_indicators_to_format(indicator_searcher, request_args)
+
+        assert demisto._stdout_lock_timeout == 60
+    finally:
+        delattr(demisto, "_stdout_lock_timeout")
+
+
+def test_get_indicators_to_format_noop_when_stdout_lock_timeout_absent(mocker):
+    """
+    Given:
+      - A server runtime that does NOT expose demisto._stdout_lock_timeout.
+    When:
+      - get_indicators_to_format iterates over indicators.
+    Then:
+      - The attribute is not created (the timeout tweak is a true no-op).
+    """
+    if hasattr(demisto, "_stdout_lock_timeout"):
+        delattr(demisto, "_stdout_lock_timeout")
+
+    indicator_searcher = IndicatorsSearcher(4)
+    request_args = edl.RequestArguments(
+        out_format="TEXT",
+        query="",
+        limit=3,
+        url_port_stripping=True,
+        url_protocol_stripping=True,
+        url_truncate=True,
+    )
+
+    get_indicators_to_format(indicator_searcher, request_args)
+
+    assert not hasattr(demisto, "_stdout_lock_timeout")

@@ -1,0 +1,21 @@
+{
+  "status": "completed",
+  "timeStarted": 1777207075512,
+  "timeCreated": 1777207075060,
+  "timeCompleted": 1777207082580,
+  "timeNow": 1777381406941,
+  "pendingComputeNodeStatuses": {
+    "countWarm": 0,
+    "countCold": 0
+  },
+  "cacheStatusesByStageId": {
+    "root": {
+      "cribl_search_sample": {
+        "usedCache": false,
+        "cacheStatus": "miss",
+        "reason": "Not a Lake Dataset",
+        "computeType": "v1"
+      }
+    }
+  }
+}

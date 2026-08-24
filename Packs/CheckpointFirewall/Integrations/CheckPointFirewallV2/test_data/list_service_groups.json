@@ -1,0 +1,27 @@
+{
+  "objects": [
+    {
+      "uid": "sg-1234",
+      "name": "service-group-1",
+      "type": "service-group",
+      "domain": {
+        "uid": "d-001",
+        "name": "SMC User",
+        "domain-type": "domain"
+      }
+    },
+    {
+      "uid": "sg-5678",
+      "name": "service-group-2",
+      "type": "service-group",
+      "domain": {
+        "uid": "d-001",
+        "name": "SMC User",
+        "domain-type": "domain"
+      }
+    }
+  ],
+  "from": 1,
+  "to": 2,
+  "total": 2
+}

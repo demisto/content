@@ -432,3 +432,49 @@ def is_gov_account(connector_id: str, account_id: str = "") -> bool:
             f"[COOC API] The account {account_id} cloud partition information is {relevant_account.get('cloud_partition')=}"
         )
         return False
+
+
+def get_timeout(timeout: int | str | None) -> tuple[int, int]:
+    """
+    Parse the ``timeout`` integration parameter into ``(read_timeout, connect_timeout)``.
+
+    Accepts either ``"<read>"`` (connect defaults to 10 s) or ``"<read>,<connect>"``.
+    Mirrors ``AWSClient.get_timeout`` from ``AWSApiModule`` for behavioural parity with
+    the legacy AWS-* packs. Intended for use by COOC integrations that support the
+    XSOAR / XSIAM marketplace path.
+
+    Args:
+        timeout (int | str | None): The raw value from ``params.get("timeout")``. May be ``None``, an
+            int, or a string.
+
+    Returns:
+        tuple[int, int]: ``(read_timeout, connect_timeout)`` in seconds.
+
+    Raises:
+        DemistoException: If the value is malformed.
+    """
+    if timeout is None or timeout == "":
+        timeout = "60,10"
+    try:
+        if isinstance(timeout, int):
+            if timeout < 0:
+                raise DemistoException("Timeout values must not be negative.")
+            return timeout, 10
+        timeout_vals = str(timeout).split(",")
+        if len(timeout_vals) > 2:
+            raise DemistoException(
+                f"Too many timeout values: expected 1 or 2, got {len(timeout_vals)}. "
+                "You can specify just the read timeout (for example 60) or also the connect "
+                "timeout followed after a comma (for example 60,10)."
+            )
+        read_timeout = int(timeout_vals[0])
+        connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
+        if read_timeout < 0 or connect_timeout < 0:
+            raise DemistoException("Timeout values must not be negative.")
+        return read_timeout, connect_timeout
+    except ValueError:
+        raise DemistoException(
+            "You can specify just the read timeout (for example 60) or also the connect "
+            "timeout followed after a comma (for example 60,10). If a connect timeout is "
+            "not specified, a default of 10 seconds will be used."
+        )

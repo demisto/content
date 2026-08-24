@@ -1,0 +1,255 @@
+id: Superna Zero Trust Request User Storage UnLockout
+version: -1
+name: Superna Zero Trust Request User Storage UnLockout
+fromversion: 8.9.0
+description: Offers an input question to accept the userID that should be unlocked out of storage. This playbook can be run by any Secops workflow to unlock a user that was previous locked out.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8282f383-8434-46f4-8fdc-91b711d30d61
+    type: start
+    task:
+      id: 8282f383-8434-46f4-8fdc-91b711d30d61
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a9b8c7d6-e5f4-4321-9876-fedcba098765
+    type: condition
+    task:
+      id: a9b8c7d6-e5f4-4321-9876-fedcba098765
+      version: -1
+      name: Is Superna Zero Trust integration enabled?
+      description: Verify that the Superna Zero Trust integration is available before executing playbook
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: SupernaZeroTrust
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 9aa29e1f-1021-47f3-8e86-6b9f12c99735
+    type: title
+    task:
+      id: 9aa29e1f-1021-47f3-8e86-6b9f12c99735
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b4823fb0-a7a9-4c4d-8d87-6a694fc5f043
+    type: collection
+    task:
+      id: b4823fb0-a7a9-4c4d-8d87-6a694fc5f043
+      version: -1
+      name: Prompt for userid
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Enter user ID in AD format domain\userID '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: example corp\username
+        tooltip: ""
+        readonly: false
+      title: User NAS unlock request
+      description: This workflow allows secOPS to request a user is locked out of NAS storage as a precaution and support SMB share auto permission detection to deny the specific user access to storage until the security threat can be resolve.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 607201e1-b227-4e95-85e0-95456b744356
+    type: regular
+    task:
+      id: 607201e1-b227-4e95-85e0-95456b744356
+      version: -1
+      name: url encode userid
+      description: 'Encodes a URL string by replacing special characters in the string using the %xx escape. For example: https://example.com converts to https:%2F%2Fexample.com.'
+      scriptName: URLEncode
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${User NAS unlock request.Answers.0}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 61def79d-4ad1-4a75-8b20-7bf5ca05d9a9
+    type: regular
+    task:
+      id: 61def79d-4ad1-4a75-8b20-7bf5ca05d9a9
+      version: -1
+      name: Superna Zero Trust Unlock User
+      description: Unlock a user from NAS storage access
+      script: SupernaZeroTrust|||superna-zt-unlock-user
+      type: regular
+      iscommand: true
+      brand: SupernaZeroTrust
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      username:
+        simple: ${User NAS unlock request.Answers.0}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 955,
+        "width": 380,
+        "x": 470,
+        "y": -170
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: false
+tests:
+- No tests (auto formatted)

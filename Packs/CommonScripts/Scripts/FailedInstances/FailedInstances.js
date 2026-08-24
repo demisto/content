@@ -6,6 +6,9 @@ var countFailed = 0;
 var countSuccess = 0;
 var instances = [];
 
+// Fetch the argument from the YAML input
+var includesDefault = args.includeDefault === 'true'; // convert string to boolean
+
 const brandConfig = {
     "ServiceNow v2": {
         command: "servicenow-oauth-test",
@@ -34,11 +37,17 @@ const brandConfig = {
     "Microsoft 365 Defender": {
         command: "microsoft-365-defender-auth-test",
         message: "run the !microsoft-365-defender-auth-test"
+    },
+     "Jira V3": {
+        command: "jira-oauth-test",
+        message: "run the !jira-oauth-test"
     }
 };
 
 Object.keys(all).forEach(function(m) {
-    var isShouldBeTesting = all[m].defaultIgnored !== 'true' && INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1;
+    // Include DNUBD instances only if includesDefault is true
+    var isShouldBeTesting = (includesDefault || all[m].defaultIgnored !== 'true') &&
+    INTERNAL_MODULES_BRANDS.indexOf(all[m].brand) === -1;
     if (all[m].state === 'active' && isShouldBeTesting) {
         var cmd = m.replace(/\s/g,'_') + '-test-module';
         var firstRest = executeCommand("addEntries", {"entries": JSON.stringify([{

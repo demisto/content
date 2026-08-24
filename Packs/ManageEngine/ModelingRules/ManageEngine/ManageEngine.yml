@@ -4,3 +4,5 @@ name: Manage Engine Modeling Rule
 rules: ''
 schema: ''
 tags: 'Manage Engine'
+supportedModules:
+- xsiam

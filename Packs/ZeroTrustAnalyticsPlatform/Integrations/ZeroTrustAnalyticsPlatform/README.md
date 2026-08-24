@@ -7,19 +7,18 @@ This integration was integrated and tested with version 2021-06-25 of ZeroTrustA
 | --- | --- | --- |
 | ZTAP server URL |  | True |
 | API Key | The API Key to use for connection | True |
-| Escalation Organization |  | True |
-| Escalation Group |  | True |
+| Reopen Group | Group to send to when reopening | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | Incident Mirroring Direction |  | False |
-| Comment entry tag |  |  |
-| Escalate entry tag |  |  |
-| ZTAP input tag |  |  |
-| Fetch attachments for comments from ZTAP |  |  |
-| Sync closing incidents with ZTAP |  |  |
-| Sync reopening incidents with ZTAP |  |  |
+| Comment entry tag | Adding this tag to a Note will sync as a comment in ZTAP | False |
+| Escalate entry tag | Adding this tag to a Note will reassign the alert back to Critical Start SOC | False |
+| ZTAP input tag |  | False |
+| Fetch attachments for comments from ZTAP |  | False |
+| Sync closing incidents with ZTAP | Cortex XSOAR only parameter. | False |
+| Sync reopening incidents with ZTAP |  | False |
 | First fetch timestamp |  | False |
 | Maximum number of incidents to fetch |  | False |
 

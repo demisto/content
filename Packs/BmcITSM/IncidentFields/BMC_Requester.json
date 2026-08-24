@@ -27,7 +27,7 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "firstname",
+            "key": "FirstName",
             "displayName": "First Name",
             "type": "shortText",
             "orgType": "shortText",
@@ -40,7 +40,7 @@
             "selectValues": null
         },
         {
-            "key": "lastname",
+            "key": "LastName",
             "displayName": "Last Name",
             "type": "shortText",
             "orgType": "shortText",
@@ -53,7 +53,20 @@
             "selectValues": null
         },
         {
-            "key": "company",
+            "key": "E-mail",
+            "displayName": "E-mail",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "Company",
             "displayName": "Company",
             "type": "shortText",
             "orgType": "shortText",
@@ -66,7 +79,7 @@
             "selectValues": null
         },
         {
-            "key": "region",
+            "key": "Region",
             "displayName": "Region",
             "type": "shortText",
             "orgType": "shortText",
@@ -79,7 +92,7 @@
             "selectValues": null
         },
         {
-            "key": "site",
+            "key": "Site",
             "displayName": "Site",
             "type": "shortText",
             "orgType": "shortText",
@@ -92,7 +105,7 @@
             "selectValues": null
         },
         {
-            "key": "sitegroup",
+            "key": "SiteGroup",
             "displayName": "Site Group",
             "type": "shortText",
             "orgType": "shortText",

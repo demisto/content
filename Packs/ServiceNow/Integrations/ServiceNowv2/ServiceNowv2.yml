@@ -145,12 +145,17 @@ configuration:
   options:
   - MM-dd-yyyy
   - MM/dd/yyyy
+  - MM/dd/yy
   - dd/MM/yyyy
+  - dd/MM/yy
   - dd-MM-yyyy
   - dd.MM.yyyy
   - yyyy-MM-dd
+  - yyyy/MM/dd
+  - yyyy.MM.dd
   - mmm-dd-yyyy
   - yyyy-MMM-dd
+  - dd-MMM-yyyy
   type: 15
   required: false
   section: Collect
@@ -352,6 +357,30 @@ configuration:
   advanced: true
   required: false
   section: Collect
+- display: Interpret comments in a specific format
+  name: comment_format
+  section: Collect
+  defaultvalue: source
+  additionalinfo: The format of the ServiceNow comments. Default is Source, the format supplied by ServiceNow during the fetch as part of the comments data. This can be changed to a different format for all comments. Possible values are Source (default), Text, and HTML. Use HTML if an HTML editor is used within ServiceNow to add comments.
+  type: 15
+  required: false
+  options:
+  - text
+  - html
+  - source
+  hidden:
+  - marketplacev2
+  - platform
+- display: Mark attachment as note
+  name: mark_attachments_as_note
+  section: Collect
+  additionalinfo: Whether to mark file attachments from ServiceNow as notes.
+  defaultvalue: "false"
+  type: 8
+  hidden:
+  - marketplacev2
+  - platform
+  required: false
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2
@@ -1569,6 +1598,13 @@ script:
       required: true
     - description: If there are mandatory variables defined for the item, they must be passed to the endpoint. Can be retrieved using the !servicenow-get-item-details command. For example, var1=value1;var2=value2.
       name: variables
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to bypass ServiceNow form validation when creating the catalog item order. When set to "true", the sysparm_no_validation flag is included in the request.
+      name: no_validation
+      predefined:
+      - 'true'
+      - 'false'
     description: Orders the specified catalog item.
     name: servicenow-create-item-order
     outputs:
@@ -1965,7 +2001,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: demisto/auth-utils:1.0.0.6111183
+  dockerimage: demisto/auth-utils:1.0.0.10608895
   isfetch: true
   ismappable: true
   isremotesyncin: true

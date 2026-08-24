@@ -4,5 +4,5 @@ name: Azure Events Hub Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
-- agentix
+- xsiam
 tags: Azure Events Hub

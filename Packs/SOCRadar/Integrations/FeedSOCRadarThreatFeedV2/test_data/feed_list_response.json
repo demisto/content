@@ -1,0 +1,35 @@
+[
+    {
+        "extra_info": {
+            "score": 30.0,
+            "seen_count": 1
+        },
+        "feed": "a5593da0e43c4879fc8c5eb7f92fbafa96d698a2",
+        "feed_type": "hash",
+        "first_seen_date": "2025-04-10 19:52:57",
+        "latest_seen_date": "2025-04-10 19:52:57",
+        "maintainer_name": "Abuse.ch-Hash"
+    },
+    {
+        "extra_info": {
+            "score": 75.0,
+            "seen_count": 5
+        },
+        "feed": "192.168.1.100",
+        "feed_type": "ip",
+        "first_seen_date": "2025-04-09 10:30:00",
+        "latest_seen_date": "2025-04-10 15:00:00",
+        "maintainer_name": "SOCRadar-Scanners"
+    },
+    {
+        "extra_info": {
+            "score": 60.0,
+            "seen_count": 3
+        },
+        "feed": "malicious-domain.example.com",
+        "feed_type": "domain",
+        "first_seen_date": "2025-04-08 08:00:00",
+        "latest_seen_date": "2025-04-10 12:00:00",
+        "maintainer_name": "SOCRadar-Phishing"
+    }
+]

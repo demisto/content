@@ -1,4 +1,4 @@
-# Trend Micro Deep Security
+# TrendAI™ Deep Security™
 
 <~XSOAR>
 
@@ -85,8 +85,8 @@ You can configure the specific vendor and product for this instance.
 
    | Parameter     | Value
    | :---          | :---
-   | `Protocol`    | The protocol that was defined in the syslog configuration on the Trend Micro Deep Security Manager Web Console.
-   | `Port`        | The port that was defined in the syslog configuration on the Trend Micro Deep Security Manager Web Console.
+   | `Protocol`    | The protocol that was defined in the syslog configuration on the TrendAI™ Deep Security™ Manager Web Console.
+   | `Port`        | The port that was defined in the syslog configuration on the TrendAI™ Deep Security™ Manager Web Console.
    | `Format`      | Select **_CEF_**.
    | `Vendor`      | Enter **_TrendMicro_**.
    | `Product`     | Enter **_DeepSecurity_**.

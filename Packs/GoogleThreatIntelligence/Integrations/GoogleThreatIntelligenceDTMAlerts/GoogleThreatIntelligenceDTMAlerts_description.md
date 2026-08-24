@@ -18,7 +18,7 @@ Your API key carries all your privileges, so keep it secure and don't share it w
 | Incident Type | Select "Google Threat Intelligence DTM Alert"|
 | Mapper (incoming) | Select "Google Threat Intelligence DTM Alerts - Incoming Mapper"|
 | API Key | Google Threat Intelligence API Key. |
-| Max Fetch | Maximum number of Alerts to fetch each time. Maximum value is 25. |
+| Max Fetch | Maximum number of Alerts to fetch each time. Maximum value is 100. |
 | First Fetch Time | The date or relative timestamp from which to begin fetching Alerts.|
 | Mirroring Direction | The mirroring direction in which to mirror the details. You can mirror "Outgoing" \(from XSOAR to GTI\) direction for DTM Alerts. |
 | Alert Type | Fetch Alerts by the specified alert types.<br/>Supported values: Compromised Credentials, Domain Discovery, Forum Post, Message, Paste, Shop Listing, Tweet, Web Content. |

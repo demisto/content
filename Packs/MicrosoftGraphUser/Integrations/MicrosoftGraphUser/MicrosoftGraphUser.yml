@@ -137,6 +137,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Allow secret generators commands execution
+  name: allow_secret_generators
+  defaultvalue: 'false'
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: Checking this box will allow running commands that generate and print secrets. Make sure to add restrictions to the related commands. For more information please refer to the following guide - <MFA guide>
 - display: Suppress Errors for Non Found Users
   name: handle_error
   defaultvalue: 'true'
@@ -144,14 +152,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: Allow secret generators commands execution
-  name: allow_secret_generators
-  defaultvalue: 'false'
-  type: 8
-  section: Collect
-  advanced: true
-  required: false
-  additionalinfo: Checking this box will allow running commands that generate and print secrets. Make sure to add restrictions to the related commands. For more information please refer to the following guide - <MFA guide>
 description: The Entra ID Users integration (formerly Azure Active Directory Users) is a Unified gateway to security insights - all from a unified Microsoft Graph User API.
 display: Entra ID Users
 name: Microsoft Graph User
@@ -1303,12 +1303,14 @@ script:
       secret: true
     description: Pops a synchronous MFA request for the given user. This is a blocking call that waits for user response or timeout.
     name: msgraph-user-request-mfa
+    hidden: true
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
       required: true
     description: Retrieves the authentication preferences for a user, including the default method.
     name: msgraph-user-get-user-default-auth-method
+    hidden: true
     outputs:
     - contextPath: MSGraphUser.AuthMethod.User
       description: The user principal name.
@@ -1353,7 +1355,7 @@ script:
     - contextPath: MSGraphUser.MFAAccessToken.AccessToken
       description: The access token value.
       type: String
-  dockerimage: demisto/crypto:1.0.0.6932158
+  dockerimage: demisto/crypto:1.0.0.11658507
   runonce: false
   script: '-'
   subtype: python3

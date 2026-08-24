@@ -1,0 +1,158 @@
+{
+    "violation_response": {
+        "data": {
+            "policyViolation": {
+                "policyViolationId": "00000000-0000-0000-0000-000000000001",
+                "status": "POLICY_VIOLATION_STATUS_OPEN",
+                "violationSeverity": "MEDIUM",
+                "createdAt": "2026-03-06T06:30:45.000Z",
+                "lastUpdatedAt": "2026-03-24T05:30:07.000Z",
+                "resourceId": "00000000-0000-0000-0000-000000000002",
+                "__typename": "PolicyViolation",
+                "policy": {
+                    "policyId": "00000000-0000-0000-0000-000000000003",
+                    "name": "Secrets stored outside of vault",
+                    "policyCategory": "MISPLACED",
+                    "policySeverity": "MEDIUM",
+                    "containsAccessFilters": false,
+                    "__typename": "DSPMPolicy"
+                },
+                "resourceMetadata": {
+                    "metadata": {
+                        "name": "test_object",
+                        "objectType": "VSPHERE_VIRTUAL_MACHINE",
+                        "platform": "PLATFORM_DATA_CENTER",
+                        "__typename": "CommonAssetMetadata"
+                    },
+                    "__typename": "ResourceMetadata"
+                },
+                "details": {
+                    "snapshotId": "00000000-0000-0000-0000-000000000005",
+                    "violatedSensitiveHits": 40,
+                    "violatedNoRiskSensitiveHits": 37,
+                    "violatedLowRiskSensitiveHits": 2,
+                    "violatedMediumRiskSensitiveHits": 1,
+                    "violatedHighRiskSensitiveHits": 0,
+                    "__typename": "DataGovViolationDetails"
+                },
+                "remediations": [
+                    {
+                        "remediationId": "00000000-0000-0000-0000-000000000009",
+                        "state": "REMEDIATION_STATE_SUCCESS",
+                        "remediationDetails": null,
+                        "__typename": "RemediationMetadata"
+                    }
+                ]
+            }
+        }
+    },
+    "empty_response": {},
+    "initial_request_success": {
+        "raw_response": {
+            "data": {
+                "downloadSnapshotResultsCsv": {
+                    "isSuccessful": true,
+                    "__typename": "DownloadCsvReply"
+                }
+            }
+        },
+        "outputs": {
+            "violationId": "00000000-0000-0000-0000-000000000001",
+            "objectId": "00000000-0000-0000-0000-000000000002",
+            "snapshotId": "00000000-0000-0000-0000-000000010001",
+            "objectName": "test_object",
+            "isSuccessful": true
+        }
+    },
+    "polling_file_ready": {
+        "raw_response": {
+            "data": {
+                "allUserFiles": [
+                    {
+                        "downloads": [
+                            {
+                                "externalId": "00000000-0000-0000-0000-000000000011",
+                                "createdAt": "2026-04-08T06:17:08.000Z",
+                                "expiresAt": "2026-04-09T06:17:08.000Z",
+                                "completedAt": "2026-04-08T06:18:28.000Z",
+                                "creator": "00000000-0000-0000-0000-000000000100",
+                                "filename": "test_object-violating-files_file_results_1775629027.csv",
+                                "type": "SNAPSHOT_RESULTS_CSV",
+                                "state": "READY",
+                                "__typename": "CustomerFacingFile"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "outputs": {
+            "violationId": "00000000-0000-0000-0000-000000000001",
+            "objectId": "00000000-0000-0000-0000-000000000002",
+            "snapshotId": "00000000-0000-0000-0000-000000010001",
+            "objectName": "test_object",
+            "externalId": "00000000-0000-0000-0000-000000000011",
+            "isSuccessful": true
+        }
+    },
+    "polling_file_not_ready": {
+        "raw_response": {
+            "data": {
+                "allUserFiles": [
+                    {
+                        "downloads": [
+                            {
+                                "createdAt": "2026-04-08T06:17:08.000Z",
+                                "expiresAt": "2026-04-09T06:17:08.000Z",
+                                "completedAt": "2026-04-08T06:18:28.000Z",
+                                "creator": "00000000-0000-0000-0000-000000000100",
+                                "filename": "test_object-violating-files_file_results_1775629027.csv",
+                                "type": "SNAPSHOT_RESULTS_CSV",
+                                "state": "IN_PROGRESS",
+                                "__typename": "CustomerFacingFile"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "outputs": {
+            "violationId": "00000000-0000-0000-0000-000000000001",
+            "objectId": "00000000-0000-0000-0000-000000000002",
+            "snapshotId": "00000000-0000-0000-0000-000000010001",
+            "objectName": "test_object",
+            "externalId": "",
+            "isSuccessful": true
+        }
+    },
+    "polling_file_failed": {
+        "raw_response": {
+            "data": {
+                "allUserFiles": [
+                    {
+                        "downloads": [
+                            {
+                                "createdAt": "2026-04-08T06:17:08.000Z",
+                                "expiresAt": "2026-04-09T06:17:08.000Z",
+                                "completedAt": "2026-04-08T06:18:28.000Z",
+                                "creator": "00000000-0000-0000-0000-000000000100",
+                                "filename": "test_object-violating-files_file_results_1775629027.csv",
+                                "type": "SNAPSHOT_RESULTS_CSV",
+                                "state": "FAILED",
+                                "__typename": "CustomerFacingFile"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "outputs": {
+            "violationId": "00000000-0000-0000-0000-000000000001",
+            "objectId": "00000000-0000-0000-0000-000000000002",
+            "snapshotId": "00000000-0000-0000-0000-000000010001",
+            "objectName": "test_object",
+            "externalId": "",
+            "isSuccessful": false
+        }
+    }
+}

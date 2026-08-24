@@ -4,3 +4,5 @@ name: HPE Switch Modeling Rule
 rules: ''
 schema: ''
 tags:
+supportedModules:
+- xsiam

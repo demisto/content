@@ -14,61 +14,66 @@ CommandResults = RecordedFutureAlerts.CommandResults
 # Test Client
 
 
-def _capture_http_call(monkeypatch: pytest.MonkeyPatch, method_name: str) -> dict[str, Any]:
-    """Patch Client.*method_name* and capture arguments."""
+def _capture_method_call(
+    monkeypatch: pytest.MonkeyPatch,
+    method_name: str,
+    *,
+    return_value: Any | None = None,
+) -> dict[str, Any]:
+    """Patch Client.*method_name* and capture keyword arguments."""
 
     captured: dict[str, Any] = {}
+    if return_value is None:
+        return_value = {"ok": True}
 
-    def _fake_http(self, *, url_suffix: str, params=None, json_data=None, **kwargs):
-        captured.update(url_suffix=url_suffix, params=params, json_data=json_data)
-        return {"ok": True}
+    def _fake_method(self, **kwargs):
+        captured.update(kwargs)
+        return return_value
 
-    monkeypatch.setattr(Client, method_name, _fake_http, raising=True)
+    monkeypatch.setattr(Client, method_name, _fake_method, raising=True)
     return captured
 
 
-def test_client_whoami_delegates_to_get(monkeypatch: pytest.MonkeyPatch):
+def test_client_response_to_command_results_uses_raw_outputs():
+    result_action = {
+        "outputs_prefix": "RecordedFutureAlerts.Alert",
+        "outputs_key_field": "id",
+        "raw_response": {"outputs": {"id": "42"}},
+        "readable_output": "done",
+    }
+
+    results = Client._response_to_command_results({"result_actions": [result_action]})
+
+    assert results[0].outputs == {"id": "42"}
+    assert results[0].readable_output == "done"
+
+
+def test_client_request_results_returns_no_results_on_404(monkeypatch: pytest.MonkeyPatch):
+    def _fake_request_raw(self, **kwargs):
+        raise RecordedFutureAlerts.DemistoException("404 not found")
+
+    monkeypatch.setattr(Client, "_request_raw", _fake_request_raw, raising=True)
+
+    client = Client(base_url="x", verify=False, headers={})
+    results = client._request_results(method="GET", url_suffix="/v3/alert/search")
+
+    assert len(results) == 1
+    assert results[0].readable_output == "No results found."
+    assert results[0].outputs == {}
+
+
+def test_client_whoami_delegates_to_request_raw(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(demisto, "args", dict, raising=True)
-    captured = _capture_http_call(monkeypatch, "_get")
+    captured = _capture_method_call(monkeypatch, "_request_raw")
 
     client = Client(base_url="x", verify=False, headers={})
     client.whoami()
 
+    assert captured["method"] == "GET"
     assert captured["url_suffix"] == "/info/whoami"
 
 
-def test_client_alert_search_delegates_to_get(monkeypatch: pytest.MonkeyPatch):
-    expected_args = {
-        "limit": "10",
-        "created_from": "2024-01-01T00:00:00Z",
-        "include_classic_alerts": "true",
-        "statuses": "New",
-    }
-    monkeypatch.setattr(demisto, "args", lambda: expected_args, raising=True)
-    captured = _capture_http_call(monkeypatch, "_get")
-
-    client = Client(base_url="x", verify=False, headers={})
-    client.alert_search()
-
-    assert captured["url_suffix"] == "/v3/alert/search"
-    assert captured["params"] == expected_args
-
-
-def test_client_alert_rule_search_delegates_to_get(
-    monkeypatch: pytest.MonkeyPatch,
-):
-    expected_args = {"rule_name": "Malware", "limit": "5"}
-    monkeypatch.setattr(demisto, "args", lambda: expected_args, raising=True)
-    captured = _capture_http_call(monkeypatch, "_get")
-
-    client = Client(base_url="x", verify=False, headers={})
-    client.alert_rule_search()
-
-    assert captured["url_suffix"] == "/v3/alert/rules"
-    assert captured["params"] == expected_args
-
-
-def test_client_alert_update_delegates_to_post(
+def test_client_alert_update_delegates_to_request_results(
     monkeypatch: pytest.MonkeyPatch,
 ):
     expected_json = {
@@ -78,21 +83,72 @@ def test_client_alert_update_delegates_to_post(
         "assignee": "analyst@example.com",
     }
     monkeypatch.setattr(demisto, "args", lambda: expected_json, raising=True)
-    captured = _capture_http_call(monkeypatch, "_post")
+    captured = _capture_method_call(
+        monkeypatch,
+        "_request_results",
+        return_value=[CommandResults(readable_output="ok")],
+    )
 
     client = Client(base_url="x", verify=False, headers={})
     client.alert_update()
 
+    assert captured["method"] == "POST"
     assert captured["url_suffix"] == "/v3/alert/update"
     assert captured["json_data"] == expected_json
 
 
-def test_client_alert_lookup_delegates_to_get(monkeypatch: pytest.MonkeyPatch):
-    captured = _capture_http_call(monkeypatch, "_get")
+def test_client_alert_search_delegates_to_request_results(monkeypatch: pytest.MonkeyPatch):
+    expected_args = {
+        "limit": "10",
+        "created_from": "2024-01-01T00:00:00Z",
+        "include_classic_alerts": "true",
+        "statuses": "New",
+    }
+    monkeypatch.setattr(demisto, "args", lambda: expected_args, raising=True)
+    captured = _capture_method_call(
+        monkeypatch,
+        "_request_results",
+        return_value=[CommandResults(readable_output="ok")],
+    )
+
+    client = Client(base_url="x", verify=False, headers={})
+    client.alert_search()
+
+    assert captured["method"] == "GET"
+    assert captured["url_suffix"] == "/v3/alert/search"
+    assert captured["params"] == expected_args
+
+
+def test_client_alert_rule_search_delegates_to_request_results(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    expected_args = {"rule_name": "Malware", "limit": "5"}
+    monkeypatch.setattr(demisto, "args", lambda: expected_args, raising=True)
+    captured = _capture_method_call(
+        monkeypatch,
+        "_request_results",
+        return_value=[CommandResults(readable_output="ok")],
+    )
+
+    client = Client(base_url="x", verify=False, headers={})
+    client.alert_rule_search()
+
+    assert captured["method"] == "GET"
+    assert captured["url_suffix"] == "/v3/alert/rules"
+    assert captured["params"] == expected_args
+
+
+def test_client_alert_lookup_delegates_to_request_results(monkeypatch: pytest.MonkeyPatch):
+    captured = _capture_method_call(
+        monkeypatch,
+        "_request_results",
+        return_value=[CommandResults(readable_output="ok")],
+    )
 
     client = Client(base_url="x", verify=False, headers={})
     client.alert_lookup("42")
 
+    assert captured["method"] == "GET"
     assert captured["url_suffix"] == "/v3/alert/lookup"
     assert captured["params"] == {"alert_id": "42"}
 
@@ -130,7 +186,7 @@ def test_client_get_alert_image_calls_http_request(
     }
 
 
-def test_client_fetch_incidents_delegates_to_post(
+def test_client_fetch_incidents_delegates_to_request_raw(
     monkeypatch: pytest.MonkeyPatch,
 ):
     monkeypatch.setattr(
@@ -146,11 +202,12 @@ def test_client_fetch_incidents_delegates_to_post(
     integration_conf = {"first_fetch": 60, "max_fetch": 10}
     monkeypatch.setattr(demisto, "params", lambda: integration_conf, raising=True)
 
-    captured = _capture_http_call(monkeypatch, "_post")
+    captured = _capture_method_call(monkeypatch, "_request_raw")
 
     client = Client(base_url="x", verify=False, headers={})
     client.fetch_incidents()
 
+    assert captured["method"] == "POST"
     assert captured["url_suffix"] == "/v3/alert/fetch"
 
     json_data = captured["json_data"]
@@ -188,15 +245,21 @@ def test_actions_alert_update_pass_through(monkeypatch: pytest.MonkeyPatch):
     assert actions.alert_update_command() is expected
 
 
-@pytest.mark.parametrize(
-    "image_id,expected_file_name",
-    [
-        ("img:abcd", "abcd.png"),
-        ("img:1234", "1234.png"),
-    ],
-)
-def test_get_file_name_from_image_id(image_id: str, expected_file_name: str):
-    assert Actions._get_file_name_from_image_id(image_id) == expected_file_name
+def test_actions_alert_lookup_pass_through(monkeypatch: pytest.MonkeyPatch):
+    expected: list[CommandResults] = [CommandResults(readable_output="hi")]
+    monkeypatch.setattr(demisto, "args", lambda: {"alert_id": "42"}, raising=True)
+
+    captured: dict[str, Any] = {}
+
+    def _fake_alert_lookup(self, alert_id: str):
+        captured["alert_id"] = alert_id
+        return expected
+
+    monkeypatch.setattr(Client, "alert_lookup", _fake_alert_lookup, raising=True)
+
+    actions = Actions(Client(base_url="x", verify=False, headers={}))
+    assert actions.alert_lookup_command() is expected
+    assert captured["alert_id"] == "42"
 
 
 def test_actions_fetch_incidents_builds_incident_objects(
@@ -228,6 +291,17 @@ def test_actions_fetch_incidents_builds_incident_objects(
     assert captured_incidents["last"]["next_query_classic"] == mock_next
 
 
+@pytest.mark.parametrize(
+    "image_id,expected_file_name",
+    [
+        ("img:abcd", "abcd.png"),
+        ("img:1234", "1234.png"),
+    ],
+)
+def test_get_file_name_from_image_id(image_id: str, expected_file_name: str):
+    assert Actions._get_file_name_from_image_id(image_id) == expected_file_name
+
+
 def test_actions_get_alert_images_no_images(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr(
         demisto,
@@ -255,6 +329,50 @@ def test_actions_get_alert_images_no_images(monkeypatch: pytest.MonkeyPatch):
     res = Actions(Client(base_url="x", verify=False, headers={})).get_alert_images_command()
 
     assert res[0].readable_output.startswith("No screenshots found in alert details.")
+
+
+@pytest.mark.parametrize(
+    "incident, expected_error",
+    [
+        (
+            None,
+            "This command can only run from an incident War Room context.",
+        ),
+        (
+            {"id": "425492fc-bd3a-4322-8908-4729c099d982", "isPlayground": True, "CustomFields": None},
+            "This command can only run from an incident War Room context.",
+        ),
+        (
+            {"id": "123", "CustomFields": None},
+            "Failed to get alert id from the incident.",
+        ),
+    ],
+)
+def test_actions_get_alert_images_precondition_errors(
+    monkeypatch: pytest.MonkeyPatch,
+    incident: Any,
+    expected_error: str,
+):
+    monkeypatch.setattr(demisto, "incident", lambda: incident, raising=True)
+
+    called = {"lookup": False, "error": ""}
+
+    def _fake_alert_lookup(*_, **__):
+        called["lookup"] = True
+        return []
+
+    def _fake_return_error(msg: str, *_, **__):
+        called["error"] = msg
+        raise RuntimeError("return_error_called")
+
+    monkeypatch.setattr(Client, "alert_lookup", _fake_alert_lookup, raising=True)
+    monkeypatch.setattr(RecordedFutureAlerts, "return_error", _fake_return_error, raising=True)
+
+    with pytest.raises(RuntimeError, match="return_error_called"):
+        Actions(Client(base_url="x", verify=False, headers={})).get_alert_images_command()
+
+    assert called["error"] == expected_error
+    assert called["lookup"] is False
 
 
 def test_actions_get_alert_images_fetches_missing(
@@ -392,10 +510,6 @@ def _exercise_main(monkeypatch: pytest.MonkeyPatch, command: str, actions_attr: 
     assert captured["res"] is expected
 
 
-def test_main_dispatch_rf_alerts(monkeypatch: pytest.MonkeyPatch):
-    _exercise_main(monkeypatch, command="rf-alerts", actions_attr="alert_search_command")
-
-
 def test_main_dispatch_rf_alert_rules(monkeypatch: pytest.MonkeyPatch):
     _exercise_main(
         monkeypatch,
@@ -404,11 +518,23 @@ def test_main_dispatch_rf_alert_rules(monkeypatch: pytest.MonkeyPatch):
     )
 
 
+def test_main_dispatch_rf_alerts(monkeypatch: pytest.MonkeyPatch):
+    _exercise_main(monkeypatch, command="rf-alerts", actions_attr="alert_search_command")
+
+
 def test_main_dispatch_rf_alert_update(monkeypatch: pytest.MonkeyPatch):
     _exercise_main(
         monkeypatch,
         command="rf-alert-update",
         actions_attr="alert_update_command",
+    )
+
+
+def test_main_dispatch_rf_alert_lookup(monkeypatch: pytest.MonkeyPatch):
+    _exercise_main(
+        monkeypatch,
+        command="rf-alert-lookup",
+        actions_attr="alert_lookup_command",
     )
 
 

@@ -21,3 +21,5 @@ Censys rate limits to 10 queries a day per IP for unauthenticated clients, and v
 ## IP reputation command
 
 Censys API provides reputation data exclusively to paying customers. When set to True, the integration will use labels to determinate reputation on IPs.
+
+Once the integration instance is configured, it will be used to populate the Censys SOAR dashboard.

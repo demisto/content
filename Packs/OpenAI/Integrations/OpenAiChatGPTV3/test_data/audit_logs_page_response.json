@@ -1,0 +1,20 @@
+{
+    "object": "list",
+    "data": [
+        {
+            "id": "FAKE_AUDIT_EVENT_001",
+            "type": "dummy.event_type_a",
+            "effective_at": 1000,
+            "actor": {"type": "session", "session": {"user": {"id": "FAKE_USER_A"}}}
+        },
+        {
+            "id": "FAKE_AUDIT_EVENT_002",
+            "type": "dummy.event_type_b",
+            "effective_at": 1100,
+            "actor": {"type": "session", "session": {"user": {"id": "FAKE_USER_B"}}}
+        }
+    ],
+    "first_id": "FAKE_AUDIT_EVENT_001",
+    "last_id": "FAKE_AUDIT_CURSOR_AAAA",
+    "has_more": false
+}

@@ -1,3 +1,17 @@
+> **Important Notice – Microsoft Sentinel Migration to Microsoft Defender Portal**
+>
+> Microsoft is migrating Microsoft Sentinel from the Azure portal to the Microsoft Defender portal:
+>
+> - **From July 2025** – New customers have automatically been onboarded and redirected to the Defender portal.
+> - **Starting March 2027** – All customers using Microsoft Sentinel in the Azure portal will be redirected to the Defender portal.
+>
+> This integration is **not being deprecated** at this time, as not all commands are supported in the Graph API. However, if you currently use Microsoft Sentinel in the Azure portal, Microsoft recommends planning your transition to the Defender portal now.
+>
+> We strongly recommend transitioning to the following integrations for managing incidents and indicators:
+>
+> - [Microsoft Graph Security](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph)
+> - [Microsoft Defender Threat Intelligence](https://xsoar.pan.dev/docs/reference/integrations/microsoft-defender-threat-intelligence)
+
 Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
 This integration was integrated and tested with version 2021-04-01 of Azure Sentinel.
 
@@ -32,26 +46,36 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
 2. Search for Azure Sentinel.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                    | **Required** |
-    |----------------------------------------------------------------------------------|--------------|
-    | Azure Cloud                                                                      | False        |
-    | Tenant ID                                                                        | False        |
-    | Client ID                                                                        | False        |
-    | Azure Managed Identities Client ID                                               | False        |
-    | Subscription ID                                                                  | True         |
-    | Resource Group Name                                                              | True         |
-    | Workspace Name                                                                   | True         |
-    | Fetch incidents                                                                  | False        |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False        |
-    | The minimum severity of incidents to fetch                                       | False        |
-    | Incident type                                                                    | False        |
-    | Trust any certificate (not secure)                                               | False        |
-    | Use system proxy settings                                                        | False        |
-    | Additional info to fetch                                                         | False        |
-    | Mirroring Direction                                                              | False        |
-    | Close Mirrored XSOAR Incident                                                    | False        |
-    | Close Mirrored Microsoft Sentinel Ticket                                         | False        |
-    | Server URL, see note below regarding Azure cloud options.                        | False        |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Azure Cloud | When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication\#using-national-cloud | False |
+| Maximum number of incidents per fetch. |  | False |
+| Tenant ID |  | False |
+| Client ID | The Application \(Client\) ID of the Azure app registration. | False |
+| Client Secret |  | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Private Key |  | False |
+| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+| Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
+| Default Subscription ID | The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail. | True |
+| Default Resource Group Name | The parameter can be saved as 000-000 and added as an argument to each command, but the Test button will fail. | True |
+| Workspace Name |  | True |
+| Fetch incidents |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| The minimum severity of incidents to fetch |  | False |
+| Incident type |  | False |
+| Server URL | Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication\#using-national-cloud | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Additional info to fetch | Choose what additional info to fetch for each incident.<br/>Note that this will increase the number of API calls.<br/> | False |
+| Mirroring Direction |  | False |
+| Close Mirrored XSOAR Incident | When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR. | False |
+| Close Mirrored Microsoft Sentinel Ticket | When selected, closing the Cortex XSOAR incident is mirrored in Microsoft Sentinel. | False |
+| Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. | False |
+| Incidents Fetch Interval |  | False |
+| Minutes to look back when fetching | The lookback time window for incidents/issues created before the last run time that did not initially match the query. Small values \(for example, 1-5 minutes\) are recommended to avoid performance issues. | False |
+| Incident Titles to not Fetch | The case-sensitive titles of the incidents that will not be fetched. This will also match if the title provided is contained in the incident's title. If no title is provided then all incidents will be fetched. | False |
+| Alert Product Names to not Fetch | The alert product names of the incidents that will not be fetched. For example: Microsoft Entra ID Protection, Microsoft Sentinel. If no alert product name is provided then incidents will be fetched normally. | False |
 
 4. Azure cloud options
 
@@ -93,6 +117,13 @@ Newly fetched incidents will be mirrored in the chosen direction. However, this 
 - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and *Microsoft Sentinel*.
 - If the **The minimum severity of incidents to fetch** integration parameter is set to a value other than `None`, incidents with a severity lower than the specified value will not be mirrored, even if their severity is changed in *Microsoft Sentinel* to a higher severity.
 - When closing an incident in Cortex XSOAR, the *Closing Reason* must be provided, otherwise the incident cannot be closed in *Microsoft Sentinel*.
+
+**Look-back Note**:
+
+- Increasing the **look-back** parameter value after the initial fetch may result in duplicate incidents during the first run following the change. To avoid duplicates, ensure the lookback value is not increased once the integration is active.
+    For more information, see [fetch-incidents-lookback](https://xsoar.pan.dev/docs/integrations/fetch-incidents-lookback).
+- Using a large lookback value (greater than one hour) may increase memory usage and is not recommended.
+    For tracking issues or scenarios requiring a large lookback window, it is recommended to use the mirroring feature with relevant tag filtering instead of the lookback parameter. You can configure a custom mapper to track specific fields.
 
 ## Commands
 
@@ -1717,7 +1748,6 @@ Updates an existing threat indicator.
 | --- | --- | --- |
 | indicator_name | The name of the indicator. | Required |
 | value | The value of the indicator. | Required |
-| display_name | The display name of the indicator. | Required |
 | description | The description of the threat indicator. | Optional |
 | indicator_type | The type of the indicator. Possible values are: ipv4, ipv6, file, url, domain. | Required |
 | hash_type | If indicator_type is a file, this entry is mandatory. | Optional |

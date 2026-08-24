@@ -2,6 +2,7 @@
     "associatedToAll": false,
     "associatedTypes": [
         "GIB Compromised Card",
+        "GIB Compromised Masked Card",
         "GIB Compromised Account"
     ],
     "caseInsensitive": false,
@@ -31,6 +32,7 @@
     "openEnded": false,
     "systemAssociatedTypes": [
         "GIB Compromised Card",
+        "GIB Compromised Masked Card",
         "GIB Compromised Account"
     ]
 }

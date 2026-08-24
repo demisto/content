@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Migration from Classic API to Pro API for Computer Inventory endpoints. Context outputs have changed. Additionally, Classic Authentication is no longer supported for computers endpoint."
+}

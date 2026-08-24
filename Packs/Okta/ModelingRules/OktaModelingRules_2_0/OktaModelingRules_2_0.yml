@@ -4,6 +4,5 @@ name: Okta 2.0 Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
-- agentix
 - xsiam
 tags: okta

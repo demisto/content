@@ -1,0 +1,73 @@
+{
+  "SecurityScore": {
+    "score": 87,
+    "grade": "B",
+    "trend": 1
+  },
+  "ChokePoints": [
+    {
+      "severity": "critical",
+      "severityScore": 100,
+      "name": "abc"
+    },
+    {
+      "severity": "critical",
+      "severityScore": 100,
+      "name": "Corporate.xm Everyone"
+    },
+    {
+      "severity": "critical",
+      "severityScore": 100,
+      "name": "FileServer"
+    }
+  ],
+  "CriticalAssets": [
+    {
+      "severity": "critical",
+      "severityScore": 89,
+      "name": "FileServer"
+    },
+    {
+      "severity": "high",
+      "severityScore": 75,
+      "name": "DatabaseServer"
+    },
+    {
+      "severity": "critical",
+      "severityScore": 95,
+      "name": "DomainController"
+    }
+  ],
+  "CompromisingExposures": [
+    {
+      "name": "PrintNightmare - sample (CVE-2021-34527)",
+      "chokePoints": 33,
+      "severity": "high",
+      "complexity": "Low",
+      "entities": 34,
+      "criticalAssets": 70,
+      "criticalAssetsAtRisk": 52,
+      "totalAssets": 135
+    },
+    {
+      "name": "DejaBlue",
+      "chokePoints": 5,
+      "severity": "high",
+      "complexity": "Low",
+      "entities": 5,
+      "criticalAssets": 43,
+      "criticalAssetsAtRisk": 32,
+      "totalAssets": 135
+    },
+    {
+      "name": "NoPac (CVE-2021-42278, CVE-2021-42287)",
+      "chokePoints": 2,
+      "severity": "high",
+      "complexity": "Low",
+      "entities": 2,
+      "criticalAssets": 38,
+      "criticalAssetsAtRisk": 28,
+      "totalAssets": 135
+    }
+  ]
+}

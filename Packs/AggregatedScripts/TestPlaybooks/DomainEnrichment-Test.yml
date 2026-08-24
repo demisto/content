@@ -634,11 +634,11 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: AlienVault OTX v2
+                        simple: CrowdStrike Falcon Intel v2
             iscontext: true
           right:
             value:
-              simple: AlienVault OTX v2
+              simple: CrowdStrike Falcon Intel v2
       - - operator: isEqualString
           left:
             value:
@@ -1405,7 +1405,7 @@ tasks:
     task:
       id: 3c657eca-d128-4419-82e3-626c68de63e1
       version: -1
-      name: AlienVault OTX v2 Result Exists
+      name: CrowdStrike Falcon Intel v2 Result Exists
       type: condition
       iscommand: false
       brand: ""
@@ -1431,7 +1431,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: AlienVault OTX v2
+                        simple: CrowdStrike Falcon Intel v2
                 accessor: Name
             iscontext: true
           right:
@@ -1459,7 +1459,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: AlienVault OTX v2
+                        simple: CrowdStrike Falcon Intel v2
                 accessor: Score
             iscontext: true
       - - operator: isExists
@@ -1475,7 +1475,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: AlienVault OTX v2
+                        simple: CrowdStrike Falcon Intel v2
                 accessor: Verdict
             iscontext: true
     continueonerrortype: ""

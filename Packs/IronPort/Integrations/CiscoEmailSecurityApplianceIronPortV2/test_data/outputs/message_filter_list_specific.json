@@ -1,0 +1,15 @@
+{
+    "meta": {
+        "count": 1
+    },
+    "data": [
+        {
+            "name": "F1",
+            "rules_and_actions": "if (recv-listener == \"InboundMail\") OR (recv-int ==\"notmain\") { alt-src-host (\"outbound\"); skip-filters(); } else { skip-filters(); }",
+            "invalid_reason": "Listener 'InboundMail' unknown; Interface 'notmain' unknown; Interface 'outbound' unknown",
+            "valid": "false",
+            "active": "true", 
+            "order": 1
+         }
+     ]
+}

@@ -4,6 +4,5 @@ name: Github Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
-- agentix
 - xsiam
 tags: github

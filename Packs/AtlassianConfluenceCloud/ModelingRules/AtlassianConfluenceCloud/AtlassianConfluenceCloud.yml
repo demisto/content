@@ -4,3 +4,5 @@ name: Atlassian Confluence Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

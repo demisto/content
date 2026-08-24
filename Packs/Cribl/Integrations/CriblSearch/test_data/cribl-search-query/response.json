@@ -1,0 +1,16 @@
+{
+  "isFinished": false,
+  "limit": 5,
+  "offset": 0,
+  "persistedEventCount": 0,
+  "totalEventCount": 0,
+  "job": {
+    "id": "1777383267244.i0hUyX",
+    "query": "dataset=\"cribl_search_sample\" | limit 5",
+    "earliest": "-5m",
+    "latest": "now",
+    "timeCreated": 1777383267244,
+    "status": "queued"
+  },
+  "events": []
+}
