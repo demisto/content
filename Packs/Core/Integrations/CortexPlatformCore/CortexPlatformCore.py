@@ -2128,7 +2128,7 @@ def update_issue_command(client: Client, args: dict):
     """
     issue_id = get_issue_id(args)
     if not issue_id:
-        raise DemistoException("Issue ID is required for updating an issue.")
+        raise CortexMissingArgError("id", override_message="Issue ID is required for updating an issue.")
 
     status_map = {
         "New": "STATUS_010_NEW",
@@ -2169,7 +2169,22 @@ def update_issue_command(client: Client, args: dict):
     filtered_update_args = {k: v for k, v in update_args.items() if v is not None}
 
     if not filtered_update_args and not link_cases and not unlink_cases:
-        raise DemistoException("Please provide arguments to update the issue.")
+        raise CortexMissingArgError(
+            [
+                "assigned_user_mail",
+                "severity",
+                "name",
+                "occurred",
+                "phase",
+                "type",
+                "description",
+                "status",
+                "link_cases",
+                "unlink_cases",
+            ],
+            require_one=True,
+            override_message="Please provide arguments to update the issue.",
+        )
 
     if link_cases:
         client.link_issue_to_cases(int(issue_id), link_cases)
@@ -6453,10 +6468,9 @@ def main():  # pragma: no cover
 
         elif command == "core-delete-endpoint-policy":
             return_results(delete_endpoint_policy_command(client, args))
-
     except Exception as err:
         demisto.error(traceback.format_exc())
-        return_error(str(err))
+        return_error(str(err), error=err)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
