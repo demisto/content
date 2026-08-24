@@ -24,7 +24,18 @@
     "layout": "Taegis XDR Case",
     "detached": false,
     "extractSettings": {
-        "mode": "All",
-        "fieldCliNameToExtractSettings": {}
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "taegisxdrcaseentities": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "taegisxdrkeyfindings": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
     }
 }
