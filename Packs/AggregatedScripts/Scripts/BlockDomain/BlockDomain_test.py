@@ -275,21 +275,29 @@ def test_start_flow_skips_commit_when_all_actions_unchanged(monkeypatch):
     def _capture(name, args):
         calls.append((name, args))
         seq = {
-            "pan-os-list-address-groups": [ok_entry({"Panorama.AddressGroups": [
-                {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": ["Cortex-evil.example.com"]}
-            ]})],
-            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": [
-                {"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}
-            ]})],
+            "pan-os-list-address-groups": [
+                ok_entry(
+                    {
+                        "Panorama.AddressGroups": [
+                            {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": ["Cortex-evil.example.com"]}
+                        ]
+                    }
+                )
+            ],
+            "pan-os-list-rules": [
+                ok_entry(
+                    {"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]}
+                )
+            ],
             "pan-os-get-address": [ok_entry({"Panorama.Addresses": {"Name": "Cortex-evil.example.com"}})],
             "pan-os-move-rule": [ok_entry()],
         }
         return seq.get(name, [ok_entry()])
 
     monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
-    monkeypatch.setattr(BlockDomain, "pan_os_commit", lambda *a, **k: pytest.fail(
-        "pan_os_commit must not be called when all rows are Unchanged"
-    ))
+    monkeypatch.setattr(
+        BlockDomain, "pan_os_commit", lambda *a, **k: pytest.fail("pan_os_commit must not be called when all rows are Unchanged")
+    )
     monkeypatch.setattr(BlockDomain.demisto, "setContext", lambda *a, **k: None)
 
     result = _pan_os(["evil.example.com"]).start_flow()
@@ -321,12 +329,14 @@ def test_start_flow_commits_when_at_least_one_row_modified(monkeypatch):
 
     def _capture(name, args):
         seq = {
-            "pan-os-list-address-groups": [ok_entry({"Panorama.AddressGroups": [
-                {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": []}
-            ]})],
-            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": [
-                {"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}
-            ]})],
+            "pan-os-list-address-groups": [
+                ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": []}]})
+            ],
+            "pan-os-list-rules": [
+                ok_entry(
+                    {"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]}
+                )
+            ],
             "pan-os-get-address": [err_entry("not found")],
             "pan-os-create-address": [ok_entry()],
             "pan-os-edit-address-group": [ok_entry()],
