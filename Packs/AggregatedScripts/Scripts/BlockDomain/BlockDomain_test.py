@@ -353,6 +353,85 @@ def test_start_flow_commits_when_at_least_one_row_modified(monkeypatch):
     assert commit_called, "pan_os_commit must be called when at least one row is Created/Modified"
 
 
+def test_process_domains_rule_created_when_object_unchanged_sets_rule_changed(monkeypatch):
+    """
+    Given:
+       - The address object and group already exist and the object is already a member (so the
+         per-domain Action is Unchanged), but the requested rule_name does NOT exist yet, so a
+         new rule must be created.
+    When:
+       - Calling process_domains.
+    Then:
+       - The row Action is Unchanged (object/membership did not change), but the instance's
+         _rule_changed flag is set True because pan-os-create-rule ran. This is what lets
+         start_flow still commit a rule-only change.
+    """
+    obj = "Cortex-evil.example.com"
+
+    def _capture(name, args):
+        seq = {
+            # Group exists and already contains the object -> membership Unchanged.
+            "pan-os-list-address-groups": [
+                ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj]}]})
+            ],
+            # No rule with the requested name exists -> ensure_rule will create it.
+            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": []})],
+            "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],  # object exists
+            "pan-os-create-rule": [ok_entry()],
+            "pan-os-move-rule": [ok_entry()],
+        }
+        return seq.get(name, [ok_entry()])
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+
+    pan_os = _pan_os(["evil.example.com"])
+    rows = pan_os.process_domains()
+
+    assert rows[0]["Action"] == ACTION_UNCHANGED
+    assert pan_os._rule_changed is True
+
+
+def test_start_flow_commits_when_only_the_rule_changed(monkeypatch):
+    """
+    Given:
+       - Every address object is already present and a member (all rows Unchanged), but a new
+         rule had to be created this run (rule-only change).
+    When:
+       - Calling start_flow.
+    Then:
+       - pan_os_commit is still invoked, so the newly created rule is actually committed/pushed
+         instead of silently sitting in the candidate config.
+    """
+    obj = "Cortex-evil.example.com"
+    commit_called: list = []
+
+    def _fake_commit(args, responses):
+        commit_called.append(True)
+        BlockDomain.POLLING = False
+        return BlockDomain.CommandResults(readable_output="fake commit ok")
+
+    def _capture(name, args):
+        seq = {
+            "pan-os-list-address-groups": [
+                ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj]}]})
+            ],
+            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": []})],
+            "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],
+            "pan-os-create-rule": [ok_entry()],
+            "pan-os-move-rule": [ok_entry()],
+        }
+        return seq.get(name, [ok_entry()])
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+    monkeypatch.setattr(BlockDomain.demisto, "setContext", lambda *a, **k: None)
+    monkeypatch.setattr(BlockDomain, "pan_os_commit", _fake_commit)
+    monkeypatch.setattr(BlockDomain.demisto, "context", lambda: {"block_domain_rows": "[]"})
+
+    _pan_os(["evil.example.com"]).start_flow()
+
+    assert commit_called, "pan_os_commit must be called when only the rule changed (all objects Unchanged)"
+
+
 def test_process_domains_captures_instance_name_from_response_metadata(monkeypatch):
     """
     Given:

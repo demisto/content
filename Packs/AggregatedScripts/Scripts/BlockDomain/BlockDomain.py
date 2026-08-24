@@ -326,6 +326,8 @@ class PanOs:
         # Rule create is deferred until the group exists (destination validation); this guard
         # prevents ensure_rule from running twice per run.
         self._rule_ensured: bool = False
+        # True once the rule was created or edited this run
+        self._rule_changed: bool = False
         # Captured lazily from the first response's Metadata.instance; stamped on every row.
         self.instance_name: str = ""
 
@@ -463,6 +465,7 @@ class PanOs:
             if self.log_forwarding_name:
                 create_rule_args["log_forwarding"] = self.log_forwarding_name
             self.execute_or_raise("pan-os-create-rule", create_rule_args, f"Failed to create rule '{self.rule_name}'")
+            self._rule_changed = True
         elif self.address_group not in rule_destinations:
             # Rule exists but doesn't reference our group - add without replacing existing destinations.
             self.execute_or_raise(
@@ -476,6 +479,7 @@ class PanOs:
                 },
                 f"Failed to add group to rule '{self.rule_name}'",
             )
+            self._rule_changed = True
         # Always enforce top placement.
         self.execute_or_raise(
             "pan-os-move-rule",
@@ -767,7 +771,9 @@ class PanOs:
         demisto.setContext("block_domain_rows", json.dumps(rows))
         # Only commit/push when a row actually mutated Panorama state. Skipping on a pure
         # Unchanged run saves a commit job + a potentially multi-minute push polling loop.
-        made_changes = any(row.get("Action") in (ACTION_CREATED, ACTION_MODIFIED) for row in rows)
+        # _rule_changed covers rule create/edit, which is not reflected in per-domain Action.
+        object_changes = any(row.get("Action") in (ACTION_CREATED, ACTION_MODIFIED) for row in rows)
+        made_changes = object_changes or self._rule_changed
         auto_commit = argToBoolean(self.args.get("auto_commit", True))
         demisto.debug(f"{LOG_TAG} start_flow: {made_changes=}, {auto_commit=}, {len(rows)} row(s)")
         if made_changes and auto_commit:
