@@ -183,9 +183,9 @@ def _extract_graph_objects(response) -> list:
         return objects
     if isinstance(response, dict):
         demisto.debug("Response is a dict.")
-        if 'value' in response and isinstance(response.get('value'), list):
+        if "value" in response and isinstance(response.get("value"), list):
             demisto.debug(f"Found 'value' array with {len(response.get('value', []))} items.")
-            return response.get('value', [])
+            return response.get("value", [])
         return [response]
     demisto.debug("Response is neither list nor dict. Returning empty list.")
     return []
@@ -193,39 +193,38 @@ def _extract_graph_objects(response) -> list:
 
 def msg_resolve_case(using_brand: str, case_name: str) -> str:
     demisto.debug(f"msg_resolve_case: Attempting to resolve case '{case_name}' using brand '{using_brand}'")
-    cases_res = execute_command('msg-list-ediscovery-cases', {'using-brand': using_brand, 'all_results': 'true'})
+    cases_res = execute_command("msg-list-ediscovery-cases", {"using-brand": using_brand, "all_results": "true"})
     cases = _extract_graph_objects(cases_res)
     demisto.debug(f"msg_resolve_case: Found {len(cases)} existing cases.")
-    
+
     for case in cases:
-        if case.get('displayName') == case_name and case.get('id'):
+        if case.get("displayName") == case_name and case.get("id"):
             demisto.debug(f"msg_resolve_case: Found matching case ID: {case['id']}")
-            return case['id']
-            
+            return case["id"]
+
     demisto.debug(f"msg_resolve_case: Case '{case_name}' not found. Creating a new one...")
-    new_case = execute_command('msg-create-ediscovery-case', {
-        'using-brand': using_brand,
-        'display_name': case_name
-    })
+    new_case = execute_command("msg-create-ediscovery-case", {"using-brand": using_brand, "display_name": case_name})
     created_cases = _extract_graph_objects(new_case)
-    new_case_id = created_cases[0].get('id') if created_cases else None
+    new_case_id = created_cases[0].get("id") if created_cases else None
     demisto.debug(f"msg_resolve_case: Created new case with ID: {new_case_id}")
     return new_case_id
 
 
 def microsoft_graph_security_delete_mail(args: dict, message_id: str, using_brand: str, delete_type: str, **kwargs):
-    demisto.debug(f"microsoft_graph_security_delete_mail starting. args: {args}, message_id: {message_id}, delete_type: {delete_type}")
+    demisto.debug(
+        f"microsoft_graph_security_delete_mail starting. args: {args}, message_id: {message_id}, delete_type: {delete_type}"
+    )
     check_demisto_version()
-    
+
     if was_email_already_deleted({"message-id": message_id}, "")[0] == "Success":
         demisto.debug("Email already deleted according to context. Exiting with Success.")
         return "Success", None
 
     case_name = "XSOAR Delete Reported Email"
-    case_id = args.get('case_id')
-    search_id = args.get('search_id')
+    case_id = args.get("case_id")
+    search_id = args.get("search_id")
     demisto.debug(f"Current State -> case_id: {case_id}, search_id: {search_id}")
-    
+
     # ==========================================
     # STEP 1: First Run - Setup and Trigger
     # ==========================================
@@ -234,88 +233,80 @@ def microsoft_graph_security_delete_mail(args: dict, message_id: str, using_bran
         case_id = msg_resolve_case(using_brand, case_name)
         kql_query = f'Identifier:"{message_id}"'
         search_name = f"delete_search_{int(time.time())}"
-        
+
         demisto.debug(f"Creating search with name '{search_name}' and KQL '{kql_query}' in case '{case_id}'")
-        search_res = execute_command('msg-create-ediscovery-search', {
-            'using-brand': using_brand,
-            'case_id': case_id,
-            'display_name': search_name,
-            'content_query': kql_query,
-            'data_source_scopes': 'allTenantMailboxes'
-        })
+        search_res = execute_command(
+            "msg-create-ediscovery-search",
+            {
+                "using-brand": using_brand,
+                "case_id": case_id,
+                "display_name": search_name,
+                "content_query": kql_query,
+                "data_source_scopes": "allTenantMailboxes",
+            },
+        )
         search_objs = _extract_graph_objects(search_res)
-        search_id = search_objs[0].get('id') if search_objs else None
+        search_id = search_objs[0].get("id") if search_objs else None
         demisto.debug(f"Search created with ID: {search_id}")
-        
+
         if not search_id:
             raise DemistoException("Failed to create eDiscovery search: No search_id returned.")
-            
+
         demisto.debug(f"Triggering msg-run-estimate-statistics for case {case_id} and search {search_id}")
-        execute_command('msg-run-estimate-statistics', {
-            'using-brand': using_brand,
-            'case_id': case_id,
-            'search_id': search_id
-        })
-        
-        args['case_id'] = case_id
-        args['search_id'] = search_id
-        
+        execute_command("msg-run-estimate-statistics", {"using-brand": using_brand, "case_id": case_id, "search_id": search_id})
+
+        args["case_id"] = case_id
+        args["search_id"] = search_id
+
         return "In Progress", schedule_next_command(args)
 
     # ==========================================
     # STEP 2: Polling Run - Check Status & Purge
     # ==========================================
     demisto.debug("Polling run detected. Checking estimate statistics status...")
-    status_res = execute_command('msg-get-last-estimate-statistics-operation', {
-        'using-brand': using_brand,
-        'case_id': case_id,
-        'search_id': search_id
-    })
-    
+    status_res = execute_command(
+        "msg-get-last-estimate-statistics-operation", {"using-brand": using_brand, "case_id": case_id, "search_id": search_id}
+    )
+
     status_objs = _extract_graph_objects(status_res)
     raw_status = status_objs[0] if status_objs else {}
-    status = str(raw_status.get('status', '')).lower()
+    status = str(raw_status.get("status", "")).lower()
     demisto.debug(f"Raw status object: {raw_status}")
     demisto.debug(f"Extracted status string: '{status}'")
-    
-    if status in ['running', 'notstarted', '']:
+
+    if status in ["running", "notstarted", ""]:
         demisto.debug("Operation still running or not started. Returning 'In Progress' to poll again.")
         return "In Progress", schedule_next_command(args)
-        
-    if status == 'failed':
+
+    if status == "failed":
         demisto.debug(f"Operation failed! Raising DeletionFailed exception for search_id: {search_id}")
         raise DeletionFailed(f"eDiscovery estimate statistics failed for search_id: {search_id}")
-        
-    indexed_items = int(raw_status.get('indexedItemCount') or 0)
-    total_items = int(raw_status.get('totalItemCount') or 0)
+
+    indexed_items = int(raw_status.get("indexedItemCount") or 0)
+    total_items = int(raw_status.get("totalItemCount") or 0)
     demisto.debug(f"Operation completed. indexedItemCount: {indexed_items}, totalItemCount: {total_items}")
-    
+
     if indexed_items == 0 and total_items == 0:
         demisto.debug("No items found. Cleaning up search and raising MissingEmailException.")
-        execute_command('msg-delete-ediscovery-search', {
-            'using-brand': using_brand,
-            'case_id': case_id,
-            'search_id': search_id
-        })
-        raise MissingEmailException()
-        
+        execute_command("msg-delete-ediscovery-search", {"using-brand": using_brand, "case_id": case_id, "search_id": search_id})
+        raise MissingEmailException
+
     purge_type = "permanentlyDelete" if delete_type == "hard" else "recoverable"
     demisto.debug(f"Items found! Triggering msg-purge-ediscovery-data with purge_type '{purge_type}'.")
-    execute_command('msg-purge-ediscovery-data', {
-        'using-brand': using_brand,
-        'case_id': case_id,
-        'search_id': search_id,
-        'purge_type': purge_type,
-        'purge_areas': 'mailboxes'
-    })
-    
+    execute_command(
+        "msg-purge-ediscovery-data",
+        {
+            "using-brand": using_brand,
+            "case_id": case_id,
+            "search_id": search_id,
+            "purge_type": purge_type,
+            "purge_areas": "mailboxes",
+        },
+    )
+
     demisto.debug(f"Cleaning up eDiscovery search {search_id}")
-    execute_command('msg-delete-ediscovery-search', {
-        'using-brand': using_brand,
-        'case_id': case_id,
-        'search_id': search_id
-    })
-    
+    execute_command("msg-delete-ediscovery-search", {"using-brand": using_brand, "case_id": case_id, "search_id": search_id})
+
     demisto.debug("Deletion flow completed successfully.")
     return "Success", None
 
@@ -431,7 +422,7 @@ def delete_email(
         delete_args = delete_args_function(search_result, search_args)  # type: ignore
     else:
         delete_args = delete_args_function(search_args)  # type: ignore
-        
+
     demisto.debug(f"Executing standard delete command: {delete_function} with args: {delete_args}")
     resp = execute_command(delete_function, delete_args)
     if deletion_error_condition(resp):
@@ -526,7 +517,7 @@ def delete_from_brand_handler(incident_info: dict, args: dict):
 
     elif delete_from_brand not in EMAIL_INTEGRATIONS:
         raise DemistoException(f"Cannot delete the email using the chosen brand. The possible brands are: {EMAIL_INTEGRATIONS}")
-    
+
     demisto.debug(f"Determined delete_from_brand: {delete_from_brand}")
     return delete_from_brand
 
