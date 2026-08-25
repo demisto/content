@@ -1,10 +1,10 @@
-USTA Account Takeover Prevention is designed to collect compromised credentials sourced from stealer malware attacks, helping organizations identify potential account takeovers and enhance their security posture. Provided by PRODAFT.
-This integration was integrated and tested with version 4.1.0 of USTA Account Takeover Prevention.
+USTAv4 Account Takeover Prevention is designed to collect compromised credentials sourced from stealer malware attacks, helping organizations identify potential account takeovers and enhance their security posture. Provided by PRODAFT.
+This integration was integrated and tested with version 4.1.0 of USTAv4 Account Takeover Prevention.
 
-## Configure USTA Account Takeover Prevention on Cortex XSOAR
+## Configure USTAv4 Account Takeover Prevention in Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for USTA Account Takeover Prevention.
+2. Search for USTAv4 Account Takeover Prevention.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
