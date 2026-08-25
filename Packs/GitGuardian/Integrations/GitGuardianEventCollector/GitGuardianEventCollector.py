@@ -11,6 +11,8 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 VENDOR = "gitguardian"
+PRODUCT = "enterprise"
+PRODUCT_SAAS = "saas"
 DEFAULT_PAGE_SIZE = 1000
 
 # Deployment types
@@ -19,8 +21,8 @@ DEPLOYMENT_SAAS = "SaaS"
 
 # XSIAM product name per deployment type
 DEPLOYMENT_TO_PRODUCT = {
-    DEPLOYMENT_ENTERPRISE: "enterprise",
-    DEPLOYMENT_SAAS: "saas",
+    DEPLOYMENT_ENTERPRISE: PRODUCT,
+    DEPLOYMENT_SAAS: PRODUCT_SAAS,
 }
 
 # API base path per deployment type (Enterprise: /api/v1, SaaS: /v1)

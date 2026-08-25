@@ -3,19 +3,19 @@ This integration was integrated and tested with version 1.0.0 of GitGuardianEven
 
 ## Configure GitGuardian Event Collector in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | False |
-| Deployment type | False |
-| API key | True |
-| Max number of events per fetch | False |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | False |
+| API key |  | True |
+| Deployment type | The deployment type. Select "Enterprise" for self-hosted deployments, or "SaaS" for the GitGuardian SaaS deployment (for example, api.gitguardian.com). | False |
+| Max number of events per fetch | Maximum number of events per fetch per event type. It is recommended to choose a number in multiples of 1000. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-The **Deployment type** parameter selects which GitGuardian API shape the collector uses:
+The **Deployment type** parameter selects which GitGuardian API the collector uses:
 
-- **Enterprise** (default): for self-hosted deployments. The API is served under `/api/v1` and incidents are fetched from `/api/v1/secrets`.
-- **SaaS**: for the GitGuardian SaaS deployment (for example `https://api.gitguardian.com`). The API is served under `/v1` and incidents are fetched from `/v1/incidents/secrets`.
+- **Enterprise** (default): For self-hosted deployments. The API is served under `/api/v1` and incidents are fetched from `/api/v1/secrets`.
+- **SaaS**: For the GitGuardian SaaS deployment (for example, `https://api.gitguardian.com`). The API is served under `/v1` and incidents are fetched from `/v1/incidents/secrets`.
 
 ## Commands
 
