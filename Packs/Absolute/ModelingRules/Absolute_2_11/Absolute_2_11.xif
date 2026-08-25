@@ -14,6 +14,11 @@ alter
     xdm.source.identity.identifier = if(actorObjectType = "User", actorDisplayId),
     xdm.source.application.version = if(actorObjectType = "System", actorDisplayId),
     xdm.source.user.identity_type = if(
+    	actorObjectType = "Device", XDM_CONST.IDENTITY_TYPE_MACHINE,
+		actorObjectType = "User", XDM_CONST.IDENTITY_TYPE_USER,
+		actorObjectType = "System", XDM_CONST.IDENTITY_TYPE_BUILTIN,
+		actorObjectType = "NA", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
+		actorObjectType = null, null, to_string(actorObjectType)),
     xdm.source.identity.identity_type = if(
     	actorObjectType = "Device", XDM_CONST.IDENTITY_TYPE_MACHINE,
 		actorObjectType = "User", XDM_CONST.IDENTITY_TYPE_USER,
