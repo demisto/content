@@ -308,26 +308,26 @@ async def test_get_events_command_no_window_uses_real_last_run(mocker):
 
 
 @pytest.mark.asyncio
-async def test_get_events_command_end_time_only_builds_window(mocker):
+async def test_get_events_command_invalid_end_before_start_returns_error(mocker):
     """
-    Given: netskope-get-events with ONLY end_time (no start_time).
+    Given: netskope-get-events where end_time is before start_time.
     When: Running get_events_command_async.
-    Then: A window is still built (end_time not silently ignored); start defaults to 1 day ago.
+    Then: return_error is called (invalid window rejected).
     """
     from NetskopeEventCollector_v2 import get_events_command_async
 
-    fetch_mock = mocker.patch("NetskopeEventCollector_v2.handle_fetch_and_send_all_events", return_value=([], 0, {}))
+    mocker.patch("NetskopeEventCollector_v2.handle_fetch_and_send_all_events", return_value=([], 0, {}))
+    return_error_mock = mocker.patch("NetskopeEventCollector_v2.return_error", side_effect=SystemExit)
     client = Client(BASE_URL, "netskope_token", proxy=False, verify=False, event_types_to_fetch=["audit"])
 
-    real_last_run = {"audit": {"next_fetch_start_time": "12345", "failures": []}}
-    await get_events_command_async(
-        client, {"limit": 50, "end_time": "2026-08-12T00:00:00Z"}, real_last_run, should_push_events=False
-    )
-
-    passed_last_run = fetch_mock.call_args.kwargs["last_run"]
-    assert passed_last_run is not real_last_run, "end_time alone must build a window"
-    assert "next_fetch_start_time" in passed_last_run["audit"]
-    assert "next_fetch_end_time" in passed_last_run["audit"]
+    with pytest.raises(SystemExit):
+        await get_events_command_async(
+            client,
+            {"start_time": "2026-08-12T00:00:00Z", "end_time": "2026-08-11T00:00:00Z"},
+            {},
+            should_push_events=False,
+        )
+    return_error_mock.assert_called_once()
 
 
 @pytest.mark.asyncio
