@@ -1658,3 +1658,82 @@ def test_get_indicators_to_format_noop_when_stdout_lock_timeout_absent(mocker):
     get_indicators_to_format(indicator_searcher, request_args)
 
     assert not hasattr(demisto, "_stdout_lock_timeout")
+
+
+def test_test_module_ports_free_returns_ok(mocker):
+    """
+    Given:
+      - Both EDL ports are free.
+    When:
+      - test_module runs.
+    Then:
+      - The standard nginx/WSGI test runs and the result is exactly "ok"
+        (the string the platform requires to mark the test as passed).
+    """
+    import EDL as edl
+
+    mocker.patch.object(edl, "validate_test_module_params", return_value=None)
+    mocker.patch.object(edl, "get_params_port", return_value=1000)
+    mocker.patch.object(edl, "is_port_in_use", return_value=False)
+    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+
+    readable_output, outputs, raw = edl.test_module({}, {"longRunningPort": "1000"})
+
+    assert readable_output == "ok"
+    assert outputs == {}
+    assert raw == {}
+    run_long_running_mock.assert_called_once()
+
+
+def test_test_module_existing_healthy_instance_returns_ok(mocker):
+    """
+    Given:
+      - The EDL ports are already in use.
+      - A healthy EDL instance is answering on them.
+    When:
+      - test_module runs.
+    Then:
+      - The result is exactly "ok" so the platform marks the test as passed
+        (regression: a verbose "ok - ..." string was previously treated as a failure reason).
+    """
+    import EDL as edl
+
+    mocker.patch.object(edl, "validate_test_module_params", return_value=None)
+    mocker.patch.object(edl, "get_params_port", return_value=1000)
+    mocker.patch.object(edl, "is_port_in_use", return_value=True)
+    mocker.patch.object(edl, "is_our_edl_instance_running", return_value=True)
+    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+
+    readable_output, outputs, raw = edl.test_module({}, {"longRunningPort": "1000"})
+
+    assert readable_output == "ok"
+    assert outputs == {}
+    assert raw == {}
+    # We must not re-bind the ports of a live instance.
+    run_long_running_mock.assert_not_called()
+
+
+def test_test_module_ports_taken_by_foreign_process_raises(mocker):
+    """
+    Given:
+      - The EDL ports are already in use.
+      - No healthy EDL instance is answering on them (a different process owns the ports).
+    When:
+      - test_module runs.
+    Then:
+      - A DemistoException is raised.
+      - run_long_running is NOT called (we must never re-bind ports owned by another process).
+    """
+    import EDL as edl
+    from CommonServerPython import DemistoException
+
+    mocker.patch.object(edl, "validate_test_module_params", return_value=None)
+    mocker.patch.object(edl, "get_params_port", return_value=1000)
+    mocker.patch.object(edl, "is_port_in_use", return_value=True)
+    mocker.patch.object(edl, "is_our_edl_instance_running", return_value=False)
+    run_long_running_mock = mocker.patch.object(edl, "run_long_running", return_value=None)
+
+    with pytest.raises(DemistoException):
+        edl.test_module({}, {"longRunningPort": "1000"})
+
+    run_long_running_mock.assert_not_called()
