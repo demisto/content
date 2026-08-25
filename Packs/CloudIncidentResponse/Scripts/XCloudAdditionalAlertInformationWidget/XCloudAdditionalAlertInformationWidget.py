@@ -97,9 +97,7 @@ def main():  # pragma: no cover
             return_results(CommandResults(readable_output="No additional alert information available."))
             return
         command_results = CommandResults(
-            readable_output=tableToMarkdown(
-                "Original Alert Additional Information", results, headers=list(results[0].keys())
-            )
+            readable_output=tableToMarkdown("Original Alert Additional Information", results, headers=list(results[0].keys()))
         )
         return_results(command_results)
     except Exception as ex:
