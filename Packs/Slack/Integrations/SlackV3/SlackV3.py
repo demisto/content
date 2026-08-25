@@ -2083,7 +2083,11 @@ async def handle_entitlement_interactions(
             entitlement_json = actions[0].get("value")
             if not entitlement_json:
                 return True
-            entitlement_string = json.loads(entitlement_json)
+            try:
+                entitlement_string = json.loads(entitlement_json)
+            except json.JSONDecodeError:
+                demisto.debug(f"SlackV3 - Action value is not valid JSON, skipping entitlement handling: {entitlement_json}")
+                return True
             if actions[0].get("action_id") == "xsoar-button-submit":
                 demisto.debug("Handling a SlackBlockBuilder response.")
                 state = data.get("state", {})
@@ -2240,6 +2244,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         message_ts = message.get("ts", "")
         actions = data.get("actions", [])
         quick_check_payload = json.dumps(data)
+        demisto.debug(f"SlackV3 - Processing payload: {quick_check_payload}")
 
         # Check if the message is from a bot so we can quit processing ASAP
         if is_bot_message(data):
