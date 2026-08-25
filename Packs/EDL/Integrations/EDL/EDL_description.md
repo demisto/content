@@ -1,4 +1,4 @@
-## How to Access the Generic Export Indicators Service
+## Generic Export Indicators Service
 
 If you have several Generic Export Indicators Service integration instances, make sure to use **different listening ports** to separate the outbound feeds.
 Each instance uses three consecutive ports: the configured **Listen Port**, port + 1, and port + 2. NGINX listens on the configured port (public), the Python process listens on port + 1, and NGINX uses port + 2 internally for its fail-fast cache fetch tier. For example, if configured for port 9009, ports 9009, 9010, and 9011 must all be free. Ensure no other instance uses a **Listen Port** within 2 of another. When running without `--network=host`, ports + 1 and + 2 are not exposed to the machine.
