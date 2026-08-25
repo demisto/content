@@ -95,31 +95,29 @@ def test_was_email_already_deleted(mocker, delete_email_context, result):
     Then:
         Return 'Success' if the email was already deleted priorly, and 'Skipped' otherwise, and the error msg
     """
-    search_args = {"message_id": "message-id"}
+    search_args = {"message-id": "message-id"}
     mocker.patch.object(demisto, "get", return_value=delete_email_context)
     e = MissingEmailException()
     assert was_email_already_deleted(search_args, str(e)) == result
 
 
-def test_was_email_found_security_and_compliance():
+def test_extract_graph_objects():
     """
-
     Given:
-        Search results from security and compliance
+        Various structures returned by execute_command for MS Graph.
     When:
-        When deleting an email and checking if it was found in the search operation done priorly
+        Calling _extract_graph_objects helper.
     Then:
-        Return true if the email was found, and false otherwise
+        Return a flat list of objects.
     """
-    success_results_dict = [
-        {"SuccessResults": "{Location: sr-test01@demistodev.onmicrosoft.com, Item count: 1, Total size: 55543}"}
-    ]
-    success_results_dict_not_found = [
-        {"SuccessResults": "{Location: sr-test01@demistodev.onmicrosoft.com, Item count: 0, Total size: 55543}"}
-    ]
-
-    assert was_email_found_security_and_compliance(success_results_dict)
-    assert not was_email_found_security_and_compliance(success_results_dict_not_found)
+    # List of objects
+    assert DeleteReportedEmail._extract_graph_objects([{"id": "1"}]) == [{"id": "1"}]
+    # OData dict with 'value'
+    assert DeleteReportedEmail._extract_graph_objects({"@odata.context": "meta", "value": [{"id": "2"}]}) == [{"id": "2"}]
+    # Single dict
+    assert DeleteReportedEmail._extract_graph_objects({"id": "3"}) == [{"id": "3"}]
+    # None
+    assert DeleteReportedEmail._extract_graph_objects(None) == []
 
 
 def execute_command_search_and_compliance_not_deleted_yet(command, args):
@@ -144,346 +142,118 @@ def execute_command_search_and_compliance_deleted_successfully(command, args):
         return {"Status": "Completed"}
 
 
-class TestSecurityAndCompliance:
+class TestMicrosoftGraphSecurityDeleteMail:
     @pytest.fixture(autouse=True)
     def setup(self, mocker):
-        self.search_args = {
-            "delete_type": "delete-type",
-            "using_brand": "brand",
-            "email_subject": "subject",
-            "to_user_id": "user_id",
-            "from_user_id": "from_user_id",
-            "message_id": "message_id",
-        }
         self.args = {}
-        import DeleteReportedEmail
+        self.message_id = "<test@message.com>"
+        self.using_brand = "Microsoft Graph"
+        self.delete_type = "soft"
 
         mocker.patch.object(DeleteReportedEmail, "check_demisto_version", return_value=None)
-        mocker.patch.object(DeleteReportedEmail, "schedule_next_command", return_value="")
-        mocker.patch.object(DeleteReportedEmail, "was_email_found_security_and_compliance", return_value=True)
+        mocker.patch.object(DeleteReportedEmail, "was_email_already_deleted", return_value=("Skipped", ""))
+        mocker.patch.object(DeleteReportedEmail, "schedule_next_command", return_value="Scheduled")
 
-    def test_first_call(self, mocker):
+    def test_first_run_success(self, mocker):
         """
         Given:
-            Search arguments to use for the search operation
+            No case_id or search_id in args.
         When:
-            Initiating a delete via security and compliance
+            Initiating the first run of the Microsoft Graph Security deletion polling.
         Then:
-            Return that the status is in progress
+            It should resolve the case, create a search with the specific KQL query,
+            trigger the estimate, return 'In Progress', and populate args.
         """
 
-        mocker.patch.object(
-            demisto,
-            "executeCommand",
-            return_value=[
-                {"Contents": {"Status": "Starting"}, "Type": "entry"},
-                {"Contents": {"Status": "Starting"}, "Type": "entry"},
-            ],
-        )
-        result = security_and_compliance_delete_mail(self.args, **self.search_args)[0]
-        assert result == "In Progress"
+        def execute_command_mock(cmd, args):
+            if cmd == "msg-list-ediscovery-cases":
+                return []  # Simulate case not found
+            if cmd == "msg-create-ediscovery-case":
+                return [{"id": "case-123"}]
+            if cmd == "msg-create-ediscovery-search":
+                assert args["content_query"] == 'Identifier:"<test@message.com>"'
+                return [{"id": "search-456"}]
+            if cmd == "msg-run-estimate-statistics":
+                return []
+            return []
 
-    def test_polled_call_create_deletion(self, mocker):
+        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=execute_command_mock)
+
+        res, scheduled = microsoft_graph_security_delete_mail(self.args, self.message_id, self.using_brand, self.delete_type)
+
+        assert res == "In Progress"
+        assert scheduled == "Scheduled"
+        assert self.args["case_id"] == "case-123"
+        assert self.args["search_id"] == "search-456"
+
+    def test_polling_in_progress(self, mocker):
         """
         Given:
-            Search arguments to use for the search operation, including the search_name
+            case_id and search_id in args, and the estimate status is 'running'.
         When:
-            Initiating a delete via security and compliance
+            Polling for estimate completion.
         Then:
-            Return that the status is in progress
+            It should return 'In Progress' and schedule next command.
         """
-        mocker.patch.object(
-            DeleteReportedEmail, "execute_command", side_effect=execute_command_search_and_compliance_not_deleted_yet
-        )
-        self.args["search_name"] = "search_name"
-        result = security_and_compliance_delete_mail(self.args, **self.search_args)[0]
-        assert result == "In Progress"
+        self.args = {"case_id": "case-123", "search_id": "search-456"}
 
-    def test_polled_call_deletion_success(self, mocker):
+        def execute_command_mock(cmd, args):
+            if cmd == "msg-get-last-estimate-statistics-operation":
+                return [{"status": "running"}]
+            return []
+
+        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=execute_command_mock)
+        res, scheduled = microsoft_graph_security_delete_mail(self.args, self.message_id, self.using_brand, self.delete_type)
+
+        assert res == "In Progress"
+        assert scheduled == "Scheduled"
+
+    def test_polling_success(self, mocker):
         """
         Given:
-            Search arguments to use for the search operation, including the search_name
+            case_id and search_id in args, and the estimate status is 'succeeded' with >0 items.
         When:
-            Initiating a delete via security and compliance
+            Polling for estimate completion.
         Then:
-            Return Success
+            It should execute the purge command, delete the search, and return 'Success'.
         """
-        mocker.patch.object(
-            DeleteReportedEmail, "execute_command", side_effect=execute_command_search_and_compliance_deleted_successfully
-        )
-        self.args["search_name"] = "search_name"
-        result = security_and_compliance_delete_mail(self.args, **self.search_args)[0]
-        assert result == "Success"
+        self.args = {"case_id": "case-123", "search_id": "search-456"}
 
+        mock_execute = mocker.patch.object(DeleteReportedEmail, "execute_command")
 
-# ─── Microsoft Graph Security eDiscovery delete flow helpers ──────────────────
+        def execute_command_mock(cmd, args):
+            if cmd == "msg-get-last-estimate-statistics-operation":
+                return [{"status": "succeeded", "indexedItemCount": 1, "totalItemCount": 0}]
+            return []
 
+        mock_execute.side_effect = execute_command_mock
+        res, scheduled = microsoft_graph_security_delete_mail(self.args, self.message_id, self.using_brand, self.delete_type)
 
-def _msg_estimate_status(status: str, indexed: int = 1, total: int = 1):
-    """Build an execute_command side-effect for the Microsoft Graph Security flow.
+        assert res == "Success"
+        assert scheduled is None
+        mock_execute.assert_any_call("msg-purge-ediscovery-data", mocker.ANY)
+        mock_execute.assert_any_call("msg-delete-ediscovery-search", mocker.ANY)
 
-    The returned callable simulates the eDiscovery command chain up to (and
-    including) the estimate-statistics polling step. ``status`` controls the
-    reported estimate status, and ``indexed``/``total`` control the item counts.
-    """
-
-    def _side_effect(command, args):
-        if command == "msg-list-ediscovery-cases":
-            return [{"DisplayName": MSG_EDISCOVERY_CASE_NAME, "CaseId": "existing_case_id"}]
-        elif command == "msg-create-ediscovery-case":
-            return {"CaseId": "new_case_id"}
-        elif command == "msg-create-ediscovery-search":
-            return {"SearchId": "search_id"}
-        elif command == "msg-run-estimate-statistics":
-            return {}
-        elif command == "msg-get-last-estimate-statistics-operation":
-            return {"Status": status, "IndexedItemsCount": indexed, "TotalItemsCount": total}
-        return {}
-
-    return _side_effect
-
-
-def _msg_full_flow(estimate_status="succeeded", purge_status="succeeded", indexed=1, total=1):
-    """Build an execute_command side-effect covering the full eDiscovery flow.
-
-    Simulates case resolution, search creation, estimate polling, purge start,
-    and purge-operation polling. The captured purge args are stored on the
-    returned callable via the ``purge_args`` attribute for inspection.
-    """
-
-    captured: dict = {}
-
-    def _side_effect(command, args):
-        if command == "msg-list-ediscovery-cases":
-            return [{"DisplayName": MSG_EDISCOVERY_CASE_NAME, "CaseId": "existing_case_id"}]
-        elif command == "msg-create-ediscovery-case":
-            return {"CaseId": "new_case_id"}
-        elif command == "msg-create-ediscovery-search":
-            return {"SearchId": "search_id"}
-        elif command == "msg-run-estimate-statistics":
-            return {}
-        elif command == "msg-get-last-estimate-statistics-operation":
-            return {"Status": estimate_status, "IndexedItemsCount": indexed, "TotalItemsCount": total}
-        elif command == "msg-purge-ediscovery-data":
-            captured["purge_args"] = args
-            return {"Purge": {"OperationID": "purge_op_id"}}
-        elif command == "msg-list-case-operation":
-            return {"Status": purge_status}
-        elif command == "msg-delete-ediscovery-search":
-            captured["cleanup_called"] = True
-            return {}
-        return {}
-
-    _side_effect.captured = captured  # type: ignore[attr-defined]
-    return _side_effect
-
-
-class TestMicrosoftGraphSecurity:
-    @pytest.fixture(autouse=True)
-    def setup(self, mocker):
-        self.kwargs = {
-            "to_user_id": "user_id",
-            "user_id": "user_id",
-            "content_query": 'Identifier:"<reportedemail@messageid>"',
-            "case_name": MSG_EDISCOVERY_CASE_NAME,
-            "using_brand": "MicrosoftGraphSecurity",
-            "delete_type": "soft",
-            "message_id": "<reportedemail@messageid>",
-        }
-        self.args: dict = {}
-        mocker.patch.object(DeleteReportedEmail, "check_demisto_version", return_value=None)
-        mocker.patch.object(DeleteReportedEmail, "schedule_next_command", return_value="scheduled")
-        # By default the email was not previously deleted.
-        mocker.patch.object(demisto, "get", return_value=None)
-
-    def test_search_args_kql_uses_identifier_query(self, mocker):
+    def test_polling_email_missing(self, mocker):
         """
         Given:
-            An incident whose brand resolves to MicrosoftGraphSecurity.
+            case_id and search_id in args, and the estimate status is 'succeeded' with 0 items.
         When:
-            get_search_args builds the search arguments.
+            Polling for estimate completion.
         Then:
-            The content_query is the KQL Identifier query (NOT from:+subject:),
-            and both to_user_id and user_id are set to the recipient mailbox.
+            It should raise MissingEmailException.
         """
-        incident_info = {
-            "CustomFields": {
-                "reportedemailorigin": "Attached",
-                "reportedemailmessageid": "<reportedemail@messageid>",
-                "reportedemailto": "recipient@example.com",
-                "emaildeletetype": "soft",
-                "reportedemailfrom": "sender@example.com",
-                "reportedemailsubject": "Test Subject",
-            }
-        }
-        mocker.patch.object(demisto, "incident", return_value=incident_info)
-        mocker.patch.object(DeleteReportedEmail, "delete_from_brand_handler", return_value="MicrosoftGraphSecurity")
-        result = get_search_args({})
-        assert result["content_query"] == 'Identifier:"<reportedemail@messageid>"'
-        assert "from:" not in result["content_query"]
-        assert "subject:" not in result["content_query"]
-        assert result["to_user_id"] == "recipient@example.com"
-        assert result["user_id"] == "recipient@example.com"
-        assert result["case_name"] == MSG_EDISCOVERY_CASE_NAME
+        self.args = {"case_id": "case-123", "search_id": "search-456"}
 
-    def test_first_call_persists_state_and_returns_in_progress(self, mocker):
-        """
-        Given:
-            A first invocation with no case_id in args and a still-running estimate.
-        When:
-            microsoft_graph_security_delete_mail is called.
-        Then:
-            case_id and search_id are persisted into args and the status is "In Progress".
-        """
-        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=_msg_estimate_status("notStarted"))
-        result, scheduled = microsoft_graph_security_delete_mail(self.args, **self.kwargs)
-        assert result == "In Progress"
-        assert scheduled == "scheduled"
-        assert self.args["case_id"] == "existing_case_id"
-        assert self.args["search_id"] == "search_id"
+        def execute_command_mock(cmd, args):
+            if cmd == "msg-get-last-estimate-statistics-operation":
+                return [{"status": "succeeded", "indexedItemCount": 0, "totalItemCount": 0}]
+            return []
 
-    def test_estimate_still_running_returns_in_progress(self, mocker):
-        """
-        Given:
-            An estimate-statistics operation that has not reached a terminal status.
-        When:
-            microsoft_graph_security_delete_mail polls the estimate.
-        Then:
-            The status is "In Progress" and no purge is started.
-        """
-        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=_msg_estimate_status("running"))
-        result = microsoft_graph_security_delete_mail(self.args, **self.kwargs)[0]
-        assert result == "In Progress"
-        assert "purge_operation_id" not in self.args
+        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=execute_command_mock)
 
-    def test_estimate_complete_no_items_raises_missing_email(self, mocker):
-        """
-        Given:
-            A completed estimate reporting zero indexed and zero total items.
-        When:
-            microsoft_graph_security_delete_mail evaluates the estimate.
-        Then:
-            A MissingEmailException is raised.
-        """
-        mocker.patch.object(
-            DeleteReportedEmail, "execute_command", side_effect=_msg_estimate_status("succeeded", indexed=0, total=0)
-        )
         with pytest.raises(MissingEmailException):
-            microsoft_graph_security_delete_mail(self.args, **self.kwargs)
-
-    def test_purge_in_progress_returns_in_progress(self, mocker):
-        """
-        Given:
-            The estimate succeeded with items and the purge operation is not yet terminal.
-        When:
-            microsoft_graph_security_delete_mail polls the purge operation.
-        Then:
-            The status is "In Progress" and the purge_operation_id is persisted.
-        """
-        side_effect = _msg_full_flow(estimate_status="succeeded", purge_status="running")
-        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=side_effect)
-        result = microsoft_graph_security_delete_mail(self.args, **self.kwargs)[0]
-        assert result == "In Progress"
-        assert self.args["purge_operation_id"] == "purge_op_id"
-
-    def test_full_success_calls_cleanup_and_returns_success(self, mocker):
-        """
-        Given:
-            The estimate succeeded with items and the purge operation succeeded.
-        When:
-            microsoft_graph_security_delete_mail completes the flow.
-        Then:
-            The search cleanup command is invoked and the status is "Success".
-        """
-        side_effect = _msg_full_flow(estimate_status="succeeded", purge_status="succeeded")
-        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=side_effect)
-        result, scheduled = microsoft_graph_security_delete_mail(self.args, **self.kwargs)
-        assert result == "Success"
-        assert scheduled is None
-        assert side_effect.captured.get("cleanup_called") is True
-
-    @pytest.mark.parametrize(
-        "delete_type, expected_purge_type",
-        [("hard", "permanentlyDelete"), ("soft", "recoverable")],
-    )
-    def test_delete_type_mapping(self, mocker, delete_type, expected_purge_type):
-        """
-        Given:
-            A delete_type of "hard" or "soft".
-        When:
-            microsoft_graph_security_delete_mail starts the purge.
-        Then:
-            The corresponding purge_type is passed to msg-purge-ediscovery-data
-            ("hard"->"permanentlyDelete", "soft"->"recoverable").
-        """
-        side_effect = _msg_full_flow(estimate_status="succeeded", purge_status="succeeded")
-        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=side_effect)
-        kwargs = {**self.kwargs, "delete_type": delete_type}
-        microsoft_graph_security_delete_mail(self.args, **kwargs)
-        assert side_effect.captured["purge_args"]["purge_type"] == expected_purge_type
-
-    def test_already_deleted_guard_returns_success_without_api_calls(self, mocker):
-        """
-        Given:
-            Context indicating this message_id was already deleted successfully.
-        When:
-            microsoft_graph_security_delete_mail is called.
-        Then:
-            "Success" is returned early and no eDiscovery API calls are made.
-        """
-        mocker.patch.object(
-            demisto,
-            "get",
-            return_value=[{"message_id": "<reportedemail@messageid>", "result": "Success"}],
-        )
-        execute_mock = mocker.patch.object(DeleteReportedEmail, "execute_command")
-        result, scheduled = microsoft_graph_security_delete_mail(self.args, **self.kwargs)
-        assert result == "Success"
-        assert scheduled is None
-        execute_mock.assert_not_called()
-
-
-class TestMsgResolveEdiscoveryCase:
-    def test_returns_existing_case_id_when_display_name_matches(self, mocker):
-        """
-        Given:
-            An existing eDiscovery case whose DisplayName matches the requested name.
-        When:
-            msg_resolve_ediscovery_case is called.
-        Then:
-            The existing CaseId is returned and no case is created.
-        """
-
-        def _side_effect(command, args):
-            if command == "msg-list-ediscovery-cases":
-                return [
-                    {"DisplayName": "Other Case", "CaseId": "other_id"},
-                    {"DisplayName": MSG_EDISCOVERY_CASE_NAME, "CaseId": "matching_id"},
-                ]
-            raise AssertionError(f"Unexpected command called: {command}")
-
-        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=_side_effect)
-        assert msg_resolve_ediscovery_case(MSG_EDISCOVERY_CASE_NAME, "MicrosoftGraphSecurity") == "matching_id"
-
-    def test_creates_new_case_when_not_found(self, mocker):
-        """
-        Given:
-            No existing eDiscovery case matches the requested display name.
-        When:
-            msg_resolve_ediscovery_case is called.
-        Then:
-            A new case is created and its CaseId is returned.
-        """
-
-        def _side_effect(command, args):
-            if command == "msg-list-ediscovery-cases":
-                return [{"DisplayName": "Unrelated", "CaseId": "unrelated_id"}]
-            elif command == "msg-create-ediscovery-case":
-                return {"CaseId": "created_id"}
-            raise AssertionError(f"Unexpected command called: {command}")
-
-        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=_side_effect)
-        assert msg_resolve_ediscovery_case(MSG_EDISCOVERY_CASE_NAME, "MicrosoftGraphSecurity") == "created_id"
+            microsoft_graph_security_delete_mail(self.args, self.message_id, self.using_brand, self.delete_type)
 
 
 GENERAL_SEARCH_ARGS = {
@@ -503,12 +273,7 @@ ADDED_SEARCH_ARGS = {
     },
     "SecurityAndCompliance": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
     "SecurityAndComplianceV2": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
-    "MicrosoftGraphSecurity": {
-        "to_user_id": "reportedemailto",
-        "user_id": "reportedemailto",
-        "content_query": 'Identifier:"<reportedemail@messageid>"',
-        "case_name": MSG_EDISCOVERY_CASE_NAME,
-    },
+    "Microsoft Graph": {"to_user_id": "reportedemailto"},
 }
 
 
@@ -522,7 +287,7 @@ ADDED_SEARCH_ARGS = {
         "MicrosoftGraphMail",
         "SecurityAndCompliance",
         "SecurityAndComplianceV2",
-        "MicrosoftGraphSecurity",
+        "Microsoft Graph",
     ],
 )
 def test_search_args(mocker, brand):

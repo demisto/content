@@ -23,11 +23,26 @@ args:
   - 'false'
 - description: Interval in seconds between each poll.
   name: interval_in_seconds
+- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the case ID.'
+  name: case_id
+  hidden: true
+- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the search ID.'
+  name: search_id
+  hidden: true
+- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the estimate operation ID.'
+  name: estimate_operation_id
+  hidden: true
+- description: 'Argument used for the MS Graph eDiscovery polling flow to track the poll count.'
+  name: poll_count
+  hidden: true
+- description: 'Argument used for the MS Graph eDiscovery polling flow to track when polling started.'
+  name: poll_started_at
+  hidden: true
 comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to.'
 commonfields:
-  id: DeleteReportedEmail
+  id: DeleteReportedEmail1
   version: -1
-name: DeleteReportedEmail
+name: DeleteReportedEmail1
 polling: true
 outputs:
 - contextPath: DeleteReportedEmail.result
