@@ -12,6 +12,6 @@ enabled: true
 comment: "Reads Taegis XDR Requested Assignee and Taegis XDR Requested Status from the incident, pushes to Taegis, then clears those fields. Use in the 'Update in Taegis' section with the two dropdowns."
 runas: DBotRole
 runonce: false
-fromversion: 6.10.0
+fromversion: 6.13.0
 tests:
 - No tests (auto formatted)

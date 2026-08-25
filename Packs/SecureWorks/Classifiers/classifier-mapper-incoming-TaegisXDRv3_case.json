@@ -1,5 +1,5 @@
 {
-    "fromVersion": "6.10.0",
+    "fromVersion": "6.13.0",
     "description": "Maps incoming Taegis XDR case fields for XSOAR incident creation and mirroring.",
     "feed": false,
     "id": "TaegisXDR-Case-Incoming-Mapper",

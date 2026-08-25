@@ -1,5 +1,5 @@
 {
-    "fromVersion": "6.10.0",
+    "fromVersion": "6.13.0",
     "id": "Taegis XDR - Case",
     "version": -1,
     "vcShouldIgnore": false,
@@ -7,7 +7,6 @@
     "name": "Taegis XDR - Case",
     "prevName": "Taegis XDR - Case",
     "color": "#B1EE95",
-    "playbookId": "Taegis XDR Case Playbook",
     "hours": 0,
     "days": 0,
     "weeks": 0,

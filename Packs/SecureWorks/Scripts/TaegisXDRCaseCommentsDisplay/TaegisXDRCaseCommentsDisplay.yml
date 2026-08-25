@@ -12,7 +12,7 @@ enabled: true
 comment: "Dynamic section that renders tag-filtered War Room comments newest-first (author, timestamp, body). Use in place of the built-in invTimeline comments section so the latest comment shows at the top."
 runas: DBotRole
 runonce: false
-fromversion: 6.10.0
+fromversion: 6.13.0
 args:
 - name: tags
   required: false

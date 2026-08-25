@@ -12,7 +12,7 @@ enabled: true
 comment: "Add a note with tag xdrcomment so it is mirrored to Taegis XDR as a comment. Add as a button on the Taegis XDR Case layout."
 runas: DBotRole
 runonce: false
-fromversion: 6.10.0
+fromversion: 6.13.0
 args:
 - name: note
   required: true

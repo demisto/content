@@ -30,7 +30,6 @@ Taegis XDR is a cloud-native security solution that combines the power of human 
 | **Incident Fields** | 15 custom fields | Case status, assignee, detections, entities, key findings, close reason, and more. |
 | **Classifiers** | Ingestion classifier + incoming/outgoing mappers | Routes Taegis cases to the correct incident type and maps fields in both directions. |
 | **Layout** | Taegis XDR Case | Custom layout with tabs, close form (including archive-on-close), and action buttons. |
-| **Playbook** | Taegis XDR Case Playbook | Abbreviated triage playbook - on case pickup, assigns the investigating analyst as owner, prompts review, and optionally closes the case. |
 | **Scripts** | TaegisXDRAddCommentNote | Adds a War Room note that mirrors to Taegis XDR as a comment, attributed to the Cortex XSOAR user who added it. |
 | | TaegisXDRAssigneeOptions | Populates assignee selection options from Taegis XDR users. |
 | | TaegisXDRCaseCommentsDisplay | Dynamic section that renders case comments newest-first in the layout, with author, timestamp, and direction (to/from Taegis XDR). |
@@ -56,7 +55,9 @@ Taegis XDR is a cloud-native security solution that combines the power of human 
 
 ## Triage Workflow
 
-By design, ingested Taegis XDR cases are created in **Pending** status as a triage queue - the playbook does not run on ingestion. An analyst **takes** a case by assigning it to themselves (Assign -> self), which sets them as the incident owner and moves it to **Active**. The **Taegis XDR Case Playbook** then runs, prompting manual review and optional case closure. Ownership stays with whoever takes the case - a deliberate, single action that works identically on Cortex XSOAR v6 and v8.
+By design, ingested Taegis XDR cases are created in **Pending** status as a triage queue. An analyst **takes** a case by assigning it to themselves (Assign -> self), which sets them as the incident owner and moves it to **Active**. Ownership stays with whoever takes the case - a deliberate, single action that works identically on Cortex XSOAR v6 and v8.
+
+The incident type ships with **no default playbook**, so triage is analyst-driven and mirroring keeps both systems in step. Attach your own playbook to the **Taegis XDR - Case** incident type if you want automated triage. If that playbook closes incidents, set **Taegis XDR Close Reason** to a `CLOSED_*` value as part of it - the integration uses that field to decide whether to close the corresponding Taegis case, so closing without it would close the Cortex XSOAR incident and leave the Taegis case open.
 
 ## Getting Started
 
