@@ -276,14 +276,6 @@
       "type": "string",
       "is_array": false
     },
-    "sys_tags": {
-      "type": "string",
-      "is_array": false
-    },
-    "mid_server": {
-      "type": "string",
-      "is_array": false
-    },
     "session_id": {
       "type": "string",
       "is_array": false
@@ -293,10 +285,6 @@
       "is_array": false
     },
     "log_level": {
-      "type": "string",
-      "is_array": false
-    },
-    "request_query": {
       "type": "string",
       "is_array": false
     }

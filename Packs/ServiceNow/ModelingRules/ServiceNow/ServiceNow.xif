@@ -60,7 +60,7 @@ filter source_log_type = "outbound_http_log"
     xdm.event.id = sys_id,
     xdm.event.type = source_log_type,
     xdm.event.duration = int_response_time,
-    xdm.event.description = to_string(object_create("Transaction Name", transaction_name, "Tags", sys_tags, "Mid Server", mid_server, "Session ID", session_id, "Sequence", sequence, "Log Level", log_level, "Request Query", request_query)),
+    xdm.event.description = to_string(object_create("Transaction Name", transaction_name, "Session ID", session_id, "Sequence", sequence, "Log Level", log_level)),
     xdm.session_context_id = transaction_id,
     xdm.network.http.url = url,
     xdm.network.http.path = path,
@@ -97,6 +97,7 @@ filter source_log_type = "outbound_http_log"
         null),
     xdm.source.sent_bytes = if(int_request_length >= 0, int_request_length, null),
     xdm.target.sent_bytes = if(int_response_length >= 0, int_response_length, null),
+    xdm.source.user.username = sys_created_by,
     xdm.source.identity.username = sys_created_by,
     xdm.target.host.hostname = hostname;
 
