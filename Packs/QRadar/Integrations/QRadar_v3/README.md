@@ -3893,45 +3893,12 @@ Adds or updates an element in a reference map.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| QRadar.ReferenceMaps.CollectionID | Number | The collection ID of the reference map. |
-| QRadar.ReferenceMaps.CreationTime | Date | The date when the reference map was created in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
-| QRadar.ReferenceMaps.ElementType | String | The type of the elements in the reference map. |
-| QRadar.ReferenceMaps.KeyLabel | String | The label of the key that was added or updated. |
-| QRadar.ReferenceMaps.Name | String | The name of the reference map. |
-| QRadar.ReferenceMaps.Namespace | String | The namespace of the reference map. Possible values: "PRIVATE", "SHARED", "TENANT". |
-| QRadar.ReferenceMaps.NumberOfElements | Number | The number of elements in the reference map. |
-| QRadar.ReferenceMaps.TimeToLive | String | The time left to live for the reference. |
-| QRadar.ReferenceMaps.TimeoutType | String | The timeout type of the reference map. Possible values: "UNKNOWN", "FIRST_SEEN", "LAST_SEEN". |
-| QRadar.ReferenceMaps.ValueLabel | String | The label of the data value that was added or updated. |
+There is no context output for this command.
 
 #### Command example
 
 ```!qradar-reference-map-value-upsert ref_name="Monitoring Identifier Gaps" value="12345" key="demoKey"```
 
-#### Context Example
-
-```json
-{
-    "QRadar": {
-        "ReferenceMaps": {
-            "CollectionID": 136,
-            "CreationTime": "2025-05-14T15:12:07.932000+00:00",
-            "ElementType": "NUM",
-            "Name": "Monitoring Identifier Gaps",
-            "Namespace": "SHARED",
-            "NumberOfElements": 3,
-            "TimeoutType": "UNKNOWN"
-        }
-    }
-}
-```
-
 #### Human Readable Output
 
->### Reference Maps List
->
->|Name|ElementType|NumberOfElements|CreationTime|Namespace|CollectionID|TimeoutType|
->|---|---|---|---|---|---|---|
->| Monitoring Identifier Gaps | NUM | 3 | 2025-05-14T15:12:07.932000+00:00 | SHARED | 136 | UNKNOWN |
+>Reference map "Monitoring Identifier Gaps" successfully updated: "demoKey" set to "12345".
