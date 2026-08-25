@@ -422,7 +422,7 @@ class PanOs:
         if group_type == "dynamic":
             raise DynamicGroupError(
                 f"Address-group '{self.address_group}' already exists as dynamic; "
-                f"will not modify a customer-managed dynamic group."
+                f"will not modify a managed dynamic group."
             )
         return True
 
