@@ -45,6 +45,8 @@ configuration:
   type: 8
   section: Collect
   required: false
+  hidden:
+  - xsoar
   supportedModules:
   - xsiam
   - exposure_management
