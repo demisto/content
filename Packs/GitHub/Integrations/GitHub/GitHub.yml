@@ -81,6 +81,14 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: GitHub app integration ID
   name: integration_id
   type: 0
