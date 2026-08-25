@@ -1,4 +1,4 @@
-Starts Instant VM Recovery with manual configuration
+Starts a Security & Compliance Analyzer scan session for the Veeam Backup & Replication instance.
 
 ## Dependencies
 
@@ -15,14 +15,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Scripts
 
 * DeleteContext
-* GetRestoredVmName
 
 ### Commands
 
-* veeam-vbr-start-instant-recovery-customized
-* veeam-vbr-get-backup-object
-* veeam-vbr-get-session
-* veeam-vbr-get-restore-points
+* veeam-vbr-get-security-analyzer-best-practices
+* veeam-vbr-get-security-analyzer-last-run
+* veeam-vbr-start-security-analyzer
 
 ## Playbook Inputs
 
@@ -31,7 +29,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Instance |  | incident.sourceInstance | Optional |
-| backupObjectId |  | incident.backupobjectid | Optional |
 
 ## Playbook Outputs
 
@@ -42,4 +39,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Veeam - Start Instant VM Recovery Manually](../doc_files/Veeam_Start_Instant_VM_Recovery_Manually.png)
+![Veeam - Start Security & Compliance Analyzer](../doc_files/Veeam_-_Start_Security_&_Compliance_Analyzer.png)

@@ -1,10 +1,9 @@
-contentitemexportablefields:
-  contentitemfields: {}
-id: 'Veeam - Resolve Triggered Alarms'
+description: Resolves Veeam ONE triggered alarms.
+id: Veeam - Resolve Triggered Alarms
 inputs:
 - description: ""
   key: TriggeredAlarmId
-  playbookInputQuery:
+  playbookInputQuery: null
   required: false
   value:
     complex:
@@ -12,7 +11,7 @@ inputs:
       root: incident
 - description: ""
   key: Instance
-  playbookInputQuery:
+  playbookInputQuery: null
   required: false
   value:
     complex:
@@ -37,12 +36,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: fa704890-3340-4540-870c-043ecbff3297
+      id: 1c5f0daf-635d-4834-8383-200c4b607c9e
       iscommand: false
       name: ""
       version: -1
-      description: ''
-    taskid: fa704890-3340-4540-870c-043ecbff3297
+    taskid: 1c5f0daf-635d-4834-8383-200c4b607c9e
     timertriggers: []
     type: start
     view: |-
@@ -89,13 +87,13 @@ tasks:
     task:
       brand: Veeam ONE REST API
       description: Resolve Triggered Alarms
-      id: e6ed3e4d-4201-403b-864f-747d436b8dec
+      id: 2fb50d10-d29f-4d71-8e30-32f53870c58e
       iscommand: true
       name: Resolve Triggered Alarms
       script: Veeam ONE REST API|||veeam-vone-resolve-triggered-alarms
       type: regular
       version: -1
-    taskid: e6ed3e4d-4201-403b-864f-747d436b8dec
+    taskid: 2fb50d10-d29f-4d71-8e30-32f53870c58e
     timertriggers: []
     type: regular
     view: |-
@@ -113,7 +111,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     note: false
     quietmode: 0
     scriptarguments:
@@ -142,13 +140,13 @@ tasks:
     task:
       brand: Veeam ONE REST API
       description: Resolve Triggered Alarms
-      id: 4ce1da8e-b4a8-4853-8623-00f75e704e6c
+      id: c9a949d2-c1bf-4f10-8e68-72917feb697c
       iscommand: true
       name: Resolve Triggered Alarms
       script: Veeam ONE REST API|||veeam-vone-resolve-triggered-alarms
       type: regular
       version: -1
-    taskid: 4ce1da8e-b4a8-4853-8623-00f75e704e6c
+    taskid: c9a949d2-c1bf-4f10-8e68-72917feb697c
     timertriggers: []
     type: regular
     view: |-
@@ -176,12 +174,12 @@ tasks:
     task:
       brand: ""
       description: Select Alarm Resolution Type
-      id: 6b80abd1-dd5a-47cd-8c7e-4adf6d7f1a6e
+      id: 19dc1a79-6377-4934-81c9-e03b5c2b40a7
       iscommand: false
       name: Select Alarm Resolution Type
       type: condition
       version: -1
-    taskid: 6b80abd1-dd5a-47cd-8c7e-4adf6d7f1a6e
+    taskid: 19dc1a79-6377-4934-81c9-e03b5c2b40a7
     timertriggers: []
     type: condition
     view: |-
@@ -207,19 +205,19 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: f6be8439-8230-48f8-8eb5-f9e17164082a
+      id: fe4a6f6e-af0d-4d51-8651-64d5d6bb5c32
       iscommand: true
       name: Close Investigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: f6be8439-8230-48f8-8eb5-f9e17164082a
+    taskid: fe4a6f6e-af0d-4d51-8651-64d5d6bb5c32
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 460,
+          "x": 160,
           "y": 710
         }
       }
@@ -235,19 +233,18 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f7e520e8-51b0-4837-85f6-e54bed2c7582
+      id: 6399b1bd-2496-4b67-88fa-3e3f2eeb332c
       iscommand: false
       name: Done
       type: title
       version: -1
-      description: ''
-    taskid: f7e520e8-51b0-4837-85f6-e54bed2c7582
+    taskid: 6399b1bd-2496-4b67-88fa-3e3f2eeb332c
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 460,
+          "x": 480,
           "y": 890
         }
       }
@@ -265,6 +262,3 @@ view: |-
       }
     }
   }
-description: 'Resolves Veeam ONE triggered alarms.'
-tests:
-- No tests (auto formatted)

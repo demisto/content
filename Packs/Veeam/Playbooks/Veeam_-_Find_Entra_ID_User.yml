@@ -1,0 +1,636 @@
+description: Checks if a user exists in a Microsoft Entra ID tenant backup.
+id: Veeam - Find Entra ID User
+inputs: []
+name: Veeam - Find Entra ID User
+outputs:
+- contextPath: Veeam.VBR.get_entra_id_item_restore_points.data.id
+  description: Restore point ID.
+- contextPath: Veeam.VBR.get_entra_id_item_restore_points.data.creationTime
+  description: Date and time when the restore point was created.
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 409f1999-7aa0-4505-85fd-e73283b6f6f5
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 409f1999-7aa0-4505-85fd-e73283b6f6f5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 02650dee-fb62-47d5-8a09-957a9306c2dd
+      iscommand: false
+      name: |
+        Clear Context Data
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 02650dee-fb62-47d5-8a09-957a9306c2dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "1"
+      orderAsc:
+        simple: "false"
+      orderColumn:
+        simple: CreationTime
+      platformNameFilter:
+        simple: EntraID
+      using:
+        complex:
+          accessor: "2"
+          root: EntraIdData.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets the latest restore point.
+      id: 96c9a6ab-c44a-4441-8827-7be7a0621d18
+      iscommand: true
+      name: Get Latest Restore Point
+      script: VBR REST API|||veeam-vbr-get-restore-points
+      type: regular
+      version: -1
+    taskid: 96c9a6ab-c44a-4441-8827-7be7a0621d18
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: Veeam.VBR.get_restore_points.data
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9566b88a-f571-46fb-8737-a5385449ac42
+      iscommand: false
+      name: |
+        Check Restore Point Existence
+      type: condition
+      version: -1
+    taskid: 9566b88a-f571-46fb-8737-a5385449ac42
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Finish:
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns an error if no restore points have been found.
+      id: dfa62f8b-d8c3-4d6b-8b51-11d97275e7ab
+      iscommand: false
+      name: No Restore Points Found
+      type: condition
+      version: -1
+    taskid: dfa62f8b-d8c3-4d6b-8b51-11d97275e7ab
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 960
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      backupId:
+        complex:
+          accessor: backupId
+          root: Veeam.VBR.get_restore_points.data
+      using:
+        complex:
+          accessor: "2"
+          root: EntraIdData.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Mounts a Microsoft Entra ID tenant from its backup and starts a
+        mount session required for restore.
+      id: 5376aa0d-41d7-443e-8c9d-912117317e5d
+      iscommand: true
+      name: Mount Entra ID Tenant
+      script: VBR REST API|||veeam-vbr-mount-entra-id-tenant
+      type: regular
+      version: -1
+    taskid: 5376aa0d-41d7-443e-8c9d-912117317e5d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 960
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gracefulStop:
+        simple: "false"
+      sessionId:
+        complex:
+          accessor: sessionId
+          root: Veeam.VBR.mount_entra_id_tenant
+      using:
+        complex:
+          accessor: "2"
+          root: EntraIdData.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Stops the mount session for a Microsoft Entra ID tenant.
+      id: f725f6e4-ff4c-4976-8c51-7d8aa7859cc9
+      iscommand: true
+      name: Unmount Entra ID Tenant
+      script: VBR REST API|||veeam-vbr-unmount-entra-id-tenant
+      type: regular
+      version: -1
+    taskid: f725f6e4-ff4c-4976-8c51-7d8aa7859cc9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 1850
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      backupId:
+        complex:
+          accessor: backupId
+          root: Veeam.VBR.get_restore_points.data
+      displayName:
+        complex:
+          accessor: "0"
+          root: EntraIdData.Answers
+      mailAddress:
+        complex:
+          accessor: "1"
+          root: EntraIdData.Answers
+      type:
+        simple: User
+      using:
+        complex:
+          accessor: "2"
+          root: EntraIdData.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Browses Microsoft Entra ID items available in a backup.
+      id: 28273fcd-53d8-4bcc-8820-c14ed9b24bc8
+      iscommand: true
+      name: Get Microsoft Entra ID Items
+      script: VBR REST API|||veeam-vbr-get-entra-id-items
+      type: regular
+      version: -1
+    taskid: 28273fcd-53d8-4bcc-8820-c14ed9b24bc8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1150
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: Veeam.VBR.get_entra_id_items.data
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 32a68b4c-200a-48b8-8354-9d0c27be435a
+      iscommand: false
+      name: Check User Existence
+      type: condition
+      version: -1
+    taskid: 32a68b4c-200a-48b8-8354-9d0c27be435a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 1300
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      backupId:
+        complex:
+          accessor: backupId
+          root: Veeam.VBR.get_restore_points.data
+      itemId:
+        complex:
+          accessor: id
+          root: Veeam.VBR.get_entra_id_items.data
+      sorting:
+        simple: |-
+          {
+                "property": "creationTime",
+                "direction": "descending"
+              }
+      using:
+        complex:
+          accessor: "2"
+          root: EntraIdData.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets restore points related to a Microsoft Entra ID item.
+      id: eaa662d7-1147-40db-8662-89f689c4cc2a
+      iscommand: true
+      name: Get Restore Points of Microsoft Entra ID Item
+      script: VBR REST API|||veeam-vbr-get-entra-id-item-restore-points
+      type: regular
+      version: -1
+    taskid: eaa662d7-1147-40db-8662-89f689c4cc2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 1540
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Finish:
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns an error if a user has not been found.
+      id: 709bb9f9-b35f-4db4-8d29-f1a1428af2fa
+      iscommand: false
+      name: User Not Found
+      type: condition
+      version: -1
+    taskid: 709bb9f9-b35f-4db4-8d29-f1a1428af2fa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1540
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 60bde136-5a18-44ea-8a54-91fb2dc93500
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 60bde136-5a18-44ea-8a54-91fb2dc93500
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 2070
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: User Name
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: Microsoft Entra ID user name.
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Email Address
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: Microsoft Entra ID user email.
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Veeam Backup & Replication Instance
+        options: []
+        optionsarg:
+        - complex:
+            accessor: name
+            root: Modules
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: Veeam Backup & Replication instance.
+        type: singleSelect
+      sender: ""
+      title: EntraIdData
+      totalanswers: 0
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 841a5415-c5ef-448d-8517-fd9d87f09151
+      iscommand: false
+      name: Enter Entra ID Data
+      type: collection
+      version: -1
+    taskid: 841a5415-c5ef-448d-8517-fd9d87f09151
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brand:
+        simple: VBR REST API
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns integration instances configured in Cortex XSOAR. You can
+        filter by instance status and/or brand name (vendor).
+      id: fb195e48-910e-466d-84c7-4c0385f24df5
+      iscommand: false
+      name: Get VBR Instances
+      script: GetInstances
+      type: regular
+      version: -1
+    taskid: fb195e48-910e-466d-84c7-4c0385f24df5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+version: -1
+fromversion: 6.10.0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_Finish": 0.28,
+      "4_11_Finish": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2205,
+        "width": 1240,
+        "x": -20,
+        "y": -70
+      }
+    }
+  }

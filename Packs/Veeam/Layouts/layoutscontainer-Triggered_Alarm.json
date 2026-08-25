@@ -157,7 +157,7 @@
 								"fieldId": "veeamalarmtemplatename",
 								"height": 22,
 								"id": "f481a590-39f6-11ef-93f6-39990e2712e6",
-								"index": 7,
+								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -267,7 +267,7 @@
 					},
 					{
 						"displayType": "CARD",
-						"h": 6,
+						"h": 4,
 						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
@@ -301,7 +301,7 @@
 							{
 								"endCol": 2,
 								"fieldId": "details",
-								"height": 22,
+								"height": 106,
 								"id": "81c9a3f0-3de7-11ef-87d9-7db03ef9d8fb",
 								"index": 3,
 								"sectionItemType": "field",
@@ -315,6 +315,40 @@
 						"w": 2,
 						"x": 1,
 						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": false,
+						"hideName": false,
+						"i": "caseinfoid-9a63f2f0-5f2b-11f1-903c-ddbd0d86adf1",
+						"items": [
+							{
+								"args": {
+									"name": {
+										"simple": "Veeam - Resolve Triggered Alarms"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "c9d92640-5f2b-11f1-903c-ddbd0d86adf1",
+								"index": 0,
+								"name": "Resolve Triggered Alarms",
+								"scriptId": "Builtin|||setPlaybook",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Actions",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 4
 					}
 				],
 				"type": "custom"
@@ -449,8 +483,8 @@
 		]
 	},
 	"group": "incident",
-    "id": "Triggered Alarm",
-    "name": "Triggered Alarm",
+	"id": "Triggered Alarm",
+	"name": "Triggered Alarm",
 	"quickView": {
 		"sections": [
 			{
@@ -561,5 +595,7 @@
     "version": -1,
     "fromVersion": "6.10.0",
     "description": "Triggered Alarm",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }

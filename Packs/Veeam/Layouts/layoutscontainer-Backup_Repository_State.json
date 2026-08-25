@@ -420,8 +420,8 @@
 		]
 	},
 	"group": "incident",
-    "id": "Backup Repository State",
-    "name": "Backup Repository State",
+	"id": "Backup Repository State",
+	"name": "Backup Repository State",
 	"quickView": {
 		"sections": [
 			{
@@ -520,8 +520,10 @@
 		]
 	},
 	"system": false,
-    "version": -1,
-    "fromVersion": "6.10.0",
-    "description": "Backup Repository State",
-    "marketplaces": ["xsoar"]
+	"version": -1,
+	"fromVersion": "6.10.0",
+	"description": "Backup Repository State",
+	"marketplaces": [
+		"xsoar"
+	]
 }

@@ -1,4 +1,4 @@
-Starts configuration backup job for the Veeam Backup & Replication instance
+Starts Instant VM Recovery with manual configuration.
 
 ## Dependencies
 
@@ -15,12 +15,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Scripts
 
 * DeleteContext
+* GetRestoredVmName
 
 ### Commands
 
-* veeam-vbr-start-configuration-backup
+* veeam-vbr-get-backup-object
+* veeam-vbr-get-restore-points
 * veeam-vbr-get-session
-* closeInvestigation
+* veeam-vbr-start-instant-recovery-customized
 
 ## Playbook Inputs
 
@@ -29,6 +31,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Instance |  | incident.sourceInstance | Optional |
+| backupObjectId |  | incident.veeambackupobjectid | Optional |
 
 ## Playbook Outputs
 
@@ -39,4 +42,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Veeam - Start Configuration Backup](../doc_files/Veeam_Start_Configuration_Backup.png)
+![Veeam - Start Instant VM Recovery Manually](../doc_files/Veeam_-_Start_Instant_VM_Recovery_Manually.png)

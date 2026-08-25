@@ -1,10 +1,9 @@
-contentitemexportablefields:
-  contentitemfields: {}
-id: 'Veeam - Start Configuration Backup'
+description: Starts configuration backup job for the Veeam Backup & Replication instance.
+id: Veeam - Start Configuration Backup
 inputs:
 - description: ""
   key: Instance
-  playbookInputQuery:
+  playbookInputQuery: null
   required: false
   value:
     complex:
@@ -29,12 +28,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1d8ab918-3f75-47c6-87ad-94c510e1780d
+      id: bf27ba7c-5126-4287-80ac-5e3c2a4a75ea
       iscommand: false
       name: ""
       version: -1
-      description: ''
-    taskid: 1d8ab918-3f75-47c6-87ad-94c510e1780d
+    taskid: bf27ba7c-5126-4287-80ac-5e3c2a4a75ea
     timertriggers: []
     type: start
     view: |-
@@ -64,13 +62,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Start Configuration Backup
-      id: 4b5c4dc3-26da-494b-8bad-bc24d4036cd9
+      id: 696e68d7-7c0a-444d-858d-de9e4f405201
       iscommand: true
       name: Start Configuration Backup
       script: VBR REST API|||veeam-vbr-start-configuration-backup
       type: regular
       version: -1
-    taskid: 4b5c4dc3-26da-494b-8bad-bc24d4036cd9
+    taskid: 696e68d7-7c0a-444d-858d-de9e4f405201
     timertriggers: []
     type: regular
     view: |-
@@ -123,12 +121,12 @@ tasks:
     task:
       brand: ""
       description: Check Session State
-      id: 777d555e-7ebd-4eb5-80f5-ab9179d95ddb
+      id: 9fff4589-dd93-46ef-88b7-f4cf74e04f0e
       iscommand: false
       name: Check Session State
       type: condition
       version: -1
-    taskid: 777d555e-7ebd-4eb5-80f5-ab9179d95ddb
+    taskid: 9fff4589-dd93-46ef-88b7-f4cf74e04f0e
     timertriggers: []
     type: condition
     view: |-
@@ -153,13 +151,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 44e11ca3-8c66-4917-81a0-5a07d4bb4460
+      id: eadc572d-c570-4f83-837b-f6089a00892e
       iscommand: false
       name: Success
       type: title
       version: -1
-      description: ''
-    taskid: 44e11ca3-8c66-4917-81a0-5a07d4bb4460
+    taskid: eadc572d-c570-4f83-837b-f6089a00892e
     timertriggers: []
     type: title
     view: |-
@@ -185,13 +182,13 @@ tasks:
     task:
       brand: Builtin
       description: Close the current incident
-      id: e0ae28a7-eae8-49ed-852a-c87b9407ee83
+      id: 7877da0c-edd6-4f8d-8521-33d17e750fdc
       iscommand: true
       name: Close Investigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: e0ae28a7-eae8-49ed-852a-c87b9407ee83
+    taskid: 7877da0c-edd6-4f8d-8521-33d17e750fdc
     timertriggers: []
     type: regular
     view: |-
@@ -213,13 +210,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0139706a-4caa-4520-889e-c9260ec293b7
+      id: d2d3993e-582a-46cf-829d-ceb7187f7e11
       iscommand: false
       name: Done
       type: title
       version: -1
-      description: ''
-    taskid: 0139706a-4caa-4520-889e-c9260ec293b7
+    taskid: d2d3993e-582a-46cf-829d-ceb7187f7e11
     timertriggers: []
     type: title
     view: |-
@@ -235,23 +231,6 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
-    message:
-      bcc:
-      body:
-        simple: Configuration backup has not been completed.
-      cc:
-      format: ""
-      methods: []
-      replyOptions:
-      - Finish
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
     nexttasks:
       Finish:
       - "6"
@@ -261,13 +240,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Failed
-      id: ed30eaf6-38ae-4e36-868a-486fa160d879
+      description: Configuration backup has not been completed.
+      id: c4e62c08-56aa-4167-8c39-e3ee0a2786f4
       iscommand: false
       name: Failed
       type: condition
       version: -1
-    taskid: ed30eaf6-38ae-4e36-868a-486fa160d879
+    taskid: c4e62c08-56aa-4167-8c39-e3ee0a2786f4
     timertriggers: []
     type: condition
     view: |-
@@ -295,21 +274,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-      id: 93eb6634-89c0-4aed-8e94-773d46c0ede4
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      id: bf810182-df6c-4906-8bd1-f0cd35eba020
       iscommand: false
       name: Clear Context Data
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 93eb6634-89c0-4aed-8e94-773d46c0ede4
+    taskid: bf810182-df6c-4906-8bd1-f0cd35eba020
     timertriggers: []
     type: regular
     view: |-
@@ -367,13 +344,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: e05f51e5-fae8-4c8d-8a34-15a6784c7990
+      id: efc6a7db-1625-4814-80a2-f7a78d83a31e
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: e05f51e5-fae8-4c8d-8a34-15a6784c7990
+    taskid: efc6a7db-1625-4814-80a2-f7a78d83a31e
     timertriggers: []
     type: playbook
     view: |-
@@ -407,13 +384,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Get Session
-      id: 84ae1232-cc8f-4b83-84d6-818076477757
+      id: 47541a25-7098-4914-8be5-e0a19865560a
       iscommand: true
       name: Get Session
       script: VBR REST API|||veeam-vbr-get-session
       type: regular
       version: -1
-    taskid: 84ae1232-cc8f-4b83-84d6-818076477757
+    taskid: 47541a25-7098-4914-8be5-e0a19865560a
     timertriggers: []
     type: regular
     view: |-
@@ -437,6 +414,3 @@ view: |-
       }
     }
   }
-description: 'Starts configuration backup job for the Veeam Backup & Replication instance.'
-tests:
-- No tests (auto formatted)

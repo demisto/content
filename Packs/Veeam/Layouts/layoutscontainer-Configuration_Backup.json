@@ -234,7 +234,7 @@
                     },
                     {
                         "displayType": "CARD",
-                        "h": 8,
+                        "h": 6,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
@@ -259,7 +259,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "details",
-                                "height": 22,
+                                "height": 106,
                                 "id": "6b795c30-3de7-11ef-87d9-7db03ef9d8fb",
                                 "index": 2,
                                 "sectionItemType": "field",
@@ -273,6 +273,39 @@
                         "w": 2,
                         "x": 1,
                         "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-93258f90-5f2f-11f1-903c-ddbd0d86adf1",
+                        "items": [
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Veeam - Start Configuration Backup"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "c22803e0-5f2f-11f1-903c-ddbd0d86adf1",
+                                "index": 0,
+                                "name": "Start Configuration Backup",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Actions",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 6
                     }
                 ],
                 "type": "custom"
@@ -515,5 +548,7 @@
     "version": -1,
     "fromVersion": "6.10.0",
     "description": "Configuration Backup",
-    "marketplaces": ["xsoar"]
+    "marketplaces": [
+        "xsoar"
+    ]
 }
