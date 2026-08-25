@@ -12,7 +12,10 @@ MIN_SERVER_VERSION_FOR_RAW_ALERTS = "8.16.0"
 def get_additonal_info() -> List[Dict]:
     alerts = demisto.context().get("Core", {}).get("OriginalAlert")
     if not alerts:
-        raise DemistoException("Original Alert is not configured in context")
+        # No original alert in context (e.g. the issue has no cloud-analytics original
+        # alert, or retrieval returned nothing). Return an empty result so the widget
+        # renders a friendly message instead of surfacing an error banner.
+        return []
     if not isinstance(alerts, list):
         alerts = [alerts]
 
@@ -75,25 +78,27 @@ def main():  # pragma: no cover
         alert_context = demisto.investigation()
         core_alert_context = demisto.context().get("Core", {})
         if not core_alert_context.get("OriginalAlert"):
-            # TEMPORARY: version-gate fallback muted for manual-testing tenants that have
-            # getRawAlerts uploaded manually but still report a server version < 8.16.0.
-            # Always use getRawAlerts. Restore the version gate below before merging.
-            original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
-            # if is_demisto_version_ge(MIN_SERVER_VERSION_FOR_RAW_ALERTS):
-            #     original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
-            # else:
-            #     original_alert_data = demisto.executeCommand(
-            #         "core-get-cloud-original-alerts", {"alert_ids": alert_context.get("id")}
-            #     )
+            if is_demisto_version_ge(MIN_SERVER_VERSION_FOR_RAW_ALERTS):
+                original_alert_data = demisto.executeCommand("getRawAlerts", {"issue_ids": alert_context.get("id")})
+            else:
+                original_alert_data = demisto.executeCommand(
+                    "core-get-cloud-original-alerts", {"alert_ids": alert_context.get("id")}
+                )
             if isError(original_alert_data):
                 raise DemistoException(f"Failed to retrieve original alerts: {get_error(original_alert_data)}")
             if original_alert_data:
                 res = verify_list_type(original_alert_data)
-                demisto.executeCommand("SetByIncidentId", {"key": "Core", "value": res, "id": alert_context.get("id")})
+                if res:
+                    demisto.executeCommand("SetByIncidentId", {"key": "Core", "value": res, "id": alert_context.get("id")})
         results = get_additonal_info()
+        if not results:
+            # Nothing to show (no cloud-analytics original alert for this issue).
+            # Render a friendly message rather than an empty table or an error banner.
+            return_results(CommandResults(readable_output="No additional alert information available."))
+            return
         command_results = CommandResults(
             readable_output=tableToMarkdown(
-                "Original Alert Additional Information", results, headers=list(results[0].keys()) if results else None
+                "Original Alert Additional Information", results, headers=list(results[0].keys())
             )
         )
         return_results(command_results)
