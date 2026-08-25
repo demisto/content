@@ -82,6 +82,11 @@ configuration:
   section: Collect
   additionalinfo: The maximum number of incidents to fetch each time.
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  required: false
 - name: first_fetch
   display: First Fetch Time Interval
   type: 0
