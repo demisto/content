@@ -1,0 +1,12 @@
+{
+  "id": "BechtleDarkWebScan - Classifier",
+  "version": -1,
+  "name": "Bechtle DarkWebScan Classifier",
+  "description": "Maps Bechtle DarkWebScan integration alerts to their incident type.",
+  "type": "classification",
+  "transformer": {
+    "complex": null
+  },
+  "keyTypeMap": {},
+  "defaultIncidentType": "BechtleDarkWebScan Incident"
+}

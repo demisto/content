@@ -1,52 +1,69 @@
+display: BechtleDarkWebScan
+name: BechtleDarkWebScan
+description: 'Notifies you if login credentials to your company are being sold on the dark web.'
 category: Identity and Access Management
+provider: Bechtle
 commonfields:
   id: BechtleDarkWebScan
   version: -1
-provider: Bechtle
+  additionalinfo: The darkwebscan.app API Key.
+sectionorder:
+- Connect
+- Collect
+- Optimize
 configuration:
 - display: API Key
-  additionalinfo: Your darkwebscan.app API Key
+  additionalinfo: The darkwebscan.app API Key.
   name: apikey
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
+  displaypassword: "API Key"
+  section: Connect
 - display: Additional request headers
   name: addreqheaders
   required: false
   type: 12
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   defaultvalue: "60"
   required: false
+  section: Collect
 - display: First fetch time
   name: first_fetch
   defaultvalue: "6 months"
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Maximum incidents per fetch
   name: max_fetch
   defaultvalue: "50"
   type: 0
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: 'The dark web scan integration notifies you if login credentials to your company are being sold on the dark web.'
-display: BechtleDarkWebScan
-name: BechtleDarkWebScan
+  section: Connect
+defaultclassifier: BechtleDarkWebScan - Classifier
 script:
   commands:
   - name: darkwebscan-getcompanies
@@ -55,41 +72,41 @@ script:
     execution: false
     outputs:
     - contextPath: BechtleDarkWebScan.Companies
-      description: 'All companies that you have access to.'
+      description: 'The companies that you have access to.'
       type: String
   - name: darkwebscan-getleaks
     arguments:
     - name: company_id
       default: false
-      description: 'ID of the company to retrieve leaked credentials for.'
+      description: 'The ID of the company to retrieve leaked credentials for.'
       isArray: false
       required: true
       type: number
       secret: false
     - name: only_new
       default: false
-      defaultValue: "false"
-      description: 'Only return leaks not previously seen by this integration instance.'
+      defaultvalue: "false"
+      description: 'Whether to only return leaks not previously seen by this integration instance.'
       isArray: false
       required: false
       secret: false
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     deprecated: false
     description: 'Returns leaked credentials for a given company_id.'
     execution: false
     outputs:
     - contextPath: BechtleDarkWebScan.LeakedCredentials
-      description: 'Leaked credentials for a given company_id.'
+      description: 'The leaked credentials for a given company_id.'
       type: String
 
   - name: darkwebscan-getosint
     arguments:
     - name: company_id
       default: false
-      description: 'ID of the company to retrieve OSINT information for.'
+      description: 'The ID of the company to retrieve OSINT information for.'
       isArray: false
       required: true
       type: number
@@ -99,14 +116,14 @@ script:
     execution: false
     outputs:
     - contextPath: BechtleDarkWebScan.OSINT
-      description: 'OSINT information (email addresses, subdomains, ...) for the associated domain of a given company_id.'
+      description: 'The OSINT information (email addresses, subdomains, ...) for the associated domain of a given company_id.'
       type: String
 
   - name: darkwebscan-getemailsecurity
     arguments:
     - name: company_id
       default: false
-      description: 'ID of the company to retrieve email security information for.'
+      description: 'The ID of the company to retrieve email security information for.'
       isArray: false
       required: true
       type: number
@@ -116,14 +133,14 @@ script:
     execution: false
     outputs:
     - contextPath: BechtleDarkWebScan.EmailSecurity
-      description: 'Email security (SPF, DMARC, DANE, ...) for the associated domain of a given company_id.'
+      description: 'The email security (SPF, DMARC, DANE, ...) information for the associated domain of a given company_id.'
       type: String
 
   - name: darkwebscan-getwaf
     arguments:
     - name: company_id
       default: false
-      description: 'ID of the company to retrieve Web Application Firewall Status information for.'
+      description: 'The ID of the company to retrieve Web Application Firewall Status information for.'
       isArray: false
       required: true
       type: number
@@ -133,7 +150,7 @@ script:
     execution: false
     outputs:
     - contextPath: BechtleDarkWebScan.WAF
-      description: 'Web Application Firewall status and product name (if applicable)'
+      description: 'The Web Application Firewall status and product name (if applicable).'
       type: String
 
   - name: darkwebscan-resetcontext
@@ -147,8 +164,9 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
-fromversion: 6.1.0
+  classifier: "BechtleDarkWebScan - Classifier"
+  dockerimage: demisto/python3:3.12.14.12277297
+fromversion: 6.10.0
 marketplaces:
 - xsoar
 - marketplacev2

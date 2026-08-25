@@ -3,6 +3,7 @@ from typing import Any
 
 import demistomock as demisto
 import urllib3
+from datetime import datetime, UTC
 from CommonServerPython import *
 from urllib3.exceptions import InsecureRequestWarning
 
@@ -46,9 +47,9 @@ class Client(BaseClient):
         if additional_request_headers:
             for line in additional_request_headers.strip().splitlines():
                 if ":" in line:
-                    key, val = line.split(":",1)
+                    key, val = line.split(":", 1)
                     headers[key.strip()] = val.strip()
-        
+
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
     def get_companies(self, page: int = 1, page_size: int = DEFAULT_PAGE_SIZE) -> dict:
@@ -59,17 +60,17 @@ class Client(BaseClient):
             "page": page,
             "page_size": page_size,
         }
-        
+
         response = self._http_request(
             method="GET",
             url_suffix="/user/companies",
             params=params,
-            resp_type="response" 
+            resp_type="response"
         )
-        
+
         if not response.text or response.status_code == 204:
             return {}
-            
+
         try:
             return response.json()
         except ValueError:
@@ -77,14 +78,13 @@ class Client(BaseClient):
                 f"API endpoint returned invalid, non-JSON text data (Status {response.status_code}): {response.text}"
             )
 
-
     def get_leaks(
-            self, 
-            company_id: int = 0, 
-            since: Optional[str] = None,
-            page: int = 1, 
-            page_size: int = DEFAULT_PAGE_SIZE
-        ) -> dict:
+        self,
+        company_id: int = 0,
+        since: Optional[str] = None,
+        page: int = 1,
+        page_size: int = DEFAULT_PAGE_SIZE
+    ) -> dict:
         """
         Retrieve leaked credentials for a given company_id.
         """
@@ -102,11 +102,11 @@ class Client(BaseClient):
         except Exception as e:
             demisto.error(f"get_leaks: {e}")
             return {}
-    
+
     def get_email_security(
-            self, 
-            company_id: int = 0, 
-        ) -> dict:
+        self,
+        company_id: int = 0,
+    ) -> dict:
         """
         Retrieve information about the email security of the domain from a given company_id.
         """
@@ -118,11 +118,11 @@ class Client(BaseClient):
             url_suffix="/scan/email-security",
             params=params,
         )
-    
+
     def get_osint(
-            self, 
-            company_id: int = 0, 
-        ) -> dict:
+        self,
+        company_id: int = 0,
+    ) -> dict:
         """
         Retrieve OSINT information about the associated domain of a given company_id.
         """
@@ -134,11 +134,11 @@ class Client(BaseClient):
             url_suffix="/scan/osint",
             params=params,
         )
-    
+
     def get_waf(
-            self, 
-            company_id: int = 0, 
-        ) -> dict:
+        self,
+        company_id: int = 0,
+    ) -> dict:
         """
         Retrieve Web Application Firewall Status information about the associated domain of a given company_id.
         """
@@ -216,12 +216,12 @@ def _to_iso8601(date_str: Optional[str]) -> str:
     as required by the 'occurred' field in incident dicts.
     """
     if not date_str:
-        return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+        return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     dt = arg_to_datetime(date_str)
     if dt is None:
         return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-    
+
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -231,15 +231,15 @@ def get_company_id_arg(args: dict) -> int:
     Raises a ValueError if missing or invalid.
     """
     company_id_raw = args.get("company_id")
-    
+
     if company_id_raw is None:
         raise ValueError("Missing required argument: 'company_id'")
-        
+
     company_id = arg_to_number(company_id_raw)
-    
+
     if company_id is None:
         raise ValueError(f"Invalid integer value provided for 'company_id': {company_id_raw}")
-        
+
     return int(company_id)
 
 
@@ -248,11 +248,11 @@ def darkwebscan_getcompanies_command(client: Client, args: dict) -> CommandResul
     darkwebscan-getcompanies
     Lists the companies/assets currently monitored by BechtleDarkWebScan.
     """
-    page = arg_to_number(args.get("page")) or 1
-    page_size = arg_to_number(args.get("page_size")) or DEFAULT_PAGE_SIZE
+    page = min(50000, max(0, arg_to_number(args.get("page")) or 0))
+    page_size = min(50000, max(0, arg_to_number(args.get("page_size")) or DEFAULT_PAGE_SIZE))
 
-    companies = client.get_companies(page=page, page_size=page_size)
-    
+    companies = client.get_companies(page=page, page_size=page_size, limit=limit)
+
     if not isinstance(companies, list):
         companies_list = [companies] if companies else []
     else:
@@ -290,7 +290,7 @@ def darkwebscan_getleaks_command(client: Client, args: dict) -> CommandResults:
 
     if args.get("company_id") is not None and company_id is None:
         raise ValueError(f"Invalid 'company_id' value: {args.get('company_id')}. Must be an integer.")
-    
+
     integration_context = get_integration_context()
     seen_ids = set(integration_context.get(CONTEXT_SEEN_LEAK_IDS_KEY, []))
     last_fetch = integration_context.get(CONTEXT_LAST_FETCH_KEY)
@@ -317,7 +317,7 @@ def darkwebscan_getleaks_command(client: Client, args: dict) -> CommandResults:
             CONTEXT_SEEN_LEAK_IDS_KEY: list(seen_ids),
             CONTEXT_LAST_FETCH_KEY: newest_timestamp
         })
-    
+
     new_leaks = _redact_rows(new_leaks, redact)
 
     readable_output = tableToMarkdown(
@@ -335,23 +335,23 @@ def darkwebscan_getleaks_command(client: Client, args: dict) -> CommandResults:
         raw_response=response,
     )
 
+
 def format_subdomains_and_emails(api_response: dict) -> str:
     """
     Transforms the API JSON response into two human-readable Markdown tables.
     """
     markdown_outputs = []
-    
+
     subdomains_list = api_response.get('subdomains', [])
     if subdomains_list:
         subdomains_table = tableToMarkdown(
             name='Monitored Subdomains',
             t=subdomains_list,
             headers=['subdomain', 'description'],
-            headerTransform=pascalToSpace           
+            headerTransform=pascalToSpace
         )
         markdown_outputs.append(subdomains_table)
-        
-    
+
     emails_list = api_response.get('emailAddresses', [])
     if emails_list:
         emails_table = tableToMarkdown(
@@ -361,11 +361,12 @@ def format_subdomains_and_emails(api_response: dict) -> str:
             headerTransform=string_to_table_header
         )
         markdown_outputs.append(emails_table)
-        
+
     if markdown_outputs:
         return '\n\n'.join(markdown_outputs)
-    
+
     return 'No subdomains or email addresses found.'
+
 
 def darkwebscan_getosint_command(client: Client, args: dict) -> CommandResults:
     """
@@ -384,7 +385,6 @@ def darkwebscan_getosint_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-
 def darkwebscan_getemailsecurity_command(client: Client, args: dict) -> CommandResults:
     """
     darkwebscan-getemailsecurity
@@ -393,9 +393,9 @@ def darkwebscan_getemailsecurity_command(client: Client, args: dict) -> CommandR
     company_id = get_company_id_arg(args)
     response = client.get_email_security(company_id=company_id)
 
-    spf = response.get("spf",{})
-    dmarc = response.get("dmarc",{})
-    dane = response.get("dane",{})
+    spf = response.get("spf", {})
+    dmarc = response.get("dmarc", {})
+    dane = response.get("dane", {})
 
     output = {
         "SPF": {
@@ -487,11 +487,11 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
 
         demisto.debug(f"Getting leaks for company ID {cid}")
 
-        response = client.get_leaks(company_id=cid, since=since, page=1, page_size=DEFAULT_BASE_URL)
+        response = client.get_leaks(company_id=cid, since=since, page=1, page_size=max_fetch)
         leaks = response.get("searchResults", [])
 
         newest_timestamp = since
-        demisto.debug("Iterating leaks...")
+        #demisto.debug("Iterating leaks...")
         for leak in leaks:
             leak_id = leak.get("id")
             if leak_id in seen_ids:
@@ -501,16 +501,17 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
                 demisto.debug("Reached max_fetch. Skipping...")
                 break
 
-            alertJSON = {
-                "id": leak.get('id', None), 
+            alert_json = {
+                "id": leak.get('id', None),
                 "date": leak.get('date', 'Unknown'),
                 "domain": leak.get('domain', 'Unknown'),
                 "links": leak.get('links', 'Unknown'),
                 "username": leak.get('username', 'Username not included with initial offer'),
-                "price": leak.get('price', ''), 
+                "price": leak.get('price', ''),
                 "size": leak.get('size', None),
                 "source": leak.get('source', None),
-                "stealer": leak.get('stealer', None) 
+                "stealer": leak.get('stealer', None),
+                "dataSource": "BechtleDarkWebScan"
             }
 
             occurred = _to_iso8601(leak.get("date") or None)
@@ -520,7 +521,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
                     f"DarkWebScan Leak: {leak.get('links', 'unknown')} "
                     f"({leak.get('source', leak.get('stealer', 'unknown source'))})"
                 ),
-                "type": "DarkWebScan Leak",
+                "type": "BechtleDarkWebScan Incident",
                 "details": (
                     f"New Dark Web Leak: {leak.get('links', 'unknown URL')}, "
                     f"Username: {leak.get('username', 'Username not included with initial offer')}, "
@@ -529,22 +530,22 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
                 ),
                 "occurred": occurred,
                 "severity": 2,
-                "rawJSON": json.dumps(alertJSON),
+                "rawJSON": json.dumps(alert_json),
             })
             demisto.debug("Adding this leak's id to the known leak ids...")
             seen_ids.add(leak_id)
             if occurred > newest_timestamp:
                 newest_timestamp = occurred
-        
+
         if len(seen_ids) > MAX_SEEN_IDS_PER_COMPANY:
             seen_ids = set(list(seen_ids)[-MAX_SEEN_IDS_PER_COMPANY:])
-        
+
         demisto.debug("Setting next_companies_state...")
         next_companies_state[cid_key] = {
             "last_fetch": newest_timestamp,
             "seen_ids": list(seen_ids)
         }
-    
+
     return {"companies": next_companies_state}, incidents
 
 
@@ -561,7 +562,7 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get("apikey")
+    api_key = params.get("apikey", {}).get("password") if isinstance(params.get("apikey"), dict) else params.get("apikey")
     additional_request_headers = params.get("addreqheaders")
     base_url = params.get("url", DEFAULT_BASE_URL).rstrip("/")
     verify_certificate = not params.get("insecure", False)
@@ -580,7 +581,7 @@ def main() -> None:
 
         if command in ('test-module', ''):
             return_results(test_module(client))
-        
+
         elif command == "fetch-incidents":
             first_fetch = params.get("first_fetch", "6 months")
             max_fetch = arg_to_number(params.get("max_fetch")) or 50
@@ -595,7 +596,7 @@ def main() -> None:
             return_results(darkwebscan_getleaks_command(client, args))
 
         elif command == "darkwebscan-getemailsecurity":
-            return_results(darkwebscan_getemailsecurity_command(client,args))
+            return_results(darkwebscan_getemailsecurity_command(client, args))
 
         elif command == "darkwebscan-getosint":
             return_results(darkwebscan_getosint_command(client, args))
@@ -611,7 +612,7 @@ def main() -> None:
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}", error=e)
 
 
 ''' ENTRY POINT '''

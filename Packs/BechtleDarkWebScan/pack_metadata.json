@@ -25,11 +25,26 @@
         "ransomware leak"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Bechtle",
+        "BechtleDarkWebScan",
+        "darkwebscan",
+        "dark web",
+        "darkweb",
+        "darknet",
+        "credentials",
+        "leaked credentials",
+        "threat intelligence",
+        "ransomware",
+        "leak detection",
+        "ransomware leaks",
+        "ransomware leak"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
     ],
+    "created": "2026-07-13T14:49:20Z",
     "firstCreated": "2026-07-13T14:49:20Z",
     "githubUser": [
         "86x"

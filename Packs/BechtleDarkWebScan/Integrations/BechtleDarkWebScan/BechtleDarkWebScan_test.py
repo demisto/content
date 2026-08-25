@@ -16,7 +16,6 @@ from BechtleDarkWebScan import Client, \
 import json
 
 
-
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
@@ -65,12 +64,12 @@ def test_command_darkwebscan_getleaks(requests_mock):
         additional_request_headers={}
     )
 
-    response = darkwebscan_getleaks_command(client, {})
+    response = darkwebscan_getleaks_command(client, {'company_id': 123,'only_new': 'false'})
 
     assert response.outputs_prefix == "BechtleDarkWebScan.LeakedCredentials"
     assert response.outputs == MOCK_GET_LEAKS_RESPONSE.get('searchResults')
     assert "john.doe@example.org" in response.readable_output
-    
+
 
 def test_command_darkwebscan_getemailsecurity(requests_mock):
     """Tests darkwebscan-getemailsecurity command function.
@@ -90,28 +89,28 @@ def test_command_darkwebscan_getemailsecurity(requests_mock):
         additional_request_headers={}
     )
 
-    response = darkwebscan_getemailsecurity_command(client, {})
-    
+    response = darkwebscan_getemailsecurity_command(client, {'company_id': 123})
+
     spf = MOCK_GET_EMAILSECURITY_RESPONSE.get('spf')
     dmarc = MOCK_GET_EMAILSECURITY_RESPONSE.get('dmarc')
     dane = MOCK_GET_EMAILSECURITY_RESPONSE.get('dane')
-    expected_output  = {
-            "SPF": {
-                "Record": spf.get("spfRecord"),
-                "Info": spf.get("warning"),
-                "Summary": spf.get("summary")
-            },
-            "DMARC": {
-                "Record": dmarc.get("dmarcRecord"),
-                "Info": dmarc.get("warning"),
-                "Summary": dmarc.get("summary")
-            },
-            "DANE": {
-                "EmailHosts": dane.get("emailHosts"),
-                "Info": dane.get("warning"),
-                "Summary": dane.get("summary")
-            }
+    expected_output = {
+        "SPF": {
+            "Record": spf.get("spfRecord"),
+            "Info": spf.get("warning"),
+            "Summary": spf.get("summary")
+        },
+        "DMARC": {
+            "Record": dmarc.get("dmarcRecord"),
+            "Info": dmarc.get("warning"),
+            "Summary": dmarc.get("summary")
+        },
+        "DANE": {
+            "EmailHosts": dane.get("emailHosts"),
+            "Info": dane.get("warning"),
+            "Summary": dane.get("summary")
         }
+    }
 
     assert response.outputs_prefix == "BechtleDarkWebScan.EmailSecurity"
     assert response.outputs == expected_output
@@ -122,14 +121,14 @@ def test_command_darkwebscan_resetcontext():
     """Tests darkwebscan-resetcontext command function.
 
     Checks the output of the command function with the expected output.
-    
+
     No mock is needed here because the say_hello_command does not call
     any external API.
     """
     response = darkwebscan_resetcontext_command()
 
     assert response.readable_output == MOCK_RESETCONTEXT_RESPONSE
-    
+
 
 def test_command_darkwebscan_getwaf(requests_mock):
     """Tests darkwebscan-getwaf command function.
@@ -149,12 +148,12 @@ def test_command_darkwebscan_getwaf(requests_mock):
         additional_request_headers={}
     )
 
-    response = darkwebscan_getwaf_command(client, {})
+    response = darkwebscan_getwaf_command(client, {'company_id': 123})
 
     assert response.outputs_prefix == "BechtleDarkWebScan.WAF"
     assert response.outputs == MOCK_GET_WAF_RESPONSE
-    assert "is in use" in response.readable_output    
-    
+    assert "is in use" in response.readable_output
+
 
 def test_command_darkwebscan_getosint(requests_mock):
     """Tests darkwebscan-getosint command function.
@@ -174,7 +173,7 @@ def test_command_darkwebscan_getosint(requests_mock):
         additional_request_headers={}
     )
 
-    response = darkwebscan_getosint_command(client, {})
+    response = darkwebscan_getosint_command(client, {'company_id': 123})
 
     assert response.outputs_prefix == "BechtleDarkWebScan.OSINT"
     assert response.outputs == MOCK_GET_OSINT_RESPONSE

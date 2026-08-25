@@ -5,14 +5,14 @@ The dark web scan integration notifies you if login credentials to your company 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key | Your darkwebscan.app API Key | True |
-| Additional request headers |  | False |
-| Fetch incidents |  | False |
-| Incidents Fetch Interval |  | False |
-| First fetch time |  | False |
-| Incident type |  | False |
-| Maximum incidents per fetch |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
+| Additional request headers | Additional request headers | False |
+| Fetch incidents | Whether to fetch incidents | False |
+| Incidents Fetch Interval | The interval incidents should be fetched | False |
+| First fetch time | The first fetch time | False |
+| Incident type | The incident type | False |
+| Maximum incidents per fetch | Maxmimum amount of incidents per fetch | False |
+| Trust any certificate (not secure) | Whether to trust any certificate | False |
+| Use system proxy settings | Whether to use system proxy settings | False |
 
 ## Commands
 
