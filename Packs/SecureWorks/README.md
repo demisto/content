@@ -74,7 +74,7 @@ By design, ingested Taegis XDR cases are created in **Pending** status as a tria
 
 Optional, and not imported automatically with the content pack. The **Taegis XDR - Case** incident type extracts indicators only from **Taegis XDR Case Entities** and **Taegis XDR Key Findings**, so Taegis XDR's own console links are not extracted from the case link or the detections grid. These lists remain useful because Key Findings is free-form text, and an analyst who pastes a Taegis case link into it would otherwise create a URL or domain indicator for the Taegis console.
 
-To suppress those, import either or both files from the `doc_files/ExclusionLists/` folder:
+A single pasted console link produces both a URL indicator and a Domain indicator, so import both files from the `doc_files/ExclusionLists/` folder to suppress them:
 
 - `TaegisXDRv3_urls.json` - Regex matching Secureworks Taegis XDR console URLs.
 - `TaegisXDRv3_domains.json` - Regex matching Secureworks Taegis XDR domains.
