@@ -167,7 +167,7 @@ class TestMicrosoftGraphSecurityDeleteMail:
 
         def execute_command_mock(cmd, args):
             if cmd == "msg-list-ediscovery-cases":
-                return []  # Simulate case not found
+                return []
             if cmd == "msg-create-ediscovery-case":
                 return [{"id": "case-123"}]
             if cmd == "msg-create-ediscovery-search":
@@ -198,8 +198,8 @@ class TestMicrosoftGraphSecurityDeleteMail:
         self.args = {"case_id": "case-123", "search_id": "search-456"}
 
         def execute_command_mock(cmd, args):
-            if cmd == "msg-get-last-estimate-statistics-operation":
-                return [{"status": "running"}]
+            if cmd == "msg-list-case-operation":
+                return [{"action": "estimateStatistics", "search": {"id": "search-456"}, "status": "running"}]
             return []
 
         mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=execute_command_mock)
@@ -218,12 +218,11 @@ class TestMicrosoftGraphSecurityDeleteMail:
             It should execute the purge command, delete the search, and return 'Success'.
         """
         self.args = {"case_id": "case-123", "search_id": "search-456"}
-
         mock_execute = mocker.patch.object(DeleteReportedEmail, "execute_command")
 
         def execute_command_mock(cmd, args):
-            if cmd == "msg-get-last-estimate-statistics-operation":
-                return [{"status": "succeeded", "indexedItemCount": 1, "totalItemCount": 0}]
+            if cmd == "msg-list-case-operation":
+                return [{"action": "estimateStatistics", "search": {"id": "search-456"}, "status": "succeeded", "indexedItemCount": 1, "totalItemCount": 0}]
             return []
 
         mock_execute.side_effect = execute_command_mock
@@ -232,7 +231,7 @@ class TestMicrosoftGraphSecurityDeleteMail:
         assert res == "Success"
         assert scheduled is None
         mock_execute.assert_any_call("msg-purge-ediscovery-data", mocker.ANY)
-        mock_execute.assert_any_call("msg-delete-ediscovery-search", mocker.ANY)
+        # Search is not deleted to prevent cancelling async purge
 
     def test_polling_email_missing(self, mocker):
         """
@@ -246,13 +245,26 @@ class TestMicrosoftGraphSecurityDeleteMail:
         self.args = {"case_id": "case-123", "search_id": "search-456"}
 
         def execute_command_mock(cmd, args):
-            if cmd == "msg-get-last-estimate-statistics-operation":
-                return [{"status": "succeeded", "indexedItemCount": 0, "totalItemCount": 0}]
+            if cmd == "msg-list-case-operation":
+                return [{"action": "estimateStatistics", "search": {"id": "search-456"}, "status": "succeeded", "indexedItemCount": 0, "totalItemCount": 0}]
             return []
 
         mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=execute_command_mock)
 
         with pytest.raises(MissingEmailException):
+            microsoft_graph_security_delete_mail(self.args, self.message_id, self.using_brand, self.delete_type)
+
+    def test_polling_failed(self, mocker):
+        self.args = {"case_id": "case-123", "search_id": "search-456"}
+
+        def execute_command_mock(cmd, args):
+            if cmd == "msg-list-case-operation":
+                return [{"action": "estimateStatistics", "search": {"id": "search-456"}, "status": "failed"}]
+            return []
+
+        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=execute_command_mock)
+
+        with pytest.raises(DeletionFailed, match="eDiscovery estimate statistics failed"):
             microsoft_graph_security_delete_mail(self.args, self.message_id, self.using_brand, self.delete_type)
 
 
@@ -261,7 +273,6 @@ GENERAL_SEARCH_ARGS = {
     "email_subject": "reportedemailsubject",
     "message-id": "<reportedemail@messageid>",
 }
-
 
 ADDED_SEARCH_ARGS = {
     "Gmail": {"query": 'rfc822msgid:"<reportedemail@messageid>"', "user-id": "reportedemailto"},
@@ -275,7 +286,6 @@ ADDED_SEARCH_ARGS = {
     "SecurityAndComplianceV2": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
     "Microsoft Graph": {"to_user_id": "reportedemailto"},
 }
-
 
 @pytest.mark.parametrize(
     "brand",

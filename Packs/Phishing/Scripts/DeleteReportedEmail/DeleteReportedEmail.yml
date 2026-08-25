@@ -9,12 +9,18 @@ args:
   name: delete_from_brand
 - description: 'Argument used for the generic polling flow within the security and compliance search.'
   name: search_name
-- description: 'Internal argument used for the generic polling flow. The eDiscovery case ID, set automatically between polling cycles. Should not be set by the user.'
+- description: 'The eDiscovery case ID, set automatically between polling cycles. Should not be set by the user.'
   name: case_id
-- description: 'Internal argument used for the generic polling flow. The eDiscovery search ID, set automatically between polling cycles. Should not be set by the user.'
+  hidden: true
+  type: shortText
+- description: 'The eDiscovery search ID, set automatically between polling cycles. Should not be set by the user.'
   name: search_id
-- description: 'Internal argument used for the generic polling flow. The purge operation ID, set automatically between polling cycles. Should not be set by the user.'
+  hidden: true
+  type: shortText
+- description: 'The purge operation ID, set automatically between polling cycles. Should not be set by the user.'
   name: purge_operation_id
+  hidden: true
+  type: shortText
 - auto: PREDEFINED
   description: Whether to use the Cortex XSOAR built-in polling to retrieve the result when it's ready.
   name: polling
@@ -23,21 +29,18 @@ args:
   - 'false'
 - description: Interval in seconds between each poll.
   name: interval_in_seconds
-- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the case ID.'
-  name: case_id
-  hidden: true
-- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the search ID.'
-  name: search_id
-  hidden: true
-- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the estimate operation ID.'
+- description: 'The Microsoft Graph eDiscovery estimate operation ID used for the polling flow.'
   name: estimate_operation_id
   hidden: true
-- description: 'Argument used for the MS Graph eDiscovery polling flow to track the poll count.'
+  type: shortText
+- description: 'The Microsoft Graph eDiscovery poll count used for the polling flow.'
   name: poll_count
   hidden: true
-- description: 'Argument used for the MS Graph eDiscovery polling flow to track when polling started.'
+  type: number
+- description: 'The Microsoft Graph eDiscovery timestamp for when polling started.'
   name: poll_started_at
   hidden: true
+  type: shortText
 comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to.'
 commonfields:
   id: DeleteReportedEmail
