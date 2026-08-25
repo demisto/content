@@ -9,6 +9,12 @@ args:
   name: delete_from_brand
 - description: 'Argument used for the generic polling flow within the security and compliance search.'
   name: search_name
+- description: 'Internal argument used for the generic polling flow. The eDiscovery case ID, set automatically between polling cycles. Should not be set by the user.'
+  name: case_id
+- description: 'Internal argument used for the generic polling flow. The eDiscovery search ID, set automatically between polling cycles. Should not be set by the user.'
+  name: search_id
+- description: 'Internal argument used for the generic polling flow. The purge operation ID, set automatically between polling cycles. Should not be set by the user.'
+  name: purge_operation_id
 - auto: PREDEFINED
   description: Whether to use the Cortex XSOAR built-in polling to retrieve the result when it's ready.
   name: polling

@@ -335,9 +335,7 @@ class TestMicrosoftGraphSecurity:
         Then:
             case_id and search_id are persisted into args and the status is "In Progress".
         """
-        mocker.patch.object(
-            DeleteReportedEmail, "execute_command", side_effect=_msg_estimate_status("notStarted")
-        )
+        mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=_msg_estimate_status("notStarted"))
         result, scheduled = microsoft_graph_security_delete_mail(self.args, **self.kwargs)
         assert result == "In Progress"
         assert scheduled == "scheduled"
