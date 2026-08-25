@@ -890,8 +890,6 @@ class TestSanitizeLargeInts:
     integers and non-integer values untouched.
     """
 
-    MAX_SAFE_INT = 9007199254740991
-
     def test_small_int_unchanged(self):
         """
         Given: An integer at or below the max safe integer.
@@ -900,8 +898,8 @@ class TestSanitizeLargeInts:
         """
         assert sanitize_large_ints(0) == 0
         assert sanitize_large_ints(1) == 1
-        assert sanitize_large_ints(self.MAX_SAFE_INT) == self.MAX_SAFE_INT
-        assert isinstance(sanitize_large_ints(self.MAX_SAFE_INT), int)
+        assert sanitize_large_ints(MAX_SAFE_INT) == MAX_SAFE_INT
+        assert isinstance(sanitize_large_ints(MAX_SAFE_INT), int)
 
     def test_large_int_stringified(self):
         """
@@ -970,6 +968,37 @@ class TestSanitizeLargeInts:
         assert result[1]["id"] == "13510798884679645"
         assert result[2]["id"] == 12345
         assert result[0]["rating"] == 3
+
+    def test_list_of_mixed_types(self):
+        """
+        Given: A list containing mixed types (large int, small int, str, float,
+               bool, None, nested dict, nested list).
+        When:  sanitize_large_ints is called.
+        Then:  Only ints exceeding MAX_SAFE_INT are stringified; all other
+               types are returned unchanged, and nested containers are
+               processed recursively.
+        """
+        payload = [
+            13510798884679647,
+            12345,
+            "abc",
+            1.5,
+            True,
+            False,
+            None,
+            {"id": 13510798884679648, "name": "nested"},
+            [13510798884679649, 10],
+        ]
+        result = sanitize_large_ints(payload)
+        assert result[0] == "13510798884679647"
+        assert result[1] == 12345
+        assert result[2] == "abc"
+        assert result[3] == 1.5
+        assert result[4] is True
+        assert result[5] is False
+        assert result[6] is None
+        assert result[7] == {"id": "13510798884679648", "name": "nested"}
+        assert result[8] == ["13510798884679649", 10]
 
     def test_empty_containers(self):
         """

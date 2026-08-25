@@ -51,7 +51,12 @@ MAP_ASSET_TYPE_TO_REQUEST_KEY = {
 }
 
 
-def sanitize_large_ints(obj):
+# IEEE 754 max safe integer (2^53 - 1). Integers larger than this lose
+# numerical precision when parsed as floats during JSON unmarshaling in XSOAR Core.
+MAX_SAFE_INT = 9007199254740991
+
+
+def sanitize_large_ints(obj: Any) -> Any:
     """
     Recursively finds integers larger than the JS/Go max safe integer (2^53 - 1)
     and converts them to strings to prevent IEEE 754 precision loss in XSOAR Core.
@@ -62,8 +67,6 @@ def sanitize_large_ints(obj):
     preserves numerical fidelity so downstream commands can reference the
     correct ThreatConnect object IDs.
     """
-    MAX_SAFE_INT = 9007199254740991
-
     if isinstance(obj, bool):
         # bool is a subclass of int in Python, preserve as-is
         return obj
