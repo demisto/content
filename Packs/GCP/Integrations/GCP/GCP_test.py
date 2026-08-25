@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 import os
 import re
 import yaml
+import demistomock as demisto
 
 
 def util_load_json(path):
@@ -3007,6 +3008,47 @@ def test_storage_bucket_objects_list_basic(mocker):
     mock_objects.list.assert_called_with(bucket="b1", prefix="p/", delimiter="/", maxResults=5, pageToken="tok")
     assert "GCP.Storage.Buckets(val.name && val.name == obj.name)" in result.outputs
     assert result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"]["Objects"][0]["name"] == "o1"
+
+
+def test_storage_bucket_objects_list_merges_with_context(mocker):
+    """
+    Given: A bucket that already has objects in the context, and a new page holding an existing and a new object
+    When: storage_bucket_objects_list is called
+    Then: The existing object is replaced, the new object is appended, and other buckets are left untouched
+    """
+    from GCP import storage_bucket_objects_list
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "bucket": "b1", "size": "2"}, {"name": "o2", "bucket": "b1", "size": "3"}]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={
+            "GCP": {
+                "Storage": {
+                    "Buckets": [
+                        {"name": "b1", "Objects": [{"name": "o1", "bucket": "b1", "size": "1"}]},
+                        {"name": "b2", "Objects": [{"name": "other", "bucket": "b2", "size": "9"}]},
+                    ]
+                }
+            }
+        },
+    )
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_objects_list(creds, {"bucket_name": "b1"})
+
+    bucket_output = result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"]
+    assert bucket_output["name"] == "b1"
+    assert bucket_output["Objects"] == [
+        {"name": "o1", "bucket": "b1", "size": "2"},
+        {"name": "o2", "bucket": "b1", "size": "3"},
+    ]
 
 
 def test_storage_bucket_policy_list_with_version(mocker):

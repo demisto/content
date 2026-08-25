@@ -737,6 +737,39 @@ def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResul
     )
 
 
+def _merge_bucket_objects(bucket_name: str, new_objects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Merges newly fetched objects into the objects already stored in the context for the given bucket.
+
+    Objects are identified by their name: an object that already exists in the context is replaced in place,
+    while a new object is appended to the end of the list.
+
+    Args:
+        bucket_name (str): The name of the bucket the objects belong to.
+        new_objects (list[dict[str, Any]]): The objects returned by the current API call.
+
+    Returns:
+        list[dict[str, Any]]: The merged list of objects for the bucket.
+    """
+    existing_buckets = demisto.get(demisto.context(), "GCP.Storage.Buckets") or []
+    if isinstance(existing_buckets, dict):
+        existing_buckets = [existing_buckets]
+
+    merged_objects: dict[str, dict[str, Any]] = {}
+    for bucket in existing_buckets:
+        if isinstance(bucket, dict) and bucket.get("name") == bucket_name:
+            for obj in bucket.get("Objects") or []:
+                if isinstance(obj, dict) and obj.get("name"):
+                    merged_objects[obj["name"]] = obj
+
+    for obj in new_objects:
+        if obj.get("name"):
+            merged_objects[obj["name"]] = obj
+
+    demisto.debug(f"[GCP: storage_bucket_objects_list] Objects in context after merge: {len(merged_objects)}")
+    return list(merged_objects.values())
+
+
 def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of objects in a bucket.
@@ -788,12 +821,14 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
         }
         object_data.append(object_info)
     hr = tableToMarkdown(f"Objects in bucket: {bucket_name}", object_data, removeNull=True, headerTransform=pascalToSpace)
+    # The objects are merged with the ones already in the context, so the bucket entry that matches the bucket
+    # name is updated with the full objects list instead of overwriting the previously fetched objects.
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": bucket_name,
-            "Objects": objects,
-        },
-        "GCP.Storage.Buckets(true)": {"ObjectsNextToken": response.get("nextPageToken")},
+            "Objects": _merge_bucket_objects(bucket_name, objects),
+            "ObjectsNextToken": response.get("nextPageToken"),
+        }
     }
 
     return CommandResults(
