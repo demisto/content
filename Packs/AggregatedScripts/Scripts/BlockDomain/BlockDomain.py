@@ -268,6 +268,8 @@ def build_final_command_results(rows: list, verbose: bool, responses: list) -> C
     When verbose is True, the per-command human-readable outputs are appended to the same readable
     output (blank-line separated), mirroring the ExpirePassword aggregated script.
 
+    When there is at least one row and every row failed, the whole run is reported as an error.
+
     Args:
         rows (list): The aggregated BlockDomain rows.
         verbose (bool): Whether to append per-command human-readable output.
@@ -275,20 +277,28 @@ def build_final_command_results(rows: list, verbose: bool, responses: list) -> C
     Returns:
         A single CommandResults to return from the script.
     """
+    all_failed = bool(rows) and all(row.get("Result") == RESULT_FAILED for row in rows)
+    table_title = "Block Domain: All runs failed." if all_failed else "Block Domain"
     readable_output = tableToMarkdown(
-        "Block Domain",
+        table_title,
         rows,
         headers=["Domain", "Brand", "Instance", "Status", "Result", "Action", "RuleName", "Message"],
         removeNull=False,
     )
+    if all_failed:
+        readable_output += "\n\n**All runs failed.** Review the table above for the specific error messages."
     if verbose:
         readable_output += build_verbose_human_readable(responses)
-    return CommandResults(
+    command_results = CommandResults(
         outputs_prefix="BlockDomain",
         outputs_key_field=["Domain", "Brand", "Instance"],
         outputs=rows,
         readable_output=readable_output,
     )
+    if all_failed:
+        # Surface the whole run as an error entry so the war room / playbook can branch on failure.
+        command_results.entry_type = EntryType.ERROR
+    return command_results
 
 
 """ PAN-OS FLOW """

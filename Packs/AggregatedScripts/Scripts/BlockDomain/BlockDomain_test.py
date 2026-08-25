@@ -743,6 +743,98 @@ def test_build_final_command_results_verbose_appends_command_hr():
     assert result.readable_output.endswith("HR-one")
 
 
+def test_build_final_command_results_all_failed_is_error_entry():
+    """
+    Given:
+       - A rows list where every row has Result == Failed.
+    When:
+       - Calling build_final_command_results.
+    Then:
+       - The returned CommandResults is marked as an ERROR entry, still exposes the rows as
+         outputs, and its readable_output carries the "All runs failed" header so the war room
+         and any downstream playbook can branch on the failure.
+    """
+    rows = [
+        {
+            "Domain": "a.com",
+            "Brand": "Panorama",
+            "Instance": "inst1",
+            "Status": STATUS_FAILED,
+            "Result": RESULT_FAILED,
+            "Action": ACTION_UNCHANGED,
+            "RuleName": "",
+            "Message": "boom",
+        },
+        {
+            "Domain": "b.com",
+            "Brand": "Panorama",
+            "Instance": "inst1",
+            "Status": STATUS_FAILED,
+            "Result": RESULT_FAILED,
+            "Action": ACTION_UNCHANGED,
+            "RuleName": "",
+            "Message": "boom",
+        },
+    ]
+
+    result = build_final_command_results(rows, verbose=False, responses=[])
+    assert result.entry_type == BlockDomain.EntryType.ERROR
+    assert result.outputs == rows
+    assert "All runs failed" in result.readable_output
+
+
+def test_build_final_command_results_partial_failure_is_not_error_entry():
+    """
+    Given:
+       - A rows list with at least one successful row alongside a failed row.
+    When:
+       - Calling build_final_command_results.
+    Then:
+       - The returned CommandResults is NOT an ERROR entry (entry_type is unset / not ERROR),
+         so a partial success is still reported as a normal result.
+    """
+    rows = [
+        {
+            "Domain": "a.com",
+            "Brand": "Panorama",
+            "Instance": "inst1",
+            "Status": STATUS_DONE,
+            "Result": RESULT_SUCCESS,
+            "Action": ACTION_CREATED,
+            "RuleName": "Cortex - Block Domain",
+            "Message": "ok",
+        },
+        {
+            "Domain": "b.com",
+            "Brand": "Panorama",
+            "Instance": "inst1",
+            "Status": STATUS_FAILED,
+            "Result": RESULT_FAILED,
+            "Action": ACTION_UNCHANGED,
+            "RuleName": "",
+            "Message": "boom",
+        },
+    ]
+
+    result = build_final_command_results(rows, verbose=False, responses=[])
+    assert result.entry_type != BlockDomain.EntryType.ERROR
+    assert "All runs failed" not in result.readable_output
+
+
+def test_build_final_command_results_empty_rows_is_not_error_entry():
+    """
+    Given:
+       - An empty rows list (e.g. no domains reached a vendor).
+    When:
+       - Calling build_final_command_results.
+    Then:
+       - The run is NOT reported as an error (an empty run is not an all-failed run).
+    """
+    result = build_final_command_results([], verbose=False, responses=[])
+    assert result.entry_type != BlockDomain.EntryType.ERROR
+    assert "All runs failed" not in result.readable_output
+
+
 def test_pan_os_push_status_error_contents_is_terminal_failure(monkeypatch):
     """
     Given:
