@@ -192,6 +192,16 @@ def _extract_graph_objects(response: Any) -> list:
 
 
 def msg_resolve_case(using_brand: str, case_name: str) -> str | None:
+    """
+    Get the ID of an existing eDiscovery case by its display name, creating the case if it does not exist.
+
+    Args:
+        using_brand: The brand (integration instance) used to run the eDiscovery commands.
+        case_name: The display name of the eDiscovery case to resolve.
+
+    Returns:
+        The ID of the existing or newly created case, or None if the case could not be created.
+    """
     demisto.debug(f"msg_resolve_case: Attempting to resolve case '{case_name}' using brand '{using_brand}'")
     cases_res = execute_command("msg-list-ediscovery-cases", {"using-brand": using_brand, "all_results": "true"})
     cases = _extract_graph_objects(cases_res)
@@ -211,6 +221,20 @@ def msg_resolve_case(using_brand: str, case_name: str) -> str | None:
 
 
 def microsoft_graph_security_delete_mail(args: dict, message_id: str, using_brand: str, delete_type: str, **kwargs) -> tuple[str, ScheduledCommand | None]:
+    """
+    Delete an email using the Microsoft Graph eDiscovery flow, with polling between the search and the purge.
+
+    Args:
+        args: This script's arguments, also used to persist the case_id and search_id between polling runs.
+        message_id: The RFC Message-ID of the email to delete.
+        using_brand: The brand (integration instance) used to run the eDiscovery commands.
+        delete_type: The deletion type, 'hard' for a permanent delete, otherwise a recoverable delete.
+        **kwargs: Additional unused search arguments.
+
+    Returns:
+        A tuple of the deletion result ('Success' or 'In Progress') and the ScheduledCommand for the
+        next polling run, or None when no further polling is needed.
+    """
     demisto.debug(
         f"microsoft_graph_security_delete_mail starting. args: {args}, message_id: {message_id}, delete_type: {delete_type}"
     )
