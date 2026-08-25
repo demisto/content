@@ -133,11 +133,17 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: New
   display: 'Status for fetching alerts as incidents. Comma-separated lists are supported, e.g., New,Resolved.'
   name: fetch_status
@@ -184,6 +190,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Server URL (e.g., https://api.securitycenter.microsoft.com)
   name: url
   type: 0
@@ -1629,8 +1638,8 @@ script:
       defaultValue: 'false'
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - name: timeout_in_seconds
       description: Timeout for polling. Default is 300 seconds.
     - name: interval_in_seconds

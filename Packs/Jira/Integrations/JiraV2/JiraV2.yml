@@ -61,6 +61,9 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   display: Mirror incoming incidents
   hidden:
@@ -72,6 +75,9 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Use created field to fetch incidents
   name: fetchByCreated
   type: 8
@@ -118,6 +124,9 @@ configuration:
   name: incidentFetchInterval
   type: 19
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 description: Deprecated. Use the Atlassian Jira v3 integration instead
 display: Atlassian Jira v2 (Deprecated)
 name: jira-v2

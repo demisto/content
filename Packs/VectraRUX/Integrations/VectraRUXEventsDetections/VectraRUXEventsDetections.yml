@@ -23,6 +23,9 @@ configuration:
   required: false
   type: 8
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The maximum number of events detections to fetch each time. If the value is greater than 200, it will be considered as 200. The maximum is 200.
   defaultvalue: '50'
   display: Max Fetch
@@ -30,6 +33,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: "The date or relative timestamp from which to begin fetching events detections.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 Oct 2025, 01 Mar 2021 04:45:33, 2025-12-17T14:05:44Z."
   defaultvalue: 1 hour
   display: First Fetch Time
@@ -117,6 +123,9 @@ configuration:
   required: false
   type: 13
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: When checked, no SSL certificates check will be done when interacting with the Vectra RUX API. It's insecure. (Default - unchecked)
   display: Trust any certificate (not secure)
   name: insecure
