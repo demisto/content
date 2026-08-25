@@ -495,7 +495,7 @@ async def fetch_and_send_events_async(
             # get-events path: caller needs the actual events
             return events
 
-    def _page_result_len(page_result) -> int:
+    def _page_result_len(page_result: int | list[dict]) -> int:
         # _handle_page returns an int (fetch-events: streamed & freed) or the events list (get-events).
         return page_result if isinstance(page_result, int) else len(page_result)
 
@@ -696,10 +696,12 @@ async def get_events_command_async(
     if args.get("start_time"):
         start_arg = arg_to_datetime(args.get("start_time"), arg_name="start_time")
         end_arg = arg_to_datetime(args.get("end_time") or "now", arg_name="end_time")
-        start_epoch = str(int(start_arg.timestamp()))  # type: ignore[union-attr]
-        end_epoch = str(int(end_arg.timestamp()))  # type: ignore[union-attr]
-        if int(end_epoch) <= int(start_epoch):
-            return_error(f"'end_time' ({end_epoch}) must be after 'start_time' ({start_epoch}).")
+        start_ts = int(start_arg.timestamp())  # type: ignore[union-attr]
+        end_ts = int(end_arg.timestamp())  # type: ignore[union-attr]
+        if end_ts <= start_ts:
+            return_error(f"'end_time' ({end_ts}) must be after 'start_time' ({start_ts}).")
+        start_epoch = str(start_ts)
+        end_epoch = str(end_ts)
         last_run = {
             fetch_type: {"next_fetch_start_time": start_epoch, "next_fetch_end_time": end_epoch, "failures": []}
             for fetch_type in client.event_types_to_fetch
