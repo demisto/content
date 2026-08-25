@@ -316,9 +316,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zones.get"]),
     "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
     "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
-    "gcp-compute-networks-add-peering": (GCPServices.COMPUTE, ["compute.networks.addPeering"]),
-    "gcp-compute-delete-network": (GCPServices.COMPUTE, ["compute.networks.delete"]),
-    "gcp-compute-networks-remove-peering": (GCPServices.COMPUTE, ["compute.networks.removePeering"]),
+    "gcp-compute-network-peering-add": (GCPServices.COMPUTE, ["compute.networks.addPeering"]),
+    "gcp-compute-network-delete": (GCPServices.COMPUTE, ["compute.networks.delete"]),
+    "gcp-compute-network-peering-remove": (GCPServices.COMPUTE, ["compute.networks.removePeering"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
@@ -2866,7 +2866,7 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
     )
 
 
-def gcp_compute_networks_add_peering(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gcp_compute_network_peering_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Adds a peering to the specified network.
     Args:
@@ -2883,7 +2883,6 @@ def gcp_compute_networks_add_peering(creds: Credentials, args: dict[str, Any]) -
         {
             "name": name.lower() if name else None,
             "peerNetwork": args.get("peer_network"),
-            "autoCreateRoutes": arg_to_bool_or_none(args.get("auto_create_routes")),
             "networkPeering": {
                 "name": args.get("network_peering_name"),
                 "network": args.get("network_peering_network"),
@@ -2909,7 +2908,7 @@ def gcp_compute_networks_add_peering(creds: Credentials, args: dict[str, Any]) -
     )
 
 
-def gcp_compute_delete_network(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gcp_compute_network_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Deletes the specified network.
     Args:
@@ -2938,7 +2937,7 @@ def gcp_compute_delete_network(creds: Credentials, args: dict[str, Any]) -> Comm
     )
 
 
-def gcp_compute_networks_remove_peering(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gcp_compute_network_peering_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Removes a peering from the specified network.
     Args:
@@ -3098,9 +3097,9 @@ def main():  # pragma: no cover
             "gcp-compute-zone-get": gcp_compute_zone_get,
             "gcp-compute-networks-list": gcp_compute_networks_list,
             "gcp-compute-network-insert": gcp_compute_network_insert,
-            "gcp-compute-networks-add-peering": gcp_compute_networks_add_peering,
-            "gcp-compute-delete-network": gcp_compute_delete_network,
-            "gcp-compute-networks-remove-peering": gcp_compute_networks_remove_peering,
+            "gcp-compute-network-peering-add": gcp_compute_network_peering_add,
+            "gcp-compute-network-delete": gcp_compute_network_delete,
+            "gcp-compute-network-peering-remove": gcp_compute_network_peering_remove,
             # Storage commands
             "gcp-storage-bucket-list": storage_bucket_list,
             "gcp-storage-bucket-get": storage_bucket_get,
