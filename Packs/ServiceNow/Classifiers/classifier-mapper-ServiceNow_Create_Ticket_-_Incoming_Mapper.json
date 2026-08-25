@@ -1184,6 +1184,10 @@
                     },
                     "simple": ""
                 },
+                "ServiceNow Ticket ID": {
+                    "complex": null,
+                    "simple": "sys_id"
+                },
                 "ServiceNow State": {
                     "complex": {
                         "accessor": "",
