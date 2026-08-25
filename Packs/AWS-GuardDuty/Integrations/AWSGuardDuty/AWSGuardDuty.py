@@ -356,6 +356,35 @@ def update_threat_intel_set(client: "GuardDutyClient", args: dict):
         raise Exception(f"Failed updating ThreatIntel set {args.get('threatIntelSetId')}. Response was: {response}")
 
 
+def parse_tag_field_to_dict(tags_str: str) -> dict:
+    """
+    Parses a tags argument in the "key=<KEY>,value=<VALUE>" format (multiple pairs separated by ";")
+    into a string-to-string map suitable for the GuardDuty API Tags parameter.
+
+    Args:
+        tags_str (str): The tags string, e.g. "key=Environment,value=prod;key=Team,value=sec".
+
+    Returns:
+        dict: A mapping of tag keys to values, e.g. {"Environment": "prod", "Team": "sec"}.
+
+    Raises:
+        DemistoException: If a pair is not in the expected "key=<KEY>,value=<VALUE>" format.
+    """
+    tags: dict[str, str] = {}
+    for pair in argToList(tags_str, separator=";"):
+        key = value = None
+        for field in argToList(pair):
+            field_key, _, field_value = field.partition("=")
+            if field_key.strip().lower() == "key":
+                key = field_value.strip()
+            elif field_key.strip().lower() == "value":
+                value = field_value.strip()
+        if not key or value is None:
+            raise DemistoException(f"Could not parse the tag: '{pair}'. Tags must be in the format: key=<KEY>,value=<VALUE>.")
+        tags[key] = value
+    return tags
+
+
 def create_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResults:
     tags = args.get("tags")
     kwargs = remove_empty_elements(
@@ -365,15 +394,14 @@ def create_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandRe
             "Format": args.get("format"),
             "Location": args.get("location"),
             "Name": args.get("name"),
-            "ClientToken": args.get("clientToken"),
             "ExpectedBucketOwner": args.get("expectedBucketOwner"),
-            "Tags": dict(item.split("=", 1) for item in argToList(tags)) if tags else None,
+            "Tags": parse_tag_field_to_dict(tags) if tags else None,
         }
     )
 
     demisto.debug(
         f"aws-gd-create-threat-entity-set: creating Threat Entity Set for Detector {args.get('detectorId')} "
-        f"with request fields: {kwargs.keys()}"
+        f"with request fields: {list(kwargs.keys())}"
     )
     response = client.create_threat_entity_set(**kwargs)
 
@@ -383,15 +411,66 @@ def create_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandRe
         f"for Detector {args.get('detectorId')}."
     )
 
-    readable_output = (
-        tableToMarkdown("AWS GuardDuty Threat Entity Set", data)
-        if data
-        else "No Threat Entity Set was created. The GuardDuty API did not return a Threat Entity Set ID."
-    )
+    readable_output = tableToMarkdown("AWS GuardDuty ThreatEntity Set", data)
     return CommandResults(
         readable_output=readable_output,
         outputs=data,
-        outputs_prefix="AWS.GuardDuty.Detectors.ThreatEntitySet",
+        outputs_prefix="AWS.GuardDuty.ThreatEntitySet",
+        outputs_key_field="ThreatEntitySetId",
+    )
+
+
+def update_threat_entity_set(client: "GuardDutyClient", args: dict):
+    kwargs = remove_empty_elements(
+        {
+            "DetectorId": args.get("detectorId"),
+            "ThreatEntitySetId": args.get("threatEntitySetId"),
+            "Activate": arg_to_bool_or_none(args.get("activate")),
+            "Location": args.get("location"),
+            "Name": args.get("name"),
+            "ExpectedBucketOwner": args.get("expectedBucketOwner"),
+        }
+    )
+
+    demisto.debug(
+        f"aws-gd-update-threat-entity-set: updating Threat Entity Set {args.get('threatEntitySetId')} "
+        f"of Detector {args.get('detectorId')} with request fields: {list(kwargs.keys())}"
+    )
+    response = client.update_threat_entity_set(**kwargs)
+
+    if response == {} or response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
+        return f"Threat entity set {args.get('threatEntitySetId')} was updated successfully"
+    else:
+        raise Exception(f"Failed updating Threat Entity set {args.get('threatEntitySetId')}. Response was: {response}")
+
+
+def get_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResults:
+    demisto.debug(
+        f"aws-gd-get-threat-entity-set: retrieving Threat Entity Set {args.get('threatEntitySetId')} "
+        f"of Detector {args.get('detectorId')}."
+    )
+    response = client.get_threat_entity_set(
+        DetectorId=args.get("detectorId", ""), ThreatEntitySetId=args.get("threatEntitySetId", "")
+    )
+    data = {
+        "DetectorId": args.get("detectorId"),
+        "ThreatEntitySetId": args.get("threatEntitySetId"),
+        "Name": response.get("Name"),
+        "Format": response.get("Format"),
+        "Location": response.get("Location"),
+        "Status": response.get("Status"),
+        "ExpectedBucketOwner": response.get("ExpectedBucketOwner"),
+        "CreatedAt": response.get("CreatedAt"),
+        "UpdatedAt": response.get("UpdatedAt"),
+        "Tags": response.get("Tags"),
+    }
+    data = remove_empty_elements(data)
+
+    readable_output = tableToMarkdown("AWS GuardDuty ThreatEntity Set", data)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=data,
+        outputs_prefix="AWS.GuardDuty.ThreatEntitySet",
         outputs_key_field="ThreatEntitySetId",
     )
 
@@ -409,49 +488,54 @@ def delete_threat_entity_set(client: "GuardDutyClient", args: dict):
             f"aws-gd-delete-threat-entity-set: successfully deleted Threat Entity Set {args.get('threatEntitySetId')} "
             f"from Detector {args.get('detectorId')}."
         )
-        return f"The Threat Entity Set {args.get('threatEntitySetId')} has been deleted from Detector {args.get('detectorId')}"
+        return (
+            f"Threat Entity Set {args.get('threatEntitySetId')} was deleted from Detector "
+            f"{args.get('detectorId')} successfully"
+        )
     else:
         raise Exception(f"Failed to delete Threat Entity set {args.get('threatEntitySetId')} . Response was: {response}")
 
 
 def list_threat_entity_sets(client: "GuardDutyClient", args: dict) -> CommandResults:
-    detector_id = args.get("detectorId", "")
-
-    kwargs: dict[str, Any] = {"DetectorId": detector_id}
-    # MaxResults valid range for ListThreatEntitySets is 1-50.
-    limit = arg_to_number(args.get("limit")) or MAX_RESULTS_RESPONSE
-    if not 0 < limit <= MAX_RESULTS_RESPONSE:
-        raise DemistoException(f"limit argument must be between 1 to {MAX_RESULTS_RESPONSE}")
-    kwargs["MaxResults"] = limit
-    if next_token := args.get("next_token"):
-        kwargs["NextToken"] = next_token
-
+    limit, page_size, page = get_pagination_args(args)
     demisto.debug(
-        f"aws-gd-list-threat-entity-sets: listing Threat Entity Sets for Detector {detector_id} "
-        f"with request fields: {list(kwargs.keys())}."
+        f"aws-gd-list-threat-entity-sets: listing Threat Entity Sets for Detector {args.get('detectorId')} "
+        f"with limit={limit}, page_size={page_size}, page={page}."
     )
-    response = client.list_threat_entity_sets(**kwargs)
 
-    threat_entity_set_ids = response.get("ThreatEntitySetIds", [])
-    demisto.debug(f"aws-gd-list-threat-entity-sets: found {len(threat_entity_set_ids)} Threat Entity Set(s).")
+    paginator = client.get_paginator("list_threat_entity_sets")
+    response_iterator = paginator.paginate(
+        DetectorId=args.get("detectorId", ""),
+        PaginationConfig={
+            "MaxItems": limit,
+            "PageSize": page_size,
+        },
+    )
 
-    data = [{"DetectorId": detector_id}]
-    data.extend({"ThreatEntitySetId": threat_entity_set_id} for threat_entity_set_id in threat_entity_set_ids)
+    data = []
+    data.append({"DetectorId": args.get("detectorId")})
+    next_token = None
+    for i, page_response in enumerate(response_iterator):
+        if page is None or (page - 1) == i:
+            for threatEntitySet in page_response["ThreatEntitySetIds"]:
+                data.append({"ThreatEntitySetId": threatEntitySet})
+            next_token = page_response.get("NextToken")
+            if page:
+                break
 
-    outputs = {
-        "AWS.GuardDuty.Detectors.ThreatEntitySet(val.ThreatEntitySetId && val.ThreatEntitySetId == obj.ThreatEntitySetId)": data,
-        "AWS.GuardDuty.Detectors(true)": {"ThreatEntitySetsNextToken": response.get("NextToken")},
+    # data includes the DetectorId seed entry, so the number of returned sets is len(data) - 1.
+    demisto.debug(f"aws-gd-list-threat-entity-sets: found {len(data) - 1} Threat Entity Set(s).")
+
+    outputs: dict[str, Any] = {
+        "AWS.GuardDuty.ThreatEntitySet(val.ThreatEntitySetId && val.ThreatEntitySetId == obj.ThreatEntitySetId)": data,
     }
+    if next_token:
+        outputs["AWS.GuardDutyThreatEntitySetNextToken"] = {"NextToken": next_token}
 
-    readable_output = (
-        tableToMarkdown("AWS GuardDuty Threat Entity Sets", data)
-        if threat_entity_set_ids
-        else "No Threat Entity Sets were found for the specified detector."
-    )
+    readable_output = tableToMarkdown("AWS GuardDuty ThreatEntity Sets", data)
     return CommandResults(
         readable_output=readable_output,
         outputs=outputs,
-        raw_response=response,
     )
 
 
@@ -937,6 +1021,12 @@ def main():  # pragma: no cover
 
         elif demisto.command() == "aws-gd-create-threat-entity-set":
             result = create_threat_entity_set(client, demisto.args())
+
+        elif demisto.command() == "aws-gd-update-threat-entity-set":
+            result = update_threat_entity_set(client, demisto.args())
+
+        elif demisto.command() == "aws-gd-get-threat-entity-set":
+            result = get_threat_entity_set(client, demisto.args())
 
         elif demisto.command() == "aws-gd-delete-threat-entity-set":
             result = delete_threat_entity_set(client, demisto.args())
