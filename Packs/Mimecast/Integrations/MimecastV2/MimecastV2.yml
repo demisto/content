@@ -101,6 +101,9 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch URL incidents
   name: fetchURL
   type: 8
@@ -140,6 +143,9 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '24'
   display: Hours before first fetch to retrieve incidents
   name: fetchDelta
@@ -157,6 +163,9 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: new_insecure
   type: 8
@@ -177,6 +186,9 @@ configuration:
   hidden:
   - marketplacev2
   - platform
+  supportedModules:
+  - agentix
+  - xsiam
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
 display: Mimecast v2
 name: MimecastV2
