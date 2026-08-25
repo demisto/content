@@ -1186,7 +1186,7 @@ def run_anthropic_claude_integration() -> None:
     model = params.get("model-freetext") if params.get("model-freetext") else params.get("model-select")
     compliance_api_key = params.get("compliance_apikey", {}).get("password")
 
-    url = params.get("url")
+    url = params.get("url", "https://api.anthropic.com/")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
