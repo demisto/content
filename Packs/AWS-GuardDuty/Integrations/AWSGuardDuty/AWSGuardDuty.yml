@@ -623,6 +623,7 @@ script:
     name: aws-gd-update-threatintel-set
   - name: aws-gd-create-threat-entity-set
     description: Creates a new threat entity set. In a threat entity set, you can provide known malicious threat entities for your AWS environment.
+    execution: true
     arguments:
     - name: detectorId
       description: The unique ID of the detector of the GuardDuty account for which you want to create a ThreatEntitySet.
