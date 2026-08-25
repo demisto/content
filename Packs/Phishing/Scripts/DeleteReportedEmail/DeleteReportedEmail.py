@@ -141,7 +141,7 @@ def schedule_next_command(args: dict):
         **args,
     }
     return ScheduledCommand(
-        command="DeleteReportedEmail1",
+        command="DeleteReportedEmail",
         next_run_in_seconds=60,
         args=polling_args,
         timeout_in_seconds=600,
@@ -564,7 +564,7 @@ def main():
                     search_args,
                     headerTransform=string_to_table_header,
                 ),
-                outputs_prefix="DeleteReportedEmail1",
+                outputs_prefix="DeleteReportedEmail",
                 outputs_key_field="message_id",
                 raw_response="",
                 outputs=search_args,

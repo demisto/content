@@ -40,9 +40,9 @@ args:
   hidden: true
 comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to.'
 commonfields:
-  id: DeleteReportedEmail1
+  id: DeleteReportedEmail
   version: -1
-name: DeleteReportedEmail1
+name: DeleteReportedEmail
 polling: true
 outputs:
 - contextPath: DeleteReportedEmail.result
