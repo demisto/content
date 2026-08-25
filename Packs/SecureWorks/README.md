@@ -72,10 +72,12 @@ By design, ingested Taegis XDR cases are created in **Pending** status as a tria
 
 ## Post-Install: Exclusion Lists
 
-Exclusion lists are not automatically imported with the content pack. To prevent Taegis XDR URLs and domains from being flagged as indicators, import the two exclusion list files included in the `doc_files/ExclusionLists/` folder:
+Optional, and not imported automatically with the content pack. The **Taegis XDR - Case** incident type extracts indicators only from **Taegis XDR Case Entities** and **Taegis XDR Key Findings**, so Taegis XDR's own console links are not extracted from the case link or the detections grid. These lists remain useful because Key Findings is free-form text, and an analyst who pastes a Taegis case link into it would otherwise create a URL or domain indicator for the Taegis console.
 
-- `TaegisXDRv3_urls.json` - Regex pattern matching Secureworks Taegis XDR URLs.
-- `TaegisXDRv3_domains.json` - Regex pattern matching Secureworks Taegis XDR domains.
+To suppress those, import either or both files from the `doc_files/ExclusionLists/` folder:
+
+- `TaegisXDRv3_urls.json` - Regex matching Secureworks Taegis XDR console URLs.
+- `TaegisXDRv3_domains.json` - Regex matching Secureworks Taegis XDR domains.
 
 **Cortex XSOAR v6:** Settings -> Advanced -> **Exclusion List** -> Import exclusion list (import icon) -> select each JSON file.
 
