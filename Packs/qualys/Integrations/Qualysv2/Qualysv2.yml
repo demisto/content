@@ -46,6 +46,16 @@ configuration:
   - xpanse
   supportedModules:
   - xsiam
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - xsiam
 - defaultvalue: 3 days
   section: Collect
   display: Event first fetch time
