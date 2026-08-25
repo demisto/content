@@ -6016,3 +6016,36 @@ def test_create_script_notice_ui():
     assert quote_block["type"] == "rich_text_quote"
     text_element = quote_block["elements"][1]
     assert AssistantMessages.SCRIPT_AVAILABLE_NOTICE in text_element["text"]
+
+
+@pytest.mark.asyncio
+async def test_handle_entitlement_interactions_empty_action_value(mocker):
+    """
+    Given:
+        A Slack interactive payload where actions[0]["value"] is an empty string "".
+    When:
+        handle_entitlement_interactions is called.
+    Then:
+        The function returns True without raising a JSONDecodeError.
+        (Regression test for XSUP-75552)
+    """
+    import SlackV3
+
+    ENTITLEMENT_REGEX = r"4404dae8-2d45-46bd-85fa-64779c12abe8@22"
+    quick_check_payload = f'{{"actions": [{{"value": "", "action_id": "some-action"}}], "entitlement": "{ENTITLEMENT_REGEX}"}}'
+
+    mocker.patch.object(SlackV3, "get_user_details", return_value={"profile": {"email": "test@example.com"}})
+
+    result = await SlackV3.handle_entitlement_interactions(
+        data={},
+        event={},
+        user_id="U123",
+        actions=[{"value": "", "action_id": "some-action"}],
+        channel="C123",
+        thread=None,
+        message_ts="123456.789",
+        quick_check_payload=quick_check_payload,
+        user_profile={},
+    )
+
+    assert result is True

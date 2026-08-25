@@ -2081,7 +2081,7 @@ async def handle_entitlement_interactions(
         user = await get_user_details(user_id=user_id)
         if len(actions) > 0:
             entitlement_json = actions[0].get("value")
-            if entitlement_json is None:
+            if not entitlement_json:
                 return True
             entitlement_string = json.loads(entitlement_json)
             if actions[0].get("action_id") == "xsoar-button-submit":
