@@ -9,6 +9,9 @@ filter eventType = "Activity"
     xdm.source.user.identifier = accountId,
     xdm.source.identity.identifier = accountId,
     xdm.source.user.username = coalesce(
+                                       json_extract_scalar(data, "$.byUser"),
+                                       json_extract_scalar(data, "$.lastLoggedInUserName"),
+                                       json_extract_scalar(data, "$.realUser")),
     xdm.source.identity.username = coalesce(
                                        json_extract_scalar(data, "$.byUser"),
                                        json_extract_scalar(data, "$.lastLoggedInUserName"),
