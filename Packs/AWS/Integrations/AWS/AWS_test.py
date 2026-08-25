@@ -271,6 +271,98 @@ def test_list_bucket_objects_command(mocker, mock_contents, expected_readable_fr
         assert result.outputs["Objects"][0]["Size"] == 1024
 
 
+@pytest.mark.parametrize(
+    "mock_contents, expected_readable_fragment, expected_output_len",
+    [
+        # Case 1: Bucket has objects (Success)
+        (
+            [{"Key": "test.txt", "Size": 1024, "LastModified": "2023-01-01", "StorageClass": "STANDARD"}],
+            "AWS S3 Bucket Object",
+            1,
+        ),
+        ([], "No objects found in bucket", 0),  # Case 2: Bucket is empty (Success but no content)
+    ],
+)
+def test_list_bucket_objects_v2_command(mocker, mock_contents, expected_readable_fragment, expected_output_len):
+    """
+    Given: A mocked S3 client returning a ListObjectsV2 response with (or without) objects.
+    When: list_bucket_objects_v2_command is called.
+    Then: It should call list_objects_v2 and return CommandResults with the expected objects/readable output.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Contents": mock_contents}
+
+    mock_client.list_objects_v2.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    args = {"bucket": "test-bucket"}
+
+    result = S3.list_bucket_objects_v2_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert expected_readable_fragment in result.readable_output
+    mock_client.list_objects_v2.assert_called_once()
+
+    if expected_output_len > 0:
+        bucket_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
+        assert len(bucket_output["ObjectsV2"]) == expected_output_len
+        assert bucket_output["BucketName"] == "test-bucket"
+        assert bucket_output["ObjectsV2"][0]["Key"] == "test.txt"
+        assert bucket_output["ObjectsV2"][0]["Size"] == 1024
+
+
+def test_list_bucket_objects_v2_command_pagination(mocker):
+    """
+    Given: A mocked S3 client returning a truncated ListObjectsV2 response with a NextContinuationToken,
+           and next_token / start_after arguments supplied by the caller.
+    When: list_bucket_objects_v2_command is called.
+    Then: It should pass ContinuationToken and StartAfter to list_objects_v2 and surface
+          NextContinuationToken as ObjectsNextToken in the outputs.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Contents": [{"Key": "test.txt", "Size": 1024, "LastModified": "2023-01-01", "StorageClass": "STANDARD"}],
+        "IsTruncated": True,
+        "NextContinuationToken": "next-token-value",
+    }
+    mock_client.list_objects_v2.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"bucket": "test-bucket", "next_token": "prev-token-value", "start_after": "aaa.txt"}
+
+    result = S3.list_bucket_objects_v2_command(mock_client, args)
+
+    call_kwargs = mock_client.list_objects_v2.call_args[1]
+    assert call_kwargs["ContinuationToken"] == "prev-token-value"
+    assert call_kwargs["StartAfter"] == "aaa.txt"
+    bucket_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
+    assert bucket_output["ObjectsV2NextToken"] == "next-token-value"
+
+
+def test_list_bucket_objects_v2_command_error_response(mocker):
+    """
+    Given: A mocked S3 client returning a non-OK HTTP status from list_objects_v2.
+    When: list_bucket_objects_v2_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.list_objects_v2.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.list_bucket_objects_v2_command(mock_client, args)
+
+    mock_handle_error.assert_called_once()
+
+
 def test_s3_put_bucket_logging_command_enable_logging(mocker):
     """
     Given: A mocked boto3 S3 client and arguments to enable bucket logging.
@@ -2027,7 +2119,7 @@ def test_s3_get_bucket_policy_command_success(mocker):
 
     result = S3.get_bucket_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_prefix == "AWS.S3.Buckets"
     assert result.outputs_key_field == "BucketName"
     assert result.outputs["BucketName"] == "test-bucket"
     assert result.outputs["Policy"] == policy_document
@@ -2227,7 +2319,7 @@ def test_s3_get_bucket_encryption_command_success(mocker):
 
     result = S3.get_bucket_encryption_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_prefix == "AWS.S3.Buckets"
     assert result.outputs_key_field == "BucketName"
     assert result.outputs["BucketName"] == "test-bucket"
     assert "ServerSideEncryptionConfiguration" in result.outputs
@@ -2392,7 +2484,7 @@ def test_s3_get_public_access_block_command_success(mocker):
 
     result = S3.get_public_access_block_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_prefix == "AWS.S3.Buckets"
     assert result.outputs_key_field == "BucketName"
     assert result.outputs["BucketName"] == "test-bucket"
     assert result.outputs["PublicAccessBlock"] == public_access_block_config
@@ -6106,6 +6198,46 @@ def test_get_bucket_website_command_failure(mocker):
     mock_error_handler.assert_called_once()
 
 
+def test_get_bucket_website_command_context_output(mocker):
+    """
+    Given:
+        - A mocked boto3 S3 client returning a full website configuration
+          (IndexDocument, ErrorDocument, RedirectAllRequestsTo, RoutingRules).
+        - A valid bucket name.
+    When:
+        - get_bucket_website_command is called.
+    Then:
+        - The CommandResults context output prefix is "AWS.S3.Buckets.BucketWebsite".
+        - The outputs match the expected website configuration exactly.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    index_document = {"Suffix": "index.html"}
+    error_document = {"Key": "error.html"}
+    redirect_all_requests_to = {"HostName": "example.com", "Protocol": "https"}
+    routing_rules = [{"Redirect": {"ReplaceKeyPrefixWith": "documents/"}}]
+    mock_client.get_bucket_website.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "IndexDocument": index_document,
+        "ErrorDocument": error_document,
+        "RedirectAllRequestsTo": redirect_all_requests_to,
+        "RoutingRules": routing_rules,
+    }
+    args = {"bucket": "mock_bucket_name"}
+
+    result = S3.get_bucket_website_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.S3.Buckets.BucketWebsite"
+    assert result.outputs == {
+        "ErrorDocument": error_document,
+        "IndexDocument": index_document,
+        "RedirectAllRequestsTo": redirect_all_requests_to,
+        "RoutingRules": routing_rules,
+    }
+
+
 def test_get_bucket_acl_command_success(mocker):
     """
     Given: A mocked boto3 S3 client and a valid bucket name.
@@ -6136,6 +6268,41 @@ def test_get_bucket_acl_command_failure(mocker):
     args = {"bucket": "mock_bucket_name"}
     S3.get_bucket_acl_command(mock_client, args)
     mock_error_handler.assert_called_once()
+
+
+def test_get_bucket_acl_command_context_output(mocker):
+    """
+    Given:
+        - A mocked boto3 S3 client returning a full access control policy (Grants and Owner).
+        - A valid bucket name.
+    When:
+        - get_bucket_acl_command is called.
+    Then:
+        - The CommandResults context output prefix is "AWS.S3.Buckets.BucketAcl".
+        - The outputs match the expected access control policy exactly.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    owner = {"DisplayName": "owner-display-name", "ID": "owner-id"}
+    grants = [
+        {
+            "Grantee": {"Type": "CanonicalUser", "DisplayName": "owner-display-name", "ID": "owner-id"},
+            "Permission": "FULL_CONTROL",
+        }
+    ]
+    mock_client.get_bucket_acl.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Owner": owner,
+        "Grants": grants,
+    }
+    args = {"bucket": "mock_bucket_name"}
+
+    result = S3.get_bucket_acl_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.S3.Buckets.BucketAcl"
+    assert result.outputs == {"Grants": grants, "Owner": owner}
 
 
 def test_create_network_acl_command_success(mocker):
