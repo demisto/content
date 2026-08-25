@@ -35,9 +35,6 @@ configuration:
   name: isFetch
   type: 8
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - defaultvalue: stateNOT IN6,7
   display: The query to use when fetching incidents
   name: sysparm_query
@@ -64,9 +61,6 @@ configuration:
   name: incidentType
   type: 13
   required: false
-  supportedModules:
-  - agentix
-  - xsiam
 - display: Get incident attachments
   name: get_attachments
   type: 8
