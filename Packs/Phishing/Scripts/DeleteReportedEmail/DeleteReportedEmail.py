@@ -1,7 +1,6 @@
 import re
 import time
 from collections.abc import Callable
-from typing import Any
 from urllib.parse import quote, unquote
 
 import demistomock as demisto  # noqa: F401
@@ -16,10 +15,7 @@ EMAIL_INTEGRATIONS = [
     "MicrosoftGraphMail",
     "SecurityAndCompliance",
     "SecurityAndComplianceV2",
-    "Microsoft Graph",
 ]
-# Stable display name used for the reusable eDiscovery case in Microsoft Graph Security.
-MSG_EDISCOVERY_CASE_NAME = "XSOAR Delete Reported Email"
 # RFC 5322 msg-id is <id-left@id-right> with a constrained charset
 MESSAGE_ID_REGEX = re.compile(r"<[^\s<>]+@[^\s<>]+>")
 seconds = time.time()
@@ -256,218 +252,6 @@ def security_and_compliance_delete_mail(
     return "Success", None
 
 
-# Terminal success statuses for Microsoft Graph Security eDiscovery operations.
-MSG_SUCCESS_STATUSES = {"succeeded", "partiallysucceeded"}
-# Map the script's delete type to the Microsoft Graph Security purge type.
-MSG_PURGE_TYPE_MAP = {"hard": "permanentlyDelete", "soft": "recoverable"}
-
-
-def msg_extract_objects(response: Any) -> list[dict]:
-    """
-    Normalize a Microsoft Graph Security command response into a list of raw Graph objects.
-
-    ``execute_command`` returns each entry's ``Contents``, which is the command's
-    ``CommandResults.raw_response``. For the msg-* eDiscovery commands that payload is the raw
-    Microsoft Graph JSON (camelCase keys), not the CamelCase EntryContext. It may be:
-      - a single Graph object (create case / create search / get operation),
-      - an OData envelope from a list command: ``{"@odata.context": ..., "value": [...]}``,
-      - a list, when ``execute_command`` returned more than one entry,
-      - empty, or not a mapping at all.
-
-    Args:
-        response: The value returned by ``execute_command``.
-
-    Returns:
-        A list of raw Graph objects. Possibly empty; never raises.
-    """
-    if isinstance(response, list):
-        objects: list[dict] = []
-        for item in response:
-            objects.extend(msg_extract_objects(item))
-        return objects
-
-    if not isinstance(response, dict):
-        return []
-
-    value = response.get("value")
-    if isinstance(value, list):
-        return [item for item in value if isinstance(item, dict)]
-    if isinstance(value, dict):
-        return [value]
-    return [response]
-
-
-def msg_first_object(response: Any) -> dict:
-    """
-    Return the first raw Graph object from a Microsoft Graph Security command response.
-
-    Args:
-        response: The value returned by ``execute_command``.
-
-    Returns:
-        The first raw Graph object, or an empty dict when there is none.
-    """
-    objects = msg_extract_objects(response)
-    return objects[0] if objects else {}
-
-
-def msg_is_success_status(status: Any) -> bool:
-    """
-    Check whether a Microsoft Graph eDiscovery operation status is a terminal success.
-
-    Graph reports mixed-case statuses (e.g. ``partiallySucceeded``), so both the reported status
-    and the configured statuses are normalized before being compared.
-
-    Args:
-        status: The status value reported by the API.
-
-    Returns:
-        True if the status is a terminal success status.
-    """
-    return str(status or "").strip().lower() in {expected.strip().lower() for expected in MSG_SUCCESS_STATUSES}
-
-
-def msg_resolve_ediscovery_case(case_name: str, using_brand: str) -> str:
-    """
-    Resolve the eDiscovery case by display name, creating it if it does not exist.
-    Args:
-        case_name: The stable display name of the eDiscovery case.
-        using_brand: The brand used for this operation.
-    Returns:
-        The resolved (or newly created) case ID.
-    """
-    cases = execute_command("msg-list-ediscovery-cases", {"all_results": "true", "using-brand": using_brand})
-    for case in msg_extract_objects(cases):
-        if case.get("displayName") == case_name and case.get("id"):
-            demisto.debug(f"msg_resolve_ediscovery_case: found existing case '{case_name}' with id '{case.get('id')}'")
-            return case["id"]
-
-    demisto.debug(f"msg_resolve_ediscovery_case: case '{case_name}' not found, creating it")
-    created = execute_command("msg-create-ediscovery-case", {"display_name": case_name, "using-brand": using_brand})
-    demisto.debug(f"AAA created: {created=}")
-    case_id = msg_first_object(created).get("id")
-    demisto.debug(f"AAA case_id: {case_id=}")
-    if not case_id:
-        return_error(
-            f"Failed to resolve or create the Microsoft Graph Security eDiscovery case '{case_name}': "
-            f"no case ID was returned by msg-create-ediscovery-case."
-        )
-    return case_id
-
-
-def microsoft_graph_security_delete_mail(
-    args: dict,
-    to_user_id: str,
-    user_id: str,
-    content_query: str,
-    case_name: str,
-    using_brand: str,
-    delete_type: str,
-    message_id: str,
-    **kwargs,
-):
-    """
-    Search and delete the email using the Microsoft Graph Security eDiscovery command chain, via the polling flow.
-    Args:
-        args: script args (used to persist polling state across runs).
-        to_user_id: the mailbox to scope the search and purge to.
-        user_id: the mailbox owner (alias of to_user_id).
-        content_query: the KQL query filtering by the RFC Message-ID (Identifier).
-        case_name: stable display name for the reusable eDiscovery case.
-        using_brand: the brand used for this operation.
-        delete_type: the delete type, soft or hard.
-        message_id: the message id of the email.
-    Returns:
-        The command status (In Progress or Success) and the scheduledCommand object for the next command, if needed.
-    """
-    check_demisto_version()
-
-    if was_email_already_deleted({"message_id": message_id}, "")[0] == "Success":
-        # Since the polling flow mutates the context, we conduct this check first,
-        # instead of only if the email is not found.
-        return "Success", None
-
-    case_id = args.get("case_id", "")
-    search_id = args.get("search_id", "")
-    purge_operation_id = args.get("purge_operation_id", "")
-
-    if not case_id:
-        # First run: resolve (or create) the eDiscovery case and create the search.
-        case_id = msg_resolve_ediscovery_case(case_name, using_brand)
-        search_args = {
-            "case_id": case_id,
-            "display_name": f"search_for_delete_{seconds}",
-            "content_query": content_query,
-            "using-brand": using_brand,
-        }
-        if to_user_id:
-            search_args["data_source_scopes"] = "allTenantMailboxes"
-        search = execute_command("msg-create-ediscovery-search", search_args)
-        search_id = msg_first_object(search).get("id")
-        if not search_id:
-            return_error(
-                f"Failed to create the Microsoft Graph Security eDiscovery search for case '{case_id}': "
-                f"no search ID was returned by msg-create-ediscovery-search."
-            )
-        execute_command(
-            "msg-run-estimate-statistics",
-            {"case_id": case_id, "search_id": search_id, "using-brand": using_brand},
-        )
-        args["case_id"] = case_id
-        args["search_id"] = search_id
-
-    if not purge_operation_id:
-        # Poll the estimate statistics operation until it reaches a terminal state.
-        estimate = execute_command(
-            "msg-get-last-estimate-statistics-operation",
-            {"case_id": case_id, "search_id": search_id, "using-brand": using_brand},
-        )
-        estimate_dict = msg_first_object(estimate)
-        status = estimate_dict.get("status")
-        demisto.debug(f"microsoft_graph_security_delete_mail: estimate statistics status is '{status}'")
-        if not msg_is_success_status(status):
-            return "In Progress", schedule_next_command(args)
-
-        indexed_items = arg_to_number(estimate_dict.get("indexedItemCount")) or 0
-        total_items = arg_to_number(estimate_dict.get("totalItemCount")) or 0
-        if indexed_items == 0 and total_items == 0:
-            raise MissingEmailException
-
-        # The email was found, start the purge.
-        purge_type = MSG_PURGE_TYPE_MAP.get(delete_type, "recoverable")
-        purge = execute_command(
-            "msg-purge-ediscovery-data",
-            {
-                "case_id": case_id,
-                "search_id": search_id,
-                "purge_type": purge_type,
-                "purge_areas": "mailboxes",
-                "using-brand": using_brand,
-            },
-        )
-        # msg-purge-ediscovery-data builds CommandResults with `outputs` and no `raw_response`,
-        # so CommandResults falls back to the outputs dict and `OperationID` is the correct key.
-        purge_dict = msg_first_object(purge)
-        purge_operation_id = purge_dict.get("OperationID") or purge_dict.get("Purge", {}).get("OperationID")
-        args["purge_operation_id"] = purge_operation_id
-
-    # Poll the purge operation until it completes.
-    operation = execute_command(
-        "msg-list-case-operation",
-        {"case_id": case_id, "operation_id": purge_operation_id, "using-brand": using_brand},
-    )
-    operation_dict = msg_first_object(operation)
-    purge_status = operation_dict.get("status")
-    demisto.debug(f"microsoft_graph_security_delete_mail: purge operation status is '{purge_status}'")
-    if not msg_is_success_status(purge_status):
-        return "In Progress", schedule_next_command(args)
-
-    # The email was purged, clean up the search.
-    execute_command("msg-delete-ediscovery-search", {"case_id": case_id, "search_id": search_id, "using-brand": using_brand})
-
-    return "Success", None
-
-
 def extract_message_id(search_result: list, search_function: str) -> str | None:
     """Extract the RFC Message-ID from a search result based on the integration's response structure.
 
@@ -640,12 +424,6 @@ def get_search_args(args: dict):
         },
         "SecurityAndCompliance": {"to_user_id": user_id, "from_user_id": from_user_id},
         "SecurityAndComplianceV2": {"to_user_id": user_id, "from_user_id": from_user_id},
-        "Microsoft Graph": {
-            "to_user_id": user_id,
-            "user_id": user_id,
-            "content_query": f'Identifier:"{message_id}"',
-            "case_name": MSG_EDISCOVERY_CASE_NAME,
-        },
     }
 
     search_args.update(additional_args.get(delete_from_brand, {}))
@@ -688,10 +466,6 @@ def main():
         if delete_from_brand in ["SecurityAndCompliance", "SecurityAndComplianceV2"]:
             security_and_compliance_args = {k.replace("-", "_"): v for k, v in search_args.items()}
             result, scheduled_command = security_and_compliance_delete_mail(args, **security_and_compliance_args)
-
-        elif delete_from_brand == "Microsoft Graph":
-            microsoft_graph_security_args = {k.replace("-", "_"): v for k, v in search_args.items()}
-            result, scheduled_command = microsoft_graph_security_delete_mail(args, **microsoft_graph_security_args)
 
         else:
             integrations_dict = {
