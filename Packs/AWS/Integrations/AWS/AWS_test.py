@@ -6,6 +6,38 @@ import demistomock as demisto
 import pytest
 
 from CommonServerPython import CommandResults, DemistoException
+import ast
+import os
+import re
+
+QUICK_ACTION_SUFFIX = "-quick-action"
+_INTEGRATION_DIR = os.path.dirname(os.path.abspath(__file__))
+_YML_PATH = os.path.join(_INTEGRATION_DIR, "AWS.yml")
+_PY_PATH = os.path.join(_INTEGRATION_DIR, "AWS.py")
+
+# Platform-standard arguments that are resolved centrally rather than read with
+# args.get(...) inside each command handler:
+#   - region / account_id -> consumed by get_service_client() when building the
+#     boto3 client and by the multi-account fan-out in execute_aws_command().
+#   - limit / next_token  -> consumed by the shared build_pagination_kwargs().
+#   - polling_timeout / interval_in_seconds / hide_polling_output -> consumed by
+#     the @polling_function decorator, not by the handler body.
+PLATFORM_STANDARD_ARGS = {
+    "region",
+    "account_id",
+    "limit",
+    "next_token",
+    "polling_timeout",
+    "interval_in_seconds",
+    "hide_polling_output",
+}
+
+# Output roots produced by platform helpers rather than by an explicit
+# outputs_prefix in the handler. `File.*` entries come from fileResult().
+PLATFORM_STANDARD_OUTPUT_ROOTS = ("File.",)
+
+# An ``ast`` node that declares a function (sync or async).
+FunctionNode = ast.FunctionDef | ast.AsyncFunctionDef
 
 
 def test_parse_resource_ids_with_valid_input():
@@ -269,6 +301,98 @@ def test_list_bucket_objects_command(mocker, mock_contents, expected_readable_fr
         assert result.outputs["BucketName"] == "test-bucket"
         assert result.outputs["Objects"][0]["Key"] == "test.txt"
         assert result.outputs["Objects"][0]["Size"] == 1024
+
+
+@pytest.mark.parametrize(
+    "mock_contents, expected_readable_fragment, expected_output_len",
+    [
+        # Case 1: Bucket has objects (Success)
+        (
+            [{"Key": "test.txt", "Size": 1024, "LastModified": "2023-01-01", "StorageClass": "STANDARD"}],
+            "AWS S3 Bucket Object",
+            1,
+        ),
+        ([], "No objects found in bucket", 0),  # Case 2: Bucket is empty (Success but no content)
+    ],
+)
+def test_list_bucket_objects_v2_command(mocker, mock_contents, expected_readable_fragment, expected_output_len):
+    """
+    Given: A mocked S3 client returning a ListObjectsV2 response with (or without) objects.
+    When: list_bucket_objects_v2_command is called.
+    Then: It should call list_objects_v2 and return CommandResults with the expected objects/readable output.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Contents": mock_contents}
+
+    mock_client.list_objects_v2.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    args = {"bucket": "test-bucket"}
+
+    result = S3.list_bucket_objects_v2_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert expected_readable_fragment in result.readable_output
+    mock_client.list_objects_v2.assert_called_once()
+
+    if expected_output_len > 0:
+        bucket_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
+        assert len(bucket_output["ObjectsV2"]) == expected_output_len
+        assert bucket_output["BucketName"] == "test-bucket"
+        assert bucket_output["ObjectsV2"][0]["Key"] == "test.txt"
+        assert bucket_output["ObjectsV2"][0]["Size"] == 1024
+
+
+def test_list_bucket_objects_v2_command_pagination(mocker):
+    """
+    Given: A mocked S3 client returning a truncated ListObjectsV2 response with a NextContinuationToken,
+           and next_token / start_after arguments supplied by the caller.
+    When: list_bucket_objects_v2_command is called.
+    Then: It should pass ContinuationToken and StartAfter to list_objects_v2 and surface
+          NextContinuationToken as ObjectsNextToken in the outputs.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Contents": [{"Key": "test.txt", "Size": 1024, "LastModified": "2023-01-01", "StorageClass": "STANDARD"}],
+        "IsTruncated": True,
+        "NextContinuationToken": "next-token-value",
+    }
+    mock_client.list_objects_v2.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"bucket": "test-bucket", "next_token": "prev-token-value", "start_after": "aaa.txt"}
+
+    result = S3.list_bucket_objects_v2_command(mock_client, args)
+
+    call_kwargs = mock_client.list_objects_v2.call_args[1]
+    assert call_kwargs["ContinuationToken"] == "prev-token-value"
+    assert call_kwargs["StartAfter"] == "aaa.txt"
+    bucket_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
+    assert bucket_output["ObjectsV2NextToken"] == "next-token-value"
+
+
+def test_list_bucket_objects_v2_command_error_response(mocker):
+    """
+    Given: A mocked S3 client returning a non-OK HTTP status from list_objects_v2.
+    When: list_bucket_objects_v2_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.list_objects_v2.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.list_bucket_objects_v2_command(mock_client, args)
+
+    mock_handle_error.assert_called_once()
 
 
 def test_s3_put_bucket_logging_command_enable_logging(mocker):
@@ -2027,7 +2151,7 @@ def test_s3_get_bucket_policy_command_success(mocker):
 
     result = S3.get_bucket_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_prefix == "AWS.S3.Buckets"
     assert result.outputs_key_field == "BucketName"
     assert result.outputs["BucketName"] == "test-bucket"
     assert result.outputs["Policy"] == policy_document
@@ -2227,7 +2351,7 @@ def test_s3_get_bucket_encryption_command_success(mocker):
 
     result = S3.get_bucket_encryption_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_prefix == "AWS.S3.Buckets"
     assert result.outputs_key_field == "BucketName"
     assert result.outputs["BucketName"] == "test-bucket"
     assert "ServerSideEncryptionConfiguration" in result.outputs
@@ -2392,7 +2516,7 @@ def test_s3_get_public_access_block_command_success(mocker):
 
     result = S3.get_public_access_block_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_prefix == "AWS.S3.Buckets"
     assert result.outputs_key_field == "BucketName"
     assert result.outputs["BucketName"] == "test-bucket"
     assert result.outputs["PublicAccessBlock"] == public_access_block_config
@@ -6106,6 +6230,46 @@ def test_get_bucket_website_command_failure(mocker):
     mock_error_handler.assert_called_once()
 
 
+def test_get_bucket_website_command_context_output(mocker):
+    """
+    Given:
+        - A mocked boto3 S3 client returning a full website configuration
+          (IndexDocument, ErrorDocument, RedirectAllRequestsTo, RoutingRules).
+        - A valid bucket name.
+    When:
+        - get_bucket_website_command is called.
+    Then:
+        - The CommandResults context output prefix is "AWS.S3.Buckets.BucketWebsite".
+        - The outputs match the expected website configuration exactly.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    index_document = {"Suffix": "index.html"}
+    error_document = {"Key": "error.html"}
+    redirect_all_requests_to = {"HostName": "example.com", "Protocol": "https"}
+    routing_rules = [{"Redirect": {"ReplaceKeyPrefixWith": "documents/"}}]
+    mock_client.get_bucket_website.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "IndexDocument": index_document,
+        "ErrorDocument": error_document,
+        "RedirectAllRequestsTo": redirect_all_requests_to,
+        "RoutingRules": routing_rules,
+    }
+    args = {"bucket": "mock_bucket_name"}
+
+    result = S3.get_bucket_website_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.S3.Buckets.BucketWebsite"
+    assert result.outputs == {
+        "ErrorDocument": error_document,
+        "IndexDocument": index_document,
+        "RedirectAllRequestsTo": redirect_all_requests_to,
+        "RoutingRules": routing_rules,
+    }
+
+
 def test_get_bucket_acl_command_success(mocker):
     """
     Given: A mocked boto3 S3 client and a valid bucket name.
@@ -6136,6 +6300,41 @@ def test_get_bucket_acl_command_failure(mocker):
     args = {"bucket": "mock_bucket_name"}
     S3.get_bucket_acl_command(mock_client, args)
     mock_error_handler.assert_called_once()
+
+
+def test_get_bucket_acl_command_context_output(mocker):
+    """
+    Given:
+        - A mocked boto3 S3 client returning a full access control policy (Grants and Owner).
+        - A valid bucket name.
+    When:
+        - get_bucket_acl_command is called.
+    Then:
+        - The CommandResults context output prefix is "AWS.S3.Buckets.BucketAcl".
+        - The outputs match the expected access control policy exactly.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    owner = {"DisplayName": "owner-display-name", "ID": "owner-id"}
+    grants = [
+        {
+            "Grantee": {"Type": "CanonicalUser", "DisplayName": "owner-display-name", "ID": "owner-id"},
+            "Permission": "FULL_CONTROL",
+        }
+    ]
+    mock_client.get_bucket_acl.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Owner": owner,
+        "Grants": grants,
+    }
+    args = {"bucket": "mock_bucket_name"}
+
+    result = S3.get_bucket_acl_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.S3.Buckets.BucketAcl"
+    assert result.outputs == {"Grants": grants, "Owner": owner}
 
 
 def test_create_network_acl_command_success(mocker):
@@ -14912,6 +15111,7 @@ def test_eks_create_access_entry_command_success(mocker):
         "principal_arn": "arn:aws:iam::123456789012:role/test-role",
         "kubernetes_groups": "group1,group2",
         "type": "Standard",
+        "tags": "key=Owner,value=SysAdmin;key=Env,value=Prod",
     }
 
     result = EKS.create_access_entry_command(mock_client, args)
@@ -14928,6 +15128,7 @@ def test_eks_create_access_entry_command_success(mocker):
     assert call_kwargs["principalArn"] == "arn:aws:iam::123456789012:role/test-role"
     assert call_kwargs["kubernetesGroups"] == ["group1", "group2"]
     assert call_kwargs["type"] == "Standard"
+    assert call_kwargs["tags"] == {"Owner": "SysAdmin", "Env": "Prod"}
 
 
 def test_eks_create_access_entry_command_minimal_args(mocker):
@@ -19756,6 +19957,478 @@ def test_create_network_firewall_policy_obj_invalid_rule_group_reference_raises(
         create_network_firewall_policy_obj(args)
 
 
+def test_parse_subnet_mappings_field_empty_input_returns_empty_list():
+    """
+    Given:
+        - An empty/None subnet mappings string.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should return an empty list.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    assert parse_subnet_mappings_field(None) == []
+    assert parse_subnet_mappings_field("") == []
+
+
+def test_parse_subnet_mappings_field_single_full_mapping():
+    """
+    Given:
+        - A single mapping string with both SubnetId and IPAddressType.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should return a list with one dict containing both fields.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "SubnetId=subnet-1111,IPAddressType=IPV4"
+
+    # When
+    result = parse_subnet_mappings_field(mappings_string)
+
+    # Then
+    assert result == [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}]
+
+
+def test_parse_subnet_mappings_field_multiple_mappings_with_optional_field():
+    """
+    Given:
+        - Multiple mapping strings, one with IPAddressType and one without.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should return each mapping parsed independently, dropping empty optional fields.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "SubnetId=subnet-1111,IPAddressType=DUALSTACK;SubnetId=subnet-2222"
+
+    # When
+    result = parse_subnet_mappings_field(mappings_string)
+
+    # Then
+    assert result == [
+        {"SubnetId": "subnet-1111", "IPAddressType": "DUALSTACK"},
+        {"SubnetId": "subnet-2222"},
+    ]
+
+
+def test_parse_subnet_mappings_field_only_subnet_id():
+    """
+    Given:
+        - A mapping string containing only SubnetId.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should return a single-key dict with SubnetId only.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "SubnetId=subnet-1111"
+
+    # When
+    result = parse_subnet_mappings_field(mappings_string)
+
+    # Then
+    assert result == [{"SubnetId": "subnet-1111"}]
+
+
+def test_parse_subnet_mappings_field_missing_subnet_id_raises():
+    """
+    Given:
+        - A mapping string without a SubnetId field.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should raise a ValueError indicating SubnetId is required.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "IPAddressType=IPV4"
+
+    # When / Then
+    with pytest.raises(ValueError, match="SubnetId is required"):
+        parse_subnet_mappings_field(mappings_string)
+
+
+def test_parse_subnet_mappings_field_malformed_field_raises():
+    """
+    Given:
+        - A mapping string with a field that has no '=' separator.
+    When:
+        - parse_subnet_mappings_field is called.
+    Then:
+        - It should raise a ValueError with the expected format guidance.
+    """
+    from AWS import parse_subnet_mappings_field
+
+    # Given
+    mappings_string = "SubnetId=subnet-1111,IPAddressType"
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_subnet_mappings_field(mappings_string)
+
+
+def test_update_subnet_change_protection_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall name and subnet change protection flag.
+    When: update_subnet_change_protection_command is called successfully.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "SubnetChangeProtection": True,
+        "UpdateToken": "token-123",
+    }
+    mock_client.update_subnet_change_protection.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "subnet_change_protection": "true"}
+
+    result = NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The subnet change protection flag of the firewall was updated successfully." in result.readable_output
+    mock_client.update_subnet_change_protection.assert_called_once_with(FirewallName="test-firewall", SubnetChangeProtection=True)
+
+
+def test_update_subnet_change_protection_command_success_with_arn(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid firewall ARN and subnet change protection flag.
+    When: update_subnet_change_protection_command is called successfully.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "SubnetChangeProtection": False,
+        "UpdateToken": "token-123",
+    }
+    mock_client.update_subnet_change_protection.return_value = mock_response
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "subnet_change_protection": "false",
+    }
+
+    result = NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The subnet change protection flag of the firewall was updated successfully." in result.readable_output
+    mock_client.update_subnet_change_protection.assert_called_once_with(
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall", SubnetChangeProtection=False
+    )
+
+
+def test_update_subnet_change_protection_command_success_with_update_token(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall name, subnet change protection flag, and update token.
+    When: update_subnet_change_protection_command is called successfully.
+    Then: It should return CommandResults with a success message and pass the update token.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "SubnetChangeProtection": True,
+        "UpdateToken": "token-456",
+    }
+    mock_client.update_subnet_change_protection.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "subnet_change_protection": "true", "update_token": "token-123"}
+
+    result = NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "The subnet change protection flag of the firewall was updated successfully." in result.readable_output
+    mock_client.update_subnet_change_protection.assert_called_once_with(
+        FirewallName="test-firewall", SubnetChangeProtection=True, UpdateToken="token-123"
+    )
+
+
+def test_update_subnet_change_protection_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall identifier.
+    When: update_subnet_change_protection_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"subnet_change_protection": "true"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+
+def test_update_subnet_change_protection_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: update_subnet_change_protection_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.update_subnet_change_protection.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_name": "test-firewall", "subnet_change_protection": "true", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.update_subnet_change_protection_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_associate_subnets_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall name and subnet IDs.
+    When: associate_subnets_command is called successfully.
+    Then: It should return CommandResults with the firewall subnet mappings.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "UpdateToken": "token-123",
+        "SubnetMappings": [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}],
+    }
+    mock_client.associate_subnets.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "subnet_mappings": "SubnetId=subnet-1111"}
+
+    result = NetworkFirewall.associate_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["SubnetMappings"] == [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}]
+    assert "ResponseMetadata" not in result.outputs
+    mock_client.associate_subnets.assert_called_once_with(
+        FirewallName="test-firewall", SubnetMappings=[{"SubnetId": "subnet-1111"}]
+    )
+
+
+def test_associate_subnets_command_success_with_arn_and_multiple_subnets(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall ARN, an update token, and multiple subnet
+        mappings with per-subnet IP address types.
+    When: associate_subnets_command is called successfully.
+    Then: It should return CommandResults and pass the parsed subnet mappings to the API call.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "UpdateToken": "token-456",
+        "SubnetMappings": [
+            {"SubnetId": "subnet-1111", "IPAddressType": "DUALSTACK"},
+            {"SubnetId": "subnet-2222", "IPAddressType": "IPV4"},
+        ],
+    }
+    mock_client.associate_subnets.return_value = mock_response
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "update_token": "token-123",
+        "subnet_mappings": "SubnetId=subnet-1111,IPAddressType=DUALSTACK;SubnetId=subnet-2222,IPAddressType=IPV4",
+    }
+
+    result = NetworkFirewall.associate_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert len(result.outputs["SubnetMappings"]) == 2
+    mock_client.associate_subnets.assert_called_once_with(
+        UpdateToken="token-123",
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        SubnetMappings=[
+            {"SubnetId": "subnet-1111", "IPAddressType": "DUALSTACK"},
+            {"SubnetId": "subnet-2222", "IPAddressType": "IPV4"},
+        ],
+    )
+
+
+def test_associate_subnets_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall identifier.
+    When: associate_subnets_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"subnet_mappings": "SubnetId=subnet-1111"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.associate_subnets_command(mock_client, args)
+
+
+def test_associate_subnets_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: associate_subnets_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.associate_subnets.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_name": "test-firewall", "subnet_mappings": "SubnetId=subnet-1111", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.associate_subnets_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
+def test_disassociate_subnets_command_success_with_name(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall name and subnet IDs.
+    When: disassociate_subnets_command is called successfully.
+    Then: It should return CommandResults with a success readable output and the raw subnet mappings in outputs.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "UpdateToken": "token-123",
+        "SubnetMappings": [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}],
+    }
+    mock_client.disassociate_subnets.return_value = mock_response
+
+    args = {"firewall_name": "test-firewall", "subnet_ids": "subnet-2222"}
+
+    result = NetworkFirewall.disassociate_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs_key_field == "FirewallArn"
+    assert result.outputs["FirewallName"] == "test-firewall"
+    assert result.outputs["SubnetMappings"] == [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}]
+    assert "ResponseMetadata" not in result.outputs
+    assert "AWS Network Firewall Subnets Disassociated Successfully" in result.readable_output
+    mock_client.disassociate_subnets.assert_called_once_with(FirewallName="test-firewall", SubnetIds=["subnet-2222"])
+
+
+def test_disassociate_subnets_command_success_with_arn_and_multiple_subnets(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client, a valid firewall ARN, an update token and multiple subnet IDs.
+    When: disassociate_subnets_command is called successfully.
+    Then: It should return CommandResults and pass all arguments to the API call.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "FirewallName": "test-firewall",
+        "UpdateToken": "token-456",
+        "SubnetMappings": [],
+    }
+    mock_client.disassociate_subnets.return_value = mock_response
+
+    args = {
+        "firewall_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "update_token": "token-123",
+        "subnet_ids": "subnet-1111,subnet-2222",
+    }
+
+    result = NetworkFirewall.disassociate_subnets_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["SubnetMappings"] == []
+    mock_client.disassociate_subnets.assert_called_once_with(
+        UpdateToken="token-123",
+        FirewallArn="arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        SubnetIds=["subnet-1111", "subnet-2222"],
+    )
+
+
+def test_disassociate_subnets_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall identifier.
+    When: disassociate_subnets_command is called without firewall_name or firewall_arn.
+    Then: It should raise a DemistoException asking for at least one argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"subnet_ids": "subnet-1111"}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.disassociate_subnets_command(mock_client, args)
+
+
+def test_disassociate_subnets_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: disassociate_subnets_command is called and the API returns an error.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST},
+        "Error": {"Code": "InvalidRequestException", "Message": "Invalid request"},
+    }
+    mock_client.disassociate_subnets.return_value = mock_response
+
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+    mock_error_handler.side_effect = DemistoException("API Error")
+
+    args = {"firewall_name": "test-firewall", "subnet_ids": "subnet-1111", "account_id": "123456789012"}
+
+    with pytest.raises(DemistoException, match="API Error"):
+        NetworkFirewall.disassociate_subnets_command(mock_client, args)
+
+    mock_error_handler.assert_called_once_with(mock_response, "123456789012")
+
+
 def test_create_rule_group_command_success_with_rules_source(mocker):
     """
     Given:
@@ -20824,6 +21497,149 @@ def test_parse_json_arg_when_invalid_json_raises_demisto_exception():
         parse_json_arg(args, "ip_sets")
 
 
+def test_parse_key_value_items_field_single_item_multiple_fields():
+    """
+    Given:
+        - A single item string with multiple 'Key=Value' fields separated by ','.
+    When:
+        - parse_key_value_items_field is called with the required key present.
+    Then:
+        - It should return a list with one dict mapping each field key to its value.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "SubnetId=subnet-1,IPAddressType=IPV4"
+
+    # When
+    result = parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1,IPAddressType=type1")
+
+    # Then
+    assert result == [{"SubnetId": "subnet-1", "IPAddressType": "IPV4"}]
+
+
+def test_parse_key_value_items_field_multiple_items():
+    """
+    Given:
+        - A semicolon-separated string with two items, where the second omits the optional IPAddressType field.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should not raise and should return a list of two dicts, each containing only the fields that were
+          provided for that item.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "SubnetId=subnet-1,IPAddressType=IPV4;SubnetId=subnet-2"
+
+    # When
+    result = parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1,IPAddressType=type1")
+
+    # Then
+    assert result == [
+        {"SubnetId": "subnet-1", "IPAddressType": "IPV4"},
+        {"SubnetId": "subnet-2"},
+    ]
+
+
+def test_parse_key_value_items_field_strips_whitespace():
+    """
+    Given:
+        - An item string whose keys and values are padded with surrounding whitespace.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should strip the whitespace from both keys and values.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = " SubnetId = subnet-1 , IPAddressType = IPV4 "
+
+    # When
+    result = parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+    # Then
+    assert result == [{"SubnetId": "subnet-1", "IPAddressType": "IPV4"}]
+
+
+@pytest.mark.parametrize("items_string", [None, ""])
+def test_parse_key_value_items_field_empty_input_returns_empty_list(items_string):
+    """
+    Given:
+        - An empty or None items string.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should return an empty list.
+    """
+    from AWS import parse_key_value_items_field
+
+    # When
+    result = parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+    # Then
+    assert result == []
+
+
+def test_parse_key_value_items_field_missing_required_key_raises():
+    """
+    Given:
+        - An item string that does not contain the required key.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should raise a ValueError naming the required key as required for each item.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "IPAddressType=IPV4"
+
+    # When / Then
+    with pytest.raises(ValueError, match="SubnetId is required for each item"):
+        parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+
+def test_parse_key_value_items_field_field_without_separator_raises():
+    """
+    Given:
+        - An item string containing a field with no '=' separator.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should raise a ValueError indicating the field could not be parsed and include the format hint.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "SubnetId=subnet-1,IPAddressType"
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field: SubnetId=subnet-1,IPAddressType. .*SubnetId=id1"):
+        parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+
+def test_parse_key_value_items_field_field_with_empty_value_raises():
+    """
+    Given:
+        - An item string containing a field with a key but an empty value.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should raise a ValueError indicating the field could not be parsed.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "SubnetId="
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+
 def test_parse_stateful_rule_group_references_field_single_full_reference():
     """
     Given:
@@ -20950,7 +21766,7 @@ def test_parse_stateful_rule_group_references_field_missing_resource_arn_raises(
     refs_string = "Priority=100,Override=DROP_TO_ALERT"
 
     # When / Then
-    with pytest.raises(ValueError, match="ResourceArn is required"):
+    with pytest.raises(ValueError, match="ResourceArn is required for each item"):
         parse_stateful_rule_group_references_field(refs_string)
 
 
@@ -20990,3 +21806,894 @@ def test_parse_stateful_rule_group_references_field_invalid_arn_raises():
     # When / Then
     with pytest.raises(ValueError, match="ResourceArn must be a valid ARN"):
         parse_stateful_rule_group_references_field(refs_string)
+
+
+def test_delete_resource_policy_command_success(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid resource ARN.
+    When: delete_resource_policy_command is called successfully.
+    Then: It should return CommandResults with a success message.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.delete_resource_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {"resource_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"}
+
+    result = NetworkFirewall.delete_resource_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "was deleted successfully" in result.readable_output
+    mock_client.delete_resource_policy.assert_called_once_with(
+        ResourceArn="arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
+    )
+
+
+def test_delete_resource_policy_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: delete_resource_policy_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.delete_resource_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"resource_arn": "arn:test", "account_id": "123456789012"}
+
+    NetworkFirewall.delete_resource_policy_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+def test_put_resource_policy_command_success(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid resource ARN and policy.
+    When: put_resource_policy_command is called successfully.
+    Then: It should return CommandResults with a success message and the correct kwargs.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.put_resource_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "resource_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy",
+        "policy": '{"Statement": []}',
+    }
+
+    result = NetworkFirewall.put_resource_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "created/updated successfully" in result.readable_output
+    call_kwargs = mock_client.put_resource_policy.call_args[1]
+    assert call_kwargs["ResourceArn"] == "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
+    assert call_kwargs["Policy"] == '{"Statement": []}'
+
+
+def test_put_resource_policy_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: put_resource_policy_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.put_resource_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"resource_arn": "arn:test", "policy": "{}", "account_id": "123456789012"}
+
+    NetworkFirewall.put_resource_policy_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+def test_describe_resource_policy_command_success(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client returning a resource policy.
+    When: describe_resource_policy_command is called successfully.
+    Then: It should return CommandResults with the resource policy in the outputs.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.describe_resource_policy.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Policy": '{"Statement": [{"Effect": "Allow"}]}',
+    }
+
+    args = {"resource_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"}
+
+    result = NetworkFirewall.describe_resource_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.NetworkFirewall.ResourcePolicies"
+    assert result.outputs["Policy"] == '{"Statement": [{"Effect": "Allow"}]}'
+    assert result.outputs["ResourceArn"] == "arn:aws:network-firewall:us-east-1:123456789012:firewall-policy/test-policy"
+
+
+def test_describe_resource_policy_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: describe_resource_policy_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.describe_resource_policy.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"resource_arn": "arn:test", "account_id": "123456789012"}
+
+    NetworkFirewall.describe_resource_policy_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+def test_network_firewall_list_tags_for_resource_command_success(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client returning tags.
+    When: list_tags_for_resource_command is called successfully.
+    Then: It should return CommandResults with the tags and a next token.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.list_tags_for_resource.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Tags": [{"Key": "customer", "Value": "acme"}],
+        "NextToken": "token123",
+    }
+
+    args = {
+        "resource_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "limit": "10",
+        "next_token": "prev-token",
+    }
+
+    result = NetworkFirewall.list_tags_for_resource_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    tags_output = result.outputs["AWS.NetworkFirewall.Tags(val.ResourceArn == obj.ResourceArn)"]
+    assert tags_output["Tags"] == [{"Key": "customer", "Value": "acme"}]
+    assert tags_output["TagsNextToken"] == "token123"
+    call_kwargs = mock_client.list_tags_for_resource.call_args[1]
+    assert call_kwargs["MaxResults"] == 10
+    assert call_kwargs["NextToken"] == "prev-token"
+
+
+def test_network_firewall_list_tags_for_resource_command_no_tags(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client returning no tags.
+    When: list_tags_for_resource_command is called.
+    Then: It should return CommandResults with an empty tags list.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.list_tags_for_resource.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Tags": [],
+    }
+
+    args = {"resource_arn": "arn:test"}
+
+    result = NetworkFirewall.list_tags_for_resource_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == "No tags were found."
+
+
+def test_network_firewall_list_tags_for_resource_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: list_tags_for_resource_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.list_tags_for_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"resource_arn": "arn:test", "account_id": "123456789012"}
+
+    NetworkFirewall.list_tags_for_resource_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+def test_network_firewall_tag_resource_command_success(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid resource ARN and tags.
+    When: tag_resource_command is called successfully.
+    Then: It should return CommandResults with a success message and parsed tags.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.tag_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "resource_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "tags": "key=customer,value=acme;key=env,value=prod",
+    }
+
+    result = NetworkFirewall.tag_resource_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "was tagged successfully" in result.readable_output
+    call_kwargs = mock_client.tag_resource.call_args[1]
+    assert call_kwargs["Tags"] == [{"Key": "customer", "Value": "acme"}, {"Key": "env", "Value": "prod"}]
+
+
+def test_network_firewall_tag_resource_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: tag_resource_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.tag_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"resource_arn": "arn:test", "tags": "key=k,value=v", "account_id": "123456789012"}
+
+    NetworkFirewall.tag_resource_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+def test_network_firewall_untag_resource_command_success(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid resource ARN and tag keys.
+    When: untag_resource_command is called successfully.
+    Then: It should return CommandResults with a success message and parsed tag keys.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.untag_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}}
+
+    args = {
+        "resource_arn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "tag_keys": "customer,env",
+    }
+
+    result = NetworkFirewall.untag_resource_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "tags were removed" in result.readable_output
+    call_kwargs = mock_client.untag_resource.call_args[1]
+    assert call_kwargs["TagKeys"] == ["customer", "env"]
+
+
+def test_network_firewall_untag_resource_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: untag_resource_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.untag_resource.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"resource_arn": "arn:test", "tag_keys": "k", "account_id": "123456789012"}
+
+    NetworkFirewall.untag_resource_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+def test_describe_logging_configuration_command_success(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client returning a logging configuration.
+    When: describe_logging_configuration_command is called successfully.
+    Then: It should return CommandResults with the logging configuration in the outputs.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.describe_logging_configuration.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "LoggingConfiguration": {
+            "LogDestinationConfigs": [
+                {"LogType": "FLOW", "LogDestinationType": "S3", "LogDestination": {"bucketName": "my-bucket"}}
+            ]
+        },
+    }
+
+    args = {"firewall_name": "test-firewall"}
+
+    result = NetworkFirewall.describe_logging_configuration_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert result.outputs["FirewallArn"] == "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall"
+    assert result.outputs["LoggingConfiguration"]["LogDestinationConfigs"][0]["LogType"] == "FLOW"
+    mock_client.describe_logging_configuration.assert_called_once_with(FirewallName="test-firewall")
+
+
+def test_describe_logging_configuration_command_missing_arguments(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and no firewall identifier arguments.
+    When: describe_logging_configuration_command is called.
+    Then: It should raise a DemistoException asking for at least one identifier argument.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {}
+
+    with pytest.raises(DemistoException, match="Please enter at least one of the network firewall identifier arguments."):
+        NetworkFirewall.describe_logging_configuration_command(mock_client, args)
+
+
+def test_describe_logging_configuration_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: describe_logging_configuration_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.describe_logging_configuration.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"firewall_name": "test-firewall", "account_id": "123456789012"}
+
+    NetworkFirewall.describe_logging_configuration_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+def test_update_logging_configuration_command_success(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and a valid logging configuration JSON.
+    When: update_logging_configuration_command is called successfully.
+    Then: It should return CommandResults with the logging configuration and pass a parsed dict to boto3.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.update_logging_configuration.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "LoggingConfiguration": {
+            "LogDestinationConfigs": [
+                {"LogType": "FLOW", "LogDestinationType": "S3", "LogDestination": {"bucketName": "my-bucket"}}
+            ]
+        },
+    }
+
+    args = {
+        "firewall_name": "test-firewall",
+        "log_type": "FLOW",
+        "log_destination_type": "S3",
+        "log_destination_key": "bucketName",
+        "log_destination_value": "my-bucket",
+    }
+
+    result = NetworkFirewall.update_logging_configuration_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == "AWS.NetworkFirewall.Firewalls"
+    assert "updated successfully" in result.readable_output
+    call_kwargs = mock_client.update_logging_configuration.call_args[1]
+    log_destination_config = call_kwargs["LoggingConfiguration"]["LogDestinationConfigs"][0]
+    assert log_destination_config["LogType"] == "FLOW"
+    assert log_destination_config["LogDestinationType"] == "S3"
+    assert log_destination_config["LogDestination"] == {"bucketName": "my-bucket"}
+
+
+def test_update_logging_configuration_command_enable_monitoring_dashboard(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and enable_monitoring_dashboard set to true.
+    When: update_logging_configuration_command is called.
+    Then: It should pass EnableMonitoringDashboard=True to boto3 and surface it in the outputs.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.update_logging_configuration.return_value = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "FirewallArn": "arn:aws:network-firewall:us-east-1:123456789012:firewall/test-firewall",
+        "EnableMonitoringDashboard": True,
+    }
+
+    args = {"firewall_name": "test-firewall", "enable_monitoring_dashboard": "true"}
+
+    result = NetworkFirewall.update_logging_configuration_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    call_kwargs = mock_client.update_logging_configuration.call_args[1]
+    assert call_kwargs["EnableMonitoringDashboard"] is True
+    assert result.outputs["EnableMonitoringDashboard"] is True
+
+
+def test_update_logging_configuration_command_partial_destination_args(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client and only some of the log destination arguments.
+    When: update_logging_configuration_command is called.
+    Then: It should raise a ValueError requiring all log destination arguments to be provided together.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    args = {"firewall_name": "test-firewall", "log_type": "FLOW", "log_destination_type": "S3"}
+
+    with pytest.raises(ValueError, match="you must provide all of the following arguments"):
+        NetworkFirewall.update_logging_configuration_command(mock_client, args)
+
+
+def test_update_logging_configuration_command_api_error(mocker):
+    """
+    Given: A mocked boto3 NetworkFirewall client that returns an error status code.
+    When: update_logging_configuration_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import NetworkFirewall
+
+    mock_client = mocker.Mock()
+    mock_client.update_logging_configuration.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_error_handler = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {
+        "firewall_name": "test-firewall",
+        "log_type": "FLOW",
+        "log_destination_type": "S3",
+        "log_destination_key": "bucketName",
+        "log_destination_value": "my-bucket",
+        "account_id": "123456789012",
+    }
+
+    NetworkFirewall.update_logging_configuration_command(mock_client, args)
+
+    mock_error_handler.assert_called_once()
+
+
+# ---------------------------------------------------------------------------
+# YML <-> PY wiring assertion tests
+#
+# These tests read the integration's .yml and .py from disk and assert that
+# every command, its arguments, and its output prefixes declared in the YML are
+# actually wired up in the Python code. This proves the command, its args, and
+# its outputs are implemented as declared.
+#
+# The comparison is PER-COMMAND: each YML command is resolved to its handler
+# function via COMMANDS_MAPPING in AWS.py. Unlike the GCP integration (whose
+# handlers are plain module-level functions), AWS handlers are `@staticmethod`s
+# on service classes (e.g. ``S3.buckets_list_command``), and they frequently
+# delegate argument parsing to shared builders (e.g.
+# ``aws_ec2_fleet_create_args_builder(args)``). The analysis is therefore done
+# with the ``ast`` module and follows those delegations transitively, so an
+# argument read inside a helper still counts as wired.
+#
+# Quick-action commands (names ending in "-quick-action") and the built-in
+# "test-module" command are intentionally excluded.
+#
+# NOTE: these tests are pure static analysis - they only parse the .yml/.py
+# text. They perform no network/API calls, read no environment variables, and
+# are independent of execution order and of the system clock.
+# ---------------------------------------------------------------------------
+
+
+def _is_included_command(command_name: str) -> bool:
+    """Return whether the command should be checked by the YML <-> PY assertions.
+
+    Args:
+        command_name: The command name as declared in the YML / COMMANDS_MAPPING.
+
+    Returns:
+        True if the command is neither ``test-module`` nor a quick action, False otherwise.
+    """
+    return command_name != "test-module" and not command_name.endswith(QUICK_ACTION_SUFFIX)
+
+
+def _load_yml_spec() -> dict:
+    """Parse the integration YML and return its command specifications.
+
+    Arguments marked ``hidden: true`` in the YML are excluded: they are not
+    user-facing (they carry internal polling state or a fixed defaultValue for a
+    quick action) and are frequently consumed by shared/platform code rather
+    than read directly in the command handler.
+
+    Returns:
+        A dict mapping command_name -> {"args": [arg_names], "outputs": [contextPaths]}
+        for every non-quick-action, non-test-module command.
+    """
+    import yaml
+
+    with open(_YML_PATH, encoding="utf-8") as f:
+        yml = yaml.safe_load(f)
+
+    spec: dict[str, dict[str, list[str]]] = {}
+    for command in yml.get("script", {}).get("commands", []):
+        name = command.get("name", "")
+        if not _is_included_command(name):
+            continue
+        arg_names = [arg["name"] for arg in (command.get("arguments") or []) if arg.get("name") and not arg.get("hidden")]
+        context_paths = [out["contextPath"] for out in (command.get("outputs") or []) if out.get("contextPath")]
+        spec[name] = {"args": arg_names, "outputs": context_paths}
+    return spec
+
+
+def _load_py_tree() -> ast.Module:
+    """Parse the integration .py file into an AST.
+
+    Returns:
+        The parsed AWS.py module as an ``ast.Module``.
+    """
+    with open(_PY_PATH, encoding="utf-8") as f:
+        return ast.parse(f.read())
+
+
+@pytest.fixture(scope="module")
+def yml_spec() -> dict:
+    """Provide the AWS.yml command specifications, parsed once for the whole module.
+
+    Returns:
+        The value of :func:`_load_yml_spec`, shared by every test in this module.
+    """
+    return _load_yml_spec()
+
+
+@pytest.fixture(scope="module")
+def py_tree() -> ast.Module:
+    """Provide the AWS.py AST, parsed once for the whole module.
+
+    Returns:
+        The value of :func:`_load_py_tree`, shared by every test in this module.
+    """
+    return _load_py_tree()
+
+
+def _parse_commands_mapping(tree: ast.Module) -> dict[str, str]:
+    """Parse ``COMMANDS_MAPPING`` in AWS.py, mapping command name -> handler name.
+
+    ``COMMANDS_MAPPING`` is an annotated assignment (``: dict[str, Callable]``),
+    so both ``Assign`` and ``AnnAssign`` nodes are considered.
+
+    Args:
+        tree: The parsed AWS.py module.
+
+    Returns:
+        A dict mapping command_name -> dotted handler name (e.g. "S3.buckets_list_command"),
+        excluding test-module and quick-action commands.
+    """
+    mapping: dict[str, str] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = [node.target.id]
+        else:
+            continue
+        if "COMMANDS_MAPPING" not in targets or not isinstance(node.value, ast.Dict):
+            continue
+        for key, value in zip(node.value.keys, node.value.values):
+            if isinstance(key, ast.Constant) and isinstance(key.value, str) and _is_included_command(key.value):
+                mapping[key.value] = ast.unparse(value)
+    return mapping
+
+
+def _index_functions(tree: ast.Module) -> tuple:
+    """Index every function in the module by qualified name and by short name.
+
+    Args:
+        tree: The parsed AWS.py module.
+
+    Returns:
+        A ``(qualified_index, short_index)`` tuple of dicts mapping a function name to its
+        definition node, where qualified names look like "S3.buckets_list_command" and short
+        names look like "buckets_list_command" (first definition wins on a short-name clash).
+    """
+    qualified: dict[str, FunctionNode] = {}
+    short: dict[str, FunctionNode] = {}
+
+    def walk(node: ast.AST, prefix: str = "") -> None:
+        """Recursively index the functions declared under ``node``.
+
+        Args:
+            node: The AST node whose ``body`` is scanned (module, class, or function).
+            prefix: The dotted name prefix accumulated from the enclosing scopes.
+
+        Returns:
+            None. ``qualified`` and ``short`` are populated in place.
+        """
+        for child in node.body:
+            if isinstance(child, ast.ClassDef):
+                walk(child, f"{prefix}{child.name}.")
+            elif isinstance(child, ast.FunctionDef | ast.AsyncFunctionDef):
+                name = f"{prefix}{child.name}"
+                qualified[name] = child
+                short.setdefault(child.name, child)
+                walk(child, f"{name}.")
+
+    walk(tree)
+    return qualified, short
+
+
+def _resolve(name: str, qualified: dict, short: dict) -> FunctionNode | None:
+    """Resolve a (possibly dotted) callee name to its function definition node.
+
+    Args:
+        name: The callee name as written in the source (e.g. "S3.buckets_list_command").
+        qualified: Index of functions by qualified (dotted) name.
+        short: Index of functions by bare function name.
+
+    Returns:
+        The matching function definition node, or None if the name is not defined in AWS.py.
+    """
+    return qualified.get(name) or short.get(name.split(".")[-1])
+
+
+def _camel_to_snake(value: str) -> str:
+    """Convert a CamelCase string to its snake_case form.
+
+    Mirrors ``CommonServerPython.camel_case_to_underscore``, which AWS.py uses at
+    runtime to derive argument names from AWS API keys, so consecutive uppercase
+    letters (acronyms) are kept together instead of being split letter by letter.
+
+    Args:
+        value: The string to convert (e.g. "KMSKeyId").
+
+    Returns:
+        The snake_case form of the string (e.g. "kms_key_id").
+    """
+    partially_split = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", value)
+    return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", partially_split).lower()
+
+
+def _string_literals(node: ast.AST) -> set[str]:
+    """Collect all string literals in a function, plus their snake_case forms.
+
+    Some handlers derive the argument name from a CamelCase AWS API key, e.g.
+    ``camel_case_to_underscore("Runtime")`` -> ``"runtime"``, so the snake_case
+    variants are included to avoid false positives.
+
+    Args:
+        node: The AST node (typically a function definition) to scan.
+
+    Returns:
+        A set of every string literal found under the node, unioned with the snake_case
+        form of each of those literals.
+    """
+    literals = {n.value for n in ast.walk(node) if isinstance(n, ast.Constant) and isinstance(n.value, str)}
+    return literals | {_camel_to_snake(v) for v in literals}
+
+
+def _callees_receiving_args(node: ast.AST) -> list[str]:
+    """Find the functions a handler calls while forwarding its ``args`` dict.
+
+    Args:
+        node: The AST node (typically a handler's function definition) to scan.
+
+    Returns:
+        A list of callee names (as written in the source) that receive ``args`` either
+        positionally or as a keyword argument.
+    """
+    callees: list[str] = []
+    for child in ast.walk(node):
+        if not isinstance(child, ast.Call):
+            continue
+        forwards_args = any(isinstance(a, ast.Name) and a.id == "args" for a in child.args) or any(
+            isinstance(kw.value, ast.Name) and kw.value.id == "args" for kw in child.keywords
+        )
+        if forwards_args:
+            callees.append(ast.unparse(child.func))
+    return callees
+
+
+def _collect_arg_names(
+    node: ast.AST,
+    qualified: dict,
+    short: dict,
+    depth: int = 6,
+    seen: set[int] | None = None,
+) -> set[str]:
+    """Collect argument names read by a handler, following ``args`` delegation.
+
+    Args:
+        node: The handler function definition to scan.
+        qualified: Index of functions by qualified (dotted) name.
+        short: Index of functions by bare function name.
+        depth: Maximum delegation depth to follow into callees that receive ``args``.
+        seen: Ids of already-visited function nodes, used to avoid infinite recursion.
+
+    Returns:
+        A set of candidate argument names (string literals, plus their snake_case forms)
+        read by the handler and by the helpers it forwards ``args`` to.
+    """
+    seen = seen if seen is not None else set()
+    found = _string_literals(node)
+    if depth <= 0:
+        return found
+    for callee in _callees_receiving_args(node):
+        target = _resolve(callee, qualified, short)
+        if target is not None and id(target) not in seen:
+            seen.add(id(target))
+            found |= _collect_arg_names(target, qualified, short, depth - 1, seen)
+    return found
+
+
+def _collect_output_prefixes(
+    node: ast.AST,
+    qualified: dict,
+    short: dict,
+    depth: int = 4,
+    seen: set[int] | None = None,
+) -> set[str]:
+    """Collect context-path-like literals produced by a handler and its helpers.
+
+    Args:
+        node: The handler function definition to scan.
+        qualified: Index of functions by qualified (dotted) name.
+        short: Index of functions by bare function name.
+        depth: Maximum call depth to follow into helper functions.
+        seen: Ids of already-visited function nodes, used to avoid infinite recursion.
+
+    Returns:
+        A set of dotted string literals (with any trailing ``(...)`` DT filter stripped)
+        that look like context output prefixes.
+    """
+    seen = seen if seen is not None else set()
+    found = {re.sub(r"\(.*\)$", "", literal) for literal in _string_literals(node) if "." in literal}
+    if depth <= 0:
+        return found
+    for child in ast.walk(node):
+        if not isinstance(child, ast.Call):
+            continue
+        target = _resolve(ast.unparse(child.func), qualified, short)
+        if target is not None and id(target) not in seen:
+            seen.add(id(target))
+            found |= _collect_output_prefixes(target, qualified, short, depth - 1, seen)
+    return found
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("Runtime", "runtime"),
+        ("RuntimeVersion", "runtime_version"),
+        ("bucketName", "bucket_name"),
+        ("KMSKeyId", "kms_key_id"),
+        ("S3Bucket", "s3_bucket"),
+        ("already_snake", "already_snake"),
+    ],
+)
+def test_camel_to_snake(value: str, expected: str) -> None:
+    """
+    Given: A CamelCase string, either a plain one or one containing an acronym.
+    When: Converting it with _camel_to_snake.
+    Then: The result matches what CommonServerPython.camel_case_to_underscore produces
+          at runtime, keeping consecutive uppercase letters together instead of
+          splitting them letter by letter.
+
+    Args:
+        value: The string to convert.
+        expected: The expected snake_case form.
+    """
+    assert _camel_to_snake(value) == expected
+
+
+def test_yml_commands_are_wired_in_py(yml_spec: dict, py_tree: ast.Module) -> None:
+    """
+    Given: The integration YML declaring command names.
+    When: Comparing against the COMMANDS_MAPPING wired in AWS.py.
+    Then: Every non-quick-action YML command must be wired in the .py, and every
+          wired handler must resolve to a real function.
+
+    Args:
+        yml_spec: The parsed AWS.yml command specifications (module-scoped fixture).
+        py_tree: The parsed AWS.py AST (module-scoped fixture).
+    """
+    # When
+    command_map = _parse_commands_mapping(py_tree)
+    qualified, short = _index_functions(py_tree)
+
+    # Then
+    missing = sorted(name for name in yml_spec if name not in command_map)
+    assert not missing, (
+        "The following commands are declared in AWS.yml but are NOT wired in " f"COMMANDS_MAPPING in AWS.py: {missing}"
+    )
+
+    unresolved = sorted(
+        f"{command} -> {handler}" for command, handler in command_map.items() if _resolve(handler, qualified, short) is None
+    )
+    assert not unresolved, (
+        "The following COMMANDS_MAPPING handlers do not resolve to a function " f"defined in AWS.py: {unresolved}"
+    )
+
+
+def test_yml_args_match_py_handler_verbatim(yml_spec: dict, py_tree: ast.Module) -> None:
+    """
+    Given: The arguments declared per command in the integration YML.
+    When: Comparing (verbatim) against the argument names read in that command's
+          resolved handler in AWS.py, following delegation into shared builders.
+    Then: Each YML argument name must appear exactly as-is in the handler.
+          Any naming difference (snake_case vs camelCase, casing) fails, except
+          for platform-standard args.
+
+    Args:
+        yml_spec: The parsed AWS.yml command specifications (module-scoped fixture).
+        py_tree: The parsed AWS.py AST (module-scoped fixture).
+    """
+    # Given
+    command_map = _parse_commands_mapping(py_tree)
+    qualified, short = _index_functions(py_tree)
+
+    # When
+    mismatches: list[str] = []
+    for command_name in sorted(yml_spec):
+        handler = command_map.get(command_name)
+        node = _resolve(handler, qualified, short) if handler else None
+        if node is None:
+            # Missing wiring is reported by test_yml_commands_are_wired_in_py.
+            continue
+        handler_args = _collect_arg_names(node, qualified, short)
+        for arg_name in yml_spec[command_name]["args"]:
+            if arg_name in PLATFORM_STANDARD_ARGS:
+                continue
+            if arg_name not in handler_args:
+                mismatches.append(f'{command_name} (handler {handler}) -> args.get("{arg_name}")')
+
+    # Then
+    assert not mismatches, (
+        "The following YML arguments are NOT read verbatim from args in their "
+        "command's handler in AWS.py (a naming difference such as snake_case vs "
+        "camelCase means the YML and PY are out of sync):\n" + "\n".join(mismatches)
+    )
+
+
+def test_yml_output_prefixes_match_py_handler(yml_spec: dict[str, dict[str, list[str]]], py_tree: ast.Module) -> None:
+    """
+    Given: The output contextPaths declared per command in the integration YML.
+    When: Comparing against the output prefixes declared in that command's
+          resolved handler in AWS.py.
+    Then: Every YML output contextPath must be covered by an output prefix
+          declared in the handler (the prefix must be a leading segment of the
+          contextPath), except for platform-produced outputs.
+
+    Args:
+        yml_spec: The parsed AWS.yml command specifications (module-scoped fixture).
+        py_tree: The parsed AWS.py AST (module-scoped fixture).
+    """
+    # Given
+    command_map = _parse_commands_mapping(py_tree)
+    qualified, short = _index_functions(py_tree)
+
+    def _is_covered(context_path: str, prefixes: set) -> bool:
+        return any(context_path == prefix or context_path.startswith(prefix + ".") for prefix in prefixes)
+
+    # When
+    uncovered: list = []
+    for command_name in sorted(yml_spec):
+        handler = command_map.get(command_name)
+        node = _resolve(handler, qualified, short) if handler else None
+        if node is None:
+            continue
+        handler_prefixes = _collect_output_prefixes(node, qualified, short)
+        for context_path in yml_spec[command_name]["outputs"]:
+            if context_path.startswith(PLATFORM_STANDARD_OUTPUT_ROOTS):
+                continue
+            if not _is_covered(context_path, handler_prefixes):
+                uncovered.append(f"{command_name} (handler {handler}) -> {context_path}")
+
+    # Then
+    assert not uncovered, (
+        "The following YML output contextPaths are NOT covered by any output "
+        "prefix declared in their command's handler in AWS.py:\n" + "\n".join(uncovered)
+    )
