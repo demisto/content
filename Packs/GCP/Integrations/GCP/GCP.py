@@ -2888,6 +2888,7 @@ def gcp_compute_image_insert(creds: Credentials, args: dict[str, Any]) -> Comman
     project_id = args.get("project_id")
     force_create = argToBoolean(args.get("force_create", False))
     name = args.get("name")
+    labels = args.get("labels")
     guest_os_features = argToList(args.get("guest_os_features"))
 
     body = remove_empty_elements(
@@ -2902,7 +2903,7 @@ def gcp_compute_image_insert(creds: Credentials, args: dict[str, Any]) -> Comman
             "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
             "licenses": argToList(args.get("licenses")),
             "licenseCodes": argToList(args.get("license_codes")),
-            "labels": parse_labels(args["labels"]) if args.get("labels") else None,
+            "labels": parse_labels(labels) if labels else None,
             "labelFingerprint": args.get("label_fingerprint"),
             "guestOsFeatures": [{"type": feature} for feature in guest_os_features],
             "rawDisk": {

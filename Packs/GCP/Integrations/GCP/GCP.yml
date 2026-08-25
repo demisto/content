@@ -2619,7 +2619,7 @@ script:
       required: false
       required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-    - description: Name of the image family to search for.
+    - description: The name of the image family to search for.
       name: family
       required: true
     description: "Returns the latest image that is part of an image family and is not deprecated. Required permission: compute.images.get."
@@ -2629,22 +2629,22 @@ script:
       description: The unique identifier for the resource. This identifier is defined by the server.
       type: String
     - contextPath: GCP.Compute.Images.name
-      description: Name of the resource.
+      description: The name of the resource.
       type: String
     - contextPath: GCP.Compute.Images.family
       description: The name of the image family to which this image belongs.
       type: String
     - contextPath: GCP.Compute.Images.creationTimestamp
-      description: Creation timestamp in RFC3339 text format.
+      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: GCP.Compute.Images.description
-      description: An optional description of this resource.
+      description: The optional description of this resource.
       type: String
     - contextPath: GCP.Compute.Images.status
       description: The status of the image. Possible values are FAILED, PENDING, or READY.
       type: String
     - contextPath: GCP.Compute.Images.selfLink
-      description: Server-defined URL for the resource.
+      description: The server-defined URL for the resource.
       type: String
 
 # gcp-compute-images-list
@@ -2655,14 +2655,14 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+      description: "The maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
-      description: Token for pagination.
+      description: The token for pagination.
       required: false
     - name: filter
-      description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value."
+      description: "The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value."
     - name: order_by
-      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
+      description: The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name.
     description: "Lists images in a specific project. Required permission: compute.images.list."
     name: gcp-compute-images-list
     outputs:
@@ -2670,7 +2670,7 @@ script:
       description: The unique identifier for the resource. This identifier is defined by the server.
       type: String
     - contextPath: GCP.Compute.Images.name
-      description: Name of the resource.
+      description: The name of the resource.
       type: String
     - contextPath: GCP.Compute.Images.family
       description: The name of the image family to which this image belongs.
@@ -2679,16 +2679,16 @@ script:
       description: The status of the image. Possible values are FAILED, PENDING, or READY.
       type: String
     - contextPath: GCP.Compute.Images.creationTimestamp
-      description: Creation timestamp in RFC3339 text format.
+      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: GCP.Compute.Images.description
-      description: An optional description of this resource.
+      description: The optional description of this resource.
       type: String
     - contextPath: GCP.Compute.Images.selfLink
-      description: Server-defined URL for the resource.
+      description: The server-defined URL for the resource.
       type: String
     - contextPath: GCP.Compute.ImagesNextToken
-      description: Next page token for pagination.
+      description: The next page token for pagination.
       type: String
 
 # gcp-compute-image-delete
@@ -2697,11 +2697,12 @@ script:
       required: false
       required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-    - description: Name of the image resource to delete.
+    - description: The name of the image resource to delete.
       name: image
       required: true
     description: "Deletes the specified image. Required permission: compute.images.delete."
     name: gcp-compute-image-delete
+    execution: true
 
 # gcp-compute-image-labels-set
   - arguments:
@@ -2709,10 +2710,10 @@ script:
       required: false
       required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-    - description: Name of the image resource to set labels on.
+    - description: The name of the image resource to set labels on.
       name: image
       required: true
-    - description: 'A list of labels to apply for this resource, in tuples, e.g., key=abc,value=123;key=def,value=456.'
+    - description: 'The list of labels to apply for this resource, in tuples, e.g., key=abc,value=123;key=def,value=456.'
       name: labels
       required: true
     - description: The fingerprint of the previous set of labels for this resource, used to detect conflicts. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels.
@@ -2722,22 +2723,22 @@ script:
     name: gcp-compute-image-labels-set
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: Unique identifier for the operation resource, defined by the server.
+      description: The unique identifier for the operation resource, defined by the server.
       type: String
     - contextPath: GCP.Compute.Operations.name
-      description: Name of the operation resource.
+      description: The name of the operation resource.
       type: String
     - contextPath: GCP.Compute.Operations.kind
-      description: Type of the resource, for example compute#operation.
+      description: The type of the resource, for example compute#operation.
       type: String
     - contextPath: GCP.Compute.Operations.operationType
-      description: Type of operation, such as insert, update, or delete.
+      description: The type of operation, such as insert, update, or delete.
       type: String
     - contextPath: GCP.Compute.Operations.status
-      description: Current status of the operation.
+      description: The current status of the operation.
       type: String
     - contextPath: GCP.Compute.Operations.progress
-      description: Progress of the operation as a percentage between 0 and 100.
+      description: The progress of the operation as a percentage between 0 and 100.
       type: Number
 
 # gcp-compute-image-insert
@@ -2746,7 +2747,7 @@ script:
       required: false
       required:platform: true
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-    - description: Name of the resource; provided by the client when the resource is created.
+    - description: The name of the resource; provided by the client when the resource is created.
       name: name
       required: true
     - description: Whether to attempt to create the image even if OS features or license validation fails.
@@ -2755,51 +2756,63 @@ script:
       predefined:
       - "true"
       - "false"
-    - description: An optional description of this resource.
+    - description: The optional description of this resource.
       name: description
     - description: The full Google Cloud Storage URL where the disk image is stored.
       name: raw_disk_source
-    - description: An optional SHA1 checksum of the disk image before unpackaging.
+    - description: The optional SHA1 checksum of the disk image before unpackaging.
       name: raw_disk_sha1_checksum
     - description: The format used to encode and transmit the block device, which should be TAR.
       name: raw_disk_container_type
+      auto: PREDEFINED
+      predefined:
+      - TAR
     - description: The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
       name: deprecated_state
+      auto: PREDEFINED
+      predefined:
+      - ACTIVE
+      - DEPRECATED
+      - OBSOLETE
+      - DELETED
     - description: The URL of the suggested replacement for a deprecated resource.
       name: deprecated_replacement
-    - description: Size of the image tar.gz archive stored in Google Cloud Storage (in bytes).
+    - description: The size of the image tar.gz archive stored in Google Cloud Storage (in bytes).
       name: archive_size_bytes
-    - description: Size of the image when restored onto a persistent disk (in GB).
+    - description: The size of the image when restored onto a persistent disk (in GB).
       name: disk_size_gb
-    - description: URL of the source disk used to create this image. You must provide either this property or the raw_disk_source property but not both.
+    - description: The URL of the source disk used to create this image. You must provide either this property or the raw_disk_source property but not both.
       name: source_disk
-    - description: Comma-separated list of applicable license URIs.
+    - description: A comma-separated list of applicable license URIs.
       name: licenses
+      isArray: true
     - description: The name of the image family to which this image belongs.
       name: family
-    - description: A 256-bit customer-supplied encryption key (RFC 4648 base64) for the image.
+    - description: The 256-bit customer-supplied encryption key (RFC 4648 base64) for the image.
       name: image_encryption_key_raw_key
     - description: The name of the encryption key that is stored in Google Cloud KMS for the image.
       name: image_encryption_key_kms_key_name
-    - description: A 256-bit customer-supplied encryption key (RFC 4648 base64) of the source disk.
+    - description: The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source disk.
       name: source_disk_encryption_key_raw_key
     - description: The name of the encryption key stored in Google Cloud KMS of the source disk.
       name: source_disk_encryption_key_kms_key_name
-    - description: 'A list of labels to apply for this resource, in tuples, e.g., key=abc,value=123;key=def,value=456.'
+    - description: 'The list of labels to apply for this resource, in tuples, e.g., key=abc,value=123;key=def,value=456.'
       name: labels
     - description: The fingerprint of the previous set of labels for this resource.
       name: label_fingerprint
-    - description: Comma-separated list of guest OS features to enable on the image.
+    - description: A comma-separated list of guest OS features to enable on the image.
       name: guest_os_features
-    - description: Comma-separated list of integer license codes indicating which licenses are attached to this image.
+      isArray: true
+    - description: A comma-separated list of integer license codes indicating which licenses are attached to this image.
       name: license_codes
-    - description: URL of the source image used to create this image.
+      isArray: true
+    - description: The URL of the source image used to create this image.
       name: source_image
     - description: The name of the encryption key stored in Google Cloud KMS of the source image.
       name: source_image_encryption_key_kms_key_name
-    - description: URL of the source snapshot used to create this image.
+    - description: The URL of the source snapshot used to create this image.
       name: source_snapshot
-    - description: A 256-bit customer-supplied encryption key (RFC 4648 base64) of the source snapshot.
+    - description: The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source snapshot.
       name: source_snapshot_encryption_key_raw_key
     - description: The name of the encryption key stored in Google Cloud KMS of the source snapshot.
       name: source_snapshot_encryption_key_kms_key_name
@@ -2807,22 +2820,22 @@ script:
     name: gcp-compute-image-insert
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: Unique identifier for the operation resource, defined by the server.
+      description: The unique identifier for the operation resource, defined by the server.
       type: String
     - contextPath: GCP.Compute.Operations.name
-      description: Name of the operation resource.
+      description: The name of the operation resource.
       type: String
     - contextPath: GCP.Compute.Operations.kind
-      description: Type of the resource, for example compute#operation.
+      description: The type of the resource, for example compute#operation.
       type: String
     - contextPath: GCP.Compute.Operations.operationType
-      description: Type of operation, such as insert, update, or delete.
+      description: The type of operation, such as insert, update, or delete.
       type: String
     - contextPath: GCP.Compute.Operations.status
-      description: Current status of the operation.
+      description: The current status of the operation.
       type: String
     - contextPath: GCP.Compute.Operations.progress
-      description: Progress of the operation as a percentage between 0 and 100.
+      description: The progress of the operation as a percentage between 0 and 100.
       type: Number
 
 # gcp-compute-region-get
