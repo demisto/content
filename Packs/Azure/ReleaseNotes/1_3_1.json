@@ -1,0 +1,10 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Azure scenario B breaking change (all items).",
+    "forceUpdate": {
+        "breakingChangesNotesTightly": {
+            "message": "Azure tightly banner message (scenario B).",
+            "moreInfo": "Azure tightly detailed modal text (scenario B)."
+        }
+    }
+}

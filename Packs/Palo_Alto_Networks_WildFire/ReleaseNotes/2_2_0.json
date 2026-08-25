@@ -1,0 +1,7 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "WildFire scenario G overall breaking change.",
+    "forceUpdate": {
+        "breakingChangesNotesLoosely": "WildFire loosely breaking change note (scenario G)."
+    }
+}
