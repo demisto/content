@@ -1623,7 +1623,7 @@ def validate_test_module_params(params: dict) -> None:
         parse_date_range(cache_refresh_rate, to_timestamp=True)
 
 
-def test_module(_: dict, params: dict):
+def test_module(_: dict, params: dict) -> tuple[str, dict, dict]:
     """
     Validates the integration configuration and, if a long-running instance is already up,
     verifies it is a healthy EDL instance instead of failing on the already-bound ports.
