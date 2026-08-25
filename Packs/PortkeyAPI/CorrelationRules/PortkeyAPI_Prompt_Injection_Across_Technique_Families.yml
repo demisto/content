@@ -13,6 +13,10 @@ xql_query: |-
   //              boundary rather than a tuned number. It previously counted REQUESTS, which
   //              measured persistence at one technique and is the wrong axis: repeating a
   //              single approach is not iteration, and trying several is.
+  //   Category: xdm.event.type is carried through the comp so the alert has one. It is a
+  //              per-dataset constant on portkey_llm_requests_raw, so adding it to the by
+  //              clause cannot split a group and cannot move families_attempted, which
+  //              the filter below tests.
   //   Layering:  the per-family rules in this pack carry the urgency and fire first. This
   //              one adds the identity-level picture across them, so it is deliberately a
   //              medium worklist and not a second copy of the same alert.
@@ -100,13 +104,13 @@ xql_query: |-
          values(xdm.target.resource.name) as models,
          min(_time) as first_attempt,
          max(_time) as last_attempt
-      by xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id
+      by xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id, xdm.event.type
   | filter families_attempted > 1
   | sort desc families_attempted
-  | fields xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id, families_attempted, families, flagged_requests, models_targeted, models, first_attempt, last_attempt
+  | fields xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id, xdm.event.type, families_attempted, families, flagged_requests, models_targeted, models, first_attempt, last_attempt
 alert_name: Portkey injection across $families_attempted technique families by $xdm.source.user.username
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: $xdm.source.user.username attempted $families_attempted different prompt injection technique families ($families) against workspace $xdm.target.resource.parent_id between $first_attempt and $last_attempt, over $flagged_requests request(s) and $models_targeted model(s) ($models). Read the SPREAD rather than the count. Repeating one approach is not iteration and is often a person or an application that simply talks that way, whereas moving between distinct families is someone trying things until one works, which usually means working towards a technique the guardrails do not cover. The individual attempts are reported by the per-family rules, so treat this as the identity-level picture rather than as a new attempt. Establish whether this identity is a person or an application, and whether any of the attempts reached a model rather than being stopped by a guardrail, which the answered-by-the-model rule reports separately.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:

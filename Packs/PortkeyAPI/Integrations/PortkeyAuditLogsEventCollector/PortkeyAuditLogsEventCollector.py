@@ -17,6 +17,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
+import json
 import urllib3
 from typing import Any
 
@@ -76,6 +77,57 @@ def _to_iso8601(value: Any) -> str:
     return dt.strftime(DATE_FORMAT)
 
 
+# Keys whose VALUE is credential material. Matched case-insensitively against the key
+# name, and by substring, so api_key, apiKey and AIRS_API_KEY all match one entry.
+SECRET_KEY_MARKERS = ("credential", "secret", "password", "passwd", "token", "api_key", "apikey", "authorization", "auth_key", "private_key")
+REDACTED = "GOCORTEX_REDACTED"
+
+
+def _redact_secrets(value):
+    """Replace credential VALUES anywhere in a decoded request body.
+
+    LAW N17. The vendor redacts SOME fields itself -- an api key reads back as
+    i2*****Wp4 and a guardrail check id as po*****pii -- and that partial redaction
+    is exactly what makes this dangerous, because it looks like the body is safe.
+    It is not: an integration is created by POSTing the third party credential in
+    full, so the plaintext key of whatever is being integrated lands in the audit
+    body and then in the dataset.
+
+    Redacting at the collector is the only place that works. A modelling rule runs
+    over data already stored, and retention decides how long the secret lives.
+    """
+    if isinstance(value, dict):
+        out = {}
+        for key, inner in value.items():
+            lowered = str(key).lower()
+            if any(marker in lowered for marker in SECRET_KEY_MARKERS):
+                # Redact the whole subtree: a credentials object holds one secret per
+                # provider and their NAMES are worth keeping, their values never are.
+                out[key] = {k: REDACTED for k in inner} if isinstance(inner, dict) else REDACTED
+            else:
+                out[key] = _redact_secrets(inner)
+        return out
+    if isinstance(value, list):
+        return [_redact_secrets(item) for item in value]
+    return value
+
+
+def redact_request_body(raw: Any) -> Any:
+    """Redact secrets in the JSON request body the audit API returns as a string.
+
+    A body that will not parse is dropped rather than passed through: an unparseable
+    body cannot be inspected, and passing it on would defeat the whole check.
+    """
+    if not raw:
+        return raw
+    try:
+        decoded = json.loads(raw) if isinstance(raw, str) else raw
+    except (ValueError, TypeError):
+        return REDACTED
+    redacted = _redact_secrets(decoded)
+    return json.dumps(redacted) if isinstance(raw, str) else redacted
+
+
 def add_fields_to_event(event: dict) -> dict:
     """Attach XSIAM ingestion metadata to a raw audit log event.
 
@@ -85,6 +137,9 @@ def add_fields_to_event(event: dict) -> dict:
     event["_time"] = event.get("timestamp")
     event["source_log_type"] = "audit"
     event["portkey_organisation_id"] = event.get("organisation_id")
+    for field in ("request_body", "request_headers", "query_params"):
+        if field in event:
+            event[field] = redact_request_body(event[field])
     return event
 
 

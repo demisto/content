@@ -19,7 +19,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.description, xdm.source.cloud.project, xdm.source.user.identifier, xdm.source.user.user_type, xdm.source.user.identity_type, xdm.source.ipv4, xdm.source.location.country, xdm.network.http.method, xdm.network.http.url, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.parent_id, xdm.*
 alert_name: Portkey API key created by $xdm.source.user.identifier
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: A new Portkey API key was created by user $xdm.source.user.identifier from $xdm.source.ipv4 in $xdm.source.location.country. A new key is a new route to the models and the data behind them, so confirm the creation was expected, that the requester is who the account says, and that the key was given an expiry and a spend limit.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:

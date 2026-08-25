@@ -48,7 +48,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
 alert_name: Portkey injection attempt answered by the model - $xdm.source.user.username
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: A prompt from $xdm.source.user.username matching a known injection technique reached $xdm.target.resource.name and produced a response, and the gateway guardrail did not deny it. A response does not prove the model complied, since it may have refused in prose, but it does mean the request was not stopped upstream, so this is the population worth reading first. Retrieve the completion and confirm whether protected material was returned. Note the gate is the guardrail verdict and not the status code alone, because a soft denial returns a success status while having blocked the request.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:

@@ -19,7 +19,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
 alert_name: Portkey - System Prompt or Context Extraction Attempt - $xdm.source.user.username
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: A prompt sent by $xdm.source.user.username to $xdm.target.resource.name sought the model's instructions or context, or asked for material to be re-encoded, for example as base64, reversed or transliterated, which is how an attacker retrieves protected text without asking for it directly. A system prompt often carries credentials, internal endpoints and business logic, so confirm what the response contained.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:

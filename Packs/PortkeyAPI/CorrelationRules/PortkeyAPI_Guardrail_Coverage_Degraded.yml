@@ -12,6 +12,15 @@ xql_query: |-
   //              deployment and cannot ship as a default, so set it just below the coverage
   //              normally achieved. The minimum request count stops a quiet window
   //              producing a meaningless ratio.
+  //   Suppression: workspace alone is not enough. This rule reports a LEVEL, so the same
+  //              workspace degrading further inside the suppression window is a different
+  //              finding and must not be muted by the first one. coverage_percent is
+  //              continuous and would re-alert on every fluctuation, so it is banded: a
+  //              worsening that crosses a band alerts, jitter inside one does not.
+  //   Category: xdm.event.type is carried through the comp so the alert has one. It is
+  //              a per-dataset constant, pinned by this rule's own filter above, so adding
+  //              it to the by clause cannot split a group and cannot move the count the
+  //              filter below tests.
   //   Grouping: PER WORKSPACE. Grouping on the observer product, which is a constant, put
   //              the whole tenant in one row that named nothing a responder could act on,
   //              and averaged a workspace losing its guardrail against all the traffic
@@ -19,12 +28,13 @@ xql_query: |-
   datamodel dataset = portkey_llm_requests_raw
   | filter xdm.event.type = "llm_request"
   | alter evaluated_flag = if(xdm.observer.action != null, 1, 0)
-  | comp count() as requests, sum(evaluated_flag) as evaluated, values(xdm.target.host.hostname) as upstreams, values(xdm.target.resource.name) as models by xdm.target.resource.parent_id
+  | comp count() as requests, sum(evaluated_flag) as evaluated, values(xdm.target.host.hostname) as upstreams, values(xdm.target.resource.name) as models by xdm.target.resource.parent_id, xdm.event.type
   | alter unevaluated = subtract(requests, evaluated)
   | alter coverage_percent = multiply(divide(to_float(evaluated), to_float(requests)), 100)
   | filter requests >= 50 and coverage_percent < 90
+  | alter coverage_band = if(coverage_percent < 25, "under_25", coverage_percent < 50, "under_50", coverage_percent < 75, "under_75", "under_90")
   | sort asc coverage_percent
-  | fields xdm.target.resource.parent_id, requests, evaluated, unevaluated, coverage_percent, upstreams, models
+  | fields xdm.target.resource.parent_id, xdm.event.type, coverage_band, requests, evaluated, unevaluated, coverage_percent, upstreams, models
 alert_name: Portkey workspace $xdm.target.resource.parent_id guardrail coverage at $coverage_percent per cent
 alert_category: User Defined
 user_defined_category: xdm.event.type
@@ -35,6 +45,7 @@ mitre_defs:
   - T1685 - Disable or Modify Tools
 suppression_fields:
 - xdm.target.resource.parent_id
+- coverage_band
 global_rule_id: 46797107-ce69-4cb5-84e1-08679fff1f82
 is_enabled: true
 alert_type: null

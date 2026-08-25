@@ -5,6 +5,7 @@ xql_query: |-
   // References
   //   https://attack.mitre.org/techniques/T1098/
   //   https://portkey.ai/docs/product/administration
+  //   Suppression: keyed on xdm.event.id, which the modelling rule fills from `id`; on this polled snapshot that is the API KEY OBJECT id and not a per-event id, so it identifies the subject of the finding uniquely and re-poll does not re-alert.
   datamodel dataset = portkey_api_keys_raw
   | filter xdm.target.resource.value contains "can_create_api_keys" or xdm.target.resource.value contains "can_delete_api_keys"
   | sort desc _time
@@ -12,7 +13,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
 alert_name: Portkey API key can manage API keys - $xdm.target.resource.name
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: Portkey API key $xdm.target.resource.name holds scopes that allow it to create or delete other API keys. An attacker who obtains this key can mint further credentials that outlive its revocation, or delete the keys legitimate services depend on. Confirm the key genuinely needs key management, and remove those scopes if it does not.
 alert_domain: DOMAIN_POSTURE
 mitre_defs:

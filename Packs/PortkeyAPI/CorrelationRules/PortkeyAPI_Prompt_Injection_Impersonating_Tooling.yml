@@ -18,7 +18,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
 alert_name: Portkey - Prompt Injection Impersonating Tooling or Authority - $xdm.source.user.username
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: A prompt sent by $xdm.source.user.username to $xdm.target.resource.name used a social or structural pretext, casting the model as a terminal or command interpreter, claiming an authority such as an auditor or security officer that permits disclosure, or dictating the first words of the reply so a refusal becomes harder. These techniques are individually weaker than a direct override and are commonly combined with one.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:

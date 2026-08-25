@@ -5,6 +5,7 @@ xql_query: |-
   // References
   //   https://attack.mitre.org/techniques/T1098/
   //   https://portkey.ai/docs/product/administration
+  //   Suppression: keyed on xdm.event.id, which the modelling rule fills from `id`; on this polled snapshot that is the WORKSPACE OBJECT id and not a per-event id, so it identifies the subject of the finding uniquely and re-poll does not re-alert.
   datamodel dataset = portkey_workspaces_raw
   | filter xdm.target.resource.value contains "members_write_api_keys" or xdm.target.resource.value contains "members_write_virtual_keys"
   | sort desc _time
@@ -12,7 +13,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
 alert_name: Portkey workspace lets members create API keys - $xdm.target.resource.name
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: Portkey workspace $xdm.target.resource.name allows ordinary members, not only managers, to create API keys or provider credentials. Any member can therefore issue a credential that reaches the models and the data behind them, and can do so without an administrator being involved. Restrict key creation to managers unless members genuinely need it.
 alert_domain: DOMAIN_POSTURE
 mitre_defs:

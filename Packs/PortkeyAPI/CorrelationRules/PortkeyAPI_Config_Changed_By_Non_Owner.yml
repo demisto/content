@@ -12,7 +12,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*, xdm.target.user.identifier
 alert_name: Portkey config changed by non owner - $xdm.target.resource.name
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: Portkey gateway config $xdm.target.resource.name was last changed by somebody other than its owner. A config decides which provider and model a request reaches, the fallback behaviour, and which guardrails apply, so an unexpected editor can silently reroute traffic or drop the safety controls. Confirm the change was intended and review the current routing.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:

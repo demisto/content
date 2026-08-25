@@ -3,6 +3,7 @@
 """Unit tests for the Portkey Audit Logs Event Collector."""
 
 import inspect
+import json
 
 import PortkeyAuditLogsEventCollector as collector
 
@@ -112,3 +113,61 @@ def test_empty_keeps_cursor():
     assert events == []
     assert run["last_ts"] == "2026-07-20T09:00:00.000Z"
     assert run["last_ids"] == ["z"]
+
+
+# --------------------------------------------------------------------------- #
+# LAW N17 -- credential material must not reach the dataset
+# --------------------------------------------------------------------------- #
+
+
+def test_an_integration_credential_is_redacted_before_ingestion():
+    """Creating an integration POSTs the third party credential IN FULL.
+
+    The vendor redacts some fields itself, which is what makes this dangerous: the
+    body looks sanitised because an api key reads back as i2*****Wp4, while the
+    credentials object beside it carries a live key in plaintext.
+    """
+    event = {
+        "timestamp": 1,
+        "organisation_id": "org-1",
+        "request_body": json.dumps({
+            "organisation_id": "org-1",
+            "integration_id": "int-1",
+            "credentials": {"AIRS_API_KEY": "a-real-secret-value"},
+        }),
+    }
+    out = collector.add_fields_to_event(event)
+    body = json.loads(out["request_body"])
+    assert "a-real-secret-value" not in out["request_body"]
+    assert body["credentials"]["AIRS_API_KEY"] == collector.REDACTED
+    # The NAME survives: which provider was integrated is worth detecting on.
+    assert "AIRS_API_KEY" in body["credentials"]
+    # Everything that is not a secret is untouched.
+    assert body["integration_id"] == "int-1"
+
+
+def test_secret_bearing_keys_are_matched_by_substring_and_case():
+    """api_key, apiKey and AIRS_API_KEY are one rule, not three."""
+    for name in ("api_key", "apiKey", "AIRS_API_KEY", "Authorization", "client_secret", "PASSWORD"):
+        out = collector.redact_request_body(json.dumps({name: "sensitive"}))
+        assert "sensitive" not in out, f"{name} was not redacted"
+
+
+def test_a_nested_secret_is_reached():
+    """Secrets are not always at the top level."""
+    out = collector.redact_request_body(json.dumps(
+        {"config": {"providers": [{"name": "openai", "credentials": {"token": "sensitive"}}]}}))
+    assert "sensitive" not in out
+    assert "openai" in out
+
+
+def test_a_body_that_will_not_parse_is_dropped_not_passed_through():
+    """An unparseable body cannot be inspected, so passing it on would defeat the check."""
+    assert collector.redact_request_body("{not json") == collector.REDACTED
+
+
+def test_a_body_with_no_secrets_is_left_alone():
+    """Redaction must not damage the change detection built on this field."""
+    original = json.dumps({"name": "k", "scopes": ["logs.list"], "usage_limits": None})
+    out = collector.redact_request_body(original)
+    assert json.loads(out) == json.loads(original)

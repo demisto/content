@@ -14,7 +14,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
 alert_name: Portkey - Prompt Injection Using Chat Control Tokens - $xdm.source.user.username
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: A prompt sent by $xdm.source.user.username to $xdm.target.resource.name contained chat template control tokens, such as an im_start marker or a system tag. These delimit the turns of a conversation, so a user supplying them is attempting to close the user turn and open a forged system turn, making their text look like an instruction from the application rather than input from a person. Review the prompt and confirm whether the model acted on the injected content.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:

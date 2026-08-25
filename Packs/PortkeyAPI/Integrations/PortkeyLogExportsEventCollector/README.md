@@ -40,3 +40,19 @@ for sizing ingestion before enabling collection.
 | Argument | Description |
 | --- | --- |
 | `since` | How far back to count (default `1 day`). |
+
+### portkey-log-exports-cancel-export
+
+Cancels a running log export by id.
+
+An export is collected in stages across fetches, so one that never reaches a finished state
+holds its workspace: no new window is measured while it is outstanding. Cancelling releases
+it. The cancelled state is terminal, so the next fetch drops the job and re-measures the same
+window, and because the watermark does not move, cancelling skips no records.
+
+Cancel is rejected by the API for an export that was never started. That is reported plainly
+rather than as an error, because a draft that never ran needs no cancelling.
+
+| Argument | Description |
+| --- | --- |
+| `export_id` | The id of the log export to cancel. Required. |

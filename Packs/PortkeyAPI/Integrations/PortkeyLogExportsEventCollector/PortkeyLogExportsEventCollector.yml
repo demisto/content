@@ -74,6 +74,13 @@ script:
       description: 'How far back to count (e.g. "1 day", "12 hours").'
       defaultValue: 1 day
     outputs: []
+  - name: portkey-log-exports-cancel-export
+    description: Cancel a running log export by id. A cancelled export is terminal, so a job this collector is holding is released on the next fetch and the same window is re-measured, which means cancelling skips no records.
+    arguments:
+    - name: export_id
+      description: The id of the log export to cancel.
+      required: true
+    outputs: []
 fromversion: 6.8.0
 defaultEnabled: true
 marketplaces:

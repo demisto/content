@@ -21,7 +21,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
 alert_name: Portkey forged tool-result delimiter from $xdm.source.user.username
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: Content reaching $xdm.target.resource.name in the conversation of $xdm.source.user.username carried a tool-result delimiter. This is text formatted to look like tooling output, which borrows the trust a model gives to results it believes came from a tool it called. Do NOT read this as proof that a tool produced the content. The gateway record merges the sender's turns with tool turns and discards the role labels, so provenance cannot be established from it, and the likeliest explanation is that the delimiter was typed by the sender. Establish who or what the sender is, and retrieve the surrounding conversation to see whether the forged marker was followed by an instruction. Genuine injection arriving through retrieved data or an upstream service is a different problem and is not visible in this feed.
 alert_domain: DOMAIN_SECURITY
 mitre_defs:

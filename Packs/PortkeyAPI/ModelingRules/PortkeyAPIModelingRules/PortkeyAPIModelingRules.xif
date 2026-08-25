@@ -98,8 +98,44 @@ filter
     // Neither half is invented vocabulary; both come from the record itself.
     tmp_action_derived = if(tmp_method != "", concat(lowercase(tmp_method), "_", coalesce(tmp_resource_type, "resource")))
 | alter
+    // The audit record carries the request BODY of every mutating call, which is the
+    // intended state of the resource after the change. That is the only place a CHANGE
+    // is visible: the inventory snapshots carry current state, so they show what a key
+    // or guardrail looks like now and never that a protection was taken off it.
+    //
+    // The vendor redacts SOME fields itself, and that partial redaction is the trap:
+    // an api key reads back as i2*****Wp4 and a check id as po*****pii, so the body
+    // looks sanitised. It is not. Creating an integration POSTs the third party
+    // credential IN FULL, so the plaintext key of whatever is being integrated
+    // reaches the body. The COLLECTOR redacts credential-bearing keys before
+    // ingestion under LAW N17; this rule must never be the thing relied on for that,
+    // because a modelling rule runs over data already stored.
+    //
+    // Read by INDEXED path only. A wildcard path hangs the query rather than erroring.
+    tmp_b_name = json_extract_scalar(request_body, "$.name"),
+    tmp_b_scopes = json_extract_array(request_body, "$.scopes"),
+    tmp_b_checks = json_extract_array(request_body, "$.checks"),
+    tmp_b_limit = json_extract_scalar(request_body, "$.usage_limits"),
+    tmp_b_expiry = json_extract_scalar(request_body, "$.expires_at"),
+    tmp_b_rotation = json_extract_scalar(request_body, "$.rotation_policy")
+| alter
+    // Joined to ONE string rather than left as an array: a correlation counts it with
+    // array_length(split(...)) and compares the count across a window, which is how a
+    // scope set growing is told from one merely being rewritten.
+    tmp_scope_list = if(tmp_b_scopes != null, arraystring(tmp_b_scopes, "|"), ""),
+    tmp_check_count = if(tmp_b_checks != null, to_string(array_length(tmp_b_checks)), ""),
+    // Absent is the value that matters. A protection is removed by being set to null,
+    // so the null IS the finding and must not be dropped as an empty field.
+    tmp_protections = concat(
+        if(tmp_b_limit = null, "usage_limit:absent", "usage_limit:set"), "|",
+        if(tmp_b_expiry = null, "expiry:absent", "expiry:set"), "|",
+        if(tmp_b_rotation = null, "rotation:absent", "rotation:set"))
+| alter
     xdm.observer.vendor = "portkey",
     xdm.observer.product = "audit",
+    xdm.target.resource.name = tmp_b_name,
+    xdm.target.resource.value = if(tmp_scope_list != "", tmp_scope_list, tmp_check_count != "", concat("checks:", tmp_check_count), null),
+    xdm.event.outcome_reason = if(tmp_method = "POST" or tmp_method = "PUT", tmp_protections, null),
     xdm.event.id = tmp_request_id,
     xdm.event.original_event_type = coalesce(tmp_action_named, tmp_action_derived, "GOCORTEX_UNMODELLED"),
     xdm.event.type = if(tmp_is_audit != null, coalesce(tmp_log_type, "audit"), "GOCORTEX_UNMODELLED"),
@@ -513,6 +549,35 @@ filter
 //   guardrail_check_ids          -> xdm.observer.name
 //   total_units, cost            -> xdm.event.description
 //
+// PRISMA AIRS, WHICH IS NOT ALWAYS PRESENT
+//   Prisma AIRS runs as a Portkey plugin. Records predating it carry no AIRS data at
+//   all, and Portkey's own moderation still runs on them, so BOTH are supported and
+//   neither is assumed. Every airs_ column defaults to empty rather than null, so a
+//   record without AIRS takes the same branches it always did.
+//
+//   AIRS scans BOTH sides of a request, as two checks on one record, each with its own
+//   detection vocabulary: prompt (agent, dlp, injection, malicious_code, url_cats) and
+//   response (db_security, source_code, topic_violation, toxic_content, ungrounded).
+//   The collector merges them; it must not overwrite, or a prompt classified malicious
+//   reads as benign because the response was.
+//
+//   airs_category, airs_prompt_detections,
+//   airs_response_detections, airs_tool_detections,
+//   guardrail_flagged_categories -> xdm.event.outcome_reason, each prefixed with its
+//                         source so a correlation can ask for one without matching the
+//                         others: `airs_prompt:`, `airs_response:`, `moderation:`.
+//   airs_evaluated, airs_detection_count,
+//   airs_action                  -> xdm.observer.action, ahead of a moderation flag but
+//                         behind an outright deny. AIRS detecting something and the
+//                         profile allowing it is the finding worth having.
+//   airs_error, airs_timeout     -> xdm.event.original_event_type as
+//                         llm_request_airs_not_evaluated. A scan that errored is not a
+//                         clean verdict and must not read as one.
+//
+//   airs_action IS NOT NORMALISED. Only one value has ever been observed on this
+//   tenant, so the rest of its vocabulary is unknown and inventing it would put a
+//   value space in the model that nothing has confirmed. It is carried as found.
+//
 // NOT MAPPED
 //   request, response  -- the full prompt and completion objects stay in the
 //                         dataset for investigation. Only the user-authored text
@@ -548,7 +613,21 @@ filter
     tmp_gr_soft = guardrail_soft_denied,
     tmp_gr_flagged = guardrail_flagged,
     tmp_gr_cats = guardrail_flagged_categories,
-    tmp_gr_checks = guardrail_check_ids
+    tmp_gr_checks = guardrail_check_ids,
+    tmp_airs_eval = airs_evaluated,
+    tmp_airs_cat = airs_category,
+    tmp_airs_act = airs_action,
+    tmp_airs_prompt = airs_prompt_detections,
+    tmp_airs_resp = airs_response_detections,
+    tmp_airs_tool = airs_tool_detections,
+    tmp_airs_profile = airs_profile_name,
+    tmp_airs_scan = airs_scan_id,
+    tmp_airs_err = airs_error,
+    tmp_airs_timeout = airs_timeout,
+    tmp_airs_n = to_integer(airs_detection_count)
+| alter
+    tmp_airs_malicious = if(tmp_airs_eval = true and tmp_airs_cat ~= "malicious", true, false),
+    tmp_airs_broken = if(tmp_airs_eval = true and (tmp_airs_err = true or tmp_airs_timeout = true), true, false)
 | alter
     tmp_host = arrayindex(regextract(coalesce(json_extract_scalar(request_details, "$.url"), ""), "https?://([^/]+)"), 0)
 | alter
@@ -556,7 +635,13 @@ filter
     xdm.observer.product = "llm_requests",
     xdm.event.id = tmp_id,
     xdm.event.type = if(tmp_id != null, "llm_request", "GOCORTEX_UNMODELLED"),
-    xdm.event.original_event_type = if(tmp_gr_flagged = true, "llm_request_guardrail_flagged", "llm_request"),
+    xdm.event.original_event_type = if(
+        tmp_airs_broken = true, "llm_request_airs_not_evaluated",
+        tmp_airs_malicious = true, "llm_request_airs_malicious",
+        tmp_airs_eval = true and tmp_airs_n > 0, "llm_request_airs_detected",
+        tmp_airs_eval = true, "llm_request_airs_clean",
+        tmp_gr_flagged = true, "llm_request_guardrail_flagged",
+        "llm_request"),
     xdm.event.tags = if(tmp_id != null, arraycreate(XDM_CONST.EVENT_TAG_SAAS), null),
     xdm.event.operation = if(tmp_id != null, XDM_CONST.OPERATION_TYPE_READ, null),
     xdm.event.outcome = if(
@@ -566,11 +651,26 @@ filter
     xdm.observer.action = if(
         tmp_gr_denied = true, "denied",
         tmp_gr_soft = true, "soft_denied",
+        tmp_airs_eval = true and tmp_airs_n > 0, concat("airs_detected_", coalesce(tmp_airs_act, "unknown")),
         tmp_gr_flagged = true, "flagged",
+        tmp_airs_eval = true, concat("airs_clean_", coalesce(tmp_airs_act, "unknown")),
         tmp_gr_evaluated = true, "allowed",
         null),
     xdm.observer.name = if(tmp_gr_checks != "", tmp_gr_checks, null),
-    xdm.event.outcome_reason = if(tmp_gr_cats != "", tmp_gr_cats, null),
+    xdm.event.outcome_reason = if(
+        concat(
+            if(tmp_airs_cat != "", concat("airs_category:", tmp_airs_cat, "|"), ""),
+            if(tmp_airs_prompt != "", concat("airs_prompt:", tmp_airs_prompt, "|"), ""),
+            if(tmp_airs_resp != "", concat("airs_response:", tmp_airs_resp, "|"), ""),
+            if(tmp_airs_tool != "", concat("airs_tool:", tmp_airs_tool, "|"), ""),
+            if(tmp_gr_cats != "", concat("moderation:", tmp_gr_cats), "")) != "",
+        concat(
+            if(tmp_airs_cat != "", concat("airs_category:", tmp_airs_cat, "|"), ""),
+            if(tmp_airs_prompt != "", concat("airs_prompt:", tmp_airs_prompt, "|"), ""),
+            if(tmp_airs_resp != "", concat("airs_response:", tmp_airs_resp, "|"), ""),
+            if(tmp_airs_tool != "", concat("airs_tool:", tmp_airs_tool, "|"), ""),
+            if(tmp_gr_cats != "", concat("moderation:", tmp_gr_cats), "")),
+        null),
     xdm.source.user.username = tmp_user,
     xdm.source.user.identifier = tmp_user,
     xdm.target.resource.type = "llm_model",

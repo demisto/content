@@ -58,9 +58,23 @@ DEFAULT_LAG_MINUTES = 5
 EXPORT_RECORD_LIMIT = 50000
 # How many times a window may be halved when it holds more than the cap.
 MAX_WINDOW_BISECTS = 8
+# How many fetches an export may stay non-terminal before it is abandoned. At the default
+# five minute interval this is an hour. A job that never reaches success or failure would
+# otherwise block its workspace for good: the run polls it, collects nothing, and creates
+# no new window, so the workspace goes quiet while every health signal still reads normal.
+MAX_JOB_POLLS = 12
+# How many times an export may succeed carrying nothing before its window is given up on.
+# A job only exists because the window measured non-empty, so a success with no records is
+# a discrepancy rather than a quiet period, and the window is re-measured. The bound stops
+# a window that can never yield from exporting for ever.
+MAX_EMPTY_EXPORTS = 3
 # Terminal export states.
 STATUS_SUCCESS = "success"
-STATUS_TERMINAL_FAILURES = ("failed", "stopped")
+# A cancel issued from the Portkey console leaves the export in its own terminal state.
+# Treating that as non-terminal leaves the job to be released only by MAX_JOB_POLLS, long
+# after the operator has already told the platform to stop it. The spelling is not
+# documented here, so both are matched.
+STATUS_TERMINAL_FAILURES = ("failed", "stopped", "cancelled", "canceled")
 
 ALL_REQUESTED_DATA = [
     "id",
@@ -119,6 +133,11 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix=f"/logs/exports/{export_id}/start")
 
     def cancel_export(self, export_id: str) -> dict:
+        """Cancel an export that is already RUNNING.
+
+        Rejected with 400 for an export that was created but never started, so
+        this must not be used to tidy away an unused draft.
+        """
         return self._http_request(method="POST", url_suffix=f"/logs/exports/{export_id}/cancel")
 
     def get_export(self, export_id: str) -> dict:
@@ -155,7 +174,7 @@ def parse_generated_at(value: str) -> Optional[str]:
 
     Portkey returns a JavaScript date string, for example
     ``Sat Jul 25 2026 11:14:18 GMT+0000 (Coordinated Universal Time)``, which is
-    not a format Cortex parses. The offset is always reported as GMT+0000 on this
+    not a format Cortex Platform parses. The offset is always reported as GMT+0000 on
     endpoint, so the leading portion is read and treated as UTC.
     """
     if not value:
@@ -225,13 +244,87 @@ def extract_user_prompt(request: Any) -> str:
     return "\n".join(parts)
 
 
+# The detection sides AIRS reports on. Each holds boolean flags whose names are the
+# detection types, so the SET of names that are true is the finding, not any one field.
+AIRS_DETECTION_SIDES = ("prompt_detected", "response_detected", "tool_detected")
+
+
+def _merge_into(out: dict, column: str, values) -> None:
+    """Union a value into a pipe-joined, sorted column without losing what is there."""
+    existing = {v for v in str(out.get(column) or "").split("|") if v}
+    existing.update(str(v) for v in values if v not in (None, ""))
+    out[column] = "|".join(sorted(existing))
+
+
+def _flatten_airs(data: dict, out: dict) -> None:
+    """Flatten one Prisma AIRS check into top-level columns.
+
+    AIRS runs on BOTH sides of a request: a before-request check scanning the prompt
+    and an after-request check scanning the response, each with its own detection
+    vocabulary. So this is called more than once per record and every column here
+    ACCUMULATES. Overwriting loses the prompt verdict behind the response one, and a
+    request whose prompt was classified malicious then reads as benign.
+
+    action and category are unioned rather than reduced to a worst value. Only two
+    categories and one action have ever been observed, so any precedence between them
+    would be invented, and a rule can ask whether the set CONTAINS what it cares about.
+
+    Detection flags are collected as the sorted set of names that are TRUE rather than
+    one column per flag: AIRS adds detection types over time, and a column per type
+    means a dataset whose schema follows the vendor's roadmap.
+    """
+    out["airs_evaluated"] = True
+    _merge_into(out, "airs_action", [data.get("action")])
+    _merge_into(out, "airs_category", [data.get("category")])
+
+    for column, key in (
+        ("airs_profile_id", "profile_id"),
+        ("airs_profile_name", "profile_name"),
+        ("airs_scan_id", "scan_id"),
+        ("airs_report_id", "report_id"),
+        ("airs_session_id", "session_id"),
+        ("airs_transaction_id", "transaction_id"),
+    ):
+        _merge_into(out, column, [data.get(key)])
+
+    if data.get("error") is True or (data.get("errors") or []):
+        out["airs_error"] = True
+    if data.get("timeout") is True:
+        out["airs_timeout"] = True
+
+    for side in AIRS_DETECTION_SIDES:
+        detections = data.get(side)
+        if not isinstance(detections, dict):
+            continue
+        fired = [name for name, on in detections.items() if on is True]
+        _merge_into(out, f"airs_{side.split('_')[0]}_detections", fired)
+
+    out["airs_detection_count"] = sum(
+        len([v for v in str(out.get(f"airs_{side.split('_')[0]}_detections") or "").split("|") if v])
+        for side in AIRS_DETECTION_SIDES
+    )
+
+
 def extract_guardrail_results(response: Any) -> dict:
     """Flatten Portkey's own guardrail output into top-level columns.
 
     Portkey evaluates configured guardrails and records the outcome under
     ``response.hook_results``, as a list of hooks each holding a list of checks.
-    That is two levels of array, which XQL cannot traverse, so the flattening is
-    done here where it can be parsed properly and unit tested.
+
+    An earlier version of this docstring said XQL cannot traverse that. It can, by
+    INDEXED path, and the claim was wrong. The real reasons to flatten here are:
+
+    - A WILDCARD path hangs the query instead of erroring, so there is no way to
+      FIND a check by name, only to probe fixed positions and test each id.
+    - Position is not stable. A hook list holds Portkey's own moderation, an AIRS
+      check, or both, so a fixed position reads whichever vendor happens to be first.
+
+    Probing a bounded set of positions is REJECTED, not merely awkward: it is
+    silently incomplete once real depth exceeds the bound, it cannot be unit tested,
+    and it fails quietly. Parsing here is a trade, not an impossibility -- testable
+    and depth-independent, against a data model rule that would apply to records
+    already ingested, which flattening at ingest can never do. Revisit only if the
+    wildcard starts working; do not reach for fixed positions.
 
     This is the AUTHORITATIVE classification for a request: it is the vendor's
     own verdict, versioned by the vendor. It is preferred over anything derived
@@ -247,6 +340,25 @@ def extract_guardrail_results(response: Any) -> dict:
         "guardrail_check_ids": "",
         "guardrail_top_category": None,
         "guardrail_top_score": None,
+        # Prisma AIRS runs as a Portkey plugin and reports under the same hook
+        # structure, but its verdict lives in its own `data` block rather than in
+        # the moderation shape above. Flattened separately so an AIRS finding is
+        # never confused with Portkey's own content moderation.
+        "airs_evaluated": False,
+        "airs_action": "",
+        "airs_category": "",
+        "airs_profile_id": "",
+        "airs_profile_name": "",
+        "airs_scan_id": "",
+        "airs_report_id": "",
+        "airs_session_id": "",
+        "airs_transaction_id": "",
+        "airs_error": False,
+        "airs_timeout": False,
+        "airs_prompt_detections": "",
+        "airs_response_detections": "",
+        "airs_tool_detections": "",
+        "airs_detection_count": 0,
     }
     if isinstance(response, str):
         try:
@@ -290,6 +402,8 @@ def extract_guardrail_results(response: Any) -> dict:
             data = check.get("data") or {}
             if not isinstance(data, dict):
                 continue
+            if "prisma-airs" in str(check.get("id", "")):
+                _flatten_airs(data, out)
             for key in ("allFlaggedCategories", "flaggedCategories"):
                 for category in data.get(key) or []:
                     if category not in categories:
@@ -382,15 +496,19 @@ def open_export_window(
         total = int(response.get("total") or 0)
 
         if total == 0:
-            # Nothing in the window. Abandon the draft and move the watermark on.
-            _try_cancel(client, export_id)
+            # Nothing in the window, so no job is needed and the watermark moves
+            # on. The draft is LEFT IN PLACE deliberately: cancel only accepts an
+            # export that has been started, and this one never was, so calling it
+            # here returns 400 on every quiet poll. Swallowing that failure as a
+            # debug line hides it completely, and each rejected call lands back in
+            # the audit dataset this pack collects.
             return None, window_end, 0
 
         if total < EXPORT_RECORD_LIMIT:
             return export_id, window_end, total
 
-        # Too big for one export. Abandon this draft and halve the window.
-        _try_cancel(client, export_id)
+        # Too big for one export. The unstarted draft is left alone for the same
+        # reason as the empty-window case above, and the window is halved.
         window_end = start + (window_end - start) / 2
         demisto.debug(f"Portkey: window held {total} records, narrowing to {_iso(window_end)}")
 
@@ -399,16 +517,6 @@ def open_export_window(
         f"{workspace_slug} after {MAX_WINDOW_BISECTS} attempts."
     )
     return None, start, 0
-
-
-def _try_cancel(client: Client, export_id: Optional[str]) -> None:
-    """Cancel an export that will not be used. Failure to cancel is not fatal."""
-    if not export_id:
-        return
-    try:
-        client.cancel_export(export_id)
-    except Exception as e:  # noqa: BLE001 - tidying only, must never break collection
-        demisto.debug(f"Portkey: could not cancel unused export {export_id}: {e}")
 
 
 def collect_finished_export(client: Client, workspace_slug: str, export_id: str) -> list[dict]:
@@ -420,6 +528,16 @@ def collect_finished_export(client: Client, workspace_slug: str, export_id: str)
         raise DemistoException(f"Export {export_id} completed but returned no download URL.")
     payload = client.fetch_signed_payload(signed_url)
     return parse_export_payload(payload, workspace_slug)
+
+
+def _carry(last_ts, empties: int) -> dict:
+    """Workspace state that keeps the watermark where it is, preserving the empty count."""
+    carried: dict = {}
+    if last_ts:
+        carried["last_ts"] = last_ts
+    if empties:
+        carried["empties"] = empties
+    return carried
 
 
 def advance_workspace(
@@ -438,6 +556,9 @@ def advance_workspace(
     """
     job = state.get("job") or {}
     last_ts = state.get("last_ts")
+    # Counted on the workspace, not the job: a retry discards the job and builds a new one,
+    # so a counter living there would reset every time and never reach its bound.
+    empties = int(state.get("empties") or 0)
 
     if job.get("id"):
         export_id = job["id"]
@@ -445,19 +566,58 @@ def advance_workspace(
 
         if status == STATUS_SUCCESS:
             events = collect_finished_export(client, workspace_slug, export_id)
-            demisto.debug(f"Portkey: export {export_id} yielded {len(events)} events for {workspace_slug}")
-            return events, {"last_ts": job["win_end"]}
+            if events:
+                demisto.debug(f"Portkey: export {export_id} yielded {len(events)} events for {workspace_slug}")
+                return events, {"last_ts": job["win_end"]}
+
+            # A success carrying NOTHING does not close the window. The job only exists
+            # because the window measured non-empty when it was sized, so an empty result
+            # is a discrepancy, not a quiet period, and advancing on it is the same
+            # unconfirmed-advance that silently stranded records before.
+            empties += 1
+            if empties >= MAX_EMPTY_EXPORTS:
+                demisto.error(
+                    f"Portkey: export {export_id} for workspace {workspace_slug} succeeded with no "
+                    f"records {empties} times over the window ending {job['win_end']}. Giving up on "
+                    "that window and moving past it: whatever it held is NOT collected. This is "
+                    "reported rather than done quietly because it is a loss."
+                )
+                return [], {"last_ts": job["win_end"]}
+            demisto.error(
+                f"Portkey: export {export_id} for workspace {workspace_slug} succeeded but returned "
+                f"no records, attempt {empties} of {MAX_EMPTY_EXPORTS}. Re-measuring the same window; "
+                "the watermark is unchanged."
+            )
+            return [], _carry(last_ts, empties)
 
         if status in STATUS_TERMINAL_FAILURES:
             demisto.error(
                 f"Portkey: export {export_id} for workspace {workspace_slug} ended as '{status}'. "
                 "The same window will be retried on the next run."
             )
-            return [], {"last_ts": last_ts} if last_ts else {}
+            return [], _carry(last_ts, empties)
 
-        # Still draft or in progress. Leave the job in place and wait.
-        demisto.debug(f"Portkey: export {export_id} is '{status}', waiting")
-        return [], state
+        # Still draft or in progress. Wait, but not forever.
+        polls = int(job.get("polls") or 0) + 1
+        if polls >= MAX_JOB_POLLS:
+            demisto.error(
+                f"Portkey: export {export_id} for workspace {workspace_slug} did not reach a "
+                f"terminal state within {MAX_JOB_POLLS} fetches, last status '{status}'. "
+                "Abandoning it and re-measuring the SAME window, whose watermark is unchanged, "
+                "so nothing is skipped by giving up on the job."
+            )
+            try:
+                # Valid here and only here: this export WAS started, and cancel is
+                # rejected for one that never was.
+                client.cancel_export(export_id)
+            except Exception as exc:  # noqa: BLE001 - the abandon must not depend on tidying
+                demisto.error(f"Portkey: could not cancel abandoned export {export_id}: {exc}")
+            return [], _carry(last_ts, empties)
+
+        demisto.debug(f"Portkey: export {export_id} is '{status}', waiting ({polls}/{MAX_JOB_POLLS})")
+        waiting = dict(state)
+        waiting["job"] = {**job, "polls": polls}
+        return [], waiting
 
     start = _parse_iso(last_ts) if last_ts else first_fetch
     end = _now() - lag
@@ -468,14 +628,28 @@ def advance_workspace(
     export_id, window_end, total = open_export_window(client, workspace_slug, start, end, requested_data)
 
     if export_id is None:
-        # Either an empty window, which just advances the watermark, or a window
-        # that could not be sized, which leaves the watermark alone to retry.
-        next_ts = _iso(window_end) if total == 0 and window_end > start else last_ts
-        return [], {"last_ts": next_ts} if next_ts else {}
+        # The window held nothing, or could not be sized. Either way the
+        # watermark STAYS PUT and the window simply widens on the next run.
+        #
+        # It used to advance to window_end whenever the window measured empty,
+        # which reads as free but closes that interval permanently: a record the
+        # export index had not yet published when the window was measured could
+        # never be collected afterwards, because the collector never looks at
+        # that span again. Nothing reports it -- the fetch succeeds, the metrics
+        # update, and the dataset just stops growing while the organisation is
+        # still generating traffic.
+        #
+        # Every other exit from this function already refuses to move the
+        # watermark on anything short of a completed download. This one now
+        # agrees with them. A quiet organisation re-measures a widening window
+        # at the cost of the single create call it was making anyway.
+        return [], _carry(last_ts, empties)
 
     client.start_export(export_id)
     demisto.debug(f"Portkey: started export {export_id} for {workspace_slug} covering {total} records")
-    return [], {"last_ts": last_ts, "job": {"id": export_id, "win_end": _iso(window_end)}}
+    nxt = _carry(last_ts, empties)
+    nxt["job"] = {"id": export_id, "win_end": _iso(window_end)}
+    return [], nxt
 
 
 def fetch_events(
@@ -544,7 +718,8 @@ def get_events_command(client: Client, args: dict, workspace_slugs: list[str], i
     """Report the record count for a window without running an export.
 
     Creating an export returns the count before the job runs, so this previews
-    the volume a real fetch would collect. The draft is cancelled afterwards.
+    the volume a real fetch would collect. The draft is left unstarted rather
+    than cancelled, because cancel is rejected for an export that never ran.
     """
     since = arg_to_datetime(args.get("since") or "1 day")
     assert since is not None
@@ -554,13 +729,43 @@ def get_events_command(client: Client, args: dict, workspace_slugs: list[str], i
     rows = []
     for slug in workspace_slugs:
         response = client.create_export(slug, _iso(start), _iso(end), requested_data)
-        _try_cancel(client, response.get("id"))
         rows.append({"workspace": slug, "window_start": _iso(start), "window_end": _iso(end), "records": response.get("total")})
 
     return CommandResults(
         readable_output=tableToMarkdown("Portkey LLM request logs available", rows),
         raw_response=rows,
     )
+
+
+def cancel_export_command(client: Client, args: dict) -> CommandResults:
+    """Cancel a running log export by id.
+
+    For an export this collector is holding, cancelling is enough on its own: the
+    cancelled state is terminal, so the next fetch releases the job and re-measures
+    the same window. The watermark does not move, so nothing is skipped by cancelling.
+
+    Cancel is REJECTED for an export that was never started, which is not an error
+    worth raising as one: the draft was already inert.
+    """
+    export_id = args.get("export_id")
+    if not export_id:
+        raise DemistoException("An export_id is required. It is the id of the export to cancel.")
+
+    try:
+        client.cancel_export(export_id)
+    except Exception as exc:  # noqa: BLE001 - the reason matters more than the type
+        message = str(exc)
+        if "400" in message:
+            return CommandResults(readable_output=(
+                f"Export {export_id} was not cancelled: the API rejected it, which is what it does "
+                "for an export that was never started. A draft that never ran needs no cancelling."
+            ))
+        raise
+
+    return CommandResults(readable_output=(
+        f"Export {export_id} cancelled. If this collector was holding it, the next fetch releases "
+        "the job and re-measures the same window, so no records are skipped by cancelling."
+    ))
 
 
 def main() -> None:  # pragma: no cover
@@ -593,6 +798,9 @@ def main() -> None:  # pragma: no cover
 
         if command == "test-module":
             return_results(test_module(client, workspace_slugs))
+
+        elif command == "portkey-log-exports-cancel-export":
+            return_results(cancel_export_command(client, args))
 
         elif command == "portkey-log-exports-get-events":
             return_results(get_events_command(client, args, workspace_slugs, include_bodies))

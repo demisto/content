@@ -111,6 +111,54 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 1.9.23
+
+- Redact credential values in the audit collector, because creating an integration sends the third party key in full.
+
+### 1.9.22
+
+- Add three correlations that read the audit request body, covering a key scope set that grew, a key protection that changed, and a guardrail check set that changed.
+
+### 1.9.21
+
+- Carry the audit request body into the data model, so a protection being taken off a key is visible where only current state was before.
+
+### 1.9.20
+
+- Record why the guardrail payload is flattened in the collector, correcting a claim that the query language could not read it.
+
+### 1.9.19
+
+- Add three Prisma AIRS correlations covering a permitted malicious prompt, a detection on the response side, and a scan that did not evaluate.
+
+### 1.9.18
+
+- Flatten the Prisma AIRS verdict at the collector and carry it into the data model, alongside the moderation verdict that runs with or without it.
+
+### 1.9.17
+
+- Band the guardrail coverage level so a workspace degrading further is a separate finding, and record the three Portkey corpora as whole small inventories.
+
+### 1.9.16
+
+- Add a command that cancels a running log export by id, releasing a workspace that a stalled export is holding.
+
+### 1.9.15
+
+- Treat a cancel from the console as terminal, and close a window only when its export actually returned records.
+
+### 1.9.14
+
+- Bound the wait on an in-flight log export, give every correlation a category the data model supplies, and justify the object-id suppression keys.
+
+### 1.9.13
+
+- Stop the log export collector cancelling a draft it never started, and hold the watermark on a window that measured empty so a record published late is still collected.
+
+### 1.9.12
+
+- Correct two comments that named the platform without qualifying it.
+
 ### 1.9.11
 
 - Format the one file the contribution gate objected to. A dict that fits inside the line limit was split across lines, which stayed invisible while the formatter could not start.

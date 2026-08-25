@@ -6,6 +6,7 @@ xql_query: |-
   //   https://attack.mitre.org/techniques/T1685/
   //   https://portkey.ai/docs/product/guardrails
   //   https://owasp.org/www-project-top-10-for-large-language-model-applications/
+  //   Suppression: keyed on xdm.event.id, which the modelling rule fills from `id`; on this polled snapshot that is the WORKSPACE OBJECT id and not a per-event id, so it identifies the subject of the finding uniquely and re-poll does not re-alert.
   datamodel dataset = portkey_workspaces_raw
   | filter xdm.target.resource.value contains "members_write_guardrails" or xdm.target.resource.value contains "members_write_configs"
   | sort desc _time
@@ -13,7 +14,7 @@ xql_query: |-
   | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
 alert_name: Portkey workspace guardrails writable by members - $xdm.target.resource.name
 alert_category: User Defined
-user_defined_category: xdm.alert.category
+user_defined_category: xdm.event.type
 alert_description: Portkey workspace $xdm.target.resource.name allows ordinary members to change guardrails or routing configs. Guardrails are the controls that filter prompts and responses, so a member able to edit them can disable the protection that stops sensitive data leaving through a model, and can reroute traffic to an unapproved provider. Restrict guardrail and config changes to managers.
 alert_domain: DOMAIN_POSTURE
 mitre_defs:
