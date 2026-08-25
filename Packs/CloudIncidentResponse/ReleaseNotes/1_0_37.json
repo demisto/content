@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "In the Cortex XDR - Cloud Data Exfiltration Response playbook, the *username* and *Username* context paths were updated from **PaloAltoNetworksXDR.Incident.alerts.user_name** to **PaloAltoNetworksXDR.Case.Issues.user_name**, to match the output of the ***xdr-case-list*** command that replaced the deprecated ***xdr-get-incident-extra-data*** command in the calling playbook. Custom playbooks or automations that rely on the previous **PaloAltoNetworksXDR.Incident.alerts.user_name** context path must be updated to the new context path."
+}
