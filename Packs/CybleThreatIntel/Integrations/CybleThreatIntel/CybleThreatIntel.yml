@@ -127,7 +127,7 @@ configuration:
     type: 0
     defaultvalue: 1
     required: true
-    additionalinfo: How many hours back to fetch IOCs on first run. Max 3 hours.
+    additionalinfo: The number of hours back to fetch IOCs on first run. Maximum is 3 hours.
     section: Collect
     hidden: true
   - display: Indicator Fetch Limit
@@ -135,15 +135,17 @@ configuration:
     type: 0
     defaultvalue: '100'
     section: Collect
-    additionalinfo: Maximum indicators per API page (API cap is 100).
+    required: false
+    additionalinfo: The maximum number of indicators per API page (API cap is 100).
     hidden: true
   - display: Max indicators per fetch run
     name: max_indicators_per_fetch
     type: 0
     defaultvalue: '100'
     section: Collect
-    additionalinfo: Hard cap of indicators submitted per fetch-indicators run. Non-TIM XSOAR licenses ingest at most 100 per fetch; leave at 100 unless you have a TIM license that allows more. Raising this on a non-TIM tenant causes skipped IOCs.
-    hidden: true
+    required: false
+    additionalinfo: The hard cap of indicators submitted per fetch-indicators run. Non-TIM Cortex licenses ingest at most 100 per fetch; leave at 100 unless you have a TIM license that allows more. Raising this on a non-TIM tenant causes skipped IOCs.
+    hidden: false
 script:
   type: python
   subtype: python3
@@ -182,7 +184,7 @@ script:
         - contextPath: CybleIntel.collection.names
           description: Backward compatibility placeholder.
           type: String
-fromversion: 6.2.0
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
 sectionorder:
