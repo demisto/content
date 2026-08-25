@@ -4,6 +4,7 @@ from contextlib import nullcontext as does_not_raise
 import demistomock as demisto  # noqa: F401
 import pytest
 from AWSGuardDuty import (
+    DemistoException,
     archive_findings,
     connection_test,
     create_detector,
@@ -781,51 +782,50 @@ def test_list_threat_entity_sets(mocker):
         Running list_threat_entity_sets command
 
     Then:
-        assert api calls are called exactly once and as expected.
+        assert the API is called with the default limit and the outputs contain the detector and entity set IDs.
     """
     mocked_client = MockedBoto3Client()
-    get_paginator_mock = mocker.patch.object(MockedBoto3Client, "get_paginator", side_effect=[MockedPaginator()])
-    paginate_mock = mocker.patch.object(
-        MockedPaginator, "paginate", side_effect=[[{"ThreatEntitySetIds": ["entity1", "entity2"]}]]
+    list_mock = mocker.patch.object(
+        MockedBoto3Client, "list_threat_entity_sets", side_effect=[{"ThreatEntitySetIds": ["entity1", "entity2"]}]
     )
 
     command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id"})
 
-    get_paginator_mock.assert_called_with("list_threat_entity_sets")
-    paginate_mock.assert_called_with(DetectorId="some_id", PaginationConfig={"MaxItems": 50, "PageSize": 50})
-    assert command_results.outputs == [
+    list_mock.assert_called_with(DetectorId="some_id", MaxResults=50)
+    entity_sets = command_results.outputs[
+        "AWS.GuardDuty.Detectors.ThreatEntitySet(val.ThreatEntitySetId && val.ThreatEntitySetId == obj.ThreatEntitySetId)"
+    ]
+    assert entity_sets == [
         {"DetectorId": "some_id"},
         {"ThreatEntitySetId": "entity1"},
         {"ThreatEntitySetId": "entity2"},
     ]
 
 
-def test_list_threat_entity_sets_with_pagination_args(mocker):
+def test_list_threat_entity_sets_with_limit_and_next_token(mocker):
     """
     Given:
         AWSClient session
-        list_threat_entity_sets valid response and manual pagination arguments (page and page_size)
+        list_threat_entity_sets valid response and the limit and next_token arguments
 
     When:
         Running list_threat_entity_sets command
 
     Then:
-        assert the paginator is called with the pagination config derived from page and page_size.
+        assert the API is called with the provided MaxResults and NextToken, and the returned
+        NextToken is emitted under the ThreatEntitySetsNextToken output.
     """
     mocked_client = MockedBoto3Client()
-    get_paginator_mock = mocker.patch.object(MockedBoto3Client, "get_paginator", side_effect=[MockedPaginator()])
-    paginate_mock = mocker.patch.object(
-        MockedPaginator, "paginate", side_effect=[[{"ThreatEntitySetIds": ["entity1"]}, {"ThreatEntitySetIds": ["entity2"]}]]
+    list_mock = mocker.patch.object(
+        MockedBoto3Client,
+        "list_threat_entity_sets",
+        side_effect=[{"ThreatEntitySetIds": ["entity1"], "NextToken": "next-page-token"}],
     )
 
-    command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id", "page": "2", "page_size": "1"})
+    command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id", "limit": "10", "next_token": "prev-token"})
 
-    get_paginator_mock.assert_called_with("list_threat_entity_sets")
-    paginate_mock.assert_called_with(DetectorId="some_id", PaginationConfig={"MaxItems": 2, "PageSize": 1})
-    assert command_results.outputs == [
-        {"DetectorId": "some_id"},
-        {"ThreatEntitySetId": "entity2"},
-    ]
+    list_mock.assert_called_with(DetectorId="some_id", MaxResults=10, NextToken="prev-token")
+    assert command_results.outputs["AWS.GuardDuty.Detectors(true)"] == {"ThreatEntitySetsNextToken": "next-page-token"}
 
 
 def test_list_threat_entity_sets_empty(mocker):
@@ -838,16 +838,36 @@ def test_list_threat_entity_sets_empty(mocker):
         Running list_threat_entity_sets command
 
     Then:
-        assert only the DetectorId seed entry is returned in the outputs.
+        assert only the DetectorId seed entry is returned and an informative readable output is shown.
     """
     mocked_client = MockedBoto3Client()
-    mocker.patch.object(MockedBoto3Client, "get_paginator", side_effect=[MockedPaginator()])
-    mocker.patch.object(MockedPaginator, "paginate", side_effect=[[{"ThreatEntitySetIds": []}]])
+    mocker.patch.object(MockedBoto3Client, "list_threat_entity_sets", side_effect=[{"ThreatEntitySetIds": []}])
 
     command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id"})
 
-    assert command_results.outputs == [{"DetectorId": "some_id"}]
-    assert command_results.outputs_prefix == "AWS.GuardDuty.Detectors.ThreatEntitySet"
+    entity_sets = command_results.outputs[
+        "AWS.GuardDuty.Detectors.ThreatEntitySet(val.ThreatEntitySetId && val.ThreatEntitySetId == obj.ThreatEntitySetId)"
+    ]
+    assert entity_sets == [{"DetectorId": "some_id"}]
+    assert "No Threat Entity Sets were found" in command_results.readable_output
+
+
+def test_list_threat_entity_sets_invalid_limit(mocker):
+    """
+    Given:
+        AWSClient session
+        list_threat_entity_sets called with a limit above the allowed maximum
+
+    When:
+        Running list_threat_entity_sets command
+
+    Then:
+        assert a DemistoException is raised for the out-of-range limit.
+    """
+    mocked_client = MockedBoto3Client()
+
+    with pytest.raises(DemistoException, match="limit argument must be between 1 to 50"):
+        list_threat_entity_sets(mocked_client, {"detectorId": "some_id", "limit": "51"})
 
 
 EXPECTED_IP_SET_RESULT = {

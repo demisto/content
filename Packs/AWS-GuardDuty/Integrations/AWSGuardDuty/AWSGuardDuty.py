@@ -415,44 +415,43 @@ def delete_threat_entity_set(client: "GuardDutyClient", args: dict):
 
 
 def list_threat_entity_sets(client: "GuardDutyClient", args: dict) -> CommandResults:
-    limit, page_size, page = get_pagination_args(args)
+    detector_id = args.get("detectorId", "")
+
+    kwargs: dict[str, Any] = {"DetectorId": detector_id}
+    # MaxResults valid range for ListThreatEntitySets is 1-50.
+    limit = arg_to_number(args.get("limit")) or MAX_RESULTS_RESPONSE
+    if not 0 < limit <= MAX_RESULTS_RESPONSE:
+        raise DemistoException(f"limit argument must be between 1 to {MAX_RESULTS_RESPONSE}")
+    kwargs["MaxResults"] = limit
+    if next_token := args.get("next_token"):
+        kwargs["NextToken"] = next_token
+
     demisto.debug(
-        f"aws-gd-list-threat-entity-sets: listing Threat Entity Sets for Detector {args.get('detectorId')} "
-        f"with limit={limit}, page_size={page_size}, page={page}."
+        f"aws-gd-list-threat-entity-sets: listing Threat Entity Sets for Detector {detector_id} "
+        f"with request fields: {list(kwargs.keys())}."
     )
+    response = client.list_threat_entity_sets(**kwargs)
 
-    paginator = client.get_paginator("list_threat_entity_sets")
-    response_iterator = paginator.paginate(
-        DetectorId=args.get("detectorId", ""),
-        PaginationConfig={
-            "MaxItems": limit,
-            "PageSize": page_size,
-        },
-    )
+    threat_entity_set_ids = response.get("ThreatEntitySetIds", [])
+    demisto.debug(f"aws-gd-list-threat-entity-sets: found {len(threat_entity_set_ids)} Threat Entity Set(s).")
 
-    data = []
-    data.append({"DetectorId": args.get("detectorId")})
-    for i, page_response in enumerate(response_iterator):
-        if page is None or (page - 1) == i:
-            for threatEntitySet in page_response["ThreatEntitySetIds"]:
-                data.append({"ThreatEntitySetId": threatEntitySet})
-            if page:
-                break
+    data = [{"DetectorId": detector_id}]
+    data.extend({"ThreatEntitySetId": threat_entity_set_id} for threat_entity_set_id in threat_entity_set_ids)
 
-    # data includes the DetectorId seed entry, so the number of returned sets is len(data) - 1.
-    demisto.debug(
-        f"aws-gd-list-threat-entity-sets: found {len(data) - 1} Threat Entity Set(s) " f"for Detector {args.get('detectorId')}."
-    )
+    outputs = {
+        "AWS.GuardDuty.Detectors.ThreatEntitySet(val.ThreatEntitySetId && val.ThreatEntitySetId == obj.ThreatEntitySetId)": data,
+        "AWS.GuardDuty.Detectors(true)": {"ThreatEntitySetsNextToken": response.get("NextToken")},
+    }
+
     readable_output = (
         tableToMarkdown("AWS GuardDuty Threat Entity Sets", data)
-        if data
+        if threat_entity_set_ids
         else "No Threat Entity Sets were found for the specified detector."
     )
     return CommandResults(
         readable_output=readable_output,
-        outputs=data,
-        outputs_prefix="AWS.GuardDuty.Detectors.ThreatEntitySet",
-        outputs_key_field="ThreatEntitySetId",
+        outputs=outputs,
+        raw_response=response,
     )
 
 

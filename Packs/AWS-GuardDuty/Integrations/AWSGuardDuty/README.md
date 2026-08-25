@@ -1003,18 +1003,18 @@ Lists the ThreatEntitySets of the GuardDuty service specified by the detector ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detectorId | The unique ID of the detector that specifies the GuardDuty service whose ThreatEntitySets you want to list. | Required |
-| limit | The maximum number of results to return. Valid range is 1-50. Default is 50. | Optional |
-| page | The specific page of results to return. | Optional |
-| page_size | The number of results to return in each page. Valid range is 1-50. Default is 50. | Optional |
-| region | The AWS Region, if not specified the default region will be used. | Optional |
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
-| roleSessionName | An identifier for the assumed role session. | Optional |
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional |
+| detectorId | The unique ID of the detector that specifies the GuardDuty service whose ThreatEntitySets you want to list. | Required | 
+| limit | The maximum number of results to return. Valid range is 1-50. Default is 50. | Optional | 
+| next_token | The token for the next set of items to return, used for pagination. Use the ThreatEntitySetsNextToken value returned by a previous call. | Optional | 
+| region | The AWS Region. If not specified, the default region is used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | The identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.GuardDuty.Detectors.ThreatEntitySet.DetectorId | string | The unique ID of the detector. |
-| AWS.GuardDuty.Detectors.ThreatEntitySet.ThreatEntitySetId | string | The unique identifier for a Threat Entity Set. |
+| AWS.GuardDuty.Detectors.ThreatEntitySet.DetectorId | string | The unique ID of the detector. | 
+| AWS.GuardDuty.Detectors.ThreatEntitySet.ThreatEntitySetId | string | The unique identifier for a Threat Entity Set. | 
+| AWS.GuardDuty.Detectors.ThreatEntitySetsNextToken | string | The token to use in a subsequent request to retrieve the next set of results. | 

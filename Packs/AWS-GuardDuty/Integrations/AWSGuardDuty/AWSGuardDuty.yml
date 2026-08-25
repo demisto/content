@@ -701,11 +701,8 @@ script:
     - name: limit
       description: The maximum number of results to return. Valid range is 1-50.
       defaultValue: '50'
-    - name: page
-      description: The specific page of results to return.
-    - name: page_size
-      description: The number of results to return in each page. Valid range is 1-50.
-      defaultValue: '50'
+    - name: next_token
+      description: The token for the next set of items to return, used for pagination. Use the ThreatEntitySetsNextToken value returned by a previous call.
     - name: region
       description: The AWS Region. If not specified, the default region is used.
     - name: roleArn
@@ -720,6 +717,9 @@ script:
       type: string
     - contextPath: AWS.GuardDuty.Detectors.ThreatEntitySet.ThreatEntitySetId
       description: The unique identifier for a Threat Entity Set.
+      type: string
+    - contextPath: AWS.GuardDuty.Detectors.ThreatEntitySetsNextToken
+      description: The token to use in a subsequent request to retrieve the next set of results.
       type: string
   - arguments:
     - description: The ID of the detector that specifies the GuardDuty service whose findings you want to list.
