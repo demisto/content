@@ -251,7 +251,7 @@ def darkwebscan_getcompanies_command(client: Client, args: dict) -> CommandResul
     page = min(50000, max(0, arg_to_number(args.get("page")) or 0))
     page_size = min(50000, max(0, arg_to_number(args.get("page_size")) or DEFAULT_PAGE_SIZE))
 
-    companies = client.get_companies(page=page, page_size=page_size, limit=limit)
+    companies = client.get_companies(page=page, page_size=page_size)
 
     if not isinstance(companies, list):
         companies_list = [companies] if companies else []
