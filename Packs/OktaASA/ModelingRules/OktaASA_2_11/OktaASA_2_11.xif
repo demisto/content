@@ -55,11 +55,17 @@ alter //Extraction of fields
     xdm.source.user.username = user -> name,
     xdm.source.identity.username = user -> name,
     xdm.source.user.is_disabled = if(
+        user_status ~= "ACTIVE|UNKNOWN|PENDING", FALSE,
+        user_status ~= "DISABLE", TRUE,
+        null),
     xdm.source.identity.is_disabled = if(
         user_status ~= "ACTIVE|UNKNOWN|PENDING", FALSE,
         user_status ~= "DISABLE", TRUE,
         null),
     xdm.source.user.user_type = if(
+        user_type = "human", XDM_CONST.USER_TYPE_REGULAR,
+        user_type = "service" OR details -> unix_user_name != null, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        user_type),
     xdm.source.identity.user_type = if(
         user_type = "human", XDM_CONST.USER_TYPE_REGULAR,
         user_type = "service" OR details -> unix_user_name != null, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
