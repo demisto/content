@@ -33,6 +33,12 @@ configuration:
   defaultvalue: "5"
   type: 19
   required: false
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'true'
 - display: Event Types To Fetch
   section: Collect
   name: event_types_to_fetch
