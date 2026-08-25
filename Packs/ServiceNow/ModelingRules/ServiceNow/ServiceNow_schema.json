@@ -124,10 +124,6 @@
       "type": "string",
       "is_array": false
     },
-    "state": {
-      "type": "int",
-      "is_array": false
-    },
     "active": {
       "type": "int",
       "is_array": false
@@ -273,14 +269,6 @@
       "is_array": false
     },
     "hostname": {
-      "type": "string",
-      "is_array": false
-    },
-    "source_table": {
-      "type": "string",
-      "is_array": false
-    },
-    "source_record": {
       "type": "string",
       "is_array": false
     },
