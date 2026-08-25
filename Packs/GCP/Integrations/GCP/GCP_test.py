@@ -6652,3 +6652,284 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+class TestGCPComputeNetworksAddPeering:
+    def test_gcp_compute_networks_add_peering_minimal_args(self, mocker):
+        """
+        Given: A mocked GCP Compute service with the minimal required arguments.
+        When: gcp_compute_networks_add_peering is called with network and name only.
+        Then: The addPeering API is called with the lowercased name in the body and operation details are returned.
+        """
+        from GCP import GCPServices, gcp_compute_networks_add_peering
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_add_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.addPeering.return_value = mock_add_peering
+        mock_add_peering.execute.return_value = {
+            "status": "PENDING",
+            "kind": "compute#operation",
+            "name": "operation-1",
+            "id": "111",
+            "operationType": "addPeering",
+        }
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "network": "my-network", "name": "My-Peering"}
+
+        result = gcp_compute_networks_add_peering(mock_creds, args)
+
+        mock_networks.addPeering.assert_called_once_with(
+            project="test-project", network="my-network", body={"name": "my-peering"}
+        )
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs_key_field == "id"
+
+    def test_gcp_compute_networks_add_peering_all_args(self, mocker):
+        """
+        Given: A mocked GCP Compute service with the full peering configuration.
+        When: gcp_compute_networks_add_peering is called with the networkPeering fields and booleans.
+        Then: The addPeering API body is built with the nested networkPeering object and converted booleans.
+        """
+        from GCP import GCPServices, gcp_compute_networks_add_peering
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_add_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.addPeering.return_value = mock_add_peering
+        mock_add_peering.execute.return_value = {"id": "222", "name": "operation-2", "status": "DONE"}
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {
+            "project_id": "test-project",
+            "network": "my-network",
+            "name": "peering-1",
+            "peer_network": "projects/other/global/networks/peer",
+            "auto_create_routes": "true",
+            "network_peering_name": "np-name",
+            "network_peering_network": "projects/other/global/networks/np",
+            "network_peering_exchange_subnet_routes": "true",
+        }
+
+        gcp_compute_networks_add_peering(mock_creds, args)
+
+        expected_body = {
+            "name": "peering-1",
+            "peerNetwork": "projects/other/global/networks/peer",
+            "autoCreateRoutes": True,
+            "networkPeering": {
+                "name": "np-name",
+                "network": "projects/other/global/networks/np",
+                "exchangeSubnetRoutes": True,
+            },
+        }
+        mock_networks.addPeering.assert_called_once_with(project="test-project", network="my-network", body=expected_body)
+
+    def test_gcp_compute_networks_add_peering_permission_error(self, mocker):
+        """
+        Given: A mocked GCP Compute service whose addPeering raises an HttpError.
+        When: gcp_compute_networks_add_peering is called.
+        Then: The HttpError propagates so main() can convert it into a structured permission error.
+        """
+        from GCP import GCPServices, gcp_compute_networks_add_peering
+        from googleapiclient.errors import HttpError
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_add_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.addPeering.return_value = mock_add_peering
+        mock_resp = mocker.Mock()
+        mock_resp.status = 403
+        mock_add_peering.execute.side_effect = HttpError(mock_resp, b'{"error": {"message": "Permission denied"}}')
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "network": "my-network", "name": "peering-1"}
+
+        with pytest.raises(HttpError):
+            gcp_compute_networks_add_peering(mock_creds, args)
+
+
+class TestGCPComputeDeleteNetwork:
+    def test_gcp_compute_delete_network_success(self, mocker):
+        """
+        Given: A mocked GCP Compute service returning an operation.
+        When: gcp_compute_delete_network is called with a project_id and network.
+        Then: The delete API is called and operation details are returned under GCP.Compute.Operations.
+        """
+        from GCP import GCPServices, gcp_compute_delete_network
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_delete = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.delete.return_value = mock_delete
+        mock_delete.execute.return_value = {
+            "status": "PENDING",
+            "kind": "compute#operation",
+            "name": "operation-del",
+            "id": "333",
+            "operationType": "delete",
+        }
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "network": "my-network"}
+
+        result = gcp_compute_delete_network(mock_creds, args)
+
+        mock_networks.delete.assert_called_once_with(project="test-project", network="my-network")
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "333"
+
+    def test_gcp_compute_delete_network_minimal_response(self, mocker):
+        """
+        Given: A mocked GCP Compute service returning an operation with few fields.
+        When: gcp_compute_delete_network is called.
+        Then: The command still returns CommandResults referencing the operation id.
+        """
+        from GCP import GCPServices, gcp_compute_delete_network
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_delete = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.delete.return_value = mock_delete
+        mock_delete.execute.return_value = {"id": "444", "name": "op-min"}
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_delete_network(mock_creds, {"project_id": "test-project", "network": "n"})
+
+        assert result.outputs["id"] == "444"
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+
+    def test_gcp_compute_delete_network_permission_error(self, mocker):
+        """
+        Given: A mocked GCP Compute service whose delete raises an HttpError.
+        When: gcp_compute_delete_network is called.
+        Then: The HttpError propagates so main() can convert it into a structured permission error.
+        """
+        from GCP import GCPServices, gcp_compute_delete_network
+        from googleapiclient.errors import HttpError
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_delete = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.delete.return_value = mock_delete
+        mock_resp = mocker.Mock()
+        mock_resp.status = 403
+        mock_delete.execute.side_effect = HttpError(mock_resp, b'{"error": {"message": "Permission denied"}}')
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        with pytest.raises(HttpError):
+            gcp_compute_delete_network(mock_creds, {"project_id": "test-project", "network": "n"})
+
+
+class TestGCPComputeNetworksRemovePeering:
+    def test_gcp_compute_networks_remove_peering_success(self, mocker):
+        """
+        Given: A mocked GCP Compute service returning an operation.
+        When: gcp_compute_networks_remove_peering is called with network and name.
+        Then: The removePeering API is called with the name in the body and operation details are returned.
+        """
+        from GCP import GCPServices, gcp_compute_networks_remove_peering
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_remove_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.removePeering.return_value = mock_remove_peering
+        mock_remove_peering.execute.return_value = {
+            "status": "PENDING",
+            "kind": "compute#operation",
+            "name": "operation-rp",
+            "id": "555",
+            "operationType": "removePeering",
+        }
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "network": "my-network", "name": "peering-1"}
+
+        result = gcp_compute_networks_remove_peering(mock_creds, args)
+
+        mock_networks.removePeering.assert_called_once_with(
+            project="test-project", network="my-network", body={"name": "peering-1"}
+        )
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "555"
+
+    def test_gcp_compute_networks_remove_peering_empty_body_when_no_name(self, mocker):
+        """
+        Given: A mocked GCP Compute service and args without a peering name.
+        When: gcp_compute_networks_remove_peering is called with only network.
+        Then: The removePeering API is called with an empty body.
+        """
+        from GCP import GCPServices, gcp_compute_networks_remove_peering
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_remove_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.removePeering.return_value = mock_remove_peering
+        mock_remove_peering.execute.return_value = {"id": "666", "name": "op-empty"}
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        gcp_compute_networks_remove_peering(mock_creds, {"project_id": "test-project", "network": "my-network"})
+
+        mock_networks.removePeering.assert_called_once_with(project="test-project", network="my-network", body={})
+
+    def test_gcp_compute_networks_remove_peering_permission_error(self, mocker):
+        """
+        Given: A mocked GCP Compute service whose removePeering raises an HttpError.
+        When: gcp_compute_networks_remove_peering is called.
+        Then: The HttpError propagates so main() can convert it into a structured permission error.
+        """
+        from GCP import GCPServices, gcp_compute_networks_remove_peering
+        from googleapiclient.errors import HttpError
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_remove_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.removePeering.return_value = mock_remove_peering
+        mock_resp = mocker.Mock()
+        mock_resp.status = 403
+        mock_remove_peering.execute.side_effect = HttpError(mock_resp, b'{"error": {"message": "Permission denied"}}')
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "network": "my-network", "name": "peering-1"}
+
+        with pytest.raises(HttpError):
+            gcp_compute_networks_remove_peering(mock_creds, args)
