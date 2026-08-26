@@ -67,7 +67,7 @@ script:
       description: The scan ID of the released email.
       type: number
     description: Re-sends an email that was falsely quarantined, using the scan ID.
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.14.12277297
   isfetch: true
 tests:
 - PerceptionPoint Test
