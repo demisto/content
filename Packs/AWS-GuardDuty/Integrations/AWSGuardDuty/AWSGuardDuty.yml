@@ -774,8 +774,6 @@ script:
     - description: The maximum number of results across all pages. Valid range is 1-50.
       name: limit
       defaultValue: '50'
-    - name: next_token
-      description: The NextToken value returned in a previous response. Set to null on the first call, then pass the previous response's NextToken to continue listing data.
     - name: page_size
       description: The page size for the underlying paginator. Valid range is 1-50.
       defaultValue: '50'
@@ -797,9 +795,6 @@ script:
       type: string
     - contextPath: AWS.GuardDuty.ThreatEntitySet.ThreatEntitySetId
       description: The unique identifier for a threat entity set.
-      type: string
-    - contextPath: AWS.GuardDutyThreatEntitySetNextToken.NextToken
-      description: The page token to pass to the next_token argument of the next aws-gd-list-threat-entity-sets run to fetch the next page. Absent or empty when there are no more pages.
       type: string
   - arguments:
     - description: The ID of the detector that specifies the GuardDuty service whose findings you want to list.

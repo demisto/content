@@ -1025,39 +1025,40 @@ def test_list_threat_entity_sets(mocker):
 
     get_paginator_mock.assert_called_with("list_threat_entity_sets")
     paginate_mock.assert_called_with(DetectorId="some_id", PaginationConfig={"MaxItems": 50, "PageSize": 50})
-    entity_sets = command_results.outputs[
-        "AWS.GuardDuty.ThreatEntitySet(val.ThreatEntitySetId && val.ThreatEntitySetId == obj.ThreatEntitySetId)"
-    ]
-    assert entity_sets == [
+    assert command_results.outputs == [
         {"DetectorId": "some_id"},
         {"ThreatEntitySetId": "entity1"},
         {"ThreatEntitySetId": "entity2"},
     ]
+    assert command_results.outputs_prefix == "AWS.GuardDuty.ThreatEntitySet"
 
 
-def test_list_threat_entity_sets_with_next_token(mocker):
+def test_list_threat_entity_sets_specific_page(mocker):
     """
     Given:
         AWSClient session
-        list_threat_entity_sets paginated response that includes a NextToken
+        list_threat_entity_sets paginated response spanning multiple pages and the page argument
 
     When:
         Running list_threat_entity_sets command
 
     Then:
-        assert the returned NextToken is emitted under the AWS.GuardDutyThreatEntitySetNextToken output.
+        assert only the requested page's entity sets are returned.
     """
     mocked_client = MockedBoto3Client()
     mocker.patch.object(MockedBoto3Client, "get_paginator", side_effect=[MockedPaginator()])
     mocker.patch.object(
         MockedPaginator,
         "paginate",
-        side_effect=[[{"ThreatEntitySetIds": ["entity1"], "NextToken": "next-page-token"}]],
+        side_effect=[[{"ThreatEntitySetIds": ["entity1"]}, {"ThreatEntitySetIds": ["entity2"]}]],
     )
 
-    command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id"})
+    command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id", "page": "2", "page_size": "1"})
 
-    assert command_results.outputs["AWS.GuardDutyThreatEntitySetNextToken"] == {"NextToken": "next-page-token"}
+    assert command_results.outputs == [
+        {"DetectorId": "some_id"},
+        {"ThreatEntitySetId": "entity2"},
+    ]
 
 
 def test_list_threat_entity_sets_empty(mocker):
@@ -1070,7 +1071,7 @@ def test_list_threat_entity_sets_empty(mocker):
         Running list_threat_entity_sets command
 
     Then:
-        assert only the DetectorId seed entry is returned and no NextToken output is emitted.
+        assert only the DetectorId seed entry is returned.
     """
     mocked_client = MockedBoto3Client()
     mocker.patch.object(MockedBoto3Client, "get_paginator", side_effect=[MockedPaginator()])
@@ -1078,11 +1079,7 @@ def test_list_threat_entity_sets_empty(mocker):
 
     command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id"})
 
-    entity_sets = command_results.outputs[
-        "AWS.GuardDuty.ThreatEntitySet(val.ThreatEntitySetId && val.ThreatEntitySetId == obj.ThreatEntitySetId)"
-    ]
-    assert entity_sets == [{"DetectorId": "some_id"}]
-    assert "AWS.GuardDutyThreatEntitySetNextToken" not in command_results.outputs
+    assert command_results.outputs == [{"DetectorId": "some_id"}]
 
 
 def test_list_threat_entity_sets_invalid_page_size(mocker):

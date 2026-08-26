@@ -452,18 +452,20 @@ def get_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResul
     response = client.get_threat_entity_set(
         DetectorId=args.get("detectorId", ""), ThreatEntitySetId=args.get("threatEntitySetId", "")
     )
-    data = remove_empty_elements({
-        "DetectorId": args.get("detectorId"),
-        "ThreatEntitySetId": args.get("threatEntitySetId"),
-        "Name": response.get("Name"),
-        "Format": response.get("Format"),
-        "Location": response.get("Location"),
-        "Status": response.get("Status"),
-        "ExpectedBucketOwner": response.get("ExpectedBucketOwner"),
-        "CreatedAt": response.get("CreatedAt"),
-        "UpdatedAt": response.get("UpdatedAt"),
-        "Tags": response.get("Tags"),
-    })
+    data = remove_empty_elements(
+        {
+            "DetectorId": args.get("detectorId"),
+            "ThreatEntitySetId": args.get("threatEntitySetId"),
+            "Name": response.get("Name"),
+            "Format": response.get("Format"),
+            "Location": response.get("Location"),
+            "Status": response.get("Status"),
+            "ExpectedBucketOwner": response.get("ExpectedBucketOwner"),
+            "CreatedAt": response.get("CreatedAt"),
+            "UpdatedAt": response.get("UpdatedAt"),
+            "Tags": response.get("Tags"),
+        }
+    )
 
     return CommandResults(
         readable_output=tableToMarkdown("AWS GuardDuty ThreatEntity Set", data),
@@ -512,28 +514,22 @@ def list_threat_entity_sets(client: "GuardDutyClient", args: dict) -> CommandRes
 
     data = []
     data.append({"DetectorId": args.get("detectorId")})
-    next_token = None
     for i, page_response in enumerate(response_iterator):
         if page is None or (page - 1) == i:
             for threatEntitySet in page_response["ThreatEntitySetIds"]:
                 data.append({"ThreatEntitySetId": threatEntitySet})
-            next_token = page_response.get("NextToken")
             if page:
                 break
 
     # data includes the DetectorId seed entry, so the number of returned sets is len(data) - 1.
     demisto.debug(f"aws-gd-list-threat-entity-sets: found {len(data) - 1} Threat Entity Set(s).")
 
-    outputs: dict[str, Any] = {
-        "AWS.GuardDuty.ThreatEntitySet(val.ThreatEntitySetId && val.ThreatEntitySetId == obj.ThreatEntitySetId)": data,
-    }
-    if next_token:
-        outputs["AWS.GuardDutyThreatEntitySetNextToken"] = {"NextToken": next_token}
-
     readable_output = tableToMarkdown("AWS GuardDuty ThreatEntity Sets", data)
     return CommandResults(
         readable_output=readable_output,
-        outputs=outputs,
+        outputs=data,
+        outputs_prefix="AWS.GuardDuty.ThreatEntitySet",
+        outputs_key_field="ThreatEntitySetId",
     )
 
 

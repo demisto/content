@@ -1004,7 +1004,6 @@ Lists the threat entity sets of the GuardDuty service specified by the detector 
 | --- | --- | --- |
 | detectorId | The detector whose threat entity sets you want to list. | Required |
 | limit | The maximum number of results across all pages. Valid range is 1-50. Default is 50. | Optional |
-| next_token | The NextToken value returned in a previous response. Set to null on the first call, then pass the previous response's NextToken to continue listing data. | Optional |
 | page_size | The page size for the underlying paginator. Valid range is 1-50. Default is 50. | Optional |
 | page | The 1-based page index. When set, only that page is returned. | Optional |
 | region | The AWS Region. If not specified, the default region is used. | Optional |
@@ -1018,7 +1017,6 @@ Lists the threat entity sets of the GuardDuty service specified by the detector 
 | --- | --- | --- |
 | AWS.GuardDuty.ThreatEntitySet.DetectorId | string | The unique ID of the detector. |
 | AWS.GuardDuty.ThreatEntitySet.ThreatEntitySetId | string | The unique identifier for a threat entity set. |
-| AWS.GuardDutyThreatEntitySetNextToken.NextToken | string | The page token to pass to the next_token argument of the next aws-gd-list-threat-entity-sets run to fetch the next page. Absent or empty when there are no more pages. |
 
 ### aws-gd-update-threat-entity-set
 
