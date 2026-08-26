@@ -1,12 +1,9 @@
 """Unit tests for the Microsoft Defender for Cloud Apps Event Collector."""
 
 import demistomock as demisto
-import pytest
-from pydantic import ValidationError
 
 from MicrosoftDefenderEventCollector import (
     DEFAULT_LIMIT,
-    MAX_LIMIT,
     DefenderGetEvents,
     IntegrationOptions,
 )
@@ -50,10 +47,10 @@ class TestIntegrationOptionsLimit:
         options = IntegrationOptions.parse_obj({"limit": 1000})
         assert options.limit == 1000
 
-    def test_limit_above_max_is_rejected(self):
-        """Values above MAX_LIMIT are rejected by validation."""
-        with pytest.raises(ValidationError):
-            IntegrationOptions.parse_obj({"limit": MAX_LIMIT + 1})
+    def test_large_limit_is_accepted(self):
+        """There is no upper cap: a large limit is accepted so admins can size to their volume."""
+        options = IntegrationOptions.parse_obj({"limit": 50000})
+        assert options.limit == 50000
 
 
 class TestRunPaginationRegression:

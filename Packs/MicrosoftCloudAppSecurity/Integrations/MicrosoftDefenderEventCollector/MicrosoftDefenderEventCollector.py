@@ -18,7 +18,6 @@ from CommonServerUserPython import *  # noqa
 
 
 DEFAULT_LIMIT = 1000
-MAX_LIMIT = 3000
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
 
 
@@ -114,9 +113,11 @@ class IntegrationOptions(BaseModel):
 
     proxy: bool | None = False
     # limit is the maximum number of events to fetch per event type per fetch cycle.
-    # Defaults to DEFAULT_LIMIT so fetch-events pagination is always bounded, and is
-    # capped at MAX_LIMIT. Pagination loops in pages (~100, the API default page size).
-    limit: int = Field(DEFAULT_LIMIT, ge=1, le=MAX_LIMIT)
+    # Defaults to DEFAULT_LIMIT so fetch-events pagination is always bounded. There is no
+    # upper cap: the correct value depends on the tenant's event volume, which we cannot
+    # know in advance, so admins may raise it as needed. Pagination loops in pages (~100,
+    # the API default page size).
+    limit: int = Field(DEFAULT_LIMIT, ge=1)
 
 
 class IntegrationEventsClient(ABC):
@@ -431,11 +432,6 @@ def main(command: str, demisto_params: dict):
 
         after = demisto_params.get("after") or DEFAULT_FROM_FETCH_PARAMETER
 
-        # TEMPORARY (XSUP-72224): hardcoded first-fetch lookback for diagnosis. REMOVE LATER.
-        # Used only as the per-type fallback when a type has no last-run watermark.
-        after = "1 hour"
-        demisto.debug("MD: CUSTOM VERSION - using hardcoded first-fetch lookback: 1 hour")
-
         if after and not isinstance(after, int):
             demisto.debug(f"MD: Got after argument: {after}")
             timestamp = dateparser.parse(after)  # type: ignore
@@ -443,10 +439,6 @@ def main(command: str, demisto_params: dict):
             demisto.debug(f"MD: Parsed the after arg: {after}")
 
         options = IntegrationOptions.parse_obj(demisto_params)
-
-        # TEMPORARY (XSUP-72224): force limit to 3000 to speed up backlog drain. REMOVE LATER.
-        options.limit = 3000
-        demisto.debug("MD: CUSTOM VERSION - using hardcoded limit: 3000")
         request = DefenderHTTPRequest.parse_obj(demisto_params)
         authenticator = DefenderAuthenticator.parse_obj(demisto_params)
 
