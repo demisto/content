@@ -1676,14 +1676,14 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
 
-### gcp-kms-key-ring-list
+### gcp-kms-key-rings-list
 
 ***
 Lists the Cloud KMS key rings in a given location, or across all locations. Required Permissions: cloudkms.keyRings.list.
 
 #### Base Command
 
-`gcp-kms-key-ring-list`
+`gcp-kms-key-rings-list`
 
 #### Input
 
@@ -2035,9 +2035,11 @@ Returns the public key of a given asymmetric crypto key version. Required Permis
 | --- | --- | --- |
 | GCP.KMS.PublicKey.CryptoKey | String | The crypto key to which the public key belongs. |
 | GCP.KMS.PublicKey.CryptoKeyVersion | String | The resource name of the crypto key version. |
-| GCP.KMS.PublicKey.PEM | String | The public key in PEM format. |
-| GCP.KMS.PublicKey.Algorithm | String | The algorithm of the public key. |
-| GCP.KMS.PublicKey.FullResponse | Unknown | The full API response returned by the getPublicKey operation. |
+| GCP.KMS.PublicKey.pem | String | The public key in PEM format. |
+| GCP.KMS.PublicKey.pemCrc32c | String | The CRC32C checksum of the returned PEM public key. |
+| GCP.KMS.PublicKey.algorithm | String | The algorithm of the public key. |
+| GCP.KMS.PublicKey.name | String | The resource name of the crypto key version returned by the API. |
+| GCP.KMS.PublicKey.protectionLevel | String | The protection level of the crypto key version. |
 
 ### gcp-kms-symmetric-encrypt
 
@@ -2067,8 +2069,11 @@ Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.crypt
 | --- | --- | --- |
 | GCP.KMS.SymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
 | GCP.KMS.SymmetricEncrypt.ResourceName | String | The full resource name of the crypto key used for the encryption. |
-| GCP.KMS.SymmetricEncrypt.Ciphertext | String | The Base64-encoded encrypted ciphertext. |
-| GCP.KMS.SymmetricEncrypt.FullResponse | Unknown | The full API response returned by the encrypt operation. |
+| GCP.KMS.SymmetricEncrypt.ciphertext | String | The Base64-encoded encrypted ciphertext. |
+| GCP.KMS.SymmetricEncrypt.ciphertextCrc32c | String | The CRC32C checksum of the returned ciphertext. |
+| GCP.KMS.SymmetricEncrypt.verifiedPlaintextCrc32c | Boolean | Whether the API verified the CRC32C checksum of the supplied plaintext. |
+| GCP.KMS.SymmetricEncrypt.name | String | The resource name of the crypto key version used for the encryption. |
+| GCP.KMS.SymmetricEncrypt.protectionLevel | String | The protection level of the crypto key version used for the encryption. |
 
 ### gcp-kms-symmetric-decrypt
 
@@ -2129,7 +2134,10 @@ Encrypts data with the public key of an asymmetric crypto key version. The encry
 | GCP.KMS.AsymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
 | GCP.KMS.AsymmetricEncrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the encryption. |
 | GCP.KMS.AsymmetricEncrypt.Ciphertext | String | The Base64-encoded encrypted ciphertext. |
-| GCP.KMS.AsymmetricEncrypt.FullResponse | Unknown | The full API response of the public key used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.pem | String | The public key, in PEM format, that was used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.algorithm | String | The algorithm of the public key that was used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.name | String | The resource name of the crypto key version returned by the API. |
+| GCP.KMS.AsymmetricEncrypt.protectionLevel | String | The protection level of the crypto key version used for the encryption. |
 
 ### gcp-kms-asymmetric-decrypt
 
@@ -2159,4 +2167,6 @@ Decrypts data using an asymmetric crypto key version. Required Permissions: clou
 | GCP.KMS.AsymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
 | GCP.KMS.AsymmetricDecrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the decryption. |
 | GCP.KMS.AsymmetricDecrypt.Plaintext | String | The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
-| GCP.KMS.AsymmetricDecrypt.FullResponse | Unknown | The full API response returned by the decrypt operation. |
+| GCP.KMS.AsymmetricDecrypt.plaintextCrc32c | String | The CRC32C checksum of the returned plaintext. |
+| GCP.KMS.AsymmetricDecrypt.verifiedCiphertextCrc32c | Boolean | Whether the API verified the CRC32C checksum of the supplied ciphertext. |
+| GCP.KMS.AsymmetricDecrypt.protectionLevel | String | The protection level of the crypto key version used for the decryption. |

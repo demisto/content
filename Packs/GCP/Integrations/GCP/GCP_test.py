@@ -6691,14 +6691,14 @@ def _mock_kms_client(mocker):
     return kms_client, crypto_keys, crypto_key_versions, key_rings
 
 
-def test_kms_key_ring_list_success(mocker):
+def test_kms_key_rings_list_success(mocker):
     """
     Given: A project whose global location holds a single key ring.
-    When: kms_key_ring_list is called.
+    When: kms_key_rings_list is called.
     Then: The key rings are listed for the requested location and returned under GCP.KMS.KeyRings,
           normalized to the PascalCase context format.
     """
-    from GCP import kms_key_ring_list
+    from GCP import kms_key_rings_list
 
     _, _, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {
@@ -6711,7 +6711,7 @@ def test_kms_key_ring_list_success(mocker):
     }
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_ring_list(creds, {"project_id": "mock_project_id", "location": "global"})
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "location": "global"})
 
     key_rings.list.assert_called_once_with(parent="projects/mock_project_id/locations/global", pageSize=50)
     entry = result.outputs["GCP.KMS.KeyRings(val.ResourceName && val.ResourceName == obj.ResourceName)"][0]
@@ -6724,13 +6724,13 @@ def test_kms_key_ring_list_success(mocker):
     }
 
 
-def test_kms_key_ring_list_forwards_page_token_and_returns_next_token(mocker):
+def test_kms_key_rings_list_forwards_page_token_and_returns_next_token(mocker):
     """
     Given: A single-location request that supplies a page token and whose response is paginated.
-    When: kms_key_ring_list is called.
+    When: kms_key_rings_list is called.
     Then: The token is forwarded to the API and the next page token is returned in the context.
     """
-    from GCP import kms_key_ring_list
+    from GCP import kms_key_rings_list
 
     _, _, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {
@@ -6739,7 +6739,7 @@ def test_kms_key_ring_list_forwards_page_token_and_returns_next_token(mocker):
     }
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_ring_list(creds, {"project_id": "mock_project_id", "page_token": "prev_token", "limit": "10"})
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "page_token": "prev_token", "limit": "10"})
 
     key_rings.list.assert_called_once_with(
         parent="projects/mock_project_id/locations/global", pageSize=10, pageToken="prev_token"
@@ -6747,13 +6747,13 @@ def test_kms_key_ring_list_forwards_page_token_and_returns_next_token(mocker):
     assert result.outputs["GCP.KMS(true)"] == {"KeyRingsNextToken": "next_token"}
 
 
-def test_kms_key_ring_list_all_locations_ignores_page_token(mocker):
+def test_kms_key_rings_list_all_locations_ignores_page_token(mocker):
     """
     Given: The all_locations flag is enabled together with a page token.
-    When: kms_key_ring_list is called.
+    When: kms_key_rings_list is called.
     Then: The token is not forwarded, because a page token is only valid for the location that issued it.
     """
-    from GCP import kms_key_ring_list
+    from GCP import kms_key_rings_list
 
     _, _, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {
@@ -6762,19 +6762,19 @@ def test_kms_key_ring_list_all_locations_ignores_page_token(mocker):
     }
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_ring_list(creds, {"project_id": "mock_project_id", "all_locations": "true", "page_token": "prev_token"})
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "all_locations": "true", "page_token": "prev_token"})
 
     assert all("pageToken" not in call.kwargs for call in key_rings.list.call_args_list)
     assert "GCP.KMS(true)" not in result.outputs
 
 
-def test_kms_key_ring_list_all_locations_reports_truncation(mocker):
+def test_kms_key_rings_list_all_locations_reports_truncation(mocker):
     """
     Given: An all-locations sweep where a location returns more key rings than the limit.
-    When: kms_key_ring_list is called.
+    When: kms_key_rings_list is called.
     Then: The omission is surfaced in the output, since the page token cannot be forwarded.
     """
-    from GCP import kms_key_ring_list
+    from GCP import kms_key_rings_list
 
     _, _, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {
@@ -6783,18 +6783,18 @@ def test_kms_key_ring_list_all_locations_reports_truncation(mocker):
     }
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_ring_list(creds, {"project_id": "mock_project_id", "all_locations": "true", "limit": "1"})
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "all_locations": "true", "limit": "1"})
 
     assert "Some results were omitted" in result.readable_output
 
 
-def test_kms_key_ring_list_all_locations_no_truncation_notice_when_complete(mocker):
+def test_kms_key_rings_list_all_locations_no_truncation_notice_when_complete(mocker):
     """
     Given: An all-locations sweep where no location returns a next page token.
-    When: kms_key_ring_list is called.
+    When: kms_key_rings_list is called.
     Then: No truncation notice is shown.
     """
-    from GCP import kms_key_ring_list
+    from GCP import kms_key_rings_list
 
     _, _, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {
@@ -6802,53 +6802,53 @@ def test_kms_key_ring_list_all_locations_no_truncation_notice_when_complete(mock
     }
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_ring_list(creds, {"project_id": "mock_project_id", "all_locations": "true"})
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "all_locations": "true"})
 
     assert "Some results were omitted" not in result.readable_output
 
 
-def test_kms_key_ring_list_all_locations_sweeps_every_location(mocker):
+def test_kms_key_rings_list_all_locations_sweeps_every_location(mocker):
     """
     Given: The all_locations flag is enabled.
-    When: kms_key_ring_list is called.
+    When: kms_key_rings_list is called.
     Then: Every supported KMS location is queried instead of only the requested one.
     """
-    from GCP import KMS_ALL_LOCATIONS, kms_key_ring_list
+    from GCP import KMS_ALL_LOCATIONS, kms_key_rings_list
 
     _, _, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {"keyRings": []}
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_ring_list(creds, {"project_id": "mock_project_id", "all_locations": "true"})
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "all_locations": "true"})
 
     assert key_rings.list.call_count == len(KMS_ALL_LOCATIONS)
     assert result.readable_output == "No KMS key rings found."
 
 
-def test_kms_key_ring_list_no_results(mocker):
+def test_kms_key_rings_list_no_results(mocker):
     """
     Given: A location that holds no key rings.
-    When: kms_key_ring_list is called.
+    When: kms_key_rings_list is called.
     Then: A no-results message is returned instead of an empty table.
     """
-    from GCP import kms_key_ring_list
+    from GCP import kms_key_rings_list
 
     _, _, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {}
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_ring_list(creds, {"project_id": "mock_project_id"})
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id"})
 
     assert result.readable_output == "No KMS key rings found."
 
 
-def test_kms_key_list_success_with_filter_and_paging(mocker):
+def test_kms_keys_list_success_with_filter_and_paging(mocker):
     """
     Given: A key ring holding one enabled crypto key and a next page token.
-    When: kms_key_list is called with a key_state filter and a page token.
+    When: kms_keys_list is called with a key_state filter and a page token.
     Then: The filter and token reach the API and the next page token is exposed in the outputs.
     """
-    from GCP import kms_key_list
+    from GCP import kms_keys_list
 
     _, crypto_keys, _, _ = _mock_kms_client(mocker)
     crypto_keys.list.return_value.execute.return_value = {
@@ -6870,7 +6870,7 @@ def test_kms_key_list_success_with_filter_and_paging(mocker):
         "key_state": "ENABLED",
         "page_token": "mock_page_token",
     }
-    result = kms_key_list(creds, args)
+    result = kms_keys_list(creds, args)
 
     crypto_keys.list.assert_called_once_with(
         parent="projects/mock_project_id/locations/global/keyRings/mock_key_ring",
@@ -6884,46 +6884,46 @@ def test_kms_key_list_success_with_filter_and_paging(mocker):
     assert result.outputs["GCP.KMS(true)"]["CryptoKeysNextToken"] == "mock_next_page_token"
 
 
-def test_kms_key_list_no_results(mocker):
+def test_kms_keys_list_no_results(mocker):
     """
     Given: A key ring that holds no crypto keys.
-    When: kms_key_list is called.
+    When: kms_keys_list is called.
     Then: A no-results message is returned.
     """
-    from GCP import kms_key_list
+    from GCP import kms_keys_list
 
     _, crypto_keys, _, _ = _mock_kms_client(mocker)
     crypto_keys.list.return_value.execute.return_value = {}
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_list(creds, {"project_id": "mock_project_id", "key_ring": "mock_key_ring"})
+    result = kms_keys_list(creds, {"project_id": "mock_project_id", "key_ring": "mock_key_ring"})
 
     assert result.readable_output == "No KMS crypto keys found."
 
 
-def test_kms_key_list_invalid_limit_raises(mocker):
+def test_kms_keys_list_invalid_limit_raises(mocker):
     """
     Given: A limit above the accepted range.
-    When: kms_key_list is called.
+    When: kms_keys_list is called.
     Then: A DemistoException is raised by the shared limit validation.
     """
     from CommonServerPython import DemistoException
-    from GCP import kms_key_list
+    from GCP import kms_keys_list
 
     _mock_kms_client(mocker)
     creds = mocker.MagicMock(spec=Credentials)
 
     with pytest.raises(DemistoException, match="acceptable values of the argument limit"):
-        kms_key_list(creds, {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "limit": "501"})
+        kms_keys_list(creds, {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "limit": "501"})
 
 
-def test_kms_key_list_all_walks_key_rings(mocker):
+def test_kms_keys_list_all_walks_key_rings(mocker):
     """
     Given: A location holding one key ring with one crypto key.
-    When: kms_key_list_all is called.
+    When: kms_keys_list_all is called.
     Then: The key ring is enumerated and its crypto keys are attributed to that key ring.
     """
-    from GCP import kms_key_list_all
+    from GCP import kms_keys_list_all
 
     _, crypto_keys, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {
@@ -6939,21 +6939,21 @@ def test_kms_key_list_all_walks_key_rings(mocker):
     }
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
+    result = kms_keys_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
 
     assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
     assert result.outputs[0]["KeyRing"] == "mock_key_ring"
     assert result.outputs[0]["Name"] == "mock_crypto_key"
 
 
-def test_kms_key_list_all_reports_truncation(mocker):
+def test_kms_keys_list_all_reports_truncation(mocker):
     """
     Given: A key ring whose crypto key listing is paginated, so results are incomplete.
-    When: kms_key_list_all is called.
+    When: kms_keys_list_all is called.
     Then: The readable output warns that results were omitted, because this aggregated
           command cannot expose a single usable page token.
     """
-    from GCP import kms_key_list_all
+    from GCP import kms_keys_list_all
 
     _, crypto_keys, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {
@@ -6965,19 +6965,19 @@ def test_kms_key_list_all_reports_truncation(mocker):
     }
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
+    result = kms_keys_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
 
     assert "Some results were omitted" in result.readable_output
     assert "gcp-kms-keys-list" in result.readable_output
 
 
-def test_kms_key_list_all_no_truncation_notice_when_complete(mocker):
+def test_kms_keys_list_all_no_truncation_notice_when_complete(mocker):
     """
     Given: A key ring whose crypto key listing fits in a single page.
-    When: kms_key_list_all is called.
+    When: kms_keys_list_all is called.
     Then: No truncation notice is shown.
     """
-    from GCP import kms_key_list_all
+    from GCP import kms_keys_list_all
 
     _, crypto_keys, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {
@@ -6988,24 +6988,24 @@ def test_kms_key_list_all_no_truncation_notice_when_complete(mocker):
     }
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
+    result = kms_keys_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
 
     assert "Some results were omitted" not in result.readable_output
 
 
-def test_kms_key_list_all_no_results(mocker):
+def test_kms_keys_list_all_no_results(mocker):
     """
     Given: A location that holds no key rings at all.
-    When: kms_key_list_all is called.
+    When: kms_keys_list_all is called.
     Then: A no-results message is returned.
     """
-    from GCP import kms_key_list_all
+    from GCP import kms_keys_list_all
 
     _, _, _, key_rings = _mock_kms_client(mocker)
     key_rings.list.return_value.execute.return_value = {}
 
     creds = mocker.MagicMock(spec=Credentials)
-    result = kms_key_list_all(creds, {"project_id": "mock_project_id"})
+    result = kms_keys_list_all(creds, {"project_id": "mock_project_id"})
 
     assert result.readable_output == "No KMS crypto keys found."
 
@@ -7511,21 +7511,17 @@ def test_kms_public_key_get_success(mocker):
 
     crypto_key_versions.getPublicKey.assert_called_once_with(name=version_name)
     assert result.outputs_prefix == "GCP.KMS.PublicKey"
-    assert result.outputs["Algorithm"] == "RSA_DECRYPT_OAEP_2048_SHA256"
-    assert result.outputs["PEM"] == "-----BEGIN PUBLIC KEY-----\nmock\n-----END PUBLIC KEY-----\n"
+    assert result.outputs["algorithm"] == "RSA_DECRYPT_OAEP_2048_SHA256"
+    assert result.outputs["pem"] == "-----BEGIN PUBLIC KEY-----\nmock\n-----END PUBLIC KEY-----\n"
     assert result.outputs["CryptoKey"] == "mock_asym_key"
     assert result.outputs["CryptoKeyVersion"] == version_name
-    assert result.outputs["FullResponse"] == {
-        "pem": "-----BEGIN PUBLIC KEY-----\nmock\n-----END PUBLIC KEY-----\n",
-        "algorithm": "RSA_DECRYPT_OAEP_2048_SHA256",
-    }
 
 
 def test_kms_public_key_get_empty_response(mocker):
     """
     Given: The API returns an empty public key response.
     When: kms_public_key_get is called.
-    Then: The curated PEM/Algorithm fields are None and the empty response is surfaced as the full response.
+    Then: Only the command-derived fields are returned, since the API response carries no key material.
     """
     from GCP import kms_public_key_get
 
@@ -7542,10 +7538,9 @@ def test_kms_public_key_get_empty_response(mocker):
     result = kms_public_key_get(creds, args)
 
     assert result.outputs_prefix == "GCP.KMS.PublicKey"
-    assert result.outputs["PEM"] is None
-    assert result.outputs["Algorithm"] is None
+    assert "pem" not in result.outputs
+    assert "algorithm" not in result.outputs
     assert result.outputs["CryptoKey"] == "mock_asym_key"
-    assert result.outputs["FullResponse"] == {}
 
 
 def test_kms_symmetric_encrypt_plaintext(mocker):
@@ -7577,7 +7572,11 @@ def test_kms_symmetric_encrypt_plaintext(mocker):
     assert call_kwargs["body"]["plaintext"] == base64.b64encode(b"mock secret").decode()
     assert call_kwargs["body"]["additionalAuthenticatedData"] == "bW9ja19hYWQ="
     assert result.outputs_prefix == "GCP.KMS.SymmetricEncrypt"
-    assert result.outputs["Ciphertext"] == "bW9ja19jaXBoZXI="
+    assert result.outputs["ciphertext"] == "bW9ja19jaXBoZXI="
+    assert result.outputs["CryptoKey"] == "mock_crypto_key"
+    assert result.outputs["ResourceName"] == (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key"
+    )
 
 
 def test_kms_symmetric_encrypt_base64_plaintext_is_decoded_first(mocker):

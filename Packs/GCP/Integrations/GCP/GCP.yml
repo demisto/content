@@ -2051,7 +2051,7 @@ script:
       - contextPath: GCP.BigQuery.Datasets.catalogSource
         description: The origin of the dataset.
         type: String
-  - name: gcp-kms-key-ring-list
+  - name: gcp-kms-key-rings-list
     description: "Lists the Cloud KMS key rings in a given location, or across all locations. Required Permissions: cloudkms.keyRings.list."
     arguments:
     - name: project_id
@@ -2662,15 +2662,21 @@ script:
       - contextPath: GCP.KMS.PublicKey.CryptoKeyVersion
         description: The resource name of the crypto key version.
         type: String
-      - contextPath: GCP.KMS.PublicKey.PEM
+      - contextPath: GCP.KMS.PublicKey.pem
         description: The public key in PEM format.
         type: String
-      - contextPath: GCP.KMS.PublicKey.Algorithm
+      - contextPath: GCP.KMS.PublicKey.pemCrc32c
+        description: The CRC32C checksum of the returned PEM public key.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.algorithm
         description: The algorithm of the public key.
         type: String
-      - contextPath: GCP.KMS.PublicKey.FullResponse
-        description: The full API response returned by the getPublicKey operation.
-        type: Unknown
+      - contextPath: GCP.KMS.PublicKey.name
+        description: The resource name of the crypto key version returned by the API.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.protectionLevel
+        description: The protection level of the crypto key version.
+        type: String
   - name: gcp-kms-symmetric-encrypt
     description: "Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToEncrypt."
     arguments:
@@ -2709,12 +2715,21 @@ script:
       - contextPath: GCP.KMS.SymmetricEncrypt.ResourceName
         description: The full resource name of the crypto key used for the encryption.
         type: String
-      - contextPath: GCP.KMS.SymmetricEncrypt.Ciphertext
+      - contextPath: GCP.KMS.SymmetricEncrypt.ciphertext
         description: The Base64-encoded encrypted ciphertext.
         type: String
-      - contextPath: GCP.KMS.SymmetricEncrypt.FullResponse
-        description: The full API response returned by the encrypt operation.
-        type: Unknown
+      - contextPath: GCP.KMS.SymmetricEncrypt.ciphertextCrc32c
+        description: The CRC32C checksum of the returned ciphertext.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.verifiedPlaintextCrc32c
+        description: Whether the API verified the CRC32C checksum of the supplied plaintext.
+        type: Boolean
+      - contextPath: GCP.KMS.SymmetricEncrypt.name
+        description: The resource name of the crypto key version used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.protectionLevel
+        description: The protection level of the crypto key version used for the encryption.
+        type: String
   - name: gcp-kms-symmetric-decrypt
     description: "Decrypts data that was encrypted with a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
     arguments:
@@ -2797,9 +2812,18 @@ script:
       - contextPath: GCP.KMS.AsymmetricEncrypt.Ciphertext
         description: The Base64-encoded encrypted ciphertext.
         type: String
-      - contextPath: GCP.KMS.AsymmetricEncrypt.FullResponse
-        description: The full API response of the public key used for the encryption.
-        type: Unknown
+      - contextPath: GCP.KMS.AsymmetricEncrypt.pem
+        description: The public key, in PEM format, that was used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.algorithm
+        description: The algorithm of the public key that was used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.name
+        description: The resource name of the crypto key version returned by the API.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.protectionLevel
+        description: The protection level of the crypto key version used for the encryption.
+        type: String
   - name: gcp-kms-asymmetric-decrypt
     description: "Decrypts data using an asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
     arguments:
@@ -2838,9 +2862,15 @@ script:
       - contextPath: GCP.KMS.AsymmetricDecrypt.Plaintext
         description: The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
         type: String
-      - contextPath: GCP.KMS.AsymmetricDecrypt.FullResponse
-        description: The full API response returned by the decrypt operation.
-        type: Unknown
+      - contextPath: GCP.KMS.AsymmetricDecrypt.plaintextCrc32c
+        description: The CRC32C checksum of the returned plaintext.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.verifiedCiphertextCrc32c
+        description: Whether the API verified the CRC32C checksum of the supplied ciphertext.
+        type: Boolean
+      - contextPath: GCP.KMS.AsymmetricDecrypt.protectionLevel
+        description: The protection level of the crypto key version used for the decryption.
+        type: String
 
 # The command is currently unsupported.
 #  - name: gcp-iam-project-deny-policy-create

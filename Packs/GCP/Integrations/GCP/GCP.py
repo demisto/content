@@ -32,6 +32,7 @@ KMS_KEY_TABLE = [
 # https://docs.cloud.google.com/kms/docs/locations.
 KMS_ALL_LOCATIONS = [
     "global",
+    "nam-eur-asia1",
     # Americas
     "ca",
     "nam3",
@@ -72,6 +73,8 @@ KMS_ALL_LOCATIONS = [
     "asia-southeast2",
     "australia-southeast1",
     "australia-southeast2",
+    "au",
+    "in",
     # Europe, Middle East, and Africa
     "africa-south1",
     "eur3",
@@ -94,7 +97,9 @@ KMS_ALL_LOCATIONS = [
     "europe-west9",
     "europe-west10",
     "europe-west12",
-    "me-central1",
+    "me-west1",
+    "de",
+    "it",
     "me-central2",
     "me-west1",
 ]
@@ -422,7 +427,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     ),
     # KMS commands
-    "gcp-kms-key-ring-list": (GCPServices.KMS, ["cloudkms.keyRings.list"]),
+    "gcp-kms-key-rings-list": (GCPServices.KMS, ["cloudkms.keyRings.list"]),
     "gcp-kms-keys-list": (GCPServices.KMS, ["cloudkms.cryptoKeys.list"]),
     "gcp-kms-keys-list-all": (GCPServices.KMS, ["cloudkms.keyRings.list", "cloudkms.cryptoKeys.list"]),
     "gcp-kms-key-get": (GCPServices.KMS, ["cloudkms.cryptoKeys.get"]),
@@ -2781,7 +2786,7 @@ def _kms_set_key_version_state(
     )
 
 
-def kms_key_ring_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def kms_key_rings_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """Lists the KeyRings available in a location, or across every location.
 
     Args:
@@ -2814,7 +2819,7 @@ def kms_key_ring_list(creds: Credentials, args: dict[str, Any]) -> CommandResult
             "pageToken": None if all_locations else page_token,
         }
         remove_nulls_from_dictionary(request_params)
-        demisto.debug(f"[GCP: kms_key_ring_list] Request params: {request_params}")
+        demisto.debug(f"[GCP: kms_key_rings_list] Request params: {request_params}")
         response = kms_client.projects().locations().keyRings().list(**request_params).execute()  # pylint: disable=E1101
         key_rings.extend(_kms_key_ring_to_context(key_ring, project_id, location) for key_ring in response.get("keyRings", []))
         if all_locations:
@@ -2824,7 +2829,7 @@ def kms_key_ring_list(creds: Credentials, args: dict[str, Any]) -> CommandResult
         else:
             next_page_token = response.get("nextPageToken")
 
-    demisto.debug(f"[GCP: kms_key_ring_list] KeyRings returned: {len(key_rings)}, truncated: {truncated}")
+    demisto.debug(f"[GCP: kms_key_rings_list] KeyRings returned: {len(key_rings)}, truncated: {truncated}")
 
     if not key_rings:
         return CommandResults(readable_output="No KMS key rings found.")
@@ -2854,7 +2859,7 @@ def kms_key_ring_list(creds: Credentials, args: dict[str, Any]) -> CommandResult
     return CommandResults(readable_output=hr, outputs=remove_empty_elements(outputs), raw_response=key_rings)
 
 
-def kms_key_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def kms_keys_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """Lists the CryptoKeys of a single KeyRing.
 
     Args:
@@ -2881,7 +2886,7 @@ def kms_key_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
         "pageToken": args.get("page_token"),
     }
     remove_nulls_from_dictionary(request_params)
-    demisto.debug(f"[GCP: kms_key_list] Request params: {request_params}")
+    demisto.debug(f"[GCP: kms_keys_list] Request params: {request_params}")
 
     kms_client = GCPServices.KMS.build(creds)
     response = (
@@ -2889,7 +2894,7 @@ def kms_key_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     )
 
     keys = [_kms_key_to_context(key, project_id, location, key_ring) for key in response.get("cryptoKeys", [])]
-    demisto.debug(f"[GCP: kms_key_list] CryptoKeys returned: {len(keys)}")
+    demisto.debug(f"[GCP: kms_keys_list] CryptoKeys returned: {len(keys)}")
 
     if not keys:
         return CommandResults(readable_output="No KMS crypto keys found.")
@@ -2904,7 +2909,7 @@ def kms_key_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     return CommandResults(readable_output=hr, outputs=remove_empty_elements(outputs), raw_response=response)
 
 
-def kms_key_list_all(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def kms_keys_list_all(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """Lists every CryptoKey across all KeyRings in a location, or across every location.
 
     Args:
@@ -2954,7 +2959,7 @@ def kms_key_list_all(creds: Credentials, args: dict[str, Any]) -> CommandResults
                 _kms_key_to_context(key, project_id, location, key_ring_id) for key in keys_response.get("cryptoKeys", [])
             )
 
-    demisto.debug(f"[GCP: kms_key_list_all] CryptoKeys returned: {len(keys)}, truncated: {truncated}")
+    demisto.debug(f"[GCP: kms_keys_list_all] CryptoKeys returned: {len(keys)}, truncated: {truncated}")
 
     if not keys:
         return CommandResults(readable_output="No KMS crypto keys found.")
@@ -3313,19 +3318,14 @@ def kms_public_key_get(creds: Credentials, args: dict[str, Any]) -> CommandResul
         .execute()
     )
 
-    public_key_context = {
-        "CryptoKey": crypto_key,
-        "CryptoKeyVersion": version_name,
-        "PEM": response.get("pem"),
-        "Algorithm": response.get("algorithm"),
-        "FullResponse": response,
-    }
+    response["CryptoKey"] = crypto_key
+    response["CryptoKeyVersion"] = version_name
 
     return CommandResults(
         readable_output=f"The public key of CryptoKey {crypto_key} is:\n{response.get('pem')}",
         outputs_prefix="GCP.KMS.PublicKey",
         outputs_key_field="CryptoKeyVersion",
-        outputs=public_key_context,
+        outputs=response,
         raw_response=response,
     )
 
@@ -3368,18 +3368,14 @@ def kms_symmetric_encrypt(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
 
     ciphertext = response.get("ciphertext", "")
-    encrypt_context = {
-        "CryptoKey": crypto_key,
-        "ResourceName": key_name,
-        "Ciphertext": ciphertext,
-        "FullResponse": response,
-    }
+    response["CryptoKey"] = crypto_key
+    response["ResourceName"] = key_name
 
     return CommandResults(
         readable_output=f"The text has been encrypted.\nCiphertext: {ciphertext}",
         outputs_prefix="GCP.KMS.SymmetricEncrypt",
         outputs_key_field="Ciphertext",
-        outputs=encrypt_context,
+        outputs=response,
         raw_response=response,
     )
 
@@ -3503,18 +3499,15 @@ def kms_asymmetric_encrypt(creds: Credentials, args: dict[str, Any]) -> CommandR
     pad = padding.OAEP(mgf=padding.MGF1(algorithm=hash_algorithm), algorithm=hash_algorithm, label=None)
     ciphertext = base64.b64encode(public_key.encrypt(plaintext, pad)).decode()  # type: ignore[union-attr]
 
-    encrypt_context = {
-        "CryptoKey": crypto_key,
-        "CryptoKeyVersion": version_name,
-        "Ciphertext": ciphertext,
-        "FullResponse": response,
-    }
+    response["CryptoKey"] = crypto_key
+    response["CryptoKeyVersion"] = version_name
+    response["Ciphertext"] = ciphertext
 
     return CommandResults(
         readable_output=f"The text has been encrypted.\nCiphertext: {ciphertext}",
         outputs_prefix="GCP.KMS.AsymmetricEncrypt",
         outputs_key_field="Ciphertext",
-        outputs=encrypt_context,
+        outputs=response,
         raw_response=response,
     )
 
@@ -3557,12 +3550,9 @@ def kms_asymmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandR
 
     raw_plaintext = base64.b64decode(response.get("plaintext", ""))
     plaintext = _kms_decode_plaintext(raw_plaintext)
-    decrypt_context = {
-        "CryptoKey": crypto_key,
-        "CryptoKeyVersion": version_name,
-        "Plaintext": plaintext,
-        "FullResponse": response,
-    }
+    response["CryptoKey"] = crypto_key
+    response["CryptoKeyVersion"] = version_name
+    response["Plaintext"] = plaintext
 
     if plaintext is None:
         # The payload is binary, so it is returned as a file to keep the bytes intact.
@@ -3572,7 +3562,7 @@ def kms_asymmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandR
                 readable_output=f"The data has been decrypted and returned as the file {file_name}.",
                 outputs_prefix="GCP.KMS.AsymmetricDecrypt",
                 outputs_key_field="CryptoKeyVersion",
-                outputs=remove_empty_elements(decrypt_context),
+                outputs=remove_empty_elements(response),
                 raw_response=response,
             ),
             fileResult(file_name, raw_plaintext),
@@ -3582,7 +3572,7 @@ def kms_asymmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandR
         readable_output="The text has been decrypted.",
         outputs_prefix="GCP.KMS.AsymmetricDecrypt",
         outputs_key_field="CryptoKeyVersion",
-        outputs=decrypt_context,
+        outputs=response,
         raw_response=response,
     )
 
@@ -4197,9 +4187,9 @@ def main():  # pragma: no cover
             # BigQuery commands
             "gcp-bq-dataset-policy-remove": bq_dataset_policy_remove_command,
             # KMS commands
-            "gcp-kms-key-ring-list": kms_key_ring_list,
-            "gcp-kms-keys-list": kms_key_list,
-            "gcp-kms-keys-list-all": kms_key_list_all,
+            "gcp-kms-key-rings-list": kms_key_rings_list,
+            "gcp-kms-keys-list": kms_keys_list,
+            "gcp-kms-keys-list-all": kms_keys_list_all,
             "gcp-kms-key-get": kms_key_get,
             "gcp-kms-key-create": kms_key_create,
             "gcp-kms-key-update": kms_key_update,
