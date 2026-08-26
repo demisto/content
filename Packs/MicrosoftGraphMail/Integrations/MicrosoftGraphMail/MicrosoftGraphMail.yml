@@ -124,6 +124,16 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ID or Client ID
   name: _auth_id
   type: 0

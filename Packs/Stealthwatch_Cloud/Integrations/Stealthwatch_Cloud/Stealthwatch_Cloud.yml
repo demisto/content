@@ -52,6 +52,16 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 description: Protect your cloud assets and private network.
 display: Cisco Secure Cloud Analytics (Stealthwatch Cloud)
 name: Stealthwatch Cloud
