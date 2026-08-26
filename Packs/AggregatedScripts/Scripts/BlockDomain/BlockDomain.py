@@ -340,7 +340,8 @@ class PanOs:
         """
         if not self.tag:
             return
-        res = run_execute_command("pan-os-create-tag", {"name": self.tag})
+        command_name = "pan-os-create-tag"
+        res = run_execute_command(command_name, {"name": self.tag})
         self.responses.append(res)
         if is_error(res):
             # An already-existing tag is the common, benign case; log and continue.
@@ -389,7 +390,8 @@ class PanOs:
             A tuple of (exists, current_tags). current_tags is empty when the object is absent or
             has no tags.
         """
-        res = run_execute_command("pan-os-get-address", {"name": object_name})
+        command_name = "pan-os-get-address"
+        res = run_execute_command(command_name, {"name": object_name})
         # pan-os-get-address raises when the object is absent; treat that as 'does not exist'.
         if is_error(res):
             return False, []
@@ -678,7 +680,8 @@ class PanOs:
         Returns:
             True if the instance model is 'Panorama', False otherwise.
         """
-        res = run_execute_command("pan-os", {"cmd": "<show><system><info></info></system></show>", "type": "op"})
+        command_name = "pan-os"
+        res = run_execute_command(command_name, {"cmd": "<show><system><info></info></system></show>", "type": "op"})
         self.responses.append(res)
         context = get_relevant_context(res[0].get("EntryContext", {}), "Panorama.Command")
         model = context.get("response", {}).get("result", {}).get("system", {}).get("model", "")  # type: ignore
@@ -858,7 +861,8 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
     Returns:
         The PollResult object.
     """
-    res_commit = run_execute_command("pan-os-commit", {"polling": True})
+    command_name = "pan-os-commit"
+    res_commit = run_execute_command(command_name, {"polling": True})
     polling_args = res_commit[0].get("Metadata", {}).get("pollingArgs", {})
     job_id = polling_args.get("commit_job_id")
     if job_id:
@@ -901,7 +905,8 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     """
     global POLLING
     commit_job_id = args["commit_job_id"]
-    res_commit_status = run_execute_command("pan-os-commit-status", {"job_id": commit_job_id})
+    command_name = "pan-os-commit-status"
+    res_commit_status = run_execute_command(command_name, {"job_id": commit_job_id})
     responses.append(res_commit_status)
     # When pan-os-commit-status errors, Contents is a plain string instead of the nested dict.
     # Treat as a terminal failure to avoid a `.get()` crash on a string.
@@ -944,7 +949,8 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
     Returns:
         The PollResult object.
     """
-    res_push_to_device = run_execute_command("pan-os-push-to-device-group", {"polling": True})
+    command_name = "pan-os-push-to-device-group"
+    res_push_to_device = run_execute_command(command_name, {"polling": True})
     responses.append(res_push_to_device)
     polling_args = res_push_to_device[0].get("Metadata", {}).get("pollingArgs", {})
     job_id = polling_args.get("push_job_id")
@@ -982,7 +988,8 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
     """
     global POLLING
     push_job_id = args["push_job_id"]
-    res_push_status = run_execute_command("pan-os-push-status", {"job_id": push_job_id})
+    command_name = "pan-os-push-status"
+    res_push_status = run_execute_command(command_name, {"job_id": push_job_id})
     responses.append(res_push_status)
     # When pan-os-push-status errors, Contents is a plain string instead of the nested dict.
     # Treat as a terminal failure to avoid a `.get()` crash on a string (mirrors pan_os_commit_status).
