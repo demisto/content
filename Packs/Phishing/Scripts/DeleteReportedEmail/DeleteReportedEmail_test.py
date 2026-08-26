@@ -222,7 +222,15 @@ class TestMicrosoftGraphSecurityDeleteMail:
 
         def execute_command_mock(cmd, args):
             if cmd == "msg-list-case-operation":
-                return [{"action": "estimateStatistics", "search": {"id": "search-456"}, "status": "succeeded", "indexedItemCount": 1, "totalItemCount": 0}]
+                return [
+                    {
+                        "action": "estimateStatistics",
+                        "search": {"id": "search-456"},
+                        "status": "succeeded",
+                        "indexedItemCount": 1,
+                        "totalItemCount": 0,
+                    }
+                ]
             return []
 
         mock_execute.side_effect = execute_command_mock
@@ -246,7 +254,15 @@ class TestMicrosoftGraphSecurityDeleteMail:
 
         def execute_command_mock(cmd, args):
             if cmd == "msg-list-case-operation":
-                return [{"action": "estimateStatistics", "search": {"id": "search-456"}, "status": "succeeded", "indexedItemCount": 0, "totalItemCount": 0}]
+                return [
+                    {
+                        "action": "estimateStatistics",
+                        "search": {"id": "search-456"},
+                        "status": "succeeded",
+                        "indexedItemCount": 0,
+                        "totalItemCount": 0,
+                    }
+                ]
             return []
 
         mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=execute_command_mock)
@@ -286,6 +302,7 @@ ADDED_SEARCH_ARGS = {
     "SecurityAndComplianceV2": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
     "Microsoft Graph": {"to_user_id": "reportedemailto"},
 }
+
 
 @pytest.mark.parametrize(
     "brand",

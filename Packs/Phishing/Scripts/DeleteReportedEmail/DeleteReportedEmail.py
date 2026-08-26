@@ -220,7 +220,9 @@ def msg_resolve_case(using_brand: str, case_name: str) -> str | None:
     return new_case_id
 
 
-def microsoft_graph_security_delete_mail(args: dict, message_id: str, using_brand: str, delete_type: str, **kwargs) -> tuple[str, ScheduledCommand | None]:
+def microsoft_graph_security_delete_mail(
+    args: dict, message_id: str, using_brand: str, delete_type: str, **kwargs
+) -> tuple[str, ScheduledCommand | None]:
     """
     Delete an email using the Microsoft Graph eDiscovery flow, with polling between the search and the purge.
 
@@ -257,7 +259,7 @@ def microsoft_graph_security_delete_mail(args: dict, message_id: str, using_bran
         case_id = msg_resolve_case(using_brand, case_name)
         if not case_id:
             raise DemistoException("Failed to resolve or create an eDiscovery case. case_id is missing.")
-            
+
         kql_query = f'Identifier:"{message_id}"'
         search_name = f"delete_search_{int(time.time())}"
 
@@ -292,9 +294,7 @@ def microsoft_graph_security_delete_mail(args: dict, message_id: str, using_bran
     # ==========================================
     demisto.debug("Polling run detected. Checking estimate statistics status via case operations...")
     # Script-only workaround: read raw status via msg-list-case-operation to handle partiallySucceeded
-    status_res = execute_command(
-        "msg-list-case-operation", {"using-brand": using_brand, "case_id": case_id}
-    )
+    status_res = execute_command("msg-list-case-operation", {"using-brand": using_brand, "case_id": case_id})
 
     status_objs = _extract_graph_objects(status_res)
     raw_status = {}
@@ -329,7 +329,7 @@ def microsoft_graph_security_delete_mail(args: dict, message_id: str, using_bran
 
     purge_type = "permanentlyDelete" if delete_type == "hard" else "recoverable"
     demisto.debug(f"Items found! Triggering msg-purge-ediscovery-data with purge_type '{purge_type}'.")
-    
+
     try:
         execute_command(
             "msg-purge-ediscovery-data",
