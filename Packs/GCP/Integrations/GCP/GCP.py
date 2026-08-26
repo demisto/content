@@ -646,6 +646,39 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
                     raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
 
 
+def _merge_bucket_objects(bucket_name: str, new_objects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Merges newly fetched objects into the objects already stored in the context for the given bucket.
+
+    Objects are identified by their name: an object that already exists in the context is replaced in place,
+    while a new object is appended to the end of the list.
+
+    Args:
+        bucket_name (str): The name of the bucket the objects belong to.
+        new_objects (list[dict[str, Any]]): The objects returned by the current API call.
+
+    Returns:
+        list[dict[str, Any]]: The merged list of objects for the bucket.
+    """
+    existing_buckets = demisto.get(demisto.context(), "GCP.Storage.Buckets") or []
+    if isinstance(existing_buckets, dict):
+        existing_buckets = [existing_buckets]
+
+    merged_objects: dict[str, dict[str, Any]] = {}
+    for bucket in existing_buckets:
+        if isinstance(bucket, dict) and bucket.get("name") == bucket_name:
+            for obj in bucket.get("Objects") or []:
+                if isinstance(obj, dict) and obj.get("name"):
+                    merged_objects[obj["name"]] = obj
+
+    for obj in new_objects:
+        if obj.get("name"):
+            merged_objects[obj["name"]] = obj
+
+    demisto.debug(f"[GCP: _merge_bucket_objects] Objects in context after merge: {len(merged_objects)}")
+    return list(merged_objects.values())
+
+
 ##########
 
 
@@ -1104,7 +1137,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
 
     Returns:
         CommandResults: Human-readable table of applied ACL entries and machine outputs under
-        'GCP.Storage.Bucket.ObjectPolicy'.
+        'GCP.Storage.BucketObjectPolicy'.
     """
     bucket_name = args.get("bucket_name", "")
     object_name = args.get("object_name", "")
@@ -1937,7 +1970,7 @@ def storage_bucket_create(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.Bucket",
+        outputs_prefix="GCP.Storage.Buckets",
         outputs=response,
         outputs_key_field=["name", "id"],
         raw_response=response,
@@ -1997,7 +2030,7 @@ def storage_bucket_public_access_block(creds: Credentials, args: dict[str, Any])
 
     return CommandResults(
         readable_output=f"Public access prevention is set to {public_access_prevention} for {bucket_name}.",
-        outputs_prefix="GCP.Storage.Bucket",
+        outputs_prefix="GCP.Storage.Buckets",
         outputs=response,
         outputs_key_field=["name", "id"],
         raw_response=response,
@@ -2044,11 +2077,16 @@ def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> Co
     demisto.debug(f"[GCP: storage_bucket_object_upload] Uploading {file_name} to bucket {bucket_name} as {object_name}")
     response = storage.objects().insert(**request_params).execute()  # pylint: disable=E1101
 
+    outputs = {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": bucket_name,
+            "Objects": _merge_bucket_objects(bucket_name, [response]),
+        }
+    }
+
     return CommandResults(
         readable_output=f"File {file_name} was successfully uploaded to bucket {bucket_name} as {object_name}.",
-        outputs_prefix="GCP.Storage.BucketObject",
-        outputs=response,
-        outputs_key_field="id",
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -2133,11 +2171,16 @@ def storage_bucket_object_copy(creds: Credentials, args: dict[str, Any]) -> Comm
         .execute()
     )
 
+    outputs = {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": destination_bucket_name,
+            "Objects": _merge_bucket_objects(destination_bucket_name, [response]),
+        }
+    }
+
     return CommandResults(
         readable_output=(f"File was successfully copied to bucket {destination_bucket_name} as {destination_object_name}."),
-        outputs_prefix="GCP.Storage.BucketObject",
-        outputs=response,
-        outputs_key_field="id",
+        outputs=outputs,
         raw_response=response,
     )
 

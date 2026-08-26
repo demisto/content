@@ -1453,145 +1453,145 @@ script:
       - "false"
       description: Whether to enable Uniform Bucket-Level Access (UBLA) on the bucket.
     outputs:
-    - contextPath: GCP.Storage.Bucket.id
+    - contextPath: GCP.Storage.Buckets.id
       description: The unique identifier for the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.name
+    - contextPath: GCP.Storage.Buckets.name
       description: The name of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.kind
+    - contextPath: GCP.Storage.Buckets.kind
       description: The type of resource (for example, storage#bucket).
       type: String
-    - contextPath: GCP.Storage.Bucket.selfLink
+    - contextPath: GCP.Storage.Buckets.selfLink
       description: The link to the bucket resource on the GCP API.
       type: String
-    - contextPath: GCP.Storage.Bucket.projectNumber
+    - contextPath: GCP.Storage.Buckets.projectNumber
       description: The GCP project number associated with the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.location
+    - contextPath: GCP.Storage.Buckets.location
       description: The location of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.locationType
+    - contextPath: GCP.Storage.Buckets.locationType
       description: The type of location (for example, multi-region).
       type: String
-    - contextPath: GCP.Storage.Bucket.storageClass
+    - contextPath: GCP.Storage.Buckets.storageClass
       description: The storage class of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.rpo
+    - contextPath: GCP.Storage.Buckets.rpo
       description: The recovery point objective setting of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.etag
+    - contextPath: GCP.Storage.Buckets.etag
       description: The HTTP entity tag of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.metageneration
+    - contextPath: GCP.Storage.Buckets.metageneration
       description: The metageneration number of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.timeCreated
+    - contextPath: GCP.Storage.Buckets.timeCreated
       description: The time the bucket was created.
       type: Date
-    - contextPath: GCP.Storage.Bucket.updated
+    - contextPath: GCP.Storage.Buckets.updated
       description: The time the bucket was last updated.
       type: Date
-    - contextPath: GCP.Storage.Bucket.iamConfiguration.publicAccessPrevention
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.publicAccessPrevention
       description: The public access prevention setting of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.iamConfiguration.uniformBucketLevelAccess.enabled
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.enabled
       description: Whether Uniform Bucket-Level Access (UBLA) is enabled on the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.iamConfiguration.uniformBucketLevelAccess.lockedTime
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.lockedTime
       description: The deadline for changing the Uniform Bucket-Level Access setting from true to false.
       type: Date
-    - contextPath: GCP.Storage.Bucket.versioning.enabled
+    - contextPath: GCP.Storage.Buckets.versioning.enabled
       description: Whether object versioning is enabled for the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.defaultEventBasedHold
+    - contextPath: GCP.Storage.Buckets.defaultEventBasedHold
       description: The default value for the event-based hold on newly created objects in the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.generation
+    - contextPath: GCP.Storage.Buckets.generation
       description: The generation (version) number of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.softDeleteTime
+    - contextPath: GCP.Storage.Buckets.softDeleteTime
       description: The time the bucket was soft-deleted.
       type: Date
-    - contextPath: GCP.Storage.Bucket.hardDeleteTime
+    - contextPath: GCP.Storage.Buckets.hardDeleteTime
       description: The time the bucket will be permanently deleted.
       type: Date
-    - contextPath: GCP.Storage.Bucket.hierarchicalNamespace.enabled
+    - contextPath: GCP.Storage.Buckets.hierarchicalNamespace.enabled
       description: Whether hierarchical namespace is enabled for the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.encryption.defaultKmsKeyName
+    - contextPath: GCP.Storage.Buckets.encryption.defaultKmsKeyName
       description: The Cloud KMS key used to encrypt objects written to the bucket when no encryption method is specified.
       type: String
-    - contextPath: GCP.Storage.Bucket.acl
+    - contextPath: GCP.Storage.Buckets.acl
       description: Access controls on the bucket (bucketAccessControls resources). Omitted when Uniform Bucket-Level Access is enabled.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.defaultObjectAcl
+    - contextPath: GCP.Storage.Buckets.defaultObjectAcl
       description: Default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.website.mainPageSuffix
+    - contextPath: GCP.Storage.Buckets.website.mainPageSuffix
       description: The suffix appended to requests for a directory-like URL, used for static website hosting.
       type: String
-    - contextPath: GCP.Storage.Bucket.website.notFoundPage
+    - contextPath: GCP.Storage.Buckets.website.notFoundPage
       description: The object served when a requested resource is not found, used for static website hosting.
       type: String
-    - contextPath: GCP.Storage.Bucket.owner.entity
+    - contextPath: GCP.Storage.Buckets.owner.entity
       description: The entity that owns the bucket, in the form project-owner-projectId.
       type: String
-    - contextPath: GCP.Storage.Bucket.owner.entityId
+    - contextPath: GCP.Storage.Buckets.owner.entityId
       description: The ID of the entity that owns the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.logging.logBucket
+    - contextPath: GCP.Storage.Buckets.logging.logBucket
       description: The destination bucket where the bucket's logs are placed.
       type: String
-    - contextPath: GCP.Storage.Bucket.logging.logObjectPrefix
+    - contextPath: GCP.Storage.Buckets.logging.logObjectPrefix
       description: The prefix for log object names.
       type: String
-    - contextPath: GCP.Storage.Bucket.cors
+    - contextPath: GCP.Storage.Buckets.cors
       description: The bucket's Cross-Origin Resource Sharing (CORS) configuration.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.lifecycle.rule
+    - contextPath: GCP.Storage.Buckets.lifecycle.rule
       description: The bucket's lifecycle management rules.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.autoclass.enabled
+    - contextPath: GCP.Storage.Buckets.autoclass.enabled
       description: Whether Autoclass is enabled for the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.autoclass.toggleTime
+    - contextPath: GCP.Storage.Buckets.autoclass.toggleTime
       description: The time at which Autoclass was last enabled or disabled for the bucket.
       type: Date
-    - contextPath: GCP.Storage.Bucket.autoclass.terminalStorageClass
+    - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClass
       description: The coldest storage class that an object transitions to in an Autoclass-enabled bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.autoclass.terminalStorageClassUpdateTime
+    - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime
       description: The time at which the terminal storage class was last updated for the bucket.
       type: Date
-    - contextPath: GCP.Storage.Bucket.labels
+    - contextPath: GCP.Storage.Buckets.labels
       description: User-provided bucket labels, as key-value pairs.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.retentionPolicy.retentionPeriod
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.retentionPeriod
       description: The minimum age, in seconds, that objects must reach before they can be deleted or replaced.
       type: String
-    - contextPath: GCP.Storage.Bucket.retentionPolicy.effectiveTime
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.effectiveTime
       description: The time from which the retention policy was effective.
       type: Date
-    - contextPath: GCP.Storage.Bucket.retentionPolicy.isLocked
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.isLocked
       description: Whether the retention policy is locked.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.objectRetention.mode
+    - contextPath: GCP.Storage.Buckets.objectRetention.mode
       description: The bucket's object retention mode. When Enabled, retention configurations can be set on objects.
       type: String
-    - contextPath: GCP.Storage.Bucket.billing.requesterPays
+    - contextPath: GCP.Storage.Buckets.billing.requesterPays
       description: Whether Requester Pays is enabled for the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.softDeletePolicy.retentionDurationSeconds
+    - contextPath: GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds
       description: The period, in seconds, during which a soft-deleted object is retained and cannot be permanently deleted.
       type: String
-    - contextPath: GCP.Storage.Bucket.softDeletePolicy.effectiveTime
+    - contextPath: GCP.Storage.Buckets.softDeletePolicy.effectiveTime
       description: The time at which the soft delete policy becomes effective.
       type: Date
-    - contextPath: GCP.Storage.Bucket.customPlacementConfig.dataLocations
+    - contextPath: GCP.Storage.Buckets.customPlacementConfig.dataLocations
       description: The list of individual regions that comprise a configurable dual-region bucket.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.ipFilter.mode
+    - contextPath: GCP.Storage.Buckets.ipFilter.mode
       description: The state of the IP filter configuration (Enabled or Disabled).
       type: String
 
@@ -1634,145 +1634,145 @@ script:
       - inherited
       defaultValue: enforced
     outputs:
-    - contextPath: GCP.Storage.Bucket.id
+    - contextPath: GCP.Storage.Buckets.id
       description: The unique identifier for the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.name
+    - contextPath: GCP.Storage.Buckets.name
       description: The name of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.kind
+    - contextPath: GCP.Storage.Buckets.kind
       description: The type of resource (for example, storage#bucket).
       type: String
-    - contextPath: GCP.Storage.Bucket.selfLink
+    - contextPath: GCP.Storage.Buckets.selfLink
       description: The link to the bucket resource on the GCP API.
       type: String
-    - contextPath: GCP.Storage.Bucket.projectNumber
+    - contextPath: GCP.Storage.Buckets.projectNumber
       description: The GCP project number associated with the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.location
+    - contextPath: GCP.Storage.Buckets.location
       description: The location of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.locationType
+    - contextPath: GCP.Storage.Buckets.locationType
       description: The type of location (for example, multi-region).
       type: String
-    - contextPath: GCP.Storage.Bucket.storageClass
+    - contextPath: GCP.Storage.Buckets.storageClass
       description: The storage class of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.rpo
+    - contextPath: GCP.Storage.Buckets.rpo
       description: The recovery point objective setting of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.etag
+    - contextPath: GCP.Storage.Buckets.etag
       description: The HTTP entity tag of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.metageneration
+    - contextPath: GCP.Storage.Buckets.metageneration
       description: The metageneration number of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.timeCreated
+    - contextPath: GCP.Storage.Buckets.timeCreated
       description: The time the bucket was created.
       type: Date
-    - contextPath: GCP.Storage.Bucket.updated
+    - contextPath: GCP.Storage.Buckets.updated
       description: The time the bucket was last updated.
       type: Date
-    - contextPath: GCP.Storage.Bucket.iamConfiguration.publicAccessPrevention
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.publicAccessPrevention
       description: The public access prevention setting of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.iamConfiguration.uniformBucketLevelAccess.enabled
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.enabled
       description: Whether Uniform Bucket-Level Access (UBLA) is enabled on the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.iamConfiguration.uniformBucketLevelAccess.lockedTime
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.lockedTime
       description: The deadline for changing the Uniform Bucket-Level Access setting from true to false.
       type: Date
-    - contextPath: GCP.Storage.Bucket.versioning.enabled
+    - contextPath: GCP.Storage.Buckets.versioning.enabled
       description: Whether object versioning is enabled for the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.defaultEventBasedHold
+    - contextPath: GCP.Storage.Buckets.defaultEventBasedHold
       description: The default value for the event-based hold on newly created objects in the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.generation
+    - contextPath: GCP.Storage.Buckets.generation
       description: The generation (version) number of the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.softDeleteTime
+    - contextPath: GCP.Storage.Buckets.softDeleteTime
       description: The time the bucket was soft-deleted.
       type: Date
-    - contextPath: GCP.Storage.Bucket.hardDeleteTime
+    - contextPath: GCP.Storage.Buckets.hardDeleteTime
       description: The time the bucket will be permanently deleted.
       type: Date
-    - contextPath: GCP.Storage.Bucket.hierarchicalNamespace.enabled
+    - contextPath: GCP.Storage.Buckets.hierarchicalNamespace.enabled
       description: Whether hierarchical namespace is enabled for the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.encryption.defaultKmsKeyName
+    - contextPath: GCP.Storage.Buckets.encryption.defaultKmsKeyName
       description: The Cloud KMS key used to encrypt objects written to the bucket when no encryption method is specified.
       type: String
-    - contextPath: GCP.Storage.Bucket.acl
+    - contextPath: GCP.Storage.Buckets.acl
       description: Access controls on the bucket (bucketAccessControls resources). Omitted when Uniform Bucket-Level Access is enabled.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.defaultObjectAcl
+    - contextPath: GCP.Storage.Buckets.defaultObjectAcl
       description: Default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.website.mainPageSuffix
+    - contextPath: GCP.Storage.Buckets.website.mainPageSuffix
       description: The suffix appended to requests for a directory-like URL, used for static website hosting.
       type: String
-    - contextPath: GCP.Storage.Bucket.website.notFoundPage
+    - contextPath: GCP.Storage.Buckets.website.notFoundPage
       description: The object served when a requested resource is not found, used for static website hosting.
       type: String
-    - contextPath: GCP.Storage.Bucket.owner.entity
+    - contextPath: GCP.Storage.Buckets.owner.entity
       description: The entity that owns the bucket, in the form project-owner-projectId.
       type: String
-    - contextPath: GCP.Storage.Bucket.owner.entityId
+    - contextPath: GCP.Storage.Buckets.owner.entityId
       description: The ID of the entity that owns the bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.logging.logBucket
+    - contextPath: GCP.Storage.Buckets.logging.logBucket
       description: The destination bucket where the bucket's logs are placed.
       type: String
-    - contextPath: GCP.Storage.Bucket.logging.logObjectPrefix
+    - contextPath: GCP.Storage.Buckets.logging.logObjectPrefix
       description: The prefix for log object names.
       type: String
-    - contextPath: GCP.Storage.Bucket.cors
+    - contextPath: GCP.Storage.Buckets.cors
       description: The bucket's Cross-Origin Resource Sharing (CORS) configuration.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.lifecycle.rule
+    - contextPath: GCP.Storage.Buckets.lifecycle.rule
       description: The bucket's lifecycle management rules.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.autoclass.enabled
+    - contextPath: GCP.Storage.Buckets.autoclass.enabled
       description: Whether Autoclass is enabled for the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.autoclass.toggleTime
+    - contextPath: GCP.Storage.Buckets.autoclass.toggleTime
       description: The time at which Autoclass was last enabled or disabled for the bucket.
       type: Date
-    - contextPath: GCP.Storage.Bucket.autoclass.terminalStorageClass
+    - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClass
       description: The coldest storage class that an object transitions to in an Autoclass-enabled bucket.
       type: String
-    - contextPath: GCP.Storage.Bucket.autoclass.terminalStorageClassUpdateTime
+    - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime
       description: The time at which the terminal storage class was last updated for the bucket.
       type: Date
-    - contextPath: GCP.Storage.Bucket.labels
+    - contextPath: GCP.Storage.Buckets.labels
       description: User-provided bucket labels, as key-value pairs.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.retentionPolicy.retentionPeriod
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.retentionPeriod
       description: The minimum age, in seconds, that objects must reach before they can be deleted or replaced.
       type: String
-    - contextPath: GCP.Storage.Bucket.retentionPolicy.effectiveTime
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.effectiveTime
       description: The time from which the retention policy was effective.
       type: Date
-    - contextPath: GCP.Storage.Bucket.retentionPolicy.isLocked
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.isLocked
       description: Whether the retention policy is locked.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.objectRetention.mode
+    - contextPath: GCP.Storage.Buckets.objectRetention.mode
       description: The bucket's object retention mode. When Enabled, retention configurations can be set on objects.
       type: String
-    - contextPath: GCP.Storage.Bucket.billing.requesterPays
+    - contextPath: GCP.Storage.Buckets.billing.requesterPays
       description: Whether Requester Pays is enabled for the bucket.
       type: Boolean
-    - contextPath: GCP.Storage.Bucket.softDeletePolicy.retentionDurationSeconds
+    - contextPath: GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds
       description: The period, in seconds, during which a soft-deleted object is retained and cannot be permanently deleted.
       type: String
-    - contextPath: GCP.Storage.Bucket.softDeletePolicy.effectiveTime
+    - contextPath: GCP.Storage.Buckets.softDeletePolicy.effectiveTime
       description: The time at which the soft delete policy becomes effective.
       type: Date
-    - contextPath: GCP.Storage.Bucket.customPlacementConfig.dataLocations
+    - contextPath: GCP.Storage.Buckets.customPlacementConfig.dataLocations
       description: The list of individual regions that comprise a configurable dual-region bucket.
       type: Unknown
-    - contextPath: GCP.Storage.Bucket.ipFilter.mode
+    - contextPath: GCP.Storage.Buckets.ipFilter.mode
       description: The state of the IP filter configuration (Enabled or Disabled).
       type: String
 
@@ -1804,103 +1804,106 @@ script:
       - publicRead
       description: The predefined ACL to apply to the uploaded object. Cannot be used when Uniform Bucket-Level Access is enabled on the bucket.
     outputs:
-    - contextPath: GCP.Storage.BucketObject.kind
+    - contextPath: GCP.Storage.Buckets.name
+      description: The name of the bucket containing the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.kind
       description: The kind of item this is. For objects, this is always storage#object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.id
+    - contextPath: GCP.Storage.Buckets.Objects.id
       description: The ID of the uploaded object, including the bucket name, object name, and generation number.
       type: String
-    - contextPath: GCP.Storage.BucketObject.selfLink
+    - contextPath: GCP.Storage.Buckets.Objects.selfLink
       description: The link to the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.mediaLink
+    - contextPath: GCP.Storage.Buckets.Objects.mediaLink
       description: The media download link for the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.name
+    - contextPath: GCP.Storage.Buckets.Objects.name
       description: The name of the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.bucket
+    - contextPath: GCP.Storage.Buckets.Objects.bucket
       description: The name of the bucket containing the object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.generation
+    - contextPath: GCP.Storage.Buckets.Objects.generation
       description: The content generation of the uploaded object. Used for object versioning.
       type: String
-    - contextPath: GCP.Storage.BucketObject.metageneration
+    - contextPath: GCP.Storage.Buckets.Objects.metageneration
       description: The version of the metadata for the object at this generation.
       type: String
-    - contextPath: GCP.Storage.BucketObject.contentType
+    - contextPath: GCP.Storage.Buckets.Objects.contentType
       description: The content type of the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.storageClass
+    - contextPath: GCP.Storage.Buckets.Objects.storageClass
       description: The storage class of the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.size
+    - contextPath: GCP.Storage.Buckets.Objects.size
       description: The content length of the uploaded object in bytes.
       type: String
-    - contextPath: GCP.Storage.BucketObject.md5Hash
+    - contextPath: GCP.Storage.Buckets.Objects.md5Hash
       description: The MD5 hash of the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.crc32c
+    - contextPath: GCP.Storage.Buckets.Objects.crc32c
       description: The CRC32c checksum of the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.etag
+    - contextPath: GCP.Storage.Buckets.Objects.etag
       description: The HTTP 1.1 Entity tag for the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.timeCreated
+    - contextPath: GCP.Storage.Buckets.Objects.timeCreated
       description: The creation time of the uploaded object in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.updated
+    - contextPath: GCP.Storage.Buckets.Objects.updated
       description: The modification time of the uploaded object metadata in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.timeStorageClassUpdated
+    - contextPath: GCP.Storage.Buckets.Objects.timeStorageClassUpdated
       description: The time at which the object's storage class was last changed, in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.contentEncoding
+    - contextPath: GCP.Storage.Buckets.Objects.contentEncoding
       description: The content encoding of the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.contentDisposition
+    - contextPath: GCP.Storage.Buckets.Objects.contentDisposition
       description: The content disposition of the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.contentLanguage
+    - contextPath: GCP.Storage.Buckets.Objects.contentLanguage
       description: The content language of the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.cacheControl
+    - contextPath: GCP.Storage.Buckets.Objects.cacheControl
       description: The cache control directive for the uploaded object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.metadata
+    - contextPath: GCP.Storage.Buckets.Objects.metadata
       description: User-provided metadata, in key/value pairs.
       type: Unknown
-    - contextPath: GCP.Storage.BucketObject.acl
+    - contextPath: GCP.Storage.Buckets.Objects.acl
       description: The access control list for the uploaded object.
       type: Unknown
-    - contextPath: GCP.Storage.BucketObject.owner.entity
+    - contextPath: GCP.Storage.Buckets.Objects.owner.entity
       description: The entity of the object owner.
       type: String
-    - contextPath: GCP.Storage.BucketObject.owner.entityId
+    - contextPath: GCP.Storage.Buckets.Objects.owner.entityId
       description: The ID of the object owner entity.
       type: String
-    - contextPath: GCP.Storage.BucketObject.componentCount
+    - contextPath: GCP.Storage.Buckets.Objects.componentCount
       description: The number of component objects that make up a composite object.
       type: Number
-    - contextPath: GCP.Storage.BucketObject.customTime
+    - contextPath: GCP.Storage.Buckets.Objects.customTime
       description: A user-specified timestamp for the uploaded object, in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.eventBasedHold
+    - contextPath: GCP.Storage.Buckets.Objects.eventBasedHold
       description: Whether an event-based hold is active on the uploaded object.
       type: Boolean
-    - contextPath: GCP.Storage.BucketObject.temporaryHold
+    - contextPath: GCP.Storage.Buckets.Objects.temporaryHold
       description: Whether a temporary hold is active on the uploaded object.
       type: Boolean
-    - contextPath: GCP.Storage.BucketObject.retentionExpirationTime
+    - contextPath: GCP.Storage.Buckets.Objects.retentionExpirationTime
       description: The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.kmsKeyName
+    - contextPath: GCP.Storage.Buckets.Objects.kmsKeyName
       description: The Cloud KMS key used to encrypt the uploaded object, if any.
       type: String
-    - contextPath: GCP.Storage.BucketObject.customerEncryption.encryptionAlgorithm
+    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption.encryptionAlgorithm
       description: The encryption algorithm used with the customer-supplied encryption key.
       type: String
-    - contextPath: GCP.Storage.BucketObject.customerEncryption.keySha256
+    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption.keySha256
       description: The SHA256 hash of the customer-supplied encryption key.
       type: String
 
@@ -1960,103 +1963,106 @@ script:
       required: false
       description: The name to give the copied object in the destination bucket. Defaults to the source object name.
     outputs:
-    - contextPath: GCP.Storage.BucketObject.kind
+    - contextPath: GCP.Storage.Buckets.name
+      description: The name of the destination bucket containing the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.kind
       description: The kind of item this is. For objects, this is always storage#object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.id
+    - contextPath: GCP.Storage.Buckets.Objects.id
       description: The ID of the copied object, including the bucket name, object name, and generation number.
       type: String
-    - contextPath: GCP.Storage.BucketObject.selfLink
+    - contextPath: GCP.Storage.Buckets.Objects.selfLink
       description: The link to the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.mediaLink
+    - contextPath: GCP.Storage.Buckets.Objects.mediaLink
       description: The media download link for the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.name
+    - contextPath: GCP.Storage.Buckets.Objects.name
       description: The name of the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.bucket
+    - contextPath: GCP.Storage.Buckets.Objects.bucket
       description: The name of the bucket containing the object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.generation
+    - contextPath: GCP.Storage.Buckets.Objects.generation
       description: The content generation of the copied object. Used for object versioning.
       type: String
-    - contextPath: GCP.Storage.BucketObject.metageneration
+    - contextPath: GCP.Storage.Buckets.Objects.metageneration
       description: The version of the metadata for the object at this generation.
       type: String
-    - contextPath: GCP.Storage.BucketObject.contentType
+    - contextPath: GCP.Storage.Buckets.Objects.contentType
       description: The content type of the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.storageClass
+    - contextPath: GCP.Storage.Buckets.Objects.storageClass
       description: The storage class of the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.size
+    - contextPath: GCP.Storage.Buckets.Objects.size
       description: The content length of the copied object in bytes.
       type: String
-    - contextPath: GCP.Storage.BucketObject.md5Hash
+    - contextPath: GCP.Storage.Buckets.Objects.md5Hash
       description: The MD5 hash of the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.crc32c
+    - contextPath: GCP.Storage.Buckets.Objects.crc32c
       description: The CRC32c checksum of the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.etag
+    - contextPath: GCP.Storage.Buckets.Objects.etag
       description: The HTTP 1.1 Entity tag for the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.timeCreated
+    - contextPath: GCP.Storage.Buckets.Objects.timeCreated
       description: The creation time of the copied object in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.updated
+    - contextPath: GCP.Storage.Buckets.Objects.updated
       description: The modification time of the copied object metadata in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.timeStorageClassUpdated
+    - contextPath: GCP.Storage.Buckets.Objects.timeStorageClassUpdated
       description: The time at which the object's storage class was last changed, in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.contentEncoding
+    - contextPath: GCP.Storage.Buckets.Objects.contentEncoding
       description: The content encoding of the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.contentDisposition
+    - contextPath: GCP.Storage.Buckets.Objects.contentDisposition
       description: The content disposition of the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.contentLanguage
+    - contextPath: GCP.Storage.Buckets.Objects.contentLanguage
       description: The content language of the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.cacheControl
+    - contextPath: GCP.Storage.Buckets.Objects.cacheControl
       description: The cache control directive for the copied object.
       type: String
-    - contextPath: GCP.Storage.BucketObject.metadata
+    - contextPath: GCP.Storage.Buckets.Objects.metadata
       description: User-provided metadata, in key/value pairs.
       type: Unknown
-    - contextPath: GCP.Storage.BucketObject.acl
+    - contextPath: GCP.Storage.Buckets.Objects.acl
       description: The access control list for the copied object.
       type: Unknown
-    - contextPath: GCP.Storage.BucketObject.owner.entity
+    - contextPath: GCP.Storage.Buckets.Objects.owner.entity
       description: The entity of the object owner.
       type: String
-    - contextPath: GCP.Storage.BucketObject.owner.entityId
+    - contextPath: GCP.Storage.Buckets.Objects.owner.entityId
       description: The ID of the object owner entity.
       type: String
-    - contextPath: GCP.Storage.BucketObject.componentCount
+    - contextPath: GCP.Storage.Buckets.Objects.componentCount
       description: The number of component objects that make up a composite object.
       type: Number
-    - contextPath: GCP.Storage.BucketObject.customTime
+    - contextPath: GCP.Storage.Buckets.Objects.customTime
       description: A user-specified timestamp for the copied object, in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.eventBasedHold
+    - contextPath: GCP.Storage.Buckets.Objects.eventBasedHold
       description: Whether an event-based hold is active on the copied object.
       type: Boolean
-    - contextPath: GCP.Storage.BucketObject.temporaryHold
+    - contextPath: GCP.Storage.Buckets.Objects.temporaryHold
       description: Whether a temporary hold is active on the copied object.
       type: Boolean
-    - contextPath: GCP.Storage.BucketObject.retentionExpirationTime
+    - contextPath: GCP.Storage.Buckets.Objects.retentionExpirationTime
       description: The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format.
       type: Date
-    - contextPath: GCP.Storage.BucketObject.kmsKeyName
+    - contextPath: GCP.Storage.Buckets.Objects.kmsKeyName
       description: The Cloud KMS key used to encrypt the copied object, if any.
       type: String
-    - contextPath: GCP.Storage.BucketObject.customerEncryption.encryptionAlgorithm
+    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption.encryptionAlgorithm
       description: The encryption algorithm used with the customer-supplied encryption key.
       type: String
-    - contextPath: GCP.Storage.BucketObject.customerEncryption.keySha256
+    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption.keySha256
       description: The SHA256 hash of the customer-supplied encryption key.
       type: String
 

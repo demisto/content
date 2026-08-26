@@ -6689,7 +6689,7 @@ def test_storage_bucket_create_success(mocker):
     assert call_kwargs["project"] == "p1"
     assert call_kwargs["body"]["name"] == "b1"
     assert call_kwargs["body"]["location"] == "US"
-    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
     assert result.outputs["name"] == "b1"
 
 
@@ -6892,7 +6892,7 @@ def test_storage_bucket_public_access_block_outputs(mocker):
     creds = mocker.Mock(spec=Credentials)
     result = storage_bucket_public_access_block(creds, {"project_id": "p1", "bucket_name": "b1"})
 
-    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
     assert result.outputs_key_field == ["name", "id"]
     assert result.outputs == response
     assert result.raw_response == response
@@ -6925,8 +6925,12 @@ def test_storage_bucket_object_upload_success(mocker):
     assert call_kwargs["bucket"] == "b1"
     assert call_kwargs["name"] == "o1"
     assert "f.txt was successfully uploaded" in result.readable_output
-    assert result.outputs_prefix == "GCP.Storage.BucketObject"
-    assert result.outputs == {"name": "o1", "bucket": "b1"}
+    assert result.outputs == {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": "b1",
+            "Objects": [{"name": "o1", "bucket": "b1"}],
+        }
+    }
 
 
 def test_storage_bucket_object_upload_with_acl(mocker):
@@ -7199,8 +7203,12 @@ def test_storage_bucket_object_copy_success(mocker):
     assert call_kwargs["sourceObject"] == "o1"
     assert call_kwargs["destinationBucket"] == "dst"
     assert call_kwargs["destinationObject"] == "o2"
-    assert result.outputs_prefix == "GCP.Storage.BucketObject"
-    assert result.outputs == {"name": "o2", "bucket": "dst"}
+    assert result.outputs == {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": "dst",
+            "Objects": [{"name": "o2", "bucket": "dst"}],
+        }
+    }
 
 
 def test_storage_bucket_object_copy_default_destination_name(mocker):
