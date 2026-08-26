@@ -41,52 +41,52 @@ configuration:
   name: fetch_time
   type: 0
   required: false
-description: Multi-Vector Cyber Attack, Breach and Attack Simulation
+description: Multi-Vector Cyber Attack, Breach and Attack Simulation.
 display: Cymulate
 name: Cymulate
 script:
   commands:
   - arguments:
-    - description: The attack unique identifier
+    - description: The attack unique identifier.
       name: attack_id
       required: true
-    - description: The Cymulate module_type
+    - description: The Cymulate module_type.
       name: module_type
       required: true
-    - description: The incident unique identifier
+    - description: The incident unique identifier.
       name: incident_id
-    description: This commands return full cymulate's incidents information
+    description: This commands return full cymulate's incidents information.
     name: cymulate-get-incident-info
     outputs:
     - contextPath: Cymulate.Incident.Payload
-      description: The Cymulate payload that generated this incident
+      description: The Cymulate payload that generated this incident.
       type: String
     - contextPath: Cymulate.Incident.Name
-      description: The name of the incident
+      description: The name of the incident.
       type: String
     - contextPath: Cymulate.Incident.Status
-      description: The attack status (Enum Values- Penetrated, Blocked, Dead)
+      description: The attack status (Enum Values- Penetrated, Blocked, Dead).
       type: String
     - contextPath: Cymulate.Incident.ID
-      description: The incident ID
+      description: The incident ID.
       type: String
     - contextPath: Cymulate.Incident.Md5
-      description: The Md5
+      description: The Md5.
       type: String
     - contextPath: Cymulate.Incident.Attack_Vector
-      description: The Attack Vector
+      description: The Attack Vector.
       type: String
     - contextPath: Cymulate.Incident.Sha256
-      description: 'The Sha256 '
+      description: 'The Sha256.'
       type: String
     - contextPath: Cymulate.Incident.Sha1
-      description: The Sha1
+      description: The Sha1.
       type: String
     - contextPath: Cymulate.Incident.Cymulate_ID
-      description: The cymulate's ID of the incident
+      description: The cymulate's ID of the incident.
       type: String
     - contextPath: Cymulate.Incident.Attack_ID
-      description: The cymulate's Attack ID of the incident
+      description: The cymulate's Attack ID of the incident.
       type: String
   dockerimage: demisto/python3:3.12.14.12277297
   isfetch: true

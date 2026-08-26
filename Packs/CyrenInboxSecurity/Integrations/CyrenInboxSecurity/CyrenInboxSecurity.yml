@@ -51,12 +51,12 @@ name: Cyren Inbox Security
 script:
   commands:
   - arguments:
-    - description: case ID
+    - description: case ID.
       name: case_id
       required: true
     - auto: PREDEFINED
       default: true
-      description: resolution
+      description: resolution.
       name: resolution
       predefined:
       - phishing
@@ -64,7 +64,7 @@ script:
       - clean
       - other
     - auto: PREDEFINED
-      description: the reason of the resolution
+      description: the reason of the resolution.
       name: resolution_reason
       predefined:
       - Identified phishing URL
@@ -72,10 +72,10 @@ script:
       - Other
       - Scam
       - Spam
-    - description: free text for resolution reason
+    - description: free text for resolution reason.
       name: resolution_reason_text
     - auto: PREDEFINED
-      description: remediation actions to perform
+      description: remediation actions to perform.
       isArray: true
       name: actions
       predefined:
@@ -85,11 +85,11 @@ script:
       - SOFT_DELETE
       - MOVE_TO_INBOX
       - REMOVE_BANNER
-    description: resolve a case and remediate incidents
+    description: resolve a case and remediate incidents.
     name: cyren-resolve-and-remediate
     outputs:
     - contextPath: Cyren.data.status
-      description: status of actions performed
+      description: status of actions performed.
       type: string
   dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
