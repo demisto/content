@@ -1,4 +1,4 @@
-The script blocks a list of domain FQDNs in supported integrations. Safe to re-run: domains that are already blocked are reported as `Unchanged`.
+The script blocks a list of domain FQDNs in supported integrations. Currently only supports Palo Alto Networks Panorama.
 
 ## Script Data
 
