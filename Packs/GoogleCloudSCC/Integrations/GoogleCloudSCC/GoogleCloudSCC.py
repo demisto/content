@@ -128,6 +128,7 @@ GET_OUTPUT_MESSAGE: dict[str, Any] = {"HEADER_MESSAGE": "Total retrieved {0}: {1
 COMMON_STRING: dict[str, str] = {
     "RESOURCE_NAME": "Resource Name",
     "SECURITY_MARKS": "Security Marks",
+    "SOURCE_PROPERTIES": "Source Properties",
     "MUTE_CONFIG": "Mute Config",
     "SET_STATE_HR_STR": "The state of the finding has been updated successfully.",
     "SET_MUTE_HR_STR": "The finding has been muted successfully.",
@@ -1539,6 +1540,49 @@ def prepare_hr_and_ec_for_update_finding(result: dict[str, Any]) -> tuple[str, d
     return readable_output, remove_empty_elements(result)
 
 
+def prepare_hr_and_ec_for_update_finding_v2(result: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """
+    Prepare human readable output and entry context for the v2 update finding command.
+
+    Unlike v1, the source properties of the finding are displayed as well, so that the properties updated by the
+    command are visible in the war room.
+
+    :param result: Update finding v2 API response
+    :return: markdown string and context data of the updated finding
+    """
+    # Preparing entry context and human readable
+    finding_url = GoogleNameParser.get_finding_url(result.get("name", ""))
+
+    hr_data = {
+        "Organization ID": GoogleNameParser.get_organization_id(),
+        "Name": get_markdown_link(result.get("name", ""), finding_url),
+        "State": result.get("state", ""),
+        "Severity": result.get("severity", ""),
+        "Category": result.get("category", ""),
+        COMMON_STRING["EVENT_TIME"]: convert_string_to_date_format(result.get("eventTime", "")),
+        COMMON_STRING["CREATE_TIME"]: convert_string_to_date_format(result.get("createTime", "")),
+        "External Uri": get_markdown_link(result.get("externalUri", ""), result.get("externalUri", "")),
+        COMMON_STRING["RESOURCE_NAME"]: result.get("resourceName", ""),
+        COMMON_STRING["SOURCE_PROPERTIES"]: result.get("sourceProperties", {}),
+    }
+
+    headers = [
+        "Organization ID",
+        "Name",
+        "State",
+        "Severity",
+        "Category",
+        COMMON_STRING["EVENT_TIME"],
+        COMMON_STRING["CREATE_TIME"],
+        "External Uri",
+        COMMON_STRING["RESOURCE_NAME"],
+        COMMON_STRING["SOURCE_PROPERTIES"],
+    ]
+    readable_output = tableToMarkdown("The finding has been updated successfully.", t=hr_data, headers=headers, removeNull=True)
+
+    return readable_output, remove_empty_elements(result)
+
+
 def prepare_hr_and_ec_for_finding_mute_state(result: dict[str, Any], hr_title: str) -> tuple[str, dict[str, Any]]:
     """
     Prepare human readable output and entry context for the finding mute/unmute commands.
@@ -2182,7 +2226,7 @@ def finding_update_v2_command(client: GoogleSccClient, args: dict) -> CommandRes
     # Get response
     result = client.update_finding_v2(*arguments)
 
-    readable_output, context = prepare_hr_and_ec_for_update_finding(result)
+    readable_output, context = prepare_hr_and_ec_for_update_finding_v2(result)
 
     return CommandResults(
         readable_output=readable_output,

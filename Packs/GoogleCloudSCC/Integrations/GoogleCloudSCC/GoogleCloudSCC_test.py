@@ -602,6 +602,30 @@ def test_get_and_validate_args_finding_update():
     assert update_mask == ["A", "B", "C"]
 
 
+def test_prepare_hr_and_ec_for_update_finding_v2():
+    """
+    Scenario: Validates human readable and entry context for the v2 update finding command.
+
+    Given:
+    - v2 update finding response given
+
+    Then:
+    - Ensure finding HR is correct.
+    - Ensure the source properties updated by the command are displayed, unlike in v1.
+    """
+    from GoogleCloudSCC import prepare_hr_and_ec_for_update_finding_v2
+
+    with open("./test_data/update_finding_v2_response.json") as f:
+        finding_response = json.load(f)
+    GoogleNameParser.get_organization_id = Mock(return_value="123")
+
+    hr, ec = prepare_hr_and_ec_for_update_finding_v2(finding_response)
+    assert "Source Properties" in hr
+    assert "browser: Chrome" in hr
+    assert "Severity" in hr
+    assert ec["name"] == finding_response["name"]
+
+
 def test_get_update_mask_for_update_finding():
     """
     Scenario: Validates updateMask field construct Properly
@@ -1443,7 +1467,7 @@ def test_finding_state_update_v2_command(client, mocker):
         mock_data = json.load(file)
     with open("./test_data/update_finding_v2_ec.json") as f:
         finding_ec = json.load(f)
-    with open("./test_data/update_finding_v2_hr.md") as f:
+    with open("./test_data/state_update_finding_v2_hr.md") as f:
         hr_output = f.read()
     GoogleNameParser.get_organization_id = Mock(return_value="123")
     client.update_state_v2 = Mock(return_value=mock_data)

@@ -601,9 +601,10 @@ script:
       - us
       - eu
       - sa
-    - description: |
+    - description: |-
         The v2 filter expression is a list of one or more restrictions combined via logical operators AND and OR.
-        Parentheses are supported, and OR has higher precedence than AND. Examples include:
+        Parentheses are supported, and OR has higher precedence than AND.
+        A restriction has the form <field> <operator> <value> and can be prefixed with "-" to negate it. Examples include:
         1) name
         2) securityMarks.marks.marka
 
@@ -611,6 +612,8 @@ script:
         1) = for all value types.
         2) >, <, >=, <= for integer values.
         3) :, meaning substring matching, for strings.
+
+        The supported value types are string literals in quotes, integer literals without quotes, and the boolean literals true and false without quotes.
 
         The following field and operator combinations are supported:
         1) name: =
@@ -624,9 +627,21 @@ script:
         9) securityMarks.marks: =, :
         10) resource:
         11) resource.name: =, :
+        12) resource.parent_name: =, :
+        13) resource.parent_display_name: =, :
+        14) resource.project_name: =, :
+        15) resource.project_display_name: =, :
+        16) resource.type: =, :
+        17) resource.display_name: =, :
+        18) resource.folders.resource_folder: =, :
 
-        Examples: "category="XSS_SCRIPTING" AND state="ACTIVE""
-        Use a negated partial match on the empty string to filter based on a property not existing: "-severity=LOW".
+        Note: The value provided here is combined with the severity, category, and state arguments using the AND operator.
+
+        Examples:
+        1) category="XSS_SCRIPTING" AND state="ACTIVE"
+        2) severity="HIGH" AND resource.projectDisplayName:"prod"
+        3) eventTime > "2026-06-10T16:07:18-07:00"
+        4) -resourceName:"" (a negated partial match on the empty string, to filter on a property not existing).
       name: filter
     - description: |-
         This parameter defines what fields and order to use for sorting.
@@ -2385,13 +2400,6 @@ script:
         Note: Users can retrieve the list of the finding names by executing the "google-cloud-scc-v2-finding-list" command.
       name: name
       required: true
-    - description: |-
-        Time at which the event took place. By default UTC current time will be taken if no value is provided in eventTime.
-
-        Format: YYYY-MM-ddTHH:mm:ss.sssZ
-
-        Example: 2026-07-22T07:10:02.782Z, 2026-06-02T15:01:23.045123456Z.
-      name: eventTime
     - auto: PREDEFINED
       description: Related severity of the finding.
       name: severity
@@ -2404,7 +2412,11 @@ script:
       name: externalUri
     - description: Source specific properties. These properties are managed by the source that writes the finding. For example "key1=val1,key2=val2".
       name: sourceProperties
-    - description: A updateMask argument supports single or comma-separated fields that need to be updated/deleted. A updateMask is automatically generated in the backend for the specific arguments provided in the command and only those values will be updated. To delete attributes/properties, add those keys in updateMask without specifying those fields individually in the command arguments.
+    - description: |-
+        The name of a field that needs to be updated/deleted.
+        The updateMask is automatically generated in the backend for the specific arguments provided in the command and only those values will be updated. To delete an attribute/property, provide its key in updateMask without specifying that field individually in the command arguments.
+
+        Example: severity, externalUri, sourceProperties.browser.
       name: updateMask
     description: Update an organization's or source's finding using the Security Command Center v2 API.
     name: google-cloud-scc-v2-finding-update
@@ -8553,12 +8565,16 @@ script:
 
         Example: 2026-07-22T07:10:02.782Z, 2026-06-02T15:01:23.045123456Z.
       name: expiryTime
-    - description: |-
+    - auto: PREDEFINED
+      description: |-
         The location in which the mute rule is created. If no location is specified, the mute rule is created in "global".
         'sa' is the location identifier of the Saudi Arabia (me-central2) region.
-
-        Example: global, eu, us, sa.
       name: location
+      predefined:
+      - global
+      - us
+      - eu
+      - sa
     description: Create a mute rule (mute config) for an organization using the Security Command Center v2 API.
     name: google-cloud-scc-mute-rule-create
     outputs:

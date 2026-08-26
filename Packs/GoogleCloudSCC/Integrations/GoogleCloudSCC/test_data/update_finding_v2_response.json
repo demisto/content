@@ -24,7 +24,7 @@
         "src_geoip_src": "MaxMind",
         "dst_location": "Mountain View",
         "device": "Server",
-        "srcip": "10.0.0.1"
+        "srcip": "0.0.0.1"
     },
     "securityMarks": {
         "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks",
@@ -53,7 +53,7 @@
     "findingClass": "THREAT",
     "indicator": {
         "ipAddresses": [
-            "10.0.0.1"
+            "0.0.0.1"
         ],
         "domains": [
             "xmr-pool.badactor.example"
@@ -178,7 +178,7 @@
     },
     "access": {
         "principalEmail": "jdoe@example.com",
-        "callerIp": "10.0.0.1",
+        "callerIp": "0.0.0.1",
         "callerIpGeo": {
             "regionCode": "IN"
         },
@@ -198,7 +198,7 @@
     },
     "connections": [
         {
-            "destinationIp": "10.0.0.1",
+            "destinationIp": "0.0.0.1",
             "destinationPort": 3333,
             "sourceIp": "10.128.0.12",
             "sourcePort": 51244,
@@ -536,7 +536,7 @@
             "0.0.0.0/0"
         ],
         "destinationIpRanges": [
-            "10.0.0.1/20"
+            "0.0.0.1/20"
         ],
         "exposedServices": [
             "ssh"
@@ -782,9 +782,9 @@
         "privateIpAddress": "10.128.0.12",
         "privatePort": "8080",
         "exposedService": "http",
-        "publicIpAddress": "10.0.0.1",
+        "publicIpAddress": "0.0.0.1",
         "publicPort": "80",
-        "exposedEndpoint": "10.0.0.1:80",
+        "exposedEndpoint": "0.0.0.1:80",
         "loadBalancerFirewallPolicy": "prod-lb-fw-policy",
         "serviceFirewallPolicy": "prod-svc-fw-policy",
         "forwardingRule": "web-lb-forwarding-rule",

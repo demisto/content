@@ -952,7 +952,7 @@ Lists an organization or source's findings using the Security Command Center v2 
 | pageSize | The maximum number of results to return in a single response. The minimum value is 1 and maximum value is 1000. Default is 10. | Optional |
 | state | Filter the findings by their state. Can be 'ACTIVE', 'INACTIVE'. Comma-separated values are supported and if any state value is not provided, by default 'ACTIVE' state will be considered for listing of findings. Value provided inside the state would be applied in the query as a filter parameter for filtering results. Possible values are: ACTIVE, INACTIVE. Default is ACTIVE. | Optional |
 | location | The location in which the findings reside. 'sa' is the location identifier of the Saudi Arabia (me-central2) region. If no location is provided, findings are assumed to be in 'global'. Possible values are: global, us, eu, sa. Default is global. | Optional |
-| filter | The v2 filter expression is a list of one or more restrictions combined via logical operators AND and OR.<br/>Parentheses are supported, and OR has higher precedence than AND. Examples include:<br/>1) name<br/>2) securityMarks.marks.marka<br/><br/>The supported operators are:<br/>1) = for all value types.<br/>2) &gt;, &lt;, &gt;=, &lt;= for integer values.<br/>3) :, meaning substring matching, for strings.<br/><br/>The following field and operator combinations are supported:<br/>1) name: =<br/>2) parent: =, :<br/>3) resourceName: =, :<br/>4) state: =, :<br/>5) category: =, :<br/>6) externalUri: =, :<br/>7) eventTime: =, &gt;, &lt;, &gt;=, &lt;= (using an RFC3339 timestamp or milliseconds since epoch)<br/>8) severity: =, :<br/>9) securityMarks.marks: =, :<br/>10) resource:<br/>11) resource.name: =, :<br/><br/>Examples: "category="XSS_SCRIPTING" AND state="ACTIVE""<br/>Use a negated partial match on the empty string to filter based on a property not existing: "-severity=LOW".<br/>. | Optional |
+| filter | The v2 filter expression is a list of one or more restrictions combined via logical operators AND and OR.<br/>Parentheses are supported, and OR has higher precedence than AND.<br/>A restriction has the form &lt;field&gt; &lt;operator&gt; &lt;value&gt; and can be prefixed with "-" to negate it. Examples include:<br/>1) name<br/>2) securityMarks.marks.marka<br/><br/>The supported operators are:<br/>1) = for all value types.<br/>2) &gt;, &lt;, &gt;=, &lt;= for integer values.<br/>3) :, meaning substring matching, for strings.<br/><br/>The supported value types are string literals in quotes, integer literals without quotes, and the boolean literals true and false without quotes.<br/><br/>The following field and operator combinations are supported:<br/>1) name: =<br/>2) parent: =, :<br/>3) resourceName: =, :<br/>4) state: =, :<br/>5) category: =, :<br/>6) externalUri: =, :<br/>7) eventTime: =, &gt;, &lt;, &gt;=, &lt;= (using an RFC3339 timestamp or milliseconds since epoch)<br/>8) severity: =, :<br/>9) securityMarks.marks: =, :<br/>10) resource:<br/>11) resource.name: =, :<br/>12) resource.parent_name: =, :<br/>13) resource.parent_display_name: =, :<br/>14) resource.project_name: =, :<br/>15) resource.project_display_name: =, :<br/>16) resource.type: =, :<br/>17) resource.display_name: =, :<br/>18) resource.folders.resource_folder: =, :<br/><br/>Note: The value provided here is combined with the severity, category, and state arguments using the AND operator.<br/><br/>Examples:<br/>1) category="XSS_SCRIPTING" AND state="ACTIVE"<br/>2) severity="HIGH" AND resource.projectDisplayName:"prod"<br/>3) eventTime &gt; "2026-06-10T16:07:18-07:00"<br/>4) -resourceName:"" (a negated partial match on the empty string, to filter on a property not existing)<br/>. | Optional |
 | orderBy | This parameter defines what fields and order to use for sorting.<br/>The string value should be a comma-separated list of fields. The default sorting order is ascending.<br/>To specify descending order for a field, a suffix " desc" should be appended to the field name.<br/><br/>For example: "name desc,category".<br/><br/>Supported fields in the v2 API: name, parent, state, category, resourceName, eventTime, severity, securityMarks.marks. | Optional |
 | pageToken | The value returned by the last response of a google-cloud-scc-v2-finding-list command indicates that this is a continuation of a prior findings.list call, and that the system should return the next page of data. | Optional |
 
@@ -1697,7 +1697,7 @@ Lists an organization or source's findings using the Security Command Center v2 
                 "src_geoip_src": "MaxMind",
                 "dst_location": "Austin",
                 "device": "Windows Device",
-                "srcip": "10.0.0.1"
+                "srcip": "0.0.0.1"
             },
             "securityMarks": {
                 "name": "organizations/284002401341/sources/5473473300599573546/findings/f8e7d6c5b4a3928170615243aabbccdd/securityMarks",
@@ -1725,7 +1725,7 @@ Lists an organization or source's findings using the Security Command Center v2 
             "findingClass": "THREAT",
             "indicator": {
                 "ipAddresses": [
-                    "10.0.0.1"
+                    "0.0.0.1"
                 ],
                 "domains": [
                     "malicious-c2.example.com"
@@ -1850,7 +1850,7 @@ Lists an organization or source's findings using the Security Command Center v2 
             },
             "access": {
                 "principalEmail": "compute-sa@prod-web-app-284002.iam.gserviceaccount.com",
-                "callerIp": "10.0.0.1",
+                "callerIp": "0.0.0.1",
                 "callerIpGeo": {
                     "regionCode": "US"
                 },
@@ -1870,7 +1870,7 @@ Lists an organization or source's findings using the Security Command Center v2 
             },
             "connections": [
                 {
-                    "destinationIp": "10.0.0.1",
+                    "destinationIp": "0.0.0.1",
                     "destinationPort": 443,
                     "sourceIp": "10.128.0.4",
                     "sourcePort": 51820,
@@ -2208,7 +2208,7 @@ Lists an organization or source's findings using the Security Command Center v2 
                     "0.0.0.0/0"
                 ],
                 "destinationIpRanges": [
-                    "10.0.0.1/20"
+                    "0.0.0.1/20"
                 ],
                 "exposedServices": [
                     "ssh"
@@ -2454,9 +2454,9 @@ Lists an organization or source's findings using the Security Command Center v2 
                 "privateIpAddress": "10.128.0.4",
                 "privatePort": "8080",
                 "exposedService": "http",
-                "publicIpAddress": "10.0.0.1",
+                "publicIpAddress": "0.0.0.1",
                 "publicPort": "443",
-                "exposedEndpoint": "10.0.0.1:443",
+                "exposedEndpoint": "0.0.0.1:443",
                 "loadBalancerFirewallPolicy": "allow-https",
                 "serviceFirewallPolicy": "allow-http-8080",
                 "forwardingRule": "web-forwarding-rule",
@@ -2533,11 +2533,10 @@ Update an organization's or source's finding using the Security Command Center v
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The relative resource name of the finding.<br/>In the v2 API the name may include an optional "locations/{location}" segment.<br/><br/>Format: organizations/{organization_id}/sources/{source_id}/findings/{findingId} or organizations/{organization_id}/sources/{source_id}/locations/{location_id}/findings/{findingId}<br/><br/>Example: organizations/595779152576/sources/14801394649435054450/locations/global/findings/bc5a86da657611ebb979005056a5924e.<br/><br/>Note: Users can retrieve the list of the finding names by executing the "google-cloud-scc-v2-finding-list" command. | Required |
-| eventTime | Time at which the event took place. By default UTC current time will be taken if no value is provided in eventTime.<br/><br/>Format: YYYY-MM-ddTHH:mm:ss.sssZ<br/><br/>Example: 2026-07-22T07:10:02.782Z, 2026-06-02T15:01:23.045123456Z. | Optional |
 | severity | Related severity of the finding. Possible values are: LOW, MEDIUM, HIGH, CRITICAL. | Optional |
 | externalUri | URI that points to a web page outside of Cloud SCC (Security Command Center) where additional information about the finding can be found. | Optional |
 | sourceProperties | Source specific properties. These properties are managed by the source that writes the finding. For example "key1=val1,key2=val2". | Optional |
-| updateMask | A updateMask argument supports single or comma-separated fields that need to be updated/deleted. A updateMask is automatically generated in the backend for the specific arguments provided in the command and only those values will be updated. To delete attributes/properties, add those keys in updateMask without specifying those fields individually in the command arguments. | Optional |
+| updateMask | The name of a field that needs to be updated/deleted.<br/>The updateMask is automatically generated in the backend for the specific arguments provided in the command and only those values will be updated. To delete an attribute/property, provide its key in updateMask without specifying that field individually in the command arguments.<br/><br/>Example: severity, externalUri, sourceProperties.browser. | Optional |
 
 #### Context Output
 
@@ -3079,7 +3078,7 @@ Update an organization's or source's finding using the Security Command Center v
                 "src_geoip_src": "MaxMind",
                 "dst_location": "Mountain View",
                 "device": "Server",
-                "srcip": "10.0.0.1"
+                "srcip": "0.0.0.1"
             },
             "securityMarks": {
                 "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks",
@@ -3108,7 +3107,7 @@ Update an organization's or source's finding using the Security Command Center v
             "findingClass": "THREAT",
             "indicator": {
                 "ipAddresses": [
-                    "10.0.0.1"
+                    "0.0.0.1"
                 ],
                 "domains": [
                     "xmr-pool.badactor.example"
@@ -3233,7 +3232,7 @@ Update an organization's or source's finding using the Security Command Center v
             },
             "access": {
                 "principalEmail": "jdoe@example.com",
-                "callerIp": "10.0.0.1",
+                "callerIp": "0.0.0.1",
                 "callerIpGeo": {
                     "regionCode": "IN"
                 },
@@ -3253,7 +3252,7 @@ Update an organization's or source's finding using the Security Command Center v
             },
             "connections": [
                 {
-                    "destinationIp": "10.0.0.1",
+                    "destinationIp": "0.0.0.1",
                     "destinationPort": 3333,
                     "sourceIp": "10.128.0.12",
                     "sourcePort": 51244,
@@ -3591,7 +3590,7 @@ Update an organization's or source's finding using the Security Command Center v
                     "0.0.0.0/0"
                 ],
                 "destinationIpRanges": [
-                    "10.0.0.1/20"
+                    "0.0.0.1/20"
                 ],
                 "exposedServices": [
                     "ssh"
@@ -3837,9 +3836,9 @@ Update an organization's or source's finding using the Security Command Center v
                 "privateIpAddress": "10.128.0.12",
                 "privatePort": "8080",
                 "exposedService": "http",
-                "publicIpAddress": "10.0.0.1",
+                "publicIpAddress": "0.0.0.1",
                 "publicPort": "80",
-                "exposedEndpoint": "10.0.0.1:80",
+                "exposedEndpoint": "0.0.0.1:80",
                 "loadBalancerFirewallPolicy": "prod-lb-fw-policy",
                 "serviceFirewallPolicy": "prod-svc-fw-policy",
                 "forwardingRule": "web-lb-forwarding-rule",
@@ -3891,9 +3890,9 @@ Update an organization's or source's finding using the Security Command Center v
 
 >### The finding has been updated successfully
 >
->|Organization ID|Name|State|Severity|Category|Event Time (In UTC)|Create Time (In UTC)|External Uri|Resource Name|
->|---|---|---|---|---|---|---|---|---|
->| 123 | [organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a](https://console.cloud.google.com/security/command-center/findings?organizationId=123&resourceId=organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a) | ACTIVE | CRITICAL | Malware: Cryptomining Bad IP | February 18, 2020 at 07:26:42 AM | February 19, 2020 at 01:37:43 PM | [https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/web-server-01?project=prod-webapp-284917](https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/web-server-01?project=prod-webapp-284917) | //compute.googleapis.com/projects/prod-webapp-284917/zones/us-central1-a/instances/web-server-01 |
+>|Organization ID|Name|State|Severity|Category|Event Time (In UTC)|Create Time (In UTC)|External Uri|Resource Name|Source Properties|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 123 | [organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a](https://console.cloud.google.com/security/command-center/findings?organizationId=123&resourceId=organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a) | ACTIVE | CRITICAL | Malware: Cryptomining Bad IP | February 18, 2020 at 07:26:42 AM | February 19, 2020 at 01:37:43 PM | [https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/web-server-01?project=prod-webapp-284917](https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/web-server-01?project=prod-webapp-284917) | //compute.googleapis.com/projects/prod-webapp-284917/zones/us-central1-a/instances/web-server-01 | dst_zipcode: 94043<br>browser: Chrome<br>dst_region: California<br>userkey: jdoe@example.com<br>traffic_type: CloudApp<br>count: 3<br>dst_longitude: -122.0841<br>src_region: Maharashtra<br>app: Google Cloud Platform<br>dst_latitude: 37.422<br>object: instances/web-server-01<br>src_latitude: 19.076<br>sv: malsite<br>os: Linux<br>src_geoip_src: MaxMind<br>dst_location: Mountain View<br>device: Server<br>srcip: 0.0.0.1 |
 
 ### google-cloud-scc-v2-finding-state-update
 
@@ -4451,7 +4450,7 @@ Update the state of an organization's or source's finding using the Security Com
                 "src_geoip_src": "MaxMind",
                 "dst_location": "Mountain View",
                 "device": "Server",
-                "srcip": "10.0.0.1"
+                "srcip": "0.0.0.1"
             },
             "securityMarks": {
                 "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks",
@@ -4480,7 +4479,7 @@ Update the state of an organization's or source's finding using the Security Com
             "findingClass": "THREAT",
             "indicator": {
                 "ipAddresses": [
-                    "10.0.0.1"
+                    "0.0.0.1"
                 ],
                 "domains": [
                     "xmr-pool.badactor.example"
@@ -4605,7 +4604,7 @@ Update the state of an organization's or source's finding using the Security Com
             },
             "access": {
                 "principalEmail": "jdoe@example.com",
-                "callerIp": "10.0.0.1",
+                "callerIp": "0.0.0.1",
                 "callerIpGeo": {
                     "regionCode": "IN"
                 },
@@ -4625,7 +4624,7 @@ Update the state of an organization's or source's finding using the Security Com
             },
             "connections": [
                 {
-                    "destinationIp": "10.0.0.1",
+                    "destinationIp": "0.0.0.1",
                     "destinationPort": 3333,
                     "sourceIp": "10.128.0.12",
                     "sourcePort": 51244,
@@ -4963,7 +4962,7 @@ Update the state of an organization's or source's finding using the Security Com
                     "0.0.0.0/0"
                 ],
                 "destinationIpRanges": [
-                    "10.0.0.1/20"
+                    "0.0.0.1/20"
                 ],
                 "exposedServices": [
                     "ssh"
@@ -5209,9 +5208,9 @@ Update the state of an organization's or source's finding using the Security Com
                 "privateIpAddress": "10.128.0.12",
                 "privatePort": "8080",
                 "exposedService": "http",
-                "publicIpAddress": "10.0.0.1",
+                "publicIpAddress": "0.0.0.1",
                 "publicPort": "80",
-                "exposedEndpoint": "10.0.0.1:80",
+                "exposedEndpoint": "0.0.0.1:80",
                 "loadBalancerFirewallPolicy": "prod-lb-fw-policy",
                 "serviceFirewallPolicy": "prod-svc-fw-policy",
                 "forwardingRule": "web-lb-forwarding-rule",
@@ -5822,7 +5821,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
                 "src_geoip_src": "MaxMind",
                 "dst_location": "Mountain View",
                 "device": "Server",
-                "srcip": "10.0.0.1"
+                "srcip": "0.0.0.1"
             },
             "securityMarks": {
                 "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks",
@@ -5851,7 +5850,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
             "findingClass": "THREAT",
             "indicator": {
                 "ipAddresses": [
-                    "10.0.0.1"
+                    "0.0.0.1"
                 ],
                 "domains": [
                     "xmr-pool.badactor.example"
@@ -5976,7 +5975,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
             },
             "access": {
                 "principalEmail": "jdoe@example.com",
-                "callerIp": "10.0.0.1",
+                "callerIp": "0.0.0.1",
                 "callerIpGeo": {
                     "regionCode": "IN"
                 },
@@ -5996,7 +5995,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
             },
             "connections": [
                 {
-                    "destinationIp": "10.0.0.1",
+                    "destinationIp": "0.0.0.1",
                     "destinationPort": 3333,
                     "sourceIp": "10.128.0.12",
                     "sourcePort": 51244,
@@ -6334,7 +6333,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
                     "0.0.0.0/0"
                 ],
                 "destinationIpRanges": [
-                    "10.0.0.1/20"
+                    "0.0.0.1/20"
                 ],
                 "exposedServices": [
                     "ssh"
@@ -6580,9 +6579,9 @@ Mute an organization's or source's finding using the Security Command Center v2 
                 "privateIpAddress": "10.128.0.12",
                 "privatePort": "8080",
                 "exposedService": "http",
-                "publicIpAddress": "10.0.0.1",
+                "publicIpAddress": "0.0.0.1",
                 "publicPort": "80",
-                "exposedEndpoint": "10.0.0.1:80",
+                "exposedEndpoint": "0.0.0.1:80",
                 "loadBalancerFirewallPolicy": "prod-lb-fw-policy",
                 "serviceFirewallPolicy": "prod-svc-fw-policy",
                 "forwardingRule": "web-lb-forwarding-rule",
@@ -7193,7 +7192,7 @@ Unmute an organization's or source's finding using the Security Command Center v
                 "src_geoip_src": "MaxMind",
                 "dst_location": "Mountain View",
                 "device": "Server",
-                "srcip": "10.0.0.1"
+                "srcip": "0.0.0.1"
             },
             "securityMarks": {
                 "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks",
@@ -7222,7 +7221,7 @@ Unmute an organization's or source's finding using the Security Command Center v
             "findingClass": "THREAT",
             "indicator": {
                 "ipAddresses": [
-                    "10.0.0.1"
+                    "0.0.0.1"
                 ],
                 "domains": [
                     "xmr-pool.badactor.example"
@@ -7347,7 +7346,7 @@ Unmute an organization's or source's finding using the Security Command Center v
             },
             "access": {
                 "principalEmail": "jdoe@example.com",
-                "callerIp": "10.0.0.1",
+                "callerIp": "0.0.0.1",
                 "callerIpGeo": {
                     "regionCode": "IN"
                 },
@@ -7367,7 +7366,7 @@ Unmute an organization's or source's finding using the Security Command Center v
             },
             "connections": [
                 {
-                    "destinationIp": "10.0.0.1",
+                    "destinationIp": "0.0.0.1",
                     "destinationPort": 3333,
                     "sourceIp": "10.128.0.12",
                     "sourcePort": 51244,
@@ -7705,7 +7704,7 @@ Unmute an organization's or source's finding using the Security Command Center v
                     "0.0.0.0/0"
                 ],
                 "destinationIpRanges": [
-                    "10.0.0.1/20"
+                    "0.0.0.1/20"
                 ],
                 "exposedServices": [
                     "ssh"
@@ -7951,9 +7950,9 @@ Unmute an organization's or source's finding using the Security Command Center v
                 "privateIpAddress": "10.128.0.12",
                 "privatePort": "8080",
                 "exposedService": "http",
-                "publicIpAddress": "10.0.0.1",
+                "publicIpAddress": "0.0.0.1",
                 "publicPort": "80",
-                "exposedEndpoint": "10.0.0.1:80",
+                "exposedEndpoint": "0.0.0.1:80",
                 "loadBalancerFirewallPolicy": "prod-lb-fw-policy",
                 "serviceFirewallPolicy": "prod-svc-fw-policy",
                 "forwardingRule": "web-lb-forwarding-rule",
@@ -8088,7 +8087,7 @@ Create a mute rule (mute config) for an organization using the Security Command 
 | type | The type of the mute rule, which determines what type of mute state the rule affects. Immutable after creation.<br/><br/>STATIC: sets the static mute state of future matching findings to muted.<br/><br/>DYNAMIC: applied to existing and future matching findings, setting their dynamic mute state to muted. Possible values are: STATIC, DYNAMIC. | Required |
 | description | A description of the mute rule. | Optional |
 | expiryTime | The expiry of the mute rule. Only applicable for dynamic mute rules. If the expiry is set, when the mute rule expires, it is removed from all findings.<br/><br/>Format: YYYY-MM-ddTHH:mm:ss.sssZ<br/><br/>Example: 2026-07-22T07:10:02.782Z, 2026-06-02T15:01:23.045123456Z. | Optional |
-| location | The location in which the mute rule is created. If no location is specified, the mute rule is created in "global".<br/>'sa' is the location identifier of the Saudi Arabia (me-central2) region.<br/><br/>Example: global, eu, us, sa. | Optional |
+| location | The location in which the mute rule is created. If no location is specified, the mute rule is created in "global".<br/>'sa' is the location identifier of the Saudi Arabia (me-central2) region. Possible values are: global, us, eu, sa. | Optional |
 
 #### Context Output
 
@@ -8146,8 +8145,8 @@ The commands below are backed by the Security Command Center v1 API and have bee
 | **Deprecated command** | **Use instead** | **Migration notes** |
 | --- | --- | --- |
 | google-cloud-scc-finding-list | [google-cloud-scc-v2-finding-list](#google-cloud-scc-v2-finding-list) | The v2 command adds the optional `location` argument (default `global`). The v1-only `compareDuration`, `readTime` and `fieldMask` arguments are not supported by the v2 API and have no v2 equivalent. |
-| google-cloud-scc-finding-update | [google-cloud-scc-v2-finding-update](#google-cloud-scc-v2-finding-update) | Same arguments as v1. The `name` argument additionally accepts finding names that contain a `locations/{location}` segment. |
-| google-cloud-scc-finding-state-update | [google-cloud-scc-v2-finding-state-update](#google-cloud-scc-v2-finding-state-update) | Same arguments as v1. The `name` argument additionally accepts finding names that contain a `locations/{location}` segment, and the request sets only the finding state (the v1 API's deprecated `startTime` field is not sent). |
+| google-cloud-scc-finding-update | [google-cloud-scc-v2-finding-update](#google-cloud-scc-v2-finding-update) | The `name` argument additionally accepts finding names that contain a `locations/{location}` segment. |
+| google-cloud-scc-finding-state-update | [google-cloud-scc-v2-finding-state-update](#google-cloud-scc-v2-finding-state-update) | The `name` argument additionally accepts finding names that contain a `locations/{location}` segment. |
 | google-cloud-scc-asset-list | - | No v2 replacement. |
 
 **Context output change:** the v1 commands write to `GoogleCloudSCC.Finding.*` while the v2 commands write to `GoogleCloudSCC.FindingV2.*`. Playbooks and automations that read the finding context must be updated to the new path when migrating.
