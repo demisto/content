@@ -1,5 +1,4 @@
-Mimecast unified email management offers cloud email services for email security, continuity and archiving emails.
-Please read detailed instructions in order to understand how to set the integration's parameters.
+Use the Mimecast integration to manage email security, continuity, and archiving services.
 
 ## Rate Limiting
 
@@ -80,7 +79,7 @@ Archive | Search | Read
 | startRow          | This parameter is ignored, use the pagination parameters instead. Possible values are: .                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Optional     |
 | active            | Defines if the search should query recently received messages that are not fully processed yet (default false). You can search by mailbox and date time across active messages. Possible values are: true, false. Default is false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional     |
 | limit             | The maximum number of results to return. Possible values are: . Default is 100.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: .                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: .                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Optional     |
 
 #### Context Output
 
@@ -147,7 +146,7 @@ Get a policy by ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Mimecast.BlockedSendersPolicy.id | String | The unique identifier of the blocked senders policy. |
-| Mimecast.BlockedSendersPolicy.description | String | A description of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.description | String | The description of the blocked senders policy. |
 | Mimecast.BlockedSendersPolicy.from.type | String | The sender address type considered by the policy. |
 | Mimecast.BlockedSendersPolicy.from.emailAddress | String | The sender email address considered by the policy. |
 | Mimecast.BlockedSendersPolicy.from.domain | String | The sender domain considered by the policy. |
@@ -161,7 +160,7 @@ Get a policy by ID.
 | Mimecast.BlockedSendersPolicy.toDateTime | Date | The date and time the policy ceases to apply. |
 | Mimecast.BlockedSendersPolicy.fromEternal | Boolean | Whether the policy applies regardless of the start date. |
 | Mimecast.BlockedSendersPolicy.toEternal | Boolean | Whether the policy applies regardless of the end date. |
-| Mimecast.BlockedSendersPolicy.fromPart | String | Whether the sender address is considered based on the envelope, header, or either address. |
+| Mimecast.BlockedSendersPolicy.fromPart | String | The sender address type considered, based on the envelope, header, or either address. |
 | Mimecast.BlockedSendersPolicy.enabled | Boolean | Whether the policy is enabled. |
 | Mimecast.BlockedSendersPolicy.enforced | Boolean | Whether the policy is enforced. |
 | Mimecast.BlockedSendersPolicy.override | Boolean | Whether the policy is considered prior to other policies of the same type. |
@@ -260,7 +259,7 @@ Deprecated. Please use mimecast-create-block-sender-policy
 | fromPart          | Addresses based on. Possible values are: envelope_from, header_from, both. Default is envelope_from.                                                                                                                                                                                          | Optional     |
 | fromType          | Blocked Sender type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address.                                                                                                                                            | Required     |
 | fromValue         | Required if fromType is one of email domain, profile group, individual email address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. | Optional     |
-| toType            | Receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name.                                                                                 | Required     |
+| toType            | The receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name.                                                                                 | Required     |
 | toValue           | Required if fromType is one of email domain, profile group, individual email address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.       | Optional     |
 | option            | The block option, must be one of: no_action, block_sender. Possible values are: no_action, block_sender.                                                                                                                                                                                      | Required     |
 
@@ -284,7 +283,7 @@ Deprecated. Please use mimecast-create-block-sender-policy
 ### mimecast-delete-policy
 
 ***
-Delete a policy by ID.
+Deletes a policy by ID.
 
 #### Base Command
 
@@ -327,7 +326,7 @@ Gateway | Managed Senders | Edit
 | recipient         | The email address of recipient to permit or block.                                                                                 | Required     |
 | action            | Choose to either "permit" (to bypass spam checks) or "block" (to reject the email). Possible values are: permit, block.            | Required     |
 | limit             | The maximum number of results to return. Possible values are: . Default is 100.                                                    | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: . | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: . | Optional     |
 | page_size         | Number of results per page to display. Possible values are: .                                                                      | Optional     |
 
 #### Context Output
@@ -433,7 +432,7 @@ Archive | Search | Read
 | view                |  The message list type, must be one of: inbox or sent, default is inbox                                                    |Optional|
 | subject                     |     Filter by message subject                 | Optional|
 | limit | The maximum number of results to return. Default is 100. | Optional |
-| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional |
+| page | The page number you would like to view. Each page contains page_size values. Must be used with page_size. | Optional |
 | page_size | Number of results per page to display. | Optional |
 
 #### Context Output
@@ -469,7 +468,7 @@ Monitoring | Attachment Protection | Read
 | toDate            | End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request.                                    | Optional     |
 | resultType        | Filters logs by scan result, default is malicious. Possible values are: safe, malicious, timeout, error, unsafe, all. Default is malicious. | Optional     |
 | limit             | The maximum number of results to return. Default is 100.                                                                                    | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size.                                 | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size.                                 | Optional     |
 | page_size         | Number of results per page to display.                                                                                                      | Optional     |
 
 #### Context Output
@@ -507,7 +506,7 @@ Monitoring | URL Protection | Read
 | toDate            | End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request.                | Optional     |
 | resultType        | Filters logs by scan result, default is all                                                                             | Optional     |
 | limit             | The maximum number of results to return. Default is 100.                                                                | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size.             | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size.             | Optional     |
 | page_size         | Number of results per page to display.                                                                                  | Optional     |
 
 #### Context Output
@@ -551,7 +550,7 @@ Monitoring | Impersonation Protection | Read
 | toDate            | End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request.                                                                                                                                                                                                                         | Optional     |
 | actions           | Filters logs by action, you can choose more then one action separated by comma. Possible values are: delete, hold, bounce, smart_folder, disable_smart_folder, content_expire, meta_expire, stationery, gcc, secure_delivery, delivery_route, document_policy, disable_document_policy, attach_set_policy, remove_email.         | Optional     |
 | limit             | The maximum number of results to return. Default is 100.                                                                                                                                                                                                                                                                         | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: .                                                                                                                                                                                               | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: .                                                                                                                                                                                               | Optional     |
 | page_size         | Number of results per page to display. Possible values are: .                                                                                                                                                                                                                                                                    | Optional     |
 
 #### Context Output
@@ -1276,7 +1275,7 @@ Account | Dashboard | Read
 | value | Free text to filter results by. Possible values are: . | Optional |
 | field_name | Message fields to filter based on. Possible values are: all, subject, sender, recipient, reason_code. | Optional |
 | page_size | Number of results per page to display. Possible values are: . | Optional |
-| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: . | Optional |
+| page | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: . | Optional |
 | limit | The maximum number of results to return. Possible values are: . | Optional |
 
 #### Context Output
@@ -1415,7 +1414,7 @@ Monitoring | Processing | Read
 | attachments       | Whether there is an attachment in the message. Possible values are: .                                                              | Optional     |
 | route             | The message route. Possible values are: all, internal, outbound, inbound, external.                                                | Optional     |
 | page_size         | Number of results per page to display. Possible values are: .                                                                      | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: . | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: . | Optional     |
 | limit             | The maximum number of results to return. Possible values are: .                                                                    | Optional     |
 
 #### Context Output
@@ -1683,7 +1682,7 @@ Archive | View Logs | Read
 | Mimecast.ViewLog.subject | String | The subject of the viewed message. |
 | Mimecast.ViewLog.messageDate | Date | The date and time that the message was received. |
 | Mimecast.ViewLog.contentViewed | Boolean | Indicates if the message content was viewed or not. |
-| Mimecast.ViewLog.discoveryCase | Boolean | Indicates if the viewed message is a part of an existing discovery case. |
+| Mimecast.ViewLog.discoveryCase | Boolean | Whether the viewed message is a part of an existing discovery case. |
 
 #### Command example
 
@@ -1878,7 +1877,7 @@ List all existing Mimecast blocked sender policies.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policyType | According to this argument an endpoint is selected. Possible values are: blockedsenders, antispoofing-bypass, address-alteration. Default is blockedsenders. | Optional |
-| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Not supported when policyType is blockedsenders. | Optional |
+| page | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Not supported when policyType is blockedsenders. | Optional |
 | page_size | Sets the result to start returning results. Default value is '50'. | Optional |
 | limit | The maximum number of results to return. Default is 50. | Optional |
 | next_token | Pagination token for requesting the next page. Only applicable when policyType is blockedsenders. | Optional |
@@ -1887,8 +1886,8 @@ List all existing Mimecast blocked sender policies.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.BlockedSendersPolicy.policies | Unknown | List of blocked-senders policies returned for the current page. |
-| Mimecast.BlockedSendersPolicy.NextToken | String | Pagination token for the next page of blocked-senders policies. |
+| Mimecast.BlockedSendersPolicy.policies | Unknown | The list of blocked-senders policies returned for the current page. |
+| Mimecast.BlockedSendersPolicy.NextToken | String | The pagination token for the next page of blocked-senders policies. |
 | Mimecast.AddressAlterationPolicy.ID | string | Policy ID. |
 | Mimecast.AddressAlterationPolicy.meta.status | Number | The status of the Address Alteration policy. |
 | Mimecast.AddressAlterationPolicy.addressAlterationSetId | String | The Mimecast secure ID of the Address Alteration Set \(folder\) that will be applied by this policy. |
@@ -1911,7 +1910,7 @@ List all existing Mimecast blocked sender policies.
 | Mimecast.AddressAlterationPolicy.policy.createTime | String | The creation timestamp of the policy. |
 | Mimecast.AddressAlterationPolicy.policy.lastUpdated | string | Block emails to receiver type. |
 | Mimecast.BlockedSendersPolicy.policies.id | String | The unique identifier of the blocked senders policy. |
-| Mimecast.BlockedSendersPolicy.policies.description | String | A description of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.policies.description | String | The description of the blocked senders policy. |
 | Mimecast.BlockedSendersPolicy.policies.from.type | String | The sender address type considered by the policy. |
 | Mimecast.BlockedSendersPolicy.policies.from.emailAddress | String | The sender email address considered by the policy. |
 | Mimecast.BlockedSendersPolicy.policies.from.domain | String | The sender domain considered by the policy. |
@@ -1925,7 +1924,7 @@ List all existing Mimecast blocked sender policies.
 | Mimecast.BlockedSendersPolicy.policies.toDateTime | Date | The date and time the policy ceases to apply. |
 | Mimecast.BlockedSendersPolicy.policies.fromEternal | Boolean | Whether the policy applies regardless of the start date. |
 | Mimecast.BlockedSendersPolicy.policies.toEternal | Boolean | Whether the policy applies regardless of the end date. |
-| Mimecast.BlockedSendersPolicy.policies.fromPart | String | Whether the sender address is considered based on the envelope, header, or either address. |
+| Mimecast.BlockedSendersPolicy.policies.fromPart | String | The sender address type considered, based on the envelope, header, or either address. |
 | Mimecast.BlockedSendersPolicy.policies.enabled | Boolean | Whether the policy is enabled. |
 | Mimecast.BlockedSendersPolicy.policies.enforced | Boolean | Whether the policy is enforced. |
 | Mimecast.BlockedSendersPolicy.policies.override | Boolean | Whether the policy is considered prior to other policies of the same type. |
@@ -2014,7 +2013,7 @@ List all existing Mimecast blocked sender policies.
 ### mimecast-create-block-sender-policy
 
 ***
-Create a Blocked Sender Policy. Note: this command does not set context outputs - use mimecast-get-policy to retrieve the full policy.
+Creates a blocked sender policy. This command does not set context outputs, use mimecast-get-policy to retrieve the full policy.
 
 #### Prerequisite
 
@@ -2038,24 +2037,24 @@ Gateway | Policies | Edit
 | fromValue | Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. For address_attribute_value, use the from_attribute_id and from_attribute_value arguments instead. | Optional |
 | from_attribute_id | The secure ID of the address attribute. Required if fromType is address_attribute_value. | Optional |
 | from_attribute_value | The value to which the address attribute is equal. Required if fromType is address_attribute_value. | Optional |
-| toType | Receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required |
+| toType | The receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required |
 | toValue | Required if toType is one of email_domain, profile_group, individual_email_address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. For address_attribute_value, use the to_attribute_id and to_attribute_value arguments instead. | Optional |
 | to_attribute_id | The secure ID of the address attribute. Required if toType is address_attribute_value. | Optional |
 | to_attribute_value | The value to which the address attribute is equal. Required if toType is address_attribute_value. | Optional |
 | option | The block option. Possible values are: no_action, block_sender. | Required |
-| from_date | The policy start date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
-| to_date | The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| from_date | The policy start date in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
+| to_date | The policy end date in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.BlockedSendersPolicy.id | String | The ID of the newly created Blocked Senders policy. |
+| Mimecast.BlockedSendersPolicy.id | String | The ID of the newly created blocked senders policy. |
 
 ### mimecast-update-block-sender-policy
 
 ***
-Updates an existing Blocked Senders policy. Only the fields you explicitly provide are sent to the API and updated, while fields you omit are left unchanged on the server. Note: this command does not set context outputs - use mimecast-get-policy to retrieve the updated policy.
+Updates an existing blocked senders policy. Only the fields you explicitly provide are sent to the API and updated, while fields you omit are left unchanged on the server. This command does not set context outputs, use mimecast-get-policy to retrieve the updated policy.
 
 #### Required Permissions
 
@@ -2071,8 +2070,8 @@ Gateway | Policies | Edit
 | --- | --- | --- |
 | policy_id | The ID of the policy to update. | Required |
 | description | A new description for the policy. | Optional |
-| fromType | The sender type by which to block senders in the policy. For email_domain, profile_group, and individual_email_address, supply the value in the fromValue argument. For address_attribute_value, supply the value in the from_attribute_id and from_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
-| toType | The blocked receiver type by which to block receivers in the policy. For email_domain, profile_group, and individual_email_address, supply the value in the toValue argument. For address_attribute_value, supply the value in the to_attribute_id and to_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
+| fromType | The sender type by which to block senders in the policy. For email_domain, profile_group, and individual_email_address, provide the value in the fromValue argument. For address_attribute_value, provide the values in the from_attribute_id and from_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
+| toType | The blocked receiver type by which to block receivers in the policy. For email_domain, profile_group, and individual_email_address, provide the value in the toValue argument. For address_attribute_value, provide the values in the to_attribute_id and to_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
 | option | The block action. Possible values are: no_action, block_sender. | Optional |
 | fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email_domain. For address_attribute_value, use the from_attribute_id and from_attribute_value arguments instead. | Optional |
 | toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email_domain. For address_attribute_value, use the to_attribute_id and to_attribute_value arguments instead. | Optional |
@@ -2081,8 +2080,8 @@ Gateway | Policies | Edit
 | to_attribute_id | The secure ID of the address attribute. Required if toType is address_attribute_value. | Optional |
 | to_attribute_value | The value to which the address attribute is equal. Required if toType is address_attribute_value. | Optional |
 | fromPart | The part from where addresses are pulled. Possible values are: envelope_from, header_from, both. | Optional |
-| from_date | The policy start date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
-| to_date | The policy end date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). | Optional |
+| from_date | The policy start date in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
+| to_date | The policy end date in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
 
 #### Context Output
 
