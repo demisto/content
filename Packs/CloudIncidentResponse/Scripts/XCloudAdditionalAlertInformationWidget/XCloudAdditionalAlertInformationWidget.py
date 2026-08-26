@@ -54,10 +54,7 @@ def verify_list_type(original_alert_data):
     if not isinstance(original_alert_data, list) or not original_alert_data:
         return None
     entry_context = original_alert_data[0].get("EntryContext") or {}
-    # Both `getRawAlerts` (Cortex builtin command) and the legacy `core-get-cloud-original-alerts` command
-    # write the alert under a DT-suffixed key under the `Core.OriginalAlert` root, e.g.
-    # "Core.OriginalAlert(val.InternalID && val.InternalID == obj.InternalID)".
-    # Match the prefix so we are resilient to the exact selector form (InternalID vs internal_id).
+    # Match the `Core.OriginalAlert` prefix so we are resilient to the exact DT selector form.
     original_alert_key = next(
         (key for key in entry_context if key.startswith("Core.OriginalAlert")),
         None,

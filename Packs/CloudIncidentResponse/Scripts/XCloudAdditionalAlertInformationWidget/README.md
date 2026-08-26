@@ -16,7 +16,6 @@ This script retrieves additional original alert information from the context.
 This script uses the following commands and scripts.
 
 * SetByIncidentId
-* core-get-cloud-original-alerts
 * getRawAlerts
 * Cortex Core - IR
 
