@@ -452,7 +452,7 @@ def get_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResul
     response = client.get_threat_entity_set(
         DetectorId=args.get("detectorId", ""), ThreatEntitySetId=args.get("threatEntitySetId", "")
     )
-    data = {
+    data = remove_empty_elements({
         "DetectorId": args.get("detectorId"),
         "ThreatEntitySetId": args.get("threatEntitySetId"),
         "Name": response.get("Name"),
@@ -463,12 +463,10 @@ def get_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResul
         "CreatedAt": response.get("CreatedAt"),
         "UpdatedAt": response.get("UpdatedAt"),
         "Tags": response.get("Tags"),
-    }
-    data = remove_empty_elements(data)
+    })
 
-    readable_output = tableToMarkdown("AWS GuardDuty ThreatEntity Set", data)
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=tableToMarkdown("AWS GuardDuty ThreatEntity Set", data),
         outputs=data,
         outputs_prefix="AWS.GuardDuty.ThreatEntitySet",
         outputs_key_field="ThreatEntitySetId",
