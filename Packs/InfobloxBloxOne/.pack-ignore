@@ -64,9 +64,6 @@ ignore=IF115
 [file:incidentfield-Infoblox_Cloud_Application_Category.json]
 ignore=IF115
 
-[file:incidentfield-incidentfield-Infoblox_Cloud_User.json]
-ignore=IF115
-
 [file:incidentfield-Infoblox_Cloud_Threat_Property.json]
 ignore=IF115
 
