@@ -6707,6 +6707,27 @@ def test_compute_zone_operation_get_success(mocker):
     assert res.outputs["id"] == "op-2"
 
 
+def test_compute_zone_operation_get_normalizes_zone_url(mocker):
+    """
+    Given: A mocked GCP compute client and a zone provided as a full GCP zone URL.
+    When: compute_zone_operation_get is called.
+    Then: The zone is normalized to its bare name via extract_zone_name before the API call.
+    """
+    from GCP import compute_zone_operation_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_zone = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone
+    mock_zone.get.return_value.execute.return_value = {"id": "op-2", "name": "operation-2"}
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    zone_url = "https://www.googleapis.com/compute/v1/projects/p1/zones/us-central1-a"
+    compute_zone_operation_get(mock_creds, {"project_id": "p1", "zone": zone_url, "operation": "operation-2"})
+
+    assert mock_zone.get.call_args[1]["zone"] == "us-central1-a"
+
+
 def test_compute_region_operation_get_success(mocker):
     """
     Given: A mocked GCP compute client returning a region operation resource.
@@ -6766,7 +6787,7 @@ def test_compute_zone_operation_list_empty(mocker):
     """
     Given: A zone operations list response with no items and no next token.
     When: compute_zone_operation_list is called.
-    Then: It returns empty operations and a None next token.
+    Then: It returns a "no results" readable output and no context outputs.
     """
     from GCP import compute_zone_operation_list
 
@@ -6783,8 +6804,8 @@ def test_compute_zone_operation_list_empty(mocker):
 
     called_kwargs = mock_zone.list.call_args[1]
     assert called_kwargs["zone"] == "us-central1-a"
-    assert res.outputs["GCP.Compute.Operations(val.id && val.id == obj.id)"] == []
-    assert res.outputs["GCP.Compute(true)"]["ZoneOperationsNextToken"] is None
+    assert res.readable_output == "No zone operations were found."
+    assert not res.outputs
 
 
 def test_compute_region_operation_list_success(mocker):

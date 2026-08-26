@@ -3002,7 +3002,7 @@ def compute_zone_operation_get(creds: Credentials, args: dict[str, Any]) -> Comm
         CommandResults: Object containing the operation details under `GCP.Compute.Operations`.
     """
     project_id = args.get("project_id")
-    zone = args.get("zone")
+    zone = extract_zone_name(args.get("zone"))
     operation = args.get("operation")
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.zoneOperations().get(project=project_id, zone=zone, operation=operation).execute()  # pylint: disable=E1101
@@ -3096,6 +3096,8 @@ def compute_global_operation_list(creds: Credentials, args: dict[str, Any]) -> C
     response = compute.globalOperations().list(**params).execute()  # pylint: disable=E1101
     demisto.debug(f"GCP Compute Global Operations \nresponse: \n{response}")
     items = response.get("items", [])
+    if not items:
+        return CommandResults(readable_output="No global operations were found.")
     next_token = response.get("nextPageToken")
     metadata = (
         "Run the following command to retrieve the next batch of operations:\n"
@@ -3141,7 +3143,7 @@ def compute_zone_operation_list(creds: Credentials, args: dict[str, Any]) -> Com
         and pagination token under `GCP.Compute.ZoneOperationsNextToken`.
     """
     project_id = args.get("project_id")
-    zone = args.get("zone")
+    zone = extract_zone_name(args.get("zone"))
     limit = arg_to_number(args.get("limit")) or 50
     page_token = args.get("page_token")
     flt = args.get("filter")
@@ -3162,6 +3164,8 @@ def compute_zone_operation_list(creds: Credentials, args: dict[str, Any]) -> Com
     response = compute.zoneOperations().list(**params).execute()  # pylint: disable=E1101
     demisto.debug(f"GCP Compute Zone Operations \nresponse: \n{response}")
     items = response.get("items", [])
+    if not items:
+        return CommandResults(readable_output="No zone operations were found.")
     next_token = response.get("nextPageToken")
     metadata = (
         "Run the following command to retrieve the next batch of operations:\n"
@@ -3228,6 +3232,8 @@ def compute_region_operation_list(creds: Credentials, args: dict[str, Any]) -> C
     response = compute.regionOperations().list(**params).execute()  # pylint: disable=E1101
     demisto.debug(f"GCP Compute Region Operations \nresponse: \n{response}")
     items = response.get("items", [])
+    if not items:
+        return CommandResults(readable_output="No region operations were found.")
     next_token = response.get("nextPageToken")
     metadata = (
         "Run the following command to retrieve the next batch of operations:\n"
@@ -3289,7 +3295,7 @@ def compute_zone_operation_delete(creds: Credentials, args: dict[str, Any]) -> C
         CommandResults: A human-readable confirmation that the operation was deleted.
     """
     project_id = args.get("project_id")
-    zone = args.get("zone")
+    zone = extract_zone_name(args.get("zone"))
     operation = args.get("operation")
     compute = GCPServices.COMPUTE.build(creds)
     compute.zoneOperations().delete(project=project_id, zone=zone, operation=operation).execute()  # pylint: disable=E1101
