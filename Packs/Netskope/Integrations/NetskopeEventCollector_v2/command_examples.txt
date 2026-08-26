@@ -1,0 +1,2 @@
+!netskope-get-events limit=1
+!netskope-get-events limit=50 start_time="3 days"
