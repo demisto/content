@@ -214,15 +214,11 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
     assert len(x) == expected_result
 
 
-def test_get_formatted_message_bad_header(capfd):
+def test_get_formatted_message_bad_header():
     """
     Given a message that has a bad header
     When: Calling get_formatted_message
-    Then: An exception is raised, as the message cannot be serialized
-
-    Note: On Python 3.12.9+ the email generator was hardened to reject folded headers
-    containing newlines, so both as_string() and as_bytes() raise HeaderWriteError for
-    such malformed headers and get_formatted_message re-raises the failure.
+    Then: There should be no exceptions
     """
     import email
 
@@ -237,10 +233,9 @@ def test_get_formatted_message_bad_header(capfd):
     msg.add_header("Foo", "From: value==value=<= .palo.com =?utf-8?q?=3E?=")
     msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
 
-    # get_formatted_message logs the failure via demisto.error (which writes to stdout),
-    # so disable output capture to satisfy the autouse check_std_out_err fixture.
-    with capfd.disabled(), pytest.raises(Exception, match="Could not format message"):
-        get_formatted_message(msg)
+    formatted_message = get_formatted_message(msg)
+    assert type(formatted_message) is bytes
+    assert body in str(formatted_message)
 
 
 def test_get_formatted_message_good_header():
@@ -1220,7 +1215,8 @@ def test_get_item_as_eml(mocker):
     ]
     expected_data = (
         "MIME-Version: 1.0\r\n"
-        "Message-ID: <message-test-idRANDOMVALUES@testing.com>\r\n"
+        "Message-ID: \r\n"
+        " <message-test-idRANDOMVALUES@testing.com>\r\n"
         'Content-Type: text/plain; charset="iso-8859-2"\r\n'
         "Content-Transfer-Encoding: quoted-printable\r\n"
         "X-FAKE-Header: HVALue\r\n"
