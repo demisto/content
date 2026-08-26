@@ -3525,6 +3525,270 @@ script:
       - contextPath: GCP.Compute.Operations.kind
         description: Type of the resource. Always compute#operation for Operation resources.
         type: string
+  - name: gcp-compute-global-operation-get
+    description: "Retrieves the specified global Operations resource. Required permission: compute.globalOperations.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: operation
+      required: true
+      description: Name of the Operations resource to return.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator ranging from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: String
+  - name: gcp-compute-zone-operation-get
+    description: "Retrieves the specified zone-specific Operations resource. Required permission: compute.zoneOperations.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: Name of the zone for this request.
+    - name: operation
+      required: true
+      description: Name of the Operations resource to return.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator ranging from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: String
+  - name: gcp-compute-region-operation-get
+    description: "Retrieves the specified region-specific Operations resource. Required permission: compute.regionOperations.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      required: true
+      description: Name of the region for this request.
+    - name: operation
+      required: true
+      description: Name of the Operations resource to return.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator ranging from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: String
+  - name: gcp-compute-global-operation-list
+    description: "Lists the global Operations resources in the specified project. Required permission: compute.globalOperations.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination.
+    - name: filter
+      description: A filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value.
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator ranging from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: String
+    - contextPath: GCP.Compute.GlobalOperationsNextToken
+      description: Next page token for pagination.
+      type: String
+  - name: gcp-compute-zone-operation-list
+    description: "Lists the zone-specific Operations resources in the specified project and zone. Required permission: compute.zoneOperations.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: Name of the zone for this request.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination.
+    - name: filter
+      description: A filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value.
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator ranging from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: String
+    - contextPath: GCP.Compute.ZoneOperationsNextToken
+      description: Next page token for pagination.
+      type: String
+  - name: gcp-compute-region-operation-list
+    description: "Lists the region-specific Operations resources in the specified project and region. Required permission: compute.regionOperations.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      required: true
+      description: Name of the region for this request.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination.
+    - name: filter
+      description: A filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value.
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator ranging from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: String
+    - contextPath: GCP.Compute.RegionOperationsNextToken
+      description: Next page token for pagination.
+      type: String
+  - name: gcp-compute-global-operation-delete
+    description: "Deletes the specified global Operations resource. Required permission: compute.globalOperations.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: operation
+      required: true
+      description: Name of the Operations resource to delete.
+    outputs: []
+  - name: gcp-compute-zone-operation-delete
+    description: "Deletes the specified zone-specific Operations resource. Required permission: compute.zoneOperations.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: Name of the zone for this request.
+    - name: operation
+      required: true
+      description: Name of the Operations resource to delete.
+    outputs: []
+  - name: gcp-compute-region-operation-delete
+    description: "Deletes the specified region-specific Operations resource. Required permission: compute.regionOperations.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      required: true
+      description: Name of the region for this request.
+    - name: operation
+      required: true
+      description: Name of the Operations resource to delete.
+    outputs: []
 
 # The command is currently unsupported.
 #  - name: gcp-admin-user-update

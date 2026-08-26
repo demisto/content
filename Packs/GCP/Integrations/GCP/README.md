@@ -1675,3 +1675,247 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
+
+### gcp-compute-global-operation-list
+
+***
+Lists the global Operations resources in the specified project. Required permission: compute.globalOperations.list.
+
+#### Base Command
+
+`gcp-compute-global-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | A filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value. | Optional |
+| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator ranging from 0 to 100. |
+| GCP.Compute.Operations.kind | String | Type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.GlobalOperationsNextToken | String | Next page token for pagination. |
+
+### gcp-compute-zone-operation-get
+
+***
+Retrieves the specified zone-specific Operations resource. Required permission: compute.zoneOperations.get.
+
+#### Base Command
+
+`gcp-compute-zone-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | Name of the zone for this request. | Required |
+| operation | Name of the Operations resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator ranging from 0 to 100. |
+| GCP.Compute.Operations.kind | String | Type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-global-operation-delete
+
+***
+Deletes the specified global Operations resource. Required permission: compute.globalOperations.delete.
+
+#### Base Command
+
+`gcp-compute-global-operation-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| operation | Name of the Operations resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-region-operation-list
+
+***
+Lists the region-specific Operations resources in the specified project and region. Required permission: compute.regionOperations.list.
+
+#### Base Command
+
+`gcp-compute-region-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | Name of the region for this request. | Required |
+| limit | Maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | A filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value. | Optional |
+| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator ranging from 0 to 100. |
+| GCP.Compute.Operations.kind | String | Type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.RegionOperationsNextToken | String | Next page token for pagination. |
+
+### gcp-compute-zone-operation-delete
+
+***
+Deletes the specified zone-specific Operations resource. Required permission: compute.zoneOperations.delete.
+
+#### Base Command
+
+`gcp-compute-zone-operation-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | Name of the zone for this request. | Required |
+| operation | Name of the Operations resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-global-operation-get
+
+***
+Retrieves the specified global Operations resource. Required permission: compute.globalOperations.get.
+
+#### Base Command
+
+`gcp-compute-global-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| operation | Name of the Operations resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator ranging from 0 to 100. |
+| GCP.Compute.Operations.kind | String | Type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-zone-operation-list
+
+***
+Lists the zone-specific Operations resources in the specified project and zone. Required permission: compute.zoneOperations.list.
+
+#### Base Command
+
+`gcp-compute-zone-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | Name of the zone for this request. | Required |
+| limit | Maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | A filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value. | Optional |
+| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator ranging from 0 to 100. |
+| GCP.Compute.Operations.kind | String | Type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.ZoneOperationsNextToken | String | Next page token for pagination. |
+
+### gcp-compute-region-operation-delete
+
+***
+Deletes the specified region-specific Operations resource. Required permission: compute.regionOperations.delete.
+
+#### Base Command
+
+`gcp-compute-region-operation-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | Name of the region for this request. | Required |
+| operation | Name of the Operations resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-region-operation-get
+
+***
+Retrieves the specified region-specific Operations resource. Required permission: compute.regionOperations.get.
+
+#### Base Command
+
+`gcp-compute-region-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | Name of the region for this request. | Required |
+| operation | Name of the Operations resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator ranging from 0 to 100. |
+| GCP.Compute.Operations.kind | String | Type of the resource. Always compute\#operation for Operation resources. |

@@ -6652,3 +6652,245 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# Compute Operations commands (get / list / delete for global / zone / region)
+# ---------------------------------------------------------------------------
+
+
+def test_compute_global_operation_get_success(mocker):
+    """
+    Given: A mocked GCP compute client returning a global operation resource.
+    When: compute_global_operation_get is called with project_id and operation.
+    Then: It returns CommandResults with the GCP.Compute.Operations prefix and the correct request kwargs.
+    """
+    from GCP import compute_global_operation_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global
+    mock_global.get.return_value.execute.return_value = {"id": "op-1", "name": "operation-1", "status": "DONE"}
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_global_operation_get(mock_creds, {"project_id": "p1", "operation": "operation-1"})
+
+    called_kwargs = mock_global.get.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["operation"] == "operation-1"
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.outputs["id"] == "op-1"
+
+
+def test_compute_zone_operation_get_success(mocker):
+    """
+    Given: A mocked GCP compute client returning a zone operation resource.
+    When: compute_zone_operation_get is called with project_id, zone, and operation.
+    Then: It returns CommandResults with the GCP.Compute.Operations prefix and passes the zone in the request.
+    """
+    from GCP import compute_zone_operation_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_zone = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone
+    mock_zone.get.return_value.execute.return_value = {"id": "op-2", "name": "operation-2", "zone": "us-central1-a"}
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_zone_operation_get(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "operation": "operation-2"})
+
+    called_kwargs = mock_zone.get.call_args[1]
+    assert called_kwargs["zone"] == "us-central1-a"
+    assert called_kwargs["operation"] == "operation-2"
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.outputs["id"] == "op-2"
+
+
+def test_compute_region_operation_get_success(mocker):
+    """
+    Given: A mocked GCP compute client returning a region operation resource.
+    When: compute_region_operation_get is called with project_id, region, and operation.
+    Then: It returns CommandResults with the GCP.Compute.Operations prefix and passes the region in the request.
+    """
+    from GCP import compute_region_operation_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_region = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region
+    mock_region.get.return_value.execute.return_value = {"id": "op-3", "name": "operation-3", "region": "us-central1"}
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_region_operation_get(mock_creds, {"project_id": "p1", "region": "us-central1", "operation": "operation-3"})
+
+    called_kwargs = mock_region.get.call_args[1]
+    assert called_kwargs["region"] == "us-central1"
+    assert called_kwargs["operation"] == "operation-3"
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.outputs["id"] == "op-3"
+
+
+def test_compute_global_operation_list_with_pagination_and_filter(mocker):
+    """
+    Given: Pagination, filter, and order_by arguments for global operations.
+    When: compute_global_operation_list is called.
+    Then: The next token is returned under GCP.Compute.GlobalOperationsNextToken and the request kwargs are correct.
+    """
+    from GCP import compute_global_operation_list
+
+    args = {"project_id": "p1", "limit": "2", "page_token": "t0", "filter": "status = DONE", "order_by": "creationTimestamp desc"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global
+    mock_global.list.return_value.execute.return_value = {
+        "items": [{"name": "op-1", "id": "1"}],
+        "nextPageToken": "t1",
+    }
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_global_operation_list(mock_creds, args)
+
+    called_kwargs = mock_global.list.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["maxResults"] == 2
+    assert called_kwargs["pageToken"] == "t0"
+    assert called_kwargs["filter"] == "status = DONE"
+    assert called_kwargs["orderBy"] == "creationTimestamp desc"
+    assert res.outputs["GCP.Compute(true)"]["GlobalOperationsNextToken"] == "t1"
+
+
+def test_compute_zone_operation_list_empty(mocker):
+    """
+    Given: A zone operations list response with no items and no next token.
+    When: compute_zone_operation_list is called.
+    Then: It returns empty operations and a None next token.
+    """
+    from GCP import compute_zone_operation_list
+
+    args = {"project_id": "p1", "zone": "us-central1-a", "limit": "10"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_zone = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone
+    mock_zone.list.return_value.execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_zone_operation_list(mock_creds, args)
+
+    called_kwargs = mock_zone.list.call_args[1]
+    assert called_kwargs["zone"] == "us-central1-a"
+    assert res.outputs["GCP.Compute.Operations(val.id && val.id == obj.id)"] == []
+    assert res.outputs["GCP.Compute(true)"]["ZoneOperationsNextToken"] is None
+
+
+def test_compute_region_operation_list_success(mocker):
+    """
+    Given: A region operations list response with items.
+    When: compute_region_operation_list is called.
+    Then: It returns the operations under GCP.Compute.Operations and passes the region in the request.
+    """
+    from GCP import compute_region_operation_list
+
+    args = {"project_id": "p1", "region": "us-central1"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_region = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region
+    mock_region.list.return_value.execute.return_value = {"items": [{"name": "op-r", "id": "5"}]}
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_region_operation_list(mock_creds, args)
+
+    called_kwargs = mock_region.list.call_args[1]
+    assert called_kwargs["region"] == "us-central1"
+    assert res.outputs["GCP.Compute.Operations(val.id && val.id == obj.id)"][0]["id"] == "5"
+
+
+def test_compute_operation_list_invalid_limit(mocker):
+    """
+    Given: A limit argument outside the acceptable range (1-500).
+    When: compute_global_operation_list is called.
+    Then: A DemistoException is raised by validate_limit.
+    """
+    from GCP import compute_global_operation_list, DemistoException
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mocker.Mock())
+
+    with pytest.raises(DemistoException, match="acceptable values of the argument limit"):
+        compute_global_operation_list(mock_creds, {"project_id": "p1", "limit": "1000"})
+
+
+def test_compute_global_operation_delete_success(mocker):
+    """
+    Given: A global operation name.
+    When: compute_global_operation_delete is called.
+    Then: The delete request is issued and a success readable output is returned.
+    """
+    from GCP import compute_global_operation_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global
+    mock_global.delete.return_value.execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_global_operation_delete(mock_creds, {"project_id": "p1", "operation": "op-1"})
+
+    called_kwargs = mock_global.delete.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["operation"] == "op-1"
+    assert "successfully deleted" in res.readable_output
+    assert "op-1" in res.readable_output
+
+
+def test_compute_zone_operation_delete_success(mocker):
+    """
+    Given: A zone operation name and zone.
+    When: compute_zone_operation_delete is called.
+    Then: The delete request is issued with the zone and a success readable output is returned.
+    """
+    from GCP import compute_zone_operation_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_zone = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone
+    mock_zone.delete.return_value.execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_zone_operation_delete(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "operation": "op-2"})
+
+    called_kwargs = mock_zone.delete.call_args[1]
+    assert called_kwargs["zone"] == "us-central1-a"
+    assert called_kwargs["operation"] == "op-2"
+    assert "successfully deleted" in res.readable_output
+
+
+def test_compute_region_operation_delete_success(mocker):
+    """
+    Given: A region operation name and region.
+    When: compute_region_operation_delete is called.
+    Then: The delete request is issued with the region and a success readable output is returned.
+    """
+    from GCP import compute_region_operation_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_region = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region
+    mock_region.delete.return_value.execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_region_operation_delete(mock_creds, {"project_id": "p1", "region": "us-central1", "operation": "op-3"})
+
+    called_kwargs = mock_region.delete.call_args[1]
+    assert called_kwargs["region"] == "us-central1"
+    assert called_kwargs["operation"] == "op-3"
+    assert "successfully deleted" in res.readable_output
