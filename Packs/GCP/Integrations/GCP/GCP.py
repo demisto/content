@@ -80,6 +80,9 @@ class GCPServices(Enum):
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
     BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
     CLOUD_FUNCTIONS = ("cloudfunctions", "v2", "cloudfunctions.googleapis.com")
+    # The synchronous invocation method (functions().call) is only exposed by the v1 Cloud Functions
+    # API, so a dedicated v1 service is used for the execute command.
+    CLOUD_FUNCTIONS_V1 = ("cloudfunctions", "v1", "cloudfunctions.googleapis.com")
 
     # The following services are currently unsupported:
     # IAM_V1 = ("iam", "v1", "iam.googleapis.com")
@@ -360,6 +363,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-cloudrun-function-get": (
         GCPServices.CLOUD_FUNCTIONS,
         ["cloudfunctions.functions.get"],
+    ),
+    "gcp-cloudfunctions-function-execute": (
+        GCPServices.CLOUD_FUNCTIONS_V1,
+        ["cloudfunctions.functions.call"],
     ),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
@@ -3140,6 +3147,46 @@ def cloud_run_function_get(creds: Credentials, args: dict[str, Any]) -> CommandR
     )
 
 
+def cloud_function_execute(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Synchronously invokes a deployed Google Cloud (1st Gen) function and returns its execution result.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Cloud Functions API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): The region of the function.
+            - function_name (str): The name of the function to invoke.
+            - data (str, optional): The input data passed to the function, as a JSON-encoded string.
+
+    Returns:
+        CommandResults: Object containing the execution result under `GCP.CloudFunctions.Execution`.
+    """
+    project_id = args.get("project_id")
+    region = args.get("region")
+    function_name = args.get("function_name")
+    data = args.get("data") or ""
+    name = f"projects/{project_id}/locations/{region}/functions/{function_name}"
+    demisto.debug(f"[GCP: cloud_function_execute] Executing function: {name}")
+
+    # functions().call (synchronous invocation) is only exposed by the v1 Cloud Functions API.
+    service = GCPServices.CLOUD_FUNCTIONS_V1.build(creds)
+    response = service.projects().locations().functions().call(name=name, body={"data": data}).execute()  # pylint: disable=E1101
+    readable_output = tableToMarkdown(
+        f"GCP Cloud Function Execution: {function_name}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.CloudFunctions.Execution",
+        outputs_key_field="executionId",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -3206,6 +3253,7 @@ def main():  # pragma: no cover
             "gcp-cloudrun-functions-list": cloud_run_function_list,
             "gcp-cloudrun-locations-list": cloud_run_location_list,
             "gcp-cloudrun-function-get": cloud_run_function_get,
+            "gcp-cloudfunctions-function-execute": cloud_function_execute,
             # Quick Actions - Firewall
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy

@@ -4374,6 +4374,32 @@ script:
     - contextPath: GCP.CloudRun.Functions.satisfiesPzi
       description: Reserved for future use.
       type: Boolean
+  - name: gcp-cloudfunctions-function-execute
+    description: "Synchronously invokes a deployed Google Cloud (1st Gen) function and returns its execution result. Required Permission: cloudfunctions.functions.call."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      description: The region of the Google Cloud function. You can get a full list of regions using the gcp-cloudrun-locations-list command.
+      required: true
+    - name: function_name
+      description: The name of the function to invoke.
+      required: true
+    - name: data
+      description: The input data passed to the function, as a JSON-encoded string.
+      required: false
+    outputs:
+    - contextPath: GCP.CloudFunctions.Execution.executionId
+      description: The execution ID of the function invocation.
+      type: String
+    - contextPath: GCP.CloudFunctions.Execution.result
+      description: The result of the function invocation, returned as a string.
+      type: String
+    - contextPath: GCP.CloudFunctions.Execution.error
+      description: An error message, if the function execution resulted in an error.
+      type: String
 
 # The command is currently unsupported.
 #  - name: gcp-admin-user-signout

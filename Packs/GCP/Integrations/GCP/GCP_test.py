@@ -6952,12 +6952,94 @@ def test_cloud_run_location_list_permission_error_propagates(mocker):
         cloud_run_location_list(mock_creds, {"project_id": "mock_project_id"})
 
 
+def test_cloud_function_execute_success(mocker):
+    """
+    Given: An existing function name and input data.
+    When: cloud_function_execute is called.
+    Then: The fully-qualified resource name and the data body are passed to the v1
+          functions().call API and the result is returned under GCP.CloudFunctions.Execution.
+    """
+    from GCP import cloud_function_execute
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_functions = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.functions.return_value = mock_functions
+    mock_build = mocker.patch("GCP.build", return_value=mock_service)
+
+    mock_functions.call.return_value.execute.return_value = {
+        "executionId": "exec-1",
+        "result": '{"status": "ok"}',
+    }
+    res = cloud_function_execute(
+        mock_creds,
+        {"project_id": "mock_project_id", "region": "us-central1", "function_name": "fn-1", "data": '{"key": "value"}'},
+    )
+
+    assert res.outputs_prefix == "GCP.CloudFunctions.Execution"
+    assert res.outputs_key_field == "executionId"
+    assert res.outputs["executionId"] == "exec-1"
+    # The synchronous invocation must go through the v1 Cloud Functions API.
+    assert mock_build.call_args[0][1] == "v1"
+    called_kwargs = mock_functions.call.call_args[1]
+    assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1/functions/fn-1"
+    assert called_kwargs["body"] == {"data": '{"key": "value"}'}
+
+
+def test_cloud_function_execute_defaults_empty_data(mocker):
+    """
+    Given: No data argument.
+    When: cloud_function_execute is called.
+    Then: An empty string is passed as the data body so the API receives a valid payload.
+    """
+    from GCP import cloud_function_execute
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_functions = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.functions.return_value = mock_functions
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    mock_functions.call.return_value.execute.return_value = {"executionId": "exec-2", "result": "ok"}
+    cloud_function_execute(mock_creds, {"project_id": "mock_project_id", "region": "us-central1", "function_name": "fn-2"})
+
+    called_kwargs = mock_functions.call.call_args[1]
+    assert called_kwargs["body"] == {"data": ""}
+
+
+def test_cloud_function_execute_permission_error_propagates(mocker):
+    """
+    Given: A caller lacking cloudfunctions.functions.call, so the API raises a 403 HttpError.
+    When: cloud_function_execute is called.
+    Then: The HttpError propagates out of the command so main() can route it through
+          handle_permission_error, rather than being swallowed into a success result.
+    """
+    from GCP import cloud_function_execute
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_service = mocker.Mock()
+    mock_functions = mocker.Mock()
+    mock_service.projects.return_value.locations.return_value.functions.return_value = mock_functions
+    mocker.patch("GCP.build", return_value=mock_service)
+
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_functions.call.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Permission \'cloudfunctions.functions.call\' denied on resource"}}'
+    )
+
+    with pytest.raises(HttpError):
+        cloud_function_execute(mock_creds, {"project_id": "mock_project_id", "region": "us-central1", "function_name": "fn-3"})
+
+
 @pytest.mark.parametrize(
     "command_name, permission",
     [
         ("gcp-cloudrun-functions-list", "cloudfunctions.functions.list"),
         ("gcp-cloudrun-locations-list", "cloudfunctions.locations.list"),
         ("gcp-cloudrun-function-get", "cloudfunctions.functions.get"),
+        ("gcp-cloudfunctions-function-execute", "cloudfunctions.functions.call"),
     ],
 )
 def test_cloud_run_permission_error_reports_declared_permission(mocker, command_name, permission):
