@@ -46,10 +46,16 @@ configuration:
   type: 8
   display: Fetch incidents
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: incidentType
   type: 13
   display: Incident type
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
@@ -57,11 +63,17 @@ configuration:
   type: 19
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - name: max_fetch
   type: 0
   defaultvalue: '50'
   display: The maximum number of incidents per fetch
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: first_fetch
   type: 0
   defaultvalue: 7 days
