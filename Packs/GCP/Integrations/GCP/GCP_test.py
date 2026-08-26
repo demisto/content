@@ -272,6 +272,41 @@ def test_compute_firewall_list_with_pagination_and_filter(mocker):
     assert res.outputs["GCP.Compute(true)"]["FirewallsNextToken"] == "t1"
 
 
+def test_compute_firewall_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-compute-firewall-list is invoked.
+    When:
+        - compute_firewall_list is called.
+    Then:
+        - The context output keys remain the singular GCP.Compute.Firewall and FirewallNextToken,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import compute_firewall_list
+
+    # Given: the deprecated singular command name and a paginated API response
+    mocker.patch.object(demisto, "command", return_value="gcp-compute-firewall-list")
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.list.return_value.execute.return_value = {
+        "items": [{"name": "fw-1", "id": "1"}],
+        "nextPageToken": "t1",
+    }
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    # When: the command function is executed
+    res = compute_firewall_list(mock_creds, {"project_id": "p1"})
+
+    # Then: the singular context paths are used, not the pluralized ones
+    assert "GCP.Compute.Firewall(val.name && val.name == obj.name)" in res.outputs
+    assert res.outputs["GCP.Compute(true)"]["FirewallNextToken"] == "t1"
+    assert "GCP.Compute.Firewalls(val.name && val.name == obj.name)" not in res.outputs
+
+
 def test_compute_firewall_get_found_and_not_found(mocker):
     """
     Given: A firewall name
@@ -2944,6 +2979,48 @@ def test_storage_bucket_list_basic(mocker):
     assert result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"][0]["name"] == "b1"
 
 
+def test_storage_bucket_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-storage-bucket-list is invoked.
+    When:
+        - storage_bucket_list is called.
+    Then:
+        - The result uses the singular outputs_prefix GCP.Storage.Bucket with a plain list output,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import storage_bucket_list
+
+    # Given: the deprecated singular command name and a bucket API response
+    mocker.patch.object(demisto, "command", return_value="gcp-storage-bucket-list")
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.list.return_value.execute.return_value = {
+        "items": [
+            {
+                "name": "b1",
+                "timeCreated": "2024-01-01T00:00:00Z",
+                "updated": "2024-01-02T00:00:00Z",
+                "owner": {"entityId": "123"},
+                "location": "US",
+                "storageClass": "STANDARD",
+            }
+        ]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+
+    # When: the command function is executed
+    result = storage_bucket_list(creds, {"project_id": "p1"})
+
+    # Then: the singular prefix and list output are preserved
+    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs[0]["name"] == "b1"
+
+
 def test_storage_bucket_get_basic(mocker):
     """
     Given: A bucket exists
@@ -3074,6 +3151,36 @@ def test_storage_bucket_policy_list_with_version(mocker):
     assert result.outputs["version"] == 3
 
 
+def test_storage_bucket_policy_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-storage-bucket-policy-list is invoked.
+    When:
+        - storage_bucket_policy_list is called.
+    Then:
+        - The result uses the singular outputs_prefix GCP.Storage.BucketPolicy,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import storage_bucket_policy_list
+
+    # Given: the deprecated singular command name and a bucket policy API response
+    mocker.patch.object(demisto, "command", return_value="gcp-storage-bucket-policy-list")
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.getIamPolicy.return_value.execute.return_value = {"version": 3, "etag": "abc", "bindings": []}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+
+    # When: the command function is executed
+    result = storage_bucket_policy_list(creds, {"bucket_name": "b1"})
+
+    # Then: the singular prefix is preserved
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+
+
 def test_storage_bucket_policy_set_basic(mocker):
     """
     Given: A policy document to apply
@@ -3126,6 +3233,37 @@ def test_storage_bucket_object_policy_list_normal_and_ubla(mocker):
     mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicies"))
     result2 = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
     assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
+
+
+def test_storage_bucket_object_policy_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-storage-bucket-object-policy-list is invoked with UBLA disabled.
+    When:
+        - storage_bucket_object_policy_list is called.
+    Then:
+        - The result uses the singular outputs_prefix GCP.Storage.BucketObjectPolicy,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import storage_bucket_object_policy_list
+
+    # Given: the deprecated singular command name, UBLA disabled, and an object ACL API response
+    mocker.patch.object(demisto, "command", return_value="gcp-storage-bucket-object-policy-list")
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.list.return_value.execute.return_value = {"items": [{"entity": "allUsers", "role": "READER"}]}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+
+    # When: the command function is executed
+    result = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
+
+    # Then: the singular prefix is preserved
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
 
 
 def test_storage_bucket_object_policy_set_update_then_insert(mocker):

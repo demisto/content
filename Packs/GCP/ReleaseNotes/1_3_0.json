@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The context outputs paths of the following commands, and quick actions were updated: gcp-compute-firewall-get, gcp-compute-snapshots-list, gcp-compute-snapshot-get, gcp-compute-instances-aggregated-list-by-ip, gcp-storage-bucket-metadata-update, Enable GCP Bucket Versioning, Set GCP Bucket Access to Uniform, gcp-storage-bucket-get, gcp-storage-bucket-objects-list, gcp-storage-bucket-policy-set, gcp-storage-bucket-object-policy-set."
+}

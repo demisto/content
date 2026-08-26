@@ -600,6 +600,7 @@ def _merge_bucket_objects(bucket_name: str, new_objects: list[dict[str, Any]]) -
     demisto.debug(f"[GCP: storage_bucket_objects_list] Objects in context after merge: {len(merged_objects)}")
     return list(merged_objects.values())
 
+
 ##########
 
 
