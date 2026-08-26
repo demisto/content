@@ -1,4 +1,7 @@
 category: Endpoint
+sectionorder:
+- connect
+- collect
 provider: Broadcom
 commonfields:
   id: Carbon Black Endpoint Standard v3
@@ -36,7 +39,7 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
+  section: collect
   advanced: true
 - name: isFetch
   display: Fetch incidents

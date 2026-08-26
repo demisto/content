@@ -95,7 +95,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - defaultvalue: 'true'
   display: Show only open issues

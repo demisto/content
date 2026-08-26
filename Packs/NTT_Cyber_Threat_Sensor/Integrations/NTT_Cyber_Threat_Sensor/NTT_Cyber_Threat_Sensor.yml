@@ -45,7 +45,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - display: The base URL for the backend to consume from
   name: BASEURL

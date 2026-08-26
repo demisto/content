@@ -58,7 +58,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - display: Whether to get attachments for the fetched tickets
   name: attachments

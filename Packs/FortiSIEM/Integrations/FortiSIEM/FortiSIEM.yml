@@ -20,7 +20,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - display: Server URL (e.g. https://192.168.0.1)
   name: host

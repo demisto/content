@@ -30,7 +30,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - display: Events query
   name: eventsQuery

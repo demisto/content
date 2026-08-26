@@ -45,7 +45,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - additionalinfo: Enables to trust on all certificates
   display: Trust any certificate (not secure)

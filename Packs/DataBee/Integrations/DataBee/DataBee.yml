@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 provider: Comcast Corporation
 commonfields:
   id: DataBee
@@ -51,6 +54,7 @@ configuration:
   - Finding.Observable
   - Finding.Process
   defaultvalue:
+  section: Collect
 - name: isFetch
   display: Fetch incidents
   required: false

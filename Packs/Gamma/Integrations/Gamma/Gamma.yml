@@ -25,6 +25,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Enter the violation ID to begin fetching from. If empty, the API will default to your first violation
   display: Starting Violation
   name: first_fetch

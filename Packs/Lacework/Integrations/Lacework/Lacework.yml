@@ -44,7 +44,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - defaultvalue: '7'
   display: Lacework Alert History to Import (in days)

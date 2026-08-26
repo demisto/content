@@ -54,7 +54,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - additionalinfo: Fetch vulnerabilities with CVS score that exactly equals the provided value. This can be a decimal point number. Disabled if empty. Mutually exclusive with cvss_score_greater_than
   display: Fetch vulnerabilities with CVSS with exact value

@@ -60,7 +60,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 description: Cloud-based IT service management solution.
 display: Cherwell

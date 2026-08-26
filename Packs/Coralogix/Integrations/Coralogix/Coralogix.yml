@@ -17,7 +17,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - additionalinfo: The Coralogix WebAPI endpoint for your account - Do not modify unless instructed to by Coralogix Customer Success
   defaultvalue: https://webapi.coralogix.com

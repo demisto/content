@@ -30,7 +30,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - display: First event ID to fetch from
   name: first_fetch_id

@@ -35,7 +35,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - defaultvalue: 'true'
   display: Enable Alert Notification Ingestion (Refresh Not Supported)

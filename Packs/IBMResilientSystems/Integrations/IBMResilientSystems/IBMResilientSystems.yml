@@ -1,4 +1,7 @@
 category: Case Management
+sectionorder:
+- Connect
+- Collect
 provider: IBM
 commonfields:
   id: IBM Resilient Systems

@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 provider: Trellix
 commonfields:
   id: FireEye Central Management

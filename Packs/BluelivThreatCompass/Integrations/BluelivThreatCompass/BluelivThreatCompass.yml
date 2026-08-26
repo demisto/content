@@ -58,7 +58,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)

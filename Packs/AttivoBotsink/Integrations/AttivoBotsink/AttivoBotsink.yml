@@ -39,7 +39,6 @@ configuration:
   defaultvalue: '1'
   required: false
   type: 19
-  section: Collect
   advanced: true
 - display: Number of days to go back for the initial fetch. Use "0" to only retrieve new incidents.
   name: first_fetch
