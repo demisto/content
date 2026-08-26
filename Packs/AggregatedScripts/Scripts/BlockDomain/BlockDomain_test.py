@@ -4,9 +4,6 @@ import pytest
 
 import BlockDomain
 from BlockDomain import (
-    ACTION_CREATED,
-    ACTION_MODIFIED,
-    ACTION_UNCHANGED,
     OBJECT_NAME_PREFIX,
     MAX_OBJECT_NAME_LENGTH,
     RESULT_FAILED,
@@ -20,7 +17,6 @@ from BlockDomain import (
     derive_object_name,
     is_valid_fqdn,
     is_wildcard,
-    most_significant_action,
     pan_os_push_status,
     validate_domains,
 )
@@ -146,6 +142,41 @@ def test_derive_object_name_overflow_truncates_and_hashes():
     assert name == derive_object_name(long_domain)
 
 
+def test_derive_object_name_overflow_distinct_domains_are_unique():
+    """
+    Given:
+       - Two DIFFERENT over-length domains.
+    When:
+       - Deriving each object name (both take the truncate+hash overflow path).
+    Then:
+       - The two names are different, proving the hash suffix disambiguates over-length names
+         (the digest is a function of the full domain, not the truncated body).
+    """
+    name_a = derive_object_name(("a" * 80) + ".example.com")
+    name_b = derive_object_name(("b" * 80) + ".example.com")
+    assert name_a != name_b
+
+
+def test_derive_object_name_overflow_same_prefix_different_tail_are_unique():
+    """
+    Given:
+       - Two over-length domains that share an identical long leading segment (so their
+         truncated bodies are the same) but differ only in a tail beyond the truncation point.
+    When:
+       - Deriving each object name.
+    Then:
+       - The names are STILL unique - the digest is computed over the full original domain, so
+         differences past the truncation boundary are preserved in the hash suffix. This is the
+         key anti-collision guarantee for the prefix-hash naming scheme.
+    """
+    shared_head = "a" * 80
+    name_a = derive_object_name(f"{shared_head}.first-tail.example.com")
+    name_b = derive_object_name(f"{shared_head}.second-tail.example.com")
+    assert name_a != name_b
+    # Both are truncated to the same length budget, so equal length; only the digest differs.
+    assert len(name_a) == len(name_b)
+
+
 def test_validate_domains_splits_valid_and_failed():
     """
     Given:
@@ -164,8 +195,10 @@ def test_validate_domains_splits_valid_and_failed():
     wildcard_row = next(row for row in failed if row["Domain"] == "*.evil.com")
     assert wildcard_row["Status"] == STATUS_FAILED
     assert wildcard_row["Result"] == RESULT_FAILED
-    assert wildcard_row["Action"] == ACTION_UNCHANGED
     assert "Wildcard" in wildcard_row["Message"]
+    # No brand/rule applies to a validation-failed row - these must be real null, not "".
+    assert wildcard_row["Brand"] is None
+    assert wildcard_row["RuleName"] is None
 
     invalid_row = next(row for row in failed if row["Domain"] == "no-dot")
     assert invalid_row["Status"] == STATUS_FAILED
@@ -187,28 +220,6 @@ def test_validate_domains_all_valid():
     assert skipped == []
 
 
-@pytest.mark.parametrize(
-    "actions, expected",
-    [
-        ([], ACTION_UNCHANGED),
-        ([ACTION_UNCHANGED, ACTION_UNCHANGED], ACTION_UNCHANGED),
-        ([ACTION_UNCHANGED, ACTION_MODIFIED], ACTION_MODIFIED),
-        ([ACTION_MODIFIED, ACTION_CREATED], ACTION_CREATED),
-        ([ACTION_CREATED, ACTION_UNCHANGED], ACTION_CREATED),
-    ],
-)
-def test_most_significant_action(actions, expected):
-    """
-    Given:
-       - A list of per-step actions (Unchanged / Modified / Created).
-    When:
-       - Calling most_significant_action to summarise the whole flow into a single action.
-    Then:
-       - Returns Created > Modified > Unchanged in priority; empty list yields Unchanged.
-    """
-    assert most_significant_action(actions) == expected
-
-
 def _pan_os(domains):
     return PanOs(
         {
@@ -223,9 +234,20 @@ def _pan_os(domains):
 
 
 def _mock_execute(monkeypatch, side_effect):
-    """Patch BlockDomain.demisto.executeCommand to yield the given responses in order."""
+    """Patch BlockDomain.demisto.executeCommand to yield the given responses in order.
+
+    ``pan-os-create-tag`` (emitted by PanOs.ensure_tag at the very start of the flow) is
+    auto-answered with a success entry and does NOT consume an item from ``side_effect``, so the
+    ordered per-command expectations in each test stay aligned with the object/group/rule flow.
+    """
     responses = iter(side_effect)
-    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", lambda *a, **k: next(responses))
+
+    def _dispatch(command_name, *a, **k):
+        if command_name == "pan-os-create-tag":
+            return [ok_entry()]
+        return next(responses)
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _dispatch)
 
 
 def test_process_domains_create_everything(monkeypatch):
@@ -252,12 +274,81 @@ def test_process_domains_create_everything(monkeypatch):
             [ok_entry()],
         ],
     )
-    rows = _pan_os(["evil.example.com"]).process_domains()
+    pan = _pan_os(["evil.example.com"])
+    rows = pan.process_domains()
     assert len(rows) == 1
     assert rows[0]["Status"] == STATUS_DONE
     assert rows[0]["Result"] == RESULT_SUCCESS
-    assert rows[0]["Action"] == ACTION_CREATED
     assert rows[0]["RuleName"] == "Cortex - Block Domain"
+    # Action is no longer surfaced; change-detection is tracked internally to gate the commit.
+    assert pan._made_changes is True
+    assert "Action" not in rows[0]
+
+
+def test_ensure_tag_creates_tag_up_front(monkeypatch):
+    """
+    Given:
+       - A PanOs flow configured with a tag.
+    When:
+       - Calling ensure_tag.
+    Then:
+       - pan-os-create-tag is invoked exactly once with the configured tag name, so the tag exists
+         before any group/rule references it (independent of whether an address object is created).
+    """
+    calls: list = []
+
+    def _capture(name, args):
+        calls.append((name, args))
+        return [ok_entry()]
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+
+    _pan_os(["evil.example.com"]).ensure_tag()
+
+    assert calls == [("pan-os-create-tag", {"name": "cortex-blocked-domains"})]
+
+
+def test_ensure_tag_tolerates_already_exists_error(monkeypatch):
+    """
+    Given:
+       - pan-os-create-tag returns an error (the tag already exists on the device).
+    When:
+       - Calling ensure_tag.
+    Then:
+       - ensure_tag does NOT raise - an already-existing tag is an expected, benign outcome.
+    """
+
+    def _err(name, args):
+        return [err_entry("tag already exists")]
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _err)
+
+    # Must not raise.
+    _pan_os(["evil.example.com"]).ensure_tag()
+
+
+def test_ensure_tag_noop_when_no_tag(monkeypatch):
+    """
+    Given:
+       - A PanOs flow with an empty tag.
+    When:
+       - Calling ensure_tag.
+    Then:
+       - No pan-os-create-tag call is made (nothing to create).
+    """
+    calls: list = []
+
+    def _capture(name, args):
+        calls.append(name)
+        return [ok_entry()]
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+
+    pan = _pan_os(["evil.example.com"])
+    pan.tag = ""
+    pan.ensure_tag()
+
+    assert calls == []
 
 
 def test_start_flow_skips_commit_when_all_actions_unchanged(monkeypatch):
@@ -305,7 +396,7 @@ def test_start_flow_skips_commit_when_all_actions_unchanged(monkeypatch):
 
     assert isinstance(result, list)
     assert len(result) == 1
-    assert result[0]["Action"] == ACTION_UNCHANGED
+    assert "Action" not in result[0]
     assert "pan-os-commit" not in [c[0] for c in calls]
 
 
@@ -387,7 +478,10 @@ def test_process_domains_rule_created_when_object_unchanged_sets_rule_changed(mo
     pan_os = _pan_os(["evil.example.com"])
     rows = pan_os.process_domains()
 
-    assert rows[0]["Action"] == ACTION_UNCHANGED
+    # Object + membership did not change (so _made_changes stays False), but the rule was created,
+    # so _rule_changed is True - that alone must still trigger a commit in start_flow.
+    assert "Action" not in rows[0]
+    assert pan_os._made_changes is False
     assert pan_os._rule_changed is True
 
 
@@ -430,36 +524,6 @@ def test_start_flow_commits_when_only_the_rule_changed(monkeypatch):
     _pan_os(["evil.example.com"]).start_flow()
 
     assert commit_called, "pan_os_commit must be called when only the rule changed (all objects Unchanged)"
-
-
-def test_process_domains_captures_instance_name_from_response_metadata(monkeypatch):
-    """
-    Given:
-       - A stream of PAN-OS responses where the first entry carries Metadata.instance
-         (the platform stamps this on every execute_command result).
-    When:
-       - Calling process_domains.
-    Then:
-       - The class captures the serving-instance name on the first successful response and
-         propagates it into every resulting row's Instance field.
-    """
-    _mock_execute(
-        monkeypatch,
-        [
-            [ok_entry({"Panorama.AddressGroups": []}, instance="Panorama_QA")],
-            [ok_entry({"Panorama.SecurityRule": []})],
-            [err_entry("not found")],
-            [ok_entry()],
-            [ok_entry()],
-            [ok_entry()],
-            [ok_entry()],
-        ],
-    )
-    pan_os = _pan_os(["evil.example.com"])
-    rows = pan_os.process_domains()
-    assert pan_os.instance_name == "Panorama_QA"
-    assert len(rows) == 1
-    assert rows[0]["Instance"] == "Panorama_QA"
 
 
 def test_process_domains_missing_group_created_lazily_with_first_object(monkeypatch):
@@ -529,9 +593,13 @@ def test_process_domains_all_unchanged(monkeypatch):
             [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],
         ],
     )
-    rows = _pan_os(["evil.example.com"]).process_domains()
+    pan = _pan_os(["evil.example.com"])
+    rows = pan.process_domains()
     assert rows[0]["Status"] == STATUS_DONE
-    assert rows[0]["Action"] == ACTION_UNCHANGED
+    # Everything already in place -> no change -> commit will be skipped.
+    assert pan._made_changes is False
+    assert pan._rule_changed is False
+    assert "Action" not in rows[0]
 
 
 def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
@@ -560,9 +628,12 @@ def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
             [ok_entry()],
         ],
     )
-    rows = _pan_os(["evil.example.com"]).process_domains()
+    pan = _pan_os(["evil.example.com"])
+    rows = pan.process_domains()
     assert rows[0]["Status"] == STATUS_DONE
-    assert rows[0]["Action"] == ACTION_CREATED
+    # A new object was created and added to the group -> a change occurred -> commit will run.
+    assert pan._made_changes is True
+    assert "Action" not in rows[0]
 
 
 def test_process_domains_existing_rule_missing_group_is_edited(monkeypatch):
@@ -588,9 +659,13 @@ def test_process_domains_existing_rule_missing_group_is_edited(monkeypatch):
             [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],
         ],
     )
-    rows = _pan_os(["evil.example.com"]).process_domains()
+    pan = _pan_os(["evil.example.com"])
+    rows = pan.process_domains()
     assert rows[0]["Status"] == STATUS_DONE
-    assert rows[0]["Action"] == ACTION_UNCHANGED
+    # Object + membership unchanged, but the rule was edited to add the group -> _rule_changed.
+    assert pan._made_changes is False
+    assert pan._rule_changed is True
+    assert "Action" not in rows[0]
 
 
 def test_process_domains_dynamic_group_is_skipped(monkeypatch):
@@ -695,10 +770,8 @@ def test_build_final_command_results_non_verbose_is_table_only():
         {
             "Domain": "a.com",
             "Brand": "Panorama",
-            "Instance": "",
             "Status": STATUS_DONE,
             "Result": RESULT_SUCCESS,
-            "Action": ACTION_CREATED,
             "RuleName": "Cortex - Block Domain",
             "Message": "ok",
         }
@@ -727,10 +800,8 @@ def test_build_final_command_results_verbose_appends_command_hr():
         {
             "Domain": "a.com",
             "Brand": "Panorama",
-            "Instance": "",
             "Status": STATUS_DONE,
             "Result": RESULT_SUCCESS,
-            "Action": ACTION_CREATED,
             "RuleName": "Cortex - Block Domain",
             "Message": "ok",
         }
@@ -758,20 +829,16 @@ def test_build_final_command_results_all_failed_is_error_entry():
         {
             "Domain": "a.com",
             "Brand": "Panorama",
-            "Instance": "inst1",
             "Status": STATUS_FAILED,
             "Result": RESULT_FAILED,
-            "Action": ACTION_UNCHANGED,
             "RuleName": "",
             "Message": "boom",
         },
         {
             "Domain": "b.com",
             "Brand": "Panorama",
-            "Instance": "inst1",
             "Status": STATUS_FAILED,
             "Result": RESULT_FAILED,
-            "Action": ACTION_UNCHANGED,
             "RuleName": "",
             "Message": "boom",
         },
@@ -797,20 +864,16 @@ def test_build_final_command_results_partial_failure_is_not_error_entry():
         {
             "Domain": "a.com",
             "Brand": "Panorama",
-            "Instance": "inst1",
             "Status": STATUS_DONE,
             "Result": RESULT_SUCCESS,
-            "Action": ACTION_CREATED,
             "RuleName": "Cortex - Block Domain",
             "Message": "ok",
         },
         {
             "Domain": "b.com",
             "Brand": "Panorama",
-            "Instance": "inst1",
             "Status": STATUS_FAILED,
             "Result": RESULT_FAILED,
-            "Action": ACTION_UNCHANGED,
             "RuleName": "",
             "Message": "boom",
         },
@@ -950,10 +1013,8 @@ def test_finish_reads_rows_and_responses_as_json_then_clears_context(monkeypatch
         {
             "Domain": "evil.example.com",
             "Brand": "Panorama",
-            "Instance": "Panorama_QA",
             "Status": STATUS_DONE,
             "Result": RESULT_SUCCESS,
-            "Action": ACTION_CREATED,
             "RuleName": "Cortex - Block Domain",
             "Message": "ok",
         }

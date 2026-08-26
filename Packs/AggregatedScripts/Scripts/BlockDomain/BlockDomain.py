@@ -30,11 +30,11 @@ STATUS_FAILED = "Failed"
 RESULT_SUCCESS = "Success"
 RESULT_FAILED = "Failed"
 
-# Action values (ordered by significance for aggregation).
+# Internal change-detection markers (no longer surfaced as a per-row Action output; used only to
+# decide whether the run mutated Panorama state and therefore needs a commit/push).
 ACTION_CREATED = "Created"
 ACTION_MODIFIED = "Modified"
 ACTION_UNCHANGED = "Unchanged"
-ACTION_SIGNIFICANCE = {ACTION_UNCHANGED: 0, ACTION_MODIFIED: 1, ACTION_CREATED: 2}
 
 # Mirrors the BlockExternalIp toggle; flipped True by polling functions while a job runs.
 POLLING = False
@@ -90,52 +90,41 @@ def derive_object_name(domain: str) -> str:
     return f"{OBJECT_NAME_PREFIX}{truncated}-{digest}"
 
 
-def most_significant_action(actions: list) -> str:
-    """Return the most significant action from a list.
-
-    Args:
-        actions (list): A list of action strings.
-    Returns:
-        The most significant action (Created > Modified > Unchanged).
-    """
-    if not actions:
-        return ACTION_UNCHANGED
-    return max(actions, key=lambda action: ACTION_SIGNIFICANCE.get(action, 0))
-
-
 def build_result_row(
     domain: str,
-    brand: str,
+    brand: str | None,
     status: str,
     result: str,
-    action: str,
     message: str,
-    instance: str = "",
-    rule_name: str = "",
+    rule_name: str | None = None,
 ) -> dict:
     """Assemble a single BlockDomain row.
 
+    Any field with no meaningful value is stored as ``None`` (real JSON null) rather than an empty
+    string, so downstream context never carries empty-string placeholders (e.g. a failed-validation
+    row has ``Brand: null`` and ``RuleName: null`` instead of ``""``).
+
+    Note: there is intentionally no ``Action`` field - the security team confirmed that ``Result``
+    plus ``Message`` convey everything they need, so per-row Created/Modified/Unchanged is not
+    surfaced. Change-detection is still performed internally to gate the commit/push.
+
     Args:
         domain (str): The processed domain.
-        brand (str): The brand used.
+        brand (str | None): The brand used, or None when not applicable (e.g. failed validation).
         status (str): The lifecycle status.
         result (str): Success or Failed.
-        action (str): Created, Modified, or Unchanged.
         message (str): A human-readable message.
-        instance (str): The integration instance.
-        rule_name (str): The rule name used (empty if none).
+        rule_name (str | None): The rule name used, or None when no rule was involved.
     Returns:
-        A dict representing a single result row.
+        A dict representing a single result row, with empty values normalised to None.
     """
     return {
-        "Domain": domain,
-        "Brand": brand,
-        "Instance": instance,
-        "Status": status,
-        "Result": result,
-        "Action": action,
-        "RuleName": rule_name,
-        "Message": message,
+        "Domain": domain or None,
+        "Brand": brand or None,
+        "Status": status or None,
+        "Result": result or None,
+        "RuleName": rule_name or None,
+        "Message": message or None,
     }
 
 
@@ -157,10 +146,9 @@ def validate_domains(domain_list: list) -> tuple[list, list]:
             failed_rows.append(
                 build_result_row(
                     domain=domain,
-                    brand="",
+                    brand=None,
                     status=STATUS_FAILED,
                     result=RESULT_FAILED,
-                    action=ACTION_UNCHANGED,
                     message=f"Wildcard domain '{domain}' is not supported by this script; skipped.",
                 )
             )
@@ -168,10 +156,9 @@ def validate_domains(domain_list: list) -> tuple[list, list]:
             failed_rows.append(
                 build_result_row(
                     domain=domain,
-                    brand="",
+                    brand=None,
                     status=STATUS_FAILED,
                     result=RESULT_FAILED,
-                    action=ACTION_UNCHANGED,
                     message=f"Invalid FQDN '{domain}' - skipped.",
                 )
             )
@@ -191,21 +178,6 @@ def get_enabled_brands() -> set:
 
 
 """ EXECUTE-COMMAND / CONTEXT HELPERS """
-
-
-def get_instance_from_result(res: dict) -> str:
-    """Return the integration instance name from a demisto.executeCommand response entry.
-
-    Every entry exposes the serving instance under ``Metadata.instance``. Mirrors the pattern
-    used by other aggregated scripts such as ExpirePassword.
-
-    Args:
-        res (dict): A single entry from the list returned by ``demisto.executeCommand``.
-    Returns:
-        The instance name, or an empty string if the entry doesn't carry one.
-    """
-    value = dict_safe_get(res, ["Metadata", "instance"])
-    return str(value) if value else ""
 
 
 def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
@@ -282,8 +254,8 @@ def build_final_command_results(rows: list, verbose: bool, responses: list) -> C
     readable_output = tableToMarkdown(
         table_title,
         rows,
-        headers=["Domain", "Brand", "Instance", "Status", "Result", "Action", "RuleName", "Message"],
-        removeNull=False,
+        headers=["Domain", "Brand", "Status", "Result", "RuleName", "Message"],
+        removeNull=True,
     )
     if all_failed:
         readable_output += "\n\n**All runs failed.** Review the table above for the specific error messages."
@@ -291,7 +263,7 @@ def build_final_command_results(rows: list, verbose: bool, responses: list) -> C
         readable_output += build_verbose_human_readable(responses)
     command_results = CommandResults(
         outputs_prefix="BlockDomain",
-        outputs_key_field=["Domain", "Brand", "Instance"],
+        outputs_key_field=["Domain", "Brand"],
         outputs=rows,
         readable_output=readable_output,
     )
@@ -338,8 +310,33 @@ class PanOs:
         self._rule_ensured: bool = False
         # True once the rule was created or edited this run
         self._rule_changed: bool = False
-        # Captured lazily from the first response's Metadata.instance; stamped on every row.
-        self.instance_name: str = ""
+        # True once any address object was created, or added to the group, this run. Together with
+        # _rule_changed this gates the commit/push (Action is no longer surfaced per row).
+        self._made_changes: bool = False
+
+    # ---- tag helper ----------------------------------------------------
+
+    def ensure_tag(self) -> None:
+        """Ensure the configured tag exists on the device before any entity references it.
+
+        The tag is otherwise only created as a side-effect of creating a *new* address object
+        (``pan-os-create-address`` with ``create_tag=true``). When every address object already
+        exists, that path is skipped, so a brand-new tag is never created and the subsequent
+        ``pan-os-create-address-group`` / ``pan-os-create-rule`` calls fail with "tag not valid".
+        Creating the tag up front decouples tag creation from object creation.
+
+        ``pan-os-create-tag`` on an already-existing tag returns an error; that is expected and
+        tolerated here (the tag simply already exists), so this method never raises for that case.
+        """
+        if not self.tag:
+            return
+        res = run_execute_command("pan-os-create-tag", {"name": self.tag})
+        self.responses.append(res)
+        if is_error(res):
+            # Most commonly the tag already exists - that is fine. Log and continue.
+            demisto.debug(
+                f"{LOG_TAG} pan-os-create-tag for '{self.tag}' returned an error " f"(likely already exists): {get_error(res)}"
+            )
 
     # ---- execution helper ----------------------------------------------
 
@@ -357,9 +354,6 @@ class PanOs:
         self.responses.append(res)
         if is_error(res):
             raise DemistoException(f"{error_prefix}: {get_error(res)}")
-        # Capture the serving instance on the first successful response (like ExpirePassword).
-        if not self.instance_name and res:
-            self.instance_name = get_instance_from_result(res[0])
         return res
 
     # ---- context probes -------------------------------------------------
@@ -431,8 +425,7 @@ class PanOs:
         group_type = (group_context.get("Type") or "").lower()
         if group_type == "dynamic":
             raise DynamicGroupError(
-                f"Address-group '{self.address_group}' already exists as dynamic; "
-                f"will not modify a managed dynamic group."
+                f"Address-group '{self.address_group}' already exists as dynamic; " f"will not modify a managed dynamic group."
             )
         return True
 
@@ -504,7 +497,7 @@ class PanOs:
         group_exists: bool,
         rule_present: bool,
         rule_destinations: list,
-    ) -> tuple[str, str, bool]:
+    ) -> tuple[bool, str, bool]:
         """Ensure a single domain's address-object exists and belongs to the group.
 
         PAN-OS ordering constraints handled here:
@@ -563,7 +556,10 @@ class PanOs:
             actions.append(ACTION_MODIFIED)
             messages.append(f"Added to '{self.address_group}'.")
 
-        return most_significant_action(actions), " ".join(messages), group_exists
+        # Collapse the per-step actions to a single 'changed' bool for commit-gating; the Action
+        # value itself is no longer surfaced in the output (Result + Message are sufficient).
+        changed = any(action in (ACTION_CREATED, ACTION_MODIFIED) for action in actions)
+        return changed, " ".join(messages), group_exists
 
     def _ensure_rule_once(self, rule_present: bool, rule_destinations: list) -> None:
         """Call ensure_rule at most once per run. Safe to invoke from the per-domain loop.
@@ -587,6 +583,9 @@ class PanOs:
         """
         rows: list = []
         try:
+            # Create the tag up front so group/rule creation can reference it even when every
+            # address object already exists (and the create-address auto-create path is skipped).
+            self.ensure_tag()
             group_context = self.get_address_group()
             group_exists = self.ensure_group(group_context)
             current_members = []
@@ -601,17 +600,16 @@ class PanOs:
                 self._ensure_rule_once(rule_present, rule_destinations)
 
             for domain in self.domains:
-                action, message, group_exists = self.ensure_domain(
+                changed, message, group_exists = self.ensure_domain(
                     domain, current_members, group_exists, rule_present, rule_destinations
                 )
+                self._made_changes = self._made_changes or changed
                 rows.append(
                     build_result_row(
                         domain=domain,
                         brand=self.brand,
                         status=STATUS_DONE,
                         result=RESULT_SUCCESS,
-                        action=action,
-                        instance=self.instance_name,
                         rule_name=self.rule_name,
                         message=f"{message} Rule '{self.rule_name}' enforced at top.",
                     )
@@ -625,8 +623,6 @@ class PanOs:
                         brand=self.brand,
                         status=STATUS_SKIPPED,
                         result=RESULT_SUCCESS,
-                        action=ACTION_UNCHANGED,
-                        instance=self.instance_name,
                         rule_name="",
                         message=str(dyn_err),
                     )
@@ -640,8 +636,6 @@ class PanOs:
                         brand=self.brand,
                         status=STATUS_FAILED,
                         result=RESULT_FAILED,
-                        action=ACTION_UNCHANGED,
-                        instance=self.instance_name,
                         rule_name=self.rule_name,
                         message=f"Failed to block '{domain}' on Panorama: {ex!s}",
                     )
@@ -779,11 +773,12 @@ class PanOs:
         """
         rows = self.process_domains()
         demisto.setContext("block_domain_rows", json.dumps(rows))
-        # Only commit/push when a row actually mutated Panorama state. Skipping on a pure
-        # Unchanged run saves a commit job + a potentially multi-minute push polling loop.
-        # _rule_changed covers rule create/edit, which is not reflected in per-domain Action.
-        object_changes = any(row.get("Action") in (ACTION_CREATED, ACTION_MODIFIED) for row in rows)
-        made_changes = object_changes or self._rule_changed
+        # Only commit/push when the run actually mutated Panorama state. Skipping on a pure
+        # "nothing changed" run saves a commit job + a potentially multi-minute push polling loop.
+        # Change-detection is tracked internally (no longer read back from a per-row Action field):
+        #   * _made_changes -> an address object was created, or added to the group.
+        #   * _rule_changed -> the rule was created or edited (group added / new rule name).
+        made_changes = self._made_changes or self._rule_changed
         auto_commit = argToBoolean(self.args.get("auto_commit", True))
         demisto.debug(f"{LOG_TAG} start_flow: {made_changes=}, {auto_commit=}, {len(rows)} row(s)")
         if made_changes and auto_commit:
@@ -792,6 +787,9 @@ class PanOs:
                 return self.finish()
             self.save_responses()
             return poll_commit
+        # Nothing changed on the device (object, group, and rule were all already in place): return
+        # early with the per-domain rows and skip the commit/push entirely.
+        demisto.debug(f"{LOG_TAG} start_flow: no changes detected; skipping commit/push.")
         return rows
 
     def finish(self) -> list:  # pragma: no cover
@@ -1033,7 +1031,6 @@ def main() -> None:  # pragma: no cover
                         brand=brand,
                         status=STATUS_FAILED,
                         result=RESULT_FAILED,
-                        action=ACTION_UNCHANGED,
                         message=f"The brand {brand} is not supported by 'block-domain'. Supported: {SUPPORTED_BRANDS}.",
                     )
                 )
@@ -1044,7 +1041,6 @@ def main() -> None:  # pragma: no cover
                         brand=brand,
                         status=STATUS_FAILED,
                         result=RESULT_FAILED,
-                        action=ACTION_UNCHANGED,
                         message=f"The brand {brand} isn't enabled.",
                     )
                 )

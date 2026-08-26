@@ -32,9 +32,7 @@ The script blocks a list of domain FQDNs in supported integrations. Safe to re-r
 | --- | --- | --- |
 | BlockDomain.Domain | The domain FQDN that was processed. | String |
 | BlockDomain.Brand | The brand \(integration\) used to block the domain. | String |
-| BlockDomain.Instance | The integration instance used to block the domain. | String |
 | BlockDomain.Status | The lifecycle status of the action. One of Done, Pending, Skipped, Failed. | String |
 | BlockDomain.Result | The result of the action. Success or Failed. | String |
-| BlockDomain.Action | The effect the run had on the target object. One of Created, Modified, Unchanged. | String |
 | BlockDomain.RuleName | The name of the rule used for this integration. Empty if no rule was used. | String |
 | BlockDomain.Message | A message concerning the result of the action. | String |

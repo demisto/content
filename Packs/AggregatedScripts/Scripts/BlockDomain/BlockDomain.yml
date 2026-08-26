@@ -65,17 +65,11 @@ outputs:
 - contextPath: BlockDomain.Brand
   description: The brand (integration) used to block the domain.
   type: String
-- contextPath: BlockDomain.Instance
-  description: The integration instance used to block the domain.
-  type: String
 - contextPath: BlockDomain.Status
   description: The lifecycle status of the action. One of Done, Pending, Skipped, Failed.
   type: String
 - contextPath: BlockDomain.Result
   description: The result of the action. Success or Failed.
-  type: String
-- contextPath: BlockDomain.Action
-  description: The effect the run had on the target object. One of Created, Modified, Unchanged.
   type: String
 - contextPath: BlockDomain.RuleName
   description: The name of the rule used for this integration. Empty if no rule was used.
