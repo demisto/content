@@ -1,6 +1,6 @@
 args:
 - auto: PREDEFINED
-  description: A list of dictionaries of headers in the form of "Header name":"Header value".
+  description: 'The email headers. Supported formats: a list of dictionaries in the form of "Header name":"Header value" (Email.Headers), a headers object in the form of "Header name": "Header value" (Email.HeadersMap), or the raw header block as a string.'
   isArray: true
   name: headers
   predefined:
