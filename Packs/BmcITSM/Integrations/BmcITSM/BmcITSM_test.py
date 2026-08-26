@@ -1453,7 +1453,7 @@ def test_fetch_command(mocker):
 @pytest.mark.parametrize(
     "command_arguments",
     [
-        (
+        pytest.param(
             {
                 "incident_number": "INC000010381028",
                 "detailed_description": "Description TEST",
