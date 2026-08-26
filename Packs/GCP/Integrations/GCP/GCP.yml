@@ -3055,7 +3055,7 @@ script:
       description: The optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format.
+      description: The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
       description: The time that this operation was started by the server. This value is in RFC3339 text format.
@@ -3288,7 +3288,7 @@ script:
       description: An optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
-      description: The user who requested the operation, for example, EMAILADDRESS.
+      description: The user who requested the operation, for example, EMAILADDRESS.§§
       type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
