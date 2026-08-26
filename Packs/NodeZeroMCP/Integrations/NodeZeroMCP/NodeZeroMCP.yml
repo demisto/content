@@ -1,0 +1,66 @@
+category: Vulnerability Management
+provider: Horizon3.ai
+sectionorder:
+- Connect
+commonfields:
+  id: NodeZero MCP
+  version: -1
+configuration:
+  - name: base_url
+    section: Connect
+    display: Server URL
+    defaultvalue: https://mcp.horizon3ai.com
+    type: 0
+    required: true
+  - name: scope
+    section: Connect
+    display: Scope
+    defaultvalue: read write offline_access
+    type: 0
+    advanced: true
+    additionalinfo: Space-separated OAuth scopes to request.
+  - name: redirect_uri
+    section: Connect
+    defaultvalue: https://oproxy.demisto.ninja/authcode
+    display: Redirect URI
+    type: 0
+    advanced: true
+  - name: server_name
+    section: Connect
+    display: Server Name
+    type: 0
+    additionalinfo: The name to use for the server in tool names. If not provided, the default name returned by the NodeZero MCP server will be used.
+    advanced: true
+description: Use this integration to connect to the NodeZero MCP server and automatically discover its available pentesting tools.
+display: NodeZero MCP
+name: NodeZero MCP
+script:
+  commands:
+  - arguments: []
+    description: Retrieves a list of available tools in the NodeZero MCP server.
+    name: list-tools
+    hidden: true
+    outputs: []
+  - arguments:
+    - name: name
+      description: The name of the tool to call.
+    - name: arguments
+      description: Parameters for the tool execution.
+    description: Calls a specific tool on the NodeZero MCP server with optional input parameters.
+    name: call-tool
+    hidden: true
+    outputs: []
+  - description: >-
+      Register this integration as an OAuth client with the NodeZero OAuth proxy and generate
+      a login URL. Follow the returned instructions to authenticate via the NodeZero portal.
+    name: nodezero-mcp-generate-login-url
+  - description: Test the OAuth authentication configuration with the NodeZero MCP server.
+    name: nodezero-mcp-auth-test
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/mcp:1.0.0.10120494
+  mcp: true
+fromversion: 8.13.0
+tests:
+- No tests (auto formatted)
