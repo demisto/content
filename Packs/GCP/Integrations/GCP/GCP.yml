@@ -992,7 +992,7 @@ script:
         type: String
 
   - name: gcp-container-cluster-security-update
-    description: "Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
+    description: "Configures security settings for GKE clusters, including access controls and visibility. Only one update may be applied to a cluster per request. Provide exactly one of the supported security flags. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     arguments:
     - name: project_id
       required: false
@@ -1349,7 +1349,7 @@ script:
         type: String
 
   - name: gcp-container-cluster-legacy-abac-auth-set
-    description: "Enables or disables legacy ABAC authorization for a GKE cluster. Required permissions: container.clusters.setLegacyAbac."
+    description: "Enables or disables legacy ABAC authorization for a GKE cluster. Required permissions: container.clusters.update."
     arguments:
     - name: project_id
       required: false
@@ -1401,18 +1401,57 @@ script:
     - contextPath: GCP.Container.Clusters.name
       description: The name of the GKE cluster.
       type: String
+    - contextPath: GCP.Container.Clusters.description
+      description: An optional description of the cluster.
+      type: String
     - contextPath: GCP.Container.Clusters.location
       description: The location (zone or region) of the GKE cluster.
       type: String
+    - contextPath: GCP.Container.Clusters.locations
+      description: The list of Compute Engine zones in which the cluster's nodes are located.
+      type: Unknown
     - contextPath: GCP.Container.Clusters.currentMasterVersion
       description: The current version of the Kubernetes master in the cluster.
       type: String
+    - contextPath: GCP.Container.Clusters.currentNodeVersion
+      description: The current version of the Kubernetes nodes in the cluster.
+      type: String
+    - contextPath: GCP.Container.Clusters.currentNodeCount
+      description: The number of nodes currently in the cluster.
+      type: Number
+    - contextPath: GCP.Container.Clusters.initialNodeCount
+      description: The initial number of nodes for the cluster.
+      type: Number
     - contextPath: GCP.Container.Clusters.endpoint
       description: The IP address of the cluster's master endpoint.
       type: String
     - contextPath: GCP.Container.Clusters.status
       description: The current status of the cluster.
       type: String
+    - contextPath: GCP.Container.Clusters.statusMessage
+      description: Additional information about the current status of the cluster, if available.
+      type: String
+    - contextPath: GCP.Container.Clusters.network
+      description: The name of the Google Compute Engine network to which the cluster is connected.
+      type: String
+    - contextPath: GCP.Container.Clusters.subnetwork
+      description: The name of the Google Compute Engine subnetwork to which the cluster is connected.
+      type: String
+    - contextPath: GCP.Container.Clusters.clusterIpv4Cidr
+      description: The IP address range of the container pods in the cluster, in CIDR notation.
+      type: String
+    - contextPath: GCP.Container.Clusters.createTime
+      description: The time the cluster was created, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Container.Clusters.selfLink
+      description: The server-defined URL for the cluster resource.
+      type: String
+    - contextPath: GCP.Container.Clusters.zone
+      description: The name of the Google Compute Engine zone in which the cluster resides.
+      type: String
+    - contextPath: GCP.Container.Clusters.nodePools
+      description: The list of node pools associated with the cluster.
+      type: Unknown
   - name: gcp-container-cluster-get
     description: "Gets the details of a specific GKE cluster. Required permissions: container.clusters.get."
     arguments:
@@ -1430,18 +1469,57 @@ script:
     - contextPath: GCP.Container.Clusters.name
       description: The name of the GKE cluster.
       type: String
+    - contextPath: GCP.Container.Clusters.description
+      description: An optional description of the cluster.
+      type: String
     - contextPath: GCP.Container.Clusters.location
       description: The location (zone or region) of the GKE cluster.
       type: String
+    - contextPath: GCP.Container.Clusters.locations
+      description: The list of Compute Engine zones in which the cluster's nodes are located.
+      type: Unknown
     - contextPath: GCP.Container.Clusters.currentMasterVersion
       description: The current version of the Kubernetes master in the cluster.
       type: String
+    - contextPath: GCP.Container.Clusters.currentNodeVersion
+      description: The current version of the Kubernetes nodes in the cluster.
+      type: String
+    - contextPath: GCP.Container.Clusters.currentNodeCount
+      description: The number of nodes currently in the cluster.
+      type: Number
+    - contextPath: GCP.Container.Clusters.initialNodeCount
+      description: The initial number of nodes for the cluster.
+      type: Number
     - contextPath: GCP.Container.Clusters.endpoint
       description: The IP address of the cluster's master endpoint.
       type: String
     - contextPath: GCP.Container.Clusters.status
       description: The current status of the cluster.
       type: String
+    - contextPath: GCP.Container.Clusters.statusMessage
+      description: Additional information about the current status of the cluster, if available.
+      type: String
+    - contextPath: GCP.Container.Clusters.network
+      description: The name of the Google Compute Engine network to which the cluster is connected.
+      type: String
+    - contextPath: GCP.Container.Clusters.subnetwork
+      description: The name of the Google Compute Engine subnetwork to which the cluster is connected.
+      type: String
+    - contextPath: GCP.Container.Clusters.clusterIpv4Cidr
+      description: The IP address range of the container pods in the cluster, in CIDR notation.
+      type: String
+    - contextPath: GCP.Container.Clusters.createTime
+      description: The time the cluster was created, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Container.Clusters.selfLink
+      description: The server-defined URL for the cluster resource.
+      type: String
+    - contextPath: GCP.Container.Clusters.zone
+      description: The name of the Google Compute Engine zone in which the cluster resides.
+      type: String
+    - contextPath: GCP.Container.Clusters.nodePools
+      description: The list of node pools associated with the cluster.
+      type: Unknown
   - name: gcp-container-node-pools-list
     description: "Lists the node pools for a GKE cluster. Required permissions: container.clusters.get."
     arguments:
@@ -1465,9 +1543,39 @@ script:
     - contextPath: GCP.Container.NodePools.status
       description: The current status of the node pool.
       type: String
+    - contextPath: GCP.Container.NodePools.statusMessage
+      description: Additional information about the current status of the node pool, if available.
+      type: String
     - contextPath: GCP.Container.NodePools.initialNodeCount
       description: The initial node count for the node pool.
       type: Number
+    - contextPath: GCP.Container.NodePools.locations
+      description: The list of Compute Engine zones in which the node pool's nodes are located.
+      type: Unknown
+    - contextPath: GCP.Container.NodePools.selfLink
+      description: The server-defined URL for the node pool resource.
+      type: String
+    - contextPath: GCP.Container.NodePools.config.machineType
+      description: The machine type of the Compute Engine instances in the node pool.
+      type: String
+    - contextPath: GCP.Container.NodePools.config.diskSizeGb
+      description: The disk size (in GB) of the nodes in the node pool.
+      type: Number
+    - contextPath: GCP.Container.NodePools.autoscaling.enabled
+      description: Whether autoscaling is enabled for the node pool.
+      type: Boolean
+    - contextPath: GCP.Container.NodePools.autoscaling.minNodeCount
+      description: The minimum number of nodes when autoscaling is enabled.
+      type: Number
+    - contextPath: GCP.Container.NodePools.autoscaling.maxNodeCount
+      description: The maximum number of nodes when autoscaling is enabled.
+      type: Number
+    - contextPath: GCP.Container.NodePools.management.autoRepair
+      description: Whether node auto-repair is enabled for the node pool.
+      type: Boolean
+    - contextPath: GCP.Container.NodePools.management.autoUpgrade
+      description: Whether node auto-upgrade is enabled for the node pool.
+      type: Boolean
   - name: gcp-container-node-pool-get
     description: "Gets the details of a specific node pool in a GKE cluster. Required permissions: container.clusters.get."
     arguments:
@@ -1494,9 +1602,39 @@ script:
     - contextPath: GCP.Container.NodePools.status
       description: The current status of the node pool.
       type: String
+    - contextPath: GCP.Container.NodePools.statusMessage
+      description: Additional information about the current status of the node pool, if available.
+      type: String
     - contextPath: GCP.Container.NodePools.initialNodeCount
       description: The initial node count for the node pool.
       type: Number
+    - contextPath: GCP.Container.NodePools.locations
+      description: The list of Compute Engine zones in which the node pool's nodes are located.
+      type: Unknown
+    - contextPath: GCP.Container.NodePools.selfLink
+      description: The server-defined URL for the node pool resource.
+      type: String
+    - contextPath: GCP.Container.NodePools.config.machineType
+      description: The machine type of the Compute Engine instances in the node pool.
+      type: String
+    - contextPath: GCP.Container.NodePools.config.diskSizeGb
+      description: The disk size (in GB) of the nodes in the node pool.
+      type: Number
+    - contextPath: GCP.Container.NodePools.autoscaling.enabled
+      description: Whether autoscaling is enabled for the node pool.
+      type: Boolean
+    - contextPath: GCP.Container.NodePools.autoscaling.minNodeCount
+      description: The minimum number of nodes when autoscaling is enabled.
+      type: Number
+    - contextPath: GCP.Container.NodePools.autoscaling.maxNodeCount
+      description: The maximum number of nodes when autoscaling is enabled.
+      type: Number
+    - contextPath: GCP.Container.NodePools.management.autoRepair
+      description: Whether node auto-repair is enabled for the node pool.
+      type: Boolean
+    - contextPath: GCP.Container.NodePools.management.autoUpgrade
+      description: Whether node auto-upgrade is enabled for the node pool.
+      type: Boolean
   - name: gcp-container-node-pool-management-set
     description: "Enables or disables the auto-repair and/or auto-upgrade management features of a node pool. Required permissions: container.clusters.update."
     arguments:

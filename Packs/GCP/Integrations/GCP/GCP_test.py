@@ -7097,3 +7097,292 @@ def test_container_cluster_security_update_stackdriver_kubernetes(mocker):
     assert update_body["desiredMonitoringService"] == "monitoring.googleapis.com/kubernetes"
     assert update_body["desiredLoggingService"] == "logging.googleapis.com/kubernetes"
     assert result.outputs == mock_response
+
+
+def test_container_node_pool_list_no_results(mocker):
+    """
+    Given: A container client returning no node pools for a cluster.
+    When: container_node_pools_list is called.
+    Then: It returns no outputs and a readable output indicating no node pools were found.
+    """
+    from GCP import container_node_pools_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().list().execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "cluster": "mock-cluster-1"}
+    result = container_node_pools_list(mock_creds, args)
+
+    assert result.outputs is None
+    assert "No node pools found" in result.readable_output
+
+
+def test_container_operation_list_no_results(mocker):
+    """
+    Given: A container client returning no operations for a location.
+    When: container_operations_list is called.
+    Then: It returns no outputs and a readable output indicating no operations were found.
+    """
+    from GCP import container_operations_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().list().execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    result = container_operations_list(mock_creds, args)
+
+    assert result.outputs is None
+    assert "No operations found" in result.readable_output
+
+
+def test_container_node_pool_management_set_no_flag_raises(mocker):
+    """
+    Given: A node-pool management request that provides neither auto_repair nor auto_upgrade.
+    When: container_node_pool_management_set is called.
+    Then: It raises a DemistoException indicating at least one flag is required.
+    """
+    from GCP import DemistoException, container_node_pool_management_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=MagicMock())
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+    }
+    with pytest.raises(DemistoException, match="at least one of 'auto_repair' or 'auto_upgrade'"):
+        container_node_pool_management_set(mock_creds, args)
+
+
+def test_container_clusters_list_api_error_propagates(mocker):
+    """
+    Given: A container client whose clusters().list raises an HttpError.
+    When: container_clusters_list is called.
+    Then: The error propagates (handled centrally in main), rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_clusters_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().list().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    with pytest.raises(HttpError):
+        container_clusters_list(mock_creds, args)
+
+
+def test_container_cluster_get_api_error_propagates(mocker):
+    """
+    Given: A container client whose clusters().get raises an HttpError.
+    When: container_cluster_get is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_cluster_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=404, reason="Not Found")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "cluster not found"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().get().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "resource_name": "mock-cluster-1"}
+    with pytest.raises(HttpError):
+        container_cluster_get(mock_creds, args)
+
+
+def test_container_node_pools_list_api_error_propagates(mocker):
+    """
+    Given: A container client whose nodePools().list raises an HttpError.
+    When: container_node_pools_list is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_node_pools_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().list().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "cluster": "mock-cluster-1"}
+    with pytest.raises(HttpError):
+        container_node_pools_list(mock_creds, args)
+
+
+def test_container_node_pool_get_api_error_propagates(mocker):
+    """
+    Given: A container client whose nodePools().get raises an HttpError.
+    When: container_node_pool_get is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_node_pool_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=404, reason="Not Found")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "node pool not found"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().get().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+    }
+    with pytest.raises(HttpError):
+        container_node_pool_get(mock_creds, args)
+
+
+def test_container_node_pool_management_set_api_error_propagates(mocker):
+    """
+    Given: A container client whose nodePools().setManagement raises an HttpError.
+    When: container_node_pool_management_set is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_node_pool_management_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().nodePools().setManagement().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "cluster": "mock-cluster-1",
+        "node_pool": "mock-pool-1",
+        "auto_repair": "true",
+    }
+    with pytest.raises(HttpError):
+        container_node_pool_management_set(mock_creds, args)
+
+
+def test_container_operations_list_api_error_propagates(mocker):
+    """
+    Given: A container client whose operations().list raises an HttpError.
+    When: container_operations_list is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_operations_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().list().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c"}
+    with pytest.raises(HttpError):
+        container_operations_list(mock_creds, args)
+
+
+def test_container_operation_cancel_api_error_propagates(mocker):
+    """
+    Given: A container client whose operations().cancel raises an HttpError.
+    When: container_operation_cancel is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_operation_cancel
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=404, reason="Not Found")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "operation not found"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().operations().cancel().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {"project_id": "mock_project_id", "region": "us-central1-c", "operation": "operation-123"}
+    with pytest.raises(HttpError):
+        container_operation_cancel(mock_creds, args)
+
+
+def test_container_cluster_legacy_abac_auth_set_api_error_propagates(mocker):
+    """
+    Given: A container client whose clusters().setLegacyAbac raises an HttpError.
+    When: container_cluster_legacy_abac_auth_set is called.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_cluster_legacy_abac_auth_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().setLegacyAbac().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enabled": "true",
+    }
+    with pytest.raises(HttpError):
+        container_cluster_legacy_abac_auth_set(mock_creds, args)
+
+
+def test_container_cluster_security_update_api_error_propagates(mocker):
+    """
+    Given: A container client whose clusters().update raises an HttpError.
+    When: container_cluster_security_update is called with a valid single flag.
+    Then: The error propagates rather than being swallowed.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import container_cluster_security_update
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_resp = mocker.Mock(status=403, reason="Forbidden")
+    http_error = HttpError(resp=mock_resp, content=b'{"error": {"message": "permission denied"}}')
+
+    mock_container = MagicMock()
+    mock_container.projects().locations().clusters().update().execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_container)
+
+    args = {
+        "project_id": "mock_project_id",
+        "region": "us-central1-c",
+        "resource_name": "mock-cluster-1",
+        "enable_binary_authorization": "true",
+    }
+    with pytest.raises(HttpError):
+        container_cluster_security_update(mock_creds, args)

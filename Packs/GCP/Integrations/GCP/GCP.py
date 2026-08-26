@@ -324,7 +324,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "container.clusters.list",
         ],
     ),
-    "gcp-container-cluster-legacy-abac-auth-set": (GCPServices.CONTAINER, ["container.clusters.setLegacyAbac"]),
+    "gcp-container-cluster-legacy-abac-auth-set": (GCPServices.CONTAINER, ["container.clusters.update"]),
     "gcp-container-clusters-list": (GCPServices.CONTAINER, ["container.clusters.list"]),
     "gcp-container-cluster-get": (GCPServices.CONTAINER, ["container.clusters.get"]),
     "gcp-container-node-pools-list": (GCPServices.CONTAINER, ["container.clusters.get"]),
@@ -1722,7 +1722,11 @@ def _container_operation_result(response: dict[str, Any], title: str) -> Command
         removeNull=True,
     )
     return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response, outputs_key_field="name"
+        readable_output=hr,
+        outputs_prefix="GCP.Container.Operations",
+        outputs=response,
+        outputs_key_field="name",
+        raw_response=response,
     )
 
 
@@ -1805,12 +1809,8 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
             if "enable_network_policy" in args
             else None,
         },
-        "desiredMonitoringService": ("monitoring.googleapis.com/kubernetes" if enable_stackdriver else "none")
-        if enable_stackdriver is not None
-        else None,
-        "desiredLoggingService": ("logging.googleapis.com/kubernetes" if enable_stackdriver else "none")
-        if enable_stackdriver is not None
-        else None,
+        "desiredMonitoringService": "monitoring.googleapis.com/kubernetes" if enable_stackdriver else None,
+        "desiredLoggingService": "logging.googleapis.com/kubernetes" if enable_stackdriver else None,
     }
     update_fields = remove_empty_elements(update_fields)
 
@@ -1874,7 +1874,10 @@ def container_clusters_list(creds: Credentials, args: dict[str, Any]) -> Command
 
     clusters = response.get("clusters", [])
     if not clusters:
-        return CommandResults(readable_output=f"No clusters found for project {project_id} in location {region}.")
+        return CommandResults(
+            readable_output=f"No clusters found for project {project_id} in location {region}.",
+            raw_response=response,
+        )
 
     hr = tableToMarkdown(
         f"Google Cloud Container Clusters (Project={project_id}, Location={region})",
@@ -1883,7 +1886,13 @@ def container_clusters_list(creds: Credentials, args: dict[str, Any]) -> Command
         headerTransform=pascalToSpace,
         removeNull=True,
     )
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Clusters", outputs=clusters, outputs_key_field="name")
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Container.Clusters",
+        outputs=clusters,
+        outputs_key_field="name",
+        raw_response=response,
+    )
 
 
 def container_cluster_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1917,7 +1926,13 @@ def container_cluster_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
         headerTransform=pascalToSpace,
         removeNull=True,
     )
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Clusters", outputs=response, outputs_key_field="name")
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Container.Clusters",
+        outputs=response,
+        outputs_key_field="name",
+        raw_response=response,
+    )
 
 
 def container_node_pools_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1947,7 +1962,7 @@ def container_node_pools_list(creds: Credentials, args: dict[str, Any]) -> Comma
 
     node_pools = response.get("nodePools", [])
     if not node_pools:
-        return CommandResults(readable_output=f"No node pools found for cluster {cluster}.")
+        return CommandResults(readable_output=f"No node pools found for cluster {cluster}.", raw_response=response)
 
     hr = tableToMarkdown(
         f"Google Cloud Container Node Pools (Cluster={cluster})",
@@ -1957,7 +1972,11 @@ def container_node_pools_list(creds: Credentials, args: dict[str, Any]) -> Comma
         removeNull=True,
     )
     return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.Container.NodePools", outputs=node_pools, outputs_key_field="name"
+        readable_output=hr,
+        outputs_prefix="GCP.Container.NodePools",
+        outputs=node_pools,
+        outputs_key_field="name",
+        raw_response=response,
     )
 
 
@@ -1995,7 +2014,11 @@ def container_node_pool_get(creds: Credentials, args: dict[str, Any]) -> Command
         removeNull=True,
     )
     return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.Container.NodePools", outputs=response, outputs_key_field="name"
+        readable_output=hr,
+        outputs_prefix="GCP.Container.NodePools",
+        outputs=response,
+        outputs_key_field="name",
+        raw_response=response,
     )
 
 
@@ -2067,7 +2090,10 @@ def container_operations_list(creds: Credentials, args: dict[str, Any]) -> Comma
 
     operations = response.get("operations", [])
     if not operations:
-        return CommandResults(readable_output=f"No operations found for project {project_id} in location {region}.")
+        return CommandResults(
+            readable_output=f"No operations found for project {project_id} in location {region}.",
+            raw_response=response,
+        )
 
     hr = tableToMarkdown(
         f"Google Cloud Container Operations (Project={project_id}, Location={region})",
@@ -2077,7 +2103,11 @@ def container_operations_list(creds: Credentials, args: dict[str, Any]) -> Comma
         removeNull=True,
     )
     return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=operations, outputs_key_field="name"
+        readable_output=hr,
+        outputs_prefix="GCP.Container.Operations",
+        outputs=operations,
+        outputs_key_field="name",
+        raw_response=response,
     )
 
 
@@ -2113,7 +2143,11 @@ def container_operation_get(creds: Credentials, args: dict[str, Any]) -> Command
         removeNull=True,
     )
     return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response, outputs_key_field="name"
+        readable_output=hr,
+        outputs_prefix="GCP.Container.Operations",
+        outputs=response,
+        outputs_key_field="name",
+        raw_response=response,
     )
 
 
@@ -2133,11 +2167,18 @@ def container_operation_cancel(creds: Credentials, args: dict[str, Any]) -> Comm
     operation = args.get("operation")
 
     container = GCPServices.CONTAINER.build(creds)
-    container.projects().locations().operations().cancel(  # pylint: disable=E1101
-        name=f"projects/{project_id}/locations/{region}/operations/{operation}"
-    ).execute()
+    response = (
+        container.projects()  # pylint: disable=E1101
+        .locations()
+        .operations()
+        .cancel(name=f"projects/{project_id}/locations/{region}/operations/{operation}")
+        .execute()
+    )
 
-    return CommandResults(readable_output=f"Google Cloud Container operation {operation} was successfully canceled.")
+    return CommandResults(
+        readable_output=f"Google Cloud Container operation {operation} was successfully canceled.",
+        raw_response=response,
+    )
 
 
 def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
