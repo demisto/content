@@ -104,5 +104,9 @@
     "supportedModules": [
         "agentix",
         "xsiam"
+    ],
+    "supportedFeatures": [
+        "",
+        " "
     ]
 }

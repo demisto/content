@@ -5,5 +5,9 @@ rules: ''
 schema: ''
 supportedModules:
 - xsiam
+supportedFeatures:
+- supported_feature_a
+- ''
+- '   '
 tags: slack
 toversion: 6.9.9

@@ -68,3 +68,6 @@ dependson:
   must:
   - SlackV3|||send-notification
 fromversion: 5.5.0
+supportedFeatures:
+- supported_feature_a
+- supported_feature_b
