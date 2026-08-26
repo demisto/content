@@ -297,9 +297,7 @@ class PanOs:
 
     The address-group and the deny rule are singletons (their names are constant), so they are
     ensured once per run. Each valid domain then gets an FQDN address-object that is added to the
-    group. Commit + optional push happen once after all domains are processed. Every write records
-    its effect (Created / Modified / Unchanged) so the aggregated per-domain row reflects the most
-    significant change.
+    group. Commit + optional push happen once after all domains are processed.
     """
 
     def __init__(self, args: dict) -> None:
