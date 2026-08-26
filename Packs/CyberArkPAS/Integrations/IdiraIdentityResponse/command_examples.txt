@@ -1,0 +1,7 @@
+!idira-identity-response-get-user-by-name username=jdoe@corp
+!idira-identity-response-lock-user user_id=00000000-0000-0000-0000-000000000000
+!idira-identity-response-disable-user user_id=00000000-0000-0000-0000-000000000000
+!idira-identity-response-unlock-user user_id=00000000-0000-0000-0000-000000000000
+!idira-identity-response-force-logout user_id=00000000-0000-0000-0000-000000000000
+!idira-identity-response-expire-password username=jdoe
+!idira-identity-response-remove-role role_id=role-123 user_ids=00000000-0000-0000-0000-000000000000
