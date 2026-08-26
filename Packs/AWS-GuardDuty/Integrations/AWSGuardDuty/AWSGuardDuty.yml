@@ -621,15 +621,18 @@ script:
       name: roleSessionDuration
     description: Updates the ThreatIntelSet specified by ThreatIntelSet ID.
     name: aws-gd-update-threatintel-set
-  - arguments:
-    - description: The unique ID of the detector that will own the threat entity set.
-      name: detectorId
+  - name: aws-gd-create-threat-entity-set
+    description: Creates a new threat entity set. In a threat entity set, you can provide known malicious threat entities for your AWS environment.
+    execution: true
+    arguments:
+    - name: detectorId
+      description: The unique ID of the detector that will own the threat entity set.
       required: true
-    - description: 'User-friendly name. Length 1-64.'
-      name: name
+    - name: name
+      description: 'User-friendly name. Length 1-64.'
       required: true
-    - description: The format of the entity-list file.
-      name: format
+    - name: format
+      description: The format of the entity-list file.
       auto: PREDEFINED
       predefined:
       - TXT
@@ -639,57 +642,20 @@ script:
       - PROOF_POINT
       - FIRE_EYE
       required: true
-    - description: 'The S3 URI of the entity-list file. For example, https://s3.us-east-1.amazonaws.com/example-bucket/threat-entities.txt.'
-      name: location
+    - name: location
+      description: 'The S3 URI of the entity-list file. For example, https://s3.us-east-1.amazonaws.com/example-bucket/threat-entities.txt.'
       required: true
-    - description: Whether GuardDuty should start using the uploaded set immediately.
-      name: activate
+    - name: activate
+      description: Whether GuardDuty should start using the uploaded set immediately.
       required: true
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-    - description: The AWS account ID that owns the S3 bucket in the location parameter. Prevents cross-account spoofing.
-      name: expectedBucketOwner
-    - description: 'The tags to add to the new threat entity set. Format: key=<KEY>,value=<VALUE>. For example, key=Environment,value=prod.'
-      name: tags
-    - description: The AWS Region. If not specified, the default region is used.
-      name: region
-    - name: roleArn
-      description: The Amazon Resource Name (ARN) of the role to assume.
-    - name: roleSessionName
-      description: The identifier for the assumed role session.
-    - name: roleSessionDuration
-      description: 'The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role.'
-    description: Creates a new threat entity set. In a threat entity set, you can provide known malicious threat entities for your AWS environment.
-    name: aws-gd-create-threat-entity-set
-    outputs:
-    - contextPath: AWS.GuardDuty.ThreatEntitySet.DetectorId
-      description: The unique ID of the detector.
-      type: string
-    - contextPath: AWS.GuardDuty.ThreatEntitySet.ThreatEntitySetId
-      description: The ID of the created threat entity set resource.
-      type: string
-    execution: true
-  - arguments:
-    - description: The detector that owns the set.
-      name: detectorId
-      required: true
-    - description: The ID of the threat entity set to update.
-      name: threatEntitySetId
-      required: true
-    - description: Whether GuardDuty should use the updated set.
-      name: activate
-      auto: PREDEFINED
-      predefined:
-      - 'True'
-      - 'False'
-    - description: 'The updated S3 URI of the entity-list file. For example, https://s3.us-east-1.amazonaws.com/example-bucket/threat-entities-v2.txt.'
-      name: location
-    - description: 'The updated user-friendly name. Length 1-64.'
-      name: name
-    - description: The AWS account ID that owns the S3 bucket in the location parameter.
-      name: expectedBucketOwner
+    - name: expectedBucketOwner
+      description: The AWS account ID that owns the S3 bucket in the location parameter. Prevents cross-account spoofing.
+    - name: tags
+      description: 'The tags to add to the new threat entity set. Format: key=<KEY>,value=<VALUE>. For example, key=Environment,value=prod.'
     - name: region
       description: The AWS Region. If not specified, the default region is used.
     - name: roleArn
@@ -698,26 +664,60 @@ script:
       description: The identifier for the assumed role session.
     - name: roleSessionDuration
       description: 'The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role.'
+    outputs:
+    - contextPath: AWS.GuardDuty.ThreatEntitySet.DetectorId
+      description: The unique ID of the detector.
+      type: string
+    - contextPath: AWS.GuardDuty.ThreatEntitySet.ThreatEntitySetId
+      description: The ID of the created threat entity set resource.
+      type: string
+  - name: aws-gd-update-threat-entity-set
     description: Updates the threat entity set that is specified by the threat entity set ID.
-    name: aws-gd-update-threat-entity-set
     execution: true
-  - arguments:
-    - description: The unique ID of the detector that owns the threat entity set.
-      name: detectorId
+    arguments:
+    - name: detectorId
+      description: The detector that owns the set.
       required: true
-    - description: The ID of the threat entity set to retrieve.
-      name: threatEntitySetId
+    - name: threatEntitySetId
+      description: The ID of the threat entity set to update.
       required: true
-    - description: The AWS Region. If not specified, the default region is used.
-      name: region
-    - description: The Amazon Resource Name (ARN) of the role to assume.
-      name: roleArn
-    - description: The identifier for the assumed role session.
-      name: roleSessionName
-    - description: 'The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role.'
-      name: roleSessionDuration
+    - name: activate
+      description: Whether GuardDuty should use the updated set.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: location
+      description: 'The updated S3 URI of the entity-list file. For example, https://s3.us-east-1.amazonaws.com/example-bucket/threat-entities-v2.txt.'
+    - name: name
+      description: 'The updated user-friendly name. Length 1-64.'
+    - name: expectedBucketOwner
+      description: The AWS account ID that owns the S3 bucket in the location parameter.
+    - name: region
+      description: The AWS Region. If not specified, the default region is used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: The identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: 'The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role.'
+  - name: aws-gd-get-threat-entity-set
     description: Retrieves the threat entity set that is specified by the threat entity set ID.
-    name: aws-gd-get-threat-entity-set
+    arguments:
+    - name: detectorId
+      description: The unique ID of the detector that owns the threat entity set.
+      required: true
+    - name: threatEntitySetId
+      description: The ID of the threat entity set to retrieve.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region is used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: The identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: 'The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role.'
     outputs:
     - contextPath: AWS.GuardDuty.ThreatEntitySet.DetectorId
       description: The unique ID of the detector.
@@ -749,30 +749,32 @@ script:
     - contextPath: AWS.GuardDuty.ThreatEntitySet.Tags
       description: The tags associated with the threat entity set.
       type: Unknown
-  - arguments:
-    - description: The detector that owns the set.
-      name: detectorId
-      required: true
-    - description: The ID of the threat entity set to delete.
-      name: threatEntitySetId
-      required: true
-    - description: The AWS Region. If not specified, the default region is used.
-      name: region
-    - description: The Amazon Resource Name (ARN) of the role to assume.
-      name: roleArn
-    - description: The identifier for the assumed role session.
-      name: roleSessionName
-    - description: 'The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role.'
-      name: roleSessionDuration
+  - name: aws-gd-delete-threat-entity-set
     description: Deletes the threat entity set that is specified by the threat entity set ID.
-    name: aws-gd-delete-threat-entity-set
     execution: true
-  - arguments:
-    - description: The detector whose threat entity sets you want to list.
-      name: detectorId
+    arguments:
+    - name: detectorId
+      description: The detector that owns the set.
       required: true
-    - description: The maximum number of results across all pages.
-      name: limit
+    - name: threatEntitySetId
+      description: The ID of the threat entity set to delete.
+      required: true
+    - name: region
+      description: The AWS Region. If not specified, the default region is used.
+    - name: roleArn
+      description: The Amazon Resource Name (ARN) of the role to assume.
+    - name: roleSessionName
+      description: The identifier for the assumed role session.
+    - name: roleSessionDuration
+      description: 'The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role.'
+  - name: aws-gd-list-threat-entity-sets
+    description: Lists the threat entity sets of the GuardDuty service specified by the detector ID.
+    arguments:
+    - name: detectorId
+      description: The detector whose threat entity sets you want to list.
+      required: true
+    - name: limit
+      description: The maximum number of results across all pages.
       defaultValue: '50'
     - name: page_size
       description: The page size for the underlying paginator. Valid range is 1-50.
@@ -787,8 +789,6 @@ script:
       description: The identifier for the assumed role session.
     - name: roleSessionDuration
       description: 'The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role.'
-    description: Lists the threat entity sets of the GuardDuty service specified by the detector ID.
-    name: aws-gd-list-threat-entity-sets
     outputs:
     - contextPath: AWS.GuardDuty.ThreatEntitySet.DetectorId
       description: The unique ID of the detector.
