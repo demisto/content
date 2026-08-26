@@ -1,4 +1,7 @@
 category: Utilities
+sectionorder:
+- Connect
+- Collect
 provider: Data443
 commonfields:
   id: Cyren Inbox Security
@@ -9,41 +12,49 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: The client iD provided by your Cyren Representative. (use "sample" to test)
   display: Client ID
   name: client_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: The client secret provided by your Cyren Representative. (use "sample" to test)
   display: Client Secret
   name: client_secret
   required: true
   type: 4
+  section: Connect
 - additionalinfo: 1 day, 2 days, etc...
   defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: "10"
   display: Maximum number of incidents per fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   required: false
   type: 19
   advanced: true
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 description: Cyren Inbox Security is an innovative solution that safeguards Office 365 mailboxes in your organization against evasive phishing, business email compromise (BEC), and fraud. This integration imports incidents from Cyren Inbox Security into XSOAR, and includes a playbook for incident resolution.
 display: Cyren Inbox Security
 name: Cyren Inbox Security

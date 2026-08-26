@@ -4,6 +4,9 @@ commonfields:
 name: Infocyte
 display: Infocyte
 category: Endpoint
+sectionorder:
+- Connect
+- Collect
 provider: Kaseya
 description: Infocyte can pivot off incidents to automate triage, validate events with forensic data and enabling dynamic response actions against any or all host using both agentless or agented endpoint access.
 configuration:
@@ -12,43 +15,52 @@ configuration:
   type: 0
   required: true
   additionalinfo: 'Your Infocyte Instance name is the cname of the URL: https://<cname>.infocyte.com'
+  section: Connect
 - display: API Key
   name: APIKey
   type: 4
   required: true
   additionalinfo: https://yourinstance.infocyte.com/profile/access-tokens
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   required: false
   type: 19
   advanced: true
+  section: Collect
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: '10'
   type: 0
   required: false
+  section: Collect
 - display: Initial fetch time (days)
   name: first_fetch
   defaultvalue: '3'
   type: 0
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 script:
   script: ''
   type: powershell

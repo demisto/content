@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 provider: CRYPTTECH
 commonfields:
   id: Cryptosim
@@ -8,46 +11,55 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: User
   additionalinfo: The User name of CRYPTOSIM
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: First Fetch Time (default 1 hour)
   defaultvalue: 1 hour
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: Max Fetch
   additionalinfo: Maximum number of incidents per fetch (Recommended less than 200)
   defaultvalue: '20'
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - display: Timezone(as hour)
   name: time_zone
   type: 0
   additionalinfo: Define the timezone to get correct logs from db. (default:3) eg. 3, 5, -5)
   defaultvalue: '3'
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   required: false
   type: 19
   advanced: true
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 description: CRYPTOSIM gets correlations and correlation's alerts. Integration fetchs alerts to incident according to instance.
 display: Cryptosim
 name: Cryptosim

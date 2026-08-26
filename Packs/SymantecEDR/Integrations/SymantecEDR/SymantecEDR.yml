@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 provider: Broadcom
 commonfields:
   id: SymantecEDR
@@ -10,17 +13,20 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - additionalinfo: OAuth Client ID and Client Secret to authorize third-party applications to communicate with Symantec EDR.
   display: Client ID
   name: credentials
   displaypassword: Client Secret
   required: true
   type: 9
+  section: Connect
 - defaultvalue: 'false'
   display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident data source
   name: fetch_incidents_events_type
   type: 15
@@ -29,16 +35,19 @@ configuration:
   options:
   - incidents
   - events
+  section: Collect
 - additionalinfo: Retrieve incident related events from EDR database. An additional API call will be made for each fetched incident.
   display: Fetch incidents alerts
   name: isIncidentsEvent
   type: 8
   required: false
+  section: Collect
 - additionalinfo: Retrieve incident comments for each fetched incident when checked. An additional API call will be made for each fetched incident.
   display: Fetch incident comments
   name: isIncidentComment
   type: 8
   required: false
+  section: Collect
 - additionalinfo: If not selected, will fetch Open Incidents.
   defaultvalue: Open
   display: Incidents "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress
@@ -50,6 +59,7 @@ configuration:
   - Closed
   type: 16
   required: false
+  section: Collect
 - additionalinfo: If not selected, will fetch High and Medium incidents.
   defaultvalue: 'High,Medium'
   display: Incidents "Priority" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
@@ -60,6 +70,7 @@ configuration:
   - Low
   - Medium
   - High
+  section: Collect
 - additionalinfo: If not selected, will fetch Success Events.
   defaultvalue: 'Success'
   display: Events "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Unknown, Success
@@ -70,6 +81,7 @@ configuration:
   - Unknown
   - Success
   - Failure
+  section: Collect
 - display: Events "Severity" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Info, Warning
   name: fetch_severity
   type: 16
@@ -83,40 +95,48 @@ configuration:
   - Major
   - Critical
   - Fatal
+  section: Collect
 - display: Query string to fetch incidents/events. For example - "updated:[2017-01-01T00:00:00.000Z TO 2017-01-08T00:00:00.000Z]"
   name: fetch_incidents_query
   type: 0
   required: false
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 10 minutes, 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
   additionalinfo: First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days.
   defaultvalue: '3 days'
+  section: Collect
 - additionalinfo: Maximum Number of Incidents fetch limit. Maximum Default limit is 50.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   required: false
   type: 19
   advanced: true
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -131,6 +151,7 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
+  section: Collect
 description: Symantec EDR (On Prem) endpoints help to detect threats in your network by filter endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s). EDR on-premise capabilities allow incident responders to quickly search, identify, and contain all impacted endpoints while investigating threats using a choice of on-premises.
 display: Symantec Endpoint Detection and Response (EDR) - On Prem
 name: SymantecEDR

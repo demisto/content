@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
 provider: Google
 commonfields:
   id: GoogleCloudSCC
@@ -9,15 +12,18 @@ configuration:
   name: service_account_json
   required: true
   type: 4
+  section: Connect
 - additionalinfo: Organization ID defines from which organization incidents need to be fetched.
   display: Organization ID
   name: organization_id
   required: true
   type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - additionalinfo: |-
     ID of the project to use for fetching incidents. If ID is not provided it will be taken from the provided service account JSON.
     Only required if the XSOAR instance is running on AWS or Azure cloud solutions.
@@ -25,37 +31,44 @@ configuration:
   name: project_id
   type: 0
   required: false
+  section: Connect
 - additionalinfo: ID of subscription from which to fetch incidents.
   display: Subscription ID
   name: subscription_id
   type: 0
   required: false
+  section: Connect
 - additionalinfo: The maximum number of incidents to fetch every time.
   defaultvalue: '50'
   display: Max Incidents
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   required: false
   type: 19
   advanced: true
+  section: Collect
 - additionalinfo: Enables to trust on all certificates
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Enables system proxy settings
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: Security Command Center is a security and risk management platform for Google Cloud. Security Command Center enables you to understand your security and data attack surface by providing asset inventory and discovery, identifying vulnerabilities and threats, and helping you mitigate and remediate risks across an organization. This integration helps you to perform tasks related to findings and assets.
 display: Google Cloud SCC
 name: GoogleCloudSCC

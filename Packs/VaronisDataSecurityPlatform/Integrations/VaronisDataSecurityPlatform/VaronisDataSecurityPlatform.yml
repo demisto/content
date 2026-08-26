@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 provider: Varonis
 commonfields:
   id: VaronisDataSecurityPlatform
@@ -8,44 +11,53 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   defaultvalue: Varonis DSP Incident
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   required: false
   type: 19
   advanced: true
+  section: Collect
 - display: The FQDN/IP the integration should connect to
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Name of Varonis user
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   additionalinfo: Maximum value is 50
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 1 week
   display: First fetch time
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: Low
   display: Minimum severity of alerts to fetch
   name: severity
@@ -55,11 +67,13 @@ configuration:
   - High
   type: 15
   required: false
+  section: Collect
 - display: Varonis threat model name
   additionalinfo: Comma-separated list of threat model names of alerts to fetch
   name: threat_model
   type: 0
   required: false
+  section: Collect
 - defaultvalue: Open
   display: Varonis alert status
   name: status
@@ -69,6 +83,7 @@ configuration:
   - Closed
   type: 15
   required: false
+  section: Collect
 description: Streamline alerts and related forensic information from Varonis DSP.
 display: Varonis Data Security Platform
 name: VaronisDataSecurityPlatform

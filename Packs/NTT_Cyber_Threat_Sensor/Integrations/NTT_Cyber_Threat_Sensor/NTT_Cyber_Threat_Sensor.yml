@@ -4,6 +4,9 @@ commonfields:
 name: NTT Cyber Threat Sensor
 display: NTT Cyber Threat Sensor
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 provider: NTT Group
 description: Retrieve alerts and recommendations from NTT CTS.
 configuration:
@@ -12,49 +15,59 @@ configuration:
   defaultvalue: ''
   type: 4
   required: true
+  section: Connect
 - display: Tenant identification. UUID formatted string
   name: TENANT_ID
   defaultvalue: <TENANT_ID>
   type: 0
   required: true
+  section: Connect
 - display: Days to fetch for the first time this application runs
   name: DAYS_BACK
   defaultvalue: 3
   type: 0
   required: true
+  section: Collect
 - display: Number of items to fetch each iteration (1 to 100)
   name: ITEMS_TO_FETCH
   defaultvalue: 20
   type: 0
   required: true
+  section: Collect
 - display: The unique key for accessing the alerts and active response recommendations
   name: SOARTOKEN
   defaultvalue: ''
   type: 4
   required: true
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   required: false
   type: 19
   advanced: true
+  section: Collect
 - display: The base URL for the backend to consume from
   name: BASEURL
   defaultvalue: https://cts.eu1.nttsecurity.io/v1
   type: 0
   required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 script:
   script: '-'
   type: python

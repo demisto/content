@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 provider: Grafana Labs
 commonfields:
   id: Grafana
@@ -9,47 +12,57 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Maximum is limited to 200.
   defaultvalue: '20'
   display: Maximum number of incidents to fetch
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: A comma-separated list of dashboard IDs. Can be found by running the "grafana-dashboards-search" command.
   display: Dashboard IDs to fetch
   name: dashboard_id
   type: 0
   required: false
+  section: Collect
 - additionalinfo: See "help".
   display: Panel ID to fetch
   name: panel_id
   type: 0
   required: false
+  section: Collect
 - display: Alert name to fetch
   name: alert_name
   type: 0
   required: false
+  section: Collect
 - display: States to fetch
   name: state
   options:
@@ -62,16 +75,19 @@ configuration:
   - unknown
   type: 16
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   required: false
   type: 19
   advanced: true
+  section: Collect
 description: Grafana alerting service.
 display: Grafana
 name: Grafana
