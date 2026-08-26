@@ -2,7 +2,7 @@
 ignore=IN126,IN135,IN145
 
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM108
 
 [file:SplunkPyPreRelease_image.png]
 ignore=IM111
