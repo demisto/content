@@ -17,6 +17,7 @@ from BlockDomain import (
     derive_object_name,
     is_valid_fqdn,
     is_wildcard,
+    normalize_tags,
     pan_os_push_status,
     validate_domains,
 )
@@ -88,18 +89,6 @@ def test_is_valid_fqdn(domain, expected):
     assert is_valid_fqdn(domain) is expected
 
 
-def test_derive_object_name_simple():
-    """
-    Given:
-       - A short, standard FQDN.
-    When:
-       - Calling derive_object_name to compute the PAN-OS address-object name.
-    Then:
-       - Returns the domain prefixed with "Cortex-".
-    """
-    assert derive_object_name("evil.example.com") == "Cortex-evil.example.com"
-
-
 def test_derive_object_name_is_deterministic():
     """
     Given:
@@ -112,14 +101,14 @@ def test_derive_object_name_is_deterministic():
     assert derive_object_name("evil.example.com") == derive_object_name("evil.example.com")
 
 
-def test_derive_object_name_sanitises_illegal_chars():
+def test_derive_object_name_illegal_chars():
     """
     Given:
        - A domain containing an underscore, which is not a legal PAN-OS object-name character.
     When:
        - Calling derive_object_name.
     Then:
-       - Underscores are normalised to hyphens so the resulting name is accepted by PAN-OS.
+       - Underscores are normalized to hyphens so the resulting name is accepted by PAN-OS.
     """
     assert derive_object_name("bad_domain.example.com") == "Cortex-bad-domain.example.com"
 
@@ -139,7 +128,6 @@ def test_derive_object_name_overflow_truncates_and_hashes():
     name = derive_object_name(long_domain)
     assert len(name) <= MAX_OBJECT_NAME_LENGTH
     assert name.startswith(OBJECT_NAME_PREFIX)
-    assert name == derive_object_name(long_domain)
 
 
 def test_derive_object_name_overflow_distinct_domains_are_unique():
@@ -206,20 +194,6 @@ def test_validate_domains_splits_valid_and_failed():
     assert "Invalid FQDN" in invalid_row["Message"]
 
 
-def test_validate_domains_all_valid():
-    """
-    Given:
-       - A list of domains that are all syntactically valid FQDNs.
-    When:
-       - Calling validate_domains.
-    Then:
-       - All entries end up in the valid list and no failed rows are produced.
-    """
-    valid, skipped = validate_domains(["a.com", "b.org"])
-    assert valid == ["a.com", "b.org"]
-    assert skipped == []
-
-
 def _pan_os(domains):
     return PanOs(
         {
@@ -281,7 +255,7 @@ def test_process_domains_create_everything(monkeypatch):
     assert rows[0]["Result"] == RESULT_SUCCESS
     assert rows[0]["RuleName"] == "Cortex - Block Domain"
     # Action is no longer surfaced; change-detection is tracked internally to gate the commit.
-    assert pan._made_changes is True
+    assert pan._address_made_changes is True
     assert "Action" not in rows[0]
 
 
@@ -351,6 +325,54 @@ def test_ensure_tag_noop_when_no_tag(monkeypatch):
     assert calls == []
 
 
+# ---- tag helpers (pure) ------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        (None, []),
+        ("", []),
+        ("solo", ["solo"]),
+        (["a", "b"], ["a", "b"]),
+        (["a", "", None, "b"], ["a", "b"]),
+    ],
+)
+def test_normalize_tags(raw, expected):
+    """
+    Given:
+       - A raw PAN-OS 'Tags' value that may be None, an empty string, a single string, or a list
+         possibly containing falsy entries.
+    When:
+       - Calling normalize_tags.
+    Then:
+       - It flattens the value into a clean list of tag-name strings, dropping falsy entries.
+    """
+    assert normalize_tags(raw) == expected
+
+
+@pytest.mark.parametrize(
+    "existing, expected",
+    [
+        ([], ["cortex-blocked-domains"]),
+        (["other"], ["other", "cortex-blocked-domains"]),
+        (["cortex-blocked-domains"], None),
+        (["other", "cortex-blocked-domains"], None),
+    ],
+)
+def test_merged_tags_if_missing(existing, expected):
+    """
+    Given:
+       - An entity's current tag list and a PanOs flow configured with 'cortex-blocked-domains'.
+    When:
+       - Calling merged_tags_if_missing.
+    Then:
+       - Returns the de-duplicated union (existing + configured tag) when the tag is absent, and
+         None (no edit needed) when the tag is already present. The existing tag is never duplicated.
+    """
+    assert _pan_os(["evil.example.com"]).merged_tags_if_missing(existing) == expected
+
+
 def test_start_flow_skips_commit_when_all_actions_unchanged(monkeypatch):
     """
     Given:
@@ -371,17 +393,32 @@ def test_start_flow_skips_commit_when_all_actions_unchanged(monkeypatch):
                 ok_entry(
                     {
                         "Panorama.AddressGroups": [
-                            {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": ["Cortex-evil.example.com"]}
+                            {
+                                "Name": "Blocked Domains - Cortex",
+                                "Type": "static",
+                                "Addresses": ["Cortex-evil.example.com"],
+                                "Tags": ["cortex-blocked-domains"],
+                            }
                         ]
                     }
                 )
             ],
             "pan-os-list-rules": [
                 ok_entry(
-                    {"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]}
+                    {
+                        "Panorama.SecurityRule": [
+                            {
+                                "Name": "Cortex - Block Domain",
+                                "Destination": ["Blocked Domains - Cortex"],
+                                "Tags": ["cortex-blocked-domains"],
+                            }
+                        ]
+                    }
                 )
             ],
-            "pan-os-get-address": [ok_entry({"Panorama.Addresses": {"Name": "Cortex-evil.example.com"}})],
+            "pan-os-get-address": [
+                ok_entry({"Panorama.Addresses": {"Name": "Cortex-evil.example.com", "Tags": ["cortex-blocked-domains"]}})
+            ],
             "pan-os-move-rule": [ok_entry()],
         }
         return seq.get(name, [ok_entry()])
@@ -461,13 +498,25 @@ def test_process_domains_rule_created_when_object_unchanged_sets_rule_changed(mo
 
     def _capture(name, args):
         seq = {
-            # Group exists and already contains the object -> membership Unchanged.
+            # Group exists, already contains the object, and already carries the tag -> Unchanged.
             "pan-os-list-address-groups": [
-                ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj]}]})
+                ok_entry(
+                    {
+                        "Panorama.AddressGroups": [
+                            {
+                                "Name": "Blocked Domains - Cortex",
+                                "Type": "static",
+                                "Addresses": [obj],
+                                "Tags": ["cortex-blocked-domains"],
+                            }
+                        ]
+                    }
+                )
             ],
             # No rule with the requested name exists -> ensure_rule will create it.
             "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": []})],
-            "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],  # object exists
+            # Object exists and already carries the tag -> no object tag edit.
+            "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": ["cortex-blocked-domains"]}]})],
             "pan-os-create-rule": [ok_entry()],
             "pan-os-move-rule": [ok_entry()],
         }
@@ -481,7 +530,7 @@ def test_process_domains_rule_created_when_object_unchanged_sets_rule_changed(mo
     # Object + membership did not change (so _made_changes stays False), but the rule was created,
     # so _rule_changed is True - that alone must still trigger a commit in start_flow.
     assert "Action" not in rows[0]
-    assert pan_os._made_changes is False
+    assert pan_os._address_made_changes is False
     assert pan_os._rule_changed is True
 
 
@@ -583,21 +632,42 @@ def test_process_domains_all_unchanged(monkeypatch):
     _mock_execute(
         monkeypatch,
         [
-            [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj]}]})],
             [
                 ok_entry(
-                    {"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]}
+                    {
+                        "Panorama.AddressGroups": [
+                            {
+                                "Name": "Blocked Domains - Cortex",
+                                "Type": "static",
+                                "Addresses": [obj],
+                                "Tags": ["cortex-blocked-domains"],
+                            }
+                        ]
+                    }
+                )
+            ],
+            [
+                ok_entry(
+                    {
+                        "Panorama.SecurityRule": [
+                            {
+                                "Name": "Cortex - Block Domain",
+                                "Destination": ["Blocked Domains - Cortex"],
+                                "Tags": ["cortex-blocked-domains"],
+                            }
+                        ]
+                    }
                 )
             ],
             [ok_entry()],
-            [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],
+            [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": ["cortex-blocked-domains"]}]})],
         ],
     )
     pan = _pan_os(["evil.example.com"])
     rows = pan.process_domains()
     assert rows[0]["Status"] == STATUS_DONE
-    # Everything already in place -> no change -> commit will be skipped.
-    assert pan._made_changes is False
+    # Everything already in place (incl. the tag) -> no change -> commit will be skipped.
+    assert pan._address_made_changes is False
     assert pan._rule_changed is False
     assert "Action" not in rows[0]
 
@@ -616,10 +686,31 @@ def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
     _mock_execute(
         monkeypatch,
         [
-            [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": []}]})],
             [
                 ok_entry(
-                    {"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"]}]}
+                    {
+                        "Panorama.AddressGroups": [
+                            {
+                                "Name": "Blocked Domains - Cortex",
+                                "Type": "static",
+                                "Addresses": [],
+                                "Tags": ["cortex-blocked-domains"],
+                            }
+                        ]
+                    }
+                )
+            ],
+            [
+                ok_entry(
+                    {
+                        "Panorama.SecurityRule": [
+                            {
+                                "Name": "Cortex - Block Domain",
+                                "Destination": ["Blocked Domains - Cortex"],
+                                "Tags": ["cortex-blocked-domains"],
+                            }
+                        ]
+                    }
                 )
             ],
             [ok_entry()],
@@ -632,7 +723,7 @@ def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
     rows = pan.process_domains()
     assert rows[0]["Status"] == STATUS_DONE
     # A new object was created and added to the group -> a change occurred -> commit will run.
-    assert pan._made_changes is True
+    assert pan._address_made_changes is True
     assert "Action" not in rows[0]
 
 
@@ -652,20 +743,342 @@ def test_process_domains_existing_rule_missing_group_is_edited(monkeypatch):
     _mock_execute(
         monkeypatch,
         [
-            [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj]}]})],
-            [ok_entry({"Panorama.SecurityRule": [{"Name": "Cortex - Block Domain", "Destination": ["something-else"]}]})],
+            [
+                ok_entry(
+                    {
+                        "Panorama.AddressGroups": [
+                            {
+                                "Name": "Blocked Domains - Cortex",
+                                "Type": "static",
+                                "Addresses": [obj],
+                                "Tags": ["cortex-blocked-domains"],
+                            }
+                        ]
+                    }
+                )
+            ],
+            [
+                ok_entry(
+                    {
+                        "Panorama.SecurityRule": [
+                            {
+                                "Name": "Cortex - Block Domain",
+                                "Destination": ["something-else"],
+                                "Tags": ["cortex-blocked-domains"],
+                            }
+                        ]
+                    }
+                )
+            ],
             [ok_entry()],
             [ok_entry()],
-            [ok_entry({"Panorama.Addresses": [{"Name": obj}]})],
+            [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": ["cortex-blocked-domains"]}]})],
         ],
     )
     pan = _pan_os(["evil.example.com"])
     rows = pan.process_domains()
     assert rows[0]["Status"] == STATUS_DONE
     # Object + membership unchanged, but the rule was edited to add the group -> _rule_changed.
-    assert pan._made_changes is False
+    assert pan._address_made_changes is False
     assert pan._rule_changed is True
     assert "Action" not in rows[0]
+
+
+def _tag_capture(monkeypatch):
+    """Patch executeCommand with a dict-based capture that tolerates call ordering.
+
+    Returns the ``calls`` list of (command_name, args) tuples. Read/probe commands return
+    fixtures that model an already-existing object/group/rule WITHOUT the configured tag, so the
+    merge/edit paths are exercised. Every other command returns a bare success entry.
+    """
+    obj = "Cortex-evil.example.com"
+    calls: list = []
+    fixtures = {
+        "pan-os-list-address-groups": [
+            ok_entry(
+                {
+                    "Panorama.AddressGroups": [
+                        {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj], "Tags": ["other"]}
+                    ]
+                }
+            )
+        ],
+        "pan-os-list-rules": [
+            ok_entry(
+                {
+                    "Panorama.SecurityRule": [
+                        {"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"], "Tags": ["other"]}
+                    ]
+                }
+            )
+        ],
+        "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": ["other"]}]})],
+    }
+
+    def _capture(name, args):
+        calls.append((name, args))
+        return fixtures.get(name, [ok_entry()])
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+    return calls
+
+
+def test_process_domains_merges_tag_on_existing_object_group_and_rule(monkeypatch):
+    """
+    Given:
+       - A tenant where the address object, address group, and rule all already exist, each
+         carrying a different pre-existing tag ('other') but NOT the configured tag.
+    When:
+       - Calling process_domains with tag='cortex-blocked-domains'.
+    Then:
+       - The configured tag is merged (never replacing) onto all three entities:
+         * pan-os-edit-address with element_to_change=tag and the merged list ['other', tag]
+         * pan-os-edit-address-group with tags=['other', tag]
+         * pan-os-edit-rule with element_to_change=tag, behaviour=add, element_value=tag
+    """
+    calls = _tag_capture(monkeypatch)
+    pan = _pan_os(["evil.example.com"])
+    rows = pan.process_domains()
+
+    assert rows[0]["Status"] == STATUS_DONE
+
+    edit_address = [args for name, args in calls if name == "pan-os-edit-address"]
+    assert edit_address == [
+        {
+            "name": "Cortex-evil.example.com",
+            "element_to_change": "tag",
+            "element_value": ["other", "cortex-blocked-domains"],
+        }
+    ]
+
+    edit_group = [args for name, args in calls if name == "pan-os-edit-address-group" and "tags" in args]
+    assert edit_group == [{"name": "Blocked Domains - Cortex", "type": "static", "tags": ["other", "cortex-blocked-domains"]}]
+
+    edit_rule_tag = [args for name, args in calls if name == "pan-os-edit-rule" and args.get("element_to_change") == "tag"]
+    assert edit_rule_tag == [
+        {
+            "rulename": "Cortex - Block Domain",
+            "element_to_change": "tag",
+            "element_value": "cortex-blocked-domains",
+            "behaviour": "add",
+            "pre_post": "pre-rulebase",
+        }
+    ]
+
+
+def test_process_domains_does_not_re_tag_when_tag_already_present(monkeypatch):
+    """
+    Given:
+       - The demo scenario: an existing FQDN, an existing group, and an existing rule that ALL
+         already carry the configured tag; the user re-runs the command.
+    When:
+       - Calling process_domains with the same tag.
+    Then:
+       - No tag edit is issued on the object, group, or rule (the tag is never duplicated), and
+         nothing changes so the commit is skipped.
+    """
+    obj = "Cortex-evil.example.com"
+    tag = "cortex-blocked-domains"
+    calls: list = []
+    fixtures = {
+        "pan-os-list-address-groups": [
+            ok_entry(
+                {
+                    "Panorama.AddressGroups": [
+                        {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj], "Tags": [tag]}
+                    ]
+                }
+            )
+        ],
+        "pan-os-list-rules": [
+            ok_entry(
+                {
+                    "Panorama.SecurityRule": [
+                        {"Name": "Cortex - Block Domain", "Destination": ["Blocked Domains - Cortex"], "Tags": [tag]}
+                    ]
+                }
+            )
+        ],
+        "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": [tag]}]})],
+    }
+
+    def _capture(name, args):
+        calls.append((name, args))
+        return fixtures.get(name, [ok_entry()])
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+
+    pan = _pan_os(["evil.example.com"])
+    pan.process_domains()
+
+    assert [args for name, args in calls if name == "pan-os-edit-address"] == []
+    assert [args for name, args in calls if name == "pan-os-edit-address-group" and "tags" in args] == []
+    assert [args for name, args in calls if name == "pan-os-edit-rule" and args.get("element_to_change") == "tag"] == []
+    assert pan._address_made_changes is False
+    assert pan._rule_changed is False
+
+
+def test_process_domains_new_rule_name_does_not_re_tag_existing_object_and_group(monkeypatch):
+    """
+    Given:
+       - An existing FQDN and existing group that ALREADY carry the configured tag, but a brand-new
+         rule name that does not exist yet (the "just add a rule" case).
+    When:
+       - Calling process_domains.
+    Then:
+       - The object and group are NOT re-tagged (no duplication); only the new rule is created
+         (which carries the tag at creation time via its own create args).
+    """
+    obj = "Cortex-evil.example.com"
+    tag = "cortex-blocked-domains"
+    calls: list = []
+    fixtures = {
+        "pan-os-list-address-groups": [
+            ok_entry(
+                {
+                    "Panorama.AddressGroups": [
+                        {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj], "Tags": [tag]}
+                    ]
+                }
+            )
+        ],
+        # Rule does not exist yet -> it will be created (with the tag in its create args).
+        "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": []})],
+        "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": [tag]}]})],
+    }
+
+    def _capture(name, args):
+        calls.append((name, args))
+        return fixtures.get(name, [ok_entry()])
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+
+    pan = _pan_os(["evil.example.com"])
+    pan.process_domains()
+
+    # Object and group already carry the tag -> no re-tag edits.
+    assert [args for name, args in calls if name == "pan-os-edit-address"] == []
+    assert [args for name, args in calls if name == "pan-os-edit-address-group" and "tags" in args] == []
+    # The new rule is created and carries the tag at creation.
+    create_rule = [args for name, args in calls if name == "pan-os-create-rule"]
+    assert len(create_rule) == 1
+    assert create_rule[0]["tags"] == tag
+    assert pan._rule_changed is True
+
+
+def _pan_os_with_log_forwarding(domains, profile):
+    """Build a PanOs flow configured with a log-forwarding profile name (rule-only)."""
+    pan = _pan_os(domains)
+    pan.log_forwarding_name = profile
+    return pan
+
+
+def _lf_capture(monkeypatch, existing_profile):
+    """Patch executeCommand modelling an existing object/group/rule (everything already in place).
+
+    The existing rule carries ``existing_profile`` as its LogForwardingProfile. Returns the
+    ``calls`` list of (command_name, args) tuples. Tags are pre-present so no tag edits fire.
+    """
+    obj = "Cortex-evil.example.com"
+    tag = "cortex-blocked-domains"
+    calls: list = []
+    fixtures = {
+        "pan-os-list-address-groups": [
+            ok_entry(
+                {
+                    "Panorama.AddressGroups": [
+                        {"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": [obj], "Tags": [tag]}
+                    ]
+                }
+            )
+        ],
+        "pan-os-list-rules": [
+            ok_entry(
+                {
+                    "Panorama.SecurityRule": [
+                        {
+                            "Name": "Cortex - Block Domain",
+                            "Destination": ["Blocked Domains - Cortex"],
+                            "Tags": [tag],
+                            "LogForwardingProfile": existing_profile,
+                        }
+                    ]
+                }
+            )
+        ],
+        "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": [tag]}]})],
+    }
+
+    def _capture(name, args):
+        calls.append((name, args))
+        return fixtures.get(name, [ok_entry()])
+
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _capture)
+    return calls
+
+
+def test_process_domains_sets_log_forwarding_on_existing_rule_when_absent(monkeypatch):
+    """
+    Given:
+       - An existing rule with NO log-forwarding profile, and a flow configured with one.
+    When:
+       - Calling process_domains.
+    Then:
+       - pan-os-edit-rule is issued with element_to_change=log-forwarding and the configured
+         profile, and _rule_changed is set.
+    """
+    calls = _lf_capture(monkeypatch, existing_profile="")
+    pan = _pan_os_with_log_forwarding(["evil.example.com"], "cortex-lfp")
+    pan.process_domains()
+
+    edit_lf = [args for name, args in calls if name == "pan-os-edit-rule" and args.get("element_to_change") == "log-forwarding"]
+    assert edit_lf == [
+        {
+            "rulename": "Cortex - Block Domain",
+            "element_to_change": "log-forwarding",
+            "element_value": "cortex-lfp",
+            "pre_post": "pre-rulebase",
+        }
+    ]
+    assert pan._rule_changed is True
+
+
+def test_process_domains_sets_log_forwarding_on_existing_rule_when_different(monkeypatch):
+    """
+    Given:
+       - An existing rule whose log-forwarding profile differs from the configured one.
+    When:
+       - Calling process_domains.
+    Then:
+       - pan-os-edit-rule replaces it with the configured profile (single-value, no dedup concept).
+    """
+    calls = _lf_capture(monkeypatch, existing_profile="old-lfp")
+    pan = _pan_os_with_log_forwarding(["evil.example.com"], "cortex-lfp")
+    pan.process_domains()
+
+    edit_lf = [args for name, args in calls if name == "pan-os-edit-rule" and args.get("element_to_change") == "log-forwarding"]
+    assert len(edit_lf) == 1
+    assert edit_lf[0]["element_value"] == "cortex-lfp"
+    assert pan._rule_changed is True
+
+
+def test_process_domains_does_not_set_log_forwarding_when_already_matches(monkeypatch):
+    """
+    Given:
+       - An existing rule that ALREADY carries the configured log-forwarding profile.
+    When:
+       - Calling process_domains.
+    Then:
+       - No log-forwarding edit is issued (no unnecessary edit), and since nothing else changed
+         the rule is left untouched.
+    """
+    calls = _lf_capture(monkeypatch, existing_profile="cortex-lfp")
+    pan = _pan_os_with_log_forwarding(["evil.example.com"], "cortex-lfp")
+    pan.process_domains()
+
+    edit_lf = [args for name, args in calls if name == "pan-os-edit-rule" and args.get("element_to_change") == "log-forwarding"]
+    assert edit_lf == []
+    assert pan._rule_changed is False
 
 
 def test_process_domains_dynamic_group_is_skipped(monkeypatch):

@@ -30,12 +30,6 @@ STATUS_FAILED = "Failed"
 RESULT_SUCCESS = "Success"
 RESULT_FAILED = "Failed"
 
-# Internal change-detection markers (no longer surfaced as a per-row Action output; used only to
-# decide whether the run mutated Panorama state and therefore needs a commit/push).
-ACTION_CREATED = "Created"
-ACTION_MODIFIED = "Modified"
-ACTION_UNCHANGED = "Unchanged"
-
 # Mirrors the BlockExternalIp toggle; flipped True by polling functions while a job runs.
 POLLING = False
 
@@ -88,6 +82,24 @@ def derive_object_name(domain: str) -> str:
     keep = MAX_OBJECT_NAME_LENGTH - len(OBJECT_NAME_PREFIX) - 1 - HASH_SUFFIX_LENGTH  # 1 for the '-' separator.
     truncated = sanitised[:keep].strip("-")
     return f"{OBJECT_NAME_PREFIX}{truncated}-{digest}"
+
+
+def normalize_tags(raw_tags: Any) -> list[str]:
+    """Normalize a PAN-OS tags value into a clean list of tag names.
+
+    PAN-OS may return an entity's tags as a single string, a list of strings, or None/absent.
+    This flattens all of those into a list (empty when there are no tags).
+
+    Args:
+        raw_tags (Any): The raw 'Tags' value from a PAN-OS context entry.
+    Returns:
+        A list of tag-name strings (possibly empty).
+    """
+    if not raw_tags:
+        return []
+    if isinstance(raw_tags, list):
+        return [str(tag) for tag in raw_tags if tag]
+    return [str(raw_tags)]
 
 
 def build_result_row(
@@ -310,9 +322,14 @@ class PanOs:
         self._rule_ensured: bool = False
         # True once the rule was created or edited this run
         self._rule_changed: bool = False
-        # True once any address object was created, or added to the group, this run. Together with
-        # _rule_changed this gates the commit/push (Action is no longer surfaced per row).
-        self._made_changes: bool = False
+        # True once any address object was created, or added to the group, this run.
+        self._address_made_changes: bool = False
+        # The pre-existing rule's current tags (captured once per run by rule_destinations), used to
+        # merge in the configured tag without duplicating it.
+        self._rule_tags: list[str] = []
+        # The pre-existing rule's current log-forwarding profile (single value, captured once per
+        # run by rule_destinations).
+        self._rule_log_forwarding: str = ""
 
     # ---- tag helper ----------------------------------------------------
 
@@ -338,6 +355,18 @@ class PanOs:
                 f"{LOG_TAG} pan-os-create-tag for '{self.tag}' returned an error " f"(likely already exists): {get_error(res)}"
             )
 
+    def merged_tags_if_missing(self, existing_tags: list[str]) -> list[str] | None:
+        """Return the tag list to write when the configured tag is not already present.
+
+        Args:
+            existing_tags (list[str]): The entity's current tags.
+        Returns:
+            The merged tag list to write, or None when nothing needs to change.
+        """
+        if not self.tag or self.tag in existing_tags:
+            return None
+        return [*existing_tags, self.tag]
+
     # ---- execution helper ----------------------------------------------
 
     def execute_or_raise(self, command_name: str, command_args: dict, error_prefix: str) -> list[dict]:
@@ -358,22 +387,26 @@ class PanOs:
 
     # ---- context probes -------------------------------------------------
 
-    def address_object_exists(self, object_name: str) -> bool:
-        """Check whether an address-object already exists.
+    def address_object_exists(self, object_name: str) -> tuple[bool, list[str]]:
+        """Check whether an address-object already exists, and return its current tags.
 
         Args:
             object_name (str): The address-object name to probe.
         Returns:
-            True if the object exists, False otherwise.
+            A tuple of (exists, current_tags). current_tags is empty when the object is absent or
+            has no tags.
         """
         res = run_execute_command("pan-os-get-address", {"name": object_name})
         # pan-os-get-address raises when the object is absent; treat that as 'does not exist'.
         if is_error(res):
-            return False
+            return False, []
         self.responses.append(res)
         context = get_relevant_context(res[0].get("EntryContext", {}), "Panorama.Addresses")
         items = context if isinstance(context, list) else [context]
-        return any(item.get("Name") == object_name for item in items)
+        for item in items:
+            if item.get("Name") == object_name:
+                return True, normalize_tags(item.get("Tags"))
+        return False, []
 
     def get_address_group(self) -> dict | None:
         """Return the target address-group context dict, or None if it does not exist.
@@ -389,11 +422,14 @@ class PanOs:
                 return item
         return None
 
-    def rule_destinations(self) -> tuple[bool, list]:
-        """Return whether the rule exists and its current destination list.
+    def rule_destinations(self) -> tuple[bool, list, list[str]]:
+        """Return whether the rule exists, its current destination list, and its current tags.
+
+        Also records the rule's current log-forwarding profile on ``self._rule_log_forwarding``
+        (single-value profile) so ensure_rule can add it only when the configured profile differs.
 
         Returns:
-            A tuple of (rule_exists, destination_list).
+            A tuple of (rule_exists, destination_list, current_tags).
         """
         res = self.execute_or_raise("pan-os-list-rules", {"pre_post": PRE_POST}, "Failed to list rules")
         context = get_relevant_context(res[0].get("EntryContext", {}), "Panorama.SecurityRule")
@@ -402,8 +438,9 @@ class PanOs:
             if item.get("Name") == self.rule_name:
                 destination = item.get("Destination")
                 destination_list = destination if isinstance(destination, list) else [destination] if destination else []
-                return True, destination_list
-        return False, []
+                self._rule_log_forwarding = item.get("LogForwardingProfile") or ""
+                return True, destination_list, normalize_tags(item.get("Tags"))
+        return False, [], []
 
     # ---- single-run writes (group + rule are singletons) ----------------
 
@@ -445,6 +482,26 @@ class PanOs:
             "pan-os-create-address-group", create_args, f"Failed to create address-group '{self.address_group}'"
         )
 
+    def ensure_group_tag(self, group_context: dict) -> None:
+        """Add the configured tag to a pre-existing address-group if it isn't already present.
+
+        pan-os-edit-address-group's ``tags`` argument replaces the group's tag list, so the
+        configured tag is merged with the group's current tags (de-duplicated) before writing.
+        No edit is issued when the tag is already present (or no tag is configured).
+
+        Args:
+            group_context (dict): The existing group's context dict (carries its current Tags).
+        """
+        merged = self.merged_tags_if_missing(normalize_tags(group_context.get("Tags")))
+        if merged is None:
+            return
+        self.execute_or_raise(
+            "pan-os-edit-address-group",
+            {"name": self.address_group, "type": "static", "tags": merged},
+            f"Failed to add tag to address-group '{self.address_group}'",
+        )
+        self._address_made_changes = True
+
     def ensure_rule(self, rule_present: bool, rule_destinations: list) -> None:
         """Ensure the deny rule exists, points at the group, and sits at the top.
 
@@ -469,20 +526,49 @@ class PanOs:
                 create_rule_args["log_forwarding"] = self.log_forwarding_name
             self.execute_or_raise("pan-os-create-rule", create_rule_args, f"Failed to create rule '{self.rule_name}'")
             self._rule_changed = True
-        elif self.address_group not in rule_destinations:
-            # Rule exists but doesn't reference our group - add without replacing existing destinations.
-            self.execute_or_raise(
-                "pan-os-edit-rule",
-                {
-                    "rulename": self.rule_name,
-                    "element_to_change": "destination",
-                    "element_value": self.address_group,
-                    "behaviour": "add",
-                    "pre_post": PRE_POST,
-                },
-                f"Failed to add group to rule '{self.rule_name}'",
-            )
-            self._rule_changed = True
+        else:
+            if self.address_group not in rule_destinations:
+                # Rule exists but doesn't reference our group - add without replacing existing destinations.
+                self.execute_or_raise(
+                    "pan-os-edit-rule",
+                    {
+                        "rulename": self.rule_name,
+                        "element_to_change": "destination",
+                        "element_value": self.address_group,
+                        "behaviour": "add",
+                        "pre_post": PRE_POST,
+                    },
+                    f"Failed to add group to rule '{self.rule_name}'",
+                )
+                self._rule_changed = True
+            # Add the configured tag to the pre-existing rule if it isn't already present. Uses
+            # behaviour=add so it never clobbers or duplicates the rule's existing tags.
+            if self.tag and self.tag not in self._rule_tags:
+                self.execute_or_raise(
+                    "pan-os-edit-rule",
+                    {
+                        "rulename": self.rule_name,
+                        "element_to_change": "tag",
+                        "element_value": self.tag,
+                        "behaviour": "add",
+                        "pre_post": PRE_POST,
+                    },
+                    f"Failed to add tag to rule '{self.rule_name}'",
+                )
+                self._rule_changed = True
+            # Add the configured log-forwarding profile to the pre-existing rule if it differs.
+            if self.log_forwarding_name and self.log_forwarding_name != self._rule_log_forwarding:
+                self.execute_or_raise(
+                    "pan-os-edit-rule",
+                    {
+                        "rulename": self.rule_name,
+                        "element_to_change": "log-forwarding",
+                        "element_value": self.log_forwarding_name,
+                        "pre_post": PRE_POST,
+                    },
+                    f"Failed to set log-forwarding profile on rule '{self.rule_name}'",
+                )
+                self._rule_changed = True
         # Always enforce top placement.
         self.execute_or_raise(
             "pan-os-move-rule",
@@ -513,17 +599,32 @@ class PanOs:
             rule_present (bool): Whether the deny rule already existed at the start of the run.
             rule_destinations (list): The rule's current destinations, when it already exists.
         Returns:
-            A tuple of (action, message, group_exists_after) describing the effect for this domain
-            and the up-to-date group-existence flag for the next iteration.
+            A tuple of (changed, message, group_exists_after) where 'changed' is True when this
+            domain mutated Panorama state (object/group created or edited), 'message' summarises the
+            effect, and 'group_exists_after' is the up-to-date group-existence flag for the next
+            iteration.
         """
         object_name = derive_object_name(domain)
-        actions: list = []
+        # 'changed' gates the commit/push: it flips True whenever this domain mutated Panorama
+        # state (object/group created or edited). The specific action label is no longer surfaced.
+        changed = False
         messages: list = []
 
         # 1. FQDN address-object.
-        if self.address_object_exists(object_name):
-            actions.append(ACTION_UNCHANGED)
+        object_exists, object_tags = self.address_object_exists(object_name)
+        if object_exists:
             messages.append(f"Address-object '{object_name}' already exists.")
+            # Add the configured tag to the pre-existing object if it isn't already there
+            # (merged, never duplicated). No edit is issued when the tag is already present.
+            merged = self.merged_tags_if_missing(object_tags)
+            if merged is not None:
+                self.execute_or_raise(
+                    "pan-os-edit-address",
+                    {"name": object_name, "element_to_change": "tag", "element_value": merged},
+                    f"Failed to add tag to address-object '{object_name}'",
+                )
+                changed = True
+                messages.append(f"Tag '{self.tag}' added to '{object_name}'.")
         else:
             create_args: dict = {"name": object_name, "fqdn": domain}
             if self.tag:
@@ -531,7 +632,7 @@ class PanOs:
                 create_args["tag"] = self.tag
                 create_args["create_tag"] = "true"
             self.execute_or_raise("pan-os-create-address", create_args, f"Failed to create address-object '{object_name}'")
-            actions.append(ACTION_CREATED)
+            changed = True
             messages.append(f"Address-object '{object_name}' created for '{domain}'.")
 
         # 2. Group membership (create the group lazily on first object).
@@ -539,12 +640,11 @@ class PanOs:
             self.create_group_with_member(object_name)
             current_members.append(object_name)
             group_exists = True
-            actions.append(ACTION_CREATED)
+            changed = True
             messages.append(f"Address-group '{self.address_group}' created with member '{object_name}'.")
             # Now that the group exists, safe to create the rule that references it.
             self._ensure_rule_once(rule_present, rule_destinations)
         elif object_name in current_members:
-            actions.append(ACTION_UNCHANGED)
             messages.append(f"Already a member of '{self.address_group}'.")
         else:
             self.execute_or_raise(
@@ -553,12 +653,9 @@ class PanOs:
                 f"Failed to add object to address-group '{self.address_group}'",
             )
             current_members.append(object_name)
-            actions.append(ACTION_MODIFIED)
+            changed = True
             messages.append(f"Added to '{self.address_group}'.")
 
-        # Collapse the per-step actions to a single 'changed' bool for commit-gating; the Action
-        # value itself is no longer surfaced in the output (Result + Message are sufficient).
-        changed = any(action in (ACTION_CREATED, ACTION_MODIFIED) for action in actions)
         return changed, " ".join(messages), group_exists
 
     def _ensure_rule_once(self, rule_present: bool, rule_destinations: list) -> None:
@@ -593,17 +690,20 @@ class PanOs:
                 members = group_context.get("Addresses")
                 current_members = list(members) if isinstance(members, list) else [members] if members else []
 
-            rule_present, rule_destinations = self.rule_destinations()
+            rule_present, rule_destinations, self._rule_tags = self.rule_destinations()
             # If the group already exists, ensure the rule up front. Otherwise defer to after
             # the first domain seeds the group.
             if group_exists:
+                # Add the configured tag to the pre-existing group if it isn't already there.
+                if group_context is not None:
+                    self.ensure_group_tag(group_context)
                 self._ensure_rule_once(rule_present, rule_destinations)
 
             for domain in self.domains:
                 changed, message, group_exists = self.ensure_domain(
                     domain, current_members, group_exists, rule_present, rule_destinations
                 )
-                self._made_changes = self._made_changes or changed
+                self._address_made_changes = self._address_made_changes or changed
                 rows.append(
                     build_result_row(
                         domain=domain,
@@ -778,7 +878,7 @@ class PanOs:
         # Change-detection is tracked internally (no longer read back from a per-row Action field):
         #   * _made_changes -> an address object was created, or added to the group.
         #   * _rule_changed -> the rule was created or edited (group added / new rule name).
-        made_changes = self._made_changes or self._rule_changed
+        made_changes = self._address_made_changes or self._rule_changed
         auto_commit = argToBoolean(self.args.get("auto_commit", True))
         demisto.debug(f"{LOG_TAG} start_flow: {made_changes=}, {auto_commit=}, {len(rows)} row(s)")
         if made_changes and auto_commit:
