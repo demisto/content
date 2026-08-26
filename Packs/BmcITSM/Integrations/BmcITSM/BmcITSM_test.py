@@ -1451,14 +1451,16 @@ def test_fetch_command(mocker):
 
 
 @pytest.mark.parametrize(
-    "command_arguments,",
+    "command_arguments",
     [
-        {
-            "incident_number": "INC000010381028",
-            "detailed_description": "Description TEST",
-            "view_access": "Public",
-            "worklog_type": "Chat",
-        },
+        (
+            {
+                "incident_number": "INC000010381028",
+                "detailed_description": "Description TEST",
+                "view_access": "Public",
+                "worklog_type": "Chat",
+            },
+        ),
     ],
 )
 def test_worklog_add_command(
