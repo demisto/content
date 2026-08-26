@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pytest
 from freezegun import freeze_time
@@ -34,35 +34,6 @@ class TestFetchActivity:
     def create_response_by_limit(from_date, to_date, offset, user_activity_entry_count=False, limit=1):
         single_response = util_load_json("test_data/single_loggings_response.json")
         return [single_response.copy() for i in range(limit)]
-
-    @staticmethod
-    def create_response_with_duplicates(request_time, limit, number_of_different_time, id_to_start_from):
-        """
-        Creates response with different requestTime and ids.
-        Args:
-            request_time: request time to start from.
-            limit: number of responses
-            number_of_different_time: number of responses with different requestTime
-            id_to_start_from: id to start from
-
-        """
-        single_response = util_load_json("test_data/single_loggings_response.json")
-        request_time_date_time = datetime.strptime(request_time, DATE_FORMAT)
-        output = []
-
-        def create_single(single_response, time, id, output):
-            single_response["requestTime"] = time
-            single_response["taskId"] = str(id)
-            output.append(single_response)
-            id += 1
-            return output, id
-
-        for _i in range(limit - number_of_different_time):
-            output, id_to_start_from = create_single(single_response.copy(), request_time, id_to_start_from, output)
-        for _i in range(limit - number_of_different_time, limit):
-            new_time = datetime.strftime(request_time_date_time + timedelta(seconds=10), DATE_FORMAT)
-            output, id_to_start_from = create_single(single_response.copy(), new_time, id_to_start_from, output)
-        return output
 
     @pytest.mark.parametrize("loggings_to_fetch", [1, 4, 6], ids=["Single", "Part", "All"])
     def test_get_max_fetch_activity_logging(self, loggings_to_fetch, requests_mock, mocker):
@@ -169,31 +140,73 @@ class TestFetchActivity:
 
         assert resolve_max_fetch(params) == DEFAULT_MAX_FETCH
 
-    DUPLICATED_ACTIVITY_LOGGINGS = [
-        (("2023-04-15T07:00:00Z", 5, 2, 0), 5, {}),
-        (("2023-04-15T07:00:00Z", 5, 1, 0), 4, {"last_log": 0}),
-    ]
+    @staticmethod
+    def _event(task_id, request_time, session_id="s", system_account="a", activity_action="READ", ip="1.1.1.1"):
+        """Builds a minimal activity logging event with the fields used for identity/dedup."""
+        return {
+            "taskId": str(task_id),
+            "requestTime": request_time,
+            "sessionId": session_id,
+            "systemAccount": system_account,
+            "activityAction": activity_action,
+            "ipAddress": ip,
+        }
 
-    @pytest.mark.parametrize("args, len_of_activity_loggings, last_run", DUPLICATED_ACTIVITY_LOGGINGS)
-    def test_remove_duplicated_activity_logging(self, args, len_of_activity_loggings, last_run):
+    def test_remove_duplications_no_previous_ids_keeps_everything(self):
         """
-        Given: responses with potential duplications from last fetch.
-        When: running fetch command.
-        Then: return last responses with the latest requestTime to check if there are duplications.
-
+        Given: a first fetch (last_run has no previous_event_ids).
+        When: running remove_duplications.
+        Then: nothing is removed.
         """
         from WorkdayEventCollector import remove_duplications
 
-        loggings = self.create_response_with_duplicates(*args)
-        if "last_log" in last_run:
-            last_run["last_log"] = loggings[last_run.get("last_log")]
-        activity_loggings = remove_duplications(loggings, last_run)
-        assert len(activity_loggings) == len_of_activity_loggings
+        loggings = [self._event(1, "2023-04-15T07:00:00.100Z"), self._event(2, "2023-04-15T07:00:00.200Z")]
+        assert remove_duplications(loggings, {}) == loggings
+
+    def test_remove_duplications_removes_only_previously_ingested(self):
+        """
+        Given: last_run tracks the identity of an event already ingested last cycle.
+        When: running remove_duplications on a batch that re-contains that event plus new ones.
+        Then: only the previously-ingested event is removed; new events are kept.
+        """
+        from WorkdayEventCollector import get_event_identity, remove_duplications
+
+        already_ingested = self._event(1, "2023-04-15T07:00:00.100Z")
+        new_event = self._event(2, "2023-04-15T07:00:00.150Z")
+        last_run = {"previous_event_ids": [get_event_identity(already_ingested)]}
+
+        result = remove_duplications([already_ingested, new_event], last_run)
+
+        assert result == [new_event]
+
+    def test_remove_duplications_keeps_new_event_that_sorts_before_checkpoint(self):
+        """
+        Regression for XSUP-75678: a NEW event in the boundary second that sorts BEFORE the stored
+        checkpoint must NOT be dropped.
+
+        Given: last cycle ingested an event at .697; this cycle the API returns (in a different
+               order) a brand-new event at .300 (earlier in the same second) plus the old .697 event.
+        When: running remove_duplications.
+        Then: the new .300 event is kept (previously it was silently discarded by position), and the
+              duplicate .697 event is removed.
+        """
+        from WorkdayEventCollector import get_event_identity, remove_duplications
+
+        previously_ingested = self._event(10, "2026-08-26T10:27:53.697Z")
+        brand_new_earlier = self._event(11, "2026-08-26T10:27:53.300Z")
+        last_run = {"previous_event_ids": [get_event_identity(previously_ingested)]}
+
+        # API returns the new (earlier) event first, then the already-ingested one.
+        result = remove_duplications([brand_new_earlier, previously_ingested], last_run)
+
+        assert brand_new_earlier in result
+        assert previously_ingested not in result
+        assert len(result) == 1
 
     def test_remove_milliseconds_from_time_of_logging(self):
         """
         Given: loggings with time string with milliseconds
-        When: Fetching loggings from Workday
+        When: Building the whole-second request bound
         Then: Remove the milliseconds.
 
         """
@@ -205,6 +218,80 @@ class TestFetchActivity:
         activity_logging["requestTime"] = requests_time
 
         assert remove_milliseconds_from_time_of_logging(activity_logging) == final_time
+
+    def test_build_next_last_run_tracks_boundary_second_ids(self):
+        """
+        Given: a batch of deduped events where several share the latest whole second.
+        When: running build_next_last_run.
+        Then: last_fetch_time is the whole-second floor of the latest event, and previous_event_ids
+              contains exactly the identities of the events in that latest second (so the next cycle
+              can dedup the re-requested second by identity).
+        """
+        from WorkdayEventCollector import build_next_last_run, get_event_identity
+
+        earlier = self._event(1, "2026-08-26T10:27:52.900Z")
+        boundary_a = self._event(2, "2026-08-26T10:27:53.100Z")
+        boundary_b = self._event(3, "2026-08-26T10:27:53.800Z")
+
+        next_last_run = build_next_last_run([earlier, boundary_a, boundary_b], {})
+
+        assert next_last_run["last_fetch_time"] == "2026-08-26T10:27:53Z"
+        assert next_last_run["latest_request_time"] == "2026-08-26T10:27:53.800Z"
+        assert set(next_last_run["previous_event_ids"]) == {
+            get_event_identity(boundary_a),
+            get_event_identity(boundary_b),
+        }
+
+    def test_build_next_last_run_empty_preserves_previous(self):
+        """
+        Given: no new events this cycle.
+        When: running build_next_last_run.
+        Then: the previous last_run is preserved (no checkpoint regression).
+        """
+        from WorkdayEventCollector import build_next_last_run
+
+        previous = {"last_fetch_time": "2026-08-26T10:27:53Z", "previous_event_ids": ["x"]}
+        assert build_next_last_run([], previous) == previous
+
+    @freeze_time("2023-04-15 08:00:00")
+    def test_fetch_migrates_from_old_last_run_shape_without_loss(self, mocker):
+        """
+        Backward-compatibility / upgrade safety: when our new code is uploaded over the client's
+        version, the FIRST fetch reads the OLD last_run shape (which only has `last_fetch_time` and
+        `last_log`, and NO `previous_event_ids`).
+
+        Given: an old-shape last_run (no `previous_event_ids`).
+        When: running fetch_activity_logging.
+        Then:
+            - It continues from the old `last_fetch_time` (no gap, no crash on missing keys).
+            - It does not silently drop events (keeps everything on this transition cycle).
+            - It writes the NEW shape (adds `previous_event_ids`) so subsequent cycles self-heal.
+        """
+        from WorkdayEventCollector import fetch_activity_logging
+
+        first_fetch_time = datetime.strptime("2023-04-12T07:00:00Z", DATE_FORMAT)
+        fetched_events = util_load_json("test_data/fetch_activity_loggings.json")
+        new_batch = fetched_events.get("fetch_loggings")  # taskIds 2 and 3
+
+        # Old-shape last_run as it would exist on the client tenant before the upgrade.
+        old_last_run = {
+            "last_fetch_time": "2023-04-15T07:00:00Z",
+            "last_log": {"taskId": "3", "requestTime": "2023-04-15T07:00:00.000Z"},
+        }
+
+        http_responses = mocker.patch.object(Client, "get_activity_logging_request", side_effect=[new_batch, []])
+
+        activity_loggings, new_last_run = fetch_activity_logging(
+            self.client, last_run=old_last_run, first_fetch=first_fetch_time, max_fetch=3
+        )
+
+        # Continues from the old checkpoint (no gap).
+        assert http_responses.call_args_list[0][1]["from_date"] == "2023-04-15T07:00:00Z"
+        # No silent loss on the transition cycle.
+        assert activity_loggings == new_batch
+        # New shape is now persisted so the next cycle deduplicates by identity.
+        assert "previous_event_ids" in new_last_run
+        assert len(new_last_run["previous_event_ids"]) == 2
 
     def test_get_activity_logging_command(self, mocker):
         """
@@ -266,9 +353,11 @@ class TestFetchActivity:
 
         assert activity_loggings == fetched_events.get("fetched_events")
         assert new_last_run.get("last_fetch_time") == "2023-04-15T07:00:00Z"
-        assert new_last_run.get("last_log").get("taskId") == "3"
+        # The boundary second (2023-04-15T07:00:00) contains taskIds 2 and 3 (identical requestTime),
+        # both tracked for identity-based dedup on the next cycle.
+        assert len(new_last_run.get("previous_event_ids")) == 2
 
-        # assert no new results when given the last_run:
+        # assert no new results when the same boundary-second events are returned again:
         fetched_events = util_load_json("test_data/fetch_activity_loggings.json")
         http_responses = mocker.patch.object(
             Client, "get_activity_logging_request", side_effect=[fetched_events.get("fetch_loggings"), []]
@@ -283,9 +372,53 @@ class TestFetchActivity:
             "from_date": "2023-04-15T07:00:00Z",
             "to_date": "2023-04-15T08:00:00Z",
         }
+        # Both re-returned events were already ingested -> deduped by identity -> nothing new.
         assert activity_loggings == []
+        # Checkpoint is preserved unchanged when there are no new events (no regression, still tracks
+        # the boundary-second identities so the next cycle keeps deduping correctly).
         assert new_last_run.get("last_fetch_time") == "2023-04-15T07:00:00Z"
-        assert new_last_run.get("last_log").get("taskId") == "3"
+        assert len(new_last_run.get("previous_event_ids")) == 2
+
+    @freeze_time("2023-04-15 08:00:00")
+    def test_fetch_activity_logging_keeps_new_event_in_rerequested_second(self, mocker):
+        """
+        Regression for XSUP-75678 at the fetch level.
+
+        Given:
+            - A previous checkpoint at the boundary second 2023-04-15T07:00:00 with two ingested
+              events (taskIds 2 and 3).
+            - The next API call re-returns those two events AND a brand-new event (taskId 99) in the
+              same second that sorts BEFORE them.
+        When:
+            - Running fetch_activity_logging.
+        Then:
+            - Only the brand-new event is ingested (the two duplicates are removed), and no event is
+              silently dropped despite sorting before the stored checkpoint.
+        """
+        from WorkdayEventCollector import fetch_activity_logging, get_event_identity
+
+        first_fetch_time = datetime.strptime("2023-04-12T07:00:00Z", DATE_FORMAT)
+        fetched_events = util_load_json("test_data/fetch_activity_loggings.json")
+        boundary_events = fetched_events.get("fetch_loggings")  # taskIds 2 and 3 at ...07:00:00.000Z
+
+        last_run = {
+            "last_fetch_time": "2023-04-15T07:00:00Z",
+            "previous_event_ids": [get_event_identity(event) for event in boundary_events],
+        }
+
+        brand_new = dict(boundary_events[0])
+        brand_new["taskId"] = "99"
+        # Same second, but the API returns it first (out of order) to reproduce the original bug.
+        reordered_batch = [brand_new, boundary_events[0], boundary_events[1]]
+
+        mocker.patch.object(Client, "get_activity_logging_request", side_effect=[reordered_batch, []])
+
+        activity_loggings, new_last_run = fetch_activity_logging(
+            self.client, last_run=last_run, first_fetch=first_fetch_time, max_fetch=3
+        )
+
+        assert activity_loggings == [brand_new]
+        assert get_event_identity(brand_new) in new_last_run.get("previous_event_ids")
 
     @pytest.mark.parametrize("max_fetch, instance_returned", [(6000, 1), (15000, 2), (60000, 6)])
     def test_instance_returned_request(self, mocker, max_fetch, instance_returned):
