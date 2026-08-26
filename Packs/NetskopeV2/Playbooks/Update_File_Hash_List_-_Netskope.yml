@@ -1,0 +1,326 @@
+id: Update File Hash List - Netskope
+version: -1
+name: Update File Hash List - Netskope
+description: |-
+  Adds hashes to a Netskope file hash list via netskopev2-update-file-hash-list.
+
+  IMPORTANT: Netskope's file hash list API (v1) has no endpoint to read the current list content -
+  every update REPLACES the full list, it cannot append. Since Netskope itself can't tell us
+  what's already there, this playbook tracks the running hash set on the XSOAR side instead, in
+  an XSOAR List named "NetskopeHashList_<ListName>" (auto-created on first run): it reads that
+  List's current content (via the NetskopeGetXsoarListContent script), merges it with NewHashes,
+  sends the full merged set to Netskope, then writes the result back (via
+  NetskopeSetXsoarListContentWithRetry, which retries a few times if XSOAR's storage backend
+  reports a transient version conflict from a concurrent write) to the same XSOAR List so the
+  next run picks up where this one left off. No manual "what's already in the list" input needed.
+
+  Only MD5 (32 hex chars) and SHA256 (64 hex chars) hashes are accepted - the command itself
+  validates this and rejects anything else. A "duplicate request, no change" response from
+  Netskope is treated as success, not an error, since the desired state (these hashes being
+  present) is already true in that case.
+
+  The ListName input must reference a Netskope list that already exists (the tracking List on the
+  XSOAR side is separate and gets created automatically).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 768a4437-219d-4102-a007-40bacf2bdc4d
+    type: start
+    task:
+      id: 768a4437-219d-4102-a007-40bacf2bdc4d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 827fa9bc-8e0e-4e4b-bc56-343e48f17f28
+    type: condition
+    task:
+      id: 827fa9bc-8e0e-4e4b-bc56-343e48f17f28
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 44f60d10-511f-4a24-8a50-80c7bd2ba870
+    type: regular
+    task:
+      id: 44f60d10-511f-4a24-8a50-80c7bd2ba870
+      version: -1
+      name: Update Hash List
+      description: |-
+        Replaces the full hash list content with the XSOAR-tracked hashes + NewHashes merged
+        (Netskope's v1 API has no read/append endpoint - this is why the running set is tracked
+        on the XSOAR side instead, via the preceding Get Currently Tracked Hashes task).
+      script: "|||netskopev2-update-file-hash-list"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "7"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.ListName
+      hash:
+        simple: ${XsoarList.content},${inputs.NewHashes}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5b21f091-93bb-4784-917f-b7e742352428
+    type: regular
+    task:
+      id: 5b21f091-93bb-4784-917f-b7e742352428
+      version: -1
+      name: Save Updated Hash List
+      description: Writes the now-validated, Netskope-accepted hash set back to the XSOAR List so the next run picks up where this one left off. Retries a few times on a transient Elasticsearch version-conflict error (seen when this list is written to in close succession).
+      scriptName: NetskopeSetXsoarListContentWithRetry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      listName:
+        simple: NetskopeHashList_${inputs.ListName}
+      listData:
+        complex:
+          root: Netskope.FileHashList.hash
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ","
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f7c96106-6154-4d3f-885f-80f54c08408d
+    type: title
+    task:
+      id: f7c96106-6154-4d3f-885f-80f54c08408d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: b5890d2a-f61d-499a-8b48-abc40e2fae22
+    type: condition
+    task:
+      id: b5890d2a-f61d-499a-8b48-abc40e2fae22
+      version: -1
+      name: Check required inputs were provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ListName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.NewHashes
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 0cbcffd8-e945-4381-a919-3d1e46a98e80
+    type: regular
+    task:
+      id: 0cbcffd8-e945-4381-a919-3d1e46a98e80
+      version: -1
+      name: Get Currently Tracked Hashes
+      description: Reads (and creates if missing) the XSOAR List that tracks this Netskope hash list's current content between runs.
+      scriptName: NetskopeGetXsoarListContent
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      listName:
+        simple: NetskopeHashList_${inputs.ListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "5_2_yes": 0.71,
+      "5_4_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 820,
+        "x": 450,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: ListName
+  value: {}
+  required: true
+  description: Name of an existing Netskope file hash list to update. Must already exist in the Netskope UI.
+  playbookInputQuery:
+- key: NewHashes
+  value: {}
+  required: true
+  description: Comma-separated MD5 or SHA256 hashes to add to the list this run.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: false

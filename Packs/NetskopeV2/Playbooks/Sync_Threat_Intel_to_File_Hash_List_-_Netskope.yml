@@ -1,0 +1,529 @@
+id: Sync Threat Intel to File Hash List - Netskope
+version: -1
+name: Sync Threat Intel to File Hash List - Netskope
+description: |-
+  Meant to run periodically (attach it to an hourly scheduled Job in XSOAR) to keep a Netskope
+  file hash list in sync with File indicators already ingested into XSOAR's own Threat Intel
+  Management.
+
+  Maintains the same "list is replace-only, track history on the XSOAR side" logic used by the
+  manual Update File Hash List playbook: Netskope's v1 file hash list API has no endpoint to read
+  the current list content, so this playbook tracks the running hash set in an XSOAR List named
+  "NetskopeHashList_<ListName>" (via NetskopeGetXsoarListContent / NetskopeSetXsoarListContentWithRetry,
+  exactly as before), merges it with newly found hashes from Threat Intel, and sends the full
+  merged set as a replace. If nothing new is found, it skips the update call entirely rather than
+  resending an unchanged list every hour.
+
+  ListName is an ordinary playbook input with a default pre-filled ("CTETest") in the Inputs and
+  Outputs panel - edit it there like any other input, no task editing needed. IMPORTANT caveat: on
+  this instance, a Job-triggered run of this playbook does not apply a playbook input's default
+  Value (confirmed empirically), so this run's input may come through empty even with a default
+  set. Task #13 ("Was ListName input provided?") checks for this and, if empty, falls back to the
+  exact same default hardcoded directly in task #14 - so the sync still runs correctly on a Job
+  either way. If you change the default, update BOTH ListName's Value in this panel AND task #14's
+  values argument, so manual runs and Job runs stay consistent. Both write to the same
+  HashSyncConfig context key that every downstream task reads from.
+
+  Checks whether a Netskope integration instance is enabled (matching any brand name containing
+  "Netskope"), reads the currently tracked hash set, searches XSOAR File indicators (optionally
+  restricted by Tags) for valid MD5 (32 hex chars) or SHA256 (64 hex chars) hashes - checking both
+  an indicator's value and its md5/sha256 CustomFields - and if any aren't already tracked,
+  updates the Netskope list and saves the new full set back to the XSOAR List for the next run.
+
+  Ends with a Close Investigation task - a recurring Job typically won't start a new run while
+  the previous job-created incident is still open, so leaving it open (the default if a playbook
+  just ends at a title task) silently blocks every future firing regardless of the configured
+  interval.
+
+  Make sure only one Netskope integration instance is enabled at a time - if two are enabled,
+  XSOAR dispatches the update command to both.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 08420e51-daea-4f6c-8756-9499c26c84c5
+    type: start
+    task:
+      id: 08420e51-daea-4f6c-8756-9499c26c84c5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: daee5631-3f9b-437e-82cb-8197a7b631b4
+    type: regular
+    task:
+      id: daee5631-3f9b-437e-82cb-8197a7b631b4
+      version: -1
+      name: Set Sync Configuration From Inputs
+      description: ListName was provided as a playbook input (e.g. a manual run) - use it as-is.
+      script: "|||SetMultipleValues"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      parent:
+        simple: HashSyncConfig
+      keys:
+        simple: ListName
+      values:
+        simple: ${inputs.ListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 6b89a39a-7bbc-406a-95cb-f8bf813b1fa3
+    type: condition
+    task:
+      id: 6b89a39a-7bbc-406a-95cb-f8bf813b1fa3
+      version: -1
+      name: Was ListName input provided?
+      description: Check whether ListName actually came through non-empty for this run. On this instance, a Job-triggered run does not apply a playbook input's default Value, so this run's input may be empty even though a default is set in the Inputs and Outputs panel - in that case, fall back to that same default directly (task #14) instead of silently doing nothing.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "14"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ListName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 0fe79550-719c-45d0-aa86-dfd14f3a9325
+    type: regular
+    task:
+      id: 0fe79550-719c-45d0-aa86-dfd14f3a9325
+      version: -1
+      name: Set Sync Configuration (Fallback Default)
+      description: 'The ListName input came through empty for this run (expected on a Job-triggered run on this instance) - fall back to the same literal default shown in the Inputs and Outputs panel. To change the default, edit BOTH here and ListName''s Value in the Inputs and Outputs panel, so manual runs and Job runs stay consistent.'
+      script: "|||SetMultipleValues"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      parent:
+        simple: HashSyncConfig
+      keys:
+        simple: ListName
+      values:
+        simple: CTETest
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 019559a2-50d9-4fce-aac3-aa51e9e9f75d
+    type: condition
+    task:
+      id: 019559a2-50d9-4fce-aac3-aa51e9e9f75d
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a6b1c4cb-c9ce-4e28-8d7d-bd98959a651f
+    type: regular
+    task:
+      id: a6b1c4cb-c9ce-4e28-8d7d-bd98959a651f
+      version: -1
+      name: Update Hash List
+      description: |-
+        Replaces the full hash list content with the XSOAR-tracked hashes + newly found Threat
+        Intel hashes merged (Netskope's v1 API has no read/append endpoint - this is why the
+        running set is tracked on the XSOAR side, via Get Currently Tracked Hashes).
+      script: "|||netskopev2-update-file-hash-list"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "7"
+    scriptarguments:
+      name:
+        complex:
+          root: HashSyncConfig.ListName
+      hash:
+        complex:
+          root: NetskopeHashSync.merged_hashes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f9bba5cc-fca3-44c2-82d2-f6be69de33cb
+    type: title
+    task:
+      id: f9bba5cc-fca3-44c2-82d2-f6be69de33cb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 9a029cb5-aa66-4c48-a8b3-ca8e95eb5823
+    type: regular
+    task:
+      id: 9a029cb5-aa66-4c48-a8b3-ca8e95eb5823
+      version: -1
+      name: Close Investigation
+      description: Close this run's incident so the recurring Job isn't blocked from firing again - Jobs typically won't start a new run while the previous job-created incident is still open.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeReason:
+        simple: Other
+      closeNotes:
+        simple: Netskope Threat Intel hash sync run completed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 9645c93f-139a-484c-9147-57b2b88b0d63
+    type: regular
+    task:
+      id: 9645c93f-139a-484c-9147-57b2b88b0d63
+      version: -1
+      name: Get Currently Tracked Hashes
+      description: Reads (and creates if missing) the XSOAR List that tracks this Netskope hash list's current content between runs.
+      scriptName: NetskopeGetXsoarListContent
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "8"
+    scriptarguments:
+      listName:
+        simple: NetskopeHashList_${HashSyncConfig.ListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4d60b077-e458-48b1-ad78-cfed088c20a5
+    type: regular
+    task:
+      id: 4d60b077-e458-48b1-ad78-cfed088c20a5
+      version: -1
+      name: Save Updated Hash List
+      description: Writes the now-validated, Netskope-accepted hash set back to the XSOAR List so the next run picks up where this one left off. Retries a few times on a transient Elasticsearch version-conflict error (seen when this list is written to in close succession).
+      scriptName: NetskopeSetXsoarListContentWithRetry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      listName:
+        simple: NetskopeHashList_${HashSyncConfig.ListName}
+      listData:
+        complex:
+          root: Netskope.FileHashList.hash
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ","
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4bf39664-331f-4d55-8389-5374c74cccc1
+    type: regular
+    task:
+      id: 4bf39664-331f-4d55-8389-5374c74cccc1
+      version: -1
+      name: Find New Hashes from Threat Intel
+      description: Search XSOAR File indicators (optionally filtered by Tags) for valid MD5/SHA256 hashes not already tracked, and compute the full merged replace-set.
+      scriptName: NetskopeFileHashSync
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "9"
+    scriptarguments:
+      tags:
+        complex:
+          root: inputs.Tags
+      existing_hashes:
+        complex:
+          root: XsoarList.content
+      max_indicators:
+        complex:
+          root: inputs.MaxIndicators
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 5eea6c69-24a5-45c8-9ef7-9f18d0a48e20
+    type: condition
+    task:
+      id: 5eea6c69-24a5-45c8-9ef7-9f18d0a48e20
+      version: -1
+      name: Are there new hashes to add?
+      description: Skip the update call entirely if nothing new was found, rather than resending an unchanged list every hour.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NetskopeHashSync.new_hashes
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_1_yes": 0.53,
+      "13_14_#default#": 0.47,
+      "2_6_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "9_3_yes": 0.53,
+      "9_4_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1570,
+        "width": 820,
+        "x": 450,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: Tags
+  value: {}
+  required: false
+  description: Optional comma-separated indicator tags to further restrict which File indicators are pulled (e.g. "malware"). Leave empty to consider all File-type indicators.
+  playbookInputQuery:
+- key: ListName
+  value:
+    simple: CTETest
+  required: false
+  description: Name of an existing Netskope file hash list to update. Must already exist in the Netskope UI. Defaults to "CTETest" - if this run's value ever comes through empty (e.g. a Job-triggered run on this instance, which doesn't apply this default automatically), the playbook falls back to the same "CTETest" default set directly in task   #14, so keep both in sync if you change this.
+  playbookInputQuery:
+- key: MaxIndicators
+  value: {}
+  required: false
+  description: Maximum number of File indicators to pull from XSOAR per run (default 500 if left empty). Bounds how much work a single scheduled run does.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: false

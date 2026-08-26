@@ -1,0 +1,41 @@
+args:
+- description: Optional comma-separated indicator tags to further restrict the search (e.g. "malware"). If omitted, all File-type indicators are considered.
+  name: tags
+- description: Comma-separated list of hashes already tracked for this Netskope file hash list (from the NetskopeGetXsoarListContent script's output) - used to compute what's genuinely new and to build the full merged replace-set.
+  name: existing_hashes
+- defaultValue: '500'
+  description: Maximum number of File indicators to pull from XSOAR per run.
+  name: max_indicators
+comment: Searches XSOAR's own Threat Intel Management for the generic "File" type plus the hash-specific "File MD5"/"File SHA-256" types (some tenants disable the hash-specific types as selectable options, in which case new hash indicators land under generic "File" instead - searching both covers either case), extracts valid MD5 (32 hex chars) / SHA256 (64 hex chars) hashes from either the indicator's value or its md5/sha256 CustomFields, and - since Netskope's v1 file hash list API has no read-back endpoint and every update replaces the full list - returns both the newly found hashes and the full merged set (existing_hashes plus new) ready to send as a full replace.
+commonfields:
+  id: NetskopeFileHashSync
+  version: -1
+name: NetskopeFileHashSync
+outputs:
+- contextPath: NetskopeHashSync.query
+  description: The indicator search query that was run.
+  type: String
+- contextPath: NetskopeHashSync.total_found_indicators
+  description: Total File indicators returned by the query.
+  type: Number
+- contextPath: NetskopeHashSync.skipped_no_valid_hash
+  description: Number of File indicators skipped because no valid MD5/SHA256 hash could be extracted from them.
+  type: Number
+- contextPath: NetskopeHashSync.new_count
+  description: Number of hashes found that aren't already in existing_hashes.
+  type: Number
+- contextPath: NetskopeHashSync.new_hashes
+  description: The newly found hashes not already tracked.
+  type: Unknown
+- contextPath: NetskopeHashSync.merged_hashes
+  description: existing_hashes plus new_hashes, deduplicated and sorted - the full set to send as a replace to netskopev2-update-file-hash-list.
+  type: Unknown
+script: ''
+type: python
+subtype: python3
+tags: []
+timeout: '0'
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

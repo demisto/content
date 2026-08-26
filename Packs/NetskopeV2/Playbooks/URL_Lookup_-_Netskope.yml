@@ -1,0 +1,294 @@
+id: URL Lookup - Netskope
+version: -1
+name: URL Lookup - Netskope
+description: |-
+  Looks up a URL's categorization/reputation info via netskopev2-url-lookup and records the
+  result as labels directly on the incident.
+
+  netskopev2-url-lookup is a bulk API (up to 100 URLs per call), but this playbook only ever
+  queries one URL at a time, matching the single URL input. Building the addLabels JSON string
+  from the lookup result requires joining nested category/URL-list names into flat values, which
+  isn't reliably expressible in plain playbook YAML templating (see NetskopeURLLookupLabels for
+  why) - that script does the real work; this playbook just wires it together.
+
+  netskopev2-url-lookup is a licensed feature on the Netskope side - if you get an error mentioning
+  licensing/enablement, URL Lookup needs to be enabled for your tenant by Netskope support.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b6877d83-77af-4268-9c47-8bd8f6206837
+    type: start
+    task:
+      id: b6877d83-77af-4268-9c47-8bd8f6206837
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 6d9f7617-3abf-4a83-9479-221182ec4e53
+    type: condition
+    task:
+      id: 6d9f7617-3abf-4a83-9479-221182ec4e53
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3ff902e8-4042-4aea-b6e7-0a2626f2bcbd
+    type: regular
+    task:
+      id: 3ff902e8-4042-4aea-b6e7-0a2626f2bcbd
+      version: -1
+      name: URL Lookup
+      description: Look up the URL's categorization/reputation info.
+      script: "|||netskopev2-url-lookup"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "7"
+    scriptarguments:
+      urls:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b5395fa6-aba4-4709-9462-bced8e5fa0b5
+    type: title
+    task:
+      id: b5395fa6-aba4-4709-9462-bced8e5fa0b5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: ab83972a-2a63-4353-b40f-bc2e83914884
+    type: condition
+    task:
+      id: ab83972a-2a63-4353-b40f-bc2e83914884
+      version: -1
+      name: Check required inputs were provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: be1c224b-4869-4471-be54-e12742214dab
+    type: regular
+    task:
+      id: be1c224b-4869-4471-be54-e12742214dab
+      version: -1
+      name: Update Incident with Lookup Result
+      description: Record the URL Lookup result as labels directly on the incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      addLabels:
+        simple: ${NetskopeURLLookupLabels.labels_json}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: c808786a-8042-4f5f-a8d5-36f7ac9a4b76
+    type: regular
+    task:
+      id: c808786a-8042-4f5f-a8d5-36f7ac9a4b76
+      version: -1
+      name: Build Incident Labels
+      description: Build the setIncident addLabels JSON string from the lookup result (joins nested category/URL-list names into flat label values).
+      scriptName: NetskopeURLLookupLabels
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "6"
+    scriptarguments:
+      lookup_result:
+        complex:
+          root: Netskope.URLLookup
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "5_2_yes": 0.71,
+      "5_4_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1105,
+        "width": 820,
+        "x": 450,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: URL
+  value: {}
+  required: true
+  description: The URL to look up.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: false

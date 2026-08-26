@@ -1,0 +1,25 @@
+args:
+- description: Name of the XSOAR List to read (created empty if it does not already exist).
+  name: listName
+  required: true
+comment: Reads (and creates if missing) an XSOAR List by a runtime-computed name, for tracking Netskope file hash list content between playbook runs (Netskope's v1 hash-list API has no read-back endpoint).
+commonfields:
+  id: NetskopeGetXsoarListContent
+  version: -1
+name: NetskopeGetXsoarListContent
+outputs:
+- contextPath: XsoarList.name
+  description: Name of the XSOAR List that was read.
+  type: String
+- contextPath: XsoarList.content
+  description: Raw content of the list (empty string if it was just created).
+  type: String
+script: ''
+type: python
+subtype: python3
+tags: []
+timeout: '0'
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

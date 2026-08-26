@@ -1,0 +1,453 @@
+id: Block IP - Network Profile - Netskope
+version: -1
+name: Block IP - Network Profile - Netskope
+description: |-
+  Blocks an IP address, IP range, or CIDR netmask via a Netskope Network Profile (shown as
+  "Network Location" in the Netskope UI) - the same "check input / check integration enabled /
+  act" pattern as Block Domain - Destination Profile - Netskope, adapted for Network Profiles
+  instead of Destination Profiles.
+
+  Looks up the network profile by name and either appends the value to that existing profile or,
+  if no profile with that name exists yet, creates a new one with the value as its first entry.
+
+  Unlike Destination Profiles, Network Profiles have no match type at all (netskopev2-create-
+  network-profile takes no "type" argument) - so unlike the destination profile playbook, there's
+  no "choose a match type" prompt here; creating a new profile needs nothing beyond the name and
+  the value itself.
+
+  Profile names are unique in Netskope, so an exact-match lookup (name eq "<ProfileName>") returns
+  at most one profile - no manual ID lookup needed, just the profile's display name.
+
+  IMPORTANT: like Destination Profiles, Network Profile values "append" has no server-side dedup -
+  calling it twice with the same value (e.g. re-running this playbook for a value that's already
+  present) adds it twice. This playbook checks the profile's current values first and only
+  appends when the value isn't already present, so re-running it for an already-blocked value is
+  a safe no-op. Also make sure only one Netskope integration instance is enabled at a time - if
+  two are enabled, XSOAR dispatches the command to both, causing the same double-add.
+
+  Network Profile value changes are staged (pending) until deployed, same as Destination
+  Profiles - this playbook appends the value and then immediately deploys that one profile so the
+  change takes effect right away. Creating a profile with default settings (interactive=false)
+  applies immediately - no separate deploy step is needed for that path.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b0449bf2-99b1-4b1b-8f26-a1b11f00a7bf
+    type: start
+    task:
+      id: b0449bf2-99b1-4b1b-8f26-a1b11f00a7bf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9e7cf8ea-d10b-4697-b619-2ccdb2dee9b7
+    type: condition
+    task:
+      id: 9e7cf8ea-d10b-4697-b619-2ccdb2dee9b7
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0fc53028-905d-461a-83c9-4355052421f2
+    type: regular
+    task:
+      id: 0fc53028-905d-461a-83c9-4355052421f2
+      version: -1
+      name: Append Value to Network Profile
+      description: Append the value to the network profile found by name, without replacing its other values.
+      script: "|||netskopev2-update-network-profile-values"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "6"
+    scriptarguments:
+      id:
+        complex:
+          root: Netskope.NetworkProfile.id
+      operation:
+        simple: append
+      values:
+        complex:
+          root: inputs.Value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2350900f-c902-40b9-b9c4-3574cc1521ee
+    type: title
+    task:
+      id: 2350900f-c902-40b9-b9c4-3574cc1521ee
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 47a36bf3-c923-491d-90e2-45340e1e7e35
+    type: condition
+    task:
+      id: 47a36bf3-c923-491d-90e2-45340e1e7e35
+      version: -1
+      name: Check required inputs were provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ProfileName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 02971561-19e6-4892-8e94-2978b329c9c5
+    type: regular
+    task:
+      id: 02971561-19e6-4892-8e94-2978b329c9c5
+      version: -1
+      name: Deploy Network Profile Changes
+      description: Deploy the staged (pending) change so the appended value takes effect.
+      script: "|||netskopev2-deploy-network-profiles"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      ids:
+        complex:
+          root: Netskope.NetworkProfile.id
+      change_note:
+        simple: Appended value via Block IP - Network Profile - Netskope playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9b1c3a24-109f-4b79-aa69-cc30b8aab4c7
+    type: regular
+    task:
+      id: 9b1c3a24-109f-4b79-aa69-cc30b8aab4c7
+      version: -1
+      name: Find Network Profile by Name
+      description: Look up the network profile's ID and current values by its exact name (profile names are unique in Netskope).
+      script: "|||netskopev2-list-network-profiles"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "8"
+    scriptarguments:
+      filter:
+        simple: name eq "${inputs.ProfileName}"
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 2117ecf6-3c90-42e4-89e4-e2a315353738
+    type: condition
+    task:
+      id: 2117ecf6-3c90-42e4-89e4-e2a315353738
+      version: -1
+      name: Was a matching profile found?
+      description: Check whether the name lookup found an existing network profile.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Netskope.NetworkProfile.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 95906f86-313f-4e38-9ef1-a7434c3dcf03
+    type: condition
+    task:
+      id: 95906f86-313f-4e38-9ef1-a7434c3dcf03
+      version: -1
+      name: Is the value already in the profile?
+      description: Skip appending if the value is already present in the profile's current values - Netskope's append operation does not dedup, so appending an already-present value would add it twice.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: inputs.Value
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Netskope.NetworkProfile.values
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: d83d00eb-d9ac-483f-b7ff-97e5d0490bc9
+    type: regular
+    task:
+      id: d83d00eb-d9ac-483f-b7ff-97e5d0490bc9
+      version: -1
+      name: Create Network Profile
+      description: No profile with that name exists yet - create one with the value as its first entry. Applies immediately (interactive=false), no separate deploy needed. Network Profiles have no "type" argument, unlike Destination Profiles, so nothing else is needed to create one.
+      script: "|||netskopev2-create-network-profile"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.ProfileName
+      values:
+        complex:
+          root: inputs.Value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_7_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "5_2_yes": 0.71,
+      "5_4_#default#": 0.53,
+      "8_9_yes": 0.53,
+      "8_10_#default#": 0.47,
+      "9_4_yes": 0.53,
+      "9_3_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1400,
+        "width": 1140,
+        "x": 130,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: ProfileName
+  value: {}
+  required: true
+  description: Name of the Netskope Network Profile (shown as "Network Location" in the Netskope UI) to add the value to. The playbook looks up the profile by this name (netskopev2-list-network-profiles, filter name eq "<ProfileName>"). If no profile with this name exists, one is created with the value as its first entry.
+  playbookInputQuery:
+- key: Value
+  value: {}
+  required: true
+  description: IP address, IP range, or CIDR netmask to add (e.g. "4.145.79.224/27").
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: false

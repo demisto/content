@@ -1,9 +1,9 @@
 {
-    "name": "Netskope v2",
-    "description": "Block URLs, domains and file hashes.",
+    "name": "Netskope - Direct to Zero Trust",
+    "description": "Manage Netskope policy enforcement with API v1/v2 commands, scripts, and playbooks for Zero Trust workflows.",
     "support": "community",
-    "currentVersion": "1.0.8",
-    "author": "randomizerxd",
+    "currentVersion": "1.0.9",
+    "author": "Netskope",
     "url": "",
     "email": "",
     "created": "2021-12-14T14:21:32Z",
@@ -13,9 +13,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": [
-        "randomizerxd"
-    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

@@ -1,0 +1,235 @@
+id: Block Domain - Netskope
+version: -1
+name: Block Domain - Netskope
+description: |-
+  Blocks a domain by adding it to an existing Netskope URL List.
+
+  Checks whether the Domain input was provided, checks whether a Netskope integration instance is
+  enabled (matching any brand name containing "Netskope", so it works against a renamed
+  dev/test instance too), and if so blocks the domain by adding it to an existing Netskope URL
+  List.
+
+  This pack has no "create list" command - the ListName input must reference a list that already
+  exists.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e5474789-ffa6-4ec7-9fc0-570fa8927bde
+    type: start
+    task:
+      id: e5474789-ffa6-4ec7-9fc0-570fa8927bde
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ed0f9ef3-436d-4a15-b558-27d978548146
+    type: condition
+    task:
+      id: ed0f9ef3-436d-4a15-b558-27d978548146
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 93402671-ca98-4e1d-a405-5235e26a6c44
+    type: regular
+    task:
+      id: 93402671-ca98-4e1d-a405-5235e26a6c44
+      version: -1
+      name: Block Domain
+      description: Add the domain to an existing Netskope URL List.
+      script: "|||netskopev2-add-url"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      list_name:
+        complex:
+          root: inputs.ListName
+      url:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 1d53c3bc-0cee-4045-929a-f53fba5b16a9
+    type: title
+    task:
+      id: 1d53c3bc-0cee-4045-929a-f53fba5b16a9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4718aaeb-cc1c-4469-a9e4-f6bcd2d477a4
+    type: condition
+    task:
+      id: 4718aaeb-cc1c-4469-a9e4-f6bcd2d477a4
+      version: -1
+      name: Check if Domain input was provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "5_2_yes": 0.71,
+      "5_4_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 820,
+        "x": 450,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: true
+  description: The domain to block.
+  playbookInputQuery:
+- key: ListName
+  value: {}
+  required: true
+  description: Name of an existing Netskope URL List to add the domain to. Must already exist - this pack has no create-list command.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: false

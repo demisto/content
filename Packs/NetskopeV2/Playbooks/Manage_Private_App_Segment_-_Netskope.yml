@@ -1,0 +1,921 @@
+id: Manage Private App Segment - Netskope
+version: -1
+name: Manage Private App Segment - Netskope
+description: |-
+  Creates, modifies, or deletes a Netskope private application (ZTNA/NPA) "segment" (Netskope's
+  own API models this as one Private App object: a host + its protocol/port entries + publishers,
+  per /api/v2/steering/apps/private/{private_app_id} - there is no separate "segment" sub-resource
+  in the API, so this playbook manages the whole private app object).
+
+  Checks whether the Action input was provided, checks whether a Netskope integration instance is
+  enabled (matching any brand name containing "Netskope"), then branches on Action:
+  - "create": creates a new private app using AppName, Host, Ports/ProtocolType, PublisherNames,
+    and Tags.
+  - "modify": updates an existing private app (identified by AppID, or by AppName - see below) -
+    only the fields you provide among AppName/Host/Ports/PublisherNames/Tags are changed, the
+    rest are left as-is. HostsToAdd/PortsToAdd/TagsToAdd append to the current host/protocols/tags
+    instead of replacing them; HostsToRemove/PortsToRemove/TagsToRemove remove specific values from
+    the current host/protocols/tags instead of requiring you to retype everything else. Task #70
+    fetches the app's current state and applies these merges before the PATCH is sent.
+  - "delete": permanently deletes the private app identified by AppID or AppName.
+
+  There's no "replace" (full PUT) action - netskopev2-replace-private-app exists as a command in
+  the pack, but the API's write validation silently no-ops the whole request when any field's
+  shape doesn't exactly match (confirmed live, twice), which makes it unreliable to drive from a
+  playbook. "modify" (PATCH) covers add/remove of individual fields instead, and is what this
+  playbook uses.
+
+  For modify/delete, you can provide AppID directly, or leave it blank and provide AppName
+  instead - netskopev2-list-private-apps has no name filter argument at all, so task #30 fetches
+  every private app and resolves AppName to an ID itself (also handling the "[app_name]"
+  bracket-wrapping Netskope applies in list responses). If no app or more than one app matches
+  that name, the playbook stops with a clear error rather than guessing.
+
+  Similarly, PublisherNames takes plain publisher names (e.g. "AWS-NPA") instead of requiring you
+  to already know each publisher_id - netskopev2-list-publishers also has no name filter, so
+  tasks #40 (create) / #42 (modify, only if PublisherNames was provided) resolve each name and
+  build the {"publisher_id": ..., "publisher_name": ...} JSON array the create/update commands
+  expect.
+
+  Ports likewise takes a plain comma-separated list of port numbers (e.g. "443,8080,22") instead
+  of requiring hand-written JSON - task #50 builds the {"type": ..., "port": ...} array the
+  create/update commands expect, using ProtocolType (default "tcp") for every port. This also
+  sidesteps a real bug that was hit and fixed: passing a bare number like "443" directly as
+  "protocols" parses as valid JSON (the integer 443) but isn't the array shape the API needs, so
+  it silently created nothing - netskopev2-create-private-app/netskopev2-update-private-app now
+  validate the parsed value is actually an array of objects, not just "is it valid JSON at all".
+  Host already accepts multiple comma-separated values directly (e.g. "10.0.0.1,10.0.0.2") - no
+  lookup or building needed for that one.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0a7d4ab9-720f-441e-a54a-a91dfb4364a1
+    type: start
+    task:
+      id: 0a7d4ab9-720f-441e-a54a-a91dfb4364a1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a3661b57-c021-4fa1-8c15-102b66d0b0bf
+    type: condition
+    task:
+      id: a3661b57-c021-4fa1-8c15-102b66d0b0bf
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a448fbc0-106b-48c3-a44c-9bf678be5da7
+    type: title
+    task:
+      id: a448fbc0-106b-48c3-a44c-9bf678be5da7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 0a822938-0e4e-4133-af9d-403c564a351c
+    type: condition
+    task:
+      id: 0a822938-0e4e-4133-af9d-403c564a351c
+      version: -1
+      name: Check required inputs were provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Action
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 9afe51ee-dfcf-4e3e-aeea-4d23269c64ed
+    type: condition
+    task:
+      id: 9afe51ee-dfcf-4e3e-aeea-4d23269c64ed
+      version: -1
+      name: Which action?
+      description: Branch based on the Action input - create, modify, or delete.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      create:
+      - "40"
+      delete:
+      - "30"
+      modify:
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: create
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Action
+            iscontext: true
+          right:
+            value:
+              simple: create
+          ignorecase: true
+    - label: modify
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Action
+            iscontext: true
+          right:
+            value:
+              simple: modify
+          ignorecase: true
+    - label: delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Action
+            iscontext: true
+          right:
+            value:
+              simple: delete
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 6705939c-f708-491b-a535-753486a5dcc0
+    type: regular
+    task:
+      id: 6705939c-f708-491b-a535-753486a5dcc0
+      version: -1
+      name: Create Private App
+      description: Create a new private app (ZTNA/NPA segment) with the given host, protocols, and publishers (resolved from PublisherNames by task #40).
+      script: "|||netskopev2-create-private-app"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      app_name:
+        complex:
+          root: inputs.AppName
+      host:
+        complex:
+          root: inputs.Host
+      protocols:
+        complex:
+          root: BuiltProtocols.protocols_json
+      publishers:
+        complex:
+          root: ResolvedPublishers.publishers_json
+      tags:
+        complex:
+          root: inputs.Tags
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 9e43d45a-2f61-46ef-bec8-5bddb2f80c5c
+    type: regular
+    task:
+      id: 9e43d45a-2f61-46ef-bec8-5bddb2f80c5c
+      version: -1
+      name: Modify Private App
+      description: Update the existing private app (segment) identified by AppID (or looked up by AppName via task #30) - only the fields provided among AppName/Host or HostsToAdd/HostsToRemove/Protocols or PortsToAdd/PortsToRemove/PublisherNames/Tags or TagsToAdd/TagsToRemove are changed. Host, protocols, and tags come from task #70, which adds/removes the requested values against the app's current values instead of replacing them wholesale, when those inputs are used.
+      script: "|||netskopev2-update-private-app"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      app_id:
+        complex:
+          root: ResolvedAppId.app_id
+      app_name:
+        complex:
+          root: inputs.AppName
+      host:
+        complex:
+          root: MergedPrivateAppFields.host
+      protocols:
+        complex:
+          root: MergedPrivateAppFields.protocols_json
+      publishers:
+        complex:
+          root: ResolvedPublishers.publishers_json
+      tags:
+        complex:
+          root: MergedPrivateAppFields.tags
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: f03421ad-9d08-483f-895b-58a9c4ebad0b
+    type: regular
+    task:
+      id: f03421ad-9d08-483f-895b-58a9c4ebad0b
+      version: -1
+      name: Delete Private App
+      description: Permanently delete the private app (segment) identified by AppID (or looked up by AppName via task #30).
+      script: "|||netskopev2-delete-private-app"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      app_id:
+        complex:
+          root: ResolvedAppId.app_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: a790ab4f-d407-4e92-9534-2d3c21c7bc06
+    type: regular
+    task:
+      id: a790ab4f-d407-4e92-9534-2d3c21c7bc06
+      version: -1
+      name: Resolve App ID by Name
+      description: netskopev2-list-private-apps has no name filter argument, so if AppID wasn't provided, this fetches all private apps and finds the one matching AppName (handling Netskope's bracket-wrapping of app_name). If AppID was provided, it's used directly with no lookup.
+      scriptName: NetskopeResolvePrivateAppId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "31"
+    scriptarguments:
+      app_id:
+        complex:
+          root: inputs.AppID
+      app_name:
+        complex:
+          root: inputs.AppName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 9bbcf9d6-bbb5-4ce4-8e46-4d764e62494c
+    type: condition
+    task:
+      id: 9bbcf9d6-bbb5-4ce4-8e46-4d764e62494c
+      version: -1
+      name: Was App ID resolved?
+      description: Stop if AppID couldn't be resolved (missing, not found by name, or ambiguous - see ResolvedAppId.error).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ResolvedAppId.app_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 61738443-8c4b-4e8a-896e-6e79f9caba8f
+    type: condition
+    task:
+      id: 61738443-8c4b-4e8a-896e-6e79f9caba8f
+      version: -1
+      name: Which action? (after resolve)
+      description: The app ID is now resolved - re-check Action to decide whether to modify or delete.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      delete:
+      - "23"
+      modify:
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: modify
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Action
+            iscontext: true
+          right:
+            value:
+              simple: modify
+          ignorecase: true
+    - label: delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Action
+            iscontext: true
+          right:
+            value:
+              simple: delete
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 5d85b141-c7b7-412e-b416-fcc993b19736
+    type: regular
+    task:
+      id: 5d85b141-c7b7-412e-b416-fcc993b19736
+      version: -1
+      name: Resolve Publishers for Create
+      description: netskopev2-list-publishers has no name filter argument, so this fetches all publishers and resolves each name in PublisherNames to its publisher_id, building the JSON array netskopev2-create-private-app expects.
+      scriptName: NetskopeResolvePublishers
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "41"
+    scriptarguments:
+      publisher_names:
+        complex:
+          root: inputs.PublisherNames
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 3de3d11d-d524-4e22-80b0-79bd6020f1f8
+    type: condition
+    task:
+      id: 3de3d11d-d524-4e22-80b0-79bd6020f1f8
+      version: -1
+      name: Were publishers resolved?
+      description: Stop if any requested publisher name couldn't be resolved (not found, or ambiguous - see ResolvedPublishers.error).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ResolvedPublishers.publishers_json
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 4b8c770e-db42-40e9-bd90-e2b03d1801cc
+    type: regular
+    task:
+      id: 4b8c770e-db42-40e9-bd90-e2b03d1801cc
+      version: -1
+      name: Resolve Publishers for Modify
+      description: netskopev2-list-publishers has no name filter argument, so this fetches all publishers and resolves each name in PublisherNames to its publisher_id, building the JSON array netskopev2-update-private-app expects.
+      scriptName: NetskopeResolvePublishers
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "43"
+    scriptarguments:
+      publisher_names:
+        complex:
+          root: inputs.PublisherNames
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 7a262ba8-fe51-45f4-b4c1-fe97b44803e7
+    type: condition
+    task:
+      id: 7a262ba8-fe51-45f4-b4c1-fe97b44803e7
+      version: -1
+      name: Were publishers resolved?
+      description: Stop if any requested publisher name couldn't be resolved (not found, or ambiguous - see ResolvedPublishers.error).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ResolvedPublishers.publishers_json
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 66bcb524-0d9b-4d99-b460-e848f9bdd590
+    type: condition
+    task:
+      id: 66bcb524-0d9b-4d99-b460-e848f9bdd590
+      version: -1
+      name: Was PublisherNames provided (for modify)?
+      description: PublisherNames is optional for Action=modify - only resolve/change publishers if it was actually provided, otherwise leave the app's existing publishers untouched.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "30"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.PublisherNames
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: ae2dc240-d2e2-450f-b56a-83fc54cc4f75
+    type: regular
+    task:
+      id: ae2dc240-d2e2-450f-b56a-83fc54cc4f75
+      version: -1
+      name: Build Protocols JSON
+      description: Builds the {"type", "port"} JSON array netskopev2-create-private-app/netskopev2-update-private-app expect for "protocols", from a plain comma-separated Ports list - runs unconditionally (harmless no-op if Ports is blank, e.g. for Action=delete or Action=modify without changing protocols).
+      scriptName: NetskopeBuildProtocolsJson
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "20"
+    scriptarguments:
+      ports:
+        complex:
+          root: inputs.Ports
+      protocol_type:
+        complex:
+          root: inputs.ProtocolType
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: 80ac52e3-b42c-4719-8506-2236d55f8305
+    type: regular
+    task:
+      id: 80ac52e3-b42c-4719-8506-2236d55f8305
+      version: -1
+      name: Merge Private App Fields for Modify
+      description: netskopev2-update-private-app replaces host/protocols/tags wholesale, not merge - if HostsToAdd/PortsToAdd/TagsToAdd/HostsToRemove/PortsToRemove/TagsToRemove were provided, fetches the app's current host/protocols/tags and applies the add/remove; otherwise passes the direct Host/BuiltProtocols/Tags values through unchanged.
+      scriptName: NetskopeMergePrivateAppFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "22"
+    scriptarguments:
+      app_id:
+        complex:
+          root: ResolvedAppId.app_id
+      host:
+        complex:
+          root: inputs.Host
+      protocols_json:
+        complex:
+          root: BuiltProtocols.protocols_json
+      tags:
+        complex:
+          root: inputs.Tags
+      hosts_to_add:
+        complex:
+          root: inputs.HostsToAdd
+      ports_to_add:
+        complex:
+          root: inputs.PortsToAdd
+      hosts_to_remove:
+        complex:
+          root: inputs.HostsToRemove
+      ports_to_remove:
+        complex:
+          root: inputs.PortsToRemove
+      tags_to_add:
+        complex:
+          root: inputs.TagsToAdd
+      tags_to_remove:
+        complex:
+          root: inputs.TagsToRemove
+      protocol_type:
+        complex:
+          root: inputs.ProtocolType
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_50_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "5_2_yes": 0.71,
+      "5_4_#default#": 0.53,
+      "20_40_create": 0.35,
+      "20_44_modify": 0.45,
+      "20_30_delete": 0.65,
+      "20_4_#default#": 0.3,
+      "31_32_yes": 0.53,
+      "31_4_#default#": 0.47,
+      "32_70_modify": 0.4,
+      "32_23_delete": 0.6,
+      "32_4_#default#": 0.3,
+      "41_21_yes": 0.53,
+      "41_4_#default#": 0.47,
+      "43_30_yes": 0.53,
+      "43_4_#default#": 0.47,
+      "44_42_yes": 0.53,
+      "44_30_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1420,
+        "width": 1500,
+        "x": 50,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: Action
+  value: {}
+  required: true
+  description: One of "create", "modify", or "delete" - which private app operation to perform. "modify" is a partial update via PATCH (netskopev2-update-private-app) - only the fields you provide are changed; use HostsToAdd/HostsToRemove, PortsToAdd/PortsToRemove, and TagsToAdd/TagsToRemove to add or remove individual values without retyping the rest.
+  playbookInputQuery:
+- key: AppID
+  value: {}
+  required: false
+  description: ID of the existing private app to modify or delete. Optional for Action=modify/delete if AppName is provided instead - netskopev2-list-private-apps has no name filter, so the playbook fetches all apps and resolves AppName to an ID itself (fails clearly if no app or more than one app matches that name). Ignored for Action=create.
+  playbookInputQuery:
+- key: AppName
+  value: {}
+  required: false
+  description: Name of the private app. Required for Action=create. For Action=modify, either leave blank to keep the current name, or use it (with AppID blank) to look up which app to modify by name. For Action=delete, provide this (with AppID blank) to look up which app to delete by name.
+  playbookInputQuery:
+- key: Host
+  value: {}
+  required: false
+  description: IP address or hostname of the private app segment - comma-separated for multiple hosts (e.g. "10.0.0.1,10.0.0.2" or "webserver.local,192.168.0.1"), Netskope accepts this directly. Required for Action=create, optional for Action=modify (leave blank to keep the current host).
+  playbookInputQuery:
+- key: Ports
+  value: {}
+  required: false
+  description: Comma-separated port numbers (e.g. "443,8080,22") - no need to hand-write the {type, port} JSON array yourself, task   #50 builds it. Required for Action=create, optional for Action=modify (leave blank to keep the current protocols).
+  playbookInputQuery:
+- key: ProtocolType
+  value:
+    simple: tcp
+  required: false
+  description: Transport protocol applied to every port in Ports (e.g. "tcp" or "udp") - all ports share this one type. Also used for any newly added ports in PortsToAdd. Defaults to "tcp".
+  playbookInputQuery:
+- key: HostsToAdd
+  value: {}
+  required: false
+  description: Action=modify only. Comma-separated hosts to add to the app's existing host list (e.g. "10.0.0.5") without discarding the current ones - task   #70 fetches the current host and merges. Unlike Host (which replaces the whole field), this is additive. Leave blank to not touch the host at all during modify.
+  playbookInputQuery:
+- key: PortsToAdd
+  value: {}
+  required: false
+  description: Action=modify only. Comma-separated ports to add to the app's existing protocols (e.g. "8080") without discarding the current ones - task   #70 fetches the current protocols and merges, using ProtocolType for the new entries. Unlike Ports (which replaces the whole field), this is additive. Leave blank to not touch protocols at all during modify.
+  playbookInputQuery:
+- key: HostsToRemove
+  value: {}
+  required: false
+  description: Action=modify only. Comma-separated hosts to remove from the app's existing host list (e.g. "10.0.0.5") without discarding the rest - task   #70 fetches the current host and removes just these entries. Leave blank to not remove any host during modify.
+  playbookInputQuery:
+- key: PortsToRemove
+  value: {}
+  required: false
+  description: Action=modify only. Comma-separated ports to remove from the app's existing protocols (e.g. "8080") without discarding the rest - task   #70 fetches the current protocols and removes just the matching port entries. Leave blank to not remove any port during modify.
+  playbookInputQuery:
+- key: PublisherNames
+  value: {}
+  required: false
+  description: Comma-separated publisher names (e.g. "AWS-NPA") - no need to know publisher_id. netskopev2-list-publishers has no name filter, so tasks   #40/#42 fetch all publishers and resolve each name themselves, building the JSON array the create/update commands expect. Required for Action=create, optional for Action=modify (leave blank to keep the current publishers).
+  playbookInputQuery:
+- key: Tags
+  value: {}
+  required: false
+  description: Comma-separated tag names to associate with the app, for policy matching. Optional for both Action=create and Action=modify. For Action=modify, this replaces the app's entire tag list - to add or remove individual tags without discarding the rest, use TagsToAdd/TagsToRemove instead (those take priority over Tags when provided).
+  playbookInputQuery:
+- key: TagsToAdd
+  value: {}
+  required: false
+  description: Action=modify only. Comma-separated tags to add to the app's existing tags (e.g. "test") without discarding the current ones - task   #70 fetches the current tags and merges. Unlike Tags (which replaces the whole field), this is additive. Leave blank to not touch tags at all during modify.
+  playbookInputQuery:
+- key: TagsToRemove
+  value: {}
+  required: false
+  description: Action=modify only. Comma-separated tag names to remove from the app's existing tags without discarding the rest - task   #70 fetches the current tags and removes just these entries. Leave blank to not remove any tag during modify.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: false
