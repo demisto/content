@@ -15,7 +15,7 @@ import dateparser
 import urllib3
 import yaml
 from apiclient import discovery, errors
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload, MediaIoBaseUpload
 
 from GSuiteApiModule import *  # noqa: E402
 
@@ -62,6 +62,8 @@ def is_approved_file(file_name: str, mime_type: str = None) -> bool:
 
 API_VERSION = "v3"
 SERVICE_NAME = "drive"
+FOLDER_MIME_TYPE = "application/vnd.google-apps.folder"
+MAX_CONTENT_LENGTH = 256
 
 MESSAGES: dict[str, str] = {
     "TEST_FAILED_ERROR": "Test connectivity failed. Check the configuration parameters provided.",
@@ -72,6 +74,11 @@ MESSAGES: dict[str, str] = {
     "MAX_INCIDENT_ERROR": "The parameter Max Incidents must be a positive integer."
     " Accepted values can be in the range of 1-100.",
     "USER_ID_REQUIRED": "The parameter User ID is required.",
+    "CONTENT_WITH_FOLDER_MIME_TYPE": f'The "content" argument cannot be used with the mime_type "{FOLDER_MIME_TYPE}",'
+    " because folders cannot hold content."
+    ' Provide a non-folder mime_type such as "text/plain" to create a file with content.',
+    "CONTENT_TOO_LONG": f'The "content" argument must not exceed {MAX_CONTENT_LENGTH} characters, but got {{}}.'
+    " To create a larger file, use the google-drive-file-upload command with an entry ID.",
 }
 
 HR_MESSAGES: dict[str, str] = {
@@ -2106,11 +2113,54 @@ def file_move_command(client: "GSuiteClient", args: dict[str, str]) -> CommandRe
     )
 
 
+def create_file_with_content(
+    client: "GSuiteClient",
+    body: dict[str, Any],
+    content: str,
+    mime_type: str,
+    supports_all_drives: bool,
+) -> dict[str, Any]:
+    """
+    Create a file in Google Drive with inline text content using a multipart upload.
+
+    The text is UTF-8 encoded and uploaded together with the file metadata in a single
+    request to the Drive upload endpoint.
+
+    :param client: Client object with an authorized HTTP instance already set.
+    :param body: The file metadata body (name, mimeType and optionally parents/description).
+    :param content: The text content to write into the file.
+    :param mime_type: The MIME type of the content being uploaded.
+    :param supports_all_drives: Whether the requesting application supports both My Drives
+        and shared drives.
+
+    :return: The created file resource as returned by the Drive API.
+
+    :raises DemistoException: If the mime_type refers to a folder, which cannot hold content,
+        or if the content exceeds ``MAX_CONTENT_LENGTH`` characters.
+    """
+    if mime_type == FOLDER_MIME_TYPE:
+        raise DemistoException(MESSAGES["CONTENT_WITH_FOLDER_MIME_TYPE"])
+
+    if len(content) > MAX_CONTENT_LENGTH:
+        raise DemistoException(MESSAGES["CONTENT_TOO_LONG"].format(len(content)))
+
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
+    media = MediaIoBaseUpload(io.BytesIO(content.encode("utf-8")), mimetype=mime_type, resumable=False)
+
+    return (
+        drive_service.files()  # pylint: disable=no-member
+        .create(body=body, media_body=media, supportsAllDrives=supports_all_drives, fields="*")
+        .execute()
+    )
+
+
 @logger
 def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> CommandResults:
     """
     google-drive-file-create
-    Create a metadata-only file or folder (no content upload).
+    Create a file or folder. When the optional ``content`` argument is provided, the text
+    content is uploaded along with the metadata in a single multipart request. Otherwise a
+    metadata-only file or folder is created.
 
     :param client: Client object.
     :param args: Command arguments.
@@ -2118,9 +2168,10 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     :return: Command Result.
     """
     file_name = args.get("file_name", "")
-    mime_type = args.get("mime_type", "application/vnd.google-apps.folder")
+    mime_type = args.get("mime_type", FOLDER_MIME_TYPE)
     parent = args.get("parent", "")
     description = args.get("description", "")
+    content = args.get("content", "")
     supports_all_drives = argToBoolean(args.get("supports_all_drives", False))
 
     # user_id can be overridden in the args
@@ -2141,7 +2192,16 @@ def file_create_command(client: "GSuiteClient", args: dict[str, str]) -> Command
     if description:
         body["description"] = description
 
-    response = client.http_request(url_suffix=url_suffix, method="POST", params=params, body=body)
+    if content:
+        response = create_file_with_content(
+            client=client,
+            body=body,
+            content=content,
+            mime_type=mime_type,
+            supports_all_drives=supports_all_drives,
+        )
+    else:
+        response = client.http_request(url_suffix=url_suffix, method="POST", params=params, body=body)
 
     readable_output = tableToMarkdown(
         f'Created "{file_name}" successfully.',
@@ -2231,8 +2291,9 @@ def _download_drive_file_content(client: "GSuiteClient", file_id: str, mime_type
         # Text payload — decode with replacement so a single bad byte cannot crash us.
         return raw_bytes.decode("utf-8", errors="replace"), effective_mime
 
-    # Binary payload (PDF, image, etc.) — base64-encode.
-    return base64.b64encode(raw_bytes).decode("ascii"), f"{effective_mime}"
+    # Binary payload (PDF, DOCX, etc.) - base64-encode and tag with ';base64'
+    # so downstream consumers can detect that Content must be base64-decoded.
+    return base64.b64encode(raw_bytes).decode("ascii"), f"{effective_mime};base64"
 
 
 @logger
