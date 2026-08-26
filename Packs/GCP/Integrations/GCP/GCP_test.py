@@ -6572,8 +6572,12 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
 
     Recognizes the supported CommandResults wiring patterns:
       1. ``outputs_prefix="GCP.Some.Path"`` keyword arguments, variable
-         assignments (``outputs_prefix = "GCP.Some.Path"``), and function
-         parameter defaults (``outputs_prefix: str = "GCP.Some.Path"``).
+         assignments (``outputs_prefix = "GCP.Some.Path"`` or the singular
+         ``output_prefix = "GCP.Some.Path"``), and function parameter defaults
+         (``outputs_prefix: str = "GCP.Some.Path"``). The assigned value may be a
+         plain string literal or a command-branched conditional expression, e.g.
+         ``outputs_prefix = "GCP.Some.Path" if command_name == "..." else other``;
+         every ``GCP.``-prefixed literal in either branch is collected.
       2. Context paths used directly as ``outputs`` dict keys, e.g.
          ``"GCP.Some.Path(val.id && val.id == obj.id)": data``. The DT
          transformer suffix in parentheses is stripped.
@@ -6595,12 +6599,25 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
             for keyword in node.keywords:
                 if keyword.arg == "outputs_prefix" and (value := _string_constant(keyword.value)):
                     prefixes.add(value)
-        # Pattern 1b: outputs_prefix = "..." / outputs_prefix: str = "..."
+        # Pattern 1b: outputs_prefix = "..." / output_prefix = "..." /
+        # outputs_prefix: str = "...". The right-hand side may be a plain string
+        # literal OR a command-branched conditional such as
+        # ``"GCP.X" if command_name == "..." else "GCP.Y"`` (an ast.IfExp); in
+        # that case every ``GCP.``-prefixed literal in either branch is collected.
         elif isinstance(node, ast.Assign | ast.AnnAssign):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
-            is_prefix_target = any(isinstance(target, ast.Name) and target.id == "outputs_prefix" for target in targets)
-            if is_prefix_target and (value := _string_constant(node.value)):
-                prefixes.add(value)
+            is_prefix_target = any(
+                isinstance(target, ast.Name) and target.id in ("outputs_prefix", "output_prefix") for target in targets
+            )
+            if is_prefix_target and node.value is not None:
+                if value := _string_constant(node.value):
+                    prefixes.add(value)
+                else:
+                    # Non-literal RHS (e.g. a conditional expression): collect any
+                    # GCP.* string literals nested within it.
+                    for sub_node in ast.walk(node.value):
+                        if (sub_value := _string_constant(sub_node)) and sub_value.startswith("GCP."):
+                            prefixes.add(sub_value)
         # Pattern 2: context paths used as outputs dict keys.
         elif isinstance(node, ast.Dict):
             for key in node.keys:
@@ -6789,10 +6806,13 @@ def test_extract_args_get_reads_subscript_access():
 def test_extract_output_prefixes_covers_all_declaration_forms():
     """
     Given: Handlers declaring an output prefix as a parameter default, as a local
-           assignment, and as outputs dict keys.
+           assignment, as a command-branched conditional assignment (both to
+           ``outputs_prefix`` and to the singular ``output_prefix``), and as
+           outputs dict keys.
     When: Extracting their output prefixes.
-    Then: Every form is recognized, the DT transformer suffix is stripped from dict
-          keys, and a non-GCP dict key is not treated as a context path.
+    Then: Every form is recognized, both branches of a conditional are collected,
+          the DT transformer suffix is stripped from dict keys, and a non-GCP dict
+          key is not treated as a context path.
     """
     source = (
         'def param_default(creds, args, outputs_prefix: str = "GCP.Storage.BucketPolicy"):\n'
@@ -6802,6 +6822,23 @@ def test_extract_output_prefixes_covers_all_declaration_forms():
         "def local_assignment(creds, args):\n"
         '    outputs_prefix = "GCP.Assigned.Path"\n'
         "    return CommandResults(outputs_prefix=outputs_prefix)\n"
+        "\n"
+        "\n"
+        "def conditional_outputs_prefix(creds, args, outputs_prefix='GCP.Storage.BucketPolicies'):\n"
+        "    command_name = demisto.command()\n"
+        '    outputs_prefix = "GCP.Storage.BucketPolicy"'
+        ' if command_name == "gcp-storage-bucket-policy-list" else outputs_prefix\n'
+        "    return CommandResults(outputs_prefix=outputs_prefix)\n"
+        "\n"
+        "\n"
+        "def conditional_output_prefix_singular(creds, args):\n"
+        "    command_name = demisto.command()\n"
+        "    output_prefix = (\n"
+        '        "GCP.Storage.BucketObjectPolicy"\n'
+        '        if command_name == "gcp-storage-bucket-object-policy-list"\n'
+        '        else "GCP.Storage.BucketObjectPolicies"\n'
+        "    )\n"
+        "    return CommandResults(outputs_prefix=output_prefix)\n"
         "\n"
         "\n"
         "def dict_keys(creds, args):\n"
@@ -6818,6 +6855,17 @@ def test_extract_output_prefixes_covers_all_declaration_forms():
     # does not leave the handler with no prefix at all.
     assert _extract_output_prefixes(functions["param_default"]) == {"GCP.Storage.BucketPolicy"}
     assert _extract_output_prefixes(functions["local_assignment"]) == {"GCP.Assigned.Path"}
+    # A command-branched conditional contributes the singular literal plus the
+    # plural parameter default it falls back to.
+    assert _extract_output_prefixes(functions["conditional_outputs_prefix"]) == {
+        "GCP.Storage.BucketPolicy",
+        "GCP.Storage.BucketPolicies",
+    }
+    # The singular ``output_prefix`` target with a two-branch conditional yields both literals.
+    assert _extract_output_prefixes(functions["conditional_output_prefix_singular"]) == {
+        "GCP.Storage.BucketObjectPolicy",
+        "GCP.Storage.BucketObjectPolicies",
+    }
     assert _extract_output_prefixes(functions["dict_keys"]) == {"GCP.Compute.Firewall", "GCP.Compute"}
 
 

@@ -2487,7 +2487,7 @@ def validate_limit(limit):
     Raises:
         DemistoException: If the limit is not set or is outside the allowed range (1-500 inclusive).
     """
-    if limit > 500 or limit < 1:
+    if limit is not None and (limit > 500 or limit < 1):
         raise DemistoException(
             f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
         )
