@@ -771,7 +771,7 @@ script:
     - description: The detector whose threat entity sets you want to list.
       name: detectorId
       required: true
-    - description: The maximum number of results across all pages. Valid range is 1-50.
+    - description: The maximum number of results across all pages.
       name: limit
       defaultValue: '50'
     - name: page_size

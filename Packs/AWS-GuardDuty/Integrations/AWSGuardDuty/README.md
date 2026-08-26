@@ -1003,7 +1003,7 @@ Lists the threat entity sets of the GuardDuty service specified by the detector 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | detectorId | The detector whose threat entity sets you want to list. | Required |
-| limit | The maximum number of results across all pages. Valid range is 1-50. Default is 50. | Optional |
+| limit | The maximum number of results across all pages. Default is 50. | Optional |
 | page_size | The page size for the underlying paginator. Valid range is 1-50. Default is 50. | Optional |
 | page | The 1-based page index. When set, only that page is returned. | Optional |
 | region | The AWS Region. If not specified, the default region is used. | Optional |
