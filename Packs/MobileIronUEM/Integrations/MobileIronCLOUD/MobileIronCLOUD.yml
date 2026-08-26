@@ -13,6 +13,13 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Server URL (i.e., https://eu1.mobileiron.com )
   name: url
   required: true

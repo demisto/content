@@ -69,6 +69,13 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: Dome9 integration allows to easily manage the security and compliance of the public cloud.
 display: Check Point Dome9 (CloudGuard)
 name: checkpointdome9

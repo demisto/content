@@ -13,6 +13,13 @@ configuration:
   type: 13
   defaultvalue: Varonis DSP Incident
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: The FQDN/IP the integration should connect to
   name: url
   required: true

@@ -39,6 +39,13 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: '7'
   display: Lacework Alert History to Import (in days)
   name: lacework_event_history

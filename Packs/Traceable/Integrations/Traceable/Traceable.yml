@@ -117,6 +117,13 @@ configuration:
   defaultvalue: Exploit
   type: 13
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Ignore Status Codes (eg. 301, 400-499)
   name: ignoreStatusCodes
   defaultvalue: 400-499

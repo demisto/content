@@ -25,6 +25,13 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: alarms
   display: 'Fetch Types: cases, alarms, both (relevant only for fetch incident mode)'
   name: fetchType

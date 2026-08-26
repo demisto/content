@@ -31,6 +31,13 @@ configuration:
   type: 13
   required: false
   section: collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - name: isFetch
   display: Fetch incidents
   type: 8
