@@ -317,9 +317,6 @@ class PanOs:
         # Key MUST match the YAML arg name; args_for_next_run re-passes it during polling re-entry.
         self.domains: list = args.get("domain_list", [])
         self.responses: list = []
-        # Rule create is deferred until the group exists (destination validation); this guard
-        # prevents ensure_rule from running twice per run.
-        self._rule_ensured: bool = False
         # True once the rule was created or edited this run
         self._rule_changed: bool = False
         # True once any address object was created, or added to the group, this run.
@@ -334,23 +331,21 @@ class PanOs:
     # ---- tag helper ----------------------------------------------------
 
     def ensure_tag(self) -> None:
-        """Ensure the configured tag exists on the device before any entity references it.
+        """Create the configured tag up front so the group and rule can reference it.
 
-        The tag is otherwise only created as a side-effect of creating a *new* address object
-        (``pan-os-create-address`` with ``create_tag=true``). When every address object already
-        exists, that path is skipped, so a brand-new tag is never created and the subsequent
-        ``pan-os-create-address-group`` / ``pan-os-create-rule`` calls fail with "tag not valid".
-        Creating the tag up front decouples tag creation from object creation.
+        Creating the tag here decouples it from address-object creation, which is important when
+        every object already exists and the create-address auto-create path is skipped. An error
+        from an already-existing tag is expected and tolerated (logged, not raised).
 
-        ``pan-os-create-tag`` on an already-existing tag returns an error; that is expected and
-        tolerated here (the tag simply already exists), so this method never raises for that case.
+        Returns:
+            None.
         """
         if not self.tag:
             return
         res = run_execute_command("pan-os-create-tag", {"name": self.tag})
         self.responses.append(res)
         if is_error(res):
-            # Most commonly the tag already exists - that is fine. Log and continue.
+            # An already-existing tag is the common, benign case; log and continue.
             demisto.debug(
                 f"{LOG_TAG} pan-os-create-tag for '{self.tag}' returned an error " f"(likely already exists): {get_error(res)}"
             )
@@ -444,70 +439,65 @@ class PanOs:
 
     # ---- single-run writes (group + rule are singletons) ----------------
 
-    def ensure_group(self, group_context: dict | None) -> bool:
-        """Detect the group's state without creating it.
+    def ensure_group(self, group_context: dict | None, object_names: list[str]) -> None:
+        """Create the static address-group with all members, or add this run's members to it.
 
-        pan-os-create-address-group refuses an empty static group, so creation is deferred until
-        we have the first address-object (see create_group_with_member).
+        A static group references its members by name, so every address object must already exist on
+        the device before the group is created or edited (otherwise PAN-OS rejects the reference).
+        Callers must create all objects first, then call this once with the full list of names.
+
+        pan-os-edit-address-group requires exactly one of element_to_add/element_to_remove for a
+        static group and applies tags only alongside it, so the configured tag is merged into the
+        same element_to_add call. Re-adding an existing member is a no-op (the command de-duplicates).
 
         Args:
-            group_context (dict | None): The existing group context, or None if missing.
+            group_context (dict | None): The existing group's context, or None if it does not exist.
+            object_names (list[str]): Every address-object name for this run (the full member list).
         Returns:
-            True if the (static) group already exists, False if it needs to be created lazily.
+            None.
         Raises:
             DynamicGroupError: If the group exists but is a customer-managed dynamic group.
         """
         if group_context is None:
-            return False
+            create_args: dict = {"name": self.address_group, "type": "static", "addresses": object_names}
+            if self.tag:
+                create_args["tags"] = self.tag
+            self.execute_or_raise(
+                "pan-os-create-address-group", create_args, f"Failed to create address-group '{self.address_group}'"
+            )
+            self._address_made_changes = True
+            return
+
         group_type = (group_context.get("Type") or "").lower()
         if group_type == "dynamic":
             raise DynamicGroupError(
                 f"Address-group '{self.address_group}' already exists as dynamic; " f"will not modify a managed dynamic group."
             )
-        return True
 
-    def create_group_with_member(self, object_name: str) -> None:
-        """Create the static address-group seeded with a first member (required by PAN-OS).
-
-        pan-os-create-address-group rejects a static group without at least one address. Callers
-        must ensure the address-object exists on the firewall before invoking this method.
-
-        Args:
-            object_name (str): The address-object to include as the initial group member.
-        """
-        create_args: dict = {"name": self.address_group, "type": "static", "addresses": object_name}
-        if self.tag:
-            create_args["tags"] = self.tag
-        self.execute_or_raise(
-            "pan-os-create-address-group", create_args, f"Failed to create address-group '{self.address_group}'"
-        )
-
-    def ensure_group_tag(self, group_context: dict) -> None:
-        """Add the configured tag to a pre-existing address-group if it isn't already present.
-
-        pan-os-edit-address-group's ``tags`` argument replaces the group's tag list, so the
-        configured tag is merged with the group's current tags (de-duplicated) before writing.
-        No edit is issued when the tag is already present (or no tag is configured).
-
-        Args:
-            group_context (dict): The existing group's context dict (carries its current Tags).
-        """
-        merged = self.merged_tags_if_missing(normalize_tags(group_context.get("Tags")))
-        if merged is None:
+        existing_members = normalize_tags(group_context.get("Addresses"))
+        members_to_add = [name for name in object_names if name not in existing_members]
+        merged_tags = self.merged_tags_if_missing(normalize_tags(group_context.get("Tags")))
+        if not members_to_add and merged_tags is None:
             return
+        # element_to_add is required by the edit; when only the tag changed, re-add existing members.
+        edit_args: dict = {"name": self.address_group, "type": "static", "element_to_add": members_to_add or object_names}
+        if merged_tags is not None:
+            edit_args["tags"] = merged_tags
         self.execute_or_raise(
             "pan-os-edit-address-group",
-            {"name": self.address_group, "type": "static", "tags": merged},
-            f"Failed to add tag to address-group '{self.address_group}'",
+            edit_args,
+            f"Failed to add object(s) to address-group '{self.address_group}'",
         )
         self._address_made_changes = True
 
     def ensure_rule(self, rule_present: bool, rule_destinations: list) -> None:
-        """Ensure the deny rule exists, points at the group, and sits at the top.
+        """Ensure the deny rule exists, points at the group, carries the tag, and sits at the top.
 
         Args:
             rule_present (bool): Whether the rule already exists.
             rule_destinations (list): The rule's current destination list.
+        Returns:
+            None.
         """
         if not rule_present:
             create_rule_args: dict = {
@@ -576,46 +566,22 @@ class PanOs:
             f"Failed to move rule '{self.rule_name}' to top",
         )
 
-    def ensure_domain(
-        self,
-        domain: str,
-        current_members: list,
-        group_exists: bool,
-        rule_present: bool,
-        rule_destinations: list,
-    ) -> tuple[bool, str, bool]:
-        """Ensure a single domain's address-object exists and belongs to the group.
+    def ensure_address_object(self, domain: str) -> tuple[str, bool, str]:
+        """Ensure a single domain's FQDN address-object exists and carries the configured tag.
 
-        PAN-OS ordering constraints handled here:
-          * pan-os-create-address-group refuses to create an empty static group, so the group is
-            created lazily using the first domain's address-object as the initial member.
-          * pan-os-create-rule validates that ``destination`` references an existing object, so the
-            rule is also created after the group first appears (see _ensure_rule_once).
+        Object-only: it does not touch the group or the rule. The group is built afterwards from the
+        full set of object names, so every member reference resolves at group-creation time.
 
         Args:
             domain (str): The domain to block.
-            current_members (list): The group's current member names (mutated in place).
-            group_exists (bool): Whether the target address-group currently exists on the firewall.
-            rule_present (bool): Whether the deny rule already existed at the start of the run.
-            rule_destinations (list): The rule's current destinations, when it already exists.
         Returns:
-            A tuple of (changed, message, group_exists_after) where 'changed' is True when this
-            domain mutated Panorama state (object/group created or edited), 'message' summarises the
-            effect, and 'group_exists_after' is the up-to-date group-existence flag for the next
-            iteration.
+            A tuple of (object_name, changed, message). 'changed' is True when the object was created
+            or its tag was added.
         """
         object_name = derive_object_name(domain)
-        # 'changed' gates the commit/push: it flips True whenever this domain mutated Panorama
-        # state (object/group created or edited). The specific action label is no longer surfaced.
-        changed = False
-        messages: list = []
-
-        # 1. FQDN address-object.
         object_exists, object_tags = self.address_object_exists(object_name)
         if object_exists:
-            messages.append(f"Address-object '{object_name}' already exists.")
-            # Add the configured tag to the pre-existing object if it isn't already there
-            # (merged, never duplicated). No edit is issued when the tag is already present.
+            # Merge the configured tag onto the existing object only when it is missing.
             merged = self.merged_tags_if_missing(object_tags)
             if merged is not None:
                 self.execute_or_raise(
@@ -623,57 +589,24 @@ class PanOs:
                     {"name": object_name, "element_to_change": "tag", "element_value": merged},
                     f"Failed to add tag to address-object '{object_name}'",
                 )
-                changed = True
-                messages.append(f"Tag '{self.tag}' added to '{object_name}'.")
-        else:
-            create_args: dict = {"name": object_name, "fqdn": domain}
-            if self.tag:
-                # create_tag=true auto-creates the tag; pan-os-create-address fails otherwise.
-                create_args["tag"] = self.tag
-                create_args["create_tag"] = "true"
-            self.execute_or_raise("pan-os-create-address", create_args, f"Failed to create address-object '{object_name}'")
-            changed = True
-            messages.append(f"Address-object '{object_name}' created for '{domain}'.")
+                return object_name, True, f"Address-object '{object_name}' already existed; tag '{self.tag}' added."
+            return object_name, False, f"Address-object '{object_name}' already exists."
 
-        # 2. Group membership (create the group lazily on first object).
-        if not group_exists:
-            self.create_group_with_member(object_name)
-            current_members.append(object_name)
-            group_exists = True
-            changed = True
-            messages.append(f"Address-group '{self.address_group}' created with member '{object_name}'.")
-            # Now that the group exists, safe to create the rule that references it.
-            self._ensure_rule_once(rule_present, rule_destinations)
-        elif object_name in current_members:
-            messages.append(f"Already a member of '{self.address_group}'.")
-        else:
-            self.execute_or_raise(
-                "pan-os-edit-address-group",
-                {"name": self.address_group, "type": "static", "element_to_add": object_name},
-                f"Failed to add object to address-group '{self.address_group}'",
-            )
-            current_members.append(object_name)
-            changed = True
-            messages.append(f"Added to '{self.address_group}'.")
-
-        return changed, " ".join(messages), group_exists
-
-    def _ensure_rule_once(self, rule_present: bool, rule_destinations: list) -> None:
-        """Call ensure_rule at most once per run. Safe to invoke from the per-domain loop.
-
-        Args:
-            rule_present (bool): Whether the deny rule already existed at run start.
-            rule_destinations (list): The rule's current destinations, when it already exists.
-        """
-        if self._rule_ensured:
-            return
-        self.ensure_rule(rule_present, rule_destinations)
-        self._rule_ensured = True
+        create_args: dict = {"name": object_name, "fqdn": domain}
+        if self.tag:
+            # create_tag=true auto-creates the tag; pan-os-create-address fails otherwise.
+            create_args["tag"] = self.tag
+            create_args["create_tag"] = "true"
+        self.execute_or_raise("pan-os-create-address", create_args, f"Failed to create address-object '{object_name}'")
+        return object_name, True, f"Address-object '{object_name}' created for '{domain}'."
 
     # ---- orchestration --------------------------------------------------
 
     def process_domains(self) -> list:
-        """Ensure the group and rule once, then loop over domains adding each object.
+        """Block all domains in three phases: objects, then the static group, then the rule.
+
+        The phased order is required because a static address-group references its members by name,
+        so every address object must exist before the group is created or edited.
 
         Returns:
             The list of BlockDomain rows for the processed domains.
@@ -683,27 +616,26 @@ class PanOs:
             # Create the tag up front so group/rule creation can reference it even when every
             # address object already exists (and the create-address auto-create path is skipped).
             self.ensure_tag()
-            group_context = self.get_address_group()
-            group_exists = self.ensure_group(group_context)
-            current_members = []
-            if group_context is not None:
-                members = group_context.get("Addresses")
-                current_members = list(members) if isinstance(members, list) else [members] if members else []
 
-            rule_present, rule_destinations, self._rule_tags = self.rule_destinations()
-            # If the group already exists, ensure the rule up front. Otherwise defer to after
-            # the first domain seeds the group.
-            if group_exists:
-                # Add the configured tag to the pre-existing group if it isn't already there.
-                if group_context is not None:
-                    self.ensure_group_tag(group_context)
-                self._ensure_rule_once(rule_present, rule_destinations)
-
+            # Phase 1: create/verify EVERY address object first (each carrying the tag).
+            object_names: list[str] = []
+            per_domain_messages: list[tuple[str, str]] = []
             for domain in self.domains:
-                changed, message, group_exists = self.ensure_domain(
-                    domain, current_members, group_exists, rule_present, rule_destinations
-                )
+                object_name, changed, message = self.ensure_address_object(domain)
+                object_names.append(object_name)
+                per_domain_messages.append((domain, message))
                 self._address_made_changes = self._address_made_changes or changed
+
+            # Phase 2: create/edit the static group ONCE with the full member list (all objects now
+            # exist, so every reference resolves). Tag is merged in the same call.
+            group_context = self.get_address_group()
+            self.ensure_group(group_context, object_names)
+
+            # Phase 3: ensure the rule once (group now exists, so its destination reference resolves).
+            rule_present, rule_destinations, self._rule_tags = self.rule_destinations()
+            self.ensure_rule(rule_present, rule_destinations)
+
+            for domain, message in per_domain_messages:
                 rows.append(
                     build_result_row(
                         domain=domain,
@@ -711,7 +643,7 @@ class PanOs:
                         status=STATUS_DONE,
                         result=RESULT_SUCCESS,
                         rule_name=self.rule_name,
-                        message=f"{message} Rule '{self.rule_name}' enforced at top.",
+                        message=f"{message} Added to '{self.address_group}'. Rule '{self.rule_name}' enforced at top.",
                     )
                 )
         except DynamicGroupError as dyn_err:
@@ -873,11 +805,8 @@ class PanOs:
         """
         rows = self.process_domains()
         demisto.setContext("block_domain_rows", json.dumps(rows))
-        # Only commit/push when the run actually mutated Panorama state. Skipping on a pure
-        # "nothing changed" run saves a commit job + a potentially multi-minute push polling loop.
-        # Change-detection is tracked internally (no longer read back from a per-row Action field):
-        #   * _made_changes -> an address object was created, or added to the group.
-        #   * _rule_changed -> the rule was created or edited (group added / new rule name).
+        # Commit/push only when the run mutated Panorama state, to avoid a needless multi-minute
+        # push poll on a pure "nothing changed" run.
         made_changes = self._address_made_changes or self._rule_changed
         auto_commit = argToBoolean(self.args.get("auto_commit", True))
         demisto.debug(f"{LOG_TAG} start_flow: {made_changes=}, {auto_commit=}, {len(rows)} row(s)")
@@ -887,8 +816,7 @@ class PanOs:
                 return self.finish()
             self.save_responses()
             return poll_commit
-        # Nothing changed on the device (object, group, and rule were all already in place): return
-        # early with the per-domain rows and skip the commit/push entirely.
+        # Nothing changed on the device: return the rows and skip the commit/push.
         demisto.debug(f"{LOG_TAG} start_flow: no changes detected; skipping commit/push.")
         return rows
 

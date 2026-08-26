@@ -207,21 +207,29 @@ def _pan_os(domains):
     )
 
 
-def _mock_execute(monkeypatch, side_effect):
-    """Patch BlockDomain.demisto.executeCommand to yield the given responses in order.
+def _mock_execute(monkeypatch, responses_by_command):
+    """Patch BlockDomain.demisto.executeCommand to answer per command name (order-independent).
 
-    ``pan-os-create-tag`` (emitted by PanOs.ensure_tag at the very start of the flow) is
-    auto-answered with a success entry and does NOT consume an item from ``side_effect``, so the
-    ordered per-command expectations in each test stay aligned with the object/group/rule flow.
+    ``responses_by_command`` maps a command name to the entry list it should return. Probe commands
+    (pan-os-get-address / -list-address-groups / -list-rules) supply the tenant state; write commands
+    default to a bare success entry when not specified. ``pan-os-create-tag`` is always auto-answered.
+
+    Args:
+        monkeypatch: The pytest monkeypatch fixture.
+        responses_by_command (dict): Mapping of command name -> entry list to return.
+    Returns:
+        The ``calls`` list of (command_name, args) tuples recorded during the run.
     """
-    responses = iter(side_effect)
+    calls: list = []
 
-    def _dispatch(command_name, *a, **k):
+    def _dispatch(command_name, args=None, *a, **k):
+        calls.append((command_name, args or {}))
         if command_name == "pan-os-create-tag":
             return [ok_entry()]
-        return next(responses)
+        return responses_by_command.get(command_name, [ok_entry()])
 
     monkeypatch.setattr(BlockDomain.demisto, "executeCommand", _dispatch)
+    return calls
 
 
 def test_process_domains_create_everything(monkeypatch):
@@ -238,15 +246,11 @@ def test_process_domains_create_everything(monkeypatch):
     """
     _mock_execute(
         monkeypatch,
-        [
-            [ok_entry({"Panorama.AddressGroups": []})],
-            [ok_entry({"Panorama.SecurityRule": []})],
-            [err_entry("not found")],
-            [ok_entry()],
-            [ok_entry()],
-            [ok_entry()],
-            [ok_entry()],
-        ],
+        {
+            "pan-os-get-address": [err_entry("not found")],
+            "pan-os-list-address-groups": [ok_entry({"Panorama.AddressGroups": []})],
+            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": []})],
+        },
     )
     pan = _pan_os(["evil.example.com"])
     rows = pan.process_domains()
@@ -612,10 +616,42 @@ def test_process_domains_missing_group_created_lazily_with_first_object(monkeypa
     assert names.index("pan-os-create-address-group") < names.index("pan-os-create-rule")
     group_create_args = next(args for name, args in calls if name == "pan-os-create-address-group")
     assert group_create_args["type"] == "static"
-    assert group_create_args["addresses"] == "Cortex-evil.example.com"
+    # The group is created once with the full member list (all objects created first).
+    assert group_create_args["addresses"] == ["Cortex-evil.example.com"]
     rule_create_args = next(args for name, args in calls if name == "pan-os-create-rule")
     assert rule_create_args["destination"] == "Blocked Domains - Cortex"
     assert "pan-os-edit-address-group" not in names
+
+
+def test_process_domains_multi_domain_creates_all_objects_before_group(monkeypatch):
+    """
+    Given:
+       - A tenant with no group, no rule, and neither address object existing, for TWO domains.
+    When:
+       - Calling process_domains for both domains.
+    Then:
+       - Both address objects are created BEFORE the single group-create, and the group is created
+         once with the full member list (this is the ordering that avoids the reference error).
+    """
+    calls = _mock_execute(
+        monkeypatch,
+        {
+            "pan-os-get-address": [err_entry("not found")],
+            "pan-os-list-address-groups": [ok_entry({"Panorama.AddressGroups": []})],
+            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": []})],
+        },
+    )
+    _pan_os(["evil.example.com", "phish.attacker.net"]).process_domains()
+
+    names = [name for name, _ in calls]
+    create_addresses = [i for i, name in enumerate(names) if name == "pan-os-create-address"]
+    group_create_index = names.index("pan-os-create-address-group")
+    # Both objects are created before the single group-create.
+    assert len(create_addresses) == 2
+    assert max(create_addresses) < group_create_index
+    assert names.count("pan-os-create-address-group") == 1
+    group_args = next(args for name, args in calls if name == "pan-os-create-address-group")
+    assert group_args["addresses"] == ["Cortex-evil.example.com", "Cortex-phish.attacker.net"]
 
 
 def test_process_domains_all_unchanged(monkeypatch):
@@ -631,8 +667,9 @@ def test_process_domains_all_unchanged(monkeypatch):
     obj = "Cortex-evil.example.com"
     _mock_execute(
         monkeypatch,
-        [
-            [
+        {
+            "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": ["cortex-blocked-domains"]}]})],
+            "pan-os-list-address-groups": [
                 ok_entry(
                     {
                         "Panorama.AddressGroups": [
@@ -646,7 +683,7 @@ def test_process_domains_all_unchanged(monkeypatch):
                     }
                 )
             ],
-            [
+            "pan-os-list-rules": [
                 ok_entry(
                     {
                         "Panorama.SecurityRule": [
@@ -659,9 +696,7 @@ def test_process_domains_all_unchanged(monkeypatch):
                     }
                 )
             ],
-            [ok_entry()],
-            [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": ["cortex-blocked-domains"]}]})],
-        ],
+        },
     )
     pan = _pan_os(["evil.example.com"])
     rows = pan.process_domains()
@@ -685,8 +720,9 @@ def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
     """
     _mock_execute(
         monkeypatch,
-        [
-            [
+        {
+            "pan-os-get-address": [err_entry("not found")],
+            "pan-os-list-address-groups": [
                 ok_entry(
                     {
                         "Panorama.AddressGroups": [
@@ -700,7 +736,7 @@ def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
                     }
                 )
             ],
-            [
+            "pan-os-list-rules": [
                 ok_entry(
                     {
                         "Panorama.SecurityRule": [
@@ -713,11 +749,7 @@ def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
                     }
                 )
             ],
-            [ok_entry()],
-            [err_entry("not found")],
-            [ok_entry()],
-            [ok_entry()],
-        ],
+        },
     )
     pan = _pan_os(["evil.example.com"])
     rows = pan.process_domains()
@@ -742,8 +774,9 @@ def test_process_domains_existing_rule_missing_group_is_edited(monkeypatch):
     obj = "Cortex-evil.example.com"
     _mock_execute(
         monkeypatch,
-        [
-            [
+        {
+            "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": ["cortex-blocked-domains"]}]})],
+            "pan-os-list-address-groups": [
                 ok_entry(
                     {
                         "Panorama.AddressGroups": [
@@ -757,7 +790,7 @@ def test_process_domains_existing_rule_missing_group_is_edited(monkeypatch):
                     }
                 )
             ],
-            [
+            "pan-os-list-rules": [
                 ok_entry(
                     {
                         "Panorama.SecurityRule": [
@@ -770,10 +803,7 @@ def test_process_domains_existing_rule_missing_group_is_edited(monkeypatch):
                     }
                 )
             ],
-            [ok_entry()],
-            [ok_entry()],
-            [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": ["cortex-blocked-domains"]}]})],
-        ],
+        },
     )
     pan = _pan_os(["evil.example.com"])
     rows = pan.process_domains()
@@ -851,8 +881,17 @@ def test_process_domains_merges_tag_on_existing_object_group_and_rule(monkeypatc
         }
     ]
 
+    # The group edit carries element_to_add (required by the static-group guard) together with the
+    # merged tags in one call. The object is already a member, so the full list is re-added (no-op).
     edit_group = [args for name, args in calls if name == "pan-os-edit-address-group" and "tags" in args]
-    assert edit_group == [{"name": "Blocked Domains - Cortex", "type": "static", "tags": ["other", "cortex-blocked-domains"]}]
+    assert edit_group == [
+        {
+            "name": "Blocked Domains - Cortex",
+            "type": "static",
+            "element_to_add": ["Cortex-evil.example.com"],
+            "tags": ["other", "cortex-blocked-domains"],
+        }
+    ]
 
     edit_rule_tag = [args for name, args in calls if name == "pan-os-edit-rule" and args.get("element_to_change") == "tag"]
     assert edit_rule_tag == [
@@ -1093,9 +1132,12 @@ def test_process_domains_dynamic_group_is_skipped(monkeypatch):
     """
     _mock_execute(
         monkeypatch,
-        [
-            [ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "dynamic", "Match": "x"}]})],
-        ],
+        {
+            "pan-os-get-address": [err_entry("not found")],
+            "pan-os-list-address-groups": [
+                ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "dynamic", "Match": "x"}]})
+            ],
+        },
     )
     rows = _pan_os(["evil.example.com"]).process_domains()
     assert rows[0]["Status"] == STATUS_SKIPPED
@@ -1116,12 +1158,12 @@ def test_process_domains_failure_marks_row_failed(monkeypatch):
     """
     _mock_execute(
         monkeypatch,
-        [
-            [ok_entry({"Panorama.AddressGroups": []})],
-            [ok_entry({"Panorama.SecurityRule": []})],
-            [err_entry("not found")],
-            [err_entry("permission denied")],
-        ],
+        {
+            "pan-os-get-address": [err_entry("not found")],
+            "pan-os-create-address": [err_entry("permission denied")],
+            "pan-os-list-address-groups": [ok_entry({"Panorama.AddressGroups": []})],
+            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": []})],
+        },
     )
     # Capture the traceback log so it does not leak to stdout (conftest fails on any stdout).
     errors: list = []
