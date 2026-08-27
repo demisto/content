@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
 
+import time
 import traceback
 from datetime import datetime, timedelta, UTC
 from typing import Any
@@ -13,6 +14,9 @@ from typing import Any
 # ============================================================================
 class Config:
     """Global static configuration."""
+
+    # Bump on every hotfix so the running build can be confirmed from the `[Version]` debug log.
+    VERSION_TAG = "o365-message-trace/2.0.6-fetch-lookback"
 
     VENDOR = "microsoft"
     PRODUCT = "o365_message_trace"
@@ -26,7 +30,7 @@ class Config:
     DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
     DEFAULT_MAX_EVENTS = 50000
-    DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
+    DEFAULT_PAGE_SIZE = 5000  # API maximum per page ($top range is 1-5000)
     DEFAULT_FIRST_FETCH_MINUTES = 1
 
     # Each fetch cycle only scans this many minutes starting from ``last_fetch``.
@@ -35,9 +39,35 @@ class Config:
     # across many runs instead of re-downloading days of events on every run.
     FETCH_WINDOW_MINUTES = 5
 
+    # Trailing look-back overlap (minutes): each cycle re-scans from ``last_fetch - LOOKBACK``.
+    # Records are mutable (status evolves) but keep their original ``receivedDateTime``, so late
+    # status updates must be re-scanned to be captured. Status-aware ``_unique_id`` dedup prevents
+    # real duplicates from being re-sent. Observed status-settling lag is ~8 min max, so 10 min
+    # still fully covers it while trimming the per-run re-scan (fewer overlap events to re-fetch
+    # and de-duplicate each cycle -> smaller tail -> more timeout headroom). Configurable via the
+    # integration parameter if needed. (Lowered 15 -> 10 under XSUP-74411 to reduce tail work.)
+    DEFAULT_LOOKBACK_MINUTES = 10
+
     # Fixed backoff schedule (in seconds) applied between retries when the Graph
     # API responds with HTTP 429 (Too Many Requests).
     RATE_LIMIT_BACKOFFS = (30, 60, 90)
+
+    # Wall-clock budget (seconds) for the WINDOW WALK portion of a single fetch invocation. The
+    # platform hard-kills a fetch-events run at 5 minutes (300s); if that happens BEFORE
+    # ``setLastRun`` the cursor never persists and the collector re-scans the same window forever
+    # (the stuck-cursor timeout bug). The walk stops itself once this budget is spent, then the
+    # run still has to do the TAIL work - dedup + build seen_ids + ``send_events_to_xsiam`` +
+    # ``setLastRun`` - on everything collected. That tail scales with the number of events and,
+    # at ``max_fetch=10000`` (~5000 events/run), was observed to take ~60s. 240s left too little
+    # headroom: walk(240s) + tail(60s+) exceeded the 300s ceiling and the run was killed before
+    # ``setLastRun`` (cursor stayed frozen). 180s gives the tail a full ~120s of headroom under
+    # the 300s ceiling, so the cursor is always persisted regardless of batch size / max_fetch.
+    EXECUTION_TIME_BUDGET_SECONDS = 180
+
+    # Value written to ``last_run["nextTrigger"]`` to ask the platform to re-invoke fetch
+    # immediately (rather than waiting for the next scheduled cycle) so a backlog drains across
+    # many bounded invocations. "0" == re-dispatch now.
+    NEXT_TRIGGER_VALUE = "0"
 
 
 # ============================================================================
@@ -238,16 +268,27 @@ def format_datetime_for_filter(dt: datetime) -> str:
     return dt.strftime(Config.DATE_FORMAT_FILTER)
 
 
+def is_execution_time_exceeded(start_time: float) -> bool:
+    """Return True once the fetch run has spent its wall-clock budget.
+
+    ``start_time`` is a ``time.monotonic()`` reading captured at the start of the run. The
+    window walk calls this each iteration and stops cleanly once the budget is spent, so the
+    run always reaches ``setLastRun`` before the platform's 5-minute hard kill.
+    """
+    elapsed = time.monotonic() - start_time
+    return elapsed >= Config.EXECUTION_TIME_BUDGET_SECONDS
+
+
 def deduplicate_events(events: list[dict], seen_ids: set[str]) -> list[dict]:
-    """Filter out events whose IDs are already in ``seen_ids``."""
+    """Filter out events whose internal ``_dedup_key`` is already in ``seen_ids``."""
     if not seen_ids:
         return events
 
     new_events: list[dict] = []
     duplicates = 0
     for event in events:
-        event_id = event.get("_unique_id")
-        if event_id and event_id in seen_ids:
+        dedup_key = event.get("_dedup_key")
+        if dedup_key and dedup_key in seen_ids:
             duplicates += 1
             continue
         new_events.append(event)
@@ -266,16 +307,23 @@ def add_time_field(events: list[dict]) -> None:
 
 
 def add_unique_id_field(events: list[dict]) -> None:
-    """Add a ``_unique_id`` field to each event in the form ``<id>|<recipientAddress>``.
+    """Add the dataset ``_unique_id`` field (``<id>|<recipientAddress>``) and an internal
+    ``_dedup_key`` (``<id>|<recipientAddress>|<status>``).
 
-    The new ``_unique_id`` field guarantees uniqueness across events that share
-    the same underlying message id but were delivered to different recipients.
+    ``_unique_id`` is the documented dataset field and stays 2-part for schema stability.
+    ``_dedup_key`` additionally includes ``status`` and is used ONLY for fetch dedup/seen_ids
+    (never sent to XSIAM): a message-trace record is re-emitted as its status evolves
+    (e.g. delivered -> recalled), so keying dedup on status lets each transition through while
+    still suppressing true duplicates of the same (id, recipient, status) across overlapping
+    fetch windows.
     """
     for event in events:
         event_id = event.get("id")
         recipient = event.get("recipientAddress")
+        status = event.get("status") or ""
         if event_id and recipient:
             event["_unique_id"] = f"{event_id}|{recipient}"
+            event["_dedup_key"] = f"{event_id}|{recipient}|{status}"
 
 
 # ============================================================================
@@ -330,6 +378,24 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     verify = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
     max_events = arg_to_number(params.get("max_fetch")) or Config.DEFAULT_MAX_EVENTS
+    # ----- TEMPORARY HOTFIX (XSUP-74411): cap events-per-run -----
+    # The per-run tail work (dedup + build seen_ids + send_events_to_xsiam) scales with the number
+    # of events collected. In dense backlog regions the run collected ~6,400 events and the tail
+    # pushed the total past the platform's 5-minute hard kill, so ``setLastRun`` never ran and the
+    # cursor re-froze. Capping the effective batch at TEMP_MAX_EVENTS_CAP keeps the tail small so
+    # every run finishes and persists its cursor. This is SAFE at the observed density: the densest
+    # single 5-min window holds ~300 events and the 15-min look-back overlap ~900 - both far below
+    # the cap - so no window is truncated and every look-back-overlap key is captured in seen_ids
+    # (no data loss, no duplicates). Remove once the proper per-run event-count cap ships.
+    TEMP_MAX_EVENTS_CAP = 3000
+    if max_events > TEMP_MAX_EVENTS_CAP:
+        demisto.debug(
+            f"[Config] TEMPORARY cap active: max_fetch={max_events} overridden to {TEMP_MAX_EVENTS_CAP} "
+            f"(XSUP-74411 timeout hotfix)."
+        )
+        max_events = TEMP_MAX_EVENTS_CAP
+    # ----- END TEMPORARY HOTFIX -----
+    lookback_minutes = arg_to_number(params.get("lookback_minutes")) or Config.DEFAULT_LOOKBACK_MINUTES
 
     # ----- Validation -----
     if not managed_identities_client_id:
@@ -363,6 +429,7 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
         "managed_identities_client_id": managed_identities_client_id,
         "azure_cloud": azure_cloud,
         "max_events": max_events,
+        "lookback_minutes": lookback_minutes,
     }
 
 
@@ -423,8 +490,7 @@ def fetch_events_sequential(
         collected.extend(page_events)
 
         demisto.debug(
-            f"[Fetch] Window {start_str} -> {end_str}: page returned {len(page_events)} events "
-            f"(running total: {len(collected)})"
+            f"[Fetch] Window {start_str} -> {end_str}: page returned {len(page_events)} events (running total: {len(collected)})"
         )
         # Defensive stop #1: empty page means there is nothing more to read.
         if not page_events:
@@ -446,16 +512,30 @@ def fetch_events_sequential(
         previous_link = next_link
 
     # Sort all collected events ascending by receivedDateTime (parsed as datetime) so the
-    # earliest event is first.
+    # earliest event is first. Use ``parse_datetime`` (flexible, via ``arg_to_datetime``) rather
+    # than a rigid ``strptime`` format: the Graph API returns MIXED fractional-second precision -
+    # whole seconds (``...:23Z``), milliseconds (``...:23.704Z``) and microseconds - and a fixed
+    # ``%f`` format silently fails on the whole-second values, sorting them as ``datetime.min`` and
+    # corrupting the truncation order.
     collected.sort(
-        key=lambda event: safe_strptime(event["receivedDateTime"], Config.DATE_FORMAT_EVENT)
+        key=lambda event: parse_datetime(event["receivedDateTime"], default=datetime.min.replace(tzinfo=UTC))
         if event.get("receivedDateTime")
-        else datetime.min
+        else datetime.min.replace(tzinfo=UTC)
     )
 
     if len(collected) > max_events:
-        demisto.debug(f"[Fetch] Collected {len(collected)} events, truncating to max_events ({max_events}).")
-        collected = collected[:max_events]
+        # Truncate to max_events, but never cut through a group sharing the same
+        # receivedDateTime second - otherwise the high-water mark would advance past a
+        # second whose events were only partially fetched, permanently skipping the rest.
+        cut = max_events
+        boundary_time = collected[max_events - 1].get("receivedDateTime")
+        while cut < len(collected) and collected[cut].get("receivedDateTime") == boundary_time:
+            cut += 1
+        demisto.debug(
+            f"[Fetch] Collected {len(collected)} events, truncating to {cut} "
+            f"(max_events={max_events}, extended to keep whole boundary second {boundary_time})."
+        )
+        collected = collected[:cut]
 
     return collected
 
@@ -474,8 +554,7 @@ def test_module(client: Client) -> str:
     demisto.debug("[Test] Starting test-module")
     if client.ms_client.grant_type == AUTHORIZATION_CODE:
         raise DemistoException(
-            "Test module is not available for the authorization code flow. "
-            "Use the o365-message-trace-auth-test command instead."
+            "Test module is not available for the authorization code flow. Use the o365-message-trace-auth-test command instead."
         )
 
     try:
@@ -524,6 +603,9 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
     events = fetch_events_sequential(client, start_dt, end_dt, max_events=limit)
     add_unique_id_field(events)
     add_time_field(events)
+    # ``_dedup_key`` is an internal fetch-only field; never expose it via this manual command.
+    for event in events:
+        event.pop("_dedup_key", None)
 
     if should_push_events and events:
         send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
@@ -543,35 +625,84 @@ def get_events_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def fetch_events(client: Client, max_events: int) -> None:
+def fetch_events(client: Client, max_events: int, lookback_minutes: int | None = None) -> None:
     """Scheduled fetch command - reads state, fetches, deduplicates, persists state."""
+    if lookback_minutes is None:
+        lookback_minutes = Config.DEFAULT_LOOKBACK_MINUTES
     last_run = demisto.getLastRun() or {}
-    demisto.debug(f"[Fetch] last_run={last_run}")
+    demisto.debug(f"[Fetch] last_run={last_run} | max_events={max_events} | lookback_minutes={lookback_minutes}")
 
     last_fetch_str: str | None = last_run.get("last_fetch")
     seen_ids: list[str] = last_run.get("seen_ids", []) or []
 
     now = datetime.now(UTC)
     if last_fetch_str:
-        start_dt = parse_datetime(last_fetch_str)
+        # Trailing look-back overlap: re-scan back from last_fetch so late status updates
+        # (which keep their original receivedDateTime) are re-surfaced. Status-aware dedup
+        # below prevents already-sent (id, recipient, status) tuples from being re-sent.
+        # When the look-back exceeds one window, the run naturally takes the window-walk branch
+        # below, keeping every API call bounded to FETCH_WINDOW_MINUTES.
+        start_dt = parse_datetime(last_fetch_str) - timedelta(minutes=lookback_minutes)
+        demisto.debug(
+            f"[Fetch] Resuming from last_fetch={last_fetch_str} with {lookback_minutes}m look-back "
+            f"-> effective start={start_dt.isoformat()}"
+        )
     else:
         start_dt = now - timedelta(minutes=Config.DEFAULT_FIRST_FETCH_MINUTES)
         demisto.debug(f"[Fetch] First run - looking back {Config.DEFAULT_FIRST_FETCH_MINUTES} minutes from now")
 
+    # ``drained_until`` is the end of the last window we FULLY fetched. It is the guaranteed
+    # forward cursor: the next run resumes from here, so no window is ever partially consumed and
+    # then skipped. Advancing on this boundary (rather than on ``max(event _time)``) is what breaks
+    # the infinite-loop / stuck-cursor bug when a saturated backlog window is all-duplicates.
+    drained_until: datetime | None = None
+
+    # When the run stops before catching up to ``now`` (max_events cap or time budget), there is
+    # still a backlog. We then ask the platform to re-invoke fetch immediately via ``nextTrigger``
+    # so the backlog drains across many bounded invocations instead of waiting a full cycle.
+    backlog_remaining = False
+
+    # Wall-clock anchor for the execution-time budget. The platform hard-kills a fetch run at
+    # 5 minutes; the window walk stops itself before that so the advanced cursor always persists.
+    execution_start = time.monotonic()
+
     if now < start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES):
         window_end_dt = now
         demisto.debug(f"[Fetch] Window {start_dt.isoformat()} -> {window_end_dt.isoformat()} (now={now.isoformat()})")
-        # Fetch all events in the window sequentially
         events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
+        drained_until = window_end_dt
 
     else:
         window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
         all_events: list[dict] = []
 
-        # Walk fixed-size windows until we either catch up to ``now``, collect enough
-        # events, or hit the safety cap on how many times ``fetch_events_sequential``
-        # may be called in a single run.
-        while start_dt < now and len(all_events) < max_events:
+        # The previous high-water mark. The look-back re-scans the region ``[last_fetch - lookback,
+        # last_fetch]``; those events are (almost) all duplicates. If the ``max_events`` cap is
+        # allowed to trip INSIDE that overlap region, the walk can stop exactly at ``last_fetch``
+        # and the cursor never advances - the stuck-cursor / infinite-loop bug. So the cap is only
+        # honored once we have drained PAST ``last_fetch`` (i.e. past the overlap into new ground).
+        # This guarantees every cycle advances at least to ``last_fetch + one window``.
+        prev_high_water = parse_datetime(last_fetch_str) if last_fetch_str else start_dt
+
+        # Walk fixed-size windows oldest->newest until we catch up to ``now``, or we have both
+        # advanced past the previous high-water mark AND collected enough events. Each window is
+        # fetched COMPLETELY (all pages) and kept intact - we never truncate a window's events away,
+        # which would drop events the advancing cursor then skips forever.
+        while start_dt < now:
+            if len(all_events) >= max_events and start_dt > prev_high_water:
+                backlog_remaining = True
+                break
+            # Time-budget guard: stop cleanly before the platform's 5-minute hard kill so the
+            # advanced cursor is always persisted below. Only trip once we are past the previous
+            # high-water mark, so a run always makes at least one window of forward progress
+            # (otherwise a slow overlap re-scan could stop AT last_fetch and never advance).
+            if start_dt > prev_high_water and is_execution_time_exceeded(execution_start):
+                demisto.debug(
+                    f"[Fetch] Execution time budget ({Config.EXECUTION_TIME_BUDGET_SECONDS}s) reached at "
+                    f"start={start_dt.isoformat()}; stopping walk and re-dispatching via nextTrigger."
+                )
+                backlog_remaining = True
+                break
             window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
             try:
                 events = fetch_events_sequential(client, start_dt, window_end_dt, max_events=max_events)
@@ -583,12 +714,19 @@ def fetch_events(client: Client, max_events: int) -> None:
             if window_end_dt <= start_dt:
                 demisto.error(f"[Fetch] Window did not advance ({start_dt} -> {window_end_dt}); stopping.")
                 break
+            # This window was fully drained - it is now safe to resume the NEXT run from its end.
+            drained_until = window_end_dt
             start_dt = window_end_dt
             window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
+            # Elapsed-time visibility: makes it easy to see from the logs how close each run gets to
+            # the execution-time budget, and whether a single dense window alone is the bottleneck.
+            demisto.debug(
+                f"[Fetch] Drained window up to {drained_until.isoformat()} | "
+                f"cumulative events={len(all_events)} | "
+                f"elapsed={time.monotonic() - execution_start:.1f}s / budget={Config.EXECUTION_TIME_BUDGET_SECONDS}s"
+            )
 
         events = all_events
-        if len(events) > max_events:
-            events = events[:max_events]
 
     add_unique_id_field(events)
     add_time_field(events)
@@ -596,35 +734,92 @@ def fetch_events(client: Client, max_events: int) -> None:
 
     # Deduplicate against previous run's high-water-mark IDs
     new_events = deduplicate_events(events, set(seen_ids))
-    demisto.debug(f"[Fetch] {len(new_events)} new events after dedup")
+    demisto.debug(f"[Fetch] {len(new_events)} new events after dedup (skipped {len(events) - len(new_events)})")
+
+    # Visibility for the look-back: count new events whose receivedDateTime predates the previous
+    # last_fetch - these are exactly the late status updates (e.g. recalls) that only the look-back
+    # overlap could surface. A non-zero count here proves the look-back is doing its job.
+    if last_fetch_str and lookback_minutes:
+        prev_last_fetch_dt = parse_datetime(last_fetch_str)
+        recovered = [event for event in new_events if event.get("_time") and parse_datetime(event["_time"]) < prev_last_fetch_dt]
+        demisto.debug(
+            f"[Fetch] {len(recovered)} new events recovered by the {lookback_minutes}m look-back (older than last_fetch)"
+        )
+
+    # New high-water mark. With no events, advance to the window end.
+    new_last_fetch = format_datetime_for_filter(window_end_dt)
+
+    # NOTE: compute the high-water mark and seen_ids BEFORE stripping ``_dedup_key`` below - the
+    # events sent to XSIAM share the same dict objects, so popping the key first would empty this.
+    timed_events = [event for event in events if event.get("_time") and event.get("_dedup_key")]
+    if timed_events:
+        new_last_fetch = max(event["_time"] for event in timed_events)
+
+    # Floor the cursor at the last FULLY-drained window end. This guarantees forward progress even
+    # when every event in a saturated backlog window was a duplicate (``max(_time)`` would then
+    # resolve back to the current boundary and the run would re-scan the same window forever). We
+    # take the later of the event-derived mark and the drained boundary so we never move backwards.
+    if drained_until is not None:
+        drained_str = format_datetime_for_filter(drained_until)
+        if parse_datetime(drained_str) > parse_datetime(new_last_fetch):
+            new_last_fetch = drained_str
+
+    # Persist EVERY _dedup_key whose _time falls inside the trailing look-back window that the
+    # NEXT run will re-scan (``[new_last_fetch - lookback, new_last_fetch]``). The next run
+    # re-queries that entire overlap, so every key in it - not just the boundary second - must be
+    # in seen_ids, otherwise every event in the overlap would be re-sent as a duplicate on each
+    # run. Keys older than the overlap are dropped, keeping the state bounded to the window.
+    # Compare parsed datetimes, not raw strings: ``_time`` (raw API value) and a formatted
+    # cutoff may differ in fractional-second precision, so a string ``>=`` would silently drop
+    # every key and re-send the whole overlap each run.
+    overlap_cutoff_dt = parse_datetime(new_last_fetch) - timedelta(minutes=lookback_minutes)
+    seen_set = {event["_dedup_key"] for event in timed_events if parse_datetime(event["_time"]) >= overlap_cutoff_dt}
 
     if new_events:
+        # Strip the internal dedup key so it never lands in the dataset. Done AFTER seen_set is
+        # built, since new_events and events share dict objects (popping earlier would empty it).
+        for event in new_events:
+            event.pop("_dedup_key", None)
         send_events_to_xsiam(events=new_events, vendor=Config.VENDOR, product=Config.PRODUCT)
         demisto.debug(f"[Fetch] Sent {len(new_events)} events to XSIAM")
 
-    # New high-water mark. With no events, advance to the window end and reset seen_ids.
-    new_last_fetch = format_datetime_for_filter(window_end_dt)
-    new_seen_ids: list[str] = []
+    # If the high-water mark did NOT advance, this run did not re-fetch anything newer than the
+    # previous boundary, so previously-seen ids must be retained (they would otherwise be re-sent
+    # next run). When it DID advance, this run already re-fetched the whole overlap, so its own
+    # set is a superset and no merge is needed. Compare as datetimes, not strings: an upgraded
+    # instance may still hold ``last_fetch`` in an older format, so a string ``==`` could wrongly
+    # skip the merge even when the instant is unchanged.
+    if last_fetch_str and parse_datetime(new_last_fetch) == parse_datetime(last_fetch_str):
+        seen_set |= set(seen_ids)
 
-    # Use ALL fetched events (not just published ones): timestamps are second-granular, so
-    # seen_ids must keep every ID at the boundary - including deduped-out ones - or the next
-    # run (re-fetching at ``>= boundary``) would re-send already-sent events as duplicates.
-    timed_events = [event for event in new_events if event.get("_time")]
-
-    if timed_events:
-        latest_time: str = max(event["_time"] for event in timed_events)
-        new_last_fetch = latest_time
-        ids_at_latest = [eid for event in timed_events if event.get("_time") == latest_time and (eid := event.get("_unique_id"))]
-        # If the high-water mark hasn't moved, merge with the existing seen_ids
-        if latest_time == last_fetch_str:
-            new_seen_ids = list(set(seen_ids) | set(ids_at_latest))
-        else:
-            new_seen_ids = ids_at_latest
+    new_seen_ids = sorted(seen_set)
+    demisto.debug(
+        f"[Fetch] overlap_cutoff={overlap_cutoff_dt.isoformat()} | " f"{len(new_seen_ids)} seen_ids carried forward for next run"
+    )
 
     new_last_run = {
         "last_fetch": new_last_fetch,
         "seen_ids": new_seen_ids,
     }
+
+    # Re-dispatch immediately when a backlog is still pending (the walk stopped on the max_events
+    # cap or the execution-time budget before reaching ``now``). ``nextTrigger`` tells the platform
+    # to re-invoke fetch right away so the backlog drains across many bounded runs. When caught up,
+    # the key is omitted so the collector returns to its normal schedule.
+    #
+    # This is safe because forward progress is guaranteed upstream: both break paths require
+    # ``start_dt > prev_high_water``, so the run always drains at least one window past the previous
+    # ``last_fetch`` and the cursor advances. Each immediate re-dispatch therefore resumes from new
+    # ground and eventually reaches ``now`` - it is a fast drain, not a spin.
+    if backlog_remaining:
+        new_last_run["nextTrigger"] = Config.NEXT_TRIGGER_VALUE
+        demisto.debug(
+            f"[Fetch] Backlog remaining (cursor {last_fetch_str} -> {new_last_fetch}) - "
+            f"set nextTrigger={Config.NEXT_TRIGGER_VALUE} to re-dispatch immediately."
+        )
+    else:
+        demisto.debug("[Fetch] Caught up to now - no backlog, nextTrigger not set (normal schedule).")
+
     demisto.setLastRun(new_last_run)
     demisto.debug(f"[Fetch] Updated last_run={new_last_run}")
 
@@ -636,10 +831,12 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
+    demisto.debug(f"[Version] Running {Config.VERSION_TAG}")
     demisto.debug(f"[Main] Command={command}")
 
     config = parse_integration_params(params)
     max_events = config.pop("max_events")
+    lookback_minutes = config.pop("lookback_minutes")
 
     try:
         client = Client(**config)  # pylint: disable=E1123
@@ -653,7 +850,7 @@ def main() -> None:  # pragma: no cover
         elif command == "o365-message-trace-get-events":
             return_results(get_events_command(client, args))
         elif command == "fetch-events":
-            fetch_events(client, max_events=max_events)
+            fetch_events(client, max_events=max_events, lookback_minutes=lookback_minutes)
         elif command == "o365-message-trace-generate-login-url":
             return_results(generate_login_url(client.ms_client))
 
