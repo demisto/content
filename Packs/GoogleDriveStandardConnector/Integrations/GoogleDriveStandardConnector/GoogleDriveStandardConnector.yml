@@ -82,6 +82,11 @@ configuration:
   section: Collect
   additionalinfo: The maximum number of incidents to fetch each time.
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  required: false
 - name: first_fetch
   display: First Fetch Time Interval
   type: 0
@@ -3203,7 +3208,7 @@ script:
       description: The list of parent folder IDs.
       type: Unknown
   - name: google-drive-file-create
-    description: Creates a new metadata-only file or folder without uploading content. Use for creating quarantine folders or tombstone placeholder files.
+    description: Creates a new file or folder. By default the file is metadata-only, which is useful for creating quarantine folders or tombstone placeholder files. Provide the `content` argument to also write text content into the created file.
     arguments:
     - name: file_name
       required: true
@@ -3218,6 +3223,8 @@ script:
       description: The ID of the parent folder. If not specified, the file will be created in the user's root folder.
     - name: description
       description: A short description of the file or folder.
+    - name: content
+      description: 'The text content to write into the created file. When provided, the content is uploaded together with the file metadata in a single request. Requires a non-folder `mime_type` (for example `text/plain`), since folders cannot hold content. Limited to 256 characters. To create larger files or upload binary files, use the `google-drive-file-upload` command with an entry ID instead.'
     - auto: PREDEFINED
       defaultValue: "false"
       description: 'Whether the requesting application supports both My Drives and shared drives.'
@@ -3265,7 +3272,7 @@ script:
     - contextPath: FileContent.Url
       description: The original URL used to retrieve the file.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.8516410
+  dockerimage: demisto/googleapi-python3:1.0.0.10182333
   isfetch: true
   runonce: false
   script: "-"

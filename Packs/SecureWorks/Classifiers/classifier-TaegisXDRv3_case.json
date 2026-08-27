@@ -1,0 +1,24 @@
+{
+    "fromVersion": "6.13.0",
+    "description": "Classifies Taegis XDR cases.",
+    "feed": false,
+    "id": "TaegisXDR-Case-Classifier",
+    "keyTypeMap": {
+        "case": "Taegis XDR - Case",
+        "detection": "Taegis XDR - Case"
+    },
+    "name": "TaegisXDR-Case-Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "taegisxdr_type",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "defaultIncidentType": "Taegis XDR - Case"
+}

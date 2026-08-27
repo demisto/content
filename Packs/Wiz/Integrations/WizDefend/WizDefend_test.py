@@ -3110,16 +3110,16 @@ def test_validate_threat_detections_issue(is_valid_result, issue_type, expected_
             assert message is None
 
 
-@pytest.mark.parametrize(
-    "command_name,function_name",
-    [
-        ("wiz-defend-resolve-threat", "resolve_threat"),
-        ("wiz-defend-reopen-threat", "reopen_threat"),
-        ("wiz-defend-set-threat-in-progress", "set_threat_in_progress"),
-        ("wiz-defend-set-threat-comment", "set_threat_comment"),
-        ("wiz-defend-clear-threat-comments", "clear_threat_comments"),
-    ],
-)
+# @pytest.mark.parametrize(
+#     "command_name,function_name",
+#     [
+#         ("wiz-defend-resolve-threat", "resolve_threat"),
+#         ("wiz-defend-reopen-threat", "reopen_threat"),
+#         ("wiz-defend-set-threat-in-progress", "set_threat_in_progress"),
+#         ("wiz-defend-set-threat-comment", "set_threat_comment"),
+#         ("wiz-defend-clear-threat-comments", "clear_threat_comments"),
+#     ],
+# )
 # def test_main_new_commands(command_name, function_name):
 #     """Test main function handling new threat management commands"""
 #     with (
