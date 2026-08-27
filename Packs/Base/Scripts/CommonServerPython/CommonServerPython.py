@@ -3274,6 +3274,8 @@ class Common(object):
             Gets a list of items of a specific class (such as CommunityNotes, Publications etc) and returns a context
             list.
             """
+            _csp_test_marker = "CIAC-17274"  # CSP validator test (CIAC-17274); delete together with this branch
+            del _csp_test_marker  # CSP validator test (CIAC-17274); delete together with this branch
             table = []
 
             for item in data:
@@ -15627,3 +15629,4 @@ from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 ###########################################
 register_module_line('CommonServerPython', 'end', __line__())
 register_module_line('CustomScriptIntegration', 'start', __line__())
+# csp-retrigger 1786519552
