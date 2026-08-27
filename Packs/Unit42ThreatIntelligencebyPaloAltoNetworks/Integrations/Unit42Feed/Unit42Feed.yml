@@ -40,7 +40,7 @@ configuration:
 - display: Maximum Indicators Per Fetch
   name: limit
   type: 0
-  defaultvalue: '100000'
+  defaultvalue: '20000'
   additionalinfo: |-
     Maximum number of indicators to fetch per type. 
     Example: limit=20,000 with 4 types selected = 80,000 total indicators.
@@ -57,7 +57,7 @@ configuration:
     4. URLs
     5. Files
     
-    Default (total for all types): 100,000. Maximum (total for all types): 100,000.
+    Default (total for all types): 20,000. Maximum (total for all types): 100,000.
   required: false
   section: Collect
   advanced: true
