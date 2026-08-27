@@ -307,7 +307,7 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+      description: "The maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
       description: Token for pagination.
       required: false
@@ -315,7 +315,7 @@ script:
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.\nFor more options and details, see:\nhttps://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string."
     outputs:
     - contextPath: GCP.Compute.Firewalls.id
-      description: Unique identifier for the firewall rule.
+      description: The unique identifier for the firewall rule.
       type: String
     - contextPath: GCP.Compute.Firewalls.name
       description: Name of the firewall rule.
@@ -342,7 +342,7 @@ script:
       description: Server-defined URL for the resource.
       type: String
     - contextPath: GCP.Compute.Firewalls.creationTimestamp
-      description: The creation timestamp of the firewall rule.
+      description: The creation timestamp of the firewall rule in ISO 8601 format (e.g., 2024-01-15T12:34:56Z)..
       type: Date
     - contextPath: GCP.Compute.Firewalls.logConfig.enable
       description: Indicates whether logging is enabled for the firewall rule.
@@ -397,7 +397,7 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+      description: "The maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
       description: Token for pagination.
     - name: filter
@@ -567,7 +567,7 @@ script:
       description: If true, match against external NAT IPs; otherwise internal NIC IPs.
     - name: limit
       defaultValue: '50'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+      description: "The maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
       description: Token for pagination.
     outputs:
@@ -1500,9 +1500,6 @@ script:
         defaultValue: "true"
         description: Enable versioning.
     outputs:
-      - contextPath: GCP.Storage.Bucket
-        description: Updated bucket metadata.
-        type: Unknown
       - contextPath: GCP.Storage.Buckets.name
         description: The name of the GCP bucket.
         type: String
@@ -1599,9 +1596,6 @@ script:
         defaultValue: "true"
         description: Enable uniform bucket-level access.
     outputs:
-      - contextPath: GCP.Storage.Bucket
-        description: Updated bucket metadata.
-        type: Unknown
       - contextPath: GCP.Storage.Buckets.name
         description: The name of the GCP bucket.
         type: String
@@ -1684,7 +1678,7 @@ script:
       description: Maximum number of buckets to return.
     - name: prefix
       required: false
-      description: Filter results to buckets whose names begin with this prefix.
+      description: The prefix to filter results to buckets whose names begin with this value.
     - name: page_token
       required: false
       description: Token for pagination.
