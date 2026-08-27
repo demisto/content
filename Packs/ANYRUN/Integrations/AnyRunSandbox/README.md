@@ -39,6 +39,7 @@ Integration is officially supported from XSOAR 8.x
 | **Parameter**                                                                                                   | **Description**                                                                                                                                                 | **Required** |
 |-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | Password                                                                                                        | ANY.RUN API-KEY without prefix.                                                                                                                                 | True |
+| Root URL                                                                                                        | Base domain for the ANY.RUN connection. By default, the domain is any.run.                                                                                      | False |
 
 ## Commands
 
@@ -246,7 +247,6 @@ Perform URL analysis using Android VM.
 | opt_network_residential_proxy_geo | Residential proxy geo location option. Example: US, AU. Default is fastest. | Optional |
 | opt_privacy_type | Privacy settings. Possible values are: public, bylink, owner, byteam. Default is bylink. | Optional |
 | opt_timeout | Timeout option. Size range: 10-660. Default is 120. | Optional |
-| obj_ext_browser | Browser name. Possible values are: Google Chrome, Mozilla Firefox. Default is Google Chrome. | Optional |
 
 #### Context Output
 
