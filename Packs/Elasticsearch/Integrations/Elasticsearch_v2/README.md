@@ -2525,3 +2525,13 @@ Import value list items from a TXT or CSV file.
 >|Value list item ID|List ID|Value|Creation date|
 >|---|---|---|---|
 >| 5678 | 1234 | 10.0.0.1 | 2024-01-15T10:00:00.000Z |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

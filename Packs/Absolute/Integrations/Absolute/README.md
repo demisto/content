@@ -1100,3 +1100,13 @@ In the ***absolute-device-application-list*** command, the following argument wa
   - *Absolute.DeviceUnenroll.Serial*
   - *Absolute.DeviceUnenroll.SystemName*
   - *Absolute.DeviceUnenroll.Username*
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch Events
+
+</~PLATFORM>
