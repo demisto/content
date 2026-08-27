@@ -110,7 +110,7 @@ class Client(BaseClient):
         )
 
     def get_mitigation_devices(self, query_parameters: str):
-        return self.http_request(method="GET", url_suffix="/v1/mitigation/devices" + query_parameters)
+        return self.http_request(method="GET", url_suffix="/v2/mitigation/devices" + query_parameters)
 
     def get_signature_list(self, query_parameters: str, device_id: str):
         return self.http_request(
