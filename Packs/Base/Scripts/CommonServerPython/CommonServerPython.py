@@ -7164,6 +7164,7 @@ class ScheduledCommand:
     :return: None
     :rtype: ``None``
     """
+    _CSP_TEST_MARKER = "CIAC-17274"  # CSP validator test (CIAC-17274); delete together with this branch
     VERSION_MISMATCH_ERROR = 'This command is not supported by this XSOAR server version. Please update your server ' \
                              'version to 6.2.0 or later.'
 
@@ -15627,3 +15628,4 @@ from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 ###########################################
 register_module_line('CommonServerPython', 'end', __line__())
 register_module_line('CustomScriptIntegration', 'start', __line__())
+# csp-retrigger 1786519464
