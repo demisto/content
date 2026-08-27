@@ -93,24 +93,13 @@ def _extract_user_id(response: dict[str, Any]) -> str:
     if not isinstance(response, dict):
         raise DemistoException("Unexpected GetUserByName response: not a JSON object.")
 
-    for key in ("UUID", "ID"):
-        value = response.get(key)
-        if value:
-            return str(value)
-
     result = response.get("Result")
-    if isinstance(result, dict):
-        if result.get("ID"):
-            return str(result["ID"])
-        users = result.get("Users")
-        if isinstance(users, list) and users and isinstance(users[0], dict) and users[0].get("ID"):
-            return str(users[0]["ID"])
-
-    raise DemistoException(
-        "Could not resolve user unique ID from GetUserByName response. "
-        f"Response keys: {list(response.keys())}. Verify the response shape against your tenant Swagger."
-    )
-
+    if not result or not result.get("Uuid"):
+        raise DemistoException(
+            "Could not resolve user unique ID from GetUserByName response. "
+            f"Response keys: {list(response.keys())}. Verify the response shape against your tenant Swagger."
+        )
+    return result.get("Uuid")
 
 # endregion
 

@@ -82,11 +82,7 @@ def test_generate_telemetry_header():
 @pytest.mark.parametrize(
     "response, expected",
     [
-        ({"UUID": "u-1"}, "u-1"),
-        ({"ID": "u-2"}, "u-2"),
-        ({"Result": {"ID": "u-3"}}, "u-3"),
-        ({"Result": {"Users": [{"ID": "u-4"}]}}, "u-4"),
-        ({"UUID": "", "ID": "u-5"}, "u-5"),
+        ({"Result": {"Uuid": "u-3"}}, "u-3")
     ],
 )
 def test_extract_user_id_variants(response, expected):
@@ -137,7 +133,7 @@ def test_test_module_auth_error(mocker, client):
 
 def test_get_user_by_name_command(mocker, client):
     mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"Result": {"ID": "u-99"}}))
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"Result": {"Uuid": "u-99"}}))
 
     result = get_user_by_name_command(client, {"username": "jdoe@corp"})
 
