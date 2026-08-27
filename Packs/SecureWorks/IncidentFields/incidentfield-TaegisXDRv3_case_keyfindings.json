@@ -1,0 +1,33 @@
+{
+    "fromVersion": "6.13.0",
+    "id": "incident_taegisxdrkeyfindings",
+    "version": -1,
+    "modified": "2026-02-02T00:28:02.81484078Z",
+    "name": "Taegis XDR Key Findings",
+    "ownerOnly": false,
+    "description": "Taegis XDR Case Key Findings",
+    "cliName": "taegisxdrkeyfindings",
+    "type": "markdown",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "runScriptAfterUpdate": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Taegis XDR - Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

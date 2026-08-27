@@ -1,0 +1,16 @@
+commonfields:
+  id: TaegisXDRCaseStatusOpenOptions
+  version: -1
+name: TaegisXDRCaseStatusOpenOptions
+script: ''
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10325753
+tags: [field-display]
+enabled: true
+comment: "Field display script: returns Taegis XDR case status values that do not start with CLOSED_, for use in Case Details section."
+runas: DBotRole
+runonce: false
+fromversion: 6.13.0
+tests:
+- No tests (auto formatted)

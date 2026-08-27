@@ -1,0 +1,619 @@
+commonfields:
+  id: TaegisXDRv3
+  version: -1
+name: TaegisXDRv3
+display: Taegis XDR v3
+category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
+- Optimize
+provider: Sophos
+description: For integration with the Secureworks Taegis XDR platform.
+supportlevelheader: partner
+configuration:
+- section: Connect
+  display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  required: true
+  type: 9
+  additionalinfo: The Taegis XDR API credential this instance authenticates as. Enter the Client ID as the username and the Client Secret as the password, or select a stored credential. Taegis displays the Client Secret only once, at creation.
+- display: API base URL
+  name: api_base_url
+  required: false
+  type: 0
+  additionalinfo: Taegis API base URL for your environment. Do not include a trailing slash. Required for all commands.
+  section: Connect
+- display: XDR base URL
+  name: xdr_base_url
+  required: false
+  type: 0
+  additionalinfo: Taegis XDR (UI) base URL for your environment. Used for investigation/alert links. Do not include a trailing slash. Required for all commands.
+  section: Connect
+- display: Tenant ID
+  name: tenant_id
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: Optional. Leave blank if the credential is scoped to a single tenant. For multi-tenant credentials, supply the Tenant ID this instance should act against.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  additionalinfo: Skip verification of the Taegis API server's TLS certificate. Not recommended outside troubleshooting.
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  additionalinfo: Route requests through the system proxy configured on the Cortex XSOAR server.
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+  section: Collect
+  additionalinfo: Enable to ingest Taegis XDR cases into Cortex XSOAR as incidents on each fetch interval.
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+  section: Collect
+  additionalinfo: The Cortex XSOAR incident type applied to ingested cases. Leave as Taegis XDR - Case unless you have created a custom type.
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  defaultvalue: '15'
+  additionalinfo: The maximum limit is 200.
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+  defaultvalue: '1'
+  additionalinfo: The interval in minutes to fetch incidents. The default is 1 minute.
+  section: Collect
+- display: First fetch timestamp
+  name: first_fetch
+  required: false
+  type: 0
+  defaultvalue: 1 day
+  section: Collect
+  additionalinfo: How far back to look for cases on the first fetch only, expressed as <number> <time unit>, for example 1 day, 12 hours, or 7 days. Later fetches resume from the previous run.
+- display: Fetch Incident Type
+  name: fetch_type
+  options:
+  - investigations
+  - alerts
+  required: false
+  type: 15
+  defaultvalue: investigations
+  additionalinfo: The type of incidents to fetch. The default is investigations.
+  section: Collect
+- display: Include Assets in Fetch
+  name: include_assets
+  required: false
+  type: 8
+  defaultvalue: 'true'
+  section: Collect
+  additionalinfo: Include associated asset details when fetching. Enriches the incident but increases fetch duration.
+- display: Fetch investigations - exclusion list (assignee emails or names)
+  name: fetch_investigations_exclude_assignee_emails
+  required: false
+  type: 0
+  defaultvalue: Sophos, Secureworks, @secureworks
+  additionalinfo: 'EXCLUSION LIST: Comma-separated assignee emails, display names, or assignee IDs (e.g. user@domain.com, Sophos, auth0|xxx). Investigations assigned to any matching assignee are EXCLUDED (no Cortex XSOAR incident). Match is by email, name, or assignee_id. If a team name (e.g. Sophos) does not match, check debug logs for assignee_id and add that ID to this list. Leave empty to fetch all.'
+  section: Collect
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+  defaultvalue: Incoming And Outgoing
+  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Taegis XDR to Cortex XSOAR), Outgoing (from Cortex XSOAR to Taegis XDR), or Incoming And Outgoing (bidirectional).'
+  section: Collect
+- section: Collect
+  display: Comment Entry Tag To Taegis
+  name: comment_tag
+  defaultvalue: xdrcomment
+  type: 0
+  required: false
+  additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Taegis XDR.
+- section: Collect
+  display: Comment Entry Tag From Taegis
+  name: comment_tag_from_taegis
+  defaultvalue: CommentFromTaegis
+  type: 0
+  required: false
+  additionalinfo: Choose the tag to add to an entry to mirror it as a comment from Taegis XDR.
+- section: Collect
+  advanced: true
+  display: Close Cortex XSOAR incident when Taegis investigation is closed
+  name: close_incident
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  additionalinfo: When enabled, closing a Taegis investigation (status starting with CLOSED_) will close the mirrored incident in Cortex XSOAR.
+- section: Collect
+  advanced: true
+  display: Use closeInvestigation when Taegis XDR Case Status is set to closed
+  name: close_out
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  additionalinfo: When enabled, setting Taegis XDR Case Status (taegisxdrcasestatus) to a closed value (e.g. CLOSED_INCONCLUSIVE) will close the investigation in Taegis via the closeInvestigation mutation (with reason). Cortex XSOAR incident status is not used to close Taegis.
+- section: Collect
+  advanced: true
+  display: How many investigations to mirror incoming each time
+  name: mirror_limit
+  defaultvalue: '100'
+  type: 0
+  required: false
+  additionalinfo: If a greater number of investigations than the limit were modified, then they won't all be mirrored in a single run.
+- section: Collect
+  advanced: true
+  display: Timestamp field to query for updates as part of the mirroring flow
+  name: mirror_timestamp_field
+  defaultvalue: updated_at
+  type: 0
+  required: false
+  additionalinfo: Field used to determine when an investigation was last updated for mirroring. Default is updated_at. The investigationsSearch GraphQL API uses the Investigation type with snake_case (updated_at). Taegis v2 docs may show updatedAt for investigationV2/investigationsV2; use updated_at for investigationsSearch.
+- section: Collect
+  advanced: true
+  display: Cortex XSOAR Taegis XDR Key Findings is master
+  name: details_master_xsoar
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: When enabled, Cortex XSOAR "Taegis XDR Key Findings" (taegisxdrkeyfindings) is always pushed to Taegis Key Findings on every update (Cortex XSOAR is master). When disabled (default), Key Findings are only pushed when the user explicitly changes that field in Cortex XSOAR, so Taegis edits are not overwritten (bidirectional-friendly).
+- section: Collect
+  advanced: true
+  display: Assign case to Sophos MDR team after comment
+  name: comment_assign_to_sophos_default
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: When enabled, the "Assign case to Sophos MDR team" field in the Add Comment form defaults to "Yes". When disabled (default), the field defaults to "No". Users can still override per comment to "Yes" or "No".
+- section: Collect
+  advanced: true
+  display: Archive Taegis XDR case on close
+  name: archive_on_close_default
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: When enabled, the "Taegis XDR Archive on Close" checkbox defaults to checked in the Close Incident panel. When disabled (default), the checkbox is unchecked. Archiving removes the case from the active Taegis XDR case list. Users can override this per incident at close time.
+- section: Collect
+  advanced: true
+  display: Allow reopen of archived Taegis XDR cases
+  name: allow_reopen_archived
+  defaultvalue: 'false'
+  type: 8
+  required: false
+  additionalinfo: When enabled, reopening a closed Cortex XSOAR incident will automatically unarchive the associated Taegis XDR case before setting it back to ACTIVE. When disabled (default), archived cases cannot be reopened via Cortex XSOAR; the case must be unarchived manually in Taegis XDR first.
+- section: Optimize
+  advanced: true
+  display: Retry on Taegis API rate limit (429)
+  name: api_rate_limit_retry_enabled
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  additionalinfo: When enabled, GraphQL and auth requests that receive HTTP 429 (rate limit) are retried with backoff. Helps when closing many mirrored incidents at once. Uses Retry-After when Taegis returns it.
+- section: Optimize
+  advanced: true
+  display: Max retries on API rate limit
+  name: api_rate_limit_max_retries
+  defaultvalue: '3'
+  type: 0
+  required: false
+  additionalinfo: Retry attempts after a 429 (in addition to the first request). Range 0-10. Each wait uses Retry-After or exponential backoff.
+- section: Optimize
+  advanced: true
+  display: Base delay (seconds) for rate-limit backoff
+  name: api_rate_limit_base_delay_seconds
+  defaultvalue: '5'
+  type: 0
+  required: false
+  additionalinfo: When Retry-After is absent, wait base x 2^attempt seconds before each retry (capped per wait).
+script:
+  script: ''
+  subtype: python3
+  type: python
+  commands:
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    - description: Tenant ID.
+      name: tenant_id
+      required: false
+    description: Fetch a specific investigation or list of investigations.
+    name: taegis-fetch-investigation
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    - description: Tenant ID.
+      name: tenant_id
+      required: false
+    description: Fetch comments by Investigation ID.
+    name: taegis-fetch-comments
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    - description: Comment text.
+      name: comment
+      required: true
+    - description: Tenant ID.
+      name: tenant_id
+      required: false
+    description: Create a comment on an investigation.
+    name: taegis-create-comment
+  - arguments:
+    - description: Comment ID.
+      name: id
+      required: true
+    - description: New comment text.
+      name: comment
+      required: true
+    description: Update an existing comment.
+    name: taegis-update-comment
+  - arguments:
+    - description: Comment ID.
+      name: id
+      required: true
+    description: Fetch a specific comment by ID.
+    name: taegis-fetch-comment
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    - description: Comma-separated alert IDs to add as evidence.
+      name: alerts
+      required: false
+    - description: Comma-separated event IDs to add as evidence.
+      name: events
+      required: false
+    - description: CQL query selecting alerts to add as evidence.
+      name: alert_query
+      required: false
+    description: Add evidence (alerts, events, or a CQL alert query) to an investigation. At least one of alerts, events, or alert_query is required.
+    name: taegis-add-evidence-to-investigation
+  - arguments:
+    - description: Investigation title.
+      name: title
+      required: true
+    - description: Investigation priority (1-4).
+      name: priority
+      required: false
+    - description: Investigation status.
+      name: status
+      required: false
+      predefined:
+      - OPEN
+      - ACTIVE
+      - AWAITING_ACTION
+      - SUSPENDED
+      - CLOSED_AUTHORIZED_ACTIVITY
+      - CLOSED_CONFIRMED_SECURITY_INCIDENT
+      - CLOSED_FALSE_POSITIVE_ALERT
+      - CLOSED_INCONCLUSIVE
+      - CLOSED_INFORMATIONAL
+      - CLOSED_NOT_VULNERABLE
+      - CLOSED_THREAT_MITIGATED
+    - description: Comma-separated alert IDs to associate with the new investigation.
+      name: alerts
+      required: false
+    - description: Key findings.
+      name: key_findings
+      required: false
+    - description: Investigation type.
+      name: type
+      required: false
+      predefined:
+      - SECURITY_INVESTIGATION
+      - INCIDENT_RESPONSE
+      - THREAT_HUNT
+      - MANAGED_XDR_THREAT_HUNT
+      - CTU_THREAT_HUNT
+      - MANAGED_XDR_ELITE_THREAT_HUNT
+      - SECUREWORKS_INCIDENT_RESPONSE
+    - description: Assignee to set on the new investigation. Use @customer, @secureworks, auth0|..., or a tenant user UUID.
+      name: assignee_id
+      required: false
+    - description: Comma-separated tags.
+      name: tags
+      required: false
+    description: Create a new investigation.
+    name: taegis-create-investigation
+  - arguments:
+    - description: ID of the investigation, alert, or other object to create a ShareLink for.
+      name: id
+      required: true
+    - description: Type of object the ShareLink points to.
+      name: type
+      required: true
+      predefined:
+      - alertId
+      - connectorId
+      - connectionId
+      - endpointDetails
+      - eventId
+      - investigationId
+      - queryId
+      - playbookTemplateId
+      - playbookInstanceId
+      - playbookExecutionId
+    - description: Tenant ID.
+      name: tenant_id
+      required: false
+    description: Create a ShareLink to an investigation, alert, or other Taegis object.
+    name: taegis-create-sharelink
+  - arguments:
+    - description: Playbook instance ID to execute.
+      name: id
+      required: true
+    - description: JSON object of optional playbook inputs.
+      name: inputs
+      required: false
+    description: Execute a Taegis playbook instance.
+    execution: true
+    name: taegis-execute-playbook
+  - arguments:
+    - description: CQL query selecting alerts. Ignored if ids is provided.
+      name: cql_query
+      required: false
+    - description: Maximum number of alerts to return.
+      name: limit
+      required: false
+    - description: Pagination offset.
+      name: offset
+      required: false
+    - description: Comma-separated specific alert IDs to fetch (e.g. alert://id1,alert://id2). Overrides cql_query.
+      name: ids
+      required: false
+    description: Fetch alerts by CQL query or by specific alert IDs.
+    name: taegis-fetch-alerts
+  - arguments:
+    - description: Page number (0-based).
+      name: page
+      required: false
+    - description: Number of assets to return per page.
+      name: page_size
+      required: false
+    - description: Filter by endpoint type.
+      name: endpoint_type
+      required: false
+    - description: Filter by host ID.
+      name: host_id
+      required: false
+    - description: Filter by hostname.
+      name: hostname
+      required: false
+    - description: Filter by investigation ID.
+      name: investigation_id
+      required: false
+    - description: Filter by IP address.
+      name: ip_address
+      required: false
+    - description: Filter by MAC address.
+      name: mac_address
+      required: false
+    - description: Filter by OS family.
+      name: os_family
+      required: false
+    - description: Filter by OS version.
+      name: os_version
+      required: false
+    - description: Filter by sensor version.
+      name: sensor_version
+      required: false
+    - description: Filter by username.
+      name: username
+      required: false
+    description: Search Taegis assets.
+    name: taegis-fetch-assets
+  - arguments:
+    - description: Asset/host ID.
+      name: id
+      required: true
+    description: Fetch endpoint isolation status and health information for an asset.
+    name: taegis-fetch-endpoint
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    - description: Page number (0-based).
+      name: page
+      required: false
+    - description: Number of alerts to return per page.
+      name: page_size
+      required: false
+    description: Fetch alerts associated with an investigation.
+    name: taegis-fetch-investigation-alerts
+  - arguments:
+    - description: Playbook execution ID.
+      name: id
+      required: true
+    description: Fetch a playbook execution by ID.
+    name: taegis-fetch-playbook-execution
+  - arguments:
+    - description: Taegis user ID in 'auth0|...' format. If provided, other filters are ignored.
+      name: id
+      required: false
+    - description: Filter by email address.
+      name: email
+      required: false
+    - description: Filter by user status.
+      name: status
+      required: false
+    - description: Page number (0-based).
+      name: page
+      required: false
+    - description: Number of users to return per page.
+      name: page_size
+      required: false
+    description: Fetch Taegis tenant users by ID or by search filters.
+    name: taegis-fetch-users
+  - arguments:
+    - description: Asset ID to isolate.
+      name: id
+      required: true
+    - description: Reason for isolating the asset.
+      name: reason
+      required: true
+    description: Isolate an asset/endpoint in Taegis.
+    name: taegis-isolate-asset
+  - arguments:
+    - description: Comma-separated alert IDs.
+      name: ids
+      required: true
+    - description: New resolution status for the alert(s).
+      name: status
+      required: true
+      predefined:
+      - FALSE_POSITIVE
+      - NOT_ACTIONABLE
+      - OPEN
+      - TRUE_POSITIVE_BENIGN
+      - TRUE_POSITIVE_MALICIOUS
+      - OTHER
+      - SUPPRESSED
+    - description: Reason for the status change.
+      name: reason
+      required: false
+    description: Update the resolution status of one or more alerts.
+    name: taegis-update-alert-status
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    description: Archive an investigation.
+    name: taegis-archive-investigation
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    description: Unarchive a previously archived investigation.
+    name: taegis-unarchive-investigation
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    - description: Investigation status.
+      name: status
+      required: false
+    - description: Investigation priority (1-4).
+      name: priority
+      required: false
+    - description: Key findings.
+      name: key_findings
+      required: false
+    - description: Tenant ID.
+      name: tenant_id
+      required: false
+    description: Update an investigation.
+    name: taegis-update-investigation
+  - arguments:
+    - description: Investigation ID (optional; defaults to current incident dbotMirrorId).
+      name: id
+      required: false
+    - description: Tenant ID (optional; from incident if not set).
+      name: tenant_id
+      required: false
+    - description: Assignee to set in Taegis. Use @customer, @secureworks, or assignee display name (e.g. Sam Johnson). Optional when run from layout button; if omitted, uses current incident assignee.
+      name: assignee_id
+      required: false
+    - description: Open status to set in Taegis (ACTIVE, AWAITING_ACTION, OPEN, SUSPENDED). Optional when run from layout button; if omitted, uses current incident status.
+      name: status
+      required: false
+      predefined:
+      - ACTIVE
+      - AWAITING_ACTION
+      - OPEN
+      - SUSPENDED
+    description: Push assignee and/or case status to Taegis. Run from an incident; use the form to select requested Assignee and Status, or leave blank to use current incident values. Refresh the incident to see the update reflected.
+    name: taegis-push-assignee-status
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    - description: Close status (e.g. CLOSED_INCONCLUSIVE, CLOSED_INFORMATIONAL).
+      name: status
+      required: true
+    - description: Close reason / notes (default Closed from Cortex XSOAR).
+      name: reason
+      required: false
+    - description: Alerts resolution status (e.g. TRUE_POSITIVE_BENIGN).
+      name: alerts_resolution_status
+      required: false
+    - description: Taegis XDR detection status (same as alertsResolutionStatus; e.g. TRUE_POSITIVE_BENIGN).
+      name: taegisxdrdetectionstatus
+      required: false
+    - description: Tenant ID.
+      name: tenant_id
+      required: false
+    description: Close an investigation via closeInvestigation mutation.
+    name: taegis-close-investigation
+  - arguments:
+    - description: Last update timestamp - automatically provided by Cortex XSOAR.
+      name: lastUpdate
+      required: false
+    description: Get modified remote data for mirroring optimization (automatically called by Cortex XSOAR).
+    name: get-modified-remote-data
+  - arguments:
+    - description: Investigation ID (remoteId) - required for manual calls, automatically provided by Cortex XSOAR.
+      name: id
+      required: false
+    - description: Last update timestamp - automatically provided by Cortex XSOAR.
+      name: lastUpdate
+      required: false
+    - description: Tenant ID.
+      name: tenant_id
+      required: false
+    description: Get remote data for mirroring (automatically called by Cortex XSOAR).
+    name: get-remote-data
+  - description: Update remote system for mirroring (automatically called by Cortex XSOAR).
+    name: update-remote-system
+  - description: Get mapping fields for schema selection (required for mappable integrations).
+    name: get-mapping-fields
+  - arguments:
+    - description: Investigation ID (remoteId).
+      name: remoteId
+      required: true
+    - description: Incident data changes (JSON format).
+      name: data
+      required: false
+    - description: Tenant ID.
+      name: tenant_id
+      required: false
+    description: Manually test update remote system for mirroring.
+    name: taegis-update-remote-system
+  - arguments:
+    - description: Investigation ID.
+      name: id
+      required: true
+    - description: Tenant ID.
+      name: tenant_id
+      required: false
+    description: Manually test get remote data for mirroring.
+    name: taegis-get-remote-data
+  dockerimage: demisto/python3:3.12.8.3296088
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+defaultclassifier: TaegisXDR-Case-Classifier
+defaultmapperin: TaegisXDR-Case-Incoming-Mapper
+defaultmapperout: TaegisXDR-Case-Outgoing-Mapper
+fromversion: 6.13.0
+tests:
+- No tests (auto formatted)

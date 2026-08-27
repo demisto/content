@@ -1,0 +1,7 @@
+[
+    {
+        "value": "(ctpx|\\w+\\.taegis)\\.secureworks\\.com",
+        "type": "regex",
+        "reason": "Taegis XDR Domains"
+    }
+]

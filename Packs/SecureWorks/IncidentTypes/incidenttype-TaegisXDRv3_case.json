@@ -1,0 +1,40 @@
+{
+    "fromVersion": "6.13.0",
+    "id": "Taegis XDR - Case",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Taegis XDR - Case",
+    "prevName": "Taegis XDR - Case",
+    "color": "#B1EE95",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Taegis XDR Case",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "taegisxdrcaseentities": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "taegisxdrkeyfindings": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    }
+}
