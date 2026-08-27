@@ -25,7 +25,7 @@ configuration:
   name: deployment_type
   required: false
   type: 15
-  additionalinfo: The deployment type. Select "Enterprise" for self-hosted deployments, or "SaaS" for the GitGuardian SaaS deployment (for example, api.gitguardian.com).
+  additionalinfo: The deployment type. Select "Enterprise" for self-hosted deployments, or "SaaS" for the GitGuardian SaaS deployment.
   options:
   - Enterprise
   - SaaS
