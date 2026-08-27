@@ -9,13 +9,9 @@
     "email": "support@horizon3.ai",
     "categories": [
         "Vulnerability Management",
-        "Utilities",
-        "MCP"
+        "Utilities"
     ],
     "tags": [
-        "Pentest",
-        "NodeZero",
-        "MCP",
         "Security",
         "Attack",
         "Breach Simulation"
