@@ -1,3 +1,4 @@
+import traceback
 from datetime import datetime
 
 import demistomock as demisto
@@ -36,7 +37,7 @@ def _format_history_date(raw_date) -> str:
                 continue
     if parsed is None:
         return raw
-    return parsed.strftime("%Y-%m-%d %H:%M")
+    return parsed.strftime("%Y-%m-%dT%H:%M:%S")
 
 
 def _slim_history_rows(history_rows) -> list[dict]:
@@ -100,6 +101,7 @@ def main():
     try:
         show_alert_history()
     except Exception as ex:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute GRAAlertHistoryDisplay. Error: {ex!s}")
 
 

@@ -584,6 +584,35 @@ def test_fetch_gra_incidents_empty_preserves_max_id(requests_mock):
     assert next_run == {"maxIncidentId": 50}
 
 
+def test_fetch_gra_incidents_pages_until_short_page(requests_mock):
+    """max_fetch is page size; drain pages with a stable cursor; last-run max is across all pages."""
+    from GuruculGRA import Client, fetch_gra_incidents
+
+    page1 = [
+        {"incidentId": 31, "entity": "a", "openDate": "10/13/2020 18:12:59"},
+        {"incidentId": 32, "entity": "b", "openDate": "10/13/2020 18:12:59"},
+    ]
+    page2 = [
+        {"incidentId": 33, "entity": "c", "openDate": "10/13/2020 18:12:59"},
+        {"incidentId": 34, "entity": "d", "openDate": "10/13/2020 18:12:59"},
+    ]
+    page3 = [{"incidentId": 35, "entity": "e", "openDate": "10/13/2020 18:12:59"}]
+    requests_mock.get(
+        "https://test.com/api/incidents/opendate",
+        [{"json": page1}, {"json": page2}, {"json": page3}],
+    )
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_incidents(
+        client, max_results=2, last_run={"maxIncidentId": 30}, first_fetch_time=1600000000
+    )
+
+    assert len(incidents) == 5
+    assert next_run == {"maxIncidentId": 35}
+    assert [req.qs["page"][0] for req in requests_mock.request_history] == ["1", "2", "3"]
+    assert all(req.qs["maxincidentid"] == ["30"] for req in requests_mock.request_history)
+
+
 def test_fetch_gra_alerts_bootstrap_uses_dates(requests_mock):
     """First alert fetch uses date window and stores maxAlertId."""
     from GuruculGRA import Client, fetch_gra_alerts
@@ -619,6 +648,38 @@ def test_fetch_gra_alerts_later_run_uses_max_id_only(requests_mock):
     assert request.qs["maxalertid"] == ["100"]
     assert "startdate" not in request.qs
     assert "enddate" not in request.qs
+
+
+def test_fetch_gra_alerts_pages_until_short_page(requests_mock):
+    """max_fetch is page size; drain pages with a stable cursor; last-run max is across all pages."""
+    from GuruculGRA import Client, fetch_gra_alerts
+
+    def _alert(alert_id: int) -> dict:
+        return {
+            "alertId": alert_id,
+            "anomalyName": f"a{alert_id}",
+            "entity": "jdoe",
+            "detectionTimestamp": "2026-07-12T08:15:00",
+        }
+
+    requests_mock.get(
+        "https://test.com/api/alerts/OPEN",
+        [
+            {"json": [_alert(101), _alert(102)]},
+            {"json": [_alert(103), _alert(104)]},
+            {"json": [_alert(105)]},
+        ],
+    )
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_alerts(
+        client, max_results=2, last_run={"maxAlertId": 100}, first_fetch_time=1600000000
+    )
+
+    assert len(incidents) == 5
+    assert next_run == {"maxAlertId": 105}
+    assert [req.qs["page"][0] for req in requests_mock.request_history] == ["1", "2", "3"]
+    assert all(req.qs["maxalertid"] == ["100"] for req in requests_mock.request_history)
 
 
 def test_gra_incidents(requests_mock):

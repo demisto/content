@@ -31,7 +31,7 @@ def test_alert_id_from_graalert_fallback():
 
 
 def test_format_history_date_iso():
-    assert _format_history_date("2026-07-12T08:15:00") == "2026-07-12 08:15"
+    assert _format_history_date("2026-07-12T08:15:00") == "2026-07-12T08:15:00"
 
 
 def test_slim_history_rows():
@@ -44,7 +44,7 @@ def test_slim_history_rows():
             }
         ]
     )
-    assert rows == [{"Action": "Comment", "Comment": "Investigating", "Date": "2026-07-12 08:15"}]
+    assert rows == [{"Action": "Comment", "Comment": "Investigating", "Date": "2026-07-12T08:15:00"}]
 
 
 def test_show_alert_history_with_list_response(mocker):

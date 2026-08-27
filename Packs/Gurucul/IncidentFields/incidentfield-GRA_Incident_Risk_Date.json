@@ -1,5 +1,5 @@
 {
-    "fromVersion": "5.0.0",
+    "fromVersion": "6.0.0",
     "associatedToAll": false,
     "associatedTypes": [
         "GRAIncident"
@@ -22,7 +22,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "shortText",
+    "type": "date",
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,

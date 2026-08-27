@@ -6,7 +6,7 @@
     "ownerOnly": false,
     "description": "Risk Score",
     "cliName": "graalertriskscore",
-    "type": "shortText",
+    "type": "number",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -27,5 +27,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.0.0"
 }

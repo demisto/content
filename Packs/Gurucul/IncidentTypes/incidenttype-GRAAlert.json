@@ -1,6 +1,6 @@
 {
-    "fromVersion": "5.0.0",
-    "autorun": true,
+    "fromVersion": "6.0.0",
+    "autorun": false,
     "color": "#FF8C00",
     "days": 0,
     "daysR": 0,
@@ -11,7 +11,7 @@
     "id": "GRAAlert",
     "locked": false,
     "name": "GRAAlert",
-    "playbookId": "GRAAlert",
+    "playbookId": "",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

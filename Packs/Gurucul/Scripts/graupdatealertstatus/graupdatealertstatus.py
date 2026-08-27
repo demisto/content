@@ -1,3 +1,5 @@
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -23,8 +25,8 @@ def close_alert():
 
     alert_id = ""
     for label in incident.get("labels", []):
-        if label["type"] == "alertId":
-            alert_id = label["value"]
+        if label.get("type") == "alertId":
+            alert_id = label.get("value") or ""
             break
 
     if alert_id == "":
@@ -35,9 +37,10 @@ def close_alert():
     if alert_id == "":
         raise Exception("alertId was not found in the incident labels or graalert field")
 
-    res = demisto.executeCommand("gra-validate-api", {"using": incident["sourceInstance"]})
-
-    if res is not None and res[0]["Contents"] == "Error in service":
+    res = demisto.executeCommand("gra-validate-api", {"using": incident.get("sourceInstance")})
+    if isError(res):
+        raise Exception(get_error(res) or "GRA validate-api failed.")
+    if res is not None and (res[0].get("Contents") if isinstance(res[0], dict) else None) == "Error in service":
         raise Exception("Alert cannot be closed as GRA services are currently unavailable.")
 
     action_res = demisto.executeCommand(
@@ -48,7 +51,7 @@ def close_alert():
             "alertComment": close_notes,
             "incidentType": incident_type,
             "subStatus": sub_status,
-            "using": incident["sourceInstance"],
+            "using": incident.get("sourceInstance"),
         },
     )
     if isError(action_res):
@@ -59,6 +62,7 @@ def main():
     try:
         close_alert()
     except Exception as ex:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute graupdatealertstatus. Error: {ex!s}")
 
 

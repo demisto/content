@@ -51,7 +51,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-  additionalinfo: Used only on the first fetch when no maxIncidentId/maxAlertId cursor exists yet. Later fetches use the ID cursor only.
+  additionalinfo: The first-fetch time window is used only when no maxIncidentId/maxAlertId cursor exists yet. Later fetches use the ID cursor only.
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "25"
@@ -67,7 +67,7 @@ configuration:
   options:
   - Incidents
   - Alerts
-  additionalinfo: What to import from GRA. Cases are no longer fetched. Legacy GRACase incidents remain actionable via gra-case-* commands. Use a separate instance for Alerts. On the Alerts instance set Classifier to GRAAlert-Classifier, Mapper (incoming) to GRAAlert-Mapper, and Incident type to GRAAlert. The integration defaults (GRAIncident-Classifier / GRAIncident-Mapper) apply to the Incidents instance. After the first bootstrap, fetch continues with maxIncidentId or maxAlertId only.
+  additionalinfo: The objects to import from GRA. Cases are no longer fetched. Legacy GRACase incidents remain actionable via gra-case-* commands. Use a separate instance for Alerts. Default Fetch type is Incidents. New instances default to Mapper (incoming) GRAIncident-Mapper and Incident type GRAIncident. On an Alerts instance, set Fetch type to Alerts, Mapper (incoming) to GRAAlert-Mapper, and Incident type to GRAAlert. After the first bootstrap, fetch continues with maxIncidentId or maxAlertId only.
 script:
   script: ''
   type: python
@@ -1016,51 +1016,51 @@ script:
       - RISK ACCEPTED
       - REOPENED
       - ALL
-      description: Status.
+      description: The status.
       defaultValue: OPEN
     - name: page
       required: true
-      description: Page No.
+      description: The page number.
       defaultValue: "1"
     - name: max
       required: true
-      description: Per page record count.
+      description: The per page record count.
       defaultValue: "25"
     outputs:
     - contextPath: Gra.Incidents.entityId
-      description: EntityId.
+      description: The entity id.
       type: number
     - contextPath: Gra.Incidents.entityTypeId
-      description: Entity Type Id.
+      description: The entity type id.
       type: number
     - contextPath: Gra.Incidents.entity
-      description: Entity.
+      description: The entity.
       type: string
     - contextPath: Gra.Incidents.incidentId
-      description: Incident Id.
+      description: The incident id.
       type: number
     - contextPath: Gra.Incidents.openDate
-      description: Open Date.
+      description: The open date.
       type: date
     - contextPath: Gra.Incidents.ownerId
-      description: Owner Id.
+      description: The owner id.
       type: number
     - contextPath: Gra.Incidents.ownerType
-      description: Owner Type.
+      description: The owner type.
       type: string
     - contextPath: Gra.Incidents.ownerName
-      description: Owner Name.
+      description: The owner name.
       type: string
     - contextPath: Gra.Incidents.riskDate
-      description: Risk Date.
+      description: The risk date.
       type: date
     - contextPath: Gra.Incidents.status
-      description: Status.
+      description: The status.
       type: string
     - contextPath: Gra.Incidents.anomalies
-      description: Anomalies.
+      description: The anomalies.
       type: string
-    description: Retrieve list of all GRA incidents for specified status.
+    description: Retrieves the list of all GRA incidents for the specified status.
   - name: gra-incident-action
     arguments:
     - name: action
@@ -1071,11 +1071,11 @@ script:
       - closeIncident
       - modelReviewIncident
       - riskManageIncident
-      description: Action.
+      description: The action.
       defaultValue: closeIncident
     - name: incidentId
       required: true
-      description: Incident Id.
+      description: The incident id.
     - name: subOption
       required: true
       auto: PREDEFINED
@@ -1084,18 +1084,18 @@ script:
       - Correct Detection
       - Tuning Required
       - Others
-      description: Sub Option.
+      description: The sub option.
       defaultValue: True Incident
     - name: incidentComment
       required: true
-      description: Incident Comment.
+      description: The incident comment.
     - name: riskAcceptDate
-      description: Risk Accept Date in yyyy-MM-dd format (riskManageIncident only).
+      description: The risk Accept Date in yyyy-MM-dd format (riskManageIncident only).
     outputs:
     - contextPath: Gra.Incident.Action.Message
-      description: Message.
+      description: The message.
       type: string
-    description: Close a GRA incident and update anomaly status as Closed / Risk Managed / Model Reviewed.
+    description: Closes a GRA incident and updates anomaly status as Closed / Risk Managed / Model Reviewed.
   - name: gra-incident-action-anomaly
     arguments:
     - name: action
@@ -1106,14 +1106,14 @@ script:
       - closeIncidentAnomaly
       - modelReviewIncidentAnomaly
       - riskAcceptIncidentAnomaly
-      description: Action.
+      description: The action.
       defaultValue: closeIncidentAnomaly
     - name: incidentId
       required: true
-      description: Incident ID.
+      description: The incident id.
     - name: anomalyNames
       required: true
-      description: Anomaly Names.
+      description: The anomaly names.
     - name: subOption
       required: true
       auto: PREDEFINED
@@ -1122,46 +1122,46 @@ script:
       - Correct Detection
       - Tuning Required
       - Others
-      description: Sub Option.
+      description: The sub option.
       defaultValue: True Incident
     - name: incidentComment
       required: true
-      description: Incident Comment.
+      description: The incident comment.
     - name: riskAcceptDate
-      description: Risk Accept Date in yyyy-MM-dd format (riskAcceptIncidentAnomaly only).
+      description: The risk Accept Date in yyyy-MM-dd format (riskAcceptIncidentAnomaly only).
     outputs:
     - contextPath: Gra.Incident.Action.Anomaly.Message
-      description: Message.
+      description: The message.
       type: string
-    description: Close anomalies within a GRA incident.
+    description: Closes anomalies within a GRA incident.
   - name: gra-incidents-anomaly
     arguments:
     - name: incidentId
-      description: GRA Incident Id.
+      description: The gRA Incident Id.
       required: true
     outputs:
     - contextPath: Gra.Incidents.anomalies.anomalyName
-      description: Incident Anomaly name.
+      description: The incident Anomaly name.
       type: string
     - contextPath: Gra.Incidents.anomalies.status
-      description: Current status of anomaly.
+      description: The current status of anomaly.
       type: string
     - contextPath: Gra.Incidents.anomalies.resourceName
-      description: Resource Name.
+      description: The resource name.
       type: string
     - contextPath: Gra.Incidents.anomalies.assignee
-      description: Assignee name.
+      description: The assignee name.
       type: string
     - contextPath: Gra.Incidents.anomalies.assigneeType
-      description: Assignee type (User/Role).
+      description: The assignee type (User/Role).
       type: string
     - contextPath: Gra.Incidents.anomalies.riskScore
-      description: Risk score for anomaly.
+      description: The risk score for anomaly.
       type: number
     - contextPath: Gra.Incidents.anomalies.riskAcceptedDate
-      description: Risk accepted date of anomaly.
+      description: The risk accepted date of anomaly.
       type: date
-    description: Retrieve anomalies for specified incident id.
+    description: Retrieves anomalies for the specified incident id.
   - name: gra-alerts
     arguments:
     - name: status
@@ -1172,97 +1172,97 @@ script:
       - CLOSED
       - IN PROGRESS
       - ALL
-      description: Status.
+      description: The status.
       defaultValue: OPEN
     - name: startDate
       required: true
-      description: Start Date (yyyy-MM-dd HH:mm:ss).
+      description: The start Date (yyyy-MM-dd HH:mm:ss).
     - name: endDate
       required: true
-      description: End Date (yyyy-MM-dd HH:mm:ss).
+      description: The end Date (yyyy-MM-dd HH:mm:ss).
     - name: page
       required: true
-      description: Page No.
+      description: The page number.
       defaultValue: "1"
     - name: max
       required: true
-      description: Per page record count.
+      description: The per page record count.
       defaultValue: "25"
     outputs:
     - contextPath: Gra.Alerts.alertId
-      description: Alert Id.
+      description: The alert id.
       type: number
     - contextPath: Gra.Alerts.anomalyName
-      description: Anomaly Name.
+      description: The anomaly name.
       type: string
     - contextPath: Gra.Alerts.entityId
-      description: Entity Id.
+      description: The entity id.
       type: number
     - contextPath: Gra.Alerts.entityTypeId
-      description: Entity Type Id.
+      description: The entity type id.
       type: number
     - contextPath: Gra.Alerts.entity
-      description: Entity.
+      description: The entity.
       type: string
     - contextPath: Gra.Alerts.statusName
-      description: Status.
+      description: The status.
       type: string
     - contextPath: Gra.Alerts.detectionTimestamp
-      description: Detection Timestamp.
+      description: The detection timestamp.
       type: date
     - contextPath: Gra.Alerts.severity
-      description: Severity.
+      description: The severity.
       type: number
     - contextPath: Gra.Alerts.resourceName
-      description: Resource Name.
+      description: The resource name.
       type: string
     - contextPath: Gra.Alerts.riskScore
-      description: Risk Score.
+      description: The risk score.
       type: number
     - contextPath: Gra.Alerts.graweblink
-      description: GRA Weblink.
+      description: The GRA weblink.
       type: string
-    description: Retrieve list of GRA alerts for specified status and date range.
+    description: Retrieves the list of GRA alerts for the specified status and date range.
   - name: gra-alert-get
     arguments:
     - name: id
       required: true
-      description: Alert Id.
+      description: The alert id.
     outputs:
     - contextPath: Gra.Alert.alertId
-      description: Alert Id.
+      description: The alert id.
       type: number
     - contextPath: Gra.Alert.anomalyName
-      description: Anomaly Name.
+      description: The anomaly name.
       type: string
     - contextPath: Gra.Alert.entityId
-      description: Entity Id.
+      description: The entity id.
       type: number
     - contextPath: Gra.Alert.entity
-      description: Entity.
+      description: The entity.
       type: string
     - contextPath: Gra.Alert.statusName
-      description: Status.
+      description: The status.
       type: string
     - contextPath: Gra.Alert.detectionTimestamp
-      description: Detection Timestamp.
+      description: The detection timestamp.
       type: date
     - contextPath: Gra.Alert.severity
-      description: Severity.
+      description: The severity.
       type: number
     - contextPath: Gra.Alert.resourceName
-      description: Resource Name.
+      description: The resource name.
       type: string
     - contextPath: Gra.Alert.riskScore
-      description: Risk Score.
+      description: The risk score.
       type: number
     - contextPath: Gra.Alert.graweblink
-      description: GRA Weblink.
+      description: The GRA weblink.
       type: string
     - contextPath: Gra.Alert.analyticalFeatures
-      description: Analytical Features.
+      description: The analytical features.
       type: string
-    description: Retrieve a single GRA alert by id.
+    description: Retrieves a single GRA alert by id.
   - name: gra-alert-action
     arguments:
     - name: action
@@ -1273,97 +1273,99 @@ script:
       - inProgressAlert
       - assignAlert
       - addCommentOnAlert
-      description: Action.
+      description: The action.
       defaultValue: closeAlert
     - name: alertId
       required: true
-      description: Alert Id.
+      description: The alert id.
     - name: alertComment
       required: true
-      description: Alert Comment.
+      description: The alert comment.
     - name: incidentType
       auto: PREDEFINED
       predefined:
       - Incident
       - Not An Incident
-      description: Required for closeAlert. Use Incident or Not An Incident.
+      description: The value required for closeAlert. Use Incident or Not An Incident.
     - name: subStatus
-      description: 'Required for closeAlert. When incidentType=Incident: True Positive, Benign Positive, Policy Violation. When incidentType=Not An Incident: Model Review, Disable Model, False Positive.'
+      description: 'The required for closeAlert. When incidentType=Incident: True Positive, Benign Positive, Policy Violation. When incidentType=Not An Incident: Model Review, Disable Model, False Positive.'
     - name: assigneeType
       auto: PREDEFINED
       predefined:
       - GRA_USER
       - GRA_USER_ROLE
-      description: Required for assignAlert.
+      description: The value required for assignAlert.
     - name: assigneeName
-      description: Required for assignAlert.
+      description: The value required for assignAlert.
     outputs:
     - contextPath: Gra.Alert.Action.Message
-      description: Message.
+      description: The message.
       type: string
-    description: 'Perform an action on a GRA alert (close, in progress, assign, comment). Reopen is not supported. For closeAlert subStatus: Incident → True Positive, Benign Positive, Policy Violation; Not An Incident → Model Review, Disable Model, False Positive. Prefer gra-alert-comment / gra-alert-assign / gra-alert-in-progress for simpler War Room use.'
+    description: 'The perform an action on a GRA alert (close, in progress, assign, comment). Reopen is not supported. For closeAlert subStatus: Incident → True Positive, Benign Positive, Policy Violation; Not An Incident → Model Review, Disable Model, False Positive. Prefer gra-alert-comment / gra-alert-assign / gra-alert-in-progress for simpler War Room use.'
   - name: gra-alert-comment
     arguments:
     - name: alertId
       required: true
-      description: Alert Id.
+      description: The alert id.
     - name: alertComment
       required: true
-      description: Comment to add on the alert.
+      description: The comment to add on the alert.
     outputs:
     - contextPath: Gra.Alert.Action.Message
-      description: Message.
+      description: The message.
       type: string
-    description: Add a comment on a GRA alert (wrapper for addCommentOnAlert).
+    description: Adds a comment on a GRA alert (wrapper for addCommentOnAlert).
   - name: gra-alert-assign
     arguments:
     - name: alertId
       required: true
-      description: Alert Id.
+      description: The alert id.
     - name: assigneeType
       required: true
       auto: PREDEFINED
       predefined:
       - GRA_USER
       - GRA_USER_ROLE
-      description: Assignee type.
+      description: The assignee type.
     - name: assigneeName
       required: true
-      description: Assignee name (GRA user or role).
+      description: The assignee name (GRA user or role).
     - name: alertComment
       required: true
-      description: Comment for the assign action.
+      description: The comment for the assign action.
     outputs:
     - contextPath: Gra.Alert.Action.Message
-      description: Message.
+      description: The message.
       type: string
-    description: Assign a GRA alert (wrapper for assignAlert).
+    description: Assigns a GRA alert (wrapper for assignAlert).
   - name: gra-alert-in-progress
     arguments:
     - name: alertId
       required: true
-      description: Alert Id.
+      description: The alert id.
     - name: alertComment
       required: true
-      description: Comment for setting the alert In Progress.
+      description: The comment for setting the alert In Progress.
     outputs:
     - contextPath: Gra.Alert.Action.Message
-      description: Message.
+      description: The message.
       type: string
-    description: Set a GRA alert to In Progress (wrapper for inProgressAlert).
+    description: Sets a GRA alert to In Progress (wrapper for inProgressAlert).
   - name: gra-alert-update-history
     arguments:
     - name: alertId
       required: true
-      description: Alert Id.
+      description: The alert id.
     outputs:
     - contextPath: Gra.Alert.History.alertDetails
-      description: Alert update history details.
+      description: The alert update history details.
       type: Unknown
-    description: Retrieve update history for a GRA alert.
+    description: Retrieves update history for a GRA alert.
   dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   subtype: python3
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+defaultmapperin: GRAIncident-Mapper
+defaultIncidentType: GRAIncident

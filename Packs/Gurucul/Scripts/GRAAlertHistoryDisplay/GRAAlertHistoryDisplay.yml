@@ -6,7 +6,7 @@ script: '-'
 type: python
 tags:
 - dynamic-section
-comment: Retrieve update history for a GRA alert and display it on the layout.
+comment: Displays GRA alert update history in a markdown table.
 enabled: true
 scripttarget: 0
 subtype: python3
@@ -15,4 +15,4 @@ dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- No tests

@@ -1,4 +1,4 @@
-[Gurucul Risk Analytics (GRA)](https://gurucul.com/gurucul-risk-analytics-gra) is a data science backed cloud native platform that predicts, detects and prevents breaches. It ingests and analyzes massive amounts of data from the network, IT systems, cloud platforms, EDR, applications, IoT, HR and much more to give you a comprehensive contextual view of user and entity behaviors. This integration fetches GRA Incidents or Alerts into Cortex XSOAR and exposes War Room commands for investigation and actions.  Workflows can be configured in Cortex XSOAR based on the commands provided by GRA.
+[Gurucul Risk Analytics (GRA)](https://gurucul.com/gurucul-risk-analytics-gra) is a data science backed cloud native platform that predicts, detects and prevents breaches. It ingests and analyzes massive amounts of data from the network, IT systems, cloud platforms, EDR, applications, IoT, HR and much more to give you a comprehensive contextual view of user and entity behaviors. This integration fetches GRA Incidents or Alerts into Cortex and exposes War Room commands for investigation and actions.  Workflows can be configured in Cortex based on the commands provided by GRA.
 
 Please make sure you look at the integration source code and comments.
 
@@ -6,17 +6,15 @@ Please make sure you look at the integration source code and comments.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. `https://soar.monstersofhack.com`\) | True |
-| apikey | API Key | True |
-| isFetch | Fetch incidents | False |
-| Classifier| Classifier for incident|False|
-| IncidentType | Incident type | False |
-| Mapper | Mapping incoming data|False|
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| first_fetch | First fetch time | False |
-| max_fetch | Maximum number of incidents per fetch | False |
-| fetch_type | What to import from GRA (`Incidents` or `Alerts`). Cases are no longer fetched. Use a separate instance for Alerts. | False |
+| Server URL (e.g. https://example.net) | The GRA server URL. | True |
+| Authorization Key | The API key used to authenticate to GRA. | True |
+| Fetch incidents | Whether this instance fetches incidents. | False |
+| Incident type | The incident type to assign to fetched incidents. | False |
+| Trust any certificate (not secure) | Whether to trust any certificate. | False |
+| Use system proxy settings | Whether to use the system proxy settings. | False |
+| First fetch time | The first-fetch time window used only when no ID cursor exists yet. | False |
+| Maximum number of incidents per fetch | The maximum number of incidents to fetch per run. | False |
+| Fetch type | The objects to import from GRA (`Incidents` or `Alerts`). Default: **Incidents**. Cases are no longer fetched. Use a separate instance for Alerts. | False |
 
 ### Fetch setup (Incidents vs Alerts)
 
@@ -24,28 +22,28 @@ Use two integration instances when you need both types:
 
 | Instance | Fetch type | Classifier | Mapper (incoming) | Incident type |
 | --- | --- | --- | --- | --- |
-| Incidents | Incidents | GRAIncident-Classifier | GRAIncident-Mapper | GRAIncident |
-| Alerts | Alerts | GRAAlert-Classifier | GRAAlert-Mapper | GRAAlert |
+| Incidents | Incidents (YAML default) | None / Select | GRAIncident-Mapper (YAML default) | GRAIncident (YAML default) |
+| Alerts | Alerts | None / Select | GRAAlert-Mapper | GRAAlert |
 
-The integration defaults are the Incident classifier and mapper. On an Alerts instance, change Classifier, Mapper, and Incident type to the Alert values above so fields and layouts map correctly.
+New instances default to **Fetch type** = `Incidents`, with Mapper (incoming) = `GRAIncident-Mapper` and Incident type = `GRAIncident` (YAML defaults). On an Alerts instance, set Fetch type to `Alerts`, then set Mapper and Incident type to the Alert values above so fields and layouts map correctly.
 
 ## Upgrading from Case fetch (2.1.0)
 
-If you already run a Gurucul instance that fetched **Cases**, update carefully so fetch does not run with the wrong type/classifier mid-upgrade:
+If you already run a Gurucul instance that fetched **Cases**, update carefully so fetch does not run with the wrong type/mapper mid-upgrade:
 
 1. **Disable** **Fetches incidents** on the existing Cases instance (or disable the instance).
 2. **Update** the Gurucul pack to **2.1.0** (Marketplace or demisto-sdk upload).
-3. Open the same instance and set:
-   - **Fetch type** = `Incidents`
-   - **Classifier** = `GRAIncident-Classifier`
-   - **Mapper (incoming)** = `GRAIncident-Mapper`
-   - **Incident type** = `GRAIncident`
+3. Open the same instance and confirm or set:
+   - **Classifier** = None / Select
+   - **Fetch type** = `Incidents` (integration default; was not used for Cases fetch on older versions)
+   - **Mapper (incoming)** = `GRAIncident-Mapper` (default on new instances)
+   - **Incident type** = `GRAIncident` (default on new instances)
 4. Save, then **re-enable** fetch.
 
 Notes:
 
-- Existing **GRACase** incidents in XSOAR remain; use `gra-case-*` commands for actions on them. Cases are no longer fetched.
-- If the instance last-run still has `maxCaseId` and no `maxIncidentId`, that Case cursor is reused as `maxIncidentId` so the first Incident fetch does not date-bootstrap from **First fetch time**.
+- Existing **GRACase** incidents in Cortex remain; use `gra-case-*` commands for actions on them. Cases are no longer fetched.
+- If the instance last-run still has `maxCaseId` and no `maxIncidentId`, that Case cursor is reused as `maxIncidentId` so the first Incident fetch does not use the initial date window from **First fetch time**.
 - For Alerts, create a **separate** instance using the Alerts row in the table above.
 
 ## Commands
@@ -1125,7 +1123,7 @@ Retrieve analytical features for specified entity value and model name.
 ### gra-cases-anomaly
 
 ***
-Retrieve anomalies for specified case id from GRA and update in XSOAR.
+Retrieve anomalies for specified case id from GRA and update in Cortex.
 
 #### Base Command
 
@@ -1240,7 +1238,7 @@ Close a GRA incident and update anomaly status as Closed / Risk Managed / Model 
 
 #### Command Example
 
-```!gra-incident-action action=closeIncident incidentId=5 subOption="True Incident" incidentComment="Closed from XSOAR"```
+```!gra-incident-action action=closeIncident incidentId=5 subOption="True Incident" incidentComment="Closed from Cortex"```
 
 #### Human Readable Output
 

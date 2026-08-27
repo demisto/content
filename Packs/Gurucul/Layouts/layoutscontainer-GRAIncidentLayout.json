@@ -14,7 +14,7 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 5,
                         "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
@@ -104,6 +104,66 @@
                                 "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "graincidentstatus",
+                                "height": 22,
+                                "id": "i1-add-graincidentstatus",
+                                "index": 9,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "graincidentriskscore",
+                                "height": 22,
+                                "id": "i1-add-graincidentriskscore",
+                                "index": 10,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "graincidentriskdate",
+                                "height": 22,
+                                "id": "i1-add-graincidentriskdate",
+                                "index": 11,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "graincidentownername",
+                                "height": 22,
+                                "id": "i1-add-graincidentownername",
+                                "index": 12,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "graincidentownertype",
+                                "height": 22,
+                                "id": "i1-add-graincidentownertype",
+                                "index": 13,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "graincidententitytypeid",
+                                "height": 22,
+                                "id": "i1-add-graincidententitytypeid",
+                                "index": 14,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxH": null,
@@ -181,42 +241,6 @@
                         "x": 2,
                         "y": 2,
                         "type": "evidence"
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "listofrulesevent",
-                                "height": 53,
-                                "id": "a28d84c0-0fba-11ec-82a4-8da638163409",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "details",
-                                "height": 106,
-                                "id": "incident-details-field",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxH": null,
-                        "maxW": 1,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Investigation Data",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 2,
-                        "isVisible": true
                     },
                     {
                         "h": 2,
@@ -799,8 +823,5 @@
     "id": "GRAIncidentLayout",
     "name": "GRAIncidentLayout",
     "system": false,
-    "version": -1,
-    "marketplaces": [
-        "xsoar"
-    ]
+    "version": -1
 }

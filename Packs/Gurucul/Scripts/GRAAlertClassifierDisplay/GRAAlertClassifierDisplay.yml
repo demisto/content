@@ -6,7 +6,7 @@ script: '-'
 type: python
 tags:
 - dynamic-section
-comment: Display GRA Alert classifier list as a readable table (parses JSON detail entries).
+comment: Displays GRA alert classifier details in a markdown table.
 enabled: true
 scripttarget: 0
 subtype: python3
@@ -15,4 +15,4 @@ dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- No tests

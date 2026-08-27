@@ -90,10 +90,20 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "graalertentitytypeid",
+                                "height": 22,
+                                "id": "i1-add-graalertentitytypeid",
+                                "index": 7,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "graalertdetectiontimestamp",
                                 "height": 22,
                                 "id": "33e85255-e157-4a9c-aec3-2d9cd3ee295a",
-                                "index": 7,
+                                "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -103,7 +113,7 @@
                                 "fieldId": "graalertstatus",
                                 "height": 22,
                                 "id": "abd30224-e208-4194-a483-8a8d6595a96d",
-                                "index": 8,
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -113,7 +123,7 @@
                                 "fieldId": "graalertseverity",
                                 "height": 22,
                                 "id": "45c78f9a-ec51-4b00-8d53-e2278d69c714",
-                                "index": 9,
+                                "index": 10,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -123,7 +133,7 @@
                                 "fieldId": "graalertriskscore",
                                 "height": 22,
                                 "id": "ad53639e-8913-489d-be40-ef7117826a50",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -133,7 +143,7 @@
                                 "fieldId": "graalertsubstatus",
                                 "height": 22,
                                 "id": "3267e771-2fd9-4a47-804d-fd5962955236",
-                                "index": 11,
+                                "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -143,7 +153,7 @@
                                 "fieldId": "graalertincidenttype",
                                 "height": 22,
                                 "id": "54d7b924-638c-4c4a-90c5-9ec962946e77",
-                                "index": 12,
+                                "index": 13,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -153,7 +163,7 @@
                                 "fieldId": "graalertresource",
                                 "height": 22,
                                 "id": "cfaa9181-1909-4eea-8255-c421d8f30d7b",
-                                "index": 13,
+                                "index": 14,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -163,7 +173,7 @@
                                 "fieldId": "graalertclassifierlist",
                                 "height": 22,
                                 "id": "b062678a-d624-4ed8-8065-dd88225943f0",
-                                "index": 14,
+                                "index": 15,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -173,7 +183,7 @@
                                 "fieldId": "graalertassignee",
                                 "height": 22,
                                 "id": "acdbe56c-1033-4ce6-a077-d593d18ba0d8",
-                                "index": 15,
+                                "index": 16,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -183,7 +193,7 @@
                                 "fieldId": "graalertassigneetype",
                                 "height": 22,
                                 "id": "f5c58d53-9e0c-4c50-bb15-4509873b5fde",
-                                "index": 16,
+                                "index": 17,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -193,7 +203,7 @@
                                 "fieldId": "graalertassigneeids",
                                 "height": 22,
                                 "id": "8bd95f04-0469-4b37-84dd-02279c956c15",
-                                "index": 17,
+                                "index": 18,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -203,7 +213,7 @@
                                 "fieldId": "graalertweblink",
                                 "height": 22,
                                 "id": "33e3391b-54ba-4c9a-868c-00c14b587a6d",
-                                "index": 18,
+                                "index": 19,
                                 "sectionItemType": "field",
                                 "startCol": 0,
                                 "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8"
@@ -856,8 +866,5 @@
     "id": "GRAAlertLayout",
     "name": "GRAAlertLayout",
     "system": false,
-    "version": -1,
-    "marketplaces": [
-        "xsoar"
-    ]
+    "version": -1
 }

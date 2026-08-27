@@ -1,5 +1,7 @@
 import json
 
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -73,6 +75,7 @@ def main():
     try:
         show_alert_classifiers()
     except Exception as ex:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute GRAAlertClassifierDisplay. Error: {ex!s}")
 
 

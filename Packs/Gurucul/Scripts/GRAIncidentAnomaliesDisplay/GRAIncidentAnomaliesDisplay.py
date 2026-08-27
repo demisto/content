@@ -1,3 +1,5 @@
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -15,7 +17,7 @@ def get_anomalies_by_incident_id():
 
     incident_id = gra_incident_id.split("-")[-1]
     if incident_id != "":
-        res = execute_command("gra-incidents-anomaly", {"incidentId": incident_id, "using": incident["sourceInstance"]})
+        res = execute_command("gra-incidents-anomaly", {"incidentId": incident_id, "using": incident.get("sourceInstance")})
         anomalies_changed_count = 0
 
         if res is not None:
@@ -23,19 +25,20 @@ def get_anomalies_by_incident_id():
             for anomaly in res:
                 if anomaly is not None:
                     new_anomaly = {
-                        "anomalyname": anomaly["anomalyName"],
-                        "riskaccepteddate": anomaly["riskAcceptedDate"],
-                        "resourcename": anomaly["resourceName"],
-                        "riskscore": anomaly["riskScore"],
-                        "assignee": anomaly["assignee"],
-                        "assigneetype": anomaly["assigneeType"],
-                        "status": anomaly["status"],
+                        "anomalyname": anomaly.get("anomalyName"),
+                        "riskaccepteddate": anomaly.get("riskAcceptedDate"),
+                        "resourcename": anomaly.get("resourceName"),
+                        "riskscore": anomaly.get("riskScore"),
+                        "assignee": anomaly.get("assignee"),
+                        "assigneetype": anomaly.get("assigneeType"),
+                        "status": anomaly.get("status"),
                     }
                     updated_anomalies.append(new_anomaly)
 
                     for old_anomaly in old_anomalies:
-                        if old_anomaly["anomalyname"] == anomaly["anomalyName"] and (
-                            old_anomaly["status"] != anomaly["status"] or old_anomaly["assignee"] != anomaly["assignee"]
+                        if old_anomaly.get("anomalyname") == anomaly.get("anomalyName") and (
+                            old_anomaly.get("status") != anomaly.get("status")
+                            or old_anomaly.get("assignee") != anomaly.get("assignee")
                         ):
                             anomalies_changed_count += 1
                             break
@@ -44,7 +47,7 @@ def get_anomalies_by_incident_id():
                 anomalies_changed_count = len(updated_anomalies) - len(old_anomalies)
 
             if anomalies_changed_count != 0:
-                execute_command("setIncident", {"id": incident["id"], "graincidentanomalydetails": updated_anomalies})
+                execute_command("setIncident", {"id": incident.get("id"), "graincidentanomalydetails": updated_anomalies})
                 if anomalies_changed_count == 1:
                     return_results(
                         "There is 1 anomaly update identified for this incident. "
@@ -63,6 +66,7 @@ def main():
     try:
         get_anomalies_by_incident_id()
     except Exception as ex:
+        demisto.error(traceback.format_exc())
         return_error(f"Failed to execute gra-incidents-anomaly. Error: {ex!s}")
 
 

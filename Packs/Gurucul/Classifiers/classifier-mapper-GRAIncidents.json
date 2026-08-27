@@ -162,6 +162,15 @@
                         "transformers": []
                     },
                     "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "openDate",
+                        "transformers": []
+                    },
+                    "simple": ""
                 }
             }
         },

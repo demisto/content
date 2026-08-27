@@ -75,6 +75,26 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
+def _occurred_from_gra_date(raw_value: Any) -> str:
+    """Build occurred ISO string from a GRA date field; fallback to now."""
+    now_ms = datetime.now().timestamp() * 1000
+    if raw_value is None or raw_value == "":
+        return timestamp_to_datestring(now_ms)
+    try:
+        ts = date_to_timestamp(str(raw_value))
+        if ts is not None:
+            return timestamp_to_datestring(ts)
+    except Exception:
+        pass
+    try:
+        parsed = dateparser.parse(str(raw_value), settings={"TIMEZONE": "UTC"})
+        if parsed is not None:
+            return timestamp_to_datestring(parsed.timestamp() * 1000)
+    except Exception:
+        pass
+    return timestamp_to_datestring(now_ms)
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -108,6 +128,11 @@ def fetch_gra_incidents(
     page = 1
     is_continue = True
 
+    demisto.debug(
+        f"fetch_gra_incidents start max_fetch={max_results} maxIncidentId={max_incident_id} "
+        f"first_fetch_time={first_fetch_time} page={page}"
+    )
+
     while is_continue:
         params: dict[str, Any] = {
             "page": page,
@@ -138,11 +163,10 @@ def fetch_gra_incidents(
                 temp_max_incident_id = incident_id
 
             record["incidentType"] = "GRAIncident"
-            incident_created_time_ms = datetime.now().timestamp() * 1000
             incidents.append(
                 {
                     "name": record.get("entity"),
-                    "occurred": timestamp_to_datestring(incident_created_time_ms),
+                    "occurred": _occurred_from_gra_date(record.get("openDate")),
                     "rawJSON": json.dumps(record),
                 }
             )
@@ -150,6 +174,7 @@ def fetch_gra_incidents(
     next_run: dict[str, Any] = {}
     if temp_max_incident_id is not None:
         next_run["maxIncidentId"] = temp_max_incident_id
+    demisto.info(f"fetch_gra_incidents end fetched={len(incidents)} next_run={next_run}")
     return next_run, incidents
 
 
@@ -160,6 +185,11 @@ def fetch_gra_alerts(client: Client, max_results: int, last_run: dict, first_fet
     incidents: list[dict[str, Any]] = []
     page = 1
     is_continue = True
+
+    demisto.debug(
+        f"fetch_gra_alerts start max_fetch={max_results} maxAlertId={max_alert_id} "
+        f"first_fetch_time={first_fetch_time} page={page}"
+    )
 
     while is_continue:
         params: dict[str, Any] = {
@@ -190,12 +220,11 @@ def fetch_gra_alerts(client: Client, max_results: int, last_run: dict, first_fet
                 temp_max_alert_id = alert_id
 
             record["incidentType"] = "GRAAlert"
-            incident_created_time_ms = datetime.now().timestamp() * 1000
             name = record.get("anomalyName") or record.get("entity") or f"Alert {alert_id}"
             incidents.append(
                 {
                     "name": name,
-                    "occurred": timestamp_to_datestring(incident_created_time_ms),
+                    "occurred": _occurred_from_gra_date(record.get("detectionTimestamp")),
                     "rawJSON": json.dumps(record),
                 }
             )
@@ -203,6 +232,7 @@ def fetch_gra_alerts(client: Client, max_results: int, last_run: dict, first_fet
     next_run: dict[str, Any] = {}
     if temp_max_alert_id is not None:
         next_run["maxAlertId"] = temp_max_alert_id
+    demisto.info(f"fetch_gra_alerts end fetched={len(incidents)} next_run={next_run}")
     return next_run, incidents
 
 
@@ -214,6 +244,7 @@ def fetch_incidents(
     fetch_type: str = "Incidents",
 ) -> tuple[dict, list[dict]]:
     """Fetch GRA objects into XSOAR. Cases are no longer imported; use Incidents or Alerts."""
+    demisto.debug(f"fetch_incidents dispatch fetch_type={fetch_type} max_results={max_results} last_run={last_run}")
     if fetch_type == "Alerts":
         return fetch_gra_alerts(client, max_results, last_run, first_fetch_time)
     return fetch_gra_incidents(client, max_results, last_run, first_fetch_time)
@@ -439,21 +470,21 @@ def main() -> None:
 
         elif demisto.command() == "gra-incident-action":
             action = arguments.get("action")
-            incident_id = arguments.get("incidentId")
+            incident_id = arg_to_number(arguments.get("incidentId"))
             sub_option = arguments.get("subOption")
             incident_comment = arguments.get("incidentComment")
             risk_accept_date = arguments.get("riskAcceptDate")
             incidents_url = "/incidents/" + action
             if action == "riskManageIncident":
                 post_url = {
-                    "incidentId": int(incident_id),
+                    "incidentId": incident_id,
                     "subOption": sub_option,
                     "incidentComment": incident_comment,
                     "riskAcceptDate": risk_accept_date,
                 }
             else:
                 post_url = {
-                    "incidentId": int(incident_id),
+                    "incidentId": incident_id,
                     "subOption": sub_option,
                     "incidentComment": incident_comment,
                 }
@@ -461,7 +492,7 @@ def main() -> None:
 
         elif demisto.command() == "gra-incident-action-anomaly":
             action = arguments.get("action")
-            incident_id = arguments.get("incidentId")
+            incident_id = arg_to_number(arguments.get("incidentId"))
             anomaly_names = arguments.get("anomalyNames")
             sub_option = arguments.get("subOption")
             incident_comment = arguments.get("incidentComment")
@@ -469,7 +500,7 @@ def main() -> None:
             incidents_url = "/incidents/" + action
             if action == "riskAcceptIncidentAnomaly":
                 post_url = {
-                    "incidentId": int(incident_id),
+                    "incidentId": incident_id,
                     "anomalyNames": anomaly_names,
                     "subOption": sub_option,
                     "incidentComment": incident_comment,
@@ -477,7 +508,7 @@ def main() -> None:
                 }
             else:
                 post_url = {
-                    "incidentId": int(incident_id),
+                    "incidentId": incident_id,
                     "anomalyNames": anomaly_names,
                     "subOption": sub_option,
                     "incidentComment": incident_comment,
@@ -486,7 +517,7 @@ def main() -> None:
 
         elif demisto.command() == "gra-incidents-anomaly":
             incident_id = arguments.get("incidentId")
-            anomalies_url = "/anomalies/" + incident_id
+            anomalies_url = "/anomalies/" + str(incident_id)
             fetch_records(client, anomalies_url, "Gra.Incidents.anomalies", "incidentId", params)
 
         elif demisto.command() == "gra-alerts":
@@ -502,7 +533,7 @@ def main() -> None:
             fetch_records(client, alerts_url, "Gra.Alerts", "alertId", alert_params)
 
         elif demisto.command() == "gra-alert-get":
-            alert_id = arguments.get("id")
+            alert_id = arg_to_number(arguments.get("id"))
             fetch_records(client, "/alerts/getAlert", "Gra.Alert", "alertId", {"id": alert_id})
 
         elif demisto.command() in (
@@ -521,10 +552,10 @@ def main() -> None:
             else:
                 action = arguments.get("action")
 
-            alert_id = arguments.get("alertId")
+            alert_id = arg_to_number(arguments.get("alertId"))
             alert_comment = arguments.get("alertComment", "")
             alerts_url = "/alerts/" + action
-            alert_post_url: dict[str, Any] = {"alertId": int(alert_id), "alertComment": alert_comment}
+            alert_post_url: dict[str, Any] = {"alertId": alert_id, "alertComment": alert_comment}
             if action == "closeAlert":
                 alert_post_url["incidentType"] = arguments.get("incidentType")
                 alert_post_url["subStatus"] = arguments.get("subStatus")
@@ -534,7 +565,7 @@ def main() -> None:
             fetch_post_records(client, alerts_url, "Gra.Alert.Action", "alertId", params, json.dumps(alert_post_url))
 
         elif demisto.command() == "gra-alert-update-history":
-            alert_id = arguments.get("alertId")
+            alert_id = arg_to_number(arguments.get("alertId"))
             fetch_records(client, "/alerts/getAlertUpdateHistory", "Gra.Alert.History", "alertId", {"alertId": alert_id})
 
     # Log exceptions and return errors

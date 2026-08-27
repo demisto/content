@@ -13,7 +13,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Gurucul"
+    ],
     "dependencies": {
         "CommonScripts": {
             "mandatory": true,
