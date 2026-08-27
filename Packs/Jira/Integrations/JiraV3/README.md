@@ -3310,3 +3310,45 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The Jira user timezone was successfully cleared from the cache
+
+### jira-get-service-desk-id-by-project
+
+***
+Returns the Jira Service Management service desks, optionally filtered by project key.
+
+#### Base Command
+
+`jira-get-service-desk-id-by-project`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_key | The project key used to filter service desks. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.ServiceDesk | Object | The service desks. |
+
+### jira-get-request-types
+
+***
+Returns the request types for a Jira Service Management service desk.
+
+#### Base Command
+
+`jira-get-request-types`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| service_desk_id | The ID of the service desk. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.RequestType | Object | The request types available in the service desk. |

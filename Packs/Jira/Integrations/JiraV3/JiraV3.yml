@@ -1570,6 +1570,25 @@ script:
       description: Questions for the form.
       type: Unknown
   - arguments:
+    - description: The ID of the service desk.
+      name: service_desk_id
+      required: true
+    description: Returns the request types for a Jira Service Management service desk.
+    name: jira-get-request-types
+    outputs:
+    - contextPath: Jira.RequestType
+      description: The request types available in the service desk.
+      type: Object
+  - arguments:
+    - description: The project key used to filter service desks.
+      name: project_key
+    description: Returns the Jira Service Management service desks, optionally filtered by project key.
+    name: jira-get-service-desk-id-by-project
+    outputs:
+    - contextPath: Jira.ServiceDesk
+      description: The service desks.
+      type: Object
+  - arguments:
     - description: The user's key (On-prem only).
       name: key
       required: false
