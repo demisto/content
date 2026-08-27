@@ -1980,7 +1980,7 @@ script:
         type: String
       - contextPath: GCP.Storage.BucketPolicies.bindings
         description: List of role bindings for the bucket.
-        type: List
+        type: Unknown
       - contextPath: GCP.Storage.BucketPolicies.resourceId
         description: Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME.
         type: String
@@ -2014,7 +2014,7 @@ script:
       type: String
     - contextPath: GCP.Storage.BucketPolicies.bindings
       description: List of role bindings for the bucket.
-      type: List
+      type: Unknown
   - name: gcp-storage-bucket-object-policy-list
     description: "Retrieves the IAM policy for a specific object in a bucket. The command is deprecated, please use gcp-storage-bucket-object-policies-list. Required permission: storage.objects.getIamPolicy."
     deprecated: true
@@ -2057,7 +2057,7 @@ script:
       description: Name of the object to retrieve IAM policy from.
     - name: generation
       required: false
-      description: Generation of the object.
+      description: The generation of the object (e.g., a positive integer).
     outputs:
     - contextPath: GCP.Storage.BucketObjectPolicies.bucketName
       description: Name of the bucket containing the object.
@@ -2067,7 +2067,7 @@ script:
       type: String
     - contextPath: GCP.Storage.BucketObjectPolicies.bindings
       description: List of role bindings for the object.
-      type: List
+      type: Unknown
   - name: gcp-storage-bucket-object-policy-set
     description: "Sets the IAM policy for a specific object in a bucket. Required permission: storage.objects.setIamPolicy."
     arguments:
@@ -2086,7 +2086,7 @@ script:
       description: JSON string representing the IAM policy to set.
     - name: generation
       required: false
-      description: Generation of the object.
+      description: The generation of the object (e.g., a positive integer).
     outputs:
     - contextPath: GCP.Storage.BucketObjectPolicies.version
       description: IAM policy version after update.
