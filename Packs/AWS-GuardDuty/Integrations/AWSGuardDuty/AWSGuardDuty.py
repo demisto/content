@@ -22,6 +22,7 @@ FINDING_FREQUENCY = {"Fifteen Minutes": "FIFTEEN_MINUTES", "One Hour": "ONE_HOUR
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 MAX_RESULTS_RESPONSE = 50
+MAX_TAGS = 50
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -356,34 +357,34 @@ def update_threat_intel_set(client: "GuardDutyClient", args: dict):
         raise Exception(f"Failed updating ThreatIntel set {args.get('threatIntelSetId')}. Response was: {response}")
 
 
-def parse_tag_field_to_dict(tags_str: str) -> dict:
+def parse_tag_field_to_dict(tags_string: str) -> dict:
     """
-    Parses a tags argument in the "key=<KEY>,value=<VALUE>" format (multiple pairs separated by ";")
-    into a string-to-string map suitable for the GuardDuty API Tags parameter.
+    Parses a list representation of key and value with the form of 'key=<name>,value=<value>' into a
+    string-to-string map suitable for the GuardDuty API Tags parameter. You can specify up to 50 tags
+    per resource. The value may contain commas; only the ";" character separates pairs.
 
     Args:
-        tags_str (str): The tags string, e.g. "key=Environment,value=prod;key=Team,value=sec".
+        tags_string: The name and value list, e.g. "key=Environment,value=prod;key=Team,value=sec".
 
     Returns:
-        dict: A mapping of tag keys to values, e.g. {"Environment": "prod", "Team": "sec"}.
-
-    Raises:
-        DemistoException: If a pair is not in the expected "key=<KEY>,value=<VALUE>" format.
+        A dict of the form {"<key>": "<value>"}, e.g. {"Environment": "prod", "Team": "sec"}.
     """
-    demisto.debug(f"[AWSGuardDuty] parse_tag_field_to_dict: parsing {len(argToList(tags_str, separator=';'))} tag pair(s).")
     tags: dict[str, str] = {}
-    for pair in argToList(tags_str, separator=";"):
-        key = value = None
-        for field in argToList(pair):
-            field_key, _, field_value = field.partition("=")
-            if field_key.strip().lower() == "key":
-                key = field_value.strip()
-            elif field_key.strip().lower() == "value":
-                value = field_value.strip()
-        if not key or value is None:
-            demisto.debug(f"[AWSGuardDuty] parse_tag_field_to_dict: failed to parse tag pair '{pair}'.")
-            raise DemistoException(f"Could not parse the tag: '{pair}'. Tags must be in the format: key=<KEY>,value=<VALUE>.")
-        tags[key] = value
+    list_tags = argToList(tags_string, separator=";")
+    if len(list_tags) > MAX_TAGS:
+        list_tags = list_tags[0:MAX_TAGS]
+        demisto.debug(
+            f"[AWSGuardDuty] parse_tag_field_to_dict: Number of tags exceeds {MAX_TAGS}, parsing only the first {MAX_TAGS} tags."
+        )
+    # According to the AWS Tag restrictions docs.
+    regex = re.compile(r"^key=([a-zA-Z0-9\s+\-=._:/@]{1,128}),value=(.{0,256})$", flags=re.UNICODE)
+    for tag in list_tags:
+        match_tag = regex.match(tag)
+        if match_tag is None:
+            raise ValueError(
+                f"Could not parse field: {tag}. Please make sure you provided like so: key=abc,value=123;key=fed,value=456"
+            )
+        tags[match_tag.group(1)] = match_tag.group(2)
     demisto.debug(f"[AWSGuardDuty] parse_tag_field_to_dict: parsed {len(tags)} tag(s) with keys {list(tags.keys())}.")
     return tags
 
@@ -471,7 +472,9 @@ def update_threat_entity_set(client: "GuardDutyClient", args: dict):
             f"[AWSGuardDuty] update_threat_entity_set: update failed for Threat Entity Set "
             f"{args.get('threatEntitySetId')} with HTTPStatusCode={status_code}."
         )
-        raise Exception(f"Failed updating Threat Entity set {args.get('threatEntitySetId')}. HTTPStatusCode was: {status_code}")
+        raise DemistoException(
+            f"Failed updating Threat Entity set {args.get('threatEntitySetId')}. HTTPStatusCode was: {status_code}"
+        )
 
 
 def get_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResults:
@@ -539,7 +542,9 @@ def delete_threat_entity_set(client: "GuardDutyClient", args: dict):
             f"[AWSGuardDuty] delete_threat_entity_set: delete failed for Threat Entity Set "
             f"{args.get('threatEntitySetId')} with HTTPStatusCode={status_code}."
         )
-        raise Exception(f"Failed to delete Threat Entity set {args.get('threatEntitySetId')}. HTTPStatusCode was: {status_code}")
+        raise DemistoException(
+            f"Failed to delete Threat Entity set {args.get('threatEntitySetId')}. HTTPStatusCode was: {status_code}"
+        )
 
 
 def list_threat_entity_sets(client: "GuardDutyClient", args: dict) -> CommandResults:
@@ -559,24 +564,25 @@ def list_threat_entity_sets(client: "GuardDutyClient", args: dict) -> CommandRes
     )
     demisto.debug("[AWSGuardDuty] list_threat_entity_sets: paginator created, iterating pages.")
 
+    detector_id = args.get("detectorId")
     data = []
-    data.append({"DetectorId": args.get("detectorId")})
     for i, page_response in enumerate(response_iterator):
         if page is None or (page - 1) == i:
             page_ids = page_response["ThreatEntitySetIds"]
             demisto.debug(f"[AWSGuardDuty] list_threat_entity_sets: page index {i} returned {len(page_ids)} ID(s).")
             for threatEntitySet in page_ids:
-                data.append({"ThreatEntitySetId": threatEntitySet})
+                data.append({"DetectorId": detector_id, "ThreatEntitySetId": threatEntitySet})
             if page:
                 break
 
-    # data includes the DetectorId seed entry, so the number of returned sets is len(data) - 1.
     demisto.debug(
-        f"[AWSGuardDuty] list_threat_entity_sets: found {len(data) - 1} Threat Entity Set(s) for Detector "
-        f"{args.get('detectorId')}. Returning CommandResults."
+        f"[AWSGuardDuty] list_threat_entity_sets: found {len(data)} Threat Entity Set(s) for Detector "
+        f"{detector_id}. Returning CommandResults."
     )
 
-    readable_output = tableToMarkdown("AWS GuardDuty ThreatEntity Sets", data)
+    readable_output = tableToMarkdown(
+        "AWS GuardDuty ThreatEntity Sets", data, headers=["DetectorId", "ThreatEntitySetId"], removeNull=True
+    )
     return CommandResults(
         readable_output=readable_output,
         outputs=data,

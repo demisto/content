@@ -1,0 +1,5 @@
+!aws-gd-create-threat-entity-set detectorId=12abc34d567e8fa901bc2d34e56789f0 name=malicious-entities format=TXT location=https://s3.us-east-1.amazonaws.com/example-bucket/threat-entities.txt activate=True tags=key=Environment,value=prod;key=Team,value=sec
+!aws-gd-update-threat-entity-set detectorId=12abc34d567e8fa901bc2d34e56789f0 threatEntitySetId=ab12cd34ef56gh78ij90 activate=True name=malicious-entities-v2
+!aws-gd-get-threat-entity-set detectorId=12abc34d567e8fa901bc2d34e56789f0 threatEntitySetId=ab12cd34ef56gh78ij90
+!aws-gd-delete-threat-entity-set detectorId=12abc34d567e8fa901bc2d34e56789f0 threatEntitySetId=ab12cd34ef56gh78ij90
+!aws-gd-list-threat-entity-sets detectorId=12abc34d567e8fa901bc2d34e56789f0

@@ -611,13 +611,13 @@ def test_create_threat_intel_set(mocker):
             {"Environment": "prod", "Team": "sec"},
             id="multiple pairs",
         ),
-        pytest.param("value=prod,key=Environment", {"Environment": "prod"}, id="reversed order"),
+        pytest.param("key=Owner,value=team-a,team-b", {"Owner": "team-a,team-b"}, id="value with commas"),
     ],
 )
 def test_parse_tag_field_to_dict(tags_str, expected):
     """
     Given:
-        A tags string in the "key=<KEY>,value=<VALUE>" format
+        A tags string in the "key=<KEY>,value=<VALUE>" format (values may contain commas)
 
     When:
         Running parse_tag_field_to_dict
@@ -644,10 +644,31 @@ def test_parse_tag_field_to_dict_invalid(tags_str):
         Running parse_tag_field_to_dict
 
     Then:
-        assert a DemistoException is raised describing the expected format.
+        assert a ValueError is raised describing the expected format.
     """
-    with pytest.raises(DemistoException, match="Tags must be in the format: key=<KEY>,value=<VALUE>."):
+    with pytest.raises(ValueError, match="Could not parse field"):
         parse_tag_field_to_dict(tags_str)
+
+
+def test_parse_tag_field_to_dict_exceeds_max_tags(mocker):
+    """
+    Given:
+        A tags string with more than 50 tag pairs
+
+    When:
+        Running parse_tag_field_to_dict
+
+    Then:
+        assert only the first 50 tags are parsed.
+    """
+    tags_str = ";".join(f"key=k{i},value=v{i}" for i in range(60))
+
+    result = parse_tag_field_to_dict(tags_str)
+
+    assert len(result) == 50
+    assert "k0" in result
+    assert "k49" in result
+    assert "k50" not in result
 
 
 def test_create_threat_entity_set(mocker):
@@ -1026,9 +1047,8 @@ def test_list_threat_entity_sets(mocker):
     get_paginator_mock.assert_called_with("list_threat_entity_sets")
     paginate_mock.assert_called_with(DetectorId="some_id", PaginationConfig={"MaxItems": 50, "PageSize": 50})
     assert command_results.outputs == [
-        {"DetectorId": "some_id"},
-        {"ThreatEntitySetId": "entity1"},
-        {"ThreatEntitySetId": "entity2"},
+        {"DetectorId": "some_id", "ThreatEntitySetId": "entity1"},
+        {"DetectorId": "some_id", "ThreatEntitySetId": "entity2"},
     ]
     assert command_results.outputs_prefix == "AWS.GuardDuty.ThreatEntitySet"
 
@@ -1056,8 +1076,7 @@ def test_list_threat_entity_sets_specific_page(mocker):
     command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id", "page": "2", "page_size": "1"})
 
     assert command_results.outputs == [
-        {"DetectorId": "some_id"},
-        {"ThreatEntitySetId": "entity2"},
+        {"DetectorId": "some_id", "ThreatEntitySetId": "entity2"},
     ]
 
 
@@ -1071,7 +1090,7 @@ def test_list_threat_entity_sets_empty(mocker):
         Running list_threat_entity_sets command
 
     Then:
-        assert only the DetectorId seed entry is returned.
+        assert an empty list is returned when there are no threat entity sets.
     """
     mocked_client = MockedBoto3Client()
     mocker.patch.object(MockedBoto3Client, "get_paginator", side_effect=[MockedPaginator()])
@@ -1079,7 +1098,7 @@ def test_list_threat_entity_sets_empty(mocker):
 
     command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id"})
 
-    assert command_results.outputs == [{"DetectorId": "some_id"}]
+    assert command_results.outputs == []
 
 
 def test_list_threat_entity_sets_invalid_page_size(mocker):

@@ -612,11 +612,6 @@ There is no context output for this command.
 ***
 Lists Amazon GuardDuty findings for the specified detector ID.
 
-##### AWS IAM Policy Permission
-
-Effect: _Allow_<br/>
-Action: _guardduty:ListFindings_
-
 #### Base Command
 
 `aws-gd-list-findings`
@@ -630,19 +625,15 @@ Action: _guardduty:ListFindings_
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
 | roleSessionName | An identifier for the assumed role session. | Optional |
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional |
-| limit | Number of total results to query. Default is `50`. | Optional |
+| limit | The number of total results to query. Default is 50. | Optional |
 | page | Specific page to query. | Optional |
-| page_size | Number of total results in each page. Default is `50`. | Optional |
+| page_size | Number of total results in each page. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.GuardDuty.Findings.FindingId | string | The unique identifier for the Finding |
-
-#### Command Example
-
-```!aws-gd-list-findings detectorId=38b1ed3fe279cd0c8edb0715ac5561eb region=eu-west-2```
+| AWS.GuardDuty.Findings.FindingId | string | The unique identifier for the Finding. |
 
 ### aws-gd-get-findings
 
@@ -917,22 +908,6 @@ Action: _guardduty:GetMembers_
 
 ```!aws-gd-get-members detectorIds=4f1fc7cd7dsg26sdf4328d8dc813 accountIds=1f3fc2cd1dag26sdf4338d8aa813```
 
-## Breaking changes from the previous version of this integration - AWS-GuardDuty
-
-The following sections list the changes in this version.
-
-### Commands
-
-Fetch incidents command - Findings that are fetched are no longer moved automatically to the GuardDuty archive.
-
-### Parameters
-
-The following parameters were added in this version:
-
-* _How many incidents to fetch each time_
-* _First fetch timestamp_
-* _Archive findings After Fetch_
-
 ### aws-gd-create-threat-entity-set
 
 ***
@@ -947,12 +922,12 @@ Creates a new threat entity set. In a threat entity set, you can provide known m
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | detectorId | The unique ID of the detector that will own the threat entity set. | Required |
-| name | User-friendly name. Length 1-64. | Required |
+| name | The user-friendly name of the threat entity set. Length 1-64. | Required |
 | format | The format of the entity-list file. Possible values are: TXT, STIX, OTX_CSV, ALIEN_VAULT, PROOF_POINT, FIRE_EYE. | Required |
 | location | The S3 URI of the entity-list file. For example, https://s3.us-east-1.amazonaws.com/example-bucket/threat-entities.txt. | Required |
 | activate | Whether GuardDuty should start using the uploaded set immediately. Possible values are: True, False. | Required |
 | expectedBucketOwner | The AWS account ID that owns the S3 bucket in the location parameter. Prevents cross-account spoofing. | Optional |
-| tags | The tags to add to the new threat entity set. Format: key=&lt;KEY&gt;,value=&lt;VALUE&gt;. For example, key=Environment,value=prod. | Optional |
+| tags | The tags to add to the new threat entity set. Format: key=&lt;KEY&gt;,value=&lt;VALUE&gt;. Separate multiple tags with a semicolon (;). For example, key=Environment,value=prod;key=Team,value=sec. | Optional |
 | region | The AWS Region. If not specified, the default region is used. | Optional |
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
 | roleSessionName | The identifier for the assumed role session. | Optional |
@@ -965,58 +940,9 @@ Creates a new threat entity set. In a threat entity set, you can provide known m
 | AWS.GuardDuty.ThreatEntitySet.DetectorId | string | The unique ID of the detector. |
 | AWS.GuardDuty.ThreatEntitySet.ThreatEntitySetId | string | The ID of the created threat entity set resource. |
 
-### aws-gd-delete-threat-entity-set
+#### Command Example
 
-***
-Deletes the threat entity set that is specified by the threat entity set ID.
-
-#### Base Command
-
-`aws-gd-delete-threat-entity-set`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| detectorId | The detector that owns the set. | Required |
-| threatEntitySetId | The ID of the threat entity set to delete. | Required |
-| region | The AWS Region. If not specified, the default region is used. | Optional |
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
-| roleSessionName | The identifier for the assumed role session. | Optional |
-| roleSessionDuration | The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role. | Optional |
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-gd-list-threat-entity-sets
-
-***
-Lists the threat entity sets of the GuardDuty service specified by the detector ID.
-
-#### Base Command
-
-`aws-gd-list-threat-entity-sets`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| detectorId | The detector whose threat entity sets you want to list. | Required |
-| limit | The maximum number of results across all pages. Default is 50. | Optional |
-| page_size | The page size for the underlying paginator. Valid range is 1-50. Default is 50. | Optional |
-| page | The 1-based page index. When set, only that page is returned. | Optional |
-| region | The AWS Region. If not specified, the default region is used. | Optional |
-| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
-| roleSessionName | The identifier for the assumed role session. | Optional |
-| roleSessionDuration | The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.GuardDuty.ThreatEntitySet.DetectorId | string | The unique ID of the detector. |
-| AWS.GuardDuty.ThreatEntitySet.ThreatEntitySetId | string | The unique identifier for a threat entity set. |
+```!aws-gd-create-threat-entity-set detectorId=12abc34d567e8fa901bc2d34e56789f0 name=malicious-entities format=TXT location=https://s3.us-east-1.amazonaws.com/example-bucket/threat-entities.txt activate=True tags=key=Environment,value=prod;key=Team,value=sec```
 
 ### aws-gd-update-threat-entity-set
 
@@ -1045,6 +971,10 @@ Updates the threat entity set that is specified by the threat entity set ID.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+
+```!aws-gd-update-threat-entity-set detectorId=12abc34d567e8fa901bc2d34e56789f0 threatEntitySetId=ab12cd34ef56gh78ij90 activate=True name=malicious-entities-v2```
 
 ### aws-gd-get-threat-entity-set
 
@@ -1077,6 +1007,87 @@ Retrieves the threat entity set that is specified by the threat entity set ID.
 | AWS.GuardDuty.ThreatEntitySet.Location | string | The S3 URI of the threat entity set file. |
 | AWS.GuardDuty.ThreatEntitySet.Status | string | The status of the threat entity set. |
 | AWS.GuardDuty.ThreatEntitySet.ExpectedBucketOwner | string | The AWS account ID that owns the S3 bucket in the location parameter. |
-| AWS.GuardDuty.ThreatEntitySet.CreatedAt | date | The timestamp when the threat entity set was created. |
-| AWS.GuardDuty.ThreatEntitySet.UpdatedAt | date | The timestamp when the threat entity set was last updated. |
+| AWS.GuardDuty.ThreatEntitySet.CreatedAt | date | The timestamp when the threat entity set was created. For example, 2020-01-01T00:00:00.000Z. |
+| AWS.GuardDuty.ThreatEntitySet.UpdatedAt | date | The timestamp when the threat entity set was last updated. For example, 2020-01-01T00:00:00.000Z. |
 | AWS.GuardDuty.ThreatEntitySet.Tags | Unknown | The tags associated with the threat entity set. |
+
+#### Command Example
+
+```!aws-gd-get-threat-entity-set detectorId=12abc34d567e8fa901bc2d34e56789f0 threatEntitySetId=ab12cd34ef56gh78ij90```
+
+### aws-gd-delete-threat-entity-set
+
+***
+Deletes the threat entity set that is specified by the threat entity set ID.
+
+#### Base Command
+
+`aws-gd-delete-threat-entity-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detectorId | The detector that owns the set. | Required |
+| threatEntitySetId | The ID of the threat entity set to delete. | Required |
+| region | The AWS Region. If not specified, the default region is used. | Optional |
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
+| roleSessionName | The identifier for the assumed role session. | Optional |
+| roleSessionDuration | The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!aws-gd-delete-threat-entity-set detectorId=12abc34d567e8fa901bc2d34e56789f0 threatEntitySetId=ab12cd34ef56gh78ij90```
+
+### aws-gd-list-threat-entity-sets
+
+***
+Lists the threat entity sets of the GuardDuty service specified by the detector ID.
+
+#### Base Command
+
+`aws-gd-list-threat-entity-sets`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| detectorId | The detector whose threat entity sets you want to list. | Required |
+| limit | The maximum number of results across all pages. Default is 50. | Optional |
+| page_size | The page size for the underlying paginator. Valid range is 1-50. Default is 50. | Optional |
+| page | The 1-based page index. When set, only that page is returned. | Optional |
+| region | The AWS Region. If not specified, the default region is used. | Optional |
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
+| roleSessionName | The identifier for the assumed role session. | Optional |
+| roleSessionDuration | The duration, in seconds, of the role session. Range: 900 seconds (15 minutes) to the maximum session duration setting for the role. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.GuardDuty.ThreatEntitySet.DetectorId | string | The unique ID of the detector. |
+| AWS.GuardDuty.ThreatEntitySet.ThreatEntitySetId | string | The unique identifier for a threat entity set. |
+
+#### Command Example
+
+```!aws-gd-list-threat-entity-sets detectorId=12abc34d567e8fa901bc2d34e56789f0```
+
+## Breaking changes from the previous version of this integration - AWS-GuardDuty
+
+The following sections list the changes in this version.
+
+### Commands
+
+Fetch incidents command - Findings that are fetched are no longer moved automatically to the GuardDuty archive.
+
+### Parameters
+
+The following parameters were added in this version:
+
+* _How many incidents to fetch each time_
+* _First fetch timestamp_
+* _Archive findings After Fetch_

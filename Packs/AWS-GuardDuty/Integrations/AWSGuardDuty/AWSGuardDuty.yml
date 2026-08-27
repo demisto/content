@@ -629,7 +629,7 @@ script:
       description: The unique ID of the detector that will own the threat entity set.
       required: true
     - name: name
-      description: 'User-friendly name. Length 1-64.'
+      description: 'The user-friendly name of the threat entity set. Length 1-64.'
       required: true
     - name: format
       description: The format of the entity-list file.
@@ -655,7 +655,7 @@ script:
     - name: expectedBucketOwner
       description: The AWS account ID that owns the S3 bucket in the location parameter. Prevents cross-account spoofing.
     - name: tags
-      description: 'The tags to add to the new threat entity set. Format: key=<KEY>,value=<VALUE>. For example, key=Environment,value=prod.'
+      description: 'The tags to add to the new threat entity set. Format: key=<KEY>,value=<VALUE>. Separate multiple tags with a semicolon (;). For example, key=Environment,value=prod;key=Team,value=sec.'
     - name: region
       description: The AWS Region. If not specified, the default region is used.
     - name: roleArn
@@ -741,10 +741,10 @@ script:
       description: The AWS account ID that owns the S3 bucket in the location parameter.
       type: string
     - contextPath: AWS.GuardDuty.ThreatEntitySet.CreatedAt
-      description: The timestamp when the threat entity set was created.
+      description: The timestamp when the threat entity set was created. For example, 2020-01-01T00:00:00.000Z.
       type: date
     - contextPath: AWS.GuardDuty.ThreatEntitySet.UpdatedAt
-      description: The timestamp when the threat entity set was last updated.
+      description: The timestamp when the threat entity set was last updated. For example, 2020-01-01T00:00:00.000Z.
       type: date
     - contextPath: AWS.GuardDuty.ThreatEntitySet.Tags
       description: The tags associated with the threat entity set.
