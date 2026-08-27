@@ -6381,7 +6381,7 @@ def _extract_param_default_prefixes(function_node: ast.AST) -> set:
     # Positional defaults bind to the LAST N positional parameters.
     positional = [*spec.posonlyargs, *spec.args]
     defaults = list(spec.defaults)
-    pairs = list(zip(positional[len(positional) - len(defaults) :], defaults))
+    pairs = list(zip(positional[len(positional) - len(defaults):], defaults))
     pairs += list(zip(spec.kwonlyargs, spec.kw_defaults))
 
     return {value for parameter, default in pairs if parameter.arg == "outputs_prefix" and (value := _string_constant(default))}
@@ -6652,3 +6652,347 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# Resource Manager (Projects & Organizations) command tests
+# ---------------------------------------------------------------------------
+
+_RM_PROJECT_RESPONSE = {
+    "name": "projects/415104041262",
+    "projectId": "tokyo-rain-123",
+    "displayName": "My Project",
+    "state": "ACTIVE",
+    "createTime": "2020-01-01T00:00:00.000Z",
+    "parent": "organizations/1234",
+    "labels": {"color": "red"},
+}
+
+_RM_ORGANIZATION_RESPONSE = {
+    "name": "organizations/1234",
+    "displayName": "example.com",
+    "state": "ACTIVE",
+    "directoryCustomerId": "C012ba3ba",
+    "createTime": "2019-01-01T00:00:00.000Z",
+}
+
+
+def test_build_project_labels_valid():
+    """
+    Given: Matching label_keys and label_values arguments.
+    When: _build_project_labels is called.
+    Then: A dictionary pairing each key with its corresponding value is returned.
+    """
+    from GCP import _build_project_labels
+
+    result = _build_project_labels("color,size", "red,big")
+    assert result == {"color": "red", "size": "big"}
+
+
+def test_build_project_labels_mismatched_lengths():
+    """
+    Given: label_keys and label_values of differing lengths.
+    When: _build_project_labels is called.
+    Then: A ValueError is raised.
+    """
+    from GCP import _build_project_labels
+
+    with pytest.raises(ValueError, match="same number of elements"):
+        _build_project_labels("color,size", "red")
+
+
+def test_build_project_labels_none():
+    """
+    Given: No label arguments.
+    When: _build_project_labels is called.
+    Then: None is returned so labels are omitted from the request body.
+    """
+    from GCP import _build_project_labels
+
+    assert _build_project_labels(None, None) is None
+
+
+def test_resource_manager_project_create_success(mocker):
+    """
+    Given: A mocked Resource Manager client whose projects.create returns a completed Operation.
+    When: resource_manager_project_create is called with a project ID and parent.
+    Then: It returns CommandResults with the GCP.ResourceManager.Projects prefix and the created project outputs.
+    """
+    from GCP import resource_manager_project_create
+
+    mock_rm = MagicMock()
+    mock_rm.projects().create().execute.return_value = {"response": _RM_PROJECT_RESPONSE, "done": True}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    args = {"project_id": "tokyo-rain-123", "parent": "organizations/1234", "display_name": "My Project"}
+    result = resource_manager_project_create(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs_prefix == "GCP.ResourceManager.Projects"
+    assert result.outputs_key_field == "projectId"
+    assert result.outputs["projectId"] == "tokyo-rain-123"
+    body = mock_rm.projects().create.call_args[1]["body"]
+    assert body["projectId"] == "tokyo-rain-123"
+    assert body["parent"] == "organizations/1234"
+    assert body["displayName"] == "My Project"
+
+
+def test_resource_manager_project_create_with_labels(mocker):
+    """
+    Given: A mocked Resource Manager client and create args including label keys/values.
+    When: resource_manager_project_create is called.
+    Then: The request body includes the labels mapping.
+    """
+    from GCP import resource_manager_project_create
+
+    mock_rm = MagicMock()
+    mock_rm.projects().create().execute.return_value = {"response": _RM_PROJECT_RESPONSE, "done": True}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    args = {
+        "project_id": "tokyo-rain-123",
+        "parent": "folders/567",
+        "label_keys": "color,size",
+        "label_values": "red,big",
+    }
+    resource_manager_project_create(mocker.Mock(spec=Credentials), args)
+
+    body = mock_rm.projects().create.call_args[1]["body"]
+    assert body["labels"] == {"color": "red", "size": "big"}
+
+
+def test_resource_manager_project_create_mismatched_labels(mocker):
+    """
+    Given: create args with mismatched label_keys and label_values.
+    When: resource_manager_project_create is called.
+    Then: A ValueError is raised before any API call.
+    """
+    from GCP import resource_manager_project_create
+
+    mocker.patch("GCP.build", return_value=MagicMock())
+    args = {"project_id": "tokyo-rain-123", "parent": "folders/567", "label_keys": "color,size", "label_values": "red"}
+    with pytest.raises(ValueError, match="same number of elements"):
+        resource_manager_project_create(mocker.Mock(spec=Credentials), args)
+
+
+def test_resource_manager_project_get_success(mocker):
+    """
+    Given: A mocked Resource Manager client whose projects.get returns a Project.
+    When: resource_manager_project_get is called with a project ID.
+    Then: It returns CommandResults with the project and calls get with the resource name.
+    """
+    from GCP import resource_manager_project_get
+
+    mock_rm = MagicMock()
+    mock_rm.projects().get().execute.return_value = _RM_PROJECT_RESPONSE
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    result = resource_manager_project_get(mocker.Mock(spec=Credentials), {"project_id": "tokyo-rain-123"})
+
+    assert result.outputs_prefix == "GCP.ResourceManager.Projects"
+    assert result.outputs["projectId"] == "tokyo-rain-123"
+    assert mock_rm.projects().get.call_args[1]["name"] == "projects/tokyo-rain-123"
+
+
+def test_resource_manager_project_search_success(mocker):
+    """
+    Given: A mocked Resource Manager client whose projects.search returns projects and a next page token.
+    When: resource_manager_project_search is called with a query.
+    Then: It returns CommandResults with the projects list and the next-page-token output.
+    """
+    from GCP import resource_manager_project_search
+
+    mock_rm = MagicMock()
+    mock_rm.projects().search().execute.return_value = {
+        "projects": [_RM_PROJECT_RESPONSE],
+        "nextPageToken": "next-token",
+    }
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    result = resource_manager_project_search(mocker.Mock(spec=Credentials), {"query": "state:ACTIVE"})
+
+    projects_output = result.outputs["GCP.ResourceManager.Projects(val.projectId && val.projectId == obj.projectId)"]
+    assert projects_output == [_RM_PROJECT_RESPONSE]
+    assert result.outputs["GCP.ResourceManager(true)"]["ProjectsNextPageToken"] == "next-token"
+    assert mock_rm.projects().search.call_args[1]["query"] == "state:ACTIVE"
+
+
+def test_resource_manager_project_search_empty(mocker):
+    """
+    Given: A mocked Resource Manager client whose projects.search returns no projects.
+    When: resource_manager_project_search is called.
+    Then: It returns CommandResults with a 'No projects found.' message and no outputs.
+    """
+    from GCP import resource_manager_project_search
+
+    mock_rm = MagicMock()
+    mock_rm.projects().search().execute.return_value = {"projects": []}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    result = resource_manager_project_search(mocker.Mock(spec=Credentials), {})
+
+    assert result.readable_output == "No projects found."
+    assert not result.outputs
+
+
+def test_resource_manager_project_search_invalid_limit(mocker):
+    """
+    Given: A limit argument outside the allowed range.
+    When: resource_manager_project_search is called.
+    Then: A DemistoException is raised by validate_limit.
+    """
+    from GCP import resource_manager_project_search
+    from CommonServerPython import DemistoException
+
+    mocker.patch("GCP.build", return_value=MagicMock())
+    with pytest.raises(DemistoException, match="acceptable values of the argument limit"):
+        resource_manager_project_search(mocker.Mock(spec=Credentials), {"limit": "501"})
+
+
+def test_resource_manager_project_update_success(mocker):
+    """
+    Given: A mocked Resource Manager client whose projects.patch returns a completed Operation.
+    When: resource_manager_project_update is called with a new display name.
+    Then: It returns CommandResults and calls patch with the correct updateMask.
+    """
+    from GCP import resource_manager_project_update
+
+    mock_rm = MagicMock()
+    mock_rm.projects().patch().execute.return_value = {"response": _RM_PROJECT_RESPONSE, "done": True}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    args = {"project_id": "tokyo-rain-123", "display_name": "New Name"}
+    result = resource_manager_project_update(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs_prefix == "GCP.ResourceManager.Projects"
+    call_kwargs = mock_rm.projects().patch.call_args[1]
+    assert call_kwargs["name"] == "projects/tokyo-rain-123"
+    assert call_kwargs["updateMask"] == "displayName"
+    assert call_kwargs["body"]["displayName"] == "New Name"
+
+
+def test_resource_manager_project_update_labels_mask(mocker):
+    """
+    Given: An update request providing only labels.
+    When: resource_manager_project_update is called.
+    Then: The updateMask contains 'labels' and the body includes the labels mapping.
+    """
+    from GCP import resource_manager_project_update
+
+    mock_rm = MagicMock()
+    mock_rm.projects().patch().execute.return_value = {"response": _RM_PROJECT_RESPONSE, "done": True}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    args = {"project_id": "tokyo-rain-123", "label_keys": "color", "label_values": "blue"}
+    resource_manager_project_update(mocker.Mock(spec=Credentials), args)
+
+    call_kwargs = mock_rm.projects().patch.call_args[1]
+    assert call_kwargs["updateMask"] == "labels"
+    assert call_kwargs["body"]["labels"] == {"color": "blue"}
+
+
+def test_resource_manager_project_update_no_fields(mocker):
+    """
+    Given: An update request with no updatable fields.
+    When: resource_manager_project_update is called.
+    Then: A ValueError is raised before any API call.
+    """
+    from GCP import resource_manager_project_update
+
+    mocker.patch("GCP.build", return_value=MagicMock())
+    with pytest.raises(ValueError, match="At least one of"):
+        resource_manager_project_update(mocker.Mock(spec=Credentials), {"project_id": "tokyo-rain-123"})
+
+
+def test_resource_manager_project_delete_success(mocker):
+    """
+    Given: A mocked Resource Manager client whose projects.delete returns a completed Operation.
+    When: resource_manager_project_delete is called.
+    Then: It returns CommandResults and calls delete with the resource name.
+    """
+    from GCP import resource_manager_project_delete
+
+    deleted = dict(_RM_PROJECT_RESPONSE, state="DELETE_REQUESTED")
+    mock_rm = MagicMock()
+    mock_rm.projects().delete().execute.return_value = {"response": deleted, "done": True}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    result = resource_manager_project_delete(mocker.Mock(spec=Credentials), {"project_id": "tokyo-rain-123"})
+
+    assert result.outputs["state"] == "DELETE_REQUESTED"
+    assert mock_rm.projects().delete.call_args[1]["name"] == "projects/tokyo-rain-123"
+
+
+def test_resource_manager_project_undelete_success(mocker):
+    """
+    Given: A mocked Resource Manager client whose projects.undelete returns a completed Operation.
+    When: resource_manager_project_undelete is called.
+    Then: It returns CommandResults and calls undelete with the resource name and empty body.
+    """
+    from GCP import resource_manager_project_undelete
+
+    mock_rm = MagicMock()
+    mock_rm.projects().undelete().execute.return_value = {"response": _RM_PROJECT_RESPONSE, "done": True}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    result = resource_manager_project_undelete(mocker.Mock(spec=Credentials), {"project_id": "tokyo-rain-123"})
+
+    assert result.outputs_prefix == "GCP.ResourceManager.Projects"
+    call_kwargs = mock_rm.projects().undelete.call_args[1]
+    assert call_kwargs["name"] == "projects/tokyo-rain-123"
+    assert call_kwargs["body"] == {}
+
+
+def test_resource_manager_organization_search_success(mocker):
+    """
+    Given: A mocked Resource Manager client whose organizations.search returns organizations.
+    When: resource_manager_organization_search is called with a query.
+    Then: It returns CommandResults with the organizations list.
+    """
+    from GCP import resource_manager_organization_search
+
+    mock_rm = MagicMock()
+    mock_rm.organizations().search().execute.return_value = {"organizations": [_RM_ORGANIZATION_RESPONSE]}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    result = resource_manager_organization_search(mocker.Mock(spec=Credentials), {"query": "domain:example.com"})
+
+    orgs_output = result.outputs["GCP.ResourceManager.Organizations(val.name && val.name == obj.name)"]
+    assert orgs_output == [_RM_ORGANIZATION_RESPONSE]
+    assert mock_rm.organizations().search.call_args[1]["query"] == "domain:example.com"
+
+
+def test_resource_manager_organization_search_empty(mocker):
+    """
+    Given: A mocked Resource Manager client whose organizations.search returns no organizations.
+    When: resource_manager_organization_search is called.
+    Then: It returns CommandResults with a 'No organizations found.' message.
+    """
+    from GCP import resource_manager_organization_search
+
+    mock_rm = MagicMock()
+    mock_rm.organizations().search().execute.return_value = {}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    result = resource_manager_organization_search(mocker.Mock(spec=Credentials), {})
+
+    assert result.readable_output == "No organizations found."
+    assert not result.outputs
+
+
+def test_resource_manager_organization_get_success(mocker):
+    """
+    Given: A mocked Resource Manager client whose organizations.get returns an Organization.
+    When: resource_manager_organization_get is called with a resource name.
+    Then: It returns CommandResults with the organization and calls get with that name.
+    """
+    from GCP import resource_manager_organization_get
+
+    mock_rm = MagicMock()
+    mock_rm.organizations().get().execute.return_value = _RM_ORGANIZATION_RESPONSE
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    result = resource_manager_organization_get(mocker.Mock(spec=Credentials), {"name": "organizations/1234"})
+
+    assert result.outputs_prefix == "GCP.ResourceManager.Organizations"
+    assert result.outputs["name"] == "organizations/1234"
+    assert mock_rm.organizations().get.call_args[1]["name"] == "organizations/1234"
