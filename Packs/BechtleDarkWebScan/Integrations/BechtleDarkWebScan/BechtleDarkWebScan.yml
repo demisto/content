@@ -64,6 +64,7 @@ configuration:
   type: 8
   section: Connect
 defaultclassifier: BechtleDarkWebScan - Classifier
+defaultmapperin: "BechtleDarkWebScan-mapper"
 script:
   commands:
   - name: darkwebscan-getcompanies
