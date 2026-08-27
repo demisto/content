@@ -325,7 +325,7 @@ script:
       description: comma separeted list of event ids.
       isArray: true
     description: close list of events.
-  dockerimage: demisto/python3:3.12.14.12277297
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   script: '-'
   type: python
