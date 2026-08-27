@@ -42,6 +42,17 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1'
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 - display: Event Types To Fetch
   name: event_types_to_fetch
   section: Collect
