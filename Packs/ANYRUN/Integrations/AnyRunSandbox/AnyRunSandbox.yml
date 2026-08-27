@@ -122,6 +122,11 @@ script:
       defaultValue: '240'
       required: false
       type: String
+    - description: 'Automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: 'True'
+      required: false
+      type: String
     - auto: PREDEFINED
       description: 'Start file analysis from the specified directory.'
       name: obj_ext_startfolder
@@ -245,6 +250,11 @@ script:
       defaultValue: '240'
       required: false
       type: String
+    - description: 'Automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: 'True'
+      required: false
+      type: String
     - auto: PREDEFINED
       description: 'Browser name.'
       name: obj_ext_browser
@@ -335,6 +345,11 @@ script:
     - description: 'Timeout option. Size range: 10-660.'
       name: opt_timeout
       defaultValue: '240'
+      required: false
+      type: String
+    - description: 'Automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: 'True'
       required: false
       type: String
     - auto: PREDEFINED
@@ -441,6 +456,11 @@ script:
       defaultValue: '120'
       required: false
       type: String
+    - description: 'Automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: 'True'
+      required: false
+      type: String
     - auto: PREDEFINED
       description: 'Browser name.'
       name: obj_ext_browser
@@ -522,6 +542,11 @@ script:
       defaultValue: '120'
       required: false
       type: String
+    - description: 'Automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: 'True'
+      required: false
+      type: String
     - description: 'Optional command line.'
       name: obj_ext_cmd
       required: false
@@ -591,6 +616,11 @@ script:
     - description: 'Timeout option. Size range: 10-660.'
       name: opt_timeout
       defaultValue: '120'
+      required: false
+      type: String
+    - description: 'Automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: 'True'
       required: false
       type: String
     - auto: PREDEFINED

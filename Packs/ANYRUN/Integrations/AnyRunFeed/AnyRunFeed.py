@@ -109,39 +109,6 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
         indicator_payload = {
             "value": indicator_value,
             "type": {"ipv4-addr": "IP", "url": "URL", "domain-name": "Domain"}.get(indicator_type),
-            "fields": {
-                "firstseenbysource": indicator.get("created"),
-                "first_seen": indicator.get("created"),
-                "modified": indicator.get("modified"),
-                "last_seen": indicator.get("modified"),
-                "vendor": "ANY.RUN",
-                "source": "ANY.RUN TI Feed",
-                "tags": indicator.get("labels", []),
-                "publications": [
-                    {
-                        "title": ref.get("source_name", ""),
-                        "link": ref["url"],
-                        "source": "ANY.RUN TI Feed",
-                        "timestamp": indicator.get("created"),
-                    }
-                    for ref in indicator.get("external_references", [])
-                    if ref.get("url")
-                ],
-            },
-        }
-        if indicator_type == "domain-name":
-            fields["communitynotes"] = [
-                {
-                    "notes": ref["url"],
-                    "timestamp": indicator.get("created"),
-                }
-                for ref in indicator.get("external_references", [])
-                if ref.get("url")
-            ]
-
-        indicator_payload = {
-            "value": indicator_value,
-            "type": {"ipv4-addr": "IP", "url": "URL", "domain-name": "Domain"}.get(indicator_type),
             "fields": fields,
         }
 
