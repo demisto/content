@@ -1,3 +1,5 @@
+sectionorder:
+- Connect
 category: "IT Services"
 provider: Atlassian
 commonfields:
