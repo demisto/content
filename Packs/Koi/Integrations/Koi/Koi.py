@@ -1,5 +1,6 @@
 import json
 import traceback
+from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, UTC
@@ -25,6 +26,32 @@ Integration for fetching Alerts and Audit Logs from the KOI API.
 # Constants and helpers
 # =================================
 INTEGRATION_NAME = "KOI"
+
+# ============================================================================
+# TEMPORARY DEBUG BUILD MARKER — remove before the official release.
+# Bump the suffix each time you upload a new test build to the client tenant so
+# you can confirm from the logs which build is actually running (XSUP-73937).
+# Grep the tenant/engine logs for "KOI OOM-FIX BUILD" to verify the upload.
+# ============================================================================
+DEBUG_BUILD_MARKER = "KOI OOM-FIX BUILD oom-streaming-1"
+
+
+def _debug_rss(stage: str) -> None:
+    """TEMPORARY: log the process RSS (resident memory) at a given stage.
+
+    Reads /proc/self/statm (Linux runner) to report process memory in MB so we can
+    confirm on the tenant that memory stays ~flat per page instead of growing with
+    volume (XSUP-73937). Best-effort: never raises, and silently no-ops off Linux.
+
+    Remove this helper (and its call sites) before the official release.
+    """
+    try:
+        with open("/proc/self/statm") as statm:
+            pages = int(statm.readline().split()[1])  # resident set size, in pages
+        rss_mb = (pages * 4096) / (1024 * 1024)
+        demisto.debug(f"[{DEBUG_BUILD_MARKER}] RSS at {stage}: {rss_mb:.1f} MB")
+    except Exception as rss_err:  # pragma: no cover - diagnostics only
+        demisto.debug(f"[{DEBUG_BUILD_MARKER}] RSS at {stage}: unavailable ({rss_err})")
 
 
 class ApiPaths:
@@ -985,7 +1012,7 @@ class Client(ContentClient):
         demisto.debug("[API] Inventory search response received")
         return response
 
-    def send_events(self, events: list[dict]) -> None:
+    def send_events(self, events: list[dict], use_streaming_send: bool = False) -> None:
         """Send events to XSIAM using the ContentClient context.
 
         Wraps send_events_to_xsiam to keep event sending encapsulated
@@ -993,10 +1020,21 @@ class Client(ContentClient):
 
         Args:
             events: List of event dicts to send.
+            use_streaming_send: When True, serialize + gzip events one at a time
+                (free-as-you-go) to keep peak memory flat regardless of batch size.
+                NOTE: the streaming send consumes (empties) the input list, so only
+                use it on the fetch path (send-and-flush) — never on a display path
+                that must still show the events after sending (e.g. koi-get-events).
         """
-        demisto.debug(f"[API] Sending {len(events)} events to XSIAM")
-        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[API] Successfully sent {len(events)} events to XSIAM")
+        event_count = len(events)
+        demisto.debug(f"[API] Sending {event_count} events to XSIAM (streaming={use_streaming_send})")
+        send_events_to_xsiam(
+            events=events,
+            vendor=Config.VENDOR,
+            product=Config.PRODUCT,
+            use_streaming_send=use_streaming_send,
+        )
+        demisto.debug(f"[API] Successfully sent {event_count} events to XSIAM")
 
 
 # endregion
@@ -1016,6 +1054,9 @@ def test_module(client: Client) -> str:
     Returns:
         'ok' if test passed, otherwise raises an exception.
     """
+    # TEMPORARY (XSUP-73937): emit the build marker on Test click so you can verify the
+    # fixed build is deployed without waiting for a fetch cycle. Grep logs for "KOI OOM-FIX BUILD".
+    demisto.debug(f"[{DEBUG_BUILD_MARKER}] test-module invoked")
     demisto.debug("[Test Module] Starting...")
     try:
         utc_now = datetime.now(UTC)
@@ -1040,40 +1081,50 @@ def test_module(client: Client) -> str:
         raise
 
 
-def fetch_events_with_pagination(
+def _iter_event_pages(
     client: Client,
     log_type: LogType,
     created_after: str,
     created_before: str | None = None,
     max_events: int = Config.DEFAULT_MAX_FETCH,
     audit_types: list[str] | None = None,
-) -> list[dict]:
-    """Fetch events with pagination support.
+) -> Iterator[list[dict]]:
+    """Yield pages of events one at a time (never accumulates the full set).
 
-    This is the single unified pagination function used by all commands
-    (test-module, fetch-events, get-events).
+    This is the single pagination source of truth. The streaming fetch path
+    (_fetch_single_log_type) iterates these pages and sends-and-flushes each one,
+    so peak memory stays flat regardless of total volume (XSUP-73937). The
+    list-returning ``fetch_events_with_pagination`` (used by the bounded/low-volume
+    test-module and get-events paths) is a thin wrapper over this generator.
+
+    Pagination stopping rules are identical to the previous implementation:
+        - stop on an empty page,
+        - stop on a partial (last) page,
+        - stop at Config.MAX_PAGES_PER_FETCH,
+        - stop once ``max_events`` have been yielded (the final page is trimmed so
+          the total number of yielded events never exceeds ``max_events``).
 
     Args:
         client: The KOI client.
         log_type: The LogType to fetch.
         created_after: Start time (ISO 8601).
         created_before: End time (ISO 8601) or None.
-        max_events: Maximum number of events to fetch.
+        max_events: Maximum number of events to yield in total across pages.
         audit_types: Optional list of audit log types to filter by.
 
-    Returns:
-        List of event dictionaries.
+    Yields:
+        Non-empty lists of event dictionaries, one page at a time.
     """
-    events: list[dict] = []
     page = 1
     page_size = min(Config.MAX_PAGE_SIZE, max_events)
+    yielded = 0
 
     demisto.debug(
         f"[Pagination Loop] Start | Type: {log_type.type_string} | Goal: {max_events} | "
         f"Time: {created_after} -> {created_before or 'Now'}"
     )
 
-    while len(events) < max_events:
+    while yielded < max_events:
         page_events = client.get_events_page(
             log_type=log_type,
             created_at_gte=created_after,
@@ -1087,10 +1138,20 @@ def fetch_events_with_pagination(
             demisto.debug(f"[Pagination Loop] Page {page}: Empty. Stopping.")
             break
 
-        events.extend(page_events)
-        demisto.debug(f"[Pagination Loop] Page {page}: +{len(page_events)} events. Total: {len(events)}")
+        raw_count = len(page_events)
 
-        if len(page_events) < page_size:
+        # Trim the final page so the running total never exceeds max_events.
+        remaining = max_events - yielded
+        if raw_count > remaining:
+            demisto.debug(f"[Pagination Loop] Page {page}: trimming {raw_count} -> {remaining} to honor max_events")
+            page_events = page_events[:remaining]
+
+        yielded += len(page_events)
+        demisto.debug(f"[Pagination Loop] Page {page}: +{len(page_events)} events. Yielded total: {yielded}")
+
+        yield page_events
+
+        if raw_count < page_size:
             demisto.debug("[Pagination Loop] Last page (partial). Stopping.")
             break
 
@@ -1100,14 +1161,50 @@ def fetch_events_with_pagination(
             demisto.debug(f"[Pagination Loop] Max page limit reached ({Config.MAX_PAGES_PER_FETCH}). Stopping.")
             break
 
-        if len(events) >= max_events:
-            demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_events}). Stopping.")
+        if yielded >= max_events:
+            demisto.debug(f"[Pagination Loop] Threshold reached ({yielded} >= {max_events}). Stopping.")
             break
 
-    # Slice to limit
-    if len(events) > max_events:
-        demisto.debug(f"[Pagination Result] Slicing {len(events)} events to limit {max_events}")
-        events = events[:max_events]
+    demisto.debug(f"[Pagination Result] Yielded {yielded} {log_type.type_string} events across pages")
+
+
+def fetch_events_with_pagination(
+    client: Client,
+    log_type: LogType,
+    created_after: str,
+    created_before: str | None = None,
+    max_events: int = Config.DEFAULT_MAX_FETCH,
+    audit_types: list[str] | None = None,
+) -> list[dict]:
+    """Fetch events with pagination support, returning the full list.
+
+    This is a thin, list-materializing wrapper over ``_iter_event_pages`` used by
+    the *bounded, low-volume* paths (test-module and the koi-get-events command),
+    which need the events in hand for display. The high-volume fetch-events path
+    does NOT use this — it streams pages via ``_iter_event_pages`` and
+    send-and-flushes each one to avoid holding the full set (XSUP-73937).
+
+    Args:
+        client: The KOI client.
+        log_type: The LogType to fetch.
+        created_after: Start time (ISO 8601).
+        created_before: End time (ISO 8601) or None.
+        max_events: Maximum number of events to fetch.
+        audit_types: Optional list of audit log types to filter by.
+
+    Returns:
+        List of event dictionaries (at most ``max_events``).
+    """
+    events: list[dict] = []
+    for page_events in _iter_event_pages(
+        client,
+        log_type=log_type,
+        created_after=created_after,
+        created_before=created_before,
+        max_events=max_events,
+        audit_types=audit_types,
+    ):
+        events.extend(page_events)
 
     demisto.debug(f"[Pagination Result] Returning {len(events)} {log_type.type_string} events")
     return events
@@ -1174,10 +1271,17 @@ def get_events_command(client: Client, args: dict, params: dict) -> CommandResul
 
 @dataclass
 class FetchResult:
-    """Result of fetching events for a single log type."""
+    """Result of fetching events for a single log type.
+
+    Note: this intentionally carries only a *count* of the new events sent — not
+    the events themselves. Each page is streamed to XSIAM and freed inside
+    _fetch_single_log_type (send-and-flush), so peak memory stays flat regardless
+    of how many events are fetched. Holding the event objects here would re-create
+    the accumulate-then-send memory pattern that caused the OOM (XSUP-73937).
+    """
 
     log_type: LogType
-    new_events: list[dict] = field(default_factory=list)
+    new_event_count: int = 0
     last_run_updates: dict[str, str | list[str]] = field(default_factory=dict)
     error: str | None = None
 
@@ -1189,11 +1293,25 @@ def _fetch_single_log_type(
     max_events: int,
     audit_types: list[str] | None,
 ) -> FetchResult:
-    """Fetch and process events for a single log type.
+    """Fetch, process and stream events for a single log type, page by page.
 
     This function is executed in a separate thread by fetch_events_command via
     ThreadPoolExecutor, enabling parallel fetching of multiple log types.
     Each thread receives an immutable copy of last_run to avoid shared mutable state.
+
+    Memory model (send-and-flush):
+        Each page is fetched, deduplicated, time-stamped and immediately streamed to
+        XSIAM via ``client.send_events(page, use_streaming_send=True)``, then freed
+        before the next page is fetched. At most ~one page is ever held in memory,
+        so peak memory is independent of the total event volume. This replaces the
+        previous accumulate-all-then-send approach that caused the OOM (XSUP-73937).
+
+    High-water-mark (HWM) tracking is done incrementally as pages stream through:
+        events are returned sorted ascending by time, so the HWM timestamp is the
+        largest ``_time`` seen and ``hwm_ids`` are the IDs at that timestamp. When a
+        strictly-greater timestamp appears the ID set is reset; equal timestamps
+        extend it. This yields the same last_run state as the old whole-batch logic
+        without ever holding all events at once.
 
     The function handles its own errors — if an API call fails, the error is captured
     in FetchResult.error and the thread returns gracefully without affecting other threads.
@@ -1211,7 +1329,7 @@ def _fetch_single_log_type(
         audit_types: Optional audit type filter (only applied for AUDIT log type).
 
     Returns:
-        FetchResult containing new_events, last_run_updates, and any error message.
+        FetchResult containing new_event_count, last_run_updates, and any error message.
     """
     result = FetchResult(log_type=log_type)
 
@@ -1235,53 +1353,69 @@ def _fetch_single_log_type(
 
         created_after = get_formatted_utc_time(time_input)
 
-        # Fetch events using the unified pagination function
-        events = fetch_events_with_pagination(
+        # Incremental HWM state (computed as pages stream through — never holds all events).
+        hwm_time: str | None = None
+        hwm_ids: set[str] = set()
+        total_new = 0
+        page_index = 0  # TEMPORARY (XSUP-73937): for per-page RSS debug logging
+
+        for page in _iter_event_pages(
             client,
             log_type=log_type,
             created_after=created_after,
             max_events=max_events,
             audit_types=audit_types if log_type == LogType.AUDIT else None,
-        )
+        ):
+            # IMPORTANT ordering constraint (streaming send consumes its input):
+            # use_streaming_send=True empties the list passed to send_events (CSP sets each
+            # slot to None as it serializes, free-as-you-go). So EVERY value we derive from
+            # this page (HWM timestamp, HWM IDs, event count) MUST be computed BEFORE the send.
+            # After the streaming send returns, `new_events` (and, on the first run where dedup
+            # returns the same object, `page`) are hollowed out and must not be read again.
+            #
+            # HWM is derived from the FULL page (before dedup) so state advances even if every
+            # event on the page turns out to be a duplicate. hwm_time / hwm_ids hold only scalar
+            # strings — never references to the event dicts — so they are unaffected by the send.
+            for event in page:
+                event_time = extract_time_from_event(event, log_type)
+                if not event_time:
+                    continue
+                if hwm_time is None or event_time > hwm_time:
+                    hwm_time = event_time
+                    hwm_ids = set()
+                if event_time == hwm_time and (event_id := get_event_id(event)):
+                    hwm_ids.add(event_id)
 
-        if not events:
-            demisto.debug(f"[Fetch] {log_type.type_string}: No events found.")
-            return result
+            page_index += 1
+            # Deduplicate this page against the previous run's IDs, then send-and-flush.
+            new_events = deduplicate_events(page, last_fetched_ids)
+            if new_events:
+                add_time_to_events(new_events, log_type)
+                count = len(new_events)  # capture the count BEFORE the streaming send empties the list
+                total_new += count
+                # Stream this page to XSIAM and free it before fetching the next page.
+                # (Do NOT read new_events / page after this call — they are consumed.)
+                client.send_events(new_events, use_streaming_send=True)
+                demisto.debug(f"[Fetch] {log_type.type_string}: streamed {count} new events (running total {total_new})")
+            # page + new_events go out of scope here → freed before the next page.
+            # TEMPORARY (XSUP-73937): confirm RSS stays ~flat across pages, not growing with volume.
+            _debug_rss(f"{log_type.type_string} after page {page_index}")
 
-        # Pre-compute time values to avoid redundant extract_time_from_event calls.
-        # Events are already sorted chronologically by the API (sort_direction=asc).
-        event_times: list[str] = [extract_time_from_event(event, log_type) or "" for event in events]
+        result.new_event_count = total_new
+        demisto.debug(f"[Fetch] {log_type.type_string}: {total_new} new events sent after dedup")
 
-        # Deduplicate
-        new_events = deduplicate_events(events, last_fetched_ids)
+        # Persist the incrementally computed HWM state.
+        if hwm_time:
+            ids_at_last_timestamp = hwm_ids
+            # If the HWM timestamp hasn't changed, merge with previous IDs to prevent duplicates.
+            if hwm_time == last_fetch_timestamp:
+                ids_at_last_timestamp = set(last_fetched_ids) | hwm_ids
 
-        if new_events:
-            add_time_to_events(new_events, log_type)
-            result.new_events = new_events
-            demisto.debug(f"[Fetch] {log_type.type_string}: {len(new_events)} new events after dedup")
+            result.last_run_updates[last_fetch_key] = hwm_time
+            result.last_run_updates[previous_ids_key] = list(ids_at_last_timestamp)
+            demisto.debug(f"[Fetch] {log_type.type_string}: State updated. New HWM: {hwm_time}")
         else:
-            demisto.debug(f"[Fetch] {log_type.type_string}: All events were duplicates.")
-
-        # Update Last Run - always update based on ALL fetched events (not just new_events)
-        new_last_run_time = event_times[-1] if event_times else None
-
-        if new_last_run_time:
-            # Collect IDs for the new high-water mark timestamp using pre-computed times
-            ids_at_last_timestamp: list[str] = [
-                event_id
-                for event, event_time in zip(events, event_times)
-                if event_time == new_last_run_time and (event_id := get_event_id(event))
-            ]
-
-            # If the HWM timestamp hasn't changed, merge with previous IDs to prevent duplicates
-            if new_last_run_time == last_fetch_timestamp:
-                ids_at_last_timestamp = list(set(last_fetched_ids) | set(ids_at_last_timestamp))
-
-            result.last_run_updates[last_fetch_key] = new_last_run_time
-            result.last_run_updates[previous_ids_key] = ids_at_last_timestamp
-            demisto.debug(f"[Fetch] {log_type.type_string}: State updated. New HWM: {new_last_run_time}")
-        else:
-            demisto.debug(f"[Fetch] {log_type.type_string}: Warning: Last event missing time. State not updated.")
+            demisto.debug(f"[Fetch] {log_type.type_string}: No events with a time field. State not updated.")
 
     except Exception as e:
         result.error = str(e)
@@ -1297,16 +1431,22 @@ def fetch_events_command(client: Client) -> None:
     simultaneously. This ensures that if one type takes a long time or fails,
     the other type still completes within the XSOAR execution timeout.
 
+    Memory model:
+        Events are NO LONGER accumulated across log types and sent in one batch.
+        Each log type streams its own pages to XSIAM page-by-page inside
+        _fetch_single_log_type (send-and-flush with use_streaming_send=True), so
+        this function only merges *counts* and last_run state — it never holds the
+        events. This keeps peak memory flat and fixes the OOM (XSUP-73937).
+
     Architecture:
         1. Single getLastRun() read at the start.
-        2. Each log type is fetched in a separate thread via _fetch_single_log_type().
-           Each thread receives an immutable copy of last_run (no shared mutable state).
+        2. Each log type is fetched + streamed in a separate thread via
+           _fetch_single_log_type(). Each thread receives an immutable copy of last_run.
         3. After all threads complete, results are merged sequentially:
-           - New events from successful types are collected.
+           - New-event counts from successful types are summed (for logging only).
            - last_run updates from successful types are applied.
            - Failed types are skipped (their previous state is preserved).
-        4. All events are sent to XSIAM in a single batch.
-        5. Single setLastRun() write at the end.
+        4. Single setLastRun() write at the end.
 
     Race condition prevention:
         - One getLastRun() call, one setLastRun() call.
@@ -1316,6 +1456,11 @@ def fetch_events_command(client: Client) -> None:
     Args:
         client: The KOI client.
     """
+    # TEMPORARY (XSUP-73937): build marker + start-of-cycle RSS. Grep the tenant logs for
+    # "KOI OOM-FIX BUILD" to confirm the fixed build is deployed and to read the memory usage.
+    demisto.debug(f"[{DEBUG_BUILD_MARKER}] fetch-events cycle START")
+    _debug_rss("cycle start")
+
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH))
 
@@ -1356,24 +1501,28 @@ def fetch_events_command(client: Client) -> None:
             except Exception as e:
                 demisto.debug(f"[Fetch] {log_type.type_string}: Thread failed: {e!s}")
 
-    # Merge results — collect all new events and last_run updates
-    all_new_events: list[dict] = []
+    # Merge results — events were already streamed per page; here we only merge
+    # last_run updates and sum counts for logging (no event objects are held).
+    total_new_events = 0
     updated_last_run: dict[str, str | list[str]] = dict(last_run)
 
     for result in results:
         if result.error:
             demisto.debug(f"[Fetch] {result.log_type.type_string}: Skipped due to error: {result.error}")
             continue
-        all_new_events.extend(result.new_events)
+        total_new_events += result.new_event_count
         updated_last_run.update(result.last_run_updates)
 
-    # Send all successfully fetched events to XSIAM
-    if all_new_events:
-        client.send_events(all_new_events)
+    demisto.debug(f"[Fetch] Total new events streamed to XSIAM this cycle: {total_new_events}")
 
     # Single write of last_run state — preserves progress from successful types
     demisto.setLastRun(updated_last_run)
     demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
+
+    # TEMPORARY (XSUP-73937): end-of-cycle RSS. Compare against "cycle start" and across cycles
+    # of different volume — this peak should stay ~flat (≈ floor + one page), not grow with volume.
+    _debug_rss("cycle end")
+    demisto.debug(f"[{DEBUG_BUILD_MARKER}] fetch-events cycle END | new events this cycle: {total_new_events}")
 
 
 def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
