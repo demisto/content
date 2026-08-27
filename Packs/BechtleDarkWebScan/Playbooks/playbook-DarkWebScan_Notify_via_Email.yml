@@ -54,7 +54,7 @@ tasks:
       - "3"
     scriptarguments:
       add_fields_to_summarize_context:
-        simple: ${issue.initial_evidence}
+        simple: ${incident.initial_evidence}
       id:
         simple: ${inputs.IssueID}
     separatecontext: false
@@ -298,7 +298,7 @@ inputs:
           period_matches_newline: {}
           regex:
             value:
-              simple: '[^a-zA-Z0-9._$:\W-]'
+              simple: '[^a-zA-Z0-9._$:\s-]'
   required: false
   description: Issue Details
   playbookInputQuery:
