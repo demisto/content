@@ -10,7 +10,7 @@ def util_load_json(path):
 
 
 def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dict = {}, retries: int = 3):
-    if url_suffix == "/secrets" or full_url.endswith("/secrets"):
+    if url_suffix == "/incidents/secrets" or full_url.endswith("/incidents/secrets"):
         return util_load_json("test_data/incident_response.json")
     elif full_url == "next_url":
         return util_load_json("test_data/audit_log_response_next_link.json")
@@ -25,90 +25,11 @@ def client(mocker):
     headers = {"Authorization": "Token mock"}
     mocker.patch.object(Client, "_http_request", side_effect=http_mock)
     return Client(
-        deployment_type="Enterprise",
         base_url="https://mock.gitguardian.com",
         verify=False,
         proxy=False,
         headers=headers,
     )
-
-
-def test_enterprise_deployment_uses_legacy_endpoints():
-    """
-    Given: A Client configured with the Enterprise deployment type.
-    When: Inspecting the resolved event-type endpoints.
-    Then: The legacy Enterprise endpoints (/secrets, /audit_logs) are used.
-    """
-    from GitGuardianEventCollector import Client
-
-    enterprise_client = Client(
-        deployment_type="Enterprise",
-        base_url="https://enterprise.gitguardian.com/api/v1",
-        verify=False,
-        proxy=False,
-        headers={"Authorization": "Token mock"},
-    )
-    assert enterprise_client.event_type_to_endpoint["incident"] == "/secrets"
-    assert enterprise_client.event_type_to_endpoint["audit_log"] == "/audit_logs"
-
-
-def test_saas_deployment_uses_saas_endpoints():
-    """
-    Given: A Client configured with the SaaS deployment type.
-    When: Inspecting the resolved event-type endpoints.
-    Then: The SaaS endpoints (/incidents/secrets, /audit_logs) are used.
-    """
-    from GitGuardianEventCollector import Client
-
-    saas_client = Client(
-        deployment_type="SaaS",
-        base_url="https://api.gitguardian.com/v1",
-        verify=False,
-        proxy=False,
-        headers={"Authorization": "Token mock"},
-    )
-    assert saas_client.event_type_to_endpoint["incident"] == "/incidents/secrets"
-    assert saas_client.event_type_to_endpoint["audit_log"] == "/audit_logs"
-
-
-def test_unknown_deployment_falls_back_to_enterprise():
-    """
-    Given: A Client configured with an unknown deployment type.
-    When: Inspecting the resolved event-type endpoints.
-    Then: The Client falls back to the Enterprise endpoints.
-    """
-    from GitGuardianEventCollector import Client
-
-    unknown_client = Client(
-        deployment_type="Unknown",
-        base_url="https://mock.gitguardian.com",
-        verify=False,
-        proxy=False,
-        headers={"Authorization": "Token mock"},
-    )
-    assert unknown_client.event_type_to_endpoint["incident"] == "/secrets"
-    assert unknown_client.event_type_to_endpoint["audit_log"] == "/audit_logs"
-
-
-def test_saas_client_requests_correct_incident_endpoint(mocker):
-    """
-    Given: A SaaS Client.
-    When: Retrieving incident events.
-    Then: The request is made against the SaaS incidents endpoint (/incidents/secrets).
-    """
-    from GitGuardianEventCollector import Client
-
-    http_request_mock = mocker.patch.object(Client, "_http_request", side_effect=http_mock)
-    saas_client = Client(
-        deployment_type="SaaS",
-        base_url="https://api.gitguardian.com/v1",
-        verify=False,
-        proxy=False,
-        headers={"Authorization": "Token mock"},
-    )
-    last_run = {"from_fetch_time": "2024-01-03T21:10:40Z", "to_fetch_time": "2024-01-03T21:10:40Z"}
-    saas_client.search_events(last_run, 1, "incident")
-    assert http_request_mock.call_args.kwargs["url_suffix"] == "/incidents/secrets"
 
 
 def test_get_events_command_limit(client):
@@ -227,3 +148,60 @@ def test_fetch_events_with_nextTrigger(client, mocker):
     assert next_run["incident"].get("next_url_link") == ""
     assert not next_run["incident"]["is_pagination_in_progress"]
     assert next_run["incident"].get("from_fetch_time") == "2024-01-03T21:10:42Z"
+
+
+def test_retrieve_events_uses_incidents_secrets_endpoint(client, mocker):
+    """
+    Given: A mock GitGuardian client.
+    When: Retrieving incident events.
+    Then: Ensure the request is made against the '/incidents/secrets' endpoint (SaaS-compatible),
+          and not the deprecated '/secrets' endpoint.
+    """
+    http_request_mock = mocker.patch.object(client, "_http_request", side_effect=http_mock)
+    last_run = {"from_fetch_time": "2024-01-03T21:10:40Z", "to_fetch_time": "2024-01-03T21:10:40Z"}
+    client.search_events(last_run, 1, "incident")
+    assert http_request_mock.call_args.kwargs["url_suffix"] == "/incidents/secrets"
+
+
+def test_add_time_to_events_sets_entry_status_new(client):
+    """
+    Given: An incident whose last_occurrence_date equals its first_occurrence_date.
+    When: Running add_time_to_events.
+    Then: Ensure the _ENTRY_STATUS is set to 'new'.
+    """
+    events = [{"id": 1, "first_occurrence_date": "2024-01-03T21:05:38Z", "last_occurrence_date": "2024-01-03T21:05:38Z"}]
+    client.add_time_to_events(events, "incident")
+    assert events[0]["_ENTRY_STATUS"] == "new"
+
+
+def test_add_time_to_events_sets_entry_status_updated(client):
+    """
+    Given: An incident whose last_occurrence_date is later than its first_occurrence_date.
+    When: Running add_time_to_events.
+    Then: Ensure the _ENTRY_STATUS is set to 'updated'.
+    """
+    events = [{"id": 1, "first_occurrence_date": "2024-01-03T21:05:38Z", "last_occurrence_date": "2024-02-03T21:05:38Z"}]
+    client.add_time_to_events(events, "incident")
+    assert events[0]["_ENTRY_STATUS"] == "updated"
+
+
+def test_add_time_to_events_omits_entry_status_without_first_occurrence(client):
+    """
+    Given: An incident missing the first_occurrence_date field.
+    When: Running add_time_to_events.
+    Then: Ensure the _ENTRY_STATUS is omitted.
+    """
+    events = [{"id": 1, "last_occurrence_date": "2024-01-03T21:05:38Z"}]
+    client.add_time_to_events(events, "incident")
+    assert "_ENTRY_STATUS" not in events[0]
+
+
+def test_add_time_to_events_omits_entry_status_for_audit_logs(client):
+    """
+    Given: An audit log event.
+    When: Running add_time_to_events.
+    Then: Ensure the _ENTRY_STATUS is not added (it applies to incidents only).
+    """
+    events = [{"id": 1, "gg_created_at": "2024-01-03T21:05:38Z"}]
+    client.add_time_to_events(events, "audit_log")
+    assert "_ENTRY_STATUS" not in events[0]

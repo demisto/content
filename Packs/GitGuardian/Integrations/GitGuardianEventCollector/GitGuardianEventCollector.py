@@ -12,53 +12,20 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 VENDOR = "gitguardian"
 PRODUCT = "enterprise"
-PRODUCT_SAAS = "saas"
 DEFAULT_PAGE_SIZE = 1000
-
-# Deployment types
-DEPLOYMENT_ENTERPRISE = "Enterprise"
-DEPLOYMENT_SAAS = "SaaS"
-
-# XSIAM product name per deployment type
-DEPLOYMENT_TO_PRODUCT = {
-    DEPLOYMENT_ENTERPRISE: PRODUCT,
-    DEPLOYMENT_SAAS: PRODUCT_SAAS,
-}
-
-# API base path per deployment type (Enterprise: /api/v1, SaaS: /v1)
-DEPLOYMENT_TO_BASE_PATH = {
-    DEPLOYMENT_ENTERPRISE: "/api/v1",
-    DEPLOYMENT_SAAS: "/v1",
-}
-
 EVENT_TYPE_TO_TIME_MAPPING = {
     "audit_log": "gg_created_at",
     "incident": "last_occurrence_date",
 }
-
-# Endpoints per deployment type (the incidents path differs between deployments)
-DEPLOYMENT_TO_EVENT_TYPE_ENDPOINT = {
-    DEPLOYMENT_ENTERPRISE: {
-        "audit_log": "/audit_logs",
-        "incident": "/secrets",
-    },
-    DEPLOYMENT_SAAS: {
-        "audit_log": "/audit_logs",
-        "incident": "/incidents/secrets",
-    },
+EVENT_TYPE_TO_ENDPOINT = {
+    "audit_log": "/audit_logs",
+    "incident": "/incidents/secrets",
 }
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    def __init__(self, deployment_type: str, **kwargs):
-        super().__init__(**kwargs)
-        self.deployment_type = deployment_type
-        self.event_type_to_endpoint = DEPLOYMENT_TO_EVENT_TYPE_ENDPOINT.get(
-            deployment_type, DEPLOYMENT_TO_EVENT_TYPE_ENDPOINT[DEPLOYMENT_ENTERPRISE]
-        )
-
     def search_events(
         self, last_run: dict[str, Any], max_events_per_fetch: int, event_type: str
     ) -> tuple[List[Dict], List[int], str, bool, str]:  # noqa: E501
@@ -130,7 +97,7 @@ class Client(BaseClient):
                 demisto.debug(f"GG: Fetching events using the params: {params}")
                 response = self._http_request(
                     method="GET",
-                    url_suffix=self.event_type_to_endpoint.get(event_type, ""),
+                    url_suffix=EVENT_TYPE_TO_ENDPOINT.get(event_type, ""),
                     params=params,
                     retries=3,
                 )
@@ -191,6 +158,26 @@ class Client(BaseClient):
                 create_time = arg_to_datetime(arg=event.get(EVENT_TYPE_TO_TIME_MAPPING[event_type]))
                 event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
                 event["source_log_type"] = event_type
+                Client.add_entry_status_to_event(event, event_type)
+
+    @staticmethod
+    def add_entry_status_to_event(event: Dict, event_type: str):
+        """
+        Adds the _ENTRY_STATUS key to incident events, discriminating new vs. updated incidents.
+        An incident is 'new' when its last_occurrence_date equals its first_occurrence_date,
+        and 'updated' when the last_occurrence_date is later than the first_occurrence_date.
+        The status is omitted when either occurrence date is missing.
+        Args:
+            event: Dict - the event to add the _ENTRY_STATUS key to.
+            event_type: str - The type of the event.
+        """
+        if event_type != "incident":
+            return
+        first_occurrence = arg_to_datetime(arg=event.get("first_occurrence_date"))
+        last_occurrence = arg_to_datetime(arg=event.get("last_occurrence_date"))
+        if not first_occurrence or not last_occurrence:
+            return
+        event["_ENTRY_STATUS"] = "new" if last_occurrence == first_occurrence else "updated"
 
     @staticmethod
     def remove_duplicated_events(events: List[Dict], prev_fetched_events_id: List[int]):
@@ -373,10 +360,7 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     api_key = params.get("api_key", {}).get("password")
-    deployment_type = params.get("deployment_type") or DEPLOYMENT_ENTERPRISE
-    base_path = DEPLOYMENT_TO_BASE_PATH.get(deployment_type, DEPLOYMENT_TO_BASE_PATH[DEPLOYMENT_ENTERPRISE])
-    base_url = urljoin(params.get("url"), base_path)
-    product = DEPLOYMENT_TO_PRODUCT.get(deployment_type, DEPLOYMENT_TO_PRODUCT[DEPLOYMENT_ENTERPRISE])
+    base_url = urljoin(params.get("url"), "/api/v1")
     proxy = params.get("proxy", False)
     verify = not params.get("insecure", False)
     max_events_per_fetch = int(params.get("max_events_per_fetch", 5000))
@@ -415,7 +399,7 @@ def main() -> None:  # pragma: no cover
     demisto.debug(f"Command being called is {command}")
     try:
         headers = {"Authorization": f"Token {api_key}"}
-        client = Client(deployment_type=deployment_type, base_url=base_url, verify=verify, headers=headers, proxy=proxy)
+        client = Client(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
         if command == "test-module":
             result = test_module(client, current_fetch_time)
@@ -427,7 +411,7 @@ def main() -> None:  # pragma: no cover
             if should_push_events:
                 client.add_time_to_events(audit_logs, "audit_log")
                 client.add_time_to_events(incidents, "incident")
-                send_events_to_xsiam(incidents + audit_logs, vendor=VENDOR, product=product)
+                send_events_to_xsiam(incidents + audit_logs, vendor=VENDOR, product=PRODUCT)
             return_results(results)
 
         elif command == "fetch-events":
@@ -438,7 +422,7 @@ def main() -> None:  # pragma: no cover
             )
             client.add_time_to_events(audit_logs, "audit_log")
             client.add_time_to_events(incidents, "incident")
-            send_events_to_xsiam(incidents + audit_logs, vendor=VENDOR, product=product)
+            send_events_to_xsiam(incidents + audit_logs, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f"GG: Setting next run: {next_run}.")
             demisto.setLastRun(next_run)
         else:

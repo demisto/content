@@ -7,7 +7,7 @@ commonfields:
   id: GitGuardianEventCollector
   version: -1
 configuration:
-- defaultvalue: https://enterprise.gitguardian.com/
+- defaultvalue: https://api.gitguardian.com
   display: Server URL
   name: url
   required: false
@@ -19,22 +19,12 @@ configuration:
   type: 9
   required: true
   section: Connect
-- defaultvalue: Enterprise
-  section: Connect
-  display: Deployment type
-  name: deployment_type
-  required: false
-  type: 15
-  additionalinfo: The deployment type. Select "Enterprise" for self-hosted deployments, or "SaaS" for the GitGuardian SaaS deployment.
-  options:
-  - Enterprise
-  - SaaS
-- display: Max number of events per fetch
+- defaultvalue: 5000
+  section: Collect
+  display: Max number of events per fetch
   name: max_events_per_fetch
   required: false
   type: 0
-  section: Collect
-  defaultvalue: '5000'
   additionalinfo: Maximum number of events per fetch per event type. It is recommended to choose a number in multiples of 1000.
 - display: Trust any certificate (not secure)
   name: insecure
@@ -74,7 +64,7 @@ script:
       name: from_date
       required: false
     deprecated: false
-    description: Gets events from GitGuardian. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    description: Gets events from GitGuardian.
     execution: false
     name: gitguardian-get-events
   dockerimage: demisto/python3:3.12.13.10116658
