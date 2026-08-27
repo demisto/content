@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import AkamaiProlexic
 import pytest
 
 from AkamaiProlexic import (
@@ -129,10 +130,17 @@ class TestHelpers:
         assert out.endswith("Z")
         assert "T" in out
 
-    def test_make_event_id_includes_type_and_time(self):
-        raw = {"id": "abc", "firstOccur": "2026-04-20T10:00:00Z"}
+    def test_make_event_id_includes_type_time_and_revision(self):
+        """Critical Events append ``recentOccur`` so in-place updates get a
+        distinct key (see ``SOURCE_CONFIG[...]["revision_field"]``)."""
+        raw = {"id": "abc", "firstOccur": "2026-04-20T10:00:00Z", "recentOccur": "2026-04-20T12:00:00Z"}
         out = make_event_id(CRITICAL_EVENTS, raw, "firstOccur")
-        assert out == "Critical Events:abc:2026-04-20T10:00:00Z"
+        assert out == "Critical Events:abc:2026-04-20T10:00:00Z:2026-04-20T12:00:00Z"
+
+    def test_make_event_id_revision_changes_key(self):
+        base = {"id": "abc", "firstOccur": "2026-04-20T10:00:00Z", "recentOccur": "2026-04-20T10:00:00Z"}
+        updated = {**base, "recentOccur": "2026-04-20T12:00:00Z"}
+        assert make_event_id(CRITICAL_EVENTS, base, "firstOccur") != make_event_id(CRITICAL_EVENTS, updated, "firstOccur")
 
     def test_make_event_id_falls_back_to_alternative_id(self):
         raw = {"eventId": "xyz", "eventStartTime": "2026-04-20T11:00:00Z"}
@@ -244,7 +252,7 @@ class TestFilterAndDedup:
             max_events=100,
         )
         assert all(e["event_type"] == EVENTS for e in events)
-        assert all(e["SOURCE_LOG_TYPE"] == "EVENTS" for e in events)
+        assert all(e["source_log_type"] == "EVENTS" for e in events)
         assert all("_time" in e for e in events)
 
     def test_dedup_unions_when_cursor_does_not_advance(self):
@@ -286,6 +294,124 @@ class TestFilterAndDedup:
         assert hw == "2026-04-20T12:45:00.000000Z"
         # Only ce-3 sits at the new high-water mark.
         assert retained == {make_event_id(CRITICAL_EVENTS, events[-1], "firstOccur")}
+
+    def test_updated_critical_event_is_not_deduped_away(self):
+        """Regression test for PR review (44059).
+
+        Prolexic updates a critical event in place: ``recentOccur`` advances while
+        ``firstOccur`` stays fixed. The dedup key must therefore include
+        ``recentOccur``, otherwise every update collides with the original key and
+        the "updated" entry is silently dropped instead of being forwarded.
+        """
+        start = "2026-01-01T00:00:00.000000Z"
+        original = {"id": "ce-1", "firstOccur": "2026-01-01T10:00:00Z", "recentOccur": "2026-01-01T10:00:00Z"}
+
+        first_batch, high_water, retained = filter_and_dedup(
+            raw_events=[original],
+            event_type=CRITICAL_EVENTS,
+            last_fetch_iso=start,
+            fetched_ids=set(),
+            max_events=100,
+        )
+        assert [e["_ENTRY_STATUS"] for e in first_batch] == ["new"]
+
+        updated = {"id": "ce-1", "firstOccur": "2026-01-01T10:00:00Z", "recentOccur": "2026-01-01T14:00:00Z"}
+        second_batch, _, _ = filter_and_dedup(
+            raw_events=[updated],
+            event_type=CRITICAL_EVENTS,
+            last_fetch_iso=high_water,
+            fetched_ids=set(retained),
+            max_events=100,
+        )
+        assert [e["_ENTRY_STATUS"] for e in second_batch] == ["updated"]
+
+    def test_unchanged_critical_event_is_still_deduped(self):
+        """Counter-test to the above: an unchanged replay must stay deduped."""
+        start = "2026-01-01T00:00:00.000000Z"
+        event = {"id": "ce-1", "firstOccur": "2026-01-01T10:00:00Z", "recentOccur": "2026-01-01T10:00:00Z"}
+
+        _, high_water, retained = filter_and_dedup(
+            raw_events=[event],
+            event_type=CRITICAL_EVENTS,
+            last_fetch_iso=start,
+            fetched_ids=set(),
+            max_events=100,
+        )
+        replay, _, _ = filter_and_dedup(
+            raw_events=[event],
+            event_type=CRITICAL_EVENTS,
+            last_fetch_iso=high_water,
+            fetched_ids=set(retained),
+            max_events=100,
+        )
+        assert replay == []
+
+    def test_epoch_millisecond_timestamps_are_ordered_chronologically(self):
+        """Regression test for PR review (44059).
+
+        Prolexic may return epoch-millisecond timestamps. Sorting those by their
+        string form is not chronological ("999999999999" sorts after
+        "1767225600000"), and because the walk stops at ``max_events`` and only
+        moves the cursor forward, a mis-ordered walk skips events permanently.
+        """
+        base = 1767225600000  # 2026-01-01T00:00:00Z
+        raw_events = [
+            {"id": "e0", "eventStartTime": base},
+            {"id": "e1", "eventStartTime": base + 60000},
+            {"id": "e2", "eventStartTime": 999999999999},  # older, but sorts last as a string
+            {"id": "e3", "eventStartTime": base + 120000},
+        ]
+
+        selected, _, _ = filter_and_dedup(
+            raw_events=raw_events,
+            event_type=EVENTS,
+            last_fetch_iso="1970-01-01T00:00:00.000000Z",
+            fetched_ids=set(),
+            max_events=100,
+        )
+        timestamps = [e["_time"] for e in selected]
+        assert timestamps == sorted(timestamps)
+        assert [e["id"] for e in selected] == ["e2", "e0", "e1", "e3"]
+
+    def test_truncated_events_are_not_lost_on_the_next_run(self):
+        """Events dropped by ``max_events`` must be picked up by the next fetch."""
+        base = 1767225600000
+        raw_events = [{"id": f"e{i}", "eventStartTime": base + (i * 60000)} for i in range(5)]
+
+        first, high_water, retained = filter_and_dedup(
+            raw_events=raw_events,
+            event_type=EVENTS,
+            last_fetch_iso="1970-01-01T00:00:00.000000Z",
+            fetched_ids=set(),
+            max_events=2,
+        )
+        second, _, _ = filter_and_dedup(
+            raw_events=raw_events,
+            event_type=EVENTS,
+            last_fetch_iso=high_water,
+            fetched_ids=set(retained),
+            max_events=100,
+        )
+        delivered = [e["id"] for e in first] + [e["id"] for e in second]
+        assert delivered == ["e0", "e1", "e2", "e3", "e4"]
+
+    def test_retained_dedup_ids_are_bounded(self, mocker):
+        """``last_run`` must not grow without bound when the cursor stalls."""
+        mocker.patch.object(AkamaiProlexic, "MAX_RETAINED_DEDUP_IDS", 10)
+        cursor = "2026-01-01T00:00:00.000000Z"
+        retained: set = set()
+
+        for batch in range(8):
+            raw_events = [{"id": f"x{batch}-{i}", "eventStartTime": cursor} for i in range(5)]
+            _, cursor, retained = filter_and_dedup(
+                raw_events=raw_events,
+                event_type=EVENTS,
+                last_fetch_iso=cursor,
+                fetched_ids=set(retained),
+                max_events=100,
+            )
+
+        assert len(retained) <= 10
 
 
 # --------------------------------------------------------------------------- #
@@ -517,6 +643,108 @@ class TestParseMaxEventsPerFetch:
 
     def test_accepts_valid_integer(self):
         assert _parse_max_events_per_fetch("500") == 500
+
+
+class TestGetEventsLimitValidation:
+    """PR review (44059): the ``limit`` argument must get the same explicit
+    validation as ``max_events_per_fetch`` rather than silently coercing ``0``
+    to the default via ``arg_to_number(...) or 50``.
+    """
+
+    def _client(self) -> Client:
+        return _build_client()
+
+    def test_zero_limit_is_rejected(self, mocker):
+        client = self._client()
+        mocker.patch.object(client, "get_events", return_value=EVENTS_RESPONSE)
+        with pytest.raises(Exception, match="limit"):
+            get_events_command(
+                client=client,
+                args={"limit": "0", "event_type": "Events"},
+                contract_id="CONTRACT-1",
+                configured_types=[EVENTS],
+                first_fetch_iso="2026-04-20T00:00:00.000000Z",
+            )
+
+    def test_negative_limit_is_rejected(self, mocker):
+        client = self._client()
+        mocker.patch.object(client, "get_events", return_value=EVENTS_RESPONSE)
+        with pytest.raises(Exception, match="limit"):
+            get_events_command(
+                client=client,
+                args={"limit": "-1", "event_type": "Events"},
+                contract_id="CONTRACT-1",
+                configured_types=[EVENTS],
+                first_fetch_iso="2026-04-20T00:00:00.000000Z",
+            )
+
+    def test_omitted_limit_uses_default(self, mocker):
+        client = self._client()
+        mocker.patch.object(client, "get_events", return_value=EVENTS_RESPONSE)
+        events, _ = get_events_command(
+            client=client,
+            args={"event_type": "Events"},
+            contract_id="CONTRACT-1",
+            configured_types=[EVENTS],
+            first_fetch_iso="2026-04-20T00:00:00.000000Z",
+        )
+        assert len(events) <= AkamaiProlexic.DEFAULT_GET_EVENTS_LIMIT
+
+
+class TestGetEventsEndTime:
+    """PR review (44059): the ``*-get-events`` handler must accept the standard
+    ``end_time`` argument. The Prolexic endpoints take no time window, so the
+    bound is applied client-side after normalization.
+    """
+
+    def test_end_time_excludes_later_events(self, mocker):
+        client = _build_client()
+        mocker.patch.object(client, "get_events", return_value=EVENTS_RESPONSE)
+
+        unbounded, _ = get_events_command(
+            client=client,
+            args={"event_type": "Events"},
+            contract_id="CONTRACT-1",
+            configured_types=[EVENTS],
+            first_fetch_iso="2026-04-20T00:00:00.000000Z",
+        )
+        bounded, _ = get_events_command(
+            client=client,
+            args={"event_type": "Events", "end_time": "2026-04-20T00:00:01Z"},
+            contract_id="CONTRACT-1",
+            configured_types=[EVENTS],
+            first_fetch_iso="2026-04-20T00:00:00.000000Z",
+        )
+        assert len(bounded) < len(unbounded)
+        assert bounded == []
+
+    def test_end_time_keeps_events_within_window(self, mocker):
+        client = _build_client()
+        mocker.patch.object(client, "get_events", return_value=EVENTS_RESPONSE)
+        events, _ = get_events_command(
+            client=client,
+            args={"event_type": "Events", "end_time": "2030-01-01T00:00:00Z"},
+            contract_id="CONTRACT-1",
+            configured_types=[EVENTS],
+            first_fetch_iso="2026-04-20T00:00:00.000000Z",
+        )
+        assert events
+
+    def test_end_time_before_start_time_is_rejected(self, mocker):
+        client = _build_client()
+        mocker.patch.object(client, "get_events", return_value=EVENTS_RESPONSE)
+        with pytest.raises(Exception, match="end_time must be later than start_time"):
+            get_events_command(
+                client=client,
+                args={
+                    "event_type": "Events",
+                    "start_time": "2026-04-20T10:00:00Z",
+                    "end_time": "2026-04-19T10:00:00Z",
+                },
+                contract_id="CONTRACT-1",
+                configured_types=[EVENTS],
+                first_fetch_iso="2026-04-20T00:00:00.000000Z",
+            )
 
 
 # --------------------------------------------------------------------------- #

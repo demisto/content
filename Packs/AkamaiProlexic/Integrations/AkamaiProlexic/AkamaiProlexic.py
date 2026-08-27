@@ -38,10 +38,15 @@ EVENTS = "Events"
 
 # Per-source configuration — exact endpoints/timestamp fields come from the
 # Akamai Prolexic Analytics design document (CIAC-16080).
+#
+# ``revision_field`` names a secondary timestamp that changes when the record is
+# updated in place. It is folded into the dedup key so that an updated record is
+# treated as a distinct entry rather than a duplicate of the original.
 SOURCE_CONFIG: dict[str, dict[str, str]] = {
     CRITICAL_EVENTS: {
         "endpoint_template": "/prolexic-analytics/v2/critical-events/contract/{contract}",
         "time_field": "firstOccur",
+        "revision_field": "recentOccur",
         "last_run_key": "critical_events",
     },
     EVENTS: {
@@ -56,6 +61,11 @@ SOURCE_CONFIG: dict[str, dict[str, str]] = {
 DEFAULT_FIRST_FETCH = "now"
 DEFAULT_MAX_EVENTS_PER_FETCH = 1000
 MAX_EVENTS_PER_FETCH_CEILING = 10000
+DEFAULT_GET_EVENTS_LIMIT = 50
+# Upper bound on how many dedup ids are carried in ``last_run``. Only ids sharing
+# the high-water-mark timestamp are retained, but a source that emits a large
+# burst at one timestamp could still grow the set without limit.
+MAX_RETAINED_DEDUP_IDS = 5000
 ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
@@ -129,6 +139,25 @@ class Client(BaseClient):
 # --------------------------------------------------------------------------- #
 
 
+def _parse_positive_int_arg(raw: Any, display_name: str, default: int, ceiling: int | None = None) -> int:
+    """Parse a user-supplied positive integer, rejecting invalid values loudly.
+
+    Distinguishes between "not supplied" (use ``default``) and "explicitly
+    0/negative" (reject). The ``arg_to_number(...) or DEFAULT`` idiom silently
+    rewrites ``0`` to the default, masking misconfiguration.
+    """
+    if raw in (None, ""):
+        return default
+    parsed = arg_to_number(raw)
+    if parsed is None:
+        raise DemistoException(f"{display_name} must be an integer; got {raw!r}.")
+    if parsed <= 0:
+        raise DemistoException(f"{display_name} must be greater than 0; got {parsed}.")
+    if ceiling is not None and parsed > ceiling:
+        raise DemistoException(f"{display_name} must be between 1 and {ceiling}; got {parsed}.")
+    return parsed
+
+
 def parse_first_fetch(first_fetch: str) -> str:
     """Convert the human-friendly ``first_fetch`` parameter into an ISO string.
 
@@ -157,6 +186,12 @@ def normalize_event_timestamp(value: Any) -> str | None:
     return parsed.astimezone(UTC).strftime(ISO_FORMAT)
 
 
+def _event_is_at_or_before(event: dict[str, Any], end_dt: datetime) -> bool:
+    """Return ``True`` when the enriched event's ``_time`` is at or before ``end_dt``."""
+    event_dt = arg_to_datetime(event.get("_time"))
+    return event_dt is None or event_dt <= end_dt
+
+
 def make_event_id(event_type: str, raw: dict[str, Any], time_field: str) -> str:
     """Build a stable dedup key.
 
@@ -164,11 +199,22 @@ def make_event_id(event_type: str, raw: dict[str, Any], time_field: str) -> str:
     use the documented timestamp field together with any provided ``id``-like
     field to form a composite key. This is robust against re-emission of the
     same record across overlapping fetch windows.
+
+    For sources that declare a ``revision_field`` (Critical Events use
+    ``recentOccur``) that value is appended to the key. Prolexic updates a
+    critical event in place while leaving ``firstOccur`` untouched, so without
+    the revision component every subsequent update would collide with the
+    original key and be discarded as a duplicate.
     """
     candidate_id_fields = ("id", "eventId", "incidentId", "alertId", "uuid")
     raw_id = next((str(raw[k]) for k in candidate_id_fields if raw.get(k) is not None), "")
     raw_time = str(raw.get(time_field, ""))
-    return f"{event_type}:{raw_id}:{raw_time}"
+    key = f"{event_type}:{raw_id}:{raw_time}"
+
+    revision_field = SOURCE_CONFIG.get(event_type, {}).get("revision_field")
+    if revision_field:
+        key = f"{key}:{raw.get(revision_field, '')!s}"
+    return key
 
 
 def annotate_critical_event(event: dict[str, Any]) -> None:
@@ -224,6 +270,9 @@ def filter_and_dedup(
     UNION with the input ``fetched_ids`` so that previously-seen ids at the
     same boundary timestamp survive into the next ``last_run``. Replacing
     them would risk re-ingestion if the API re-emitted the same event.
+    The union is capped at :data:`MAX_RETAINED_DEDUP_IDS` so a source that
+    keeps emitting new records at a single timestamp cannot grow ``last_run``
+    without bound.
     """
     time_field = SOURCE_CONFIG[event_type]["time_field"]
     selected: list[dict[str, Any]] = []
@@ -234,17 +283,23 @@ def filter_and_dedup(
     skipped_old = 0
     skipped_seen = 0
 
-    # Sort ascending by timestamp so we walk the time window forward.
-    def _sort_key(ev: dict[str, Any]) -> str:
-        return str(ev.get(time_field) or "")
-
-    for raw in sorted(raw_events, key=_sort_key):
+    # Normalise once up front: the raw timestamp may be an ISO string or epoch
+    # millis, and sorting those by ``str()`` is not chronological (e.g.
+    # "999999999999" sorts after "1767225600000"). Because the loop below stops
+    # at ``max_events`` and only ever moves the cursor forward, a mis-ordered
+    # walk would skip past events that are then never fetched again.
+    normalized_pairs: list[tuple[datetime, str, dict[str, Any]]] = []
+    for raw in raw_events:
         normalized_ts = normalize_event_timestamp(raw.get(time_field))
-        if normalized_ts is None:
+        event_dt = arg_to_datetime(normalized_ts) if normalized_ts is not None else None
+        if normalized_ts is None or event_dt is None:
             skipped_invalid_ts += 1
             continue
-        event_dt = arg_to_datetime(normalized_ts)
-        if last_fetch_dt is not None and event_dt is not None and event_dt < last_fetch_dt:
+        normalized_pairs.append((event_dt, normalized_ts, raw))
+
+    # Sort ascending by the parsed datetime so we walk the time window forward.
+    for event_dt, normalized_ts, raw in sorted(normalized_pairs, key=lambda pair: pair[0]):
+        if last_fetch_dt is not None and event_dt < last_fetch_dt:
             skipped_old += 1
             continue
 
@@ -256,14 +311,14 @@ def filter_and_dedup(
         enriched: dict[str, Any] = dict(raw)
         enriched["_time"] = normalized_ts
         enriched["event_type"] = event_type
-        enriched["SOURCE_LOG_TYPE"] = event_type.upper().replace(" ", "_")
+        enriched["source_log_type"] = event_type.upper().replace(" ", "_")
         if event_type == CRITICAL_EVENTS:
             annotate_critical_event(enriched)
 
         selected.append(enriched)
         fetched_ids.add(dedup_id)
 
-        if event_dt is not None and (new_high_water_dt is None or event_dt > new_high_water_dt):
+        if new_high_water_dt is None or event_dt > new_high_water_dt:
             new_high_water_dt = event_dt
             new_high_water = normalized_ts
 
@@ -286,6 +341,16 @@ def filter_and_dedup(
         retained_ids = fetched_ids | new_run_ids
     else:
         retained_ids = new_run_ids
+
+    if len(retained_ids) > MAX_RETAINED_DEDUP_IDS:
+        # Keep the newest ids (deterministically ordered) and drop the oldest.
+        # Trimming can only ever cause a re-fetch of an already-delivered event,
+        # never a permanent loss, so bounding state is the safer trade-off.
+        demisto.debug(
+            f"{event_type}: retained dedup ids ({len(retained_ids)}) exceeded "
+            f"{MAX_RETAINED_DEDUP_IDS}; trimming the oldest entries."
+        )
+        retained_ids = set(sorted(retained_ids)[-MAX_RETAINED_DEDUP_IDS:])
     return selected, new_high_water, retained_ids
 
 
@@ -380,7 +445,7 @@ def get_events_command(
     first_fetch_iso: str,
 ) -> tuple[list[dict[str, Any]], CommandResults]:
     """Manual fetch (``akamai-prolexic-get-events``) used for development."""
-    limit = arg_to_number(args.get("limit")) or 50
+    limit = _parse_positive_int_arg(args.get("limit"), "limit", DEFAULT_GET_EVENTS_LIMIT)
     requested_types = argToList(args.get("event_type")) or configured_types or [CRITICAL_EVENTS, EVENTS]
 
     # ``start_time`` lets the caller override the lower-bound timestamp used
@@ -390,6 +455,15 @@ def get_events_command(
         start_iso = parse_first_fetch(str(start_time_arg))
     else:
         start_iso = first_fetch_iso
+
+    # ``end_time`` is the standard upper bound for the manual command. The
+    # Prolexic endpoints do not accept a time window, so it is applied
+    # client-side after normalisation.
+    end_time_arg = args.get("end_time")
+    end_dt = arg_to_datetime(end_time_arg) if end_time_arg else None
+    start_dt = arg_to_datetime(start_iso)
+    if end_dt is not None and start_dt is not None and end_dt < start_dt:
+        raise DemistoException("end_time must be later than start_time.")
 
     all_events: list[dict[str, Any]] = []
     for event_type in requested_types:
@@ -401,6 +475,8 @@ def get_events_command(
             max_events=limit,
             first_fetch_iso=start_iso,
         )
+        if end_dt is not None:
+            events = [ev for ev in events if _event_is_at_or_before(ev, end_dt)]
         all_events.extend(events)
 
     human_readable = tableToMarkdown(
@@ -444,20 +520,13 @@ def fetch_events(
 
 
 def _parse_max_events_per_fetch(raw: Any) -> int:
-    """Parse and validate the ``max_events_per_fetch`` parameter.
-
-    Distinguishes between "not supplied" (use default) and "explicitly 0/negative"
-    (reject). Using ``arg_to_number(...) or DEFAULT`` would silently rewrite
-    ``0`` to ``DEFAULT``, masking misconfiguration.
-    """
-    if raw in (None, ""):
-        return DEFAULT_MAX_EVENTS_PER_FETCH
-    parsed = arg_to_number(raw)
-    if parsed is None:
-        raise DemistoException(f"Maximum events per fetch must be an integer; got {raw!r}.")
-    if parsed <= 0 or parsed > MAX_EVENTS_PER_FETCH_CEILING:
-        raise DemistoException(f"Maximum events per fetch must be between 1 and {MAX_EVENTS_PER_FETCH_CEILING}; got {parsed}.")
-    return parsed
+    """Parse and validate the ``max_events_per_fetch`` parameter."""
+    return _parse_positive_int_arg(
+        raw,
+        "Maximum events per fetch",
+        DEFAULT_MAX_EVENTS_PER_FETCH,
+        ceiling=MAX_EVENTS_PER_FETCH_CEILING,
+    )
 
 
 def main() -> None:  # pragma: no cover
