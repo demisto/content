@@ -98,6 +98,9 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch URL incidents
   name: fetchURL
   type: 8
@@ -134,6 +137,9 @@ configuration:
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '24'
   display: Hours before first fetch to retrieve incidents
   name: fetchDelta
@@ -148,6 +154,9 @@ configuration:
   additionalinfo: Limit for each fetched incident type. Recommended value is 100. Maximum value is 200.
   section: Collect
   advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: new_insecure
   type: 8
@@ -165,6 +174,9 @@ configuration:
   type: 19
   additionalinfo: Set the Incidents Fetch Interval to a maximum of 15 minutes if the number of incidents is expected to exceed the specified max fetch limit in each fetch cycle.
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
 display: Mimecast v2
 name: MimecastV2
