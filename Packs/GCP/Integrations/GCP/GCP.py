@@ -311,10 +311,6 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.STORAGE,
         ["storage.buckets.getIamPolicy", "storage.buckets.get"],
     ),
-    "gcp-storage-bucket-policies-list": (
-        GCPServices.STORAGE,
-        ["storage.buckets.getIamPolicy", "storage.buckets.get"],
-    ),
     "gcp-storage-bucket-policy-set": (
         GCPServices.STORAGE,
         ["storage.buckets.setIamPolicy"],
