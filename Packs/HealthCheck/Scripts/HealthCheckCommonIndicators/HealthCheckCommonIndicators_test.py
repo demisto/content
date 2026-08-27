@@ -21,7 +21,7 @@ def _wrap_core_api_response(response, extra_entries=0):
 
 IOC_OBJECTS = [
     {"value": "1.2.3.4", "relatedIncCount": 1500},
-    {"value": "evil.com", "relatedIncCount": 500},
+    {"value": "benign-indicator", "relatedIncCount": 500},
     {"value": "malware.exe", "relatedIncCount": 2000},
 ]
 
@@ -46,7 +46,7 @@ def test_main_single_entry_response(mocker):
     descriptions = [r["description"] for r in result.outputs]
     assert any("1.2.3.4" in d for d in descriptions)
     assert any("malware.exe" in d for d in descriptions)
-    assert not any("evil.com" in d for d in descriptions)
+    assert not any("benign-indicator" in d for d in descriptions)
 
 
 def test_main_multiple_entries_response(mocker):
@@ -61,7 +61,6 @@ def test_main_multiple_entries_response(mocker):
     result = main({"Thresholds": {"relatedIndicatorCount": 1000}})
 
     assert len(result.outputs) == 2
-
 
 
 def test_main_no_thresholds(mocker):
