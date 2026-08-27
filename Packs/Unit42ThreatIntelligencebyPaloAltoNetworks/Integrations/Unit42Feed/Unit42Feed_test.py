@@ -1180,29 +1180,6 @@ def test_main_function_get_threat_objects_command(mocker):
     mock_return_results.assert_called_once_with(mock_command_results)
 
 
-def test_main_function_invalid_fetch_interval(mocker):
-    """
-    Given:
-        - Main function with invalid feedFetchInterval (less than 720 minutes)
-    When:
-        - Calling main function
-    Then:
-        - Returns error about minimum fetch interval
-    """
-    # Mock demisto functions
-    mock_params = {
-        "insecure": False,
-        "proxy": False,
-        "feedFetchInterval": "600",  # Less than 720 minutes
-    }
-    mocker.patch("Unit42Feed.demisto.params", return_value=mock_params)
-    mock_return_error = mocker.patch("Unit42Feed.return_error")
-
-    main()
-
-    mock_return_error.assert_called_once_with("Feed Fetch Interval parameter must be set to at least 12 hours.")
-
-
 def test_main_function_exception_handling(mocker):
     """
     Given:

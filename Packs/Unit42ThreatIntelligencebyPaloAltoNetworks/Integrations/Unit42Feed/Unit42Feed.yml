@@ -62,10 +62,10 @@ configuration:
   section: Collect
   advanced: true
 - display: Feed Fetch Interval
-  additionalinfo: Don't set the feed fetch interval to less than 12 hours.
+  additionalinfo: Feed fetch interval is set to 1 hour and is not configurable.
   name: feedFetchInterval
   type: 19
-  defaultvalue: '720'
+  defaultvalue: '60'
   required: false
   section: Collect
   advanced: true

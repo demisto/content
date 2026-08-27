@@ -1233,9 +1233,6 @@ def main():  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    if (arg_to_number(params.get("feedFetchInterval", "720")) or 720) < 720:
-        return_error("Feed Fetch Interval parameter must be set to at least 12 hours.")
-
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
