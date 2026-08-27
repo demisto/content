@@ -3,7 +3,6 @@ This integration was integrated and tested with version `v2` of the Akamai Prole
 
 ## Configure Akamai Prolexic in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The Akamai API host \(the value of the "host" field in your .edgerc file\). Example: https://akab-h05tnam3wl42son7nktnlnnx-kbob3i3v.luna.akamaiapis.net | True |
@@ -37,11 +36,11 @@ Gets events from Akamai Prolexic. This command is used for developing and debugg
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of events to retrieve per source. Default is 50. | Optional | 
-| event_type | A comma-separated list of event types to retrieve. If empty, uses the integration configuration. Possible values are: Critical Events, Events. | Optional | 
-| start_time | The lower-bound timestamp for events to retrieve. Supports ISO 8601 (e.g., "2026-04-20T10:00:00Z") or relative time expressions (e.g., "3 days ago"). If omitted, the integration's "First fetch time" value is used. | Optional | 
-| end_time | The upper-bound timestamp for events to retrieve. Supports ISO 8601 (e.g., "2026-04-20T18:00:00Z") or relative time expressions (e.g., "1 hour ago"). If omitted, no upper bound is applied. | Optional | 
-| should_push_events | Whether to push the retrieved events to Cortex XSIAM. If false, the events are only displayed. Possible values are: true, false. Default is false. | Required | 
+| limit | The maximum number of events to retrieve per source. Default is 50. | Optional |
+| event_type | A comma-separated list of event types to retrieve. If empty, uses the integration configuration. Possible values are: Critical Events, Events. | Optional |
+| start_time | The lower-bound timestamp for events to retrieve. Supports ISO 8601 (e.g., "2026-04-20T10:00:00Z") or relative time expressions (e.g., "3 days ago"). If omitted, the integration's "First fetch time" value is used. | Optional |
+| end_time | The upper-bound timestamp for events to retrieve. Supports ISO 8601 (e.g., "2026-04-20T18:00:00Z") or relative time expressions (e.g., "1 hour ago"). If omitted, no upper bound is applied. | Optional |
+| should_push_events | Whether to push the retrieved events to Cortex XSIAM. If false, the events are only displayed. Possible values are: true, false. Default is false. | Required |
 
 #### Context Output
 

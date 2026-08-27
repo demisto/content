@@ -542,16 +542,22 @@ def main() -> None:  # pragma: no cover
     account_switch_key: str = (params.get("account_switch_key") or "").strip() or ""
 
     event_types: list[str] = argToList(params.get("event_types_to_fetch")) or [CRITICAL_EVENTS, EVENTS]
-    for event_type in event_types:
-        if event_type not in SOURCE_CONFIG:
-            return_error(f"Unsupported event type configured: {event_type}")
 
+    # Collect every configuration problem up front so the user sees all of them
+    # at once, and report through a single ``return_error`` call (W9011).
+    config_errors: list[str] = []
+    unsupported = [event_type for event_type in event_types if event_type not in SOURCE_CONFIG]
+    if unsupported:
+        config_errors.append(f"Unsupported event type(s) configured: {', '.join(unsupported)}.")
     if not base_url:
-        return_error("Server URL is required.")
+        config_errors.append("Server URL is required.")
     if not contract_id:
-        return_error("Contract ID is required.")
+        config_errors.append("Contract ID is required.")
     if not (client_token and client_secret and access_token):
-        return_error("Client Token, Client Secret and Access Token are all required.")
+        config_errors.append("Client Token, Client Secret and Access Token are all required.")
+    if config_errors:
+        return_error(" ".join(config_errors))
+        return
 
     first_fetch_iso = parse_first_fetch(params.get("first_fetch") or DEFAULT_FIRST_FETCH)
     verify_certificate = not params.get("insecure", False)
