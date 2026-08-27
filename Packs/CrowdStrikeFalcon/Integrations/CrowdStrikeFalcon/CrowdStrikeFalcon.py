@@ -855,12 +855,13 @@ def modify_detection_summaries_outputs(detection: dict):
 
 
 def log_spotlight_verify(log_line: str, log_type: str = "info"):
-    """Emit a XSUP-71944 fix-verification line, greppable as ``[VERIFY]``.
+    """Emit a snapshot-lifecycle line, greppable as ``[LIFECYCLE]``.
 
-    Diagnostic scaffolding for validating the snapshot-sealing fixes against a live tenant.
-    Every line is emitted once per severity or once per run, never per record.
+    Covers run start, seal decision and long-running cycle boundaries: the milestones needed to
+    tell "sealed", "skipped" and "still running" apart in a support ticket. Emitted once per run
+    or per cycle, never per record.
     """
-    log_falcon_assets(f"[VERIFY] {log_line}", log_type)
+    log_falcon_assets(f"[LIFECYCLE] {log_line}", log_type)
 
 
 def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
@@ -875,23 +876,16 @@ def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
 
 
 def _get_process_memory_mb() -> str:
-    """Get current process RSS memory usage and Python's tracked allocations.
-
-    Reads VmRSS from /proc/self/status (Linux) to get the current resident set size,
-    which reflects actual physical memory usage at this moment.
-    Also reports tracemalloc's tracked Python allocations to quantify arena fragmentation
-    (difference between OS RSS and Python's tracked memory = fragmentation overhead).
+    """Get current and peak process RSS, for the memory lines in the fetch logs.
 
     Returns:
-        Formatted string with current RSS, peak RSS, and Python tracked memory in MB.
+        Formatted string with current and peak RSS in MB.
     """
     # Import locally to avoid shadowing the `resource` loop variable used in other functions
     import resource as resource_mod  # noqa: F811
     import sys
-    import tracemalloc
 
-    # Current RSS: read from /proc/self/status (Linux only)
-    # VmRSS shows the actual physical memory currently used by the process
+    # Current RSS: VmRSS in /proc/self/status is the physical memory in use right now (Linux only).
     current_rss_mb = 0.0
     try:
         with open("/proc/self/status") as f:
@@ -911,18 +905,7 @@ def _get_process_memory_mb() -> str:
     else:
         peak_rss_mb = rusage.ru_maxrss / 1024
 
-    # Python tracked allocations via tracemalloc
-    # The gap between RSS and traced = arena fragmentation + non-Python allocations
-    traced_mb = 0.0
-    traced_peak_mb = 0.0
-    if tracemalloc.is_tracing():
-        traced_current, traced_peak = tracemalloc.get_traced_memory()
-        traced_mb = traced_current / (1024 * 1024)
-        traced_peak_mb = traced_peak / (1024 * 1024)
-
-    return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB" + (
-        f", py_traced={traced_mb:.1f} MB, py_peak={traced_peak_mb:.1f} MB" if traced_mb > 0 else ""
-    )
+    return f"current={current_rss_mb:.1f} MB, peak={peak_rss_mb:.1f} MB"
 
 
 def _normalize_data_to_str(data: Union[str, list, None], data_type: str) -> str | None:
@@ -4798,9 +4781,9 @@ async def fetch_spotlight_page_with_shrink(
             )
             if rung_index:
                 # Only reachable when an earlier rung failed, so this is a genuine recovery.
-                log_spotlight_verify(
-                    f"FIX-2 SHRINK-RECOVERED [{severity}] succeeded at limit={attempt_limit} "
-                    f"after {rung_index} failed attempt(s); severity NOT aborted."
+                log_falcon_assets(
+                    f"[{severity}] Page recovered at limit={attempt_limit} after {rung_index} failed attempt(s).",
+                    "info",
                 )
             return page
         except (json.JSONDecodeError, ContentClientError) as e:
@@ -4820,12 +4803,6 @@ async def fetch_spotlight_page_with_shrink(
                 break
 
             backoff_seconds = SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS[rung_index]
-            log_spotlight_verify(
-                f"FIX-2 SHRINK-RETRY [{severity}] rung={rung_index + 1}/{last_rung_index + 1} reason={reason} "
-                f"failed_at_limit={attempt_limit} backoff={backoff_seconds}s "
-                f"next_limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[rung_index + 1]} error_type={type(e).__name__}",
-                "warning",
-            )
             log_falcon_assets(
                 f"[{severity}] Transient page failure ({reason}) at limit={attempt_limit} "
                 f"(same after token). Backing off {backoff_seconds}s, then retrying the same page "
@@ -4835,12 +4812,6 @@ async def fetch_spotlight_page_with_shrink(
             await asyncio.sleep(backoff_seconds)
 
     # Exhausted the shrink ladder — the page is still failing at the smallest size.
-    log_spotlight_verify(
-        f"FIX-2 SHRINK-EXHAUSTED [{severity}] all {last_rung_index + 1} rungs failed down to "
-        f"limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[-1]}; severity WILL abort. "
-        f"error_type={type(last_error).__name__}",
-        "error",
-    )
     log_falcon_assets(
         f"[{severity}] Failed to fetch Spotlight page after exhausting the shrink ladder down to "
         f"limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[-1]}. Last error: {last_error}",
@@ -4924,12 +4895,6 @@ async def fetch_vulnerabilities_by_severity(
                 if records_lost > 0:
                     lost_send_batches += 1
                     lost_send_records += records_lost
-                    log_spotlight_verify(
-                        f"FIX-1 PARTIAL-STORE [{severity}] attempted={items_attempted} stored={records_stored} "
-                        f"lost={records_lost} counted={records_stored} (NOT {items_attempted}); "
-                        f"running_total={total_fetched}",
-                        "warning",
-                    )
                     log_falcon_assets(
                         f"[{severity}] Batch partially stored: {records_stored}/{items_attempted} records counted, "
                         f"{records_lost} lost (continuing with the next pages).",
@@ -4942,11 +4907,6 @@ async def fetch_vulnerabilities_by_severity(
                 lost_send_batches += 1
                 lost_send_records += items_attempted
                 first_send_error = first_send_error or e
-                log_spotlight_verify(
-                    f"FIX-1 SEND-FAILED [{severity}] attempted={items_attempted} stored=0 counted=0; "
-                    f"severity NOT aborted; running_total={total_fetched}; error_type={type(e).__name__}",
-                    "warning",
-                )
                 log_falcon_assets(
                     f"[{severity}] Background vulnerability send task failed; "
                     f"{items_attempted} records NOT counted and skipped (continuing with the next pages): {e}\n"
@@ -5089,10 +5049,10 @@ async def fetch_vulnerabilities_by_severity(
             reap_completed_send_tasks(pending_tasks)
             pending_tasks.clear()
 
-        log_spotlight_verify(
-            f"FIX-1 SEVERITY-DONE [{severity}] counted_total={total_fetched} "
-            f"(withheld_first_record={1 if withheld_records else 0}) batches={batch_counter} "
-            f"lost_batches={lost_send_batches} lost_records={lost_send_records} unique_aids={len(unique_aids)}"
+        log_falcon_assets(
+            f"[{severity}] Completed: counted={total_fetched} batches={batch_counter} "
+            f"lost_batches={lost_send_batches} lost_records={lost_send_records} unique_hosts={len(unique_aids)}",
+            "info",
         )
         if lost_records_by_severity is not None:
             # One integer per severity, not the records themselves.
@@ -5482,16 +5442,6 @@ async def fetch_spotlight_assets():
     log_falcon_assets("Starting Spotlight assets fetch execution (severity-based parallel approach).", "info")
     fetch_start_time = time.monotonic()
 
-    # Track Python allocations vs OS RSS. Remember if we started it, so a long-running container
-    # does not keep the tracing overhead after the cycle ends.
-    import tracemalloc
-
-    started_tracemalloc = False
-    if not tracemalloc.is_tracing():
-        tracemalloc.start()
-        started_tracemalloc = True
-        log_falcon_assets("tracemalloc started for memory diagnostics")
-
     context_store = ContentClientContextStore(namespace="SpotlightAssets")
     (
         spotlight_state,
@@ -5559,10 +5509,6 @@ async def fetch_spotlight_assets():
 
     finally:
         await client.aclose()
-        # Stop tracing only if this cycle started it.
-        if started_tracemalloc and tracemalloc.is_tracing():
-            tracemalloc.stop()
-            log_falcon_assets("tracemalloc stopped after the fetch cycle")
 
 
 def fetch_cnapp_assets():
