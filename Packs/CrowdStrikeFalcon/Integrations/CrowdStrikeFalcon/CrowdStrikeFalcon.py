@@ -4549,18 +4549,48 @@ def create_spotlight_client(context_store: ContentClientContextStore) -> Content
     )
 
 
+def extract_device_id_from_aid(aid: str | None, cid: str | None) -> str | None:
+    """
+    Return the bare device ID from a Spotlight AID, stripping a composite CID prefix.
+
+    On multi-CID tenants (Flight Control / MSSP), Spotlight returns the AID as
+    <cid><separator><device_id>. The Devices API accepts only the bare device ID, so the
+    composite form fails the whole batch with "400 invalid device id".
+    Separators seen: "-" for sensor AIDs, "_" for non-sensor assets whose body also
+    contains "_", so the CID length is used rather than splitting on the separator.
+
+    Args:
+        aid: The AID from a Spotlight vulnerability record.
+        cid: The CID from the same record.
+
+    Returns:
+        The bare device ID, or the AID unchanged when it carries no CID prefix.
+    """
+    if not aid or not cid:
+        return aid
+
+    # Require a separator plus at least one character, otherwise nothing would be left to send.
+    if not aid.startswith(cid) or len(aid) <= len(cid) + 1:
+        return aid
+
+    return aid[len(cid) + 1 :]
+
+
 def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> None:
     """
-    Extract unique AIDs (Host IDs) from vulnerabilities and merge with existing set.
+    Extract unique device IDs (Host IDs) from vulnerabilities and merge with existing set.
     Equivalent to JavaScript: const u_aid = [...new Set(aids)]
     Update the set of unique AIDs in place.
+    Composite AIDs are reduced here, while the record's CID is still in scope.
 
     Args:
         vulnerabilities: List of vulnerability objects
         existing_unique_aids: Existing set of unique AIDs
     """
     # Extract AIDs from this batch
-    batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+    batch_aids = {
+        device_id for vuln in vulnerabilities if (device_id := extract_device_id_from_aid(vuln.get("aid"), vuln.get("cid")))
+    }
 
     # Merge with existing
     existing_unique_aids.update(batch_aids)
@@ -4964,7 +4994,11 @@ async def fetch_vulnerabilities_by_severity(
             extract_unique_aids(vulnerabilities, unique_aids)
 
             # Send AIDs to asset handler for enrichment (async fire-and-forget)
-            batch_aids = {vuln.get("aid") for vuln in vulnerabilities if vuln.get("aid")}
+            batch_aids = {
+                device_id
+                for vuln in vulnerabilities
+                if (device_id := extract_device_id_from_aid(vuln.get("aid"), vuln.get("cid")))
+            }
             await asset_handler.receive_new_aids(batch_aids)
 
             batch_counter += 1

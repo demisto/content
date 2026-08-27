@@ -12578,3 +12578,80 @@ class TestXsiamSendFailureIsNotCounted:
             )
 
         assert session.post.call_count == 3, "A transient 5xx must exhaust the retry budget, not fail on the first attempt"
+
+
+class TestSpotlightCompositeAid:
+    """XSUP-71944 — on multi-CID (Flight Control / MSSP) tenants Spotlight returns ``aid`` as
+    ``<cid><separator><device_id>``. ``/devices/entities/devices/v2`` accepts only the bare
+    device ID, so forwarding the composite failed every enrichment batch with
+    ``400 invalid device id`` and left the assets dataset permanently empty.
+    """
+
+    @pytest.mark.parametrize(
+        "aid, cid, expected",
+        [
+            # Sensor AID (<cid>-<32 hex>). The expected value carries no leading separator, so
+            # this also guards the off-by-one that strips len(cid) and leaves "-" attached.
+            (input_data.spotlight_composite_aid, input_data.spotlight_composite_cid, input_data.spotlight_device_id),
+            # Non-sensor asset (<cid>_<base64url>). The body holds its own "_" and uppercase, so
+            # the expected value proves the helper neither splits on the first separator nor
+            # normalises case. Uppercase never occurs in the CID prefix (verified: 0 rows).
+            (
+                input_data.spotlight_composite_aid_underscore,
+                input_data.spotlight_composite_cid,
+                input_data.spotlight_base64_asset_id,
+            ),
+            # Rare field shape: a ":" inside the body, so the body charset is not base64url.
+            (
+                input_data.spotlight_composite_aid_prefixed,
+                input_data.spotlight_composite_cid,
+                input_data.spotlight_prefixed_device_id,
+            ),
+            # Single-CID tenants already send a bare device ID and must not regress.
+            (input_data.spotlight_bare_aid, input_data.spotlight_single_cid, input_data.spotlight_bare_aid),
+            # Never strip a prefix that was not positively identified as the CID.
+            (input_data.spotlight_composite_aid, input_data.spotlight_unrelated_cid, input_data.spotlight_composite_aid),
+            (input_data.spotlight_composite_aid, None, input_data.spotlight_composite_aid),
+            (input_data.spotlight_composite_aid, "", input_data.spotlight_composite_aid),
+            # Degenerate input must pass through rather than yield an empty ID or raise.
+            (input_data.spotlight_composite_cid, input_data.spotlight_composite_cid, input_data.spotlight_composite_cid),
+            (None, input_data.spotlight_composite_cid, None),
+            ("", input_data.spotlight_composite_cid, ""),
+        ],
+    )
+    def test_extract_device_id_from_aid(self, aid, cid, expected):
+        from CrowdStrikeFalcon import extract_device_id_from_aid
+
+        assert extract_device_id_from_aid(aid, cid) == expected
+
+    def test_extract_unique_aids_collects_bare_device_ids(self):
+        """``cid`` is not carried downstream, so extraction must happen here.
+
+        One mixed batch covers the whole contract: composite AIDs are reduced, duplicates
+        collapse, different CIDs stay distinct, bare AIDs pass through, records without an
+        ``aid`` are skipped, and the accumulator is updated in place across pages.
+        """
+        from CrowdStrikeFalcon import extract_unique_aids
+
+        vulnerabilities = [
+            {"id": "vuln1", "aid": input_data.spotlight_composite_aid, "cid": input_data.spotlight_composite_cid},
+            {"id": "vuln2", "aid": input_data.spotlight_composite_aid, "cid": input_data.spotlight_composite_cid},
+            {
+                "id": "vuln3",
+                "aid": input_data.spotlight_composite_aid_secondary,
+                "cid": input_data.spotlight_composite_cid_secondary,
+            },
+            {"id": "vuln4", "aid": input_data.spotlight_bare_aid, "cid": input_data.spotlight_single_cid},
+            {"id": "vuln5", "cid": input_data.spotlight_composite_cid},
+            {"id": "vuln6", "aid": "", "cid": input_data.spotlight_composite_cid},
+        ]
+        unique_aids = {input_data.spotlight_previously_seen_device_id}
+
+        extract_unique_aids(vulnerabilities, unique_aids)
+
+        assert unique_aids == {
+            input_data.spotlight_previously_seen_device_id,
+            input_data.spotlight_device_id,
+            input_data.spotlight_device_id_secondary,
+            input_data.spotlight_bare_aid,
+        }, "A composite AID reached the enrichment buffer — this is the 400 'invalid device id' bug"
