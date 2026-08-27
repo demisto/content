@@ -3334,7 +3334,7 @@ def update_issue_command(client: Client, args: Dict) -> CommandResults:
         severity=args["severity"].upper() if args.get("severity") else None,
     )
     if status := ISSUE_STATUSES_MAP.get(args.get("status", "")):
-        update_data["status_progress"] = status
+        update_data["status"] = status
     if resolution_reason := ISSUE_REASON_MAP.get(args.get("resolve_reason", "")):
         update_data["status_resolution_reason"] = resolution_reason
     if resolution_comment := args.get("resolve_comment"):
