@@ -1,5 +1,5 @@
 category: Vulnerability Management
-provider: Horizon3.ai
+provider: Horizon3
 sectionorder:
 - Connect
 commonfields:
@@ -10,28 +10,13 @@ configuration:
     section: Connect
     display: MCP Server URL
     defaultvalue: https://mcp.horizon3ai.com
-    additionalinfo: The url to use for the mcp server. If not provided, will default to the US MCP endpoint.
-    type: 0
-    required: false
-  - name: scope
-    section: Connect
-    display: Scope
-    defaultvalue: read write offline_access
-    type: 0
-    advanced: true
-    additionalinfo: Space-separated OAuth scopes to request.
-  - name: redirect_uri
-    section: Connect
-    defaultvalue: https://oproxy.demisto.ninja/authcode
-    display: Redirect URI
-    type: 0
-    advanced: true
-  - name: server_name
-    section: Connect
-    display: Server Name
-    type: 0
-    additionalinfo: The name to use for the server in tool names. If not provided, the default name returned by the NodeZero MCP server will be used.
-    advanced: true
+    additionalinfo: The NodeZero MCP server endpoint. Select the region that matches your NodeZero deployment.
+    type: 15
+    required: true
+    options:
+    - https://mcp.horizon3ai.com
+    - https://mcp.horizon3ai.eu
+    - https://mcp.horizon3ai.au
 description: Use this integration to connect to the NodeZero MCP server and automatically discover its available pentesting tools.
 display: NodeZero MCP
 name: NodeZero MCP
@@ -52,7 +37,7 @@ script:
     hidden: true
     outputs: []
   - description: >-
-      Register this integration as an OAuth client with the NodeZero OAuth proxy and generate
+      Register this integration with your NodeZero portal and generate
       a login URL. Follow the returned instructions to authenticate via the NodeZero portal.
     name: nodezero-mcp-generate-login-url
   - description: Test the OAuth authentication configuration with the NodeZero MCP server.
