@@ -4,20 +4,15 @@ This integration connects Cortex XSOAR to the NodeZero MCP server using OAuth 2.
 
 ### Setup steps
 
-1. Configure the **Server URL** (defaults to `https://mcp.horizon3ai.com` for US).
+1. Select the **MCP Server URL** for your region.
 2. Run `!nodezero-mcp-generate-login-url` to register the client and get a login URL.
 3. Open the URL and complete sign-in through the NodeZero portal.
 4. Run `!nodezero-mcp-auth-test` to verify the connection.
 
 ### Configuration parameters
 
-1. **Server URL**: The NodeZero MCP server URL. Defaults to `https://mcp.horizon3ai.com` (US). Change for other regions:
-    - EU: `https://mcp.horizon3ai.eu`
-    - AU: `https://mcp.horizon3ai.au`
+**MCP Server URL** (required): Select the NodeZero MCP endpoint for your region:
 
-2. **Scope**: OAuth scopes to request. Default: `read write offline_access`.
-
-### Advanced parameters
-
-* **Redirect URI**: URI the OAuth server redirects to after authorization. Default: `https://oproxy.demisto.ninja/authcode`.
-* **Server Name**: Override the display name used for the MCP server in tool names.
+- **US**: `https://mcp.horizon3ai.com`
+- **EU**: `https://mcp.horizon3ai.eu`
+- **AU**: `https://mcp.horizon3ai.au`

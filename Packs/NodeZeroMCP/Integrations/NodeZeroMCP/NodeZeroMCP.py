@@ -6,6 +6,7 @@ import asyncio
 
 COMMAND_PREFIX = "nodezero-mcp"
 DEFAULT_BASE_URL = "https://mcp.horizon3ai.com"
+SCOPE = "read write offline_access"
 
 
 def validate_required_params(base_url: str) -> None:
@@ -26,9 +27,6 @@ async def main() -> None:  # pragma: no cover
     client = None
     try:
         base_url = params.get("base_url", DEFAULT_BASE_URL)
-        scope = params.get("scope", "")
-        redirect_uri = params.get("redirect_uri", "") or REDIRECT_URI
-        server_name = params.get("server_name", "")
 
         validate_required_params(base_url)
 
@@ -36,8 +34,8 @@ async def main() -> None:  # pragma: no cover
             base_url=base_url,
             auth_type=AuthMethods.DYNAMIC_CLIENT_REGISTRATION,
             command_prefix=COMMAND_PREFIX,
-            scope=scope,
-            redirect_uri=redirect_uri,
+            scope=SCOPE,
+            redirect_uri=REDIRECT_URI,
         )
         demisto.debug(f"Command being called is {command}")
 
@@ -48,7 +46,7 @@ async def main() -> None:  # pragma: no cover
             )
 
         elif command == "list-tools":
-            result = await client.list_tools(server_name)
+            result = await client.list_tools(COMMAND_PREFIX)
             return_results(result)
 
         elif command == "call-tool":
@@ -60,9 +58,7 @@ async def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == f"{COMMAND_PREFIX}-generate-login-url":
-            result = await generate_login_url(
-                client._oauth_handler, AuthMethods.DYNAMIC_CLIENT_REGISTRATION, redirect_uri=redirect_uri
-            )
+            result = await generate_login_url(client._oauth_handler, AuthMethods.DYNAMIC_CLIENT_REGISTRATION)
             return_results(result)
 
         else:

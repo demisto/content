@@ -1,18 +1,20 @@
 {
     "name": "NodeZero MCP",
-    "description": "This content pack integrates Cortex XSOAR with the NodeZero MCP server by Horizon3.ai. It automatically discovers NodeZero's autonomous pentesting tools and exposes them as agentic system actions, enabling Cortex agents to launch pentests, retrieve findings, and trigger remediation workflows without manual configuration.",
+    "description": "This content pack integrates Cortex XSOAR with the NodeZero MCP server by Horizon3. It automatically discovers NodeZero's autonomous pentesting tools and exposes them as agentic system actions, enabling Cortex agents to launch pentests, retrieve findings, and trigger remediation workflows without manual configuration.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "serverMinVersion": "6.1.0",
-    "author": "Horizon3.ai",
+    "author": "Horizon3",
     "url": "https://www.horizon3.ai",
     "email": "support@horizon3.ai",
     "categories": [
-        "Vulnerability Management"
+        "Vulnerability Management",
+        "Utilities",
+        "MCP"
     ],
     "tags": [
-        "pentest",
-        "nodezero",
+        "Pentest",
+        "NodeZero",
         "MCP",
         "Security",
         "Attack",
