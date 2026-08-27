@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: RSASecureID_ModelingRule
+name: RSASecureID Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
