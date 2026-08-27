@@ -4,6 +4,7 @@
     "locked": false,
     "name": "BechtleDarkWebScan Incident",
     "color": "#00FFB3",
+    "playbookId": "DarkWebScan Notify via Email",
     "hours": 0,
     "days": 0,
     "weeks": 0,
