@@ -333,6 +333,14 @@ tasks:
             value:
               simple: Account.Username
             iscontext: true
+      - - operator: hasLength
+          left:
+            value:
+              simple: Account.Username
+            iscontext: true
+          right:
+            value:
+              simple: "1"
     continueonerrortype: ""
     view: |-
       {
