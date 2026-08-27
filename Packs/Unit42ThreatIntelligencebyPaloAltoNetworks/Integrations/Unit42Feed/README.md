@@ -4,15 +4,15 @@ Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Un
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Fetch indicators | Select this check box to fetch indicators \(default selected\). | True |
-| Feed Types | Choose the requested indicator feeds. Indicators feed and Threat Objects \(actors, malware, campaigns, techniques, etc.\) feed \(default is both\). | True |
+| Fetch indicators | Select this check box to fetch indicators \(default selected\). |  |
+| Feed Types | Choose the requested indicator feeds. Indicators feed and Threat Objects \(actors, malware, campaigns, techniques, etc.\) feed \(default is both\). | False |
 | Indicator Types | Comma-separated list of indicator types to fetch \(File, IP, URL, Domain\). If not specified, all indicator types are fetched. | False |
 | Maximum Indicators Per Fetch | Maximum number of indicators to fetch per type. <br/>Example: limit=20,000 with 4 types selected = 80,000 total indicators.<br/><br/>The total \(limit × number of types\) is automatically capped at 100,000.<br/>If limit × types &gt; 100,000, the limit per type is adjusted.<br/>Example: limit=30,000 with 4 types selected = 120,000 total indicators<br/>adjusted to 25,000 per type \(100,000 / 4 = 25,000\).<br/><br/>Fetch priority order:<br/>1. Threat Objects<br/>2. IPs<br/>3. Domains<br/>4. URLs<br/>5. Files<br/><br/>Default \(total for all types\): 20,000. Maximum \(total for all types\): 100,000. | False |
-| Source Reliability | Reliability of the source providing the intelligence context. | True |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+| Source Reliability | Reliability of the source providing the intelligence context. | False |
 | Tags | Supports CSV values. | False |
-| Traffic Light Protocol Color (TLP). | The Traffic Light Protocol \(TLP\) designation is to apply to indicators fetched from the feed. | False |
-| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | True |
-| Feed Expiration Policy | The feed's expiration policy. | True |
+| Traffic Light Protocol Color (TLP). | The Traffic Light Protocol \(TLP\) designation applied to indicators fetched from the feed. | False |
+|  | The feed's expiration policy. | False |
 | Indicator Expiration Interval | The indicator's expiration policy. | False |
 | Create relationships | Create relationships with other indicators. | False |
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
