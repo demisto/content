@@ -2029,9 +2029,7 @@ def alert_search_paginated_request(
 
         # there is a 'nextPageToken' value even if we already got all the results, so we also require the page to add
         # new alerts, both to detect the end of the results and to make sure the loop always progresses
-        has_more_pages = bool(
-            limit is not None and len(alerts) < limit and len(alerts) > alerts_before_page and next_page_token
-        )
+        has_more_pages = bool(limit is not None and len(alerts) < limit and len(alerts) > alerts_before_page and next_page_token)
 
     return alerts[:limit] if limit is not None else alerts, next_page_token, total_rows
 
