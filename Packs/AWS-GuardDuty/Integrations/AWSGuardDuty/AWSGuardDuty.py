@@ -568,7 +568,7 @@ def list_threat_entity_sets(client: "GuardDutyClient", args: dict) -> CommandRes
     data = []
     for i, page_response in enumerate(response_iterator):
         if page is None or (page - 1) == i:
-            page_ids = page_response["ThreatEntitySetIds"]
+            page_ids = page_response.get("ThreatEntitySetIds", [])
             demisto.debug(f"[AWSGuardDuty] list_threat_entity_sets: page index {i} returned {len(page_ids)} ID(s).")
             for threatEntitySet in page_ids:
                 data.append({"DetectorId": detector_id, "ThreatEntitySetId": threatEntitySet})
