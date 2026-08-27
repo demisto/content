@@ -6381,7 +6381,7 @@ def _extract_param_default_prefixes(function_node: ast.AST) -> set:
     # Positional defaults bind to the LAST N positional parameters.
     positional = [*spec.posonlyargs, *spec.args]
     defaults = list(spec.defaults)
-    pairs = list(zip(positional[len(positional) - len(defaults):], defaults))
+    pairs = list(zip(positional[len(positional) - len(defaults) :], defaults))
     pairs += list(zip(spec.kwonlyargs, spec.kw_defaults))
 
     return {value for parameter, default in pairs if parameter.arg == "outputs_prefix" and (value := _string_constant(default))}
