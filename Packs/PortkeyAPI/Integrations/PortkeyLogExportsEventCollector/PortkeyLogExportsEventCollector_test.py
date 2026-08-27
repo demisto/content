@@ -38,9 +38,7 @@ class MockClient:
         # the failure, so the mock refuses it too: a reintroduced cancel fails
         # the suite here instead of shipping and being invisible.
         if export_id not in self.started:
-            raise collector.DemistoException(
-                f"Error in API call [400] - Bad Request: export {export_id} is not running"
-            )
+            raise collector.DemistoException(f"Error in API call [400] - Bad Request: export {export_id} is not running")
         self.cancelled.append(export_id)
         return {}
 
@@ -150,15 +148,23 @@ def test_a_late_record_is_still_collected_after_an_empty_measurement():
     """
     client = MockClient(totals=[0])
     _, state = collector.advance_workspace(
-        client, "ws-a", {"last_ts": "2026-07-25T10:00:00Z"},
-        collector._parse_iso("2026-07-25T09:00:00Z"), collector.timedelta(minutes=5), ["id"],
+        client,
+        "ws-a",
+        {"last_ts": "2026-07-25T10:00:00Z"},
+        collector._parse_iso("2026-07-25T09:00:00Z"),
+        collector.timedelta(minutes=5),
+        ["id"],
     )
     first_start = client.created[0][1]
 
     client = MockClient(totals=[3])
     _, state2 = collector.advance_workspace(
-        client, "ws-a", state,
-        collector._parse_iso("2026-07-25T09:00:00Z"), collector.timedelta(minutes=5), ["id"],
+        client,
+        "ws-a",
+        state,
+        collector._parse_iso("2026-07-25T09:00:00Z"),
+        collector.timedelta(minutes=5),
+        ["id"],
     )
     second_start = client.created[0][1]
 
@@ -244,7 +250,7 @@ def test_a_finished_export_is_downloaded_and_advances_the_watermark():
 def test_the_cancel_command_cancels_the_named_export():
     """The operator-facing cancel reaches the API with the id it was given."""
     client = MockClient()
-    client.started.append("exp-42")          # started, so the API accepts the cancel
+    client.started.append("exp-42")  # started, so the API accepts the cancel
     results = collector.cancel_export_command(client, {"export_id": "exp-42"})
     assert client.cancelled == ["exp-42"]
     assert "exp-42" in results.readable_output
@@ -264,7 +270,7 @@ def test_the_cancel_command_requires_an_export_id():
 
 def test_the_cancel_command_explains_a_rejected_draft_rather_than_raising():
     """Cancel is rejected for an export that never started. That is not an operator error."""
-    client = MockClient()      # nothing in .started, so the mock rejects with a 400
+    client = MockClient()  # nothing in .started, so the mock rejects with a 400
     results = collector.cancel_export_command(client, {"export_id": "exp-7"})
     assert "never started" in results.readable_output
     assert client.cancelled == []
@@ -277,8 +283,12 @@ def test_a_console_cancel_is_terminal_and_releases_the_job(mocker):
         client = MockClient(statuses=[spelling])
         state = {"last_ts": "2026-07-25T10:00:00Z", "job": {"id": "exp-9", "win_end": "2026-07-25T11:00:00Z"}}
         events, new_state = collector.advance_workspace(
-            client, "ws-a", state,
-            collector._parse_iso("2026-07-25T09:00:00Z"), collector.timedelta(minutes=5), ["id"],
+            client,
+            "ws-a",
+            state,
+            collector._parse_iso("2026-07-25T09:00:00Z"),
+            collector.timedelta(minutes=5),
+            ["id"],
         )
         assert events == []
         assert "job" not in new_state, f"'{spelling}' must be treated as terminal"
@@ -293,8 +303,12 @@ def test_a_success_carrying_no_records_does_not_close_the_window(mocker):
     client = MockClient(statuses=["success"], payload="")
     state = {"last_ts": "2026-07-25T10:00:00Z", "job": {"id": "exp-9", "win_end": "2026-07-25T11:00:00Z"}}
     events, new_state = collector.advance_workspace(
-        client, "ws-a", state,
-        collector._parse_iso("2026-07-25T09:00:00Z"), collector.timedelta(minutes=5), ["id"],
+        client,
+        "ws-a",
+        state,
+        collector._parse_iso("2026-07-25T09:00:00Z"),
+        collector.timedelta(minutes=5),
+        ["id"],
     )
     assert events == []
     assert new_state["last_ts"] == "2026-07-25T10:00:00Z"
@@ -305,12 +319,19 @@ def test_a_success_carrying_no_records_does_not_close_the_window(mocker):
 def test_a_window_that_never_yields_is_given_up_on_and_the_skip_is_reported(mocker):
     """The retry must be bounded, and the eventual skip must be loud rather than silent."""
     errors = mocker.patch.object(demisto, "error")
-    state = {"last_ts": "2026-07-25T10:00:00Z", "empties": collector.MAX_EMPTY_EXPORTS - 1,
-             "job": {"id": "exp-9", "win_end": "2026-07-25T11:00:00Z"}}
+    state = {
+        "last_ts": "2026-07-25T10:00:00Z",
+        "empties": collector.MAX_EMPTY_EXPORTS - 1,
+        "job": {"id": "exp-9", "win_end": "2026-07-25T11:00:00Z"},
+    }
     client = MockClient(statuses=["success"], payload="")
     events, new_state = collector.advance_workspace(
-        client, "ws-a", state,
-        collector._parse_iso("2026-07-25T09:00:00Z"), collector.timedelta(minutes=5), ["id"],
+        client,
+        "ws-a",
+        state,
+        collector._parse_iso("2026-07-25T09:00:00Z"),
+        collector.timedelta(minutes=5),
+        ["id"],
     )
     assert events == []
     assert new_state == {"last_ts": "2026-07-25T11:00:00Z"}, "the window is given up on, counter cleared"
@@ -323,8 +344,12 @@ def test_the_empty_counter_survives_a_retry_that_starts_a_new_export(mocker):
     client = MockClient(totals=[5])
     state = {"last_ts": "2026-07-25T10:00:00Z", "empties": 2}
     events, new_state = collector.advance_workspace(
-        client, "ws-a", state,
-        collector._parse_iso("2026-07-25T09:00:00Z"), collector.timedelta(minutes=5), ["id"],
+        client,
+        "ws-a",
+        state,
+        collector._parse_iso("2026-07-25T09:00:00Z"),
+        collector.timedelta(minutes=5),
+        ["id"],
     )
     assert events == []
     assert new_state["job"]["id"] == "exp-1"
@@ -342,12 +367,16 @@ def test_a_job_that_never_finishes_is_abandoned_and_the_window_retried(mocker):
     mocker.patch.object(demisto, "error")
     state = {"last_ts": "2026-07-25T10:00:00Z", "job": {"id": "exp-9", "win_end": "2026-07-25T11:00:00Z"}}
     client = None
-    for poll in range(collector.MAX_JOB_POLLS):
+    for _poll in range(collector.MAX_JOB_POLLS):
         client = MockClient(statuses=["running"])
-        client.started.append("exp-9")   # it was started, so cancel is legitimate for it
+        client.started.append("exp-9")  # it was started, so cancel is legitimate for it
         events, state = collector.advance_workspace(
-            client, "ws-a", state,
-            collector._parse_iso("2026-07-25T09:00:00Z"), collector.timedelta(minutes=5), ["id"],
+            client,
+            "ws-a",
+            state,
+            collector._parse_iso("2026-07-25T09:00:00Z"),
+            collector.timedelta(minutes=5),
+            ["id"],
         )
         assert events == []
 
@@ -363,8 +392,12 @@ def test_a_job_below_the_bound_is_still_waited_on(mocker):
     client = MockClient(statuses=["running"])
     state = {"last_ts": "2026-07-25T10:00:00Z", "job": {"id": "exp-9", "win_end": "2026-07-25T11:00:00Z"}}
     events, new_state = collector.advance_workspace(
-        client, "ws-a", state,
-        collector._parse_iso("2026-07-25T09:00:00Z"), collector.timedelta(minutes=5), ["id"],
+        client,
+        "ws-a",
+        state,
+        collector._parse_iso("2026-07-25T09:00:00Z"),
+        collector.timedelta(minutes=5),
+        ["id"],
     )
     assert events == []
     assert new_state["job"]["id"] == "exp-9"
@@ -637,6 +670,7 @@ def test_event_carries_the_guardrail_verdict():
     assert event["guardrail_flagged_categories"] == "violence"
     assert event["user_prompt"] == "hi"
 
+
 # --------------------------------------------------------------------------- #
 # Prisma AIRS, which runs as a Portkey plugin on both sides of a request
 # --------------------------------------------------------------------------- #
@@ -645,28 +679,49 @@ def test_event_carries_the_guardrail_verdict():
 def _airs_hook(side_key, category, detections, profile, action="allow"):
     """One hook carrying a single prisma-airs check."""
     return {
-        "verdict": True, "deny": False, "softDeny200": False, "type": "guardrail",
-        "checks": [{
-            "id": "panw-prisma-airs.intercept", "verdict": True,
-            "data": {
-                "action": action, "category": category, "error": False, "errors": [],
-                "timeout": False, "source": "AI-Runtime-API",
-                "profile_id": "p-1", "profile_name": profile,
-                "scan_id": "s-1", "report_id": "r-1", "session_id": "sess-1",
-                "transaction_id": "t-1",
-                side_key: detections,
-            },
-        }],
+        "verdict": True,
+        "deny": False,
+        "softDeny200": False,
+        "type": "guardrail",
+        "checks": [
+            {
+                "id": "panw-prisma-airs.intercept",
+                "verdict": True,
+                "data": {
+                    "action": action,
+                    "category": category,
+                    "error": False,
+                    "errors": [],
+                    "timeout": False,
+                    "source": "AI-Runtime-API",
+                    "profile_id": "p-1",
+                    "profile_name": profile,
+                    "scan_id": "s-1",
+                    "report_id": "r-1",
+                    "session_id": "sess-1",
+                    "transaction_id": "t-1",
+                    side_key: detections,
+                },
+            }
+        ],
     }
 
 
 def test_an_airs_check_is_flattened_out_of_the_hook_structure():
     """hook_results is two levels of array, which XQL cannot traverse."""
-    response = {"hook_results": {"before_request_hooks": [
-        _airs_hook("prompt_detected",
-                   "malicious",
-                   {"agent": True, "dlp": False, "injection": True, "malicious_code": False, "url_cats": False},
-                   "Prompt-Profile-Allow")], "after_request_hooks": []}}
+    response = {
+        "hook_results": {
+            "before_request_hooks": [
+                _airs_hook(
+                    "prompt_detected",
+                    "malicious",
+                    {"agent": True, "dlp": False, "injection": True, "malicious_code": False, "url_cats": False},
+                    "Prompt-Profile-Allow",
+                )
+            ],
+            "after_request_hooks": [],
+        }
+    }
     out = collector.extract_guardrail_results(response)
     assert out["airs_evaluated"] is True
     assert out["airs_category"] == "malicious"
@@ -684,19 +739,29 @@ def test_airs_runs_on_both_sides_and_neither_verdict_is_lost():
     request whose PROMPT was classified malicious reads as benign because the
     response was. Every AIRS column accumulates for that reason.
     """
-    response = {"hook_results": {
-        "before_request_hooks": [
-            _airs_hook("prompt_detected",
-                       "malicious",
-                       {"agent": True, "injection": True, "dlp": False},
-                       "Prompt-Profile-Allow")],
-        "after_request_hooks": [
-            _airs_hook("response_detected",
-                       "benign",
-                       {"db_security": False, "source_code": False, "topic_violation": False,
-                        "toxic_content": False, "ungrounded": False},
-                       "Response-Profile-Allow")],
-    }}
+    response = {
+        "hook_results": {
+            "before_request_hooks": [
+                _airs_hook(
+                    "prompt_detected", "malicious", {"agent": True, "injection": True, "dlp": False}, "Prompt-Profile-Allow"
+                )
+            ],
+            "after_request_hooks": [
+                _airs_hook(
+                    "response_detected",
+                    "benign",
+                    {
+                        "db_security": False,
+                        "source_code": False,
+                        "topic_violation": False,
+                        "toxic_content": False,
+                        "ungrounded": False,
+                    },
+                    "Response-Profile-Allow",
+                )
+            ],
+        }
+    }
     out = collector.extract_guardrail_results(response)
     assert "malicious" in out["airs_category"], "the prompt verdict must survive the response verdict"
     assert out["airs_category"] == "benign|malicious"
@@ -708,12 +773,25 @@ def test_airs_runs_on_both_sides_and_neither_verdict_is_lost():
 
 def test_a_response_side_detection_is_captured_under_its_own_side():
     """The response side has its own detection vocabulary, distinct from the prompt's."""
-    response = {"hook_results": {"before_request_hooks": [], "after_request_hooks": [
-        _airs_hook("response_detected",
-                   "malicious",
-                   {"db_security": False, "source_code": True, "topic_violation": False,
-                    "toxic_content": True, "ungrounded": False},
-                   "Response-Profile-Allow")]}}
+    response = {
+        "hook_results": {
+            "before_request_hooks": [],
+            "after_request_hooks": [
+                _airs_hook(
+                    "response_detected",
+                    "malicious",
+                    {
+                        "db_security": False,
+                        "source_code": True,
+                        "topic_violation": False,
+                        "toxic_content": True,
+                        "ungrounded": False,
+                    },
+                    "Response-Profile-Allow",
+                )
+            ],
+        }
+    }
     out = collector.extract_guardrail_results(response)
     assert out["airs_response_detections"] == "source_code|toxic_content"
     assert out["airs_prompt_detections"] == ""
@@ -732,12 +810,104 @@ def test_an_airs_error_or_timeout_is_recorded_as_a_control_that_did_not_evaluate
 
 def test_portkeys_own_moderation_does_not_look_like_an_airs_finding():
     """Two different vendors report under the same hook structure."""
-    response = {"hook_results": {"before_request_hooks": [{
-        "verdict": True, "deny": False, "checks": [{
-            "id": "portkey.moderateContent",
-            "data": {"moderationResults": {"flagged": True, "category_scores": {"violence": 0.9}}},
-        }]}]}}
+    response = {
+        "hook_results": {
+            "before_request_hooks": [
+                {
+                    "verdict": True,
+                    "deny": False,
+                    "checks": [
+                        {
+                            "id": "portkey.moderateContent",
+                            "data": {"moderationResults": {"flagged": True, "category_scores": {"violence": 0.9}}},
+                        }
+                    ],
+                }
+            ]
+        }
+    }
     out = collector.extract_guardrail_results(response)
     assert out["airs_evaluated"] is False
     assert out["airs_category"] == ""
     assert out["guardrail_flagged"] is True
+
+
+# --- LAW A48: the floor must not walk when there is no watermark yet ---------
+
+
+def _pin_clock(mocker, instant):
+    """Drive the collector's whole notion of "now" from one instant.
+
+    BOTH clocks must move together or these tests prove nothing. fetch_events
+    derives the backfill floor two ways -- `_now() - timedelta(days=1)` and
+    `arg_to_datetime(first_fetch)` -- and the second resolves a relative string
+    like "1 day" against the REAL wall clock. Mocking only `_now` leaves the
+    floor pinned by real time, the suite runs in milliseconds, and the walk the
+    tests exist to catch is invisible: verified by removing the fix and watching
+    both tests still pass.
+    """
+    mocker.patch.object(collector, "_now", return_value=instant)
+    mocker.patch.object(
+        collector,
+        "arg_to_datetime",
+        side_effect=lambda value, **kw: instant - collector.timedelta(days=1) if value else None,
+    )
+
+
+def test_a_quiet_workspace_with_no_watermark_keeps_the_same_window_floor(mocker):
+    """The subtle form of running ahead, which a byte-comparison of state misses.
+
+    Before the first successful non-empty export a workspace persists {} -- no
+    last_ts at all -- so advance_workspace falls back to first_fetch, and
+    fetch_events recomputes first_fetch from the WALL CLOCK on every run. The
+    stored state is byte-identical each time while the window floor it implies
+    walks forward, and the span in between ends up inside no later window.
+
+    first_fetch is passed as the relative string a real instance uses, not a
+    pinned datetime, because pinning it is exactly what hid this.
+    """
+    mocker.patch.object(demisto, "error")
+    base = collector._parse_iso("2026-08-27T13:00:00Z")
+    floors = []
+    state: dict = {}
+    for minutes in (0, 5, 10, 15):
+        now = base + collector.timedelta(minutes=minutes)
+        _pin_clock(mocker, now)
+        client = MockClient(totals=[0])
+        _, state = collector.fetch_events(client, ["ws-a"], state, "1 day", 5, True)
+        floors.append(client.created[0][1])
+
+    assert len(set(floors)) == 1, (
+        f"window floor walked with the wall clock: {floors} -- the span between the "
+        f"first and last floor is inside no later window and is lost"
+    )
+
+
+def test_a_failed_export_with_no_watermark_re_creates_the_identical_window(mocker):
+    """The module logs "The same window will be retried on the next run."
+
+    With no watermark that promise was false: the retry started later, silently
+    abandoning a window already MEASURED as holding records.
+
+    Three runs, because that is the real lifecycle: run 1 creates and starts the
+    export and returns with the job in state, run 2 polls it and sees 'failed',
+    run 3 re-creates. The floors of runs 1 and 3 must match.
+    """
+    mocker.patch.object(demisto, "error")
+    base = collector._parse_iso("2026-08-27T13:00:00Z")
+    client = MockClient(totals=[500, 500], statuses=["failed"])
+
+    _pin_clock(mocker, base)
+    _, state = collector.fetch_events(client, ["ws-a"], {}, "1 day", 5, True)
+
+    _pin_clock(mocker, base + collector.timedelta(minutes=10))
+    _, state = collector.fetch_events(client, ["ws-a"], state, "1 day", 5, True)
+
+    _pin_clock(mocker, base + collector.timedelta(minutes=20))
+    collector.fetch_events(client, ["ws-a"], state, "1 day", 5, True)
+
+    assert len(client.created) >= 2, f"expected a re-create after the failed export, got {len(client.created)} create(s)"
+    first_floor, retry_floor = client.created[0][1], client.created[-1][1]
+    assert first_floor == retry_floor, (
+        f"a window measured at 500 records was abandoned: retried from " f"{retry_floor} instead of {first_floor}"
+    )

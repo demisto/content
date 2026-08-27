@@ -130,11 +130,13 @@ def test_an_integration_credential_is_redacted_before_ingestion():
     event = {
         "timestamp": 1,
         "organisation_id": "org-1",
-        "request_body": json.dumps({
-            "organisation_id": "org-1",
-            "integration_id": "int-1",
-            "credentials": {"AIRS_API_KEY": "a-real-secret-value"},
-        }),
+        "request_body": json.dumps(
+            {
+                "organisation_id": "org-1",
+                "integration_id": "int-1",
+                "credentials": {"AIRS_API_KEY": "a-real-secret-value"},
+            }
+        ),
     }
     out = collector.add_fields_to_event(event)
     body = json.loads(out["request_body"])
@@ -155,8 +157,9 @@ def test_secret_bearing_keys_are_matched_by_substring_and_case():
 
 def test_a_nested_secret_is_reached():
     """Secrets are not always at the top level."""
-    out = collector.redact_request_body(json.dumps(
-        {"config": {"providers": [{"name": "openai", "credentials": {"token": "sensitive"}}]}}))
+    out = collector.redact_request_body(
+        json.dumps({"config": {"providers": [{"name": "openai", "credentials": {"token": "sensitive"}}]}})
+    )
     assert "sensitive" not in out
     assert "openai" in out
 

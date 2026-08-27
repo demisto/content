@@ -620,6 +620,21 @@ def advance_workspace(
         return [], waiting
 
     start = _parse_iso(last_ts) if last_ts else first_fetch
+    if not last_ts:
+        # PIN the backfill floor the first time it is resolved [LAW A48].
+        #
+        # first_fetch is recomputed from the WALL CLOCK on every run, so leaving
+        # it unpersisted lets the floor walk forward with real time while the
+        # stored state stays byte-identical. That is the subtle form of running
+        # ahead: an empty window, a failed export and an abandoned job all return
+        # state carrying no last_ts, so the "same window" this module promises to
+        # retry in fact starts later each run, and the span in between is inside
+        # no later window. A byte-comparison of state cannot see it, because the
+        # position is DERIVED rather than stored.
+        #
+        # Writing the resolved floor advances nothing -- this run's window is
+        # unchanged -- it only makes the retry genuinely identical.
+        last_ts = _iso(start)
     end = _now() - lag
     if end <= start:
         # The lag has not yet cleared a new window; nothing to do this run.
@@ -756,16 +771,20 @@ def cancel_export_command(client: Client, args: dict) -> CommandResults:
     except Exception as exc:  # noqa: BLE001 - the reason matters more than the type
         message = str(exc)
         if "400" in message:
-            return CommandResults(readable_output=(
-                f"Export {export_id} was not cancelled: the API rejected it, which is what it does "
-                "for an export that was never started. A draft that never ran needs no cancelling."
-            ))
+            return CommandResults(
+                readable_output=(
+                    f"Export {export_id} was not cancelled: the API rejected it, which is what it does "
+                    "for an export that was never started. A draft that never ran needs no cancelling."
+                )
+            )
         raise
 
-    return CommandResults(readable_output=(
-        f"Export {export_id} cancelled. If this collector was holding it, the next fetch releases "
-        "the job and re-measures the same window, so no records are skipped by cancelling."
-    ))
+    return CommandResults(
+        readable_output=(
+            f"Export {export_id} cancelled. If this collector was holding it, the next fetch releases "
+            "the job and re-measures the same window, so no records are skipped by cancelling."
+        )
+    )
 
 
 def main() -> None:  # pragma: no cover

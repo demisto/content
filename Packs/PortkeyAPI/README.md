@@ -111,6 +111,18 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 1.9.26
+
+- Carry the AIRS profile and scan id into the outcome reason, so two extracted values reach the model instead of blocking the install.
+
+### 1.9.25
+
+- Pin the backfill floor on a workspace with no watermark, so a retried window is the same window rather than a later one.
+
+### 1.9.24
+
+- Name the unused loop counter and reflow to the pipeline formatter, so the pack lints clean.
+
 ### 1.9.23
 
 - Redact credential values in the audit collector, because creating an integration sends the third party key in full.

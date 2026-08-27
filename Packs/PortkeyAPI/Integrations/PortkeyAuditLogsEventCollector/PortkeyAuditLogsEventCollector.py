@@ -79,7 +79,18 @@ def _to_iso8601(value: Any) -> str:
 
 # Keys whose VALUE is credential material. Matched case-insensitively against the key
 # name, and by substring, so api_key, apiKey and AIRS_API_KEY all match one entry.
-SECRET_KEY_MARKERS = ("credential", "secret", "password", "passwd", "token", "api_key", "apikey", "authorization", "auth_key", "private_key")
+SECRET_KEY_MARKERS = (
+    "credential",
+    "secret",
+    "password",
+    "passwd",
+    "token",
+    "api_key",
+    "apikey",
+    "authorization",
+    "auth_key",
+    "private_key",
+)
 REDACTED = "GOCORTEX_REDACTED"
 
 
