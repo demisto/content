@@ -6,7 +6,6 @@ provider: Bechtle
 commonfields:
   id: BechtleDarkWebScan
   version: -1
-  additionalinfo: The darkwebscan.app API Key.
 sectionorder:
 - Connect
 - Collect
@@ -165,7 +164,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-  classifier: "BechtleDarkWebScan - Classifier"
   dockerimage: demisto/python3:3.12.13.12042988
 fromversion: 6.10.0
 marketplaces:
