@@ -14942,6 +14942,7 @@ def _select_ucp_profiles(profiles, capability):
         return matched
 
     for p in profiles:
+        # TODO, GAP: If we are using passthrough but no interpolation_mapping and there is no auth in this handler.
         if ((p.get('metadata') or {}).get('xsoar') or {}).get('interpolation_mapping'):
             demisto.debug('[UCP][CommonServerPython.py] _select_ucp_profiles: no capability match; '
                           'falling back to first profile with an interpolation_mapping.')
