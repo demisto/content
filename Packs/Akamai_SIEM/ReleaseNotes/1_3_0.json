@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The incident and event fetch-limit configurations were separated: the *Fetch limit* parameter was renamed to *Incident fetch limit* (`fetchLimit`) and now controls incident fetching only, while a new *Events fetch limit* (`eventsFetchLimit`) parameter controls event collection. Additionally, the *Akamai Page size* (`page_size`) parameter was removed; the page size is now managed internally by the integration and is no longer configurable."
+}

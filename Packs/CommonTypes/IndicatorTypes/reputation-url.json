@@ -293,5 +293,10 @@
   },
   "manualMapping": null,
   "fileHashesPriority": null,
-  "layout": "urlRep"
+  "layout": "urlRep",
+  "supportedModules": [
+    "agentix",
+    "xsiam",
+    "xti"
+  ]
 }
