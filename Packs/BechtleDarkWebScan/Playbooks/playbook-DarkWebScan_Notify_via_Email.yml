@@ -324,7 +324,7 @@ inputs:
 - key: SendMailTo
   value:
     simple:
-  required: false
+  required: true
   description: Send emails to
   playbookInputQuery:
 inputSections:

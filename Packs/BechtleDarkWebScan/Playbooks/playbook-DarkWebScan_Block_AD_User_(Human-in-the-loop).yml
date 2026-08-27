@@ -649,7 +649,7 @@ inputs:
 - key: SendMailsTo
   value:
     simple:
-  required: false
+  required: true
   description: Send all email notifications from this playbook to this email address
   playbookInputQuery:
 inputSections:
