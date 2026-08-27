@@ -8,7 +8,7 @@ args:
   isArray: false
   name: rule_name
   required: false
-- description: The Panorama log forwarding object name that specifies the Log Forwarding setting to apply to the PAN-OS custom rules.
+- description: The Panorama log forwarding object name that specifies the ךog Forwarding setting to apply to the PAN-OS custom rules.
   isArray: false
   name: log_forwarding_name
   required: false
@@ -66,10 +66,10 @@ outputs:
   description: The brand (integration) used to block the domain.
   type: String
 - contextPath: BlockDomain.Status
-  description: The lifecycle status of the action. One of Done, Pending, Skipped, Failed.
+  description: "The lifecycle status of the action. One of 'Done', 'Pending', 'Skipped', 'Failed'."
   type: String
 - contextPath: BlockDomain.Result
-  description: The result of the action. Success or Failed.
+  description: "The result of the action. 'Success' or 'Failed'."
   type: String
 - contextPath: BlockDomain.RuleName
   description: The name of the rule used for this integration. Empty if no rule was used.
