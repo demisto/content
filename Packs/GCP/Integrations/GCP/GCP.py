@@ -1552,7 +1552,7 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
         removeNull=True,
     )
     outputs = {
-        "GCP.Compute.AggregatedInstances(val.id && val.id == obj.id)": matched,
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": matched,
         "GCP.Compute(true)": {"AggregatedInstancesNextToken": response.get("nextPageToken")},
     }
     return CommandResults(

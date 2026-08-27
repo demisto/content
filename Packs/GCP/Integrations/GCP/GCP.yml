@@ -571,19 +571,19 @@ script:
     - name: page_token
       description: Token for pagination.
     outputs:
-    - contextPath: GCP.Compute.AggregatedInstances.name
+    - contextPath: GCP.Compute.Instances.name
       description: Instance name.
       type: string
-    - contextPath: GCP.Compute.AggregatedInstances.id
+    - contextPath: GCP.Compute.Instances.id
       description: Instance ID.
       type: string
-    - contextPath: GCP.Compute.AggregatedInstances.zone
+    - contextPath: GCP.Compute.Instances.zone
       description: Instance zone URL.
       type: string
-    - contextPath: GCP.Compute.AggregatedInstances.status
+    - contextPath: GCP.Compute.Instances.status
       description: Instance status.
       type: string
-    - contextPath: GCP.Compute.AggregatedInstances.networkInterfaces
+    - contextPath: GCP.Compute.Instances.networkInterfaces
       description: Network interfaces of the instance.
       type: Unknown
     - contextPath: GCP.Compute.AggregatedInstancesNextToken
