@@ -1,8 +1,7 @@
 id: Pull Case Metadata - Argus Managed Defence
 version: -1
 name: Pull Case Metadata - Argus Managed Defence
-description: Pulls metadata, attachments, comments, tags and events related to the
-  Argus case for later use.
+description: Pulls metadata, attachments, comments, tags and events related to the Argus case for later use.
 starttaskid: "0"
 tasks:
   "0":
@@ -162,7 +161,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
   "9":
     id: "9"
     taskid: d8659f9b-f13a-4f70-8858-572c3adba880
@@ -196,7 +195,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

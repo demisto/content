@@ -1,0 +1,298 @@
+{
+  "responseCode": 0,
+  "limit": 0,
+  "offset": 0,
+  "count": 0,
+  "size": 0,
+  "metaData": {},
+  "messages": [
+    {
+      "message": "string",
+      "messageTemplate": "string",
+      "type": "FIELD_ERROR",
+      "field": "string",
+      "parameter": {},
+      "timestamp": 0
+    }
+  ],
+  "data": [
+    {
+      "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "customer": {
+        "id": 0,
+        "name": "string",
+        "shortName": "string",
+        "domain": {
+          "id": 0,
+          "name": "string"
+        }
+      },
+      "shortName": "string",
+      "name": "string",
+      "description": "string",
+      "owner": {
+        "id": 0,
+        "shortName": "string",
+        "name": "string",
+        "domain": {
+          "id": 0,
+          "name": "string"
+        },
+        "customer": {
+          "id": 0,
+          "name": "string",
+          "shortName": "string",
+          "domain": {
+            "id": 0,
+            "name": "string"
+          }
+        }
+      },
+      "dataSource": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "customer": {
+          "id": 0,
+          "name": "string",
+          "shortName": "string",
+          "domain": {
+            "id": 0,
+            "name": "string"
+          }
+        },
+        "shortName": "string",
+        "name": "string"
+      },
+      "assetDefinition": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "domain": {
+          "id": 0,
+          "name": "string"
+        },
+        "shortName": "string",
+        "name": "string"
+      },
+      "components": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "assetId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "dataSourceId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "customerId": 0,
+          "componentDefinition": {
+            "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "domain": {
+              "id": 0,
+              "name": "string"
+            },
+            "shortName": "string",
+            "name": "string",
+            "type": "booleanType",
+            "visibility": "any"
+          },
+          "type": "booleanType",
+          "value": {},
+          "lastSeenTimestamp": 0,
+          "lastSeenByUser": {
+            "id": 0,
+            "shortName": "string",
+            "name": "string",
+            "domain": {
+              "id": 0,
+              "name": "string"
+            },
+            "customer": {
+              "id": 0,
+              "name": "string",
+              "shortName": "string",
+              "domain": {
+                "id": 0,
+                "name": "string"
+              }
+            }
+          },
+          "createdTimestamp": 0,
+          "createdByUser": {
+            "id": 0,
+            "shortName": "string",
+            "name": "string",
+            "domain": {
+              "id": 0,
+              "name": "string"
+            },
+            "customer": {
+              "id": 0,
+              "name": "string",
+              "shortName": "string",
+              "domain": {
+                "id": 0,
+                "name": "string"
+              }
+            }
+          },
+          "lastUpdatedTimestamp": 0,
+          "lastUpdatedByUser": {
+            "id": 0,
+            "shortName": "string",
+            "name": "string",
+            "domain": {
+              "id": 0,
+              "name": "string"
+            },
+            "customer": {
+              "id": 0,
+              "name": "string",
+              "shortName": "string",
+              "domain": {
+                "id": 0,
+                "name": "string"
+              }
+            }
+          },
+          "deletedTimestamp": 0,
+          "deletedByUser": {
+            "id": 0,
+            "shortName": "string",
+            "name": "string",
+            "domain": {
+              "id": 0,
+              "name": "string"
+            },
+            "customer": {
+              "id": 0,
+              "name": "string",
+              "shortName": "string",
+              "domain": {
+                "id": 0,
+                "name": "string"
+              }
+            }
+          },
+          "flags": [
+            "deleted"
+          ]
+        }
+      ],
+      "parentGroups": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "customer": {
+            "id": 0,
+            "name": "string",
+            "shortName": "string",
+            "domain": {
+              "id": 0,
+              "name": "string"
+            }
+          },
+          "shortName": "string",
+          "name": "string"
+        }
+      ],
+      "criticality": {
+        "confidentiality": "unknown",
+        "integrity": "unknown",
+        "availability": "unknown"
+      },
+      "totalCVSS": 0,
+      "vulnerabilitiesCount": 0,
+      "firstSeenTimestamp": 0,
+      "lastSeenTimestamp": 0,
+      "lastScanTimestamp": 0,
+      "firstSeenByUser": {
+        "id": 0,
+        "shortName": "string",
+        "name": "string",
+        "domain": {
+          "id": 0,
+          "name": "string"
+        },
+        "customer": {
+          "id": 0,
+          "name": "string",
+          "shortName": "string",
+          "domain": {
+            "id": 0,
+            "name": "string"
+          }
+        }
+      },
+      "lastSeenByUser": {
+        "id": 0,
+        "shortName": "string",
+        "name": "string",
+        "domain": {
+          "id": 0,
+          "name": "string"
+        },
+        "customer": {
+          "id": 0,
+          "name": "string",
+          "shortName": "string",
+          "domain": {
+            "id": 0,
+            "name": "string"
+          }
+        }
+      },
+      "createdTimestamp": 0,
+      "createdByUser": {
+        "id": 0,
+        "shortName": "string",
+        "name": "string",
+        "domain": {
+          "id": 0,
+          "name": "string"
+        },
+        "customer": {
+          "id": 0,
+          "name": "string",
+          "shortName": "string",
+          "domain": {
+            "id": 0,
+            "name": "string"
+          }
+        }
+      },
+      "lastUpdatedTimestamp": 0,
+      "lastUpdatedByUser": {
+        "id": 0,
+        "shortName": "string",
+        "name": "string",
+        "domain": {
+          "id": 0,
+          "name": "string"
+        },
+        "customer": {
+          "id": 0,
+          "name": "string",
+          "shortName": "string",
+          "domain": {
+            "id": 0,
+            "name": "string"
+          }
+        }
+      },
+      "deletedTimestamp": 0,
+      "deletedByUser": {
+        "id": 0,
+        "shortName": "string",
+        "name": "string",
+        "domain": {
+          "id": 0,
+          "name": "string"
+        },
+        "customer": {
+          "id": 0,
+          "name": "string",
+          "shortName": "string",
+          "domain": {
+            "id": 0,
+            "name": "string"
+          }
+        }
+      },
+      "flags": [
+        "deleted"
+      ]
+    }
+  ]
+}
