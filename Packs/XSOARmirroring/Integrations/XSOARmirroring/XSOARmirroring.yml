@@ -16,6 +16,13 @@ configuration:
   type: 13
   section: Collect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: XSOAR Server URL
   name: url
   defaultvalue: https://host.docker.internal:443
