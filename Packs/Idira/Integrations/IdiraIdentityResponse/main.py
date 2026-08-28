@@ -82,7 +82,6 @@ _ACTIONS = {
     "disable-user": ("idira-identity-response-disable-user", ["user_id"]),
     "unlock-user": ("idira-identity-response-unlock-user", ["user_id"]),
     "force-logout": ("idira-identity-response-force-logout", ["user_id"]),
-    "expire-password": ("idira-identity-response-expire-password", ["username"]),
     "remove-role": ("idira-identity-response-remove-role", ["role_id", "user_ids"]),
 }
 
