@@ -234,6 +234,20 @@ configuration:
   advanced: true
   required: false
   section: Collect
+- display: Incident Titles to Not Fetch
+  additionalinfo: A comma-separated list of case-sensitive titles of the incidents that will not be fetched. This will also match if the title provided is contained in the incident's title. If no title is provided then all incidents will be fetched.
+  name: titles_to_not_fetch
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+- display: Alert Product Names to Not Fetch
+  additionalinfo: 'A comma-separated list of alert product names of the incidents that will not be fetched. For example: "Microsoft Entra ID Protection, Microsoft Sentinel". If no alert product name is provided then incidents will be fetched normally.'
+  name: alert_product_names_to_not_fetch
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel
@@ -1364,9 +1378,10 @@ script:
     - description: The value of the indicator.
       name: value
       required: true
-    - description: The display name of the indicator.
+    - description: Deprecated. This argument is no longer supported by the Microsoft API and will be ignored. The display name of the indicator.
       name: display_name
-      required: true
+      hidden: true
+      deprecated: true
     - description: The description of the threat indicator.
       name: description
     - auto: PREDEFINED
@@ -2519,7 +2534,7 @@ script:
     - contextPath: AzureSentinel.Incident.Etag
       description: The Etag of the incident.
       type: String
-  dockerimage: demisto/crypto:1.0.0.7704170
+  dockerimage: demisto/crypto:1.0.0.10120494
   isfetch: true
   runonce: false
   script: '-'

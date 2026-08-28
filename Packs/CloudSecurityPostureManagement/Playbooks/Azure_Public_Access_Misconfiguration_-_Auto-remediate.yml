@@ -657,7 +657,7 @@ tasks:
       id: 53cf5c69-5f37-430c-bf52-b56d4d8d199e
       iscommand: true
       name: 'VM Disk: Disable public access'
-      script: Azure|||azure-disk-update
+      script: Azure|||azure-compute-disk-update
       type: regular
       version: -1
     taskid: 53cf5c69-5f37-430c-bf52-b56d4d8d199e
