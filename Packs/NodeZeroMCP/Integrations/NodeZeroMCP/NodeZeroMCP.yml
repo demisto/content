@@ -36,9 +36,7 @@ script:
     name: call-tool
     hidden: true
     outputs: []
-  - description: >-
-      Register this integration with your NodeZero portal and generate
-      a login URL. Follow the returned instructions to authenticate via the NodeZero portal.
+  - description: Register this integration with your NodeZero portal and generate a login URL. Follow the returned instructions to authenticate via the NodeZero portal.
     name: nodezero-mcp-generate-login-url
   - description: Test the OAuth authentication configuration with the NodeZero MCP server.
     name: nodezero-mcp-auth-test
