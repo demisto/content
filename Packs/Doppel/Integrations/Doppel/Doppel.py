@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
+import time
 import traceback
 from datetime import datetime, UTC
 
@@ -50,8 +51,20 @@ ACTIVE_QUEUE_STATES = {"doppel_review", "actioned", "needs_confirmation"}
 # Client attribution sent with every Doppel API request (usage attribution only; the header
 # is optional server-side and never affects request handling). The version is the pack
 # version and must be bumped on each release (pack_metadata.json is not readable at runtime).
-PACK_VERSION = "1.2.0"
+PACK_VERSION = "1.3.0"
 CLIENT_ATTRIBUTION = f"xsoar/{PACK_VERSION}"
+
+# --- API V2 (OAuth 2.0 client credentials) constants ---
+API_VERSION_V1 = "v1"
+API_VERSION_V2 = "v2"
+OAUTH_TOKEN_PATH = "/oauth/token"
+OAUTH_AUDIENCE = "doppel-external"
+# Key under which the minted token is cached in the integration context.
+OAUTH_CONTEXT_KEY = "oauth_token"
+# Tokens are valid for 24h; refresh a bit early so a token never expires mid-request.
+OAUTH_EXPIRY_SAFETY_MARGIN_SECONDS = 300
+# Fallback if the token response omits expires_in (documented value: 86400 = 24h).
+OAUTH_DEFAULT_EXPIRES_IN_SECONDS = 86400
 
 
 """ CLIENT CLASS """
@@ -70,7 +83,7 @@ class Client(BaseClient):
     def __init__(
         self,
         base_url,
-        api_key,
+        api_key=None,
         user_api_key=None,
         organization_code=None,
         verify=None,
@@ -78,19 +91,33 @@ class Client(BaseClient):
         retry_total=DEFAULT_RETRY_TOTAL,
         retry_backoff_factor=DEFAULT_RETRY_BACKOFF_FACTOR,
         retry_status_list=DEFAULT_RETRY_STATUS_LIST,
+        api_version=API_VERSION_V1,
+        oauth_client_id=None,
+        oauth_client_secret=None,
+        token_url=None,
     ):
         super().__init__(base_url, verify=verify, proxy=proxy)
 
+        self._api_version = api_version
+        self._oauth_client_id = oauth_client_id
+        self._oauth_client_secret = oauth_client_secret
+        self._token_url = token_url
+
         self._headers = {
             "accept": "application/json",
-            "x-api-key": api_key,
             "x-doppel-client": CLIENT_ATTRIBUTION,
             "User-Agent": f"doppel-{CLIENT_ATTRIBUTION}",
         }
-        if user_api_key:
-            self._headers["x-user-api-key"] = user_api_key
-        if organization_code:
-            self._headers["x-organization-code"] = organization_code
+        if api_version == API_VERSION_V2:
+            # The Authorization: Bearer header is attached lazily per request
+            # (see _http_request) so the token is only minted when needed.
+            pass
+        else:
+            self._headers["x-api-key"] = api_key
+            if user_api_key:
+                self._headers["x-user-api-key"] = user_api_key
+            if organization_code:
+                self._headers["x-organization-code"] = organization_code
 
         # Store retry configuration on the client and leverage BaseClient._http_request parameters
         self._retries = retry_total
@@ -98,9 +125,102 @@ class Client(BaseClient):
         self._status_list_to_retry = retry_status_list
 
         demisto.debug(
-            f"Initialized HTTP client using BaseClient._http_request retry params: total={retry_total}, "
-            f"backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
+            f"Initialized HTTP client (api_version={api_version}) using BaseClient._http_request retry params: "
+            f"total={retry_total}, backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
         )
+
+    def _http_request(self, *args, **kwargs):
+        """Wrap BaseClient._http_request with V2 bearer-token handling.
+
+        For V1 this is a pass-through. For V2, a valid cached token is attached
+        as a Bearer header; on a 401 (token revoked or expired early) the cache
+        is invalidated and the request is retried exactly once with a fresh token.
+        """
+        if self._api_version != API_VERSION_V2:
+            return super()._http_request(*args, **kwargs)
+
+        self._headers["Authorization"] = f"Bearer {self._get_oauth_token()}"
+        try:
+            return super()._http_request(*args, **kwargs)
+        except DemistoException as e:
+            status_code = getattr(getattr(e, "res", None), "status_code", None)
+            if status_code != 401:
+                raise
+            demisto.debug("Received 401 with cached OAuth token; minting a fresh token and retrying once.")
+            self._invalidate_cached_token()
+            self._headers["Authorization"] = f"Bearer {self._mint_oauth_token()}"
+            return super()._http_request(*args, **kwargs)
+
+    def _get_oauth_token(self) -> str:
+        """Return a valid access token, reusing the integration-context cache when possible.
+
+        Token caching is NOT an optimization: Doppel's token endpoint allows only a
+        handful of successful mints per client per hour, so every code path must go
+        through this cache. Do not replace this with a mint-per-request call.
+        """
+        cached = (get_integration_context() or {}).get(OAUTH_CONTEXT_KEY) or {}
+        access_token = cached.get("access_token")
+        expiry_epoch = arg_to_number(cached.get("expiry_epoch")) or 0
+        if access_token and int(time.time()) < expiry_epoch:
+            return access_token
+        return self._mint_oauth_token()
+
+    def _mint_oauth_token(self) -> str:
+        """Mint a new access token via the client-credentials flow and cache it."""
+
+        def _token_error_handler(response):
+            if response.status_code == 429:
+                retry_after = response.headers.get("Retry-After", "3600")
+                raise DemistoException(
+                    f"Doppel token request limit reached (a few successful token requests are allowed per hour "
+                    f"per Client ID). Retry after {retry_after} seconds. If this recurs, check whether other "
+                    f"tools share this Client ID and mint tokens aggressively."
+                )
+            if response.status_code in (401, 403):
+                raise DemistoException(
+                    "Authorization Error while requesting an OAuth token: make sure the Client ID and "
+                    "Client Secret are correctly set."
+                )
+            raise DemistoException(f"Failed to obtain an OAuth token: {response.status_code} {response.text}")
+
+        # Call super() directly: going through self._http_request would try to
+        # attach a Bearer token and recurse back into this method.
+        response = super()._http_request(
+            method="POST",
+            full_url=self._token_url,
+            headers={
+                "accept": "application/json",
+                "Content-Type": "application/json",
+                "x-doppel-client": CLIENT_ATTRIBUTION,
+                "User-Agent": f"doppel-{CLIENT_ATTRIBUTION}",
+            },
+            json_data={
+                "client_id": self._oauth_client_id,
+                "client_secret": self._oauth_client_secret,
+                "audience": OAUTH_AUDIENCE,
+                "grant_type": "client_credentials",
+            },
+            resp_type="response",
+            ok_codes=(200,),
+            error_handler=_token_error_handler,
+        )
+        token_data = response.json()
+        access_token = token_data.get("access_token")
+        if not access_token:
+            raise DemistoException("The Doppel token endpoint returned a response without an access_token.")
+
+        expires_in = arg_to_number(token_data.get("expires_in")) or OAUTH_DEFAULT_EXPIRES_IN_SECONDS
+        expiry_epoch = int(time.time()) + expires_in - OAUTH_EXPIRY_SAFETY_MARGIN_SECONDS
+        context = get_integration_context() or {}
+        context[OAUTH_CONTEXT_KEY] = {"access_token": access_token, "expiry_epoch": expiry_epoch}
+        set_integration_context(context)
+        demisto.debug(f"Minted a new OAuth token; cached until epoch {expiry_epoch}.")
+        return access_token
+
+    def _invalidate_cached_token(self) -> None:
+        context = get_integration_context() or {}
+        if context.pop(OAUTH_CONTEXT_KEY, None) is not None:
+            set_integration_context(context)
 
     def get_alert(self, id: str, entity: str) -> dict[str, Any]:
         """Return the alert's details when provided the Alert ID or Entity as input
@@ -435,7 +555,7 @@ def test_module(client: Client) -> str:
 
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = "Authorization Error: make sure API Key is correctly set"
+            message = "Authorization Error: make sure the API Key (V1) or the Client ID and Client Secret (V2) are correctly set"
         else:
             raise e
     return message
@@ -1009,16 +1129,25 @@ def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappi
 
 def main() -> None:
     """Main function, parses params and runs command functions."""
-    api_key = demisto.params().get("credentials", {}).get("password")
-    user_api_key = demisto.params().get("user_credentials", {}).get("password")
-    organization_code = demisto.params().get("organization_code")
-    verify = not demisto.params().get("insecure")
-    proxy = demisto.params().get("proxy")
+    params = demisto.params()
+    api_key = (params.get("credentials") or {}).get("password")
+    user_api_key = (params.get("user_credentials") or {}).get("password")
+    organization_code = params.get("organization_code")
+    oauth_client_id = (params.get("client_credentials") or {}).get("identifier")
+    oauth_client_secret = (params.get("client_credentials") or {}).get("password")
+    verify = not params.get("insecure")
+    proxy = params.get("proxy")
 
-    demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy}")
+    # The dropdown values are display-friendly (e.g. "V2 (OAuth 2.0 Client Credentials)");
+    # anything that does not start with V2 falls back to V1 for backwards compatibility.
+    api_version = API_VERSION_V2 if (params.get("api_version") or "").lower().startswith(API_VERSION_V2) else API_VERSION_V1
+
+    demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy} and API Version: {api_version}")
 
     # Get the service API URL
-    base_url = urljoin(demisto.params()["url"], "/v1")
+    server_url = params["url"]
+    base_url = urljoin(server_url, f"/{api_version}")
+    token_url = urljoin(server_url, OAUTH_TOKEN_PATH)
 
     # Explicitly define the type for the command function dictionary
     supported_commands: dict[str, Callable[[Client, dict[str, Any]], Any]] = {
@@ -1041,6 +1170,12 @@ def main() -> None:
     demisto.info(f"Command being called is {current_command}")
 
     try:
+        if api_version == API_VERSION_V2:
+            if not (oauth_client_id and oauth_client_secret):
+                raise DemistoException("API Version V2 requires both a Client ID and a Client Secret.")
+        elif not api_key:
+            raise DemistoException("API Version V1 requires an API Key.")
+
         client = Client(
             base_url=base_url,
             api_key=api_key,
@@ -1048,6 +1183,10 @@ def main() -> None:
             organization_code=organization_code,
             verify=verify,
             proxy=proxy,
+            api_version=api_version,
+            oauth_client_id=oauth_client_id,
+            oauth_client_secret=oauth_client_secret,
+            token_url=token_url,
         )
 
         if current_command in supported_commands_test_module:

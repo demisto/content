@@ -11,9 +11,11 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Doppel Tenant URL | The Doppel server URL that will be used for calling the APIs. | True |
-| API Key | The API Key to use for connection with Doppel. | True |
-| User API Key | The User API Key \(Optional\) to use for connection with Doppel. | False |
-| Organization Code | Optional organization identifier used when your Doppel environment is organization-scoped. If required by the Doppel API, include the organization code provided by your Doppel administrator. | False |
+| API Version | The Doppel API version to use. V1 authenticates with a static API Key; V2 authenticates with OAuth 2.0 client credentials \(Client ID and Client Secret\). New Doppel API capabilities are added to V2 only, so V2 is recommended. | True |
+| API Key | The API Key to use for connection with Doppel. Required when API Version is V1. | False |
+| Client ID / Client Secret | The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the **Version 2** tab on the **API Settings** page in Doppel Vision. | False |
+| User API Key | The User API Key \(Optional\) to use for connection with Doppel. Applies to API Version V1 only. | False |
+| Organization Code | Optional organization identifier used when your Doppel environment is organization-scoped. Applies to API Version V1 only; V2 scopes requests to your organization automatically. | False |
 | Trust Any Certificate (not secure) | When checked, SSL certificate verification is disabled. Use this only when the Doppel endpoint uses a self-signed or untrusted certificate. | False |
 | Use System Proxy Settings | When checked, the integration uses the system proxy defined in the XSOAR engine configuration (d1.conf). This is required if the engine routes outbound traffic through a local or organizational proxy. | False |
 | Fetch incidents |  | False |
@@ -27,6 +29,13 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Authentication: API V1 vs V2
+
+- **V1 (API Key)** — the default. Requests are authenticated with the static **API Key** header. Existing instances keep working unchanged after upgrading the pack.
+- **V2 (OAuth 2.0 Client Credentials)** — recommended. The integration exchanges the **Client ID** and **Client Secret** for a short-lived access token (valid 24 hours), caches it, and refreshes it automatically before expiry. New Doppel API capabilities are added to V2 only.
+
+**Note:** Doppel limits the number of successful token requests per Client ID per hour. The integration's built-in token caching stays well within this limit, but if the same Client ID is shared with other tools that request tokens aggressively, token requests may be throttled. Prefer a dedicated OAuth client for this integration (each Doppel organization can create up to 10).
 
 ## Commands
 
