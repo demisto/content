@@ -44,7 +44,12 @@ VALID_UNTIL = "valid_until"
 # Identity workforce user states (SetUserState).
 STATE_LOCKED = "Locked"
 STATE_DISABLED = "Disabled"
+STATE_EXPIRED = "Expired"
 STATE_NONE = "None"
+
+# SIA access-policy status values (disable-access-policy).
+POLICY_STATUS_DISABLED = "Disabled"
+POLICY_STATUS_ENABLED = "Enabled"
 
 # endregion
 
@@ -87,6 +92,20 @@ def _extract_user_id(response: dict[str, Any]) -> str:
         )
     return result.get("Uuid")
 
+
+def _identity_success(response: dict[str, Any]) -> bool:
+    """Read the ``success`` flag from an Idira Identity response.
+
+    Identity endpoints wrap the payload as ``{"Contents": {"success": bool}, ...}``.
+    A 409 (idempotent conflict) is surfaced as ``{"status_code": 409}`` by the
+    request layer and is treated as success (target already in requested state).
+    """
+    if not isinstance(response, dict):
+        return False
+    if response.get("status_code") == 409:
+        return True
+    return bool((response.get("Contents") or {}).get("success"))
+
 # endregion
 
 # region Client
@@ -108,12 +127,18 @@ class Client(BaseClient):
         client_secret: str,
         verify: bool,
         proxy: bool,
+        privilege_cloud_url: str = "",
+        sia_url: str = "",
     ):
         super().__init__(base_url=identity_url, verify=verify, proxy=proxy)
         self.identity_url = identity_url.rstrip("/")
         self.token_url = f"{self.identity_url}/oauth2/platformtoken"
         self.client_id = client_id
         self.client_secret = client_secret
+        # Optional shared-services hosts. All three use the same ISPSS Bearer
+        # token, so a single _get_access_token() serves every request wrapper.
+        self.privilege_cloud_url = privilege_cloud_url.rstrip("/")
+        self.sia_url = sia_url.rstrip("/")
         self.telemetry_header = generate_telemetry_header()
 
     def _get_access_token(self) -> str:
@@ -259,6 +284,46 @@ class Client(BaseClient):
         """Call an Idira Identity endpoint (host https://<tenant>.id.cyberark.cloud)."""
         return self._request(method=method, full_url=f"{self.identity_url}{path}", json_data=json_data, params=params)
 
+    def privilege_cloud_request(
+        self,
+        path: str,
+        json_data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        method: str = "POST",
+    ) -> Any:
+        """Call an Idira Privilege Cloud PVWA endpoint.
+
+        Host https://<subdomain>.privilegecloud.cyberark.cloud/PasswordVault/API.
+        Raises if the Privilege Cloud URL was not configured on the instance.
+        """
+        if not self.privilege_cloud_url:
+            raise DemistoException(
+                "This command requires the Privilege Cloud URL. Set it in the integration instance configuration "
+                "(e.g., https://<subdomain>.privilegecloud.cyberark.cloud)."
+            )
+        full_url = f"{self.privilege_cloud_url}/PasswordVault/API{path}"
+        return self._request(method=method, full_url=full_url, json_data=json_data, params=params)
+
+    def sia_request(
+        self,
+        path: str,
+        json_data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        method: str = "POST",
+    ) -> Any:
+        """Call an Idira Secure Infrastructure Access (SIA) endpoint.
+
+        Host https://<subdomain>.dpa.cyberark.cloud/api. Raises if the SIA URL
+        was not configured on the instance.
+        """
+        if not self.sia_url:
+            raise DemistoException(
+                "This command requires the Secure Infrastructure Access (SIA) URL. Set it in the integration "
+                "instance configuration (e.g., https://<subdomain>.dpa.cyberark.cloud)."
+            )
+        full_url = f"{self.sia_url}/api{path}"
+        return self._request(method=method, full_url=full_url, json_data=json_data, params=params)
+
 
 # endregion
 
@@ -297,7 +362,7 @@ def _set_user_state(client: Client, user_id: str, state: str) -> CommandResults:
     """Set a user's account state via SetUserState (guide 7.4)."""
     response = client.identity_request("/CDirectoryService/SetUserState", {"ID": user_id, "state": state})
 
-    success = response.get("Contents").get("success")
+    success = _identity_success(response)
     outputs = {"ID": user_id, "State": state, "Success": success}
     return CommandResults(
         outputs_prefix="IdiraIdentityResponse.UserState",
@@ -336,21 +401,22 @@ def force_logout_command(client: Client, args: dict[str, Any]) -> CommandResults
     )
 
 
-# def expire_password_command(client: Client, args: dict[str, Any]) -> CommandResults:
-#     """Require the user to set a new password at next login (guide 7.4, ChangeUser)."""
-#     username = args["username"]
-#     response = client.identity_request(
-#         "/CDirectoryService/ChangeUser", {"Name": username, "ForcePasswordChangeNext": True}
-#     )
-#
-#     outputs = {"Name": username, "ForcePasswordChangeNext": True, "Success": True}
-#     return CommandResults(
-#         outputs_prefix="IdiraIdentityResponse.PasswordExpiry",
-#         outputs_key_field="Name",
-#         outputs=outputs,
-#         readable_output=tableToMarkdown(f"User {username} required to change password at next login", outputs),
-#         raw_response=response,
-#     )
+def expire_password_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Require the user to set a new password at next login (guide 7.4, ChangeUser)."""
+    username = args["username"]
+    response = client.identity_request(
+        "/CDirectoryService/ChangeUser", {"Name": username, "ForcePasswordChangeNext": True}
+    )
+
+    success = _identity_success(response)
+    outputs = {"Name": username, "ForcePasswordChangeNext": True, "Success": success}
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.PasswordExpiry",
+        outputs_key_field="Name",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"User {username} required to change password at next login", outputs),
+        raw_response=response,
+    )
 
 
 def remove_role_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -360,7 +426,7 @@ def remove_role_command(client: Client, args: dict[str, Any]) -> CommandResults:
     response = client.identity_request(
         "/SaasManage/RemoveUsersAndGroupsFromRole", {"Name": role_id, "Users": user_ids}
     )
-    success = response.get("Contents").get("success")
+    success = _identity_success(response)
     outputs = {"RoleId": role_id, "Users": user_ids, "Success": success}
     return CommandResults(
         outputs_prefix="IdiraIdentityResponse.RoleRemoval",
@@ -371,17 +437,264 @@ def remove_role_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
+# --- Privilege Cloud: account resolution -----------------------------------
+
+
+ACCOUNT_OUTPUT_FIELDS = ("id", "name", "userName", "safeName", "platformId", "address", "secretType")
+
+
+def get_account_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Resolve privileged account(s) to their internal ID(s) (guide 7.2).
+
+    Rotate and verify calls require the internal account ID; run this first.
+    """
+    params: dict[str, Any] = {
+        "search": args.get("search"),
+        "searchType": args.get("search_type", "contains"),
+        "safeName": args.get("safe_name"),
+        "limit": arg_to_number(args.get("limit")) or 50,
+    }
+    params = {key: value for key, value in params.items() if value not in (None, "")}
+    response = client.privilege_cloud_request("/Accounts", params=params, method="GET")
+
+    accounts = response.get("value") or []
+    outputs = [{field: account.get(field) for field in ACCOUNT_OUTPUT_FIELDS} for account in accounts]
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.Account",
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            f"Idira Privilege Cloud Accounts ({len(outputs)})", outputs, headers=list(ACCOUNT_OUTPUT_FIELDS)
+        ),
+        raw_response=response,
+    )
+
+
+def get_account_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Fetch a single account's details by ID (guide 7.2, Resolve-A2)."""
+    account_id = args["account_id"]
+    response = client.privilege_cloud_request(f"/Accounts/{account_id}", method="GET")
+
+    outputs = {field: response.get(field) for field in ACCOUNT_OUTPUT_FIELDS}
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.Account",
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Idira Privilege Cloud Account: {account_id}", outputs),
+        raw_response=response,
+    )
+
+
+# --- Privilege Cloud: privileged sessions ----------------------------------
+
+
+SESSION_OUTPUT_FIELDS = (
+    "SessionGuid",
+    "User",
+    "AccountUsername",
+    "AccountAddress",
+    "RemoteMachine",
+    "Protocol",
+    "RiskScore",
+    "CanTerminate",
+    "CanSuspend",
+    "CanMonitor",
+)
+
+
+def list_sessions_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List active privileged sessions to resolve a SessionGuid (guide 7.3).
+
+    Check the ``CanTerminate`` / ``CanSuspend`` flags before acting on a session.
+    """
+    params: dict[str, Any] = {
+        "Search": args.get("search"),
+        "Safe": args.get("safe"),
+        "Limit": arg_to_number(args.get("limit")) or 25,
+    }
+    params = {key: value for key, value in params.items() if value not in (None, "")}
+    response = client.privilege_cloud_request("/LiveSessions", params=params, method="GET")
+
+    sessions = response.get("LiveSessions") or response.get("value") or []
+    outputs = [{field: session.get(field) for field in SESSION_OUTPUT_FIELDS} for session in sessions]
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.Session",
+        outputs_key_field="SessionGuid",
+        outputs=outputs,
+        readable_output=tableToMarkdown(
+            f"Idira Privilege Cloud Live Sessions ({len(outputs)})", outputs, headers=list(SESSION_OUTPUT_FIELDS)
+        ),
+        raw_response=response,
+    )
+
+
+def terminate_session_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Terminate a live privileged session by GUID (guide 7.5)."""
+    session_guid = args["session_guid"]
+    response = client.privilege_cloud_request(f"/LiveSessions/{session_guid}/Terminate/")
+
+    outputs = {"SessionGuid": session_guid, "Action": "Terminate", "Success": True}
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.SessionAction",
+        outputs_key_field="SessionGuid",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Terminated session {session_guid}", outputs),
+        raw_response=response,
+    )
+
+
+def _session_pause_action(client: Client, session_guid: str, action: str) -> CommandResults:
+    """Suspend or resume a live session by GUID (guide 7.6). Not for SSH/OPM."""
+    response = client.privilege_cloud_request(f"/LiveSessions/{session_guid}/{action}/")
+
+    outputs = {"SessionGuid": session_guid, "Action": action, "Success": True}
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.SessionAction",
+        outputs_key_field="SessionGuid",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"{action}d session {session_guid}", outputs),
+        raw_response=response,
+    )
+
+
+def suspend_session_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    return _session_pause_action(client, args["session_guid"], "Suspend")
+
+
+def resume_session_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    return _session_pause_action(client, args["session_guid"], "Resume")
+
+
+# --- Privilege Cloud: credential actions -----------------------------------
+
+
+def rotate_credential_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Trigger an immediate CPM credential change on an account (guide 7.7)."""
+    account_id = args["account_id"]
+    change_for_group = argToBoolean(args.get("change_creds_for_group", False))
+    response = client.privilege_cloud_request(
+        f"/Accounts/{account_id}/Change/", {"ChangeCredsForGroup": change_for_group}
+    )
+
+    outputs = {"AccountId": account_id, "Action": "Rotate", "Success": True}
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.CredentialAction",
+        outputs_key_field="AccountId",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Rotation triggered for account {account_id}", outputs),
+        raw_response=response,
+    )
+
+
+def verify_credential_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Mark an account for CPM verification (guide 7.7)."""
+    account_id = args["account_id"]
+    response = client.privilege_cloud_request(f"/Accounts/{account_id}/Verify/")
+
+    outputs = {"AccountId": account_id, "Action": "Verify", "Success": True}
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.CredentialAction",
+        outputs_key_field="AccountId",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Verification triggered for account {account_id}", outputs),
+        raw_response=response,
+    )
+
+
+def vault_account_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Bring an unmanaged risky account under Idira management (guide 7.7)."""
+    body: dict[str, Any] = {
+        "platformId": args["platform_id"],
+        "safeName": args["safe_name"],
+    }
+    for arg_key, body_key in (
+        ("name", "name"),
+        ("address", "address"),
+        ("username", "userName"),
+        ("secret_type", "secretType"),
+        ("secret", "secret"),
+    ):
+        value = args.get(arg_key)
+        if value not in (None, ""):
+            body[body_key] = value
+    if "automatic_management_enabled" in args:
+        body["secretManagement"] = {
+            "automaticManagementEnabled": argToBoolean(args["automatic_management_enabled"])
+        }
+
+    response = client.privilege_cloud_request("/Accounts", body)
+
+    account_id = response.get("id") if isinstance(response, dict) else None
+    outputs = {
+        "id": account_id,
+        "name": body.get("name"),
+        "safeName": body["safeName"],
+        "platformId": body["platformId"],
+        "Success": bool(account_id),
+    }
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.Account",
+        outputs_key_field="id",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Vaulted account in Safe {body['safeName']}", outputs),
+        raw_response=response,
+    )
+
+
+# --- Secure Infrastructure Access: access policy ---------------------------
+
+
+def disable_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Revoke standing/JIT access by disabling a SIA access policy (guide 7.8).
+
+    Reversible: re-run with ``status=Enabled``.
+    """
+    policy_id = args["policy_id"]
+    policy_name = args["policy_name"]
+    status = args.get("status", POLICY_STATUS_DISABLED)
+    response = client.sia_request(
+        f"/access-policies/{policy_id}",
+        {"policyId": policy_id, "policyName": policy_name, "status": status},
+        method="PUT",
+    )
+
+    outputs = {"PolicyId": policy_id, "PolicyName": policy_name, "Status": status, "Success": True}
+    return CommandResults(
+        outputs_prefix="IdiraIdentityResponse.AccessPolicy",
+        outputs_key_field="PolicyId",
+        outputs=outputs,
+        readable_output=tableToMarkdown(f"Access policy {policy_id} set to {status}", outputs),
+        raw_response=response,
+    )
+
+
 # endregion
 
 # region Main router
 
 COMMAND_MAP: dict[str, Any] = {
+    # Identity (workforce)
     "idira-identity-response-get-user-by-name": get_user_by_name_command,
     "idira-identity-response-lock-user": lock_user_command,
     "idira-identity-response-disable-user": disable_user_command,
     "idira-identity-response-unlock-user": unlock_user_command,
     "idira-identity-response-force-logout": force_logout_command,
+    "idira-identity-response-expire-password": expire_password_command,
     "idira-identity-response-remove-role": remove_role_command,
+    # Privilege Cloud: account resolution
+    "idira-identity-response-get-account": get_account_command,
+    "idira-identity-response-get-account-details": get_account_details_command,
+    # Privilege Cloud: privileged sessions
+    "idira-identity-response-list-sessions": list_sessions_command,
+    "idira-identity-response-terminate-session": terminate_session_command,
+    "idira-identity-response-suspend-session": suspend_session_command,
+    "idira-identity-response-resume-session": resume_session_command,
+    # Privilege Cloud: credential actions
+    "idira-identity-response-rotate-credential": rotate_credential_command,
+    "idira-identity-response-verify-credential": verify_credential_command,
+    "idira-identity-response-vault-account": vault_account_command,
+    # Secure Infrastructure Access
+    "idira-identity-response-disable-access-policy": disable_access_policy_command,
 }
 
 
@@ -394,6 +707,8 @@ def main() -> None:
     identity_url = (params.get("identity_url") or "").strip().rstrip("/")
     client_id = (params.get("client_id") or "").strip()
     client_secret = (params.get("credentials") or {}).get("password", "")
+    privilege_cloud_url = (params.get("privilege_cloud_url") or "").strip().rstrip("/")
+    sia_url = (params.get("sia_url") or "").strip().rstrip("/")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
@@ -411,6 +726,8 @@ def main() -> None:
             client_secret=client_secret,
             verify=verify_certificate,
             proxy=proxy,
+            privilege_cloud_url=privilege_cloud_url,
+            sia_url=sia_url,
         )
 
         if command == "test-module":

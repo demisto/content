@@ -13,17 +13,30 @@ import IdiraIdentityResponse
 from IdiraIdentityResponse import (
     Client,
     _extract_user_id,
+    disable_access_policy_command,
     disable_user_command,
+    expire_password_command,
     force_logout_command,
     generate_telemetry_header,
+    get_account_command,
+    get_account_details_command,
     get_user_by_name_command,
+    list_sessions_command,
     lock_user_command,
     remove_role_command,
+    resume_session_command,
+    rotate_credential_command,
+    suspend_session_command,
+    terminate_session_command,
     unlock_user_command,
+    vault_account_command,
+    verify_credential_command,
 )
 from IdiraIdentityResponse import test_module as run_test_module
 
 IDENTITY_URL = "https://tenant.id.cyberark.cloud"
+PRIVILEGE_CLOUD_URL = "https://tenant.privilegecloud.cyberark.cloud"
+SIA_URL = "https://tenant.dpa.cyberark.cloud"
 MOCK_CLIENT_ID = "svc-user"
 MOCK_CLIENT_SECRET = "svc-secret"
 MOCK_ACCESS_TOKEN = "mock-access-token"
@@ -31,6 +44,20 @@ MOCK_ACCESS_TOKEN = "mock-access-token"
 
 @pytest.fixture
 def client() -> Client:
+    return Client(
+        identity_url=IDENTITY_URL,
+        client_id=MOCK_CLIENT_ID,
+        client_secret=MOCK_CLIENT_SECRET,
+        verify=False,
+        proxy=False,
+        privilege_cloud_url=PRIVILEGE_CLOUD_URL,
+        sia_url=SIA_URL,
+    )
+
+
+@pytest.fixture
+def identity_only_client() -> Client:
+    """A client with no Privilege Cloud / SIA hosts configured."""
     return Client(
         identity_url=IDENTITY_URL,
         client_id=MOCK_CLIENT_ID,
@@ -235,3 +262,204 @@ def test_error_mapping(mocker, client, error_text, expected_match):
 
     with pytest.raises(DemistoException, match=expected_match):
         lock_user_command(client, {"user_id": "u-1"})
+
+
+def test_409_conflict_is_idempotent_success(mocker, client):
+    """A 409 (already in requested state) is surfaced as a success, not a crash."""
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=409))
+
+    result = lock_user_command(client, {"user_id": "u-1"})
+
+    assert result.outputs["Success"] is True
+
+
+# ========================================
+# Identity — expire password
+# ========================================
+
+
+def test_expire_password_command(mocker, client):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"Contents": {"success": True}}))
+
+    result = expire_password_command(client, {"username": "jdoe"})
+
+    assert result.outputs == {"Name": "jdoe", "ForcePasswordChangeNext": True, "Success": True}
+    _, kwargs = resp.call_args
+    assert kwargs["full_url"] == f"{IDENTITY_URL}/CDirectoryService/ChangeUser"
+    assert kwargs["json_data"] == {"Name": "jdoe", "ForcePasswordChangeNext": True}
+
+
+# ========================================
+# Privilege Cloud — accounts
+# ========================================
+
+
+def test_get_account_command(mocker, client):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(
+        client,
+        "_http_request",
+        return_value=_Resp(json_data={"value": [{"id": "12_34", "name": "svc-sql", "safeName": "IR"}]}),
+    )
+
+    result = get_account_command(client, {"search": "svc-sql"})
+
+    assert result.outputs == [
+        {
+            "id": "12_34",
+            "name": "svc-sql",
+            "userName": None,
+            "safeName": "IR",
+            "platformId": None,
+            "address": None,
+            "secretType": None,
+        }
+    ]
+    _, kwargs = resp.call_args
+    assert kwargs["full_url"] == f"{PRIVILEGE_CLOUD_URL}/PasswordVault/API/Accounts"
+    assert kwargs["method"] == "GET"
+    assert kwargs["params"] == {"search": "svc-sql", "searchType": "contains", "limit": 50}
+
+
+def test_get_account_details_command(mocker, client):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"id": "12_34", "name": "svc-sql"}))
+
+    result = get_account_details_command(client, {"account_id": "12_34"})
+
+    assert result.outputs["id"] == "12_34"
+    _, kwargs = resp.call_args
+    assert kwargs["full_url"] == f"{PRIVILEGE_CLOUD_URL}/PasswordVault/API/Accounts/12_34"
+
+
+def test_command_requires_privilege_cloud_url(mocker, identity_only_client):
+    """Privilege Cloud commands raise a clear error when the host is unconfigured."""
+    mocker.patch.object(identity_only_client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    with pytest.raises(DemistoException, match="requires the Privilege Cloud URL"):
+        get_account_command(identity_only_client, {"search": "svc-sql"})
+
+
+# ========================================
+# Privilege Cloud — sessions
+# ========================================
+
+
+def test_list_sessions_command(mocker, client):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(
+        client,
+        "_http_request",
+        return_value=_Resp(json_data={"LiveSessions": [{"SessionGuid": "s-1", "CanTerminate": True}]}),
+    )
+
+    result = list_sessions_command(client, {"search": "jdoe"})
+
+    assert result.outputs[0]["SessionGuid"] == "s-1"
+    assert result.outputs[0]["CanTerminate"] is True
+    _, kwargs = resp.call_args
+    assert kwargs["full_url"] == f"{PRIVILEGE_CLOUD_URL}/PasswordVault/API/LiveSessions"
+    assert kwargs["params"] == {"Search": "jdoe", "Limit": 25}
+
+
+@pytest.mark.parametrize(
+    "command, action",
+    [
+        (terminate_session_command, "Terminate"),
+        (suspend_session_command, "Suspend"),
+        (resume_session_command, "Resume"),
+    ],
+)
+def test_session_actions(mocker, client, command, action):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=200))
+
+    result = command(client, {"session_guid": "s-1"})
+
+    assert result.outputs == {"SessionGuid": "s-1", "Action": action, "Success": True}
+    _, kwargs = resp.call_args
+    assert kwargs["full_url"] == f"{PRIVILEGE_CLOUD_URL}/PasswordVault/API/LiveSessions/s-1/{action}/"
+
+
+# ========================================
+# Privilege Cloud — credentials
+# ========================================
+
+
+def test_rotate_credential_command(mocker, client):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=200))
+
+    result = rotate_credential_command(client, {"account_id": "12_34"})
+
+    assert result.outputs == {"AccountId": "12_34", "Action": "Rotate", "Success": True}
+    _, kwargs = resp.call_args
+    assert kwargs["full_url"] == f"{PRIVILEGE_CLOUD_URL}/PasswordVault/API/Accounts/12_34/Change/"
+    assert kwargs["json_data"] == {"ChangeCredsForGroup": False}
+
+
+def test_verify_credential_command(mocker, client):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=200))
+
+    result = verify_credential_command(client, {"account_id": "12_34"})
+
+    assert result.outputs == {"AccountId": "12_34", "Action": "Verify", "Success": True}
+    _, kwargs = resp.call_args
+    assert kwargs["full_url"] == f"{PRIVILEGE_CLOUD_URL}/PasswordVault/API/Accounts/12_34/Verify/"
+
+
+def test_vault_account_command(mocker, client):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"id": "99_1"}))
+
+    result = vault_account_command(
+        client,
+        {
+            "platform_id": "WinServerLocal",
+            "safe_name": "IR",
+            "name": "risky",
+            "automatic_management_enabled": "true",
+        },
+    )
+
+    assert result.outputs["id"] == "99_1"
+    assert result.outputs["Success"] is True
+    _, kwargs = resp.call_args
+    assert kwargs["full_url"] == f"{PRIVILEGE_CLOUD_URL}/PasswordVault/API/Accounts"
+    assert kwargs["json_data"] == {
+        "platformId": "WinServerLocal",
+        "safeName": "IR",
+        "name": "risky",
+        "secretManagement": {"automaticManagementEnabled": True},
+    }
+
+
+# ========================================
+# SIA — access policy
+# ========================================
+
+
+def test_disable_access_policy_command(mocker, client):
+    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=200))
+
+    result = disable_access_policy_command(client, {"policy_id": "p-1", "policy_name": "Prod SSH"})
+
+    assert result.outputs == {
+        "PolicyId": "p-1",
+        "PolicyName": "Prod SSH",
+        "Status": "Disabled",
+        "Success": True,
+    }
+    _, kwargs = resp.call_args
+    assert kwargs["full_url"] == f"{SIA_URL}/api/access-policies/p-1"
+    assert kwargs["method"] == "PUT"
+    assert kwargs["json_data"] == {"policyId": "p-1", "policyName": "Prod SSH", "status": "Disabled"}
+
+
+def test_disable_access_policy_requires_sia_url(mocker, identity_only_client):
+    mocker.patch.object(identity_only_client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
+    with pytest.raises(DemistoException, match="requires the Secure Infrastructure Access"):
+        disable_access_policy_command(identity_only_client, {"policy_id": "p-1", "policy_name": "Prod SSH"})

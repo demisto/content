@@ -12,18 +12,32 @@ Usage:
        python main.py get-user-by-name jdoe@corp
 
 Available actions map 1:1 to the integration commands:
-    test-module
-    get-user-by-name <username>
-    lock-user <user_id>
-    disable-user <user_id>
-    unlock-user <user_id>
-    force-logout <user_id>
-    expire-password <username>
-    remove-role <role_id> <user_id[,user_id...]>
+    Identity (needs IDIRA_IDENTITY_URL):
+        test-module
+        get-user-by-name <username>
+        lock-user <user_id>
+        disable-user <user_id>
+        unlock-user <user_id>
+        force-logout <user_id>
+        expire-password <username>
+        remove-role <role_id> <user_id[,user_id...]>
+    Privilege Cloud (also needs IDIRA_PRIVILEGE_CLOUD_URL):
+        get-account <search>
+        get-account-details <account_id>
+        list-sessions <search>
+        terminate-session <session_guid>
+        suspend-session <session_guid>
+        resume-session <session_guid>
+        rotate-credential <account_id>
+        verify-credential <account_id>
+        vault-account <platform_id> <safe_name>
+    Secure Infrastructure Access (also needs IDIRA_SIA_URL):
+        disable-access-policy <policy_id> <policy_name>
 
 WARNING: these are REAL response actions against a live tenant. lock/disable
-will block a real user from authenticating. Use a dedicated test user and run
-``unlock-user`` to reverse.
+will block a real user from authenticating, terminate-session kills a live
+session, and rotate-credential changes a real secret. Use dedicated test
+targets and run ``unlock-user`` / ``resume-session`` to reverse where possible.
 """
 import json
 import os
@@ -50,6 +64,9 @@ def _load_params() -> dict:
     identity_url = os.environ.get("IDIRA_IDENTITY_URL", "")
     client_id = os.environ.get("IDIRA_CLIENT_ID", "")
     client_secret = os.environ.get("IDIRA_CLIENT_SECRET", "")
+    # Optional hosts - only needed for the Privilege Cloud / SIA commands.
+    privilege_cloud_url = os.environ.get("IDIRA_PRIVILEGE_CLOUD_URL", "")
+    sia_url = os.environ.get("IDIRA_SIA_URL", "")
     insecure = os.environ.get("IDIRA_INSECURE", "false").lower() in ("1", "true", "yes")
 
     missing = [
@@ -69,6 +86,8 @@ def _load_params() -> dict:
         "client_id": client_id,
         # type-9 credentials param is a dict with a "password" key.
         "credentials": {"password": client_secret},
+        "privilege_cloud_url": privilege_cloud_url,
+        "sia_url": sia_url,
         "insecure": insecure,
         "proxy": False,
     }
@@ -77,12 +96,26 @@ def _load_params() -> dict:
 # Command name -> (integration command string, positional-arg names).
 _ACTIONS = {
     "test-module": ("test-module", []),
+    # Identity (workforce)
     "get-user-by-name": ("idira-identity-response-get-user-by-name", ["username"]),
     "lock-user": ("idira-identity-response-lock-user", ["user_id"]),
     "disable-user": ("idira-identity-response-disable-user", ["user_id"]),
     "unlock-user": ("idira-identity-response-unlock-user", ["user_id"]),
     "force-logout": ("idira-identity-response-force-logout", ["user_id"]),
+    "expire-password": ("idira-identity-response-expire-password", ["username"]),
     "remove-role": ("idira-identity-response-remove-role", ["role_id", "user_ids"]),
+    # Privilege Cloud
+    "get-account": ("idira-identity-response-get-account", ["search"]),
+    "get-account-details": ("idira-identity-response-get-account-details", ["account_id"]),
+    "list-sessions": ("idira-identity-response-list-sessions", ["search"]),
+    "terminate-session": ("idira-identity-response-terminate-session", ["session_guid"]),
+    "suspend-session": ("idira-identity-response-suspend-session", ["session_guid"]),
+    "resume-session": ("idira-identity-response-resume-session", ["session_guid"]),
+    "rotate-credential": ("idira-identity-response-rotate-credential", ["account_id"]),
+    "verify-credential": ("idira-identity-response-verify-credential", ["account_id"]),
+    "vault-account": ("idira-identity-response-vault-account", ["platform_id", "safe_name"]),
+    # Secure Infrastructure Access
+    "disable-access-policy": ("idira-identity-response-disable-access-policy", ["policy_id", "policy_name"]),
 }
 
 
