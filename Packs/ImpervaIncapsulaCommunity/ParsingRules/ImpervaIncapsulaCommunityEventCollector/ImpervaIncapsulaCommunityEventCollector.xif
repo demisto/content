@@ -1,0 +1,108 @@
+[INGEST:vendor="imperva", product="incapsula", target_dataset="imperva_incapsula_raw", no_hit=keep]
+
+// Imperva Incapsula emits CEF: a 7-field pipe-delimited header, then a single extension section of
+// space-separated key=value pairs (values may themselves contain spaces, but per the CEF spec must
+// not contain an unescaped "=" or "|"). This rule does not unescape CEF "\|", "\=", "\\" sequences
+// within extension values - they pass through exactly as they appear in _raw_log.
+//
+// The known extension key vocabulary below matches exactly what this pack's modeling rule consumes
+// (adapted from the field set the PANW-maintained "Imperva Incapsula" pack's modeling rule already
+// maps to XDM for the native Amazon S3 ingestion path). If your account emits additional CEF fields
+// beyond this list, they remain visible in _raw_log but are not parsed into their own column yet -
+// extend the key list both here and in ImpervaIncapsulaCommunityEventCollector_schema.json to add one.
+//
+// Field boundaries cannot be found with a lookahead (XQL's RE2 regex engine does not support one), so
+// each known key is normalized to a newline-prefixed boundary via a literal (non-backreference) replex
+// call - this only depends on the key *names* below being complete, not on the CEF extension's actual
+// field order, so it tolerates fields being emitted in a different order or omitted entirely.
+
+alter
+    cefName     = arrayindex(regextract(_raw_log, "^CEF:[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|([^|]*)\|"), 0),
+    cefSeverity = arrayindex(regextract(_raw_log, "^CEF:[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|([^|]*)\|"), 0),
+    tmp_ext     = arrayindex(regextract(_raw_log, "^CEF:[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|[^|]*\|(.*)$"), 0)
+
+// The extension has no leading space before its first key (it follows the header's final "|"
+// directly). Prepend one before boundary-normalizing, otherwise the first key=value pair has no
+// "\s" to match against below and is silently never split out.
+| alter tmp_n = concat(" ", tmp_ext)
+
+| alter tmp_n = replex(tmp_n, "\sfileId=", "\nfileId=")
+| alter tmp_n = replex(tmp_n, "\ssourceServiceName=", "\nsourceServiceName=")
+| alter tmp_n = replex(tmp_n, "\scn1=", "\ncn1=")
+| alter tmp_n = replex(tmp_n, "\sspt=", "\nspt=")
+| alter tmp_n = replex(tmp_n, "\scpt=", "\ncpt=")
+| alter tmp_n = replex(tmp_n, "\sin=", "\nin=")
+| alter tmp_n = replex(tmp_n, "\sact=", "\nact=")
+| alter tmp_n = replex(tmp_n, "\sapp=", "\napp=")
+| alter tmp_n = replex(tmp_n, "\scs2=", "\ncs2=")
+| alter tmp_n = replex(tmp_n, "\scs3=", "\ncs3=")
+| alter tmp_n = replex(tmp_n, "\scs4=", "\ncs4=")
+| alter tmp_n = replex(tmp_n, "\scs5=", "\ncs5=")
+| alter tmp_n = replex(tmp_n, "\scs6=", "\ncs6=")
+| alter tmp_n = replex(tmp_n, "\scs7=", "\ncs7=")
+| alter tmp_n = replex(tmp_n, "\scs8=", "\ncs8=")
+| alter tmp_n = replex(tmp_n, "\scs9=", "\ncs9=")
+| alter tmp_n = replex(tmp_n, "\scs10=", "\ncs10=")
+| alter tmp_n = replex(tmp_n, "\scs11=", "\ncs11=")
+| alter tmp_n = replex(tmp_n, "\send=", "\nend=")
+| alter tmp_n = replex(tmp_n, "\sref=", "\nref=")
+| alter tmp_n = replex(tmp_n, "\ssip=", "\nsip=")
+| alter tmp_n = replex(tmp_n, "\ssrc=", "\nsrc=")
+| alter tmp_n = replex(tmp_n, "\sver=", "\nver=")
+| alter tmp_n = replex(tmp_n, "\sxff=", "\nxff=")
+| alter tmp_n = replex(tmp_n, "\sccode=", "\nccode=")
+| alter tmp_n = replex(tmp_n, "\sdproc=", "\ndproc=")
+| alter tmp_n = replex(tmp_n, "\srequestMethod=", "\nrequestMethod=")
+| alter tmp_n = replex(tmp_n, "\sdeviceFacility=", "\ndeviceFacility=")
+| alter tmp_n = replex(tmp_n, "\sfilePermission=", "\nfilePermission=")
+| alter tmp_n = replex(tmp_n, "\sdeviceExternalId=", "\ndeviceExternalId=")
+| alter tmp_n = replex(tmp_n, "\scicode=", "\ncicode=")
+| alter tmp_n = replex(tmp_n, "\srequest=", "\nrequest=")
+| alter tmp_n = replex(tmp_n, "\srequestClientApplication=", "\nrequestClientApplication=")
+| alter tmp_n = replex(tmp_n, "\spostbody=", "\npostbody=")
+| alter tmp_n = replex(tmp_n, "\sstart=", "\nstart=")
+
+// Each field is now "\nkey=value"; its value runs up to the next inserted newline (or end of string).
+| alter
+    fileId                    = arrayindex(regextract(tmp_n, "\nfileId=([^\n]*)"), 0),
+    sourceServiceName         = arrayindex(regextract(tmp_n, "\nsourceServiceName=([^\n]*)"), 0),
+    cn1                       = arrayindex(regextract(tmp_n, "\ncn1=([^\n]*)"), 0),
+    spt                       = arrayindex(regextract(tmp_n, "\nspt=([^\n]*)"), 0),
+    cpt                       = arrayindex(regextract(tmp_n, "\ncpt=([^\n]*)"), 0),
+    `in`                      = arrayindex(regextract(tmp_n, "\nin=([^\n]*)"), 0),
+    act                       = arrayindex(regextract(tmp_n, "\nact=([^\n]*)"), 0),
+    app                       = arrayindex(regextract(tmp_n, "\napp=([^\n]*)"), 0),
+    cs2                       = arrayindex(regextract(tmp_n, "\ncs2=([^\n]*)"), 0),
+    cs3                       = arrayindex(regextract(tmp_n, "\ncs3=([^\n]*)"), 0),
+    cs4                       = arrayindex(regextract(tmp_n, "\ncs4=([^\n]*)"), 0),
+    cs5                       = arrayindex(regextract(tmp_n, "\ncs5=([^\n]*)"), 0),
+    cs6                       = arrayindex(regextract(tmp_n, "\ncs6=([^\n]*)"), 0),
+    cs7                       = arrayindex(regextract(tmp_n, "\ncs7=([^\n]*)"), 0),
+    cs8                       = arrayindex(regextract(tmp_n, "\ncs8=([^\n]*)"), 0),
+    cs9                       = arrayindex(regextract(tmp_n, "\ncs9=([^\n]*)"), 0),
+    cs10                      = arrayindex(regextract(tmp_n, "\ncs10=([^\n]*)"), 0),
+    cs11                      = arrayindex(regextract(tmp_n, "\ncs11=([^\n]*)"), 0),
+    end                       = arrayindex(regextract(tmp_n, "\nend=([^\n]*)"), 0),
+    ref                       = arrayindex(regextract(tmp_n, "\nref=([^\n]*)"), 0),
+    sip                       = arrayindex(regextract(tmp_n, "\nsip=([^\n]*)"), 0),
+    src                       = arrayindex(regextract(tmp_n, "\nsrc=([^\n]*)"), 0),
+    ver                       = arrayindex(regextract(tmp_n, "\nver=([^\n]*)"), 0),
+    xff                       = arrayindex(regextract(tmp_n, "\nxff=([^\n]*)"), 0),
+    ccode                     = arrayindex(regextract(tmp_n, "\nccode=([^\n]*)"), 0),
+    dproc                     = arrayindex(regextract(tmp_n, "\ndproc=([^\n]*)"), 0),
+    requestMethod             = arrayindex(regextract(tmp_n, "\nrequestMethod=([^\n]*)"), 0),
+    deviceFacility            = arrayindex(regextract(tmp_n, "\ndeviceFacility=([^\n]*)"), 0),
+    filePermission            = arrayindex(regextract(tmp_n, "\nfilePermission=([^\n]*)"), 0),
+    deviceExternalId          = arrayindex(regextract(tmp_n, "\ndeviceExternalId=([^\n]*)"), 0),
+    cicode                    = arrayindex(regextract(tmp_n, "\ncicode=([^\n]*)"), 0),
+    request                   = arrayindex(regextract(tmp_n, "\nrequest=([^\n]*)"), 0),
+    requestClientApplication  = arrayindex(regextract(tmp_n, "\nrequestClientApplication=([^\n]*)"), 0),
+    postbody                  = arrayindex(regextract(tmp_n, "\npostbody=([^\n]*)"), 0),
+    start                     = arrayindex(regextract(tmp_n, "\nstart=([^\n]*)"), 0)
+
+// start is epoch milliseconds. _time defaults to ingest time for raw-text events, so this must be
+// set explicitly or every event will appear to have occurred when the collector ran, not when
+// Imperva actually recorded it.
+| alter _time = to_timestamp(to_integer(start), "MILLIS")
+
+| fields -tmp_ext, tmp_n;
