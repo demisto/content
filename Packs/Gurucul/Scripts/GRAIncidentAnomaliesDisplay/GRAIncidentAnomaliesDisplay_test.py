@@ -13,7 +13,7 @@ _INCIDENT = {
                 "status": "Open",
                 "assignee": "assignee1",
                 "assigneetype": "User",
-                "resourcename": "resourceName1",
+                "datasourcename": "resourceName1",
                 "riskaccepteddate": None,
                 "riskscore": 92,
             }
@@ -43,7 +43,7 @@ def test_anomaly_status_change_triggers_set_incident(mocker):
                     "status": "Closed",
                     "assignee": "assignee1",
                     "assigneeType": "User",
-                    "resourceName": "resourceName1",
+                    "datasourcename": "resourceName1",
                     "riskAcceptedDate": None,
                     "riskScore": 92,
                 }
@@ -75,7 +75,7 @@ def test_no_anomaly_changes(mocker):
                 "status": "Open",
                 "assignee": "assignee1",
                 "assigneeType": "User",
-                "resourceName": "resourceName1",
+                "datasourcename": "resourceName1",
                 "riskAcceptedDate": None,
                 "riskScore": 92,
             }

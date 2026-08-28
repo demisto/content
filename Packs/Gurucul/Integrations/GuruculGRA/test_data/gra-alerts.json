@@ -12,7 +12,7 @@
     "assigneeType": null,
     "severity": 70.0,
     "classifierList": "Login",
-    "resourceName": "Okta",
+    "datasourcename": "Okta",
     "riskScore": 65.0,
     "subStatusName": null,
     "graweblink": "https://example.net/alert/101"

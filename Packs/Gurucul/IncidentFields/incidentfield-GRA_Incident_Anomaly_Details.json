@@ -64,8 +64,8 @@
             "selectValues": null
         },
         {
-            "key": "resourcename",
-            "displayName": "Resource Name",
+            "key": "datasourcename",
+            "displayName": "Data Source Name",
             "type": "shortText",
             "required": false,
             "script": "",

@@ -150,11 +150,11 @@
                     },
                     "simple": ""
                 },
-                "GRA Alert Resource": {
+                "GRA Alert Data Source": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
-                        "root": "resourceName",
+                        "root": "datasourcename",
                         "transformers": []
                     },
                     "simple": ""

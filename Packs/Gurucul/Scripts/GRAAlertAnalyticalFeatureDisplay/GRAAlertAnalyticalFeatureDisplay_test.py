@@ -35,9 +35,9 @@ def test_flatten_feature_values_dict():
     assert rows == [{"Analytical Feature": "Login Count", "Values": [1, 2, 3]}]
 
 
-def test_flatten_feature_counts_fallback():
-    rows = _flatten_feature_counts({"Login Count": 5})
-    assert rows == [{"Analytical Feature": "Login Count", "Values": 5}]
+def test_flatten_feature_counts_datasourcename_key():
+    rows = _flatten_feature_counts({"datasourcename": 2})
+    assert rows == [{"Analytical Feature": "datasourcename", "Values": 2}]
 
 
 def test_show_alert_analytical_features_with_values(mocker):

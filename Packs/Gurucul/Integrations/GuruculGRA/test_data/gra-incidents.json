@@ -12,7 +12,7 @@
     "anomalies": [
       {
         "anomalyName": "anomalyName1",
-        "resourceName": "resourceName1",
+        "datasourcename": "resourceName1",
         "assignee": "assignee1",
         "assigneeType": "assigneeType1",
         "riskAcceptedDate": null,
@@ -35,7 +35,7 @@
     "anomalies": [
       {
         "anomalyName": "anomalyName2",
-        "resourceName": "resourceName2",
+        "datasourcename": "resourceName2",
         "assignee": "assignee2",
         "assigneeType": "assigneeType2",
         "riskAcceptedDate": null,

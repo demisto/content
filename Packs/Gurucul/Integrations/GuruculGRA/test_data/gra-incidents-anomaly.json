@@ -1,7 +1,7 @@
 [
   {
     "anomalyName": "anomalyName1",
-    "resourceName": "resourceName1",
+    "datasourcename": "resourceName1",
     "assignee": "assignee1",
     "assigneeType": "assigneeType1",
     "riskAcceptedDate": null,

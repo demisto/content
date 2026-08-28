@@ -7,7 +7,7 @@ This Content Pack integrates GRA with Cortex so analysts can investigate high-ri
 - Fetch GRA **Incidents** or **Alerts** into Cortex as incidents (choose one fetch type per integration instance).
 - Create corresponding Cortex incidents with mappers, layouts, and incident types for investigation.
 - Investigate and act from the War Room using commands.
-- Continue working with existing GRA **Cases** using `gra-case-*` commands, layouts, and scripts (Cases are no longer fetched as new incidents).
+- Continue working with existing GRA **Cases** using `gra-case-*` commands, layouts, and scripts (Cases are no longer fetched as new incidents). Resource-named account commands are deprecated in favor of Data Source commands.
 - Configure Cortex workflows based on GRA risk score and entity context.
 
 ## Pack contents

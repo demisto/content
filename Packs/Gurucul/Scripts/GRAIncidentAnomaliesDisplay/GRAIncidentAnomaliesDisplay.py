@@ -27,7 +27,7 @@ def get_anomalies_by_incident_id():
                     new_anomaly = {
                         "anomalyname": anomaly.get("anomalyName"),
                         "riskaccepteddate": anomaly.get("riskAcceptedDate"),
-                        "resourcename": anomaly.get("resourceName"),
+                        "datasourcename": anomaly.get("datasourcename"),
                         "riskscore": anomaly.get("riskScore"),
                         "assignee": anomaly.get("assignee"),
                         "assigneetype": anomaly.get("assigneeType"),

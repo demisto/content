@@ -12,18 +12,22 @@
     "assigneeType": null,
     "severity": 70.0,
     "classifierList": "Login",
-    "resourceName": "Okta",
+    "datasourcename": "Okta",
     "riskScore": 65.0,
     "subStatusName": null,
     "graweblink": "https://example.net/alert/101",
     "analyticalFeatures": {
-      "feat": 1
+      "feat": 1,
+      "datasourcename": 2
     },
     "analyticalFeatureValues": {
       "feat": [
         "a",
         "b"
-      ]
+      ],
+      "datasourcename": {
+        "Okta": 2
+      }
     }
   }
 ]

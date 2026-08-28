@@ -75,24 +75,31 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | N
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
-def _occurred_from_gra_date(raw_value: Any) -> str:
-    """Build occurred ISO string from a GRA date field; fallback to now."""
+def _occurred_from_gra_date(raw_value: Any, gra_timezone: str = "UTC") -> str:
+    """Parse a naive GRA date as gra_timezone and return a UTC ISO string; fallback to now."""
     now_ms = datetime.now().timestamp() * 1000
     if raw_value is None or raw_value == "":
         return timestamp_to_datestring(now_ms)
+    timezone = gra_timezone or "UTC"
     try:
-        ts = date_to_timestamp(str(raw_value))
-        if ts is not None:
-            return timestamp_to_datestring(ts)
-    except Exception:
-        pass
-    try:
-        parsed = dateparser.parse(str(raw_value), settings={"TIMEZONE": "UTC"})
+        parsed = dateparser.parse(
+            str(raw_value),
+            settings={"TIMEZONE": timezone, "TO_TIMEZONE": "UTC"},
+        )
         if parsed is not None:
             return timestamp_to_datestring(parsed.timestamp() * 1000)
     except Exception:
         pass
     return timestamp_to_datestring(now_ms)
+
+
+def _rewrite_gra_date_fields(record: dict[str, Any], keys: list[str], gra_timezone: str) -> None:
+    """Replace naive GRA date fields with UTC ISO so incoming mappers do not treat them as UTC wall-clock."""
+    for key in keys:
+        raw = record.get(key)
+        if raw is None or raw == "":
+            continue
+        record[key] = _occurred_from_gra_date(raw, gra_timezone)
 
 
 """ COMMAND FUNCTIONS """
@@ -117,7 +124,11 @@ def fetch_post_records(client: Client, url_suffix, prefix, key, params, post_url
 
 
 def fetch_gra_incidents(
-    client: Client, max_results: int, last_run: dict, first_fetch_time: int | None
+    client: Client,
+    max_results: int,
+    last_run: dict,
+    first_fetch_time: int | None,
+    gra_timezone: str = "UTC",
 ) -> tuple[dict, list[dict]]:
     """Fetch OPEN GRA Incidents using maxIncidentId cursor after first date bootstrap."""
     max_incident_id = last_run.get("maxIncidentId")
@@ -130,7 +141,7 @@ def fetch_gra_incidents(
 
     demisto.debug(
         f"fetch_gra_incidents start max_fetch={max_results} maxIncidentId={max_incident_id} "
-        f"first_fetch_time={first_fetch_time} page={page}"
+        f"first_fetch_time={first_fetch_time} gra_timezone={gra_timezone} page={page}"
     )
 
     while is_continue:
@@ -149,7 +160,7 @@ def fetch_gra_incidents(
             )
             params["endDate"] = datetime.fromtimestamp(now).strftime(API_DATE_FORMAT)
 
-        records = client.fetch_command_result("/incidents/opendate", params, None)
+        records = client.fetch_command_result("/incidents/v1/opendate", params, None)
         if len(records) < max_results:
             is_continue = False
         else:
@@ -163,10 +174,11 @@ def fetch_gra_incidents(
                 temp_max_incident_id = incident_id
 
             record["incidentType"] = "GRAIncident"
+            _rewrite_gra_date_fields(record, ["openDate", "riskDate"], gra_timezone)
             incidents.append(
                 {
                     "name": record.get("entity"),
-                    "occurred": _occurred_from_gra_date(record.get("openDate")),
+                    "occurred": record.get("openDate") or _occurred_from_gra_date(None, gra_timezone),
                     "rawJSON": json.dumps(record),
                 }
             )
@@ -178,7 +190,13 @@ def fetch_gra_incidents(
     return next_run, incidents
 
 
-def fetch_gra_alerts(client: Client, max_results: int, last_run: dict, first_fetch_time: int | None) -> tuple[dict, list[dict]]:
+def fetch_gra_alerts(
+    client: Client,
+    max_results: int,
+    last_run: dict,
+    first_fetch_time: int | None,
+    gra_timezone: str = "UTC",
+) -> tuple[dict, list[dict]]:
     """Fetch OPEN GRA Alerts using maxAlertId cursor after first date bootstrap."""
     max_alert_id = last_run.get("maxAlertId")
     temp_max_alert_id = max_alert_id
@@ -188,7 +206,7 @@ def fetch_gra_alerts(client: Client, max_results: int, last_run: dict, first_fet
 
     demisto.debug(
         f"fetch_gra_alerts start max_fetch={max_results} maxAlertId={max_alert_id} "
-        f"first_fetch_time={first_fetch_time} page={page}"
+        f"first_fetch_time={first_fetch_time} gra_timezone={gra_timezone} page={page}"
     )
 
     while is_continue:
@@ -206,7 +224,7 @@ def fetch_gra_alerts(client: Client, max_results: int, last_run: dict, first_fet
             )
             params["endDate"] = datetime.fromtimestamp(now).strftime(API_DATE_FORMAT)
 
-        records = client.fetch_command_result("/alerts/OPEN", params, None)
+        records = client.fetch_command_result("/alerts/v1/OPEN", params, None)
         if len(records) < max_results:
             is_continue = False
         else:
@@ -220,11 +238,12 @@ def fetch_gra_alerts(client: Client, max_results: int, last_run: dict, first_fet
                 temp_max_alert_id = alert_id
 
             record["incidentType"] = "GRAAlert"
+            _rewrite_gra_date_fields(record, ["detectionTimestamp"], gra_timezone)
             name = record.get("anomalyName") or record.get("entity") or f"Alert {alert_id}"
             incidents.append(
                 {
                     "name": name,
-                    "occurred": _occurred_from_gra_date(record.get("detectionTimestamp")),
+                    "occurred": record.get("detectionTimestamp") or _occurred_from_gra_date(None, gra_timezone),
                     "rawJSON": json.dumps(record),
                 }
             )
@@ -242,12 +261,16 @@ def fetch_incidents(
     last_run: dict,
     first_fetch_time: int | None,
     fetch_type: str = "Incidents",
+    gra_timezone: str = "UTC",
 ) -> tuple[dict, list[dict]]:
     """Fetch GRA objects into XSOAR. Cases are no longer imported; use Incidents or Alerts."""
-    demisto.debug(f"fetch_incidents dispatch fetch_type={fetch_type} max_results={max_results} last_run={last_run}")
+    demisto.debug(
+        f"fetch_incidents dispatch fetch_type={fetch_type} max_results={max_results} "
+        f"gra_timezone={gra_timezone} last_run={last_run}"
+    )
     if fetch_type == "Alerts":
-        return fetch_gra_alerts(client, max_results, last_run, first_fetch_time)
-    return fetch_gra_incidents(client, max_results, last_run, first_fetch_time)
+        return fetch_gra_alerts(client, max_results, last_run, first_fetch_time, gra_timezone)
+    return fetch_gra_incidents(client, max_results, last_run, first_fetch_time, gra_timezone)
 
 
 def test_module_command(client: Client) -> str:
@@ -303,6 +326,7 @@ def main() -> None:
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
             fetch_type = demisto.params().get("fetch_type") or "Incidents"
+            gra_timezone = demisto.params().get("gra_server_timezone") or "UTC"
 
             next_run, incidents = fetch_incidents(
                 client=client,
@@ -310,6 +334,7 @@ def main() -> None:
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
                 fetch_type=fetch_type,
+                gra_timezone=gra_timezone,
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
@@ -318,43 +343,65 @@ def main() -> None:
             fetch_records(client, "/users", "Gra.Users", "employeeId", params)
 
         elif demisto.command() == "gra-fetch-accounts":
-            fetch_records(client, "/accounts", "Gra.Accounts", "id", params)
+            fetch_records(client, "/v1/accounts", "Gra.Accounts", "id", params)
 
         elif demisto.command() == "gra-fetch-active-resource-accounts":
             resource_name = arguments.get("resource_name", "Windows Security")
             active_resource_url = "/resources/" + resource_name + "/accounts"
             fetch_records(client, active_resource_url, "Gra.Active.Resource.Accounts", "id", params)
 
+        elif demisto.command() == "gra-fetch-active-datasource-accounts":
+            ds_params = dict(params)
+            ds_params["datasourcename"] = arguments.get("datasource_name", "Windows Security")
+            fetch_records(client, "/datasources/accounts", "Gra.Active.Datasource.Accounts", "id", ds_params)
+
         elif demisto.command() == "gra-fetch-user-accounts":
             employee_id = arguments.get("employee_id")
-            user_account_url = "/users/" + employee_id + "/accounts"
-            fetch_records(client, user_account_url, "Gra.User.Accounts", "id", params)
+            user_account_params = dict(params)
+            user_account_params["id"] = employee_id
+            fetch_records(client, "/v1/users/accounts", "Gra.User.Accounts", "id", user_account_params)
 
         elif demisto.command() == "gra-fetch-resource-highrisk-accounts":
             res_name = arguments.get("Resource_name", "Windows Security")
             high_risk_account_resource_url = "/resources/" + res_name + "/accounts/highrisk"
             fetch_records(client, high_risk_account_resource_url, "Gra.Resource.Highrisk.Accounts", "id", params)
 
+        elif demisto.command() == "gra-fetch-datasource-highrisk-accounts":
+            ds_params = dict(params)
+            ds_params["datasourcename"] = arguments.get("datasource_name", "Windows Security")
+            fetch_records(client, "/datasources/accounts/highrisk", "Gra.Datasource.Highrisk.Accounts", "id", ds_params)
+
         elif demisto.command() == "gra-fetch-hpa":
-            fetch_records(client, "/accounts/highprivileged", "Gra.Hpa", "id", params)
+            fetch_records(client, "/v1/accounts/highprivileged", "Gra.Hpa", "id", params)
 
         elif demisto.command() == "gra-fetch-resource-hpa":
             resource_name = arguments.get("Resource_name", "Windows Security")
             resource_hpa = "/resources/" + resource_name + "/accounts/highprivileged"
             fetch_records(client, resource_hpa, "Gra.Resource.Hpa", "id", params)
 
+        elif demisto.command() == "gra-fetch-datasource-hpa":
+            ds_params = dict(params)
+            ds_params["datasourcename"] = arguments.get("datasource_name", "Windows Security")
+            fetch_records(client, "/datasources/accounts/highprivileged", "Gra.Datasource.Hpa", "id", ds_params)
+
         elif demisto.command() == "gra-fetch-orphan-accounts":
-            fetch_records(client, "/accounts/orphan", "Gra.Orphan.Accounts", "id", params)
+            fetch_records(client, "/v1/accounts/orphan", "Gra.Orphan.Accounts", "id", params)
 
         elif demisto.command() == "gra-fetch-resource-orphan-accounts":
             resource_name = arguments.get("resource_name", "Windows Security")
             resource_orphan = "/resources/" + resource_name + "/accounts/orphan"
             fetch_records(client, resource_orphan, "Gra.Resource.Orphan.Accounts", "id", params)
 
+        elif demisto.command() == "gra-fetch-datasource-orphan-accounts":
+            ds_params = dict(params)
+            ds_params["datasourcename"] = arguments.get("datasource_name", "Windows Security")
+            fetch_records(client, "/datasources/accounts/orphan", "Gra.Datasource.Orphan.Accounts", "id", ds_params)
+
         elif demisto.command() == "gra-user-activities":
             employee_id = arguments.get("employee_id")
-            user_activities_url = "/user/" + employee_id + "/activity"
-            fetch_records(client, user_activities_url, "Gra.User.Activity", "employee_id", params)
+            activity_params = dict(params)
+            activity_params["id"] = employee_id
+            fetch_records(client, "/v1/user/activity", "Gra.User.Activity", "employee_id", activity_params)
 
         elif demisto.command() == "gra-fetch-users-details":
             employee_id = arguments.get("employee_id")
@@ -422,19 +469,14 @@ def main() -> None:
             fromDate = arguments.get("fromDate")
             toDate = arguments.get("toDate")
             modelName = arguments.get("modelName")
+            investigate_params = dict(params)
+            investigate_params["modelName"] = modelName
             if fromDate is not None and toDate is not None:
-                investigateAnomaly_url = (
-                    "/investigateAnomaly/anomalySummary/"
-                    + modelName
-                    + "?fromDate="
-                    + fromDate
-                    + " 00:00:00&toDate="
-                    + toDate
-                    + " 23:59:59"
-                )
-            else:
-                investigateAnomaly_url = "/investigateAnomaly/anomalySummary/" + modelName
-            fetch_records(client, investigateAnomaly_url, "Gra.Investigate.Anomaly.Summary", "modelId", params)
+                investigate_params["fromDate"] = fromDate + " 00:00:00"
+                investigate_params["toDate"] = toDate + " 23:59:59"
+            fetch_records(
+                client, "/investigateAnomaly/v1/anomalySummary", "Gra.Investigate.Anomaly.Summary", "modelId", investigate_params
+            )
 
         elif demisto.command() == "gra-analytical-features-entity-value":
             fromDate = arguments.get("fromDate")
@@ -442,22 +484,17 @@ def main() -> None:
             modelName = arguments.get("modelName")
             entityValue = arguments.get("entityValue")
             entityTypeId = arguments.get("entityTypeId")
+            analytical_params = dict(params)
+            analytical_params["entityValue"] = entityValue
+            analytical_params["modelName"] = modelName
             if fromDate is not None and toDate is not None:
-                analyticalFeatures_url = (
-                    "profile/analyticalFeatures/"
-                    + entityValue
-                    + "?fromDate="
-                    + fromDate
-                    + " 00:00:00&toDate="
-                    + toDate
-                    + " 23:59:59&modelName="
-                    + modelName
-                )
-            else:
-                analyticalFeatures_url = "profile/analyticalFeatures/" + entityValue + "?modelName=" + modelName
+                analytical_params["fromDate"] = fromDate + " 00:00:00"
+                analytical_params["toDate"] = toDate + " 23:59:59"
             if entityTypeId is not None:
-                analyticalFeatures_url += "&entityTypeId=" + entityTypeId
-            fetch_records(client, analyticalFeatures_url, "Gra.Analytical.Features.Entity.Value", "entityID", params)
+                analytical_params["entityTypeId"] = entityTypeId
+            fetch_records(
+                client, "/profile/analyticalFeatures", "Gra.Analytical.Features.Entity.Value", "entityID", analytical_params
+            )
         elif demisto.command() == "gra-cases-anomaly":
             caseId = arguments.get("caseId")
             anomaliesUrl = "/anomalies/" + caseId
@@ -465,7 +502,7 @@ def main() -> None:
 
         elif demisto.command() == "gra-incidents":
             status = arguments.get("status")
-            incidents_url = "/incidents/" + status
+            incidents_url = "/incidents/v1/" + status
             fetch_records(client, incidents_url, "Gra.Incidents", "incidentId", params)
 
         elif demisto.command() == "gra-incident-action":
@@ -517,14 +554,14 @@ def main() -> None:
 
         elif demisto.command() == "gra-incidents-anomaly":
             incident_id = arguments.get("incidentId")
-            anomalies_url = "/anomalies/" + str(incident_id)
+            anomalies_url = "/v1/anomalies/" + str(incident_id)
             fetch_records(client, anomalies_url, "Gra.Incidents.anomalies", "incidentId", params)
 
         elif demisto.command() == "gra-alerts":
             status = arguments.get("status")
             start_date = arguments.get("startDate")
             end_date = arguments.get("endDate")
-            alerts_url = "/alerts/" + status
+            alerts_url = "/alerts/v1/" + status
             alert_params = dict(params)
             if start_date:
                 alert_params["startDate"] = start_date
@@ -534,7 +571,7 @@ def main() -> None:
 
         elif demisto.command() == "gra-alert-get":
             alert_id = arg_to_number(arguments.get("id"))
-            fetch_records(client, "/alerts/getAlert", "Gra.Alert", "alertId", {"id": alert_id})
+            fetch_records(client, "/alerts/v1/getAlert", "Gra.Alert", "alertId", {"id": alert_id})
 
         elif demisto.command() in (
             "gra-alert-action",

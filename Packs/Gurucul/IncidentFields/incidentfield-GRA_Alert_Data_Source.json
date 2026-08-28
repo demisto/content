@@ -1,11 +1,11 @@
 {
-    "id": "incident_graalertresource",
+    "id": "incident_graalertdatasource",
     "version": -1,
     "modified": "2021-09-14T14:09:14.412325036+05:30",
-    "name": "GRA Alert Resource",
+    "name": "GRA Alert Data Source",
     "ownerOnly": false,
-    "description": "Resource",
-    "cliName": "graalertresource",
+    "description": "Data Source",
+    "cliName": "graalertdatasource",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -27,5 +27,12 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "Aliases": [
+        {
+            "cliName": "graalertresource",
+            "type": "shortText",
+            "name": "GRA Alert Resource"
+        }
+    ]
 }
