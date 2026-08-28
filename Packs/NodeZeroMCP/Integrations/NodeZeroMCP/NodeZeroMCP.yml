@@ -17,6 +17,12 @@ configuration:
     - https://mcp.horizon3ai.com
     - https://mcp.horizon3ai.eu
     - https://mcp.horizon3ai.au
+  - name: auth_code
+    type: 9
+    displaypassword: Authorization Code
+    hiddenusername: true
+    section: Connect
+    additionalinfo: The authorization code returned by the !nodezero-mcp-generate-login-url command. Paste it here, then run !nodezero-mcp-auth-test to complete authentication.
 description: Use this integration to connect to the NodeZero MCP server and automatically discover its available pentesting tools.
 display: NodeZero MCP
 name: NodeZero MCP

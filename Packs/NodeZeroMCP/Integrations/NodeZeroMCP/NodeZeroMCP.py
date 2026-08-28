@@ -3,20 +3,18 @@ from CommonServerPython import *
 from MCPApiModule import *
 
 import asyncio
+from urllib.parse import unquote
 
 COMMAND_PREFIX = "nodezero-mcp"
 DEFAULT_BASE_URL = "https://mcp.horizon3ai.com"
 SCOPE = "read write offline_access"
 
 
-def validate_required_params(base_url: str) -> None:
-    """Validates that required parameters are present.
-
-    With Dynamic Client Registration the client_id and token_endpoint are
-    discovered and registered automatically — only the MCP server URL is needed.
-    """
+def validate_required_params(base_url: str, auth_code: str, command: str) -> None:
     if not base_url:
         raise ValueError("Server URL must be provided.")
+    if not auth_code and command not in ("test-module", f"{COMMAND_PREFIX}-generate-login-url"):
+        raise ValueError("Authorization Code is required. Run !nodezero-mcp-generate-login-url to obtain one.")
 
 
 async def main() -> None:  # pragma: no cover
@@ -27,8 +25,9 @@ async def main() -> None:  # pragma: no cover
     client = None
     try:
         base_url = params.get("base_url", DEFAULT_BASE_URL)
+        auth_code = unquote(params.get("auth_code", {}).get("password") or "")
 
-        validate_required_params(base_url)
+        validate_required_params(base_url, auth_code, command)
 
         client = Client(
             base_url=base_url,
@@ -36,6 +35,7 @@ async def main() -> None:  # pragma: no cover
             command_prefix=COMMAND_PREFIX,
             scope=SCOPE,
             redirect_uri=REDIRECT_URI,
+            auth_code=auth_code,
         )
         demisto.debug(f"Command being called is {command}")
 
