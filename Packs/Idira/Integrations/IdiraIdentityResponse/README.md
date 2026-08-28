@@ -79,15 +79,6 @@ Ends all of the user's active sessions and cookies, forcing them to sign in agai
 
 **Context Output**: `IdiraIdentityResponse.ForceLogout` (`ID`, `Success`).
 
-### idira-identity-response-expire-password
-
-Requires the user to set a new password at their next login.
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | The username of the cloud user. | Required |
-
-**Context Output**: `IdiraIdentityResponse.PasswordExpiry` (`Name`, `ForcePasswordChangeNext`, `Success`).
 
 ### idira-identity-response-remove-role
 

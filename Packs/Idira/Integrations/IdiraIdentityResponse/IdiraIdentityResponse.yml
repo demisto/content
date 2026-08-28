@@ -121,22 +121,6 @@ script:
     - contextPath: IdiraIdentityResponse.ForceLogout.Success
       description: Whether the action succeeded.
       type: Boolean
-  - name: idira-identity-response-expire-password
-    description: Requires the user to set a new password at their next login.
-    arguments:
-    - name: username
-      description: The username of the cloud user.
-      required: true
-    outputs:
-    - contextPath: IdiraIdentityResponse.PasswordExpiry.Name
-      description: The username.
-      type: String
-    - contextPath: IdiraIdentityResponse.PasswordExpiry.ForcePasswordChangeNext
-      description: Whether the user must change password at next login.
-      type: Boolean
-    - contextPath: IdiraIdentityResponse.PasswordExpiry.Success
-      description: Whether the action succeeded.
-      type: Boolean
   - name: idira-identity-response-remove-role
     description: Strips standing privilege by removing one or more users from a role. Reversible by re-adding the user to the role.
     arguments:

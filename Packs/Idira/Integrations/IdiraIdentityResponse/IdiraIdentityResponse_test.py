@@ -14,7 +14,6 @@ from IdiraIdentityResponse import (
     Client,
     _extract_user_id,
     disable_user_command,
-    expire_password_command,
     force_logout_command,
     generate_telemetry_header,
     get_user_by_name_command,
@@ -142,7 +141,7 @@ def test_get_user_by_name_command(mocker, client):
     # Correct endpoint + body key.
     _, kwargs = resp.call_args
     assert kwargs["full_url"] == f"{IDENTITY_URL}/CDirectoryService/GetUserByName"
-    assert kwargs["json_data"] == {"name": "jdoe@corp"}
+    assert kwargs["json_data"] == {"username": "jdoe@corp"}
 
 
 @pytest.mark.parametrize(
@@ -155,7 +154,7 @@ def test_get_user_by_name_command(mocker, client):
 )
 def test_set_user_state_commands(mocker, client, command, expected_state):
     mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=200, json_data={"success": True}))
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=200, json_data={"Contents": {"success": True}}))
 
     result = command(client, {"user_id": "u-1"})
 
@@ -163,7 +162,7 @@ def test_set_user_state_commands(mocker, client, command, expected_state):
     assert result.outputs == {"ID": "u-1", "State": expected_state, "Success": True}
     _, kwargs = resp.call_args
     assert kwargs["full_url"] == f"{IDENTITY_URL}/CDirectoryService/SetUserState"
-    assert kwargs["json_data"] == {"ID": "u-1", "State": expected_state}
+    assert kwargs["json_data"] == {"ID": "u-1", "state": expected_state}
 
 
 def test_force_logout_command(mocker, client):
@@ -179,21 +178,9 @@ def test_force_logout_command(mocker, client):
     assert kwargs["json_data"] == {"ID": "u-1"}
 
 
-def test_expire_password_command(mocker, client):
-    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"success": True}))
-
-    result = expire_password_command(client, {"username": "jdoe"})
-
-    assert result.outputs_prefix == "IdiraIdentityResponse.PasswordExpiry"
-    assert result.outputs["ForcePasswordChangeNext"] is True
-    _, kwargs = resp.call_args
-    assert kwargs["json_data"] == {"Name": "jdoe", "ForcePasswordChangeNext": True}
-
-
 def test_remove_role_command_csv(mocker, client):
     mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"success": True}))
+    resp = mocker.patch.object(client, "_http_request", return_value=_Resp(json_data={"Contents": {"success": True}}))
 
     result = remove_role_command(client, {"role_id": "r-1", "user_ids": "u-1,u-2"})
 
@@ -208,16 +195,6 @@ def test_remove_role_command_csv(mocker, client):
 # ========================================
 
 
-def test_409_treated_as_idempotent_success(mocker, client):
-    mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
-    mocker.patch.object(client, "_http_request", return_value=_Resp(status_code=409))
-
-    result = lock_user_command(client, {"user_id": "u-1"})
-
-    assert result.outputs["Success"] is True
-    assert "already in requested state" in result.readable_output
-
-
 def test_401_clears_token_and_retries_once(mocker, client):
     mocker.patch.object(client, "_get_access_token", return_value=MOCK_ACCESS_TOKEN)
     clear = mocker.patch.object(client, "_clear_cached_token")
@@ -225,7 +202,7 @@ def test_401_clears_token_and_retries_once(mocker, client):
     http = mocker.patch.object(
         client,
         "_http_request",
-        side_effect=[DemistoException("Error 401 Unauthorized"), _Resp(status_code=200, json_data={"ok": True})],
+        side_effect=[DemistoException("Error 401 Unauthorized"), _Resp(status_code=200, json_data={"Contents": {"success": True}})],
     )
 
     result = lock_user_command(client, {"user_id": "u-1"})

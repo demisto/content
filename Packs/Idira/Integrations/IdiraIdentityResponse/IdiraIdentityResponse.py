@@ -14,9 +14,7 @@ password, and remove a privileged role. All actions target the Idira Identity
 host (https://<tenant>.id.cyberark.cloud) with a single OAuth2 client_credentials
 Bearer token obtained from /oauth2/platformtoken.
 
-Privilege Cloud (session/credential) and SIA (access-policy) actions are planned
-for a follow-up phase; EPM endpoint containment is delegated to the
-IdiraEPMSOCResponse integration.
+EPM endpoint containment is delegated to the IdiraEPMSOCResponse integration.
 """
 
 INTEGRATION_NAME = "Idira Identity Response"
@@ -47,18 +45,6 @@ VALID_UNTIL = "valid_until"
 STATE_LOCKED = "Locked"
 STATE_DISABLED = "Disabled"
 STATE_NONE = "None"
-
-# ---------------------------------------------------------------------------
-# [TBD] field names — the development guide flags these JSON keys as unconfirmed
-# ("confirm against your tenant Swagger at /identity-docs-api"). They are
-# isolated here so a single-line change fixes them once verified against a live
-# tenant. See the README "Known Limitations" section.
-# ---------------------------------------------------------------------------
-# GetUserByName request body key (guide 7.1 curl shows lowercase "name").
-GETUSER_NAME_KEY = "name"
-# SignOutEverywhere request body key carrying the user unique ID (guide 7.4).
-# Defaulted to "ID" for consistency with SetUserState; verify against Swagger.
-SIGNOUT_USER_ID_KEY = "ID"
 
 # endregion
 
@@ -294,7 +280,7 @@ def test_module(client: Client) -> str:
 def get_user_by_name_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Resolve a username to its user unique ID (guide 7.1)."""
     username = args["username"]
-    response = client.identity_request("/CDirectoryService/GetUserByName", {GETUSER_NAME_KEY: username})
+    response = client.identity_request("/CDirectoryService/GetUserByName", {'username': username})
     user_id = _extract_user_id(response)
 
     outputs = {"ID": user_id, "Username": username}
@@ -309,16 +295,15 @@ def get_user_by_name_command(client: Client, args: dict[str, Any]) -> CommandRes
 
 def _set_user_state(client: Client, user_id: str, state: str) -> CommandResults:
     """Set a user's account state via SetUserState (guide 7.4)."""
-    response = client.identity_request("/CDirectoryService/SetUserState", {"ID": user_id, "State": state})
-    already = isinstance(response, dict) and response.get("status_code") == 409
+    response = client.identity_request("/CDirectoryService/SetUserState", {"ID": user_id, "state": state})
 
-    outputs = {"ID": user_id, "State": state, "Success": True}
-    note = " (already in requested state)" if already else ""
+    success = response.get("Contents").get("success")
+    outputs = {"ID": user_id, "State": state, "Success": success}
     return CommandResults(
         outputs_prefix="IdiraIdentityResponse.UserState",
         outputs_key_field="ID",
         outputs=outputs,
-        readable_output=tableToMarkdown(f"User {user_id} state set to {state}{note}", outputs),
+        readable_output=tableToMarkdown(f"User {user_id} state set to {state}", outputs),
         raw_response=response,
     )
 
@@ -332,14 +317,14 @@ def disable_user_command(client: Client, args: dict[str, Any]) -> CommandResults
 
 
 def unlock_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Reverse a lock/disable by setting the state back to None (guide table)."""
+    """Reverse a lock/disable by setting the state back to None."""
     return _set_user_state(client, args["user_id"], STATE_NONE)
 
 
 def force_logout_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """End all of a user's sessions/cookies (guide 7.4, SignOutEverywhere)."""
+    """End all of a user's sessions/cookies"""
     user_id = args["user_id"]
-    response = client.identity_request("/UserMgmt/SignOutEverywhere", {SIGNOUT_USER_ID_KEY: user_id})
+    response = client.identity_request("/UserMgmt/SignOutEverywhere", {'ID': user_id})
 
     outputs = {"ID": user_id, "Success": True}
     return CommandResults(
@@ -351,32 +336,32 @@ def force_logout_command(client: Client, args: dict[str, Any]) -> CommandResults
     )
 
 
-def expire_password_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Require the user to set a new password at next login (guide 7.4, ChangeUser)."""
-    username = args["username"]
-    response = client.identity_request(
-        "/CDirectoryService/ChangeUser", {"Name": username, "ForcePasswordChangeNext": True}
-    )
-
-    outputs = {"Name": username, "ForcePasswordChangeNext": True, "Success": True}
-    return CommandResults(
-        outputs_prefix="IdiraIdentityResponse.PasswordExpiry",
-        outputs_key_field="Name",
-        outputs=outputs,
-        readable_output=tableToMarkdown(f"User {username} required to change password at next login", outputs),
-        raw_response=response,
-    )
+# def expire_password_command(client: Client, args: dict[str, Any]) -> CommandResults:
+#     """Require the user to set a new password at next login (guide 7.4, ChangeUser)."""
+#     username = args["username"]
+#     response = client.identity_request(
+#         "/CDirectoryService/ChangeUser", {"Name": username, "ForcePasswordChangeNext": True}
+#     )
+#
+#     outputs = {"Name": username, "ForcePasswordChangeNext": True, "Success": True}
+#     return CommandResults(
+#         outputs_prefix="IdiraIdentityResponse.PasswordExpiry",
+#         outputs_key_field="Name",
+#         outputs=outputs,
+#         readable_output=tableToMarkdown(f"User {username} required to change password at next login", outputs),
+#         raw_response=response,
+#     )
 
 
 def remove_role_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Strip standing privilege by removing users from a role (guide 7.4)."""
+    """Strip standing privilege by removing users from a role."""
     role_id = args["role_id"]
     user_ids = argToList(args["user_ids"])
     response = client.identity_request(
         "/SaasManage/RemoveUsersAndGroupsFromRole", {"Name": role_id, "Users": user_ids}
     )
-
-    outputs = {"RoleId": role_id, "Users": user_ids, "Success": True}
+    success = response.get("Contents").get("success")
+    outputs = {"RoleId": role_id, "Users": user_ids, "Success": success}
     return CommandResults(
         outputs_prefix="IdiraIdentityResponse.RoleRemoval",
         outputs_key_field="RoleId",
@@ -396,7 +381,6 @@ COMMAND_MAP: dict[str, Any] = {
     "idira-identity-response-disable-user": disable_user_command,
     "idira-identity-response-unlock-user": unlock_user_command,
     "idira-identity-response-force-logout": force_logout_command,
-    "idira-identity-response-expire-password": expire_password_command,
     "idira-identity-response-remove-role": remove_role_command,
 }
 

@@ -25,7 +25,7 @@ WARNING: these are REAL response actions against a live tenant. lock/disable
 will block a real user from authenticating. Use a dedicated test user and run
 ``unlock-user`` to reverse.
 """
-
+import json
 import os
 import sys
 
@@ -121,7 +121,7 @@ def main() -> None:
 
     for result in captured:
         print("---- result ----")
-        print(result)
+        print(json.dumps(result, indent=2))
 
 # TODO: Remove from branch before PR
 if __name__ == "__main__":
