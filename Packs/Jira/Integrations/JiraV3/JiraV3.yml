@@ -100,11 +100,27 @@ configuration:
   defaultvalue: 'false'
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 'false'
   additionalinfo: When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. This works for any workflow status whose category is `Done` (Jira automatically categorizes every status, including custom ones, as `To Do`, `In Progress`, or `Done`), or, failing that, if the `Resolved` field is populated.
   display: Close Mirrored XSOAR Incident
@@ -194,6 +210,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   commands:
   - arguments:
