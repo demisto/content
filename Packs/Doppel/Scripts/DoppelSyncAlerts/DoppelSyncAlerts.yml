@@ -11,6 +11,13 @@ args:
   - "true"
   - "false"
 - auto: PREDEFINED
+  defaultValue: "true"
+  description: Whether to reopen a closed Cortex incident/issue when Doppel revives the alert (moves it back into an active queue such as Doppel Review or Actioned, for example when a taken-down domain comes back online). The reopen only fires on a queue transition observed since the last sweep, so unrelated alert activity does not reopen incidents an analyst closed.
+  name: reopen_revived
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
   defaultValue: "false"
   description: Whether to only report what would be updated without modifying anything. The sync cursor is not advanced.
   name: dry_run
@@ -39,6 +46,9 @@ outputs:
   type: Number
 - contextPath: Doppel.SyncAlerts.IncidentsClosed
   description: Number of incidents/issues that were closed because the Doppel alert was archived.
+  type: Number
+- contextPath: Doppel.SyncAlerts.IncidentsReopened
+  description: Number of closed incidents/issues that were reopened because the Doppel alert was revived into an active queue.
   type: Number
 - contextPath: Doppel.SyncAlerts.AlertsWithoutIncident
   description: Number of modified Doppel alerts with no matching incident/issue in the tenant.

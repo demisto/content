@@ -536,6 +536,7 @@ There is no context output for this command.
 When incidents are mirrored into Cortex XSOAR from Doppel:
 
 1. Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents.
+2. When Doppel revives an alert — moves it back into an active queue such as Doppel Review or Actioned, for example when a taken-down domain comes back online — a closed Cortex XSOAR incident is automatically reopened so the revival is not missed. The reopen only fires on a queue transition that occurred after the incident's last sync, so incidents closed by an analyst are not reopened by unrelated alert activity.
 
 **Supported Fields**
 

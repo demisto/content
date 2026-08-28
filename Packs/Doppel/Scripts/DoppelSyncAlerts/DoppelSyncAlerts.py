@@ -13,6 +13,10 @@ DOPPEL_MAX_PAGE_SIZE = 200
 INCIDENT_SEARCH_BATCH = 20
 INCIDENT_SEARCH_PAGE_SIZE = 100
 SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+# Queue states that mean the alert needs attention again. Doppel's Revival Monitoring
+# reopens the same alert (no new row) into doppel_review or actioned when e.g. a parked
+# domain goes live; needs_confirmation is included because it also requires customer action.
+ACTIVE_QUEUE_STATES = {"doppel_review", "actioned", "needs_confirmation"}
 
 """ HELPER FUNCTIONS """
 
@@ -161,6 +165,44 @@ def _close_incident(incident_id: str, alert_id: str) -> None:
     )
 
 
+def _normalize_queue_state(value: Any) -> str:
+    """Normalize a queue-state-ish string ("Doppel Review" / "doppel_review") for comparison."""
+    return str(value or "").strip().lower().replace(" ", "_")
+
+
+def _was_revived_after(alert: dict, cursor_dt: datetime | None) -> bool:
+    """True when the alert re-entered an active queue after the cursor (a revival).
+
+    The check requires a fresh audit-log entry for the transition into the alert's current
+    queue state, so an incident closed by an analyst while the alert simply stays active is
+    not reopened by unrelated alert activity (e.g. a new comment).
+    """
+    queue_state = _normalize_queue_state(alert.get("queue_state"))
+    if queue_state not in ACTIVE_QUEUE_STATES or not cursor_dt:
+        return False
+    audit_logs = alert.get("audit_logs")
+    if not isinstance(audit_logs, list):
+        return False
+    for audit_log in audit_logs:
+        if not isinstance(audit_log, dict) or _normalize_queue_state(audit_log.get("value")) != queue_state:
+            continue
+        try:
+            log_time = arg_to_datetime(str(audit_log.get("timestamp")), required=False)
+        except ValueError:
+            continue
+        if log_time and log_time.tzinfo is None:
+            log_time = log_time.replace(tzinfo=UTC)
+        if log_time and log_time >= cursor_dt:
+            return True
+    return False
+
+
+def _reopen_incident(incident_id: str, alert_id: str) -> None:
+    # reopenInvestigation works on XSOAR investigations and XSIAM issues alike.
+    _execute("reopenInvestigation", {"id": incident_id})
+    demisto.debug(f"Doppel - Reopened incident {incident_id} for revived alert {alert_id}")
+
+
 """ MAIN """
 
 
@@ -170,11 +212,15 @@ def main():
         lookback = args.get("lookback") or "1 hour"
         max_pages = arg_to_number(args.get("max_pages")) or 5
         close_archived = argToBoolean(args.get("close_archived") or "false")
+        reopen_revived = argToBoolean(args.get("reopen_revived") or "true")
         dry_run = argToBoolean(args.get("dry_run") or "false")
         instance_name = args.get("instance_name")
 
         sweep_start = datetime.now(UTC).strftime(TIMESTAMP_FORMAT)
         cursor = _load_cursor(lookback)
+        cursor_dt = arg_to_datetime(cursor, required=False)
+        if cursor_dt and cursor_dt.tzinfo is None:
+            cursor_dt = cursor_dt.replace(tzinfo=UTC)
         use_alert_commands = _use_alert_commands()
 
         alerts, drained = _get_modified_alerts(cursor, max_pages, instance_name)
@@ -182,6 +228,7 @@ def main():
 
         updated = 0
         closed = 0
+        reopened = 0
         unmatched = 0
         errors: list[str] = []
         for alert in alerts:
@@ -195,6 +242,10 @@ def main():
             for incident in incidents:
                 incident_id = str(incident.get("id"))
                 try:
+                    if reopen_revived and _is_closed(incident) and _was_revived_after(alert, cursor_dt):
+                        if not dry_run:
+                            _reopen_incident(incident_id, alert_id)
+                        reopened += 1
                     if not dry_run:
                         _update_incident(incident_id, custom_fields, severity, use_alert_commands)
                     updated += 1
@@ -215,6 +266,7 @@ def main():
             "ModifiedAlerts": len(alerts),
             "IncidentsUpdated": updated,
             "IncidentsClosed": closed,
+            "IncidentsReopened": reopened,
             "AlertsWithoutIncident": unmatched,
             "Errors": len(errors),
             "CursorAdvanced": cursor_advanced,

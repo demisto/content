@@ -1,5 +1,7 @@
 import demistomock as demisto
 import DoppelSyncAlerts
+from datetime import UTC, datetime
+
 from DoppelSyncAlerts import (
     _alert_severity,
     _build_custom_fields,
@@ -9,6 +11,7 @@ from DoppelSyncAlerts import (
     _load_cursor,
     _save_cursor,
     _update_incident,
+    _was_revived_after,
     main,
 )
 
@@ -163,6 +166,39 @@ def test_is_closed():
     assert _is_closed({"status": 1}) is False
 
 
+""" REVIVAL """
+
+
+CURSOR_DT = datetime(2026, 8, 10, 0, 0, 0, tzinfo=UTC)
+
+
+def test_was_revived_after_fresh_transition_into_active_queue():
+    alert = _alert(
+        "TST-1",
+        queue_state="doppel_review",
+        audit_logs=[{"type": "queue_state_change", "value": "Doppel Review", "timestamp": "2026-08-11T00:00:00Z"}],
+    )
+    assert _was_revived_after(alert, CURSOR_DT) is True
+
+
+def test_was_revived_after_stale_transition():
+    alert = _alert(
+        "TST-1",
+        queue_state="actioned",
+        audit_logs=[{"type": "queue_state_change", "value": "actioned", "timestamp": "2026-08-01T00:00:00Z"}],
+    )
+    assert _was_revived_after(alert, CURSOR_DT) is False
+
+
+def test_was_revived_after_inactive_queue():
+    alert = _alert(
+        "TST-1",
+        queue_state="monitoring",
+        audit_logs=[{"type": "queue_state_change", "value": "monitoring", "timestamp": "2026-08-11T00:00:00Z"}],
+    )
+    assert _was_revived_after(alert, CURSOR_DT) is False
+
+
 """ MAIN """
 
 
@@ -232,6 +268,71 @@ def test_main_close_archived_closes_open_incident(mocker):
     close_calls = [args for command, args in calls if command == "closeInvestigation"]
     assert close_calls
     assert close_calls[0]["id"] == "100"
+
+
+def test_main_reopens_closed_incident_for_revived_alert(mocker):
+    calls = []
+    alerts = [
+        _alert(
+            "TST-1",
+            queue_state="doppel_review",
+            audit_logs=[{"type": "queue_state_change", "value": "doppel_review", "timestamp": "2026-08-11T00:00:00Z"}],
+        )
+    ]
+    incidents = [{"id": "100", "dbotMirrorId": "TST-1", "status": 2}]
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "executeCommand", side_effect=_main_execute_factory(alerts, incidents, calls))
+    results = mocker.patch.object(DoppelSyncAlerts, "return_results")
+
+    main()
+
+    summary = results.call_args[0][0].outputs
+    assert summary["IncidentsReopened"] == 1
+    reopen_calls = [args for command, args in calls if command == "reopenInvestigation"]
+    assert reopen_calls
+    assert reopen_calls[0]["id"] == "100"
+
+
+def test_main_does_not_reopen_when_transition_predates_cursor(mocker):
+    calls = []
+    alerts = [
+        _alert(
+            "TST-1",
+            queue_state="doppel_review",
+            audit_logs=[{"type": "queue_state_change", "value": "doppel_review", "timestamp": "2026-08-01T00:00:00Z"}],
+        )
+    ]
+    incidents = [{"id": "100", "dbotMirrorId": "TST-1", "status": 2}]
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "executeCommand", side_effect=_main_execute_factory(alerts, incidents, calls))
+    results = mocker.patch.object(DoppelSyncAlerts, "return_results")
+
+    main()
+
+    summary = results.call_args[0][0].outputs
+    assert summary["IncidentsReopened"] == 0
+    assert not any(command == "reopenInvestigation" for command, _ in calls)
+
+
+def test_main_reopen_can_be_disabled(mocker):
+    calls = []
+    alerts = [
+        _alert(
+            "TST-1",
+            queue_state="doppel_review",
+            audit_logs=[{"type": "queue_state_change", "value": "doppel_review", "timestamp": "2026-08-11T00:00:00Z"}],
+        )
+    ]
+    incidents = [{"id": "100", "dbotMirrorId": "TST-1", "status": 2}]
+    mocker.patch.object(demisto, "args", return_value={"reopen_revived": "false"})
+    mocker.patch.object(demisto, "executeCommand", side_effect=_main_execute_factory(alerts, incidents, calls))
+    results = mocker.patch.object(DoppelSyncAlerts, "return_results")
+
+    main()
+
+    summary = results.call_args[0][0].outputs
+    assert summary["IncidentsReopened"] == 0
+    assert not any(command == "reopenInvestigation" for command, _ in calls)
 
 
 def test_main_dry_run_does_not_write(mocker):
