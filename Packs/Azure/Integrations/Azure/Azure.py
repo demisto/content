@@ -1,4 +1,3 @@
-# CIAC-17086 e2e test B
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *

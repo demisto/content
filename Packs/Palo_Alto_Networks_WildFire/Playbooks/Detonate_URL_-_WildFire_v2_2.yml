@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Detonate URL - WildFire v2.2
 description: |-
-  Detonate a webpage or remote file using the WildFire v2 integration. This playbook returns relevant reports to the War Room and file reputations to the context data. CIAC-17085 scenario G: loosely coupled playbook change.
+  Detonate a webpage or remote file using the WildFire v2 integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types:
   APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z, JS.
 starttaskid: "0"

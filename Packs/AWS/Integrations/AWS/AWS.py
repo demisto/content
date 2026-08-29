@@ -1,4 +1,6 @@
-# CIAC-17086 e2e test A
+# CIAC test reset: AWS 2.9.0
+# CIAC test reset: AWS 2.10.0
+# CIAC test reset: AWS 2.11.0
 import demistomock as demisto  # noqa: F401
 from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
