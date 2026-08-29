@@ -455,7 +455,6 @@ def test_start_flow_commits_when_at_least_one_row_modified(monkeypatch):
 
     def _fake_commit(args, responses):
         commit_called.append(True)
-        BlockDomain.POLLING = False
         return BlockDomain.CommandResults(readable_output="fake commit ok")
 
     def _capture(name, args):
@@ -554,7 +553,6 @@ def test_start_flow_commits_when_only_the_rule_changed(monkeypatch):
 
     def _fake_commit(args, responses):
         commit_called.append(True)
-        BlockDomain.POLLING = False
         return BlockDomain.CommandResults(readable_output="fake commit ok")
 
     def _capture(name, args):
@@ -1362,7 +1360,7 @@ def test_pan_os_push_status_error_contents_is_terminal_failure(monkeypatch):
        - Calling pan_os_push_status.
     Then:
        - The function does NOT crash with 'str object has no attribute get'; it stops polling
-         (POLLING flipped to False) and reports a Failure status for the job.
+         (no ScheduledCommand attached) and reports a Failure status for the job.
     """
     monkeypatch.setattr(
         BlockDomain.demisto,
@@ -1374,7 +1372,7 @@ def test_pan_os_push_status_error_contents_is_terminal_failure(monkeypatch):
     # at runtime, though the declared return type is still PollResult (hence the type: ignore below).
     result = pan_os_push_status({"push_job_id": "123"}, [])
 
-    assert BlockDomain.POLLING is False
+    assert not BlockDomain.is_polling_in_progress(result)
     assert result.outputs == {"JobID": "123", "Status": "Failure"}  # type: ignore[attr-defined]
 
 
@@ -1385,7 +1383,7 @@ def test_pan_os_push_status_fin_stops_polling(monkeypatch):
     When:
        - Calling pan_os_push_status.
     Then:
-       - Polling stops (POLLING flipped to False) and the reported job status is 'FIN'.
+       - Polling stops (no ScheduledCommand attached) and the reported job status is 'FIN'.
     """
     fin_entry = {
         "Type": 1,
@@ -1397,7 +1395,7 @@ def test_pan_os_push_status_fin_stops_polling(monkeypatch):
 
     result = pan_os_push_status({"push_job_id": "456"}, [])
 
-    assert BlockDomain.POLLING is False
+    assert not BlockDomain.is_polling_in_progress(result)
     assert result.outputs == {"Status": "FIN", "JobID": "456"}  # type: ignore[attr-defined]
 
 

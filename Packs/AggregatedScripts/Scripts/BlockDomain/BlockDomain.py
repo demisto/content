@@ -30,8 +30,6 @@ STATUS_FAILED = "Failed"
 RESULT_SUCCESS = "Success"
 RESULT_FAILED = "Failed"
 
-# Mirrors the BlockExternalIp toggle; flipped True by polling functions while a job runs.
-POLLING = False
 
 # Single searchable tag for every log line; grep tenant logs for "[BlockDomain]" to trace a run.
 LOG_TAG = "[BlockDomain]"
@@ -202,6 +200,20 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
         The raw list of command entries.
     """
     return demisto.executeCommand(command_name, args)
+
+
+def is_polling_in_progress(poll_response: Any) -> bool:
+    """Return whether a polling function's result indicates it should keep polling.
+
+    The @polling_function decorator attaches a ScheduledCommand to the returned CommandResults only
+    while polling should continue; when the job finishes it returns the plain response with none.
+
+    Args:
+        poll_response (Any): The value returned by a @polling_function-decorated call.
+    Returns:
+        True if polling should continue, False when the job has finished.
+    """
+    return getattr(poll_response, "scheduled_command", None) is not None
 
 
 def get_relevant_context(original_context: dict[str, Any], key: str) -> dict | list:
@@ -768,7 +780,7 @@ class PanOs:
         self.restore_responses()
         self.args["push_job_id"] = push_job_id
         res_push_status = pan_os_push_status(self.args, self.responses)
-        if not POLLING:
+        if not is_polling_in_progress(res_push_status):
             demisto.debug(f"{LOG_TAG} Push job {push_job_id} finished.")
             return self.finish()
         self.save_responses()
@@ -785,14 +797,14 @@ class PanOs:
         self.args["commit_job_id"] = commit_job_id
         self.restore_responses()
         poll_commit_status = pan_os_commit_status(self.args, self.responses)
-        if POLLING:
+        if is_polling_in_progress(poll_commit_status):
             self.save_responses()
             return poll_commit_status
         demisto.debug(f"{LOG_TAG} Commit job {commit_job_id} finished.")
         # Commit finished - push to the device group if this is Panorama.
         if self.pan_os_is_panorama():
             poll_push = pan_os_push_to_device(self.args, self.responses)
-            if not POLLING:
+            if not is_polling_in_progress(poll_push):
                 return self.finish()
             self.save_responses()
             return poll_push
@@ -813,7 +825,7 @@ class PanOs:
         demisto.debug(f"{LOG_TAG} start_flow: {made_changes=}, {auto_commit=}, {len(rows)} row(s)")
         if made_changes and auto_commit:
             poll_commit = pan_os_commit(self.args, self.responses)
-            if not POLLING:
+            if not is_polling_in_progress(poll_commit):
                 return self.finish()
             self.save_responses()
             return poll_commit
@@ -875,8 +887,6 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
     else:
         commit_output = res_commit[0].get("Contents") or "There are no changes to commit."
         continue_to_poll = False
-    global POLLING
-    POLLING = continue_to_poll
 
     args_for_next_run = args | {
         "commit_job_id": job_id,
@@ -903,7 +913,6 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     Returns:
         The PollResult object.
     """
-    global POLLING
     commit_job_id = args["commit_job_id"]
     command_name = "pan-os-commit-status"
     res_commit_status = run_execute_command(command_name, {"job_id": commit_job_id})
@@ -913,7 +922,6 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     raw_contents = res_commit_status[0].get("Contents", {}) if res_commit_status else {}
     if not isinstance(raw_contents, dict):
         commit_output = {"JobID": commit_job_id, "Status": "Failure"}
-        POLLING = False
         return PollResult(
             response=CommandResults(
                 outputs=commit_output,
@@ -927,7 +935,6 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     job_result = result_commit_status.get("result")
     commit_output = {"JobID": commit_job_id, "Status": "Success" if job_result == "OK" else "Failure"}
     continue_to_poll = result_commit_status.get("status") != "FIN"
-    POLLING = continue_to_poll
     return PollResult(
         response=CommandResults(
             outputs=commit_output,
@@ -967,8 +974,6 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
     else:
         push_cr = CommandResults(readable_output=res_push_to_device[0].get("Contents") or "There are no changes to push.")
         continue_to_poll = False
-    global POLLING
-    POLLING = continue_to_poll
     return PollResult(
         response=push_cr,
         continue_to_poll=continue_to_poll,
@@ -986,7 +991,6 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
     Returns:
         The PollResult object.
     """
-    global POLLING
     push_job_id = args["push_job_id"]
     command_name = "pan-os-push-status"
     res_push_status = run_execute_command(command_name, {"job_id": push_job_id})
@@ -996,7 +1000,6 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
     raw_contents = res_push_status[0].get("Contents", {}) if res_push_status else {}
     if is_error(res_push_status) or not isinstance(raw_contents, dict):
         push_output = {"JobID": push_job_id, "Status": "Failure"}
-        POLLING = False
         return PollResult(
             response=CommandResults(
                 outputs=push_output,
@@ -1014,7 +1017,6 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
         outputs=context_output,
         readable_output=tableToMarkdown("Push to Device Group:", context_output, ["JobID", "Status"], removeNull=True),
     )
-    POLLING = continue_to_poll
     return PollResult(
         response=push_cr,
         continue_to_poll=continue_to_poll,
