@@ -10,7 +10,6 @@ from BlockDomain import (
     RESULT_SUCCESS,
     STATUS_DONE,
     STATUS_FAILED,
-    STATUS_SKIPPED,
     PanOs,
     build_final_command_results,
     build_verbose_human_readable,
@@ -695,7 +694,7 @@ def test_process_domains_all_unchanged(monkeypatch):
        - The resulting row is Done / Unchanged (no create/modify happened).
     """
     obj = "Cortex-evil.example.com"
-    _mock_execute(
+    calls = _mock_execute(
         monkeypatch,
         {
             "pan-os-get-address": [ok_entry({"Panorama.Addresses": [{"Name": obj, "Tags": ["cortex-blocked-domains"]}]})],
@@ -735,6 +734,8 @@ def test_process_domains_all_unchanged(monkeypatch):
     assert pan._address_made_changes is False
     assert pan._rule_changed is False
     assert "Action" not in rows[0]
+    # A pre-existing, unchanged rule must NOT be moved (no needless candidate-config churn).
+    assert not any(name == "pan-os-move-rule" for name, _ in calls)
 
 
 def test_process_domains_modified_when_added_to_existing_group(monkeypatch):
@@ -1150,7 +1151,7 @@ def test_process_domains_does_not_set_log_forwarding_when_already_matches(monkey
     assert pan._rule_changed is False
 
 
-def test_process_domains_dynamic_group_is_skipped(monkeypatch):
+def test_process_domains_dynamic_group_is_failed(monkeypatch):
     """
     Given:
        - A tenant where the target group already exists but as a *dynamic* address group
@@ -1158,7 +1159,8 @@ def test_process_domains_dynamic_group_is_skipped(monkeypatch):
     When:
        - Calling process_domains.
     Then:
-       - The row is marked Skipped / Success and the message explains the group is dynamic.
+       - The domain could not be blocked, so the row is marked Failed / Failed and the message
+         explains the group is dynamic.
     """
     _mock_execute(
         monkeypatch,
@@ -1169,10 +1171,41 @@ def test_process_domains_dynamic_group_is_skipped(monkeypatch):
             ],
         },
     )
+    # Capture the abort log so it does not leak to stdout (conftest fails on any stdout).
+    errors: list = []
+    monkeypatch.setattr(BlockDomain.demisto, "error", lambda msg: errors.append(msg))
+
     rows = _pan_os(["evil.example.com"]).process_domains()
-    assert rows[0]["Status"] == STATUS_SKIPPED
-    assert rows[0]["Result"] == RESULT_SUCCESS
+    assert rows[0]["Status"] == STATUS_FAILED
+    assert rows[0]["Result"] == RESULT_FAILED
     assert "dynamic" in rows[0]["Message"]
+    # The aborted domains are logged for troubleshooting.
+    assert any("evil.example.com" in msg for msg in errors)
+
+
+def test_process_domains_moves_rule_to_top_when_rule_created(monkeypatch):
+    """
+    Given:
+       - A tenant where neither the rule nor the address object exist yet, so the rule is created.
+    When:
+       - Calling process_domains.
+    Then:
+       - pan-os-move-rule is issued to enforce top placement for the newly created rule.
+    """
+    calls = _mock_execute(
+        monkeypatch,
+        {
+            "pan-os-get-address": [err_entry("not found")],
+            "pan-os-list-address-groups": [
+                ok_entry({"Panorama.AddressGroups": [{"Name": "Blocked Domains - Cortex", "Type": "static", "Addresses": []}]})
+            ],
+            "pan-os-list-rules": [ok_entry({"Panorama.SecurityRule": []})],
+        },
+    )
+    pan = _pan_os(["evil.example.com"])
+    pan.process_domains()
+    assert pan._rule_changed is True
+    assert any(name == "pan-os-move-rule" for name, _ in calls)
 
 
 def test_process_domains_failure_marks_row_failed(monkeypatch):

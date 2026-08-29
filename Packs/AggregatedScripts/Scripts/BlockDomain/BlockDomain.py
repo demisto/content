@@ -390,6 +390,7 @@ class PanOs:
         Returns:
             The raw command entries.
         """
+        demisto.debug(f"{LOG_TAG} executing {command_name!r} with args={command_args}")
         res = run_execute_command(command_name, command_args)
         self.responses.append(res)
         if is_error(res):
@@ -576,12 +577,14 @@ class PanOs:
                     f"Failed to set log-forwarding profile on rule '{self.rule_name}'",
                 )
                 self._rule_changed = True
-        # Always enforce top placement.
-        self.execute_or_raise(
-            "pan-os-move-rule",
-            {"rulename": self.rule_name, "where": "top", "pre_post": PRE_POST},
-            f"Failed to move rule '{self.rule_name}' to top",
-        )
+        # Enforce top placement only when we created/changed the rule; a pre-existing, unchanged
+        # rule is left where it is to avoid a needless move (and candidate-config churn).
+        if self._rule_changed or not rule_present:
+            self.execute_or_raise(
+                "pan-os-move-rule",
+                {"rulename": self.rule_name, "where": "top", "pre_post": PRE_POST},
+                f"Failed to move rule '{self.rule_name}' to top",
+            )
 
     def ensure_address_object(self, domain: str) -> tuple[str, bool, str]:
         """Ensure a single domain's FQDN address-object exists and carries the configured tag.
@@ -664,20 +667,22 @@ class PanOs:
                     )
                 )
         except DynamicGroupError as dyn_err:
-            # Abort the whole brand for this run.
+            # Abort the whole brand for this run: the target group is dynamic, so we can't add static
+            # members. Every requested domain failed to be blocked, so report them as failures.
+            demisto.error(f"{LOG_TAG} process_domains aborted for domains {self.domains}: {dyn_err}")
             for domain in self.domains:
                 rows.append(
                     build_result_row(
                         domain=domain,
                         brand=self.brand,
-                        status=STATUS_SKIPPED,
-                        result=RESULT_SUCCESS,
+                        status=STATUS_FAILED,
+                        result=RESULT_FAILED,
                         rule_name="",
                         message=str(dyn_err),
                     )
                 )
         except Exception as ex:
-            demisto.error(f"{LOG_TAG} process_domains failed: {traceback.format_exc()}")
+            demisto.error(f"{LOG_TAG} process_domains failed for domains {self.domains}: {traceback.format_exc()}")
             for domain in self.domains:
                 rows.append(
                     build_result_row(
@@ -1047,7 +1052,7 @@ def main() -> None:  # pragma: no cover
         brands_to_run = argToList(args.get("brands", ",".join(SUPPORTED_BRANDS)))
 
         if not domain_list:
-            return_error("domain_list argument is required.")
+            raise DemistoException("domain_list argument is required.")
 
         valid_domains, failed_rows = validate_domains(domain_list)
         enabled_brands = get_enabled_brands()
@@ -1055,7 +1060,7 @@ def main() -> None:  # pragma: no cover
 
         runnable_brands = [b for b in brands_to_run if b in SUPPORTED_BRANDS and b in enabled_brands]
         if not runnable_brands:
-            return_error(
+            raise DemistoException(
                 f"No integrations were found for the brands {brands_to_run}. "
                 f"Please verify the brand instances' setup. Supported brands: {SUPPORTED_BRANDS}."
             )
