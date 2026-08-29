@@ -2936,7 +2936,7 @@ def add_fields_to_events(events, time_field_path, event_type_field):
             event["event_type"] = event_type_field
 
 
-def apply_default_detection_asset_fields(asset: dict) -> None:
+def apply_default_detection_asset_fields(asset: dict[str, Any]) -> None:
     """
     Ensures that fields listed in DEFAULT_DETECTION_ASSET_FIELDS are always present on the asset,
     filling in the configured default value when a field is missing.
