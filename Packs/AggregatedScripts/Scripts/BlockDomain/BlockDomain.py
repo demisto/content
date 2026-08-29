@@ -198,8 +198,13 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> list[dict]:
         args (dict): The command arguments.
     Returns:
         The raw list of command entries.
+    Raises:
+        DemistoException: If the command returned no entries (callers index res[0] downstream).
     """
-    return demisto.executeCommand(command_name, args)
+    res = demisto.executeCommand(command_name, args)
+    if not res:
+        raise DemistoException(f"Command {command_name!r} returned an empty response.")
+    return res
 
 
 def is_polling_in_progress(poll_response: Any) -> bool:

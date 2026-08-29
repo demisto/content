@@ -19,6 +19,7 @@ from BlockDomain import (
     is_wildcard,
     normalize_tags,
     pan_os_push_status,
+    run_execute_command,
     validate_domains,
 )
 
@@ -39,6 +40,37 @@ def ok_entry(entry_context=None, contents="ok", instance=None, brand="Panorama")
 def err_entry(contents="error"):
     """Build a minimal error execute_command entry (Type 4 == entryTypes['error'])."""
     return {"Type": 4, "Contents": contents, "HumanReadable": "", "EntryContext": {}}
+
+
+def test_run_execute_command_returns_entries(monkeypatch):
+    """
+    Given:
+       - executeCommand returns a non-empty list of entries.
+    When:
+       - Calling run_execute_command.
+    Then:
+       - The entries are returned unchanged.
+    """
+    entries = [ok_entry()]
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", lambda *a, **k: entries)
+
+    assert run_execute_command("pan-os-get-address", {"name": "x"}) == entries
+
+
+@pytest.mark.parametrize("empty_response", [[], None])
+def test_run_execute_command_raises_on_empty_response(monkeypatch, empty_response):
+    """
+    Given:
+       - executeCommand returns an empty response (empty list or None).
+    When:
+       - Calling run_execute_command.
+    Then:
+       - A DemistoException is raised instead of letting downstream res[0] indexing crash.
+    """
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", lambda *a, **k: empty_response)
+
+    with pytest.raises(BlockDomain.DemistoException, match="returned an empty response"):
+        run_execute_command("pan-os-get-address", {"name": "x"})
 
 
 @pytest.mark.parametrize(
