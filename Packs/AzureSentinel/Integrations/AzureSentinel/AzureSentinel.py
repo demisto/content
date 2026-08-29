@@ -75,9 +75,12 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = (
 )
 
 DEFAULT_LIMIT = 50
-FETCH_MAX_LIMIT = 20
+
 COMMAND_MAX_LIMIT = 200
 MAX_INCIDENT_COMMENT_LIMIT = 50
+
+DEFAULT_FETCH_LIMIT = 20
+FETCH_MAX_LIMIT = 50
 
 DEFAULT_SOURCE = "Microsoft Sentinel"
 
@@ -1633,7 +1636,13 @@ def fetch_incidents(
 
     """
     # Get the last fetch details, if exist
-    limit = min(arg_to_number(demisto.params().get("limit")) or FETCH_MAX_LIMIT, FETCH_MAX_LIMIT)
+    configured_limit = arg_to_number(demisto.params().get("limit")) or DEFAULT_FETCH_LIMIT
+    limit = min(configured_limit, FETCH_MAX_LIMIT)
+    if configured_limit > FETCH_MAX_LIMIT:
+        demisto.debug(
+            f"Configured fetch limit {configured_limit} exceeds the maximum allowed ({FETCH_MAX_LIMIT}); "
+            f"using {FETCH_MAX_LIMIT} instead."
+        )
     last_fetch_time = last_run.get("last_fetch_time")
     last_fetch_ids = last_run.get("last_fetch_ids", [])
     last_incident_number = last_run.get("last_incident_number")
