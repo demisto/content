@@ -888,11 +888,11 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
     responses.append(res_commit)
     # Surface a failed commit instead of silently treating it as "no changes to commit".
     if is_error(res_commit):
-        commit_output = {"Status": "Failure"}
+        failure_output = {"Status": "Failure"}
         return PollResult(
             response=CommandResults(
-                outputs=commit_output,
-                readable_output=tableToMarkdown("Commit Status:", commit_output, removeNull=True),
+                outputs=failure_output,
+                readable_output=tableToMarkdown("Commit Status:", failure_output, removeNull=True),
             ),
             args_for_next_run=args,
             continue_to_poll=False,
