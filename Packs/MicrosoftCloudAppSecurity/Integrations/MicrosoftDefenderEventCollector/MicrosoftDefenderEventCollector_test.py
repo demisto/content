@@ -8,20 +8,51 @@ from freezegun import freeze_time
 
 from CommonServerPython import DemistoException
 from MicrosoftDefenderEventCollector import (
+    ACTIVITIES_LIMIT,
+    ACTIVITIES_PAGE_SIZE,
+    ADMIN_ACTIVITIES_FILTER,
+    ALERTS_FILTER,
+    ALERTS_LIMIT,
+    ALERTS_PAGE_SIZE,
+    ALL_EVENT_FILTERS,
     AUTH_ERROR_MSG,
-    DEFAULT_LIMIT,
+    LOGIN_ACTIVITIES_FILTER,
     DefenderClient,
     DefenderGetEvents,
+    EventFilter,
     IntegrationOptions,
     module_test,
+    select_event_filters,
 )
+
+
+def _event_filter(event_type_name: str) -> EventFilter:
+    """Build a minimal stub EventFilter for a given event type.
+
+    The endpoint category (alerts vs activities) is derived from the type name so run() can
+    resolve the correct per-cycle cap (options.alerts_limit vs options.activities_limit).
+    """
+    api_type = "alerts" if event_type_name == "alerts" else "activities"
+    page_size = ALERTS_PAGE_SIZE if api_type == "alerts" else ACTIVITIES_PAGE_SIZE
+    return EventFilter(
+        ui_name=event_type_name,
+        name=event_type_name,
+        attributes={"type": api_type, "filters": {}},
+        page_size=page_size,
+    )
+
+
+def _options(alerts_limit: int = 10_000, activities_limit: int = 10_000) -> IntegrationOptions:
+    """Build IntegrationOptions with explicit per-type caps for deterministic tests."""
+    return IntegrationOptions.parse_obj({"alerts_limit": alerts_limit, "activities_limit": activities_limit})
 
 
 def _make_get_events(options: IntegrationOptions, pages_by_type: dict) -> DefenderGetEvents:
     """Build a DefenderGetEvents whose _iter_events yields predefined pages per event type.
 
     Args:
-        options: The IntegrationOptions to use (holds the limit).
+        options: The IntegrationOptions to use. run() reads the per-type per-cycle caps from
+            options.alerts_limit / options.activities_limit.
         pages_by_type: Mapping of event_type_name -> list of pages (each page is a list of events).
 
     Returns:
@@ -29,10 +60,10 @@ def _make_get_events(options: IntegrationOptions, pages_by_type: dict) -> Defend
     """
     get_events = DefenderGetEvents.__new__(DefenderGetEvents)
     get_events.options = options
-    # run() iterates filter_name_to_attributes.items(); the value is unused by our stub.
-    get_events.filter_name_to_attributes = {event_type: {} for event_type in pages_by_type}
+    # run() iterates filter_name_to_event_filter.items() and reads the per-type cap from options.
+    get_events.filter_name_to_event_filter = {event_type: _event_filter(event_type) for event_type in pages_by_type}
 
-    def fake_iter_events(event_type_name, _endpoint_details):
+    def fake_iter_events(event_type_name, _event_filter):
         yield from pages_by_type[event_type_name]
 
     get_events._iter_events = fake_iter_events  # type: ignore[method-assign]
@@ -45,30 +76,32 @@ def _events(event_type: str, count: int, start: int = 0) -> list:
 
 
 class TestIntegrationOptionsLimit:
-    def test_default_limit_is_applied_when_missing(self):
-        """When no limit is supplied, the model defaults to DEFAULT_LIMIT (bounded, never None)."""
+    def test_per_type_defaults_applied_when_missing(self):
+        """With no user input, each type uses its per-type default cap (alerts low, activities high)."""
         options = IntegrationOptions.parse_obj({})
-        assert options.limit == DEFAULT_LIMIT
+        assert options.alerts_limit == ALERTS_LIMIT
+        assert options.activities_limit == ACTIVITIES_LIMIT
 
-    def test_limit_above_page_size_is_accepted(self):
-        """A limit greater than the old 100 ceiling is now valid (regression for the lag bug)."""
-        options = IntegrationOptions.parse_obj({"limit": 1000})
-        assert options.limit == 1000
+    def test_user_can_override_per_type_limits(self):
+        """A user may raise either per-type cap independently."""
+        options = IntegrationOptions.parse_obj({"alerts_limit": 2000, "activities_limit": 100000})
+        assert options.alerts_limit == 2000
+        assert options.activities_limit == 100000
 
     def test_large_limit_is_accepted(self):
-        """There is no upper cap: a large limit is accepted so admins can size to their volume."""
-        options = IntegrationOptions.parse_obj({"limit": 50000})
-        assert options.limit == 50000
+        """There is no upper cap: a large activities limit is accepted for high-volume tenants."""
+        options = IntegrationOptions.parse_obj({"activities_limit": 500000})
+        assert options.activities_limit == 500000
 
 
 class TestRunPaginationRegression:
     def test_backlog_drains_beyond_single_page(self):
-        """Regression for XSUP-72224: run() must paginate past the first ~100 page up to `limit`.
+        """Regression for XSUP-72224: run() must paginate past the first page up to the per-type cap.
 
         Before the fix the limit was capped at 100, so only the first page was kept per type.
-        With limit=1000 the collector should accumulate events across multiple pages.
+        With a higher cap the collector should accumulate events across multiple pages.
         """
-        options = IntegrationOptions.parse_obj({"limit": 1000})
+        options = _options(activities_limit=1000)
         # Three pages of 100 admin events => a 300-event backlog in one cycle.
         pages = {"activities_admin": [_events("activities_admin", 100, start=s) for s in (0, 100, 200)]}
         get_events = _make_get_events(options, pages)
@@ -78,8 +111,8 @@ class TestRunPaginationRegression:
         assert len(result) == 300  # all three pages drained, not just the first 100
 
     def test_limit_is_enforced_per_event_type(self):
-        """`limit` caps each event type independently; total may reach limit * number_of_types."""
-        options = IntegrationOptions.parse_obj({"limit": 150})
+        """Each event type is capped by its own per-type limit; total may reach sum of caps."""
+        options = _options(alerts_limit=150, activities_limit=150)
         pages = {
             "alerts": [_events("alerts", 100, start=s) for s in (0, 100)],
             "activities_admin": [_events("activities_admin", 100, start=s) for s in (0, 100)],
@@ -93,9 +126,23 @@ class TestRunPaginationRegression:
         assert len([e for e in result if e["event_type_name"] == "alerts"]) == 150
         assert len([e for e in result if e["event_type_name"] == "activities_admin"]) == 150
 
+    def test_alerts_and_activities_use_distinct_caps(self):
+        """The per-type caps are independent: alerts_limit bounds alerts, activities_limit bounds activities."""
+        options = _options(alerts_limit=50, activities_limit=500)
+        pages = {
+            "alerts": [_events("alerts", 100, start=s) for s in (0, 100)],  # 200 available, capped to 50
+            "activities_login": [_events("activities_login", 100, start=s) for s in range(0, 700, 100)],  # 700 -> 500
+        }
+        get_events = _make_get_events(options, pages)
+
+        result = get_events.run()
+
+        assert len([e for e in result if e["event_type_name"] == "alerts"]) == 50
+        assert len([e for e in result if e["event_type_name"] == "activities_login"]) == 500
+
     def test_fewer_events_than_limit_returns_all(self):
-        """When the source has fewer events than the limit, all are returned."""
-        options = IntegrationOptions.parse_obj({"limit": 1000})
+        """When the source has fewer events than the cap, all are returned (partial page stops)."""
+        options = _options(alerts_limit=1000)
         pages = {"alerts": [_events("alerts", 30)]}
         get_events = _make_get_events(options, pages)
 
@@ -113,16 +160,16 @@ class TestRunPaginationRegression:
         # The failure path logs via demisto.error; mock it so nothing leaks to stdout
         # (the test harness fails on unexpected stdout) and to assert the error is logged.
         error_mock = mocker.patch.object(demisto, "error")
-        options = IntegrationOptions.parse_obj({"limit": 1000})
+        options = _options()
         get_events = DefenderGetEvents.__new__(DefenderGetEvents)
         get_events.options = options
-        get_events.filter_name_to_attributes = {
-            "activities_login": {},
-            "activities_admin": {},
-            "alerts": {},
+        get_events.filter_name_to_event_filter = {
+            "activities_login": _event_filter("activities_login"),
+            "activities_admin": _event_filter("activities_admin"),
+            "alerts": _event_filter("alerts"),
         }
 
-        def failing_iter(event_type_name, _endpoint_details):
+        def failing_iter(event_type_name, _event_filter):
             if event_type_name == "activities_login":
                 raise RuntimeError("simulated API failure (e.g., 429/timeout)")
             yield _events(event_type_name, 20)
@@ -148,11 +195,11 @@ class TestRunPaginationRegression:
         limit, so the sub-limit types were silently discarded every cycle - starving
         those datasets. All three types must be present in the result.
         """
-        options = IntegrationOptions.parse_obj({"limit": 1000})
+        options = _options(alerts_limit=1000, activities_limit=1000)
         pages = {
-            # 12 pages of 100 => 1200 login events, exceeds the 1000 limit -> sliced to 1000.
+            # 12 pages of 100 => 1200 login events, exceeds the 1000 cap -> sliced to 1000.
             "activities_login": [_events("activities_login", 100, start=s) for s in range(0, 1200, 100)],
-            # Low-volume types well below the limit - must still be kept in full.
+            # Low-volume types well below the cap - must still be kept in full.
             "activities_admin": [_events("activities_admin", 10)],
             "alerts": [_events("alerts", 5)],
         }
@@ -261,8 +308,8 @@ def _make_defender_get_events_with_client(pages: list[dict], mocker) -> Defender
 
 
 class TestIterEventsPagination:
-    """Coverage for DefenderGetEvents._iter_events: pagination, event tagging, and the
-    per-type start window taken from the last run."""
+    """Coverage for DefenderGetEvents._iter_events: pagination, event tagging, the per-type
+    start window taken from the last run, and the per-type API page size sent to the API."""
 
     def test_single_page_no_next_yields_once_and_tags_type(self, mocker):
         """A response with hasNext=False yields exactly one page and tags each event's type."""
@@ -271,7 +318,7 @@ class TestIterEventsPagination:
         payload = {"data": [{"timestamp": 1}, {"timestamp": 2}], "hasNext": False}
         get_events = _make_defender_get_events_with_client([payload], mocker)
 
-        pages = list(get_events._iter_events("alerts", {"type": "alerts", "filters": {}}))
+        pages = list(get_events._iter_events("alerts", ALERTS_FILTER))
 
         assert len(pages) == 1
         assert len(pages[0]) == 2
@@ -291,7 +338,7 @@ class TestIterEventsPagination:
         ]
         get_events = _make_defender_get_events_with_client(pages_payload, mocker)
 
-        pages = list(get_events._iter_events("activities_login", {"type": "activities", "filters": {}}))
+        pages = list(get_events._iter_events("activities_login", LOGIN_ACTIVITIES_FILTER))
 
         # All three pages are yielded and the client was called three times.
         assert [len(p) for p in pages] == [2, 2, 1]
@@ -306,11 +353,36 @@ class TestIterEventsPagination:
         payload = {"data": [{"timestamp": 9999}], "hasNext": False}
         get_events = _make_defender_get_events_with_client([payload], mocker)
 
-        list(get_events._iter_events("alerts", {"type": "alerts", "filters": {}}))
+        list(get_events._iter_events("alerts", ALERTS_FILTER))
 
         # The request filters must carry the per-type watermark (8888), not client.after (1000).
         sent_filters = json.loads(get_events.client.request.params["filters"])
         assert sent_filters["date"] == {"gte": 8888}
+
+    def test_alerts_page_size_sent_to_api(self, mocker):
+        """The alerts endpoint requests its per-type page size (100) as the API `limit`."""
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        payload = {"data": [{"timestamp": 1}], "hasNext": False}
+        get_events = _make_defender_get_events_with_client([payload], mocker)
+
+        list(get_events._iter_events("alerts", ALERTS_FILTER))
+
+        assert get_events.client.request.params["limit"] == ALERTS_PAGE_SIZE
+
+    def test_activities_page_size_sent_to_api(self, mocker):
+        """The activities endpoint requests its larger per-type page size (5000) as the API `limit`.
+
+        This is the core throughput fix (XSUP-72224): without it each page returned only ~100.
+        """
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        payload = {"data": [{"timestamp": 1}], "hasNext": False}
+        get_events = _make_defender_get_events_with_client([payload], mocker)
+
+        list(get_events._iter_events("activities_login", LOGIN_ACTIVITIES_FILTER))
+
+        assert get_events.client.request.params["limit"] == ACTIVITIES_PAGE_SIZE
 
 
 class TestSetRequestFilter:
@@ -347,8 +419,9 @@ class TestModuleTest:
         get_events.run.return_value = []
 
         assert module_test(get_events) == "ok"
-        # module_test probes with a minimal limit of 1.
-        assert get_events.options.limit == 1
+        # module_test probes with a minimal per-type cap of 1 for both categories.
+        assert get_events.options.alerts_limit == 1
+        assert get_events.options.activities_limit == 1
 
     def test_auth_error_returns_readable_message(self, mocker):
         get_events = mocker.Mock()
@@ -364,3 +437,24 @@ class TestModuleTest:
 
         with pytest.raises(DemistoException):
             module_test(get_events)
+
+
+class TestSelectEventFilters:
+    """Coverage for select_event_filters: the event_types_to_fetch scoping used by get-events."""
+
+    def test_empty_request_returns_all_filters(self):
+        """No requested types (the default) means fetch every configured event type."""
+        assert select_event_filters([]) == ALL_EVENT_FILTERS
+
+    def test_single_type_scopes_to_that_filter(self):
+        """Requesting only 'Login activities' selects just the login filter (backfill scoping)."""
+        assert select_event_filters(["Login activities"]) == [LOGIN_ACTIVITIES_FILTER]
+
+    def test_multiple_types_are_all_selected(self):
+        """Multiple requested types map to their respective filters."""
+        selected = select_event_filters(["Alerts", "Admin activities"])
+        assert selected == [ALERTS_FILTER, ADMIN_ACTIVITIES_FILTER]
+
+    def test_unknown_type_is_ignored(self):
+        """An unrecognized display name is silently dropped (no crash, no bad filter)."""
+        assert select_event_filters(["Does not exist"]) == []

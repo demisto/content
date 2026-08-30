@@ -55,13 +55,20 @@ configuration:
   type: 0
   section: Collect
   required: false
-- display: Number of alerts for each fetch.
-  name: limit
+- display: Maximum number of alerts per fetch.
+  name: alerts_limit
   type: 0
   section: Collect
   required: false
   defaultvalue: '1000'
-  additionalinfo: The number of events to retrieve. Events are retrieved in pages of up to 100 (the API page-size limit) until this number is reached.
+  additionalinfo: The maximum number of alert events to retrieve per fetch cycle. Alerts are retrieved in pages of up to 100 (the alerts API page-size limit) until this number is reached.
+- display: Maximum number of activities per fetch.
+  name: activities_limit
+  type: 0
+  section: Collect
+  required: false
+  defaultvalue: '50000'
+  additionalinfo: The maximum number of activity events (admin and login) to retrieve per fetch cycle. Activities are retrieved in pages of up to 5000 (the activities API page-size limit) until this number is reached.
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -103,9 +110,12 @@ script:
   - description: Returns a list of alerts. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     name: microsoft-defender-cloud-apps-get-events
     arguments:
-    - description: The maximum number of events to return per event type. Events are retrieved in pages of up to 100 (the API page-size limit).
+    - description: The maximum number of alert events to return. Alerts are retrieved in pages of up to 100 (the alerts API page-size limit).
       defaultValue: '1000'
-      name: limit
+      name: alerts_limit
+    - description: The maximum number of activity events (admin and login) to return. Activities are retrieved in pages of up to 5000 (the activities API page-size limit).
+      defaultValue: '50000'
+      name: activities_limit
     - description: The first fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months).
       defaultValue: 3 days
       isArray: true
@@ -118,6 +128,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+    - name: event_types_to_fetch
+      auto: PREDEFINED
+      description: The event types to fetch. If not provided, all the event types configured on the instance are fetched. Use this to scope a run to specific types (for example, only login activities).
+      isArray: true
+      predefined:
+      - Alerts
+      - Admin activities
+      - Login activities
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: microsoft-defender-cloud-apps-auth-reset
     arguments: []

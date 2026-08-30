@@ -17,24 +17,37 @@ from requests.auth import HTTPBasicAuth
 from CommonServerUserPython import *  # noqa
 
 
-DEFAULT_LIMIT = 1000
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
+
+# Per-type API page size (events requested per API call) and per-cycle cap (max events fetched
+# per event type per cycle). The alerts endpoint caps a page at 100; the activities endpoint
+# accepts up to 5000 per page. The per-cycle cap for activities is 10 pages (10 * 5000 = 50000)
+# so a single cycle can drain a large backlog while still being bounded.
+ALERTS_PAGE_SIZE = 100
+ALERTS_LIMIT = 1000
+ACTIVITIES_PAGE_SIZE = 5000
+ACTIVITIES_LIMIT = 50000
 
 
 class EventFilter(NamedTuple):
     ui_name: str
     name: str
     attributes: dict
+    page_size: int
 
 
-ALERTS_FILTER = EventFilter("Alerts", "alerts", {"type": "alerts", "filters": {}})
+ALERTS_FILTER = EventFilter("Alerts", "alerts", {"type": "alerts", "filters": {}}, page_size=ALERTS_PAGE_SIZE)
 ADMIN_ACTIVITIES_FILTER = EventFilter(
-    "Admin activities", "activities_admin", {"type": "activities", "filters": {"activity.type": {"eq": True}}}
+    "Admin activities",
+    "activities_admin",
+    {"type": "activities", "filters": {"activity.type": {"eq": True}}},
+    page_size=ACTIVITIES_PAGE_SIZE,
 )
 LOGIN_ACTIVITIES_FILTER = EventFilter(
     "Login activities",
     "activities_login",
     {"type": "activities", "filters": {"activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}},
+    page_size=ACTIVITIES_PAGE_SIZE,
 )
 
 ALL_EVENT_FILTERS: list[EventFilter] = [ALERTS_FILTER, ADMIN_ACTIVITIES_FILTER, LOGIN_ACTIVITIES_FILTER]
@@ -112,12 +125,13 @@ class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
     proxy: bool | None = False
-    # limit is the maximum number of events to fetch per event type per fetch cycle.
-    # Defaults to DEFAULT_LIMIT so fetch-events pagination is always bounded. There is no
-    # upper cap: the correct value depends on the tenant's event volume, which we cannot
-    # know in advance, so admins may raise it as needed. Pagination loops in pages (~100,
-    # the API default page size).
-    limit: int = Field(DEFAULT_LIMIT, ge=1)
+    # Per-type per-cycle caps (max events fetched per event type per cycle). These are
+    # user-configurable but default to sensible per-type values: alerts are low-volume, while
+    # activities (admin + login) can be very high-volume. There is no upper cap. The API page
+    # size is NOT user-configurable: it is a per-type constant (ALERTS_PAGE_SIZE /
+    # ACTIVITIES_PAGE_SIZE) carried on each EventFilter.
+    alerts_limit: int = Field(ALERTS_LIMIT, ge=1)
+    activities_limit: int = Field(ACTIVITIES_LIMIT, ge=1)
 
 
 class IntegrationEventsClient(ABC):
@@ -173,7 +187,7 @@ class IntegrationGetEvents(ABC):
     ) -> None:
         self.client = client
         self.options = options
-        self.filter_name_to_attributes = {event_filter.name: event_filter.attributes for event_filter in event_filters}
+        self.filter_name_to_event_filter = {event_filter.name: event_filter for event_filter in event_filters}
         self.base_url = base_url
 
     def run(self):
@@ -184,14 +198,18 @@ class IntegrationGetEvents(ABC):
         # - alerts with no filter
         # Each event type is fetched independently: a failure in one type is caught
         # and logged so the remaining types can still be collected in the same cycle.
-        for event_type_name, endpoint_details in self.filter_name_to_attributes.items():
+        for event_type_name, event_filter in self.filter_name_to_event_filter.items():
+            # Per-cycle cap is per-type and user-configurable: alerts vs activities. The alerts
+            # endpoint is identified by its attributes["type"]; admin + login share "activities".
+            is_alerts = event_filter.attributes["type"] == "alerts"
+            per_cycle_limit = self.options.alerts_limit if is_alerts else self.options.activities_limit
             stored_per_type: list = []
             try:
-                for logs in self._iter_events(event_type_name, endpoint_details):
+                for logs in self._iter_events(event_type_name, event_filter):
                     stored_per_type.extend(logs)
-                    if len(stored_per_type) >= self.options.limit:
-                        demisto.debug(f"[Slicing Events] reached {self.options.limit=} for {event_type_name=}, slicing per type.")
-                        stored_per_type = stored_per_type[: self.options.limit]
+                    if len(stored_per_type) >= per_cycle_limit:
+                        demisto.debug(f"[Slicing Events] reached {per_cycle_limit=} for {event_type_name=}, slicing per type.")
+                        stored_per_type = stored_per_type[:per_cycle_limit]
                         break
             except Exception as e:
                 # Discard this type's partial batch so its watermark is NOT advanced past
@@ -219,7 +237,7 @@ class IntegrationGetEvents(ABC):
         return {"after": events[-1]["created"]}
 
     @abstractmethod
-    def _iter_events(self, event_type_name: str, endpoint_details: dict):
+    def _iter_events(self, event_type_name: str, event_filter: "EventFilter"):
         """Create iterators with Yield"""
         raise NotImplementedError
 
@@ -305,11 +323,12 @@ class DefenderClient(IntegrationEventsClient):
 class DefenderGetEvents(IntegrationGetEvents):
     client: DefenderClient
 
-    def _iter_events(self, event_type_name, endpoint_details):
+    def _iter_events(self, event_type_name, event_filter):
         self.last_timestamp = {}
         base_url = self.base_url
         self.client.authenticate()
 
+        endpoint_details = event_filter.attributes
         self.client.request.params.pop("filters", None)
         self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
 
@@ -323,6 +342,12 @@ class DefenderGetEvents(IntegrationGetEvents):
 
         demisto.debug(f"MD: Sending request with filters {filters}")
         self.client.request.params["filters"] = json.dumps(filters)
+        # Request a page size from the API (up to 5000 for the activities endpoint) instead of
+        # relying on the API default (~100). This is the real throughput lever; without it every
+        # page returns only ~100 events regardless of how large the backlog is. The page size is
+        # a per-type constant on the EventFilter, decoupled from the per-cycle cap, so run() can
+        # still page multiple times.
+        self.client.request.params["limit"] = event_filter.page_size
         response = self.client.call(self.client.request).json()
         events = response.get("data", [])
         demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
@@ -403,7 +428,9 @@ def module_test(get_events: DefenderGetEvents) -> str:
 
     try:
         get_events.client.request.params = {"limit": 1}
-        get_events.options.limit = 1
+        # Probe with a minimal per-cycle cap for every type so test-module stays cheap.
+        get_events.options.alerts_limit = 1
+        get_events.options.activities_limit = 1
         get_events.run()
         message = "ok"
     except DemistoException as e:
@@ -414,6 +441,23 @@ def module_test(get_events: DefenderGetEvents) -> str:
     return message
 
 
+def select_event_filters(requested_event_types: list) -> list[EventFilter]:
+    """Map requested UI event-type names to their EventFilter definitions.
+
+    When no types are requested, all event filters are returned so the default
+    behavior (fetch everything configured on the instance) is preserved.
+
+    Args:
+        requested_event_types: UI display names (for example, ["Login activities"]).
+
+    Returns:
+        The matching EventFilter list, or ALL_EVENT_FILTERS when nothing is requested.
+    """
+    if not requested_event_types:
+        return ALL_EVENT_FILTERS
+    return [event_filter for ui_name, event_filter in UI_NAME_TO_EVENT_FILTERS.items() if ui_name in requested_event_types]
+
+
 def main(command: str, demisto_params: dict):
     demisto.debug(f"MD: Command being called is {command}")
 
@@ -421,14 +465,7 @@ def main(command: str, demisto_params: dict):
         demisto_params["client_secret"] = demisto_params["credentials"]["password"]
         push_to_xsiam = argToBoolean(demisto_params.get("should_push_events", "false"))
 
-        if user_requested_event_types := argToList(demisto_params.get("event_types_to_fetch", [])):
-            event_filters: list[EventFilter] = [
-                event_filter
-                for ui_name, event_filter in UI_NAME_TO_EVENT_FILTERS.items()
-                if ui_name in user_requested_event_types
-            ]
-        else:
-            event_filters = ALL_EVENT_FILTERS
+        event_filters = select_event_filters(argToList(demisto_params.get("event_types_to_fetch", [])))
 
         after = demisto_params.get("after") or DEFAULT_FROM_FETCH_PARAMETER
 
@@ -458,7 +495,7 @@ def main(command: str, demisto_params: dict):
             if command == "fetch-events":
                 # publishing events to XSIAM
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
-                next_run = DefenderGetEvents.get_last_run(events, get_events.filter_name_to_attributes.keys())
+                next_run = DefenderGetEvents.get_last_run(events, get_events.filter_name_to_event_filter.keys())
                 demisto.debug(f"MD: setting the next run: {next_run}")
                 demisto.setLastRun(next_run)
 
