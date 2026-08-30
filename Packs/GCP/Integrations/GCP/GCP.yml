@@ -571,22 +571,22 @@ script:
     - name: page_token
       description: Token for pagination.
     outputs:
-    - contextPath: GCP.Compute.Instances.name
+    - contextPath: GCP.Compute.AggregatedByIPInstances.name
       description: Instance name.
       type: string
-    - contextPath: GCP.Compute.Instances.id
+    - contextPath: GCP.Compute.AggregatedByIPInstances.id
       description: Instance ID.
       type: string
-    - contextPath: GCP.Compute.Instances.zone
+    - contextPath: GCP.Compute.AggregatedByIPInstances.zone
       description: Instance zone URL.
       type: string
-    - contextPath: GCP.Compute.Instances.status
+    - contextPath: GCP.Compute.AggregatedByIPInstances.status
       description: Instance status.
       type: string
-    - contextPath: GCP.Compute.Instances.networkInterfaces
+    - contextPath: GCP.Compute.AggregatedByIPInstances.networkInterfaces
       description: Network interfaces of the instance.
       type: Unknown
-    - contextPath: GCP.Compute.AggregatedInstancesNextToken
+    - contextPath: GCP.Compute.AggregatedByIPInstancesNextToken
       description: This token allows you to get the next page of results for list requests. If the number of results is larger than limit, use the next_token as a value for the query parameter page_token in the next list request.
       type: string
   - name: gcp-compute-network-tag-set
