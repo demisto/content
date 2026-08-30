@@ -4215,10 +4215,8 @@ async def xsiam_api_call_async(
         attempt_num += 1
 
     if status_code != 200:
-        # XSUP-71944: this used to log the failure and return normally. The caller's
-        # asyncio.gather() then saw no exception and counted the batch as stored, pushing the
-        # declared total-items-count above the rows actually stored, so the snapshot never sealed.
-        # Raising keeps "counted" tied to "confirmed stored".
+        # Raising is necessary to keep "counted" tied to "confirmed stored". Failing gracefully
+        # here would let the caller count an unstored batch, and the snapshot would never seal.
         error_detail = f"HTTP {last_error.status} {last_error.message}" if last_error else f"status_code={status_code}"
         raise DemistoException(
             f"Failed sending {data_type} to XSIAM after {num_of_attempts} attempt(s) ({error_detail}). "
@@ -4388,14 +4386,11 @@ async def send_batch_to_xsiam_and_save_context(
                             (ContentClientContextStore, dict, ContentClientState) -> None
                             Example: save_spotlight_state, save_cnapp_state, etc.
         data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
-        count_stored: When True, report exactly how many records XSIAM stored instead of failing the
-            whole batch on the first bad chunk. A batch is sent as independent chunks, each its own
-            request with its own retries, so a chunk either stores completely or not at all. The
-            default ``asyncio.gather(*tasks)`` raises on the first failing chunk and discards every
-            chunk's count, making a partially stored batch indistinguishable from a fully failed
-            one. With this flag the chunks are awaited with ``return_exceptions=True`` and only the
-            successful chunks' records are counted, so the caller can declare exactly what was
-            stored (``declared == stored``). A partial failure is logged and does not raise.
+        count_stored: How a partially stored batch is handled. Set True only if you consume the
+            returned count; the default False is the strict setting, where any failing chunk
+            raises so a caller can never count records that were not stored.
+            False: chunks awaited with ``asyncio.gather``, raising on the first failure.
+            True: chunks awaited with ``return_exceptions=True``, counting only what stored.
 
     Returns:
         Tuple of (batch_number_for_context_save, records_stored). ``records_stored`` equals
@@ -4472,26 +4467,11 @@ def create_task_send_batch_to_xsiam_and_save_context(
     count_stored=False,
 ):
     """
-    Create an async task to send vulnerability batch to XSIAM and save context.
-    Parameters now match the order and names of the internal async function.
+    Wrap send_batch_to_xsiam_and_save_context in an asyncio task. See that function for the
+    arguments, which this passes through unchanged.
 
-    Args:
-        data: List of data items to send
-        product: The product name
-        snapshot_id: Snapshot ID for tracking
-        items_count: Total items count - use final count when complete, 1 when in-progress
-        batch_number: Current batch number being processed
-        last_saved_batch_number: Highest batch number that has successfully saved context
-        context_store: ContentClientContextStore instance for thread-safe context operations
-        state: ContentClientState object containing cursor and metadata
-        save_state_callback: Callback function to save state with signature:
-                            (ContentClientContextStore, dict, ContentClientState) -> None
-                            Example: save_spotlight_state, save_cnapp_state, etc.
-        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
-        count_stored: Report the number of records XSIAM actually stored instead of failing the
-            whole batch on the first bad chunk. See send_batch_to_xsiam_and_save_context.
     Returns:
-        asyncio.Task: The created async task, resolving to (batch_number, records_stored)
+        asyncio.Task resolving to (batch_number, records_stored).
     """
     task = asyncio.create_task(
         send_batch_to_xsiam_and_save_context(
@@ -4544,9 +4524,9 @@ def extract_device_id_from_aid(aid: str | None, cid: str | None) -> str | None:
 
     On multi-CID tenants (Flight Control / MSSP), Spotlight returns the AID as
     <cid><separator><device_id>. The Devices API accepts only the bare device ID, so the
-    composite form fails the whole batch with "400 invalid device id".
-    Separators seen: "-" for sensor AIDs, "_" for non-sensor assets whose body also
-    contains "_", so the CID length is used rather than splitting on the separator.
+    composite form fails the whole batch with "400 invalid device id". The separator varies
+    ("-" for sensor AIDs, "_" for non-sensor assets whose body also contains "_"), so the CID
+    length is used rather than splitting on the separator.
 
     Args:
         aid: The AID from a Spotlight vulnerability record.
@@ -4778,17 +4758,17 @@ async def fetch_spotlight_page_with_shrink(
             immediately for any non-transient error that shrinking cannot resolve.
     """
     last_error: Exception | None = None
-    last_rung_index = len(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER) - 1
+    last_step_index = len(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER) - 1
 
-    for rung_index, attempt_limit in enumerate(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER):
+    for step_index, attempt_limit in enumerate(SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER):
         try:
             page = await fetch_spotlight_vulnerabilities_page(
                 client=client, after_token=after_token, filter_query=filter_query, limit=attempt_limit
             )
-            if rung_index:
-                # Only reachable when an earlier rung failed, so this is a genuine recovery.
+            if step_index:
+                # Only reachable when an earlier step failed, so this is a genuine recovery.
                 log_falcon_assets(
-                    f"[{severity}] Page recovered at limit={attempt_limit} after {rung_index} failed attempt(s).",
+                    f"[{severity}] Page recovered at limit={attempt_limit} after {step_index} failed attempt(s).",
                     "info",
                 )
             return page
@@ -4805,14 +4785,14 @@ async def fetch_spotlight_page_with_shrink(
                     raise
                 reason = f"transient upstream HTTP {status_code}" if status_code else "exhausted upstream retries"
             last_error = e
-            if rung_index == last_rung_index:
+            if step_index == last_step_index:
                 break
 
-            backoff_seconds = SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS[rung_index]
+            backoff_seconds = SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS[step_index]
             log_falcon_assets(
                 f"[{severity}] Transient page failure ({reason}) at limit={attempt_limit} "
                 f"(same after token). Backing off {backoff_seconds}s, then retrying the same page "
-                f"at limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[rung_index + 1]}. Error: {e}",
+                f"at limit={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER[step_index + 1]}. Error: {e}",
                 "warning",
             )
             await asyncio.sleep(backoff_seconds)
@@ -4841,8 +4821,7 @@ async def fetch_vulnerabilities_by_severity(
 ) -> tuple[int, set, set[asyncio.Task], list[dict]]:
     """Fetch all vulnerabilities for a single severity level with pagination.
 
-    This function handles continuous pagination for one severity, avoiding cursor
-    expiration by fetching all pages sequentially without delays.
+    Pages are fetched sequentially without delays, to avoid cursor expiration.
 
     Args:
         client: ContentClient instance for API calls
@@ -4851,12 +4830,10 @@ async def fetch_vulnerabilities_by_severity(
         spotlight_state: Current Spotlight state object
         snapshot_id: Snapshot ID for asset collection tracking
         asset_handler: AssetsDeviceHandler for AID enrichment
-        lost_records_by_severity: Optional accumulator the caller can pass to collect how many
-            records each severity failed to store, so the seal can report a snapshot-level total.
-            Holds one integer count per severity, never the records themselves, so it is at most
-            len(SPOTLIGHT_SEVERITIES) entries regardless of how many vulnerabilities are fetched.
-            Only written when the severity completes; a severity that raises is not counted here
-            because it also blocks the seal, so there is no seal line for it to appear on.
+        lost_records_by_severity: Optional accumulator collecting how many records each severity
+            failed to store, so the seal can report a snapshot-level total. One integer per
+            severity, written only when the severity completes; a severity that raises blocks the
+            seal anyway, so there is no seal line for it to appear on.
 
     Returns:
         Tuple of (total_vulnerabilities_fetched, unique_aids, pending_tasks, withheld_records)
@@ -5219,11 +5196,10 @@ async def finalize_severity_fetch(
         snapshot_id: Snapshot ID for asset collection tracking
         withheld_records: Records withheld during fetching to send as the sealing batch.
             Each record is sent exactly once (only here), so the count stays exact.
-        lost_records_by_severity: Per-severity counts of records XSIAM did not store, collected
-            by the severity fetchers. Counts only, so this stays at most len(SPOTLIGHT_SEVERITIES)
-            entries no matter how large the snapshot is. Only used to report a snapshot-level total
-            on the seal line; it does not affect whether the snapshot seals. Severities that raised
-            are absent, which is why the total is only meaningful when all severities completed.
+        lost_records_by_severity: Per-severity counts of records XSIAM did not store. Only used to
+            report a snapshot-level total on the seal line; it does not affect whether the snapshot
+            seals. Severities that raised are absent, so the total is only meaningful when all
+            severities completed.
     """
     withheld_records = withheld_records or []
     lost_records_by_severity = lost_records_by_severity or {}

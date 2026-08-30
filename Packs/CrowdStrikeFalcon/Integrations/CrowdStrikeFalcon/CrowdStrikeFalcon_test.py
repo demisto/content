@@ -10220,7 +10220,7 @@ class TestSpotlightSeverityBasedFetch:
             - fetch_spotlight_page_with_shrink is called.
         Then:
             - ContentClientRetryError is raised after the ladder is exhausted.
-            - Every rung of the ladder was attempted.
+            - Every step of the ladder was attempted.
         """
         from ContentClientApiModule import ContentClientRetryError
         from CrowdStrikeFalcon import SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER, fetch_spotlight_page_with_shrink
@@ -12052,6 +12052,7 @@ class TestSynchronousCompression:
         )
 
         assert tasks == [], "Empty non-asset data should return no tasks"
+
 
 class StopLoop(Exception):
     """Sentinel used to break out of the long-running while-True loop in tests."""

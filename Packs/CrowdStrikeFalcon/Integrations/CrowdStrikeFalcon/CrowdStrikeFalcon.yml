@@ -423,6 +423,7 @@ configuration:
     A fetch cycle starts every 24 hours. If a cycle runs longer than 24 hours, the next one starts as soon as it finishes.
   display: Long running instance for Spotlight vulnerabilities
   name: longRunning
+  defaultvalue: 'false'
   type: 8
   section: Collect
   advanced: true
