@@ -468,14 +468,14 @@ def get_email_parts(entry_id: str) -> tuple[List[dict[str, str]] | None, str | N
         - file_name (str | None): The name of the .eml file in the war room.
     """
     if not entry_id:
-        DemistoException("Provide an entryId of an uploaded '.eml' file.")
+        raise DemistoException("Provide an entryId of an uploaded '.eml' file.")
 
     get_file_path_res = demisto.getFilePath(entry_id)
     file_path = get_file_path_res["path"]
     file_name = get_file_path_res["name"]
 
     if not file_name.endswith(EML_FILE_SUFFIX):
-        DemistoException("Provided 'entry_id' does not point to a valid '.eml' file.")
+        raise DemistoException("Provided 'entry_id' does not point to a valid '.eml' file.")
 
     email_parser = parse_emails.EmailParser(file_path=file_path)
     email_parser.parse()
