@@ -1,0 +1,29 @@
+{
+    "name": "HaseenThreatIntel",
+    "description": "Fetches indicators of compromise from a STIX 2.x threat-intelligence feed and parses them into Cortex XSOAR indicators.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Mohamed Abdelrahman",
+    "url": "https://share.haseen.gov.sa",
+    "email": "mohamed.abdelrahman01@outlook.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence Management",
+        "STIX"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "STIX",
+        "Threat Intelligence",
+        "Feed",
+        "Indicators"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

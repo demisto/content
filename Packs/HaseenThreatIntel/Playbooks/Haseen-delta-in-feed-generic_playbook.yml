@@ -1,0 +1,852 @@
+id: Haseen-delta-in-feed-generic_playbook
+version: 12
+vcShouldKeepItemLegacyProdMachine: false
+name: Haseen-delta-in-feed-generic_playbook
+description: a template for the playbook you can use in Haseen Delta in Feed Triggered
+  Job
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9b79133c-67a2-42f0-8d6e-a0f6e0c5bfc3
+    type: start
+    task:
+      id: 9b79133c-67a2-42f0-8d6e-a0f6e0c5bfc3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b88ed3b4-0815-4e2a-8b16-eb82ce2bc438
+    type: title
+    task:
+      id: b88ed3b4-0815-4e2a-8b16-eb82ce2bc438
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3020
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: resolutionsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8702b4bf-f816-4af2-8a8c-db167148dd6c
+    type: title
+    task:
+      id: 8702b4bf-f816-4af2-8a8c-db167148dd6c
+      version: -1
+      name: Threat Hunting on Security Technologies
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c7d9d327-36c0-493d-8812-3ae855a3b8cf
+    type: title
+    task:
+      id: c7d9d327-36c0-493d-8812-3ae855a3b8cf
+      version: -1
+      name: Threat Hunting End
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: bd993979-641c-4928-8392-3fc2fd8cebb5
+    type: condition
+    task:
+      id: bd993979-641c-4928-8392-3fc2fd8cebb5
+      version: -1
+      name: Check if results are returned from Threat Hunting
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c75f1053-9b1c-436b-8af6-6615c4351d57
+    type: regular
+    task:
+      id: c75f1053-9b1c-436b-8af6-6615c4351d57
+      version: -1
+      name: Increase incident severity to high
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      severity:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 2dfd2e59-2f42-4eea-8cda-5c2c174af038
+    type: title
+    task:
+      id: 2dfd2e59-2f42-4eea-8cda-5c2c174af038
+      version: -1
+      name: Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c31dbb0a-bbbe-43da-88af-17ae677d99f6
+    type: condition
+    task:
+      id: c31dbb0a-bbbe-43da-88af-17ae677d99f6
+      version: -1
+      name: Check if any IOCs selected for blocking ?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      Any IOCs Selected for Blocking:
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: Any IOCs Selected for Blocking
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Block IOCs Manual Validation.Answers.0
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Block IOCs Manual Validation.Answers.1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Block IOCs Manual Validation.Answers.2
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Block IOCs Manual Validation.Answers.3
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 52beea17-563f-48e1-8deb-e92e4b73d272
+    type: condition
+    task:
+      id: 52beea17-563f-48e1-8deb-e92e4b73d272
+      version: -1
+      name: 'Following IOCs will be Blocked Please confirm if you want to proceed '
+      description: "Following IOCs will be Blocked Please confirm if you want to proceed
+        \n\nIPs: ${Block IOCs Manual Validation.Answers.1}\n\nDomains: ${Block IOCs
+        Manual Validation.Answers.0}\n\nURLs: ${Block IOCs Manual Validation.Answers.2}\n\nHashes
+        (SHA 256): ${Block IOCs Manual Validation.Answers.3}\n"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      Proceed With IOC Blocking:
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 9a2b8db8-e5e5-467c-807c-bef46f2b1c1f
+    type: title
+    task:
+      id: 9a2b8db8-e5e5-467c-807c-bef46f2b1c1f
+      version: -1
+      name: Block Indicators End
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 810cc1be-14a6-4fa3-895d-55ec2d669aad
+    type: title
+    task:
+      id: 810cc1be-14a6-4fa3-895d-55ec2d669aad
+      version: -1
+      name: Incident Closure
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 7d018a87-d699-4da0-8b5c-bc729764bfb7
+    type: regular
+    task:
+      id: 7d018a87-d699-4da0-8b5c-bc729764bfb7
+      version: -1
+      name: Replace with your Hunting Flow  (Found Indicators are the input)
+      description: "hunt for IOCs parsed under the following context paths \n\nStixIndicators.value
+        and  foundIndicators.value"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: d2bccb59-02d8-49e6-8c06-552357982ff4
+    type: regular
+    task:
+      id: d2bccb59-02d8-49e6-8c06-552357982ff4
+      version: -1
+      name: 'Replace with your Blocking flow  '
+      description: "pass the IOCs selected \n${Block IOCs Manual Validation.Answers.0}\n${Block
+        IOCs Manual Validation.Answers.1}\n${Block IOCs Manual Validation.Answers.2}\n${Block
+        IOCs Manual Validation.Answers.3}\nto your blocking logic"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 2b3f09bc-34b8-462d-8b4e-809a2c4933e9
+    type: regular
+    task:
+      id: 2b3f09bc-34b8-462d-8b4e-809a2c4933e9
+      version: -1
+      name: Replace with your Incident Closure logic
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 2976a4dc-29e1-4896-8752-04ed1617f9b7
+    type: regular
+    task:
+      id: 2976a4dc-29e1-4896-8752-04ed1617f9b7
+      version: -1
+      name: Stage the fetched indicators
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      query:
+        simple: (sourceInstances:"Haseen Threat Intel_instance_1") and (sourcetimestamp:>="24
+          hours ago" or lastSeen:>="24 hours ago")
+      size:
+        simple: "300"
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 4ef1ef26-3eb2-4fda-860b-376540f0872e
+    type: regular
+    task:
+      id: 4ef1ef26-3eb2-4fda-860b-376540f0872e
+      version: -1
+      name: 'Search Relationships '
+      description: This automation outputs the indicator relationships to context
+        according to the provided query, using the entities, entityTypes, and relationships
+        arguments. All arguments will use the AND operator. For example, using the
+        following arguments entities=8.8.8.8 entities_types=Domain will provide only
+        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      scriptName: SearchIndicatorRelationships
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      entities:
+        complex:
+          root: foundIndicators
+          accessor: value
+      limit:
+        simple: "300"
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 8bf29037-590a-4edc-8394-fe477a6bec75
+    type: regular
+    task:
+      id: 8bf29037-590a-4edc-8394-fe477a6bec75
+      version: -1
+      name: Add all indicators to the incident
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      indicatorsValues:
+        complex:
+          root: foundIndicators
+          accessor: value
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Relationships.EntityB
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 6482ea1c-6149-468b-89a5-763aaa5429db
+    type: regular
+    task:
+      id: 6482ea1c-6149-468b-89a5-763aaa5429db
+      version: -1
+      name: Prepare all indicators for hunt and block
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      query:
+        simple: incident.id:${incident.id}
+      size:
+        simple: "500"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 384d73d1-0d83-40d3-879b-8b112125bb98
+    type: collection
+    task:
+      id: 384d73d1-0d83-40d3-879b-8b112125bb98
+      version: -1
+      name: IOCs Analyst Validation for Blocking ?
+      description: Checks whether the "BlockIndicators" playbook input is set to True.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: {}
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please select the Domains for blocking
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: foundIndicators
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: foundIndicators.indicator_type
+                  iscontext: true
+                right:
+                  value:
+                    simple: Domain
+            accessor: value
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Please select the IPs for blocking
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: foundIndicators
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: foundIndicators.indicator_type
+                  iscontext: true
+                right:
+                  value:
+                    simple: IP
+            accessor: value
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Please select the  URL for blocking
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: foundIndicators
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: foundIndicators.indicator_type
+                  iscontext: true
+                right:
+                  value:
+                    simple: URL
+            accessor: value
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Please select the SHA256 hash for blocking
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: foundIndicators
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: foundIndicators.indicator_type
+                  iscontext: true
+                right:
+                  value:
+                    simple: File SHA-256
+            accessor: value
+            transformers:
+            - operator: uniq
+        - complex:
+            root: foundIndicators.value
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: foundIndicators.indicator_type
+                  iscontext: true
+                right:
+                  value:
+                    simple: File
+            - - operator: stringHasLength
+                left:
+                  value:
+                    simple: foundIndicators.value
+                  iscontext: true
+                right:
+                  value:
+                    simple: "64"
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Block IOCs Manual Validation
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3035,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 4a07cd12-173b-47c4-8da6-928eaec9f03b
+fromversion: "5.0.0"
+toversion: ""
