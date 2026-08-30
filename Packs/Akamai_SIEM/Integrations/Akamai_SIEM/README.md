@@ -285,3 +285,15 @@ If after readjusting the limit you keep encountering errors, please contact supp
 
 Due to limitations from Akamai, the config ID can only be configured on one instance on the same machine or on different machines (i.e. the same config ID can't be configured both on dev and prod tenants or twice on the same tenant).
 Configuring on multiple machines may lead to duplications or missing events.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch Events
+- Skip events decoding
+- Long running instance
+
+</~PLATFORM>

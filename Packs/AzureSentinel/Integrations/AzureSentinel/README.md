@@ -49,7 +49,7 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Azure Cloud | When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication\#using-national-cloud | False |
-| Maximum number of incidents per fetch. |  | False |
+| Maximum number of incidents per fetch. | The maximum number of incidents to fetch each time. The default value is 20 and the maximum allowed value is 50. | False |
 | Tenant ID |  | False |
 | Client ID | The Application \(Client\) ID of the Azure app registration. | False |
 | Client Secret |  | False |

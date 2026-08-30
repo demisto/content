@@ -1,0 +1,93 @@
+args:
+- description: A comma-separated list of domain FQDNs to block. Wildcard entries (e.g. *.evil.com) are not supported and are skipped.
+  isArray: true
+  name: domain_list
+  required: true
+- defaultValue: 'Cortex - Block Domain'
+  description: The name of the rule which will be created in the relevant products.
+  isArray: false
+  name: rule_name
+  required: false
+- description: The Panorama log forwarding object name that specifies the log Forwarding setting to apply to the PAN-OS custom rules.
+  isArray: false
+  name: log_forwarding_name
+  required: false
+- description: The name of the PAN-OS Panorama or Firewall address group used to hold the blocked domain FQDN objects.
+  isArray: false
+  name: address_group
+  required: false
+  defaultValue: 'Blocked Domains - Cortex'
+- description: Whether to commit the new rule and push to the device group at the end of the run.
+  isArray: false
+  name: auto_commit
+  required: false
+  defaultValue: 'true'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: The designated tag name for the domain FQDN object. Applied to every object the script creates.
+  isArray: false
+  name: tag
+  required: false
+  defaultValue: 'cortex-blocked-domains'
+- description: |-
+    A comma-separated list of integration brands to run the command for. If not provided, the command runs for all available integrations.
+  isArray: true
+  name: brands
+  required: false
+  auto: PREDEFINED
+  predefined:
+  - 'Panorama'
+- description: Whether to retrieve a human-readable entry for every command or only the final result. True retrieves a human-readable entry for every command. False retrieves a human-readable entry only for the final result.
+  name: verbose
+  defaultValue: 'false'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: The commit job ID to use in polling commands. Automatically filled by polling.
+  name: commit_job_id
+  hidden: true
+- description: The push job ID to use in polling commands. Automatically filled by polling.
+  name: push_job_id
+  hidden: true
+comment: Blocks a list of domain FQDNs across the configured security products.
+commonfields:
+  id: block-domain
+  version: -1
+enabled: false
+name: block-domain
+outputs:
+- contextPath: BlockDomain.Domain
+  description: The domain FQDN that was processed.
+  type: String
+- contextPath: BlockDomain.Brand
+  description: The brand (integration) used to block the domain.
+  type: String
+- contextPath: BlockDomain.Status
+  description: "The lifecycle status of the action. One of 'Done', 'Pending', 'Skipped', 'Failed'."
+  type: String
+- contextPath: BlockDomain.Result
+  description: "The result of the action. 'Success' or 'Failed'."
+  type: String
+- contextPath: BlockDomain.RuleName
+  description: The name of the rule used for this integration. Empty if no rule was used.
+  type: String
+- contextPath: BlockDomain.Message
+  description: A message concerning the result of the action.
+  type: String
+script: '-'
+system: false
+timeout: 20m0s
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10116658
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+polling: true
+tests:
+- No tests (auto formatted)
