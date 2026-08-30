@@ -21,6 +21,7 @@ from MicrosoftDefenderEventCollector import (
     DefenderGetEvents,
     EventFilter,
     IntegrationOptions,
+    main,
     module_test,
     select_event_filters,
 )
@@ -92,6 +93,38 @@ class TestIntegrationOptionsLimit:
         """There is no upper cap: a large activities limit is accepted for high-volume tenants."""
         options = IntegrationOptions.parse_obj({"activities_limit": 500000})
         assert options.activities_limit == 500000
+
+    @pytest.mark.parametrize("empty_value", [None, ""])
+    def test_main_empty_per_cycle_config_falls_back_to_defaults(self, mocker, empty_value):
+        """An instance upgraded from an older version passes the new per-cycle keys with
+        empty/None values (unset config fields). main() must strip them so pydantic applies the
+        per-type Field defaults instead of failing int validation."""
+        demisto_params = {
+            "url": "https://example.test",
+            "credentials": {"password": "secret", "identifier": "id"},
+            "verify": False,
+            "tenant_id": "tenant",
+            "client_id": "client",
+            "scope": "scope",
+            "endpoint_type": "Worldwide",
+            "after": "3 days",
+            "alerts_limit": empty_value,
+            "activities_limit": empty_value,
+        }
+        # Stub the network-facing pieces; keep the real DefenderGetEvents.__init__ so the code
+        # path that consumes options (and filter_name_to_event_filter) runs as in production.
+        mocker.patch.object(DefenderClient, "__init__", return_value=None)
+        mocker.patch.object(DefenderGetEvents, "run", return_value=[])
+        mocker.patch("MicrosoftDefenderEventCollector.send_events_to_xsiam")
+        mocker.patch.object(demisto, "setLastRun")
+        get_events_init = mocker.spy(DefenderGetEvents, "__init__")
+
+        # Must not raise the pydantic validation error seen on the tenant.
+        main("fetch-events", demisto_params)
+
+        options = get_events_init.call_args.kwargs["options"]
+        assert options.alerts_limit == ALERTS_LIMIT
+        assert options.activities_limit == ACTIVITIES_LIMIT
 
 
 class TestRunPaginationRegression:
@@ -338,10 +371,13 @@ class TestIterEventsPagination:
         ]
         get_events = _make_defender_get_events_with_client(pages_payload, mocker)
 
-        pages = list(get_events._iter_events("activities_login", LOGIN_ACTIVITIES_FILTER))
+        # Capture each page length as it is yielded: _iter_events pops the last event off the
+        # previously-yielded page to advance pagination (as run() consumes each page before the
+        # next), so lengths must be read during iteration, not from an eagerly-collected list.
+        page_lengths = [len(page) for page in get_events._iter_events("activities_login", LOGIN_ACTIVITIES_FILTER)]
 
         # All three pages are yielded and the client was called three times.
-        assert [len(p) for p in pages] == [2, 2, 1]
+        assert page_lengths == [2, 2, 1]
         assert get_events.client.call.call_count == 3
         # set_request_filter is called once per continuation (2 times for 3 pages).
         assert get_events.client.set_request_filter.call_count == 2
