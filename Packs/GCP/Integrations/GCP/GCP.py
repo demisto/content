@@ -1874,10 +1874,7 @@ def container_clusters_list(creds: Credentials, args: dict[str, Any]) -> Command
 
     clusters = response.get("clusters", [])
     if not clusters:
-        return CommandResults(
-            readable_output=f"No clusters found for project {project_id} in location {region}.",
-            raw_response=response,
-        )
+        return CommandResults(readable_output=f"No clusters found for project {project_id} in location {region}.")
 
     hr = tableToMarkdown(
         f"Google Cloud Container Clusters (Project={project_id}, Location={region})",
@@ -1962,7 +1959,7 @@ def container_node_pools_list(creds: Credentials, args: dict[str, Any]) -> Comma
 
     node_pools = response.get("nodePools", [])
     if not node_pools:
-        return CommandResults(readable_output=f"No node pools found for cluster {cluster}.", raw_response=response)
+        return CommandResults(readable_output=f"No node pools found for cluster {cluster}.")
 
     hr = tableToMarkdown(
         f"Google Cloud Container Node Pools (Cluster={cluster})",
@@ -2090,10 +2087,7 @@ def container_operations_list(creds: Credentials, args: dict[str, Any]) -> Comma
 
     operations = response.get("operations", [])
     if not operations:
-        return CommandResults(
-            readable_output=f"No operations found for project {project_id} in location {region}.",
-            raw_response=response,
-        )
+        return CommandResults(readable_output=f"No operations found for project {project_id} in location {region}.")
 
     hr = tableToMarkdown(
         f"Google Cloud Container Operations (Project={project_id}, Location={region})",
