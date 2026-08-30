@@ -1381,6 +1381,7 @@ script:
       description: URL returned in the Microsoft Graph Location response header. Microsoft Graph treats assignSensitivityLabel as a long-running operation; poll this URL to track the operation's completion status.
       type: String
   - name: get-file-content
+    hidden: true
     description: 'Internal command - do not use directly (may change without notice). Retrieves a file from SharePoint/OneDrive by its sharing URL and returns it in a generic unified format under the FileContent context key. Text files (csv / json / jsonl / markdown) are returned inline; binary files (e.g. docx) are base64-encoded with ''Type'' suffixed by '';base64''. The maximum supported file size is 5 MB.'
     arguments:
     - description: 'The SharePoint/OneDrive sharing URL of the file. Max file size: 5 MB.'
