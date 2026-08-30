@@ -158,38 +158,6 @@ script:
     - contextPath: HashiCorp.Secret.CustomMetadata
       description: The custom metadata saved in the secret.
     description: Returns information about a specified secret in a specified KV V2 engine.
-  - name: hashicorp-create-secret
-    arguments:
-    - name: engine
-      required: true
-      description: KV V2 engine path, e.g., "secret/" or "kv/".
-    - name: secret_path
-      required: true
-      description: Secret path, e.g., "my-secret" or "folder/my-secret".
-    - name: cas
-      description: Check-And-Set. When set, the write only succeeds if it matches the current version of the secret. Set to 0 to write only if the key does not exist. Required if cas_required is set on the key or on the backend.
-      type: number
-    - name: data
-      required: true
-      description: 'The contents of the data map will be stored and returned on read. The format example: {"foo": "abc", "bar": "123"}.'
-    description: Creates a new version of a secret at the specified location in a KV V2 engine. The whole data map is replaced, so keys that are not supplied are not carried over from the previous version.
-    execution: true
-  - name: hashicorp-update-secret
-    arguments:
-    - name: engine
-      required: true
-      description: KV V2 engine path, e.g., "secret/" or "kv/".
-    - name: secret_path
-      required: true
-      description: Secret path, e.g., "my-secret" or "folder/my-secret".
-    - name: cas
-      description: Check-And-Set. When set, the write only succeeds if it matches the current version of the secret. Required if cas_required is set on the key or on the backend.
-      type: number
-    - name: data
-      required: true
-      description: 'The contents of the data map will be merged into the secret and returned on read. The format example: {"foo": "abc", "bar": "123"}.'
-    description: Patches an existing secret at the specified location in a KV V2 engine. The command performs a JSON merge patch, so keys that are not supplied are preserved from the current version. Requires Vault 1.9 or later and the "patch" ACL capability on the secret path.
-    execution: true
   - name: hashicorp-create-secret-metadata
     arguments:
     - name: engine
