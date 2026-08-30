@@ -12700,6 +12700,41 @@ class TestUcpCredentialApplication:
         client._apply_ucp_credentials(creds, ctx)
         assert ctx.headers['Authorization'] == 'Bearer auth-code-token-abc'
 
+    def test_dispatch_oauth2_private_key_jwt(self):
+        """oauth2_private_key_jwt should route to _apply_ucp_oauth2.
+
+        The platform (unified-connector-platform) brokers the RFC 7523 private-key JWT
+        client-assertion flow and returns a standard OAuth2 access_token envelope, so the
+        integration side only needs to place it as a bearer token — identical to the other
+        oauth2 grants. No bespoke _apply_ucp_private_key_jwt method exists.
+        """
+        creds = load_ucp_test_data('ucp_credentials.json')['oauth2_private_key_jwt']
+        client = self._make_client()
+        ctx = self._make_ctx()
+        client._apply_ucp_credentials(creds, ctx)
+        assert ctx.headers['Authorization'] == 'Bearer pkjwt-token-def'
+
+    def test_dispatch_oauth2_private_key_jwt_flat_envelope(self):
+        """oauth2_private_key_jwt should also work with a flat (non-nested) envelope."""
+        creds = {
+            'type': 'oauth2_private_key_jwt',
+            'access_token': 'flat-pkjwt-token',
+            'token_type': 'Bearer',
+        }
+        client = self._make_client()
+        ctx = self._make_ctx()
+        client._apply_ucp_credentials(creds, ctx)
+        assert ctx.headers['Authorization'] == 'Bearer flat-pkjwt-token'
+
+    def test_dispatch_oauth2_private_key_jwt_empty_token_raises(self, mocker):
+        """oauth2_private_key_jwt with an empty access_token should still raise UcpException."""
+        mocker.patch.object(demisto, 'error')
+        creds = {'type': 'oauth2_private_key_jwt', 'oauth2': {'access_token': '', 'token_type': 'Bearer'}}
+        client = self._make_client()
+        ctx = self._make_ctx()
+        with pytest.raises(CommonServerPython.UcpException):
+            client._apply_ucp_credentials(creds, ctx)
+
     def test_dispatch_api_key(self, ucp_creds_api_key):
         """Should dispatch api_key type to _apply_ucp_api_key."""
         client = self._make_client()
