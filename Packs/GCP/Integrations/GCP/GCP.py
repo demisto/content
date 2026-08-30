@@ -313,7 +313,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
     "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
     "gcp-compute-region-get": (GCPServices.COMPUTE, ["compute.regions.get"]),
+    "gcp-compute-regions-list": (GCPServices.COMPUTE, ["compute.regions.list"]),
     "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zones.get"]),
+    "gcp-compute-zones-list": (GCPServices.COMPUTE, ["compute.zones.list"]),
     "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
     "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
     "gcp-container-cluster-security-update": (
@@ -2723,6 +2725,72 @@ def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandR
     )
 
 
+def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of region resources available to the specified project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - filters (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+            - page_token (str, optional): Token to retrieve the next page of results.
+
+    Returns:
+        CommandResults: Object containing the list of regions under `GCP.Compute.Regions`
+        and the pagination token under `GCP.Compute.RegionsNextToken`.
+    """
+    project = args.get("project_id")
+    limit = arg_to_number(args.get("limit", 50))
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project,
+        "maxResults": limit,
+        "filter": args.get("filters"),
+        "orderBy": args.get("order_by"),
+        "pageToken": args.get("page_token"),
+    }
+    remove_nulls_from_dictionary(params)
+    demisto.debug(f"[GCP: gcp_compute_regions_list] Request params: {params}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.regions().list(**params).execute()  # pylint: disable=E1101
+
+    items = response.get("items", [])
+    if not items:
+        return CommandResults(readable_output=f"No regions were found in project '{project}'.", raw_response=response)
+
+    next_token = response.get("nextPageToken")
+    metadata = (
+        "Run the following command to retrieve the next batch of regions:\n"
+        f"!gcp-compute-regions-list project_id={project} page_token={next_token}"
+        if next_token
+        else None
+    )
+    headers = ["id", "name", "status", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Regions",
+        items,
+        headers=headers,
+        removeNull=True,
+        metadata=metadata,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.Regions(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"RegionsNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=remove_empty_elements(outputs),
+        raw_response=response,
+    )
+
+
 def gcp_compute_instance_group_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Returns the specified instance group.
@@ -2790,6 +2858,72 @@ def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
         outputs_prefix="GCP.Compute.Zones",
         outputs_key_field="id",
         outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of zone resources available to the specified project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - filters (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+            - page_token (str, optional): Token to retrieve the next page of results.
+
+    Returns:
+        CommandResults: Object containing the list of zones under `GCP.Compute.Zones`
+        and the pagination token under `GCP.Compute.ZonesNextToken`.
+    """
+    project = args.get("project_id")
+    limit = arg_to_number(args.get("limit", 50))
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project,
+        "maxResults": limit,
+        "filter": args.get("filters"),
+        "orderBy": args.get("order_by"),
+        "pageToken": args.get("page_token"),
+    }
+    remove_nulls_from_dictionary(params)
+    demisto.debug(f"[GCP: gcp_compute_zones_list] Request params: {params}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.zones().list(**params).execute()  # pylint: disable=E1101
+
+    items = response.get("items", [])
+    if not items:
+        return CommandResults(readable_output=f"No zones were found in project '{project}'.", raw_response=response)
+
+    next_token = response.get("nextPageToken")
+    metadata = (
+        "Run the following command to retrieve the next batch of zones:\n"
+        f"!gcp-compute-zones-list project_id={project} page_token={next_token}"
+        if next_token
+        else None
+    )
+    headers = ["id", "name", "status", "region", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Zones",
+        items,
+        headers=headers,
+        removeNull=True,
+        metadata=metadata,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.Zones(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"ZonesNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=remove_empty_elements(outputs),
         raw_response=response,
     )
 
@@ -2987,7 +3121,9 @@ def main():  # pragma: no cover
             "gcp-compute-image-get": gcp_compute_image_get,
             "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
             "gcp-compute-region-get": gcp_compute_region_get,
+            "gcp-compute-regions-list": gcp_compute_regions_list,
             "gcp-compute-zone-get": gcp_compute_zone_get,
+            "gcp-compute-zones-list": gcp_compute_zones_list,
             "gcp-compute-networks-list": gcp_compute_networks_list,
             "gcp-compute-network-insert": gcp_compute_network_insert,
             # Storage commands
