@@ -98,9 +98,6 @@ configuration:
   type: 8
   required: false
   section: Collect
-  hidden:
-  - marketplacev2
-  - platform
   supportedModules:
   - agentix
   - xsiam
@@ -140,9 +137,6 @@ configuration:
   type: 13
   required: false
   section: Collect
-  hidden:
-  - marketplacev2
-  - platform
   supportedModules:
   - agentix
   - xsiam
@@ -160,9 +154,6 @@ configuration:
   additionalinfo: Limit for each fetched incident type. Recommended value is 100. Maximum value is 200.
   section: Collect
   advanced: true
-  hidden:
-  - marketplacev2
-  - platform
   supportedModules:
   - agentix
   - xsiam
@@ -183,9 +174,6 @@ configuration:
   type: 19
   additionalinfo: Set the Incidents Fetch Interval to a maximum of 15 minutes if the number of incidents is expected to exceed the specified max fetch limit in each fetch cycle.
   section: Collect
-  hidden:
-  - marketplacev2
-  - platform
   supportedModules:
   - agentix
   - xsiam
