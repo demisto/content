@@ -1707,6 +1707,40 @@ Creates a new GCP project under the specified parent (organization or folder). R
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
 | GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
 
+#### Command example
+
+```!gcp-resource-manager-project-create project_id=tokyo-rain-123 parent=organizations/123456789012 display_name="Tokyo Rain" label_keys=env label_values=prod```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "ResourceManager": {
+            "Projects": {
+                "name": "projects/415104041262",
+                "projectId": "tokyo-rain-123",
+                "displayName": "Tokyo Rain",
+                "state": "ACTIVE",
+                "createTime": "2024-01-15T12:34:56Z",
+                "parent": "organizations/123456789012",
+                "labels": {
+                    "env": "prod"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Cloud Project Create
+>
+>|Display Name|Project Id|Name|State|Create Time|Parent|
+>|---|---|---|---|---|---|
+>| Tokyo Rain | tokyo-rain-123 | projects/415104041262 | ACTIVE | 2024-01-15T12:34:56Z | organizations/123456789012 |
+
 ### gcp-resource-manager-project-get
 
 ***
@@ -1733,6 +1767,40 @@ Retrieves a GCP project by its project ID. Required Permission: resourcemanager.
 | GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
 | GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
+
+#### Command example
+
+```!gcp-resource-manager-project-get project_id=tokyo-rain-123```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "ResourceManager": {
+            "Projects": {
+                "name": "projects/415104041262",
+                "projectId": "tokyo-rain-123",
+                "displayName": "Tokyo Rain",
+                "state": "ACTIVE",
+                "createTime": "2024-01-15T12:34:56Z",
+                "parent": "organizations/123456789012",
+                "labels": {
+                    "env": "prod"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Cloud Project tokyo-rain-123
+>
+>|Display Name|Project Id|Name|State|Create Time|Parent|
+>|---|---|---|---|---|---|
+>| Tokyo Rain | tokyo-rain-123 | projects/415104041262 | ACTIVE | 2024-01-15T12:34:56Z | organizations/123456789012 |
 
 ### gcp-resource-manager-project-search
 
@@ -1765,6 +1833,48 @@ Searches for GCP projects that are visible to the caller and match an optional q
 | GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
 | GCP.ResourceManager.ProjectsNextPageToken | String | The token to use to retrieve the next batch of projects. |
 
+#### Command example
+
+```!gcp-resource-manager-project-search query="state:ACTIVE" limit=2```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "ResourceManager": {
+            "Projects": [
+                {
+                    "name": "projects/415104041262",
+                    "projectId": "tokyo-rain-123",
+                    "displayName": "Tokyo Rain",
+                    "state": "ACTIVE",
+                    "createTime": "2024-01-15T12:34:56Z",
+                    "parent": "organizations/123456789012"
+                },
+                {
+                    "name": "projects/523104041399",
+                    "projectId": "osaka-sun-456",
+                    "displayName": "Osaka Sun",
+                    "state": "ACTIVE",
+                    "createTime": "2024-02-20T08:15:00Z",
+                    "parent": "organizations/123456789012"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Cloud Projects
+>
+>|Display Name|Project Id|Name|State|Create Time|Parent|
+>|---|---|---|---|---|---|
+>| Tokyo Rain | tokyo-rain-123 | projects/415104041262 | ACTIVE | 2024-01-15T12:34:56Z | organizations/123456789012 |
+>| Osaka Sun | osaka-sun-456 | projects/523104041399 | ACTIVE | 2024-02-20T08:15:00Z | organizations/123456789012 |
+
 ### gcp-resource-manager-project-update
 
 ***
@@ -1795,6 +1905,40 @@ Updates the display name and/or labels of an existing GCP project. Required Perm
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
 | GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
 
+#### Command example
+
+```!gcp-resource-manager-project-update project_id=tokyo-rain-123 display_name="Tokyo Rain Updated" label_keys=env label_values=prod```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "ResourceManager": {
+            "Projects": {
+                "name": "projects/415104041262",
+                "projectId": "tokyo-rain-123",
+                "displayName": "Tokyo Rain Updated",
+                "state": "ACTIVE",
+                "createTime": "2024-01-15T12:34:56Z",
+                "parent": "organizations/123456789012",
+                "labels": {
+                    "env": "prod"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Cloud Project tokyo-rain-123 Update
+>
+>|Display Name|Project Id|Name|State|Create Time|Parent|
+>|---|---|---|---|---|---|
+>| Tokyo Rain Updated | tokyo-rain-123 | projects/415104041262 | ACTIVE | 2024-01-15T12:34:56Z | organizations/123456789012 |
+
 ### gcp-resource-manager-project-delete
 
 ***
@@ -1821,6 +1965,37 @@ Marks a GCP project for deletion (sets its state to DELETE_REQUESTED). Required 
 | GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
 
+#### Command example
+
+```!gcp-resource-manager-project-delete project_id=tokyo-rain-123```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "ResourceManager": {
+            "Projects": {
+                "name": "projects/415104041262",
+                "projectId": "tokyo-rain-123",
+                "displayName": "Tokyo Rain",
+                "state": "DELETE_REQUESTED",
+                "createTime": "2024-01-15T12:34:56Z",
+                "parent": "organizations/123456789012"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Cloud Project tokyo-rain-123 marked for deletion
+>
+>|Display Name|Project Id|Name|State|Create Time|Parent|
+>|---|---|---|---|---|---|
+>| Tokyo Rain | tokyo-rain-123 | projects/415104041262 | DELETE_REQUESTED | 2024-01-15T12:34:56Z | organizations/123456789012 |
+
 ### gcp-resource-manager-project-undelete
 
 ***
@@ -1846,6 +2021,37 @@ Restores a GCP project that was previously marked for deletion. Required Permiss
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
 | GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
+
+#### Command example
+
+```!gcp-resource-manager-project-undelete project_id=tokyo-rain-123```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "ResourceManager": {
+            "Projects": {
+                "name": "projects/415104041262",
+                "projectId": "tokyo-rain-123",
+                "displayName": "Tokyo Rain",
+                "state": "ACTIVE",
+                "createTime": "2024-01-15T12:34:56Z",
+                "parent": "organizations/123456789012"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Cloud Project tokyo-rain-123 restored
+>
+>|Display Name|Project Id|Name|State|Create Time|Parent|
+>|---|---|---|---|---|---|
+>| Tokyo Rain | tokyo-rain-123 | projects/415104041262 | ACTIVE | 2024-01-15T12:34:56Z | organizations/123456789012 |
 
 ### gcp-resource-manager-organization-search
 
@@ -1876,6 +2082,38 @@ Searches for GCP organizations that are visible to the caller and match an optio
 | GCP.ResourceManager.Organizations.createTime | String | The time the organization was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.OrganizationsNextPageToken | String | The token to use to retrieve the next batch of organizations. |
 
+#### Command example
+
+```!gcp-resource-manager-organization-search query="domain:example.com"```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "ResourceManager": {
+            "Organizations": [
+                {
+                    "name": "organizations/123456789012",
+                    "displayName": "example.com",
+                    "state": "ACTIVE",
+                    "directoryCustomerId": "C01abc23d",
+                    "createTime": "2024-01-15T12:34:56Z"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Cloud Organizations
+>
+>|Name|Display Name|State|Directory Customer Id|Create Time|
+>|---|---|---|---|---|
+>| organizations/123456789012 | example.com | ACTIVE | C01abc23d | 2024-01-15T12:34:56Z |
+
 ### gcp-resource-manager-organization-get
 
 ***
@@ -1900,3 +2138,33 @@ Retrieves a GCP organization by its resource name. Required Permission: resource
 | GCP.ResourceManager.Organizations.state | String | The organization's current lifecycle state. |
 | GCP.ResourceManager.Organizations.directoryCustomerId | String | The G Suite / Cloud Identity customer ID used in the Directory API. |
 | GCP.ResourceManager.Organizations.createTime | String | The time the organization was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
+
+#### Command example
+
+```!gcp-resource-manager-organization-get name=organizations/123456789012```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "ResourceManager": {
+            "Organizations": {
+                "name": "organizations/123456789012",
+                "displayName": "example.com",
+                "state": "ACTIVE",
+                "directoryCustomerId": "C01abc23d",
+                "createTime": "2024-01-15T12:34:56Z"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Cloud Organization organizations/123456789012
+>
+>|Name|Display Name|State|Directory Customer Id|Create Time|
+>|---|---|---|---|---|
+>| organizations/123456789012 | example.com | ACTIVE | C01abc23d | 2024-01-15T12:34:56Z |
