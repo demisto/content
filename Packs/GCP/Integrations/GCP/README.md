@@ -1719,12 +1719,12 @@ Creates a new Google Cloud Storage (GCS) bucket in the specified project. Requir
 | GCP.Storage.Buckets.versioning.enabled | Boolean | Whether object versioning is enabled for the bucket. |
 | GCP.Storage.Buckets.defaultEventBasedHold | Boolean | The default value for the event-based hold on newly created objects in the bucket. |
 | GCP.Storage.Buckets.generation | String | The generation \(version\) number of the bucket. |
-| GCP.Storage.Buckets.softDeleteTime | Date | The time the bucket was soft-deleted. |
+| GCP.Storage.Buckets.softDeleteTime | Date | The date and time when the bucket was soft-deleted. |
 | GCP.Storage.Buckets.hardDeleteTime | Date | The time the bucket will be permanently deleted. |
 | GCP.Storage.Buckets.hierarchicalNamespace.enabled | Boolean | Whether hierarchical namespace is enabled for the bucket. |
 | GCP.Storage.Buckets.encryption.defaultKmsKeyName | String | The Cloud KMS key used to encrypt objects written to the bucket when no encryption method is specified. |
-| GCP.Storage.Buckets.acl | Unknown | Access controls on the bucket \(bucketAccessControls resources\). Omitted when Uniform Bucket-Level Access is enabled. |
-| GCP.Storage.Buckets.defaultObjectAcl | Unknown | Default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled. |
+| GCP.Storage.Buckets.acl | Unknown | The access controls on the bucket \(bucketAccessControls resources\). Omitted when Uniform Bucket-Level Access is enabled. |
+| GCP.Storage.Buckets.defaultObjectAcl | Unknown | The default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled. |
 | GCP.Storage.Buckets.website.mainPageSuffix | String | The suffix appended to requests for a directory-like URL, used for static website hosting. |
 | GCP.Storage.Buckets.website.notFoundPage | String | The object served when a requested resource is not found, used for static website hosting. |
 | GCP.Storage.Buckets.owner.entity | String | The entity that owns the bucket, in the form project-owner-projectId. |
@@ -1734,17 +1734,17 @@ Creates a new Google Cloud Storage (GCS) bucket in the specified project. Requir
 | GCP.Storage.Buckets.cors | Unknown | The bucket's Cross-Origin Resource Sharing \(CORS\) configuration. |
 | GCP.Storage.Buckets.lifecycle.rule | Unknown | The bucket's lifecycle management rules. |
 | GCP.Storage.Buckets.autoclass.enabled | Boolean | Whether Autoclass is enabled for the bucket. |
-| GCP.Storage.Buckets.autoclass.toggleTime | Date | The time at which Autoclass was last enabled or disabled for the bucket. |
+| GCP.Storage.Buckets.autoclass.toggleTime | Date | The date and time when Autoclass was last enabled or disabled for the bucket. |
 | GCP.Storage.Buckets.autoclass.terminalStorageClass | String | The coldest storage class that an object transitions to in an Autoclass-enabled bucket. |
-| GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime | Date | The time at which the terminal storage class was last updated for the bucket. |
-| GCP.Storage.Buckets.labels | Unknown | User-provided bucket labels, as key-value pairs. |
-| GCP.Storage.Buckets.retentionPolicy.retentionPeriod | String | The minimum age, in seconds, that objects must reach before they can be deleted or replaced. |
-| GCP.Storage.Buckets.retentionPolicy.effectiveTime | Date | The time from which the retention policy was effective. |
+| GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime | Date | The date and time when the terminal storage class was last updated for the bucket. |
+| GCP.Storage.Buckets.labels | Unknown | The user-provided bucket labels, as key-value pairs. |
+| GCP.Storage.Buckets.retentionPolicy.retentionPeriod | String | The minimum age in seconds that objects must reach before they can be deleted or replaced. |
+| GCP.Storage.Buckets.retentionPolicy.effectiveTime | Date | The date and time from which the retention policy was effective. |
 | GCP.Storage.Buckets.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
-| GCP.Storage.Buckets.objectRetention.mode | String | The bucket's object retention mode. When Enabled, retention configurations can be set on objects. |
+| GCP.Storage.Buckets.objectRetention.mode | String | The bucket's object retention mode. When enabled, retention configurations can be set on objects. |
 | GCP.Storage.Buckets.billing.requesterPays | Boolean | Whether Requester Pays is enabled for the bucket. |
-| GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds | String | The period, in seconds, during which a soft-deleted object is retained and cannot be permanently deleted. |
-| GCP.Storage.Buckets.softDeletePolicy.effectiveTime | Date | The time at which the soft delete policy becomes effective. |
+| GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds | String | The period in seconds during which a soft-deleted object is retained and cannot be permanently deleted. |
+| GCP.Storage.Buckets.softDeletePolicy.effectiveTime | Date | The date and time when the soft delete policy becomes effective. |
 | GCP.Storage.Buckets.customPlacementConfig.dataLocations | Unknown | The list of individual regions that comprise a configurable dual-region bucket. |
 | GCP.Storage.Buckets.ipFilter.mode | String | The state of the IP filter configuration \(Enabled or Disabled\). |
 
@@ -1809,12 +1809,12 @@ Sets the public access prevention configuration on a GCS bucket. Required permis
 | GCP.Storage.Buckets.versioning.enabled | Boolean | Whether object versioning is enabled for the bucket. |
 | GCP.Storage.Buckets.defaultEventBasedHold | Boolean | The default value for the event-based hold on newly created objects in the bucket. |
 | GCP.Storage.Buckets.generation | String | The generation \(version\) number of the bucket. |
-| GCP.Storage.Buckets.softDeleteTime | Date | The time the bucket was soft-deleted. |
+| GCP.Storage.Buckets.softDeleteTime | Date | The date and time when the bucket was soft-deleted. |
 | GCP.Storage.Buckets.hardDeleteTime | Date | The time the bucket will be permanently deleted. |
 | GCP.Storage.Buckets.hierarchicalNamespace.enabled | Boolean | Whether hierarchical namespace is enabled for the bucket. |
 | GCP.Storage.Buckets.encryption.defaultKmsKeyName | String | The Cloud KMS key used to encrypt objects written to the bucket when no encryption method is specified. |
-| GCP.Storage.Buckets.acl | Unknown | Access controls on the bucket \(bucketAccessControls resources\). Omitted when Uniform Bucket-Level Access is enabled. |
-| GCP.Storage.Buckets.defaultObjectAcl | Unknown | Default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled. |
+| GCP.Storage.Buckets.acl | Unknown | The access controls on the bucket \(bucketAccessControls resources\). Omitted when Uniform Bucket-Level Access is enabled. |
+| GCP.Storage.Buckets.defaultObjectAcl | Unknown | The default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled. |
 | GCP.Storage.Buckets.website.mainPageSuffix | String | The suffix appended to requests for a directory-like URL, used for static website hosting. |
 | GCP.Storage.Buckets.website.notFoundPage | String | The object served when a requested resource is not found, used for static website hosting. |
 | GCP.Storage.Buckets.owner.entity | String | The entity that owns the bucket, in the form project-owner-projectId. |
@@ -1824,17 +1824,17 @@ Sets the public access prevention configuration on a GCS bucket. Required permis
 | GCP.Storage.Buckets.cors | Unknown | The bucket's Cross-Origin Resource Sharing \(CORS\) configuration. |
 | GCP.Storage.Buckets.lifecycle.rule | Unknown | The bucket's lifecycle management rules. |
 | GCP.Storage.Buckets.autoclass.enabled | Boolean | Whether Autoclass is enabled for the bucket. |
-| GCP.Storage.Buckets.autoclass.toggleTime | Date | The time at which Autoclass was last enabled or disabled for the bucket. |
+| GCP.Storage.Buckets.autoclass.toggleTime | Date | The date and time when Autoclass was last enabled or disabled for the bucket. |
 | GCP.Storage.Buckets.autoclass.terminalStorageClass | String | The coldest storage class that an object transitions to in an Autoclass-enabled bucket. |
-| GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime | Date | The time at which the terminal storage class was last updated for the bucket. |
-| GCP.Storage.Buckets.labels | Unknown | User-provided bucket labels, as key-value pairs. |
-| GCP.Storage.Buckets.retentionPolicy.retentionPeriod | String | The minimum age, in seconds, that objects must reach before they can be deleted or replaced. |
-| GCP.Storage.Buckets.retentionPolicy.effectiveTime | Date | The time from which the retention policy was effective. |
+| GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime | Date | The date and time when the terminal storage class was last updated for the bucket. |
+| GCP.Storage.Buckets.labels | Unknown | The user-provided bucket labels, as key-value pairs. |
+| GCP.Storage.Buckets.retentionPolicy.retentionPeriod | String | The minimum age in seconds that objects must reach before they can be deleted or replaced. |
+| GCP.Storage.Buckets.retentionPolicy.effectiveTime | Date | The date and time from which the retention policy was effective. |
 | GCP.Storage.Buckets.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
-| GCP.Storage.Buckets.objectRetention.mode | String | The bucket's object retention mode. When Enabled, retention configurations can be set on objects. |
+| GCP.Storage.Buckets.objectRetention.mode | String | The bucket's object retention mode. When enabled, retention configurations can be set on objects. |
 | GCP.Storage.Buckets.billing.requesterPays | Boolean | Whether Requester Pays is enabled for the bucket. |
-| GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds | String | The period, in seconds, during which a soft-deleted object is retained and cannot be permanently deleted. |
-| GCP.Storage.Buckets.softDeletePolicy.effectiveTime | Date | The time at which the soft delete policy becomes effective. |
+| GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds | String | The period in seconds during which a soft-deleted object is retained and cannot be permanently deleted. |
+| GCP.Storage.Buckets.softDeletePolicy.effectiveTime | Date | The date and time when the soft delete policy becomes effective. |
 | GCP.Storage.Buckets.customPlacementConfig.dataLocations | Unknown | The list of individual regions that comprise a configurable dual-region bucket. |
 | GCP.Storage.Buckets.ipFilter.mode | String | The state of the IP filter configuration \(Enabled or Disabled\). |
 
@@ -1878,20 +1878,20 @@ Uploads a War Room file (by entry ID) to a GCS bucket as an object. Required per
 | GCP.Storage.Buckets.Objects.etag | String | The HTTP 1.1 Entity tag for the uploaded object. |
 | GCP.Storage.Buckets.Objects.timeCreated | Date | The creation time of the uploaded object in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.updated | Date | The modification time of the uploaded object metadata in RFC 3339 format. |
-| GCP.Storage.Buckets.Objects.timeStorageClassUpdated | Date | The time at which the object's storage class was last changed, in RFC 3339 format. |
+| GCP.Storage.Buckets.Objects.timeStorageClassUpdated | Date | The date and time when the object's storage class was last changed, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.contentEncoding | String | The content encoding of the uploaded object. |
 | GCP.Storage.Buckets.Objects.contentDisposition | String | The content disposition of the uploaded object. |
 | GCP.Storage.Buckets.Objects.contentLanguage | String | The content language of the uploaded object. |
 | GCP.Storage.Buckets.Objects.cacheControl | String | The cache control directive for the uploaded object. |
-| GCP.Storage.Buckets.Objects.metadata | Unknown | User-provided metadata, in key/value pairs. |
+| GCP.Storage.Buckets.Objects.metadata | Unknown | The user-provided metadata, in key/value pairs. |
 | GCP.Storage.Buckets.Objects.acl | Unknown | The access control list for the uploaded object. |
 | GCP.Storage.Buckets.Objects.owner.entity | String | The entity of the object owner. |
 | GCP.Storage.Buckets.Objects.owner.entityId | String | The ID of the object owner entity. |
 | GCP.Storage.Buckets.Objects.componentCount | Number | The number of component objects that make up a composite object. |
-| GCP.Storage.Buckets.Objects.customTime | Date | A user-specified timestamp for the uploaded object, in RFC 3339 format. |
+| GCP.Storage.Buckets.Objects.customTime | Date | The user-specified timestamp for the uploaded object, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.eventBasedHold | Boolean | Whether an event-based hold is active on the uploaded object. |
 | GCP.Storage.Buckets.Objects.temporaryHold | Boolean | Whether a temporary hold is active on the uploaded object. |
-| GCP.Storage.Buckets.Objects.retentionExpirationTime | Date | The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format. |
+| GCP.Storage.Buckets.Objects.retentionExpirationTime | Date | The earliest date and time when the object can be deleted based on the bucket's retention policy, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.kmsKeyName | String | The Cloud KMS key used to encrypt the uploaded object, if any. |
 | GCP.Storage.Buckets.Objects.customerEncryption.encryptionAlgorithm | String | The encryption algorithm used with the customer-supplied encryption key. |
 | GCP.Storage.Buckets.Objects.customerEncryption.keySha256 | String | The SHA256 hash of the customer-supplied encryption key. |
@@ -1963,22 +1963,22 @@ Copies an object from a source bucket to a destination bucket. Required permissi
 | GCP.Storage.Buckets.Objects.md5Hash | String | The MD5 hash of the copied object. |
 | GCP.Storage.Buckets.Objects.crc32c | String | The CRC32c checksum of the copied object. |
 | GCP.Storage.Buckets.Objects.etag | String | The HTTP 1.1 Entity tag for the copied object. |
-| GCP.Storage.Buckets.Objects.timeCreated | Date | The creation time of the copied object in RFC 3339 format. |
-| GCP.Storage.Buckets.Objects.updated | Date | The modification time of the copied object metadata in RFC 3339 format. |
-| GCP.Storage.Buckets.Objects.timeStorageClassUpdated | Date | The time at which the object's storage class was last changed, in RFC 3339 format. |
+| GCP.Storage.Buckets.Objects.timeCreated | Date | The creation date and time of the copied object, in RFC 3339 format. |
+| GCP.Storage.Buckets.Objects.updated | Date | The modification time of the copied object metadata, in RFC 3339 format. |
+| GCP.Storage.Buckets.Objects.timeStorageClassUpdated | Date | The date and time when the object's storage class was last changed, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.contentEncoding | String | The content encoding of the copied object. |
 | GCP.Storage.Buckets.Objects.contentDisposition | String | The content disposition of the copied object. |
 | GCP.Storage.Buckets.Objects.contentLanguage | String | The content language of the copied object. |
 | GCP.Storage.Buckets.Objects.cacheControl | String | The cache control directive for the copied object. |
-| GCP.Storage.Buckets.Objects.metadata | Unknown | User-provided metadata, in key/value pairs. |
+| GCP.Storage.Buckets.Objects.metadata | Unknown | The user-provided metadata, in key/value pairs. |
 | GCP.Storage.Buckets.Objects.acl | Unknown | The access control list for the copied object. |
 | GCP.Storage.Buckets.Objects.owner.entity | String | The entity of the object owner. |
 | GCP.Storage.Buckets.Objects.owner.entityId | String | The ID of the object owner entity. |
 | GCP.Storage.Buckets.Objects.componentCount | Number | The number of component objects that make up a composite object. |
-| GCP.Storage.Buckets.Objects.customTime | Date | A user-specified timestamp for the copied object, in RFC 3339 format. |
+| GCP.Storage.Buckets.Objects.customTime | Date | The user-specified timestamp for the copied object, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.eventBasedHold | Boolean | Whether an event-based hold is active on the copied object. |
 | GCP.Storage.Buckets.Objects.temporaryHold | Boolean | Whether a temporary hold is active on the copied object. |
-| GCP.Storage.Buckets.Objects.retentionExpirationTime | Date | The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format. |
+| GCP.Storage.Buckets.Objects.retentionExpirationTime | Date | The earliest date and time when the object can be deleted based on the bucket's retention policy, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.kmsKeyName | String | The Cloud KMS key used to encrypt the copied object, if any. |
 | GCP.Storage.Buckets.Objects.customerEncryption.encryptionAlgorithm | String | The encryption algorithm used with the customer-supplied encryption key. |
 | GCP.Storage.Buckets.Objects.customerEncryption.keySha256 | String | The SHA256 hash of the customer-supplied encryption key. |

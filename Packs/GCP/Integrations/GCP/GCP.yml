@@ -1511,7 +1511,7 @@ script:
       description: The generation (version) number of the bucket.
       type: String
     - contextPath: GCP.Storage.Buckets.softDeleteTime
-      description: The time the bucket was soft-deleted.
+      description: The date and time when the bucket was soft-deleted.
       type: Date
     - contextPath: GCP.Storage.Buckets.hardDeleteTime
       description: The time the bucket will be permanently deleted.
@@ -1523,10 +1523,10 @@ script:
       description: The Cloud KMS key used to encrypt objects written to the bucket when no encryption method is specified.
       type: String
     - contextPath: GCP.Storage.Buckets.acl
-      description: Access controls on the bucket (bucketAccessControls resources). Omitted when Uniform Bucket-Level Access is enabled.
+      description: The access controls on the bucket (bucketAccessControls resources). Omitted when Uniform Bucket-Level Access is enabled.
       type: Unknown
     - contextPath: GCP.Storage.Buckets.defaultObjectAcl
-      description: Default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled.
+      description: The default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled.
       type: Unknown
     - contextPath: GCP.Storage.Buckets.website.mainPageSuffix
       description: The suffix appended to requests for a directory-like URL, used for static website hosting.
@@ -1556,37 +1556,37 @@ script:
       description: Whether Autoclass is enabled for the bucket.
       type: Boolean
     - contextPath: GCP.Storage.Buckets.autoclass.toggleTime
-      description: The time at which Autoclass was last enabled or disabled for the bucket.
+      description: The date and time when Autoclass was last enabled or disabled for the bucket.
       type: Date
     - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClass
       description: The coldest storage class that an object transitions to in an Autoclass-enabled bucket.
       type: String
     - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime
-      description: The time at which the terminal storage class was last updated for the bucket.
+      description: The date and time when the terminal storage class was last updated for the bucket.
       type: Date
     - contextPath: GCP.Storage.Buckets.labels
-      description: User-provided bucket labels, as key-value pairs.
+      description: The user-provided bucket labels, as key-value pairs.
       type: Unknown
     - contextPath: GCP.Storage.Buckets.retentionPolicy.retentionPeriod
-      description: The minimum age, in seconds, that objects must reach before they can be deleted or replaced.
+      description: The minimum age in seconds that objects must reach before they can be deleted or replaced.
       type: String
     - contextPath: GCP.Storage.Buckets.retentionPolicy.effectiveTime
-      description: The time from which the retention policy was effective.
+      description: The date and time from which the retention policy was effective.
       type: Date
     - contextPath: GCP.Storage.Buckets.retentionPolicy.isLocked
       description: Whether the retention policy is locked.
       type: Boolean
     - contextPath: GCP.Storage.Buckets.objectRetention.mode
-      description: The bucket's object retention mode. When Enabled, retention configurations can be set on objects.
+      description: The bucket's object retention mode. When enabled, retention configurations can be set on objects.
       type: String
     - contextPath: GCP.Storage.Buckets.billing.requesterPays
       description: Whether Requester Pays is enabled for the bucket.
       type: Boolean
     - contextPath: GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds
-      description: The period, in seconds, during which a soft-deleted object is retained and cannot be permanently deleted.
+      description: The period in seconds during which a soft-deleted object is retained and cannot be permanently deleted.
       type: String
     - contextPath: GCP.Storage.Buckets.softDeletePolicy.effectiveTime
-      description: The time at which the soft delete policy becomes effective.
+      description: The date and time when the soft delete policy becomes effective.
       type: Date
     - contextPath: GCP.Storage.Buckets.customPlacementConfig.dataLocations
       description: The list of individual regions that comprise a configurable dual-region bucket.
@@ -1692,7 +1692,7 @@ script:
       description: The generation (version) number of the bucket.
       type: String
     - contextPath: GCP.Storage.Buckets.softDeleteTime
-      description: The time the bucket was soft-deleted.
+      description: The date and time when the bucket was soft-deleted.
       type: Date
     - contextPath: GCP.Storage.Buckets.hardDeleteTime
       description: The time the bucket will be permanently deleted.
@@ -1704,10 +1704,10 @@ script:
       description: The Cloud KMS key used to encrypt objects written to the bucket when no encryption method is specified.
       type: String
     - contextPath: GCP.Storage.Buckets.acl
-      description: Access controls on the bucket (bucketAccessControls resources). Omitted when Uniform Bucket-Level Access is enabled.
+      description: The access controls on the bucket (bucketAccessControls resources). Omitted when Uniform Bucket-Level Access is enabled.
       type: Unknown
     - contextPath: GCP.Storage.Buckets.defaultObjectAcl
-      description: Default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled.
+      description: The default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled.
       type: Unknown
     - contextPath: GCP.Storage.Buckets.website.mainPageSuffix
       description: The suffix appended to requests for a directory-like URL, used for static website hosting.
@@ -1737,37 +1737,37 @@ script:
       description: Whether Autoclass is enabled for the bucket.
       type: Boolean
     - contextPath: GCP.Storage.Buckets.autoclass.toggleTime
-      description: The time at which Autoclass was last enabled or disabled for the bucket.
+      description: The date and time when Autoclass was last enabled or disabled for the bucket.
       type: Date
     - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClass
       description: The coldest storage class that an object transitions to in an Autoclass-enabled bucket.
       type: String
     - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime
-      description: The time at which the terminal storage class was last updated for the bucket.
+      description: The date and time when the terminal storage class was last updated for the bucket.
       type: Date
     - contextPath: GCP.Storage.Buckets.labels
-      description: User-provided bucket labels, as key-value pairs.
+      description: The user-provided bucket labels, as key-value pairs.
       type: Unknown
     - contextPath: GCP.Storage.Buckets.retentionPolicy.retentionPeriod
-      description: The minimum age, in seconds, that objects must reach before they can be deleted or replaced.
+      description: The minimum age in seconds that objects must reach before they can be deleted or replaced.
       type: String
     - contextPath: GCP.Storage.Buckets.retentionPolicy.effectiveTime
-      description: The time from which the retention policy was effective.
+      description: The date and time from which the retention policy was effective.
       type: Date
     - contextPath: GCP.Storage.Buckets.retentionPolicy.isLocked
       description: Whether the retention policy is locked.
       type: Boolean
     - contextPath: GCP.Storage.Buckets.objectRetention.mode
-      description: The bucket's object retention mode. When Enabled, retention configurations can be set on objects.
+      description: The bucket's object retention mode. When enabled, retention configurations can be set on objects.
       type: String
     - contextPath: GCP.Storage.Buckets.billing.requesterPays
       description: Whether Requester Pays is enabled for the bucket.
       type: Boolean
     - contextPath: GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds
-      description: The period, in seconds, during which a soft-deleted object is retained and cannot be permanently deleted.
+      description: The period in seconds during which a soft-deleted object is retained and cannot be permanently deleted.
       type: String
     - contextPath: GCP.Storage.Buckets.softDeletePolicy.effectiveTime
-      description: The time at which the soft delete policy becomes effective.
+      description: The date and time when the soft delete policy becomes effective.
       type: Date
     - contextPath: GCP.Storage.Buckets.customPlacementConfig.dataLocations
       description: The list of individual regions that comprise a configurable dual-region bucket.
@@ -1856,7 +1856,7 @@ script:
       description: The modification time of the uploaded object metadata in RFC 3339 format.
       type: Date
     - contextPath: GCP.Storage.Buckets.Objects.timeStorageClassUpdated
-      description: The time at which the object's storage class was last changed, in RFC 3339 format.
+      description: The date and time when the object's storage class was last changed, in RFC 3339 format.
       type: Date
     - contextPath: GCP.Storage.Buckets.Objects.contentEncoding
       description: The content encoding of the uploaded object.
@@ -1871,7 +1871,7 @@ script:
       description: The cache control directive for the uploaded object.
       type: String
     - contextPath: GCP.Storage.Buckets.Objects.metadata
-      description: User-provided metadata, in key/value pairs.
+      description: The user-provided metadata, in key/value pairs.
       type: Unknown
     - contextPath: GCP.Storage.Buckets.Objects.acl
       description: The access control list for the uploaded object.
@@ -1886,7 +1886,7 @@ script:
       description: The number of component objects that make up a composite object.
       type: Number
     - contextPath: GCP.Storage.Buckets.Objects.customTime
-      description: A user-specified timestamp for the uploaded object, in RFC 3339 format.
+      description: The user-specified timestamp for the uploaded object, in RFC 3339 format.
       type: Date
     - contextPath: GCP.Storage.Buckets.Objects.eventBasedHold
       description: Whether an event-based hold is active on the uploaded object.
@@ -1895,7 +1895,7 @@ script:
       description: Whether a temporary hold is active on the uploaded object.
       type: Boolean
     - contextPath: GCP.Storage.Buckets.Objects.retentionExpirationTime
-      description: The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format.
+      description: The earliest date and time when the object can be deleted based on the bucket's retention policy, in RFC 3339 format.
       type: Date
     - contextPath: GCP.Storage.Buckets.Objects.kmsKeyName
       description: The Cloud KMS key used to encrypt the uploaded object, if any.
@@ -2009,13 +2009,13 @@ script:
       description: The HTTP 1.1 Entity tag for the copied object.
       type: String
     - contextPath: GCP.Storage.Buckets.Objects.timeCreated
-      description: The creation time of the copied object in RFC 3339 format.
+      description: The creation date and time of the copied object, in RFC 3339 format.
       type: Date
     - contextPath: GCP.Storage.Buckets.Objects.updated
-      description: The modification time of the copied object metadata in RFC 3339 format.
+      description: The modification time of the copied object metadata, in RFC 3339 format.
       type: Date
     - contextPath: GCP.Storage.Buckets.Objects.timeStorageClassUpdated
-      description: The time at which the object's storage class was last changed, in RFC 3339 format.
+      description: The date and time when the object's storage class was last changed, in RFC 3339 format.
       type: Date
     - contextPath: GCP.Storage.Buckets.Objects.contentEncoding
       description: The content encoding of the copied object.
@@ -2030,7 +2030,7 @@ script:
       description: The cache control directive for the copied object.
       type: String
     - contextPath: GCP.Storage.Buckets.Objects.metadata
-      description: User-provided metadata, in key/value pairs.
+      description: The user-provided metadata, in key/value pairs.
       type: Unknown
     - contextPath: GCP.Storage.Buckets.Objects.acl
       description: The access control list for the copied object.
@@ -2045,7 +2045,7 @@ script:
       description: The number of component objects that make up a composite object.
       type: Number
     - contextPath: GCP.Storage.Buckets.Objects.customTime
-      description: A user-specified timestamp for the copied object, in RFC 3339 format.
+      description: The user-specified timestamp for the copied object, in RFC 3339 format.
       type: Date
     - contextPath: GCP.Storage.Buckets.Objects.eventBasedHold
       description: Whether an event-based hold is active on the copied object.
@@ -2054,7 +2054,7 @@ script:
       description: Whether a temporary hold is active on the copied object.
       type: Boolean
     - contextPath: GCP.Storage.Buckets.Objects.retentionExpirationTime
-      description: The earliest time the object can be deleted, based on the bucket's retention policy, in RFC 3339 format.
+      description: The earliest date and time when the object can be deleted based on the bucket's retention policy, in RFC 3339 format.
       type: Date
     - contextPath: GCP.Storage.Buckets.Objects.kmsKeyName
       description: The Cloud KMS key used to encrypt the copied object, if any.
