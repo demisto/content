@@ -12,7 +12,9 @@ from Unit42Feed import (
     sort_indicator_types_by_priority,
     fetch_indicator_type,
     fetch_threat_objects_with_limit,
+    build_fetch_units,
     calculate_limit_per_type,
+    THREAT_OBJECTS_TYPE,
     INDICATOR_TYPE_MAPPING,
     VERDICT_TO_SCORE,
     VALID_REGIONS,
@@ -857,9 +859,11 @@ def test_fetch_indicators_basic(client, mocker):
     }
 
     current_time = datetime.now()
-    result = fetch_indicators(client, params, current_time)
+    result, next_run = fetch_indicators(client, params, current_time)
 
     assert result >= 2  # At least one indicator and one threat object
+    # Nothing left to resume, so only the last successful run time is stored
+    assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
 
     # Check that both indicators and threat objects were pushed to the server
     pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
@@ -902,9 +906,10 @@ def test_fetch_indicators_pagination(client, mocker):
     params = {"feed_types": ["Indicators"], "indicator_types": ["ip"], "feed_tags": [], "tlp_color": None}
 
     current_time = datetime.now()
-    result = fetch_indicators(client, params, current_time)
+    result, next_run = fetch_indicators(client, params, current_time)
 
     assert result == 2
+    assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
 
     # Should have indicators from both pages, pushed to the server
     pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
@@ -1114,13 +1119,15 @@ def test_main_function_fetch_indicators(mocker):
     # Mock Client and fetch_indicators (fetch_indicators now returns a count and pushes internally)
     mock_client = mocker.Mock()
     mocker.patch("Unit42Feed.Client", return_value=mock_client)
-    mock_fetch_indicators = mocker.patch("Unit42Feed.fetch_indicators", return_value=1)
+    next_run = {"last_successful_run": "2023-06-02T12:00:00Z"}
+    mock_fetch_indicators = mocker.patch("Unit42Feed.fetch_indicators", return_value=(1, next_run))
     mocker.patch("Unit42Feed.datetime")
 
     main()
 
     mock_fetch_indicators.assert_called_once()
-    mock_set_last_run.assert_called_once()
+    # main() stores whatever next run state fetch_indicators produced
+    mock_set_last_run.assert_called_once_with(next_run)
     mock_info.assert_called_once()
 
 
@@ -1297,11 +1304,12 @@ def test_fetch_indicator_type_with_limit(client, mocker):
     mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Fetch with limit of 120 (should get 100 from first page, 20 from second)
-    result = fetch_indicator_type(
+    result, next_page_token = fetch_indicator_type(
         client=client, indicator_type="IP", limit=120, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 120
+    assert next_page_token is None  # Last page reported no further pages
     assert mock_get_indicators.call_count == 2
 
     pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
@@ -1336,11 +1344,13 @@ def test_fetch_indicator_type_stops_at_limit(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Fetch with limit of 50
-    result = fetch_indicator_type(
+    result, next_page_token = fetch_indicator_type(
         client=client, indicator_type="IP", limit=50, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 50
+    # Limit was hit while more pages exist, so the token is returned for the next fetch
+    assert next_page_token == "page2"
     assert mock_get_indicators.call_count == 1  # Should only make one call
 
 
@@ -1358,11 +1368,12 @@ def test_fetch_indicator_type_no_data(client, mocker):
     mocker.patch.object(client, "get_indicators", return_value=mock_response)
     mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
-    result = fetch_indicator_type(
+    result, next_page_token = fetch_indicator_type(
         client=client, indicator_type="IP", limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 0
+    assert next_page_token is None
     mock_create_indicators.assert_not_called()
 
 
@@ -1395,9 +1406,10 @@ def test_fetch_threat_objects_with_limit(client, mocker):
     mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Fetch with limit of 120
-    result = fetch_threat_objects_with_limit(client=client, limit=120, feed_tags=[], tlp_color=None)
+    result, next_page_token = fetch_threat_objects_with_limit(client=client, limit=120, feed_tags=[], tlp_color=None)
 
     assert result == 120
+    assert next_page_token is None
     assert mock_get_threat_objects.call_count == 2
 
     pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
@@ -1536,11 +1548,12 @@ def test_fetch_indicator_type_pagination(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Fetch with limit of 250 (should get 100 + 100 + 50)
-    result = fetch_indicator_type(
+    result, next_page_token = fetch_indicator_type(
         client=client, indicator_type="IP", limit=250, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 250
+    assert next_page_token is None
     assert mock_get_indicators.call_count == 3
 
     # Verify the third call requested only 50 (remaining)
@@ -1569,9 +1582,10 @@ def test_fetch_threat_objects_with_limit_stops_early(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Request limit of 100, but only 25 available
-    result = fetch_threat_objects_with_limit(client=client, limit=100, feed_tags=[], tlp_color=None)
+    result, next_page_token = fetch_threat_objects_with_limit(client=client, limit=100, feed_tags=[], tlp_color=None)
 
     assert result == 25
+    assert next_page_token is None
     assert mock_get_threat_objects.call_count == 1
 
 
