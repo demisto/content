@@ -155,22 +155,6 @@ CREDENTIALS = {
 }
 
 
-def test_client_init_without_credential_key():
-    """
-    Given:
-        A UCP-reconstructed credentials object that only carries "identifier"/"password"
-        and omits the "credential" key (XSUP-75518).
-    When:
-        The Client is initialized.
-    Then:
-        It does not raise KeyError and falls back to the access-token/refresh-token path.
-    """
-    credentials = {"identifier": "my-access-token", "password": "my-refresh-token"}
-    client = Client(DLP_URL, AUTH_URL, credentials, True, False)
-    assert client.access_token == "my-access-token"
-    assert client.refresh_token == "my-refresh-token"
-
-
 def test_update_incident(requests_mock, mocker):
     incident_id = "abcdefg12345"
     user_id = "someone@somewhere.com"

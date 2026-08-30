@@ -59,13 +59,10 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, headers=None, verify=verify, proxy=proxy)
         self.credentials = credentials
         self.auth_url = auth_url
-        # A type 9 credentials object exposes the "credential" key (the saved-credential name) only when a
-        # credential is selected from the store. Under UCP the object is reconstructed with just
-        # "identifier"/"password", so read every key defensively instead of by subscript (XSUP-75518).
-        credential_name = credentials.get(CREDENTIAL)
+        credential_name = credentials[CREDENTIAL]
         if not credential_name:
-            self.access_token = credentials.get(IDENTIFIER, "")
-            self.refresh_token = credentials.get(PASSWORD, "")
+            self.access_token = credentials[IDENTIFIER]
+            self.refresh_token = credentials[PASSWORD]
         else:
             self.access_token = ""
             self._refresh_token_with_client_credentials()
@@ -115,7 +112,7 @@ class Client(BaseClient):
             return
         try:
             print_debug_msg(f"Got {res.status_code}, attempting to refresh access token")
-            if self.credentials.get(CREDENTIAL):
+            if self.credentials[CREDENTIAL]:
                 print_debug_msg("Requesting access token with client id/client secret")
                 self._refresh_token_with_client_credentials()
             else:
