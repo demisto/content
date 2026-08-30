@@ -13,7 +13,7 @@ Triggered by the Haseen feed's delta-in-feed job after each fetch. The playbook 
 
 | Stage | Task | Description |
 | --- | --- | --- |
-| Stage | `Stage the fetched indicators` | `SearchIndicator` for `sourceInstances:"Haseen Threat Intel"` with `sourcetimestamp`/`lastSeen` within the last 24 hours (max 300). |
+| Stage | `Stage the fetched indicators` | `SearchIndicator` for `sourceBrands:"Haseen Threat Intel"` with `sourcetimestamp`/`lastSeen` within the last 24 hours (max 300). |
 | Stage | `Search Relationships` | `SearchIndicatorRelationships` for the staged indicator values (max 300). |
 | Stage | `Add all indicators to the incident` | `associateIndicatorsToIncident` on `${incident.id}`, appending each relationship's `EntityB`. |
 | Stage | `Prepare all indicators for hunt and block` | `SearchIndicator` for `incident.id:${incident.id}` (max 500). |
