@@ -1689,7 +1689,7 @@ Creates a new GCP project under the specified parent (organization or folder). R
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (e.g. tokyo-rain-123). | Required |
+| project_id | The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (e.g. tokyo-rain-123). | Optional |
 | parent | The resource name of the parent under which to create the project, in the form "organizations/[organization_id]" or "folders/[folder_id]". | Required |
 | display_name | The user-assigned display name of the project. Must be 4 to 30 characters. | Optional |
 | label_keys | The comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
@@ -1720,7 +1720,7 @@ Retrieves a GCP project by its project ID. Required Permission: resourcemanager.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The unique ID of the project to fetch (e.g. tokyo-rain-123). | Required |
+| project_id | The unique ID of the project to fetch (e.g. tokyo-rain-123). | Optional |
 
 #### Context Output
 
@@ -1778,7 +1778,7 @@ Updates the display name and/or labels of an existing GCP project. Required Perm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The unique ID of the project to update (e.g. tokyo-rain-123). | Required |
+| project_id | The unique ID of the project to update (e.g. tokyo-rain-123). | Optional |
 | display_name | The new display name for the project. Must be 4 to 30 characters. | Optional |
 | label_keys | The comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
 | label_values | The comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys. | Optional |
@@ -1808,7 +1808,7 @@ Marks a GCP project for deletion (sets its state to DELETE_REQUESTED). Required 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The unique ID of the project to delete (e.g. tokyo-rain-123). | Required |
+| project_id | The unique ID of the project to delete (e.g. tokyo-rain-123). | Optional |
 
 #### Context Output
 
@@ -1834,7 +1834,7 @@ Restores a GCP project that was previously marked for deletion. Required Permiss
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The unique ID of the project to restore (e.g. tokyo-rain-123). | Required |
+| project_id | The unique ID of the project to restore (e.g. tokyo-rain-123). | Optional |
 
 #### Context Output
 
