@@ -1,3 +1,6 @@
 [file:classifier-LogsignSIEM_Classifier.json]
 ignore=BA101
 
+[file:README.md]
+ignore=RM108
+
