@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: MicrosoftGraphSecurity_ModelingRule
+name: MicrosoftGraphSecurity Modeling Rule
+rules: ''
+schema: ''
+supportedModules:
+- xsiam
+tags: ''

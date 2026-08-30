@@ -1,0 +1,9 @@
+
+fromversion: 8.15.0
+id: SymantecCloudSecureWebGateway_ModelingRule
+name: SymantecCloudSecureWebGateway Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
