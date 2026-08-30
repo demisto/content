@@ -40,6 +40,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: "7 days"
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -58,11 +65,13 @@ configuration:
   type: 8
   required: false
   additionalinfo: Indicates whether the requester has multi-customer access.
+  section: Connect
 - display: Use API Version 2 by default
   name: is_v2
   type: 8
   required: false
   additionalinfo: Whether to use API version 2 by default for investigation commands (Can be overriden by passing the api_version argument).
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
