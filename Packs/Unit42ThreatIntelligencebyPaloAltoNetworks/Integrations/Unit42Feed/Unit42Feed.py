@@ -880,8 +880,14 @@ def push_indicators_in_batches(indicators: list, batch_size: int = 2000) -> None
 
 
 def fetch_indicator_type(
-    client: Client, indicator_type: str, limit: int, start_time: str, feed_tags: list, tlp_color: str | None
-) -> int:
+    client: Client,
+    indicator_type: str,
+    limit: int,
+    start_time: str,
+    feed_tags: list,
+    tlp_color: str | None,
+    next_page_token: str | None = None,
+) -> tuple[int, str | None]:
     """
     Fetch indicators for a specific type with pagination and limit enforcement.
 
@@ -897,12 +903,13 @@ def fetch_indicator_type(
         start_time: Start time for fetching
         feed_tags: Tags to add to indicators
         tlp_color: TLP color
+        next_page_token: Page token to resume an interrupted fetch from
 
     Returns:
-        Number of indicators fetched and pushed (count <= limit)
+        Tuple of the number of indicators fetched and pushed (count <= limit), and the
+        page token to resume from on the next fetch (None when the type was exhausted).
     """
     total_fetched = 0
-    next_page_token = None
 
     while total_fetched < limit:
         # Calculate how many more we need
@@ -919,11 +926,13 @@ def fetch_indicator_type(
         # Parse response
         if not response or not isinstance(response, dict):
             demisto.debug(f"UNIT42FEED: Invalid response for {indicator_type}, stopping")
+            next_page_token = None
             break
 
         data = response.get("data", [])
         if not data or not isinstance(data, list):
             demisto.debug(f"UNIT42FEED: No more data for {indicator_type}, stopping")
+            next_page_token = None
             break
 
         # Parse indicators for this page
@@ -950,10 +959,12 @@ def fetch_indicator_type(
             demisto.debug(f"UNIT42FEED: No more pages for {indicator_type}")
             break
 
-    return total_fetched
+    return total_fetched, next_page_token
 
 
-def fetch_threat_objects_with_limit(client: Client, limit: int, feed_tags: list, tlp_color: str | None) -> int:
+def fetch_threat_objects_with_limit(
+    client: Client, limit: int, feed_tags: list, tlp_color: str | None, next_page_token: str | None = None
+) -> tuple[int, str | None]:
     """
     Fetch threat objects with pagination and limit enforcement.
 
@@ -967,12 +978,13 @@ def fetch_threat_objects_with_limit(client: Client, limit: int, feed_tags: list,
         limit: Maximum number to fetch
         feed_tags: Tags to add to threat objects
         tlp_color: TLP color
+        next_page_token: Page token to resume an interrupted fetch from
 
     Returns:
-        Number of threat objects fetched and pushed (count <= limit)
+        Tuple of the number of threat objects fetched and pushed (count <= limit), and the
+        page token to resume from on the next fetch (None when there is nothing left to fetch).
     """
     total_fetched = 0
-    next_page_token = None
 
     while total_fetched < limit:
         # Calculate how many more we need
@@ -987,11 +999,13 @@ def fetch_threat_objects_with_limit(client: Client, limit: int, feed_tags: list,
         # Parse response
         if not response or not isinstance(response, dict):
             demisto.debug("UNIT42FEED: Invalid response for threat objects, stopping")
+            next_page_token = None
             break
 
         data = response.get("data", [])
         if not data or not isinstance(data, list):
             demisto.debug("UNIT42FEED: No more threat objects data, stopping")
+            next_page_token = None
             break
 
         # Parse threat objects for this page (note: this may include extra location
@@ -1017,7 +1031,7 @@ def fetch_threat_objects_with_limit(client: Client, limit: int, feed_tags: list,
             demisto.debug("UNIT42FEED: No more pages for threat objects")
             break
 
-    return total_fetched
+    return total_fetched, next_page_token
 
 
 def test_module(client: Client) -> str:
