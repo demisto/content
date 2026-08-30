@@ -860,16 +860,6 @@ def modify_detection_summaries_outputs(detection: dict):
     return detection
 
 
-def log_spotlight_verify(log_line: str, log_type: str = "info"):
-    """Emit a snapshot-lifecycle line, greppable as ``[LIFECYCLE]``.
-
-    Covers run start, seal decision and long-running cycle boundaries: the milestones needed to
-    tell "sealed", "skipped" and "still running" apart in a support ticket. Emitted once per run
-    or per cycle, never per record.
-    """
-    log_falcon_assets(f"[LIFECYCLE] {log_line}", log_type)
-
-
 def log_falcon_assets(log_line: str, log_type="debug", asset="Spotlight"):
     """Wrapper for log line for spotlight asset collector"""
     full_log_line = f"[Falcon Asset Collector] [{asset}] {log_line}"
@@ -4473,11 +4463,25 @@ def create_task_send_batch_to_xsiam_and_save_context(
     count_stored=False,
 ):
     """
-    Wrap send_batch_to_xsiam_and_save_context in an asyncio task. See that function for the
-    arguments, which this passes through unchanged.
+    Create an async task to send vulnerability batch to XSIAM and save context.
+    Parameters now match the order and names of the internal async function.
 
+    Args:
+        data: List of data items to send
+        product: The product name
+        snapshot_id: Snapshot ID for tracking
+        items_count: Total items count - use final count when complete, 1 when in-progress
+        batch_number: Current batch number being processed
+        last_saved_batch_number: Highest batch number that has successfully saved context
+        context_store: ContentClientContextStore instance for thread-safe context operations
+        state: ContentClientState object containing cursor and metadata
+        save_state_callback: Callback function to save state with signature:
+                            (ContentClientContextStore, dict, ContentClientState) -> None
+                            Example: save_spotlight_state, save_cnapp_state, etc.
+        data_type: Type of data being sent for XSIAM collector-type header. Defaults to "assets"
+        count_stored: When True, the task resolves with the number of records XSIAM stored
     Returns:
-        asyncio.Task resolving to (batch_number, records_stored).
+        asyncio.Task: The created async task, resolving to (batch_number, records_stored)
     """
     task = asyncio.create_task(
         send_batch_to_xsiam_and_save_context(
@@ -5223,14 +5227,14 @@ async def finalize_severity_fetch(
     lost_records_total = sum(lost_records_by_severity.values())
     lossy_severities = {severity: lost for severity, lost in sorted(lost_records_by_severity.items()) if lost}
 
-    log_spotlight_verify(
-        f"SEAL-GATE completed={sorted(current_completed_severities)} "
-        f"required={sorted(SPOTLIGHT_SEVERITIES)} all_complete={all_severities_completed} "
-        f"grand_total={total_vulnerabilities} lost_records_total={lost_records_total} "
-        f"lost_by_severity={lossy_severities} "
-        f"withheld_records={len(withheld_records)} "
-        f"will_seal={all_severities_completed and bool(withheld_records)}"
-    )
+    if lost_records_total:
+        # The declared count already excludes these, so the snapshot still seals - but it seals
+        # smaller than what Falcon returned, which is otherwise invisible.
+        log_falcon_assets(
+            f"{lost_records_total} record(s) were not stored by XSIAM and are therefore not counted "
+            f"in the declared total: {lossy_severities}. They are picked up on the next fetch cycle.",
+            "warning",
+        )
 
     if all_severities_completed:
         if not withheld_records:
@@ -5266,11 +5270,6 @@ async def finalize_severity_fetch(
                 data_type="assets",
             )
             await final_task
-            log_spotlight_verify(
-                f"SEAL-SENT snapshot_id={snapshot_id} declared_total_items_count={total_vulnerabilities} "
-                f"seal_batch_records={len(withheld_records)}. Snapshot seals only if the rows actually "
-                f"stored equal {total_vulnerabilities}."
-            )
             log_falcon_assets(
                 f"Final sealing batch sent successfully for snapshot_id={snapshot_id} "
                 f"(total-items-count={total_vulnerabilities})",
@@ -5293,13 +5292,6 @@ async def finalize_severity_fetch(
         # State will be cleared by fetch_spotlight_assets() after this function returns
         log_falcon_assets("All severities completed successfully.", "info")
     else:
-        log_spotlight_verify(
-            f"SEAL-SKIPPED snapshot NOT sealed; missing severities="
-            f"{[s for s in SPOTLIGHT_SEVERITIES if s not in current_completed_severities]}. "
-            f"Fetched {total_vulnerabilities} records this cycle; they remain unqueryable until a cycle "
-            f"completes every severity.",
-            "warning",
-        )
         log_falcon_assets(
             f"Not all severities completed yet. Snapshot NOT sealed. Completed: {current_completed_severities}, "
             f"Remaining: {[s for s in SPOTLIGHT_SEVERITIES if s not in current_completed_severities]}",
@@ -5441,11 +5433,10 @@ async def fetch_spotlight_assets():
         prior_withheld_records,
     ) = load_spotlight_state(context_store)
     # Note: cursor is not used for severity-based fetching - each severity starts fresh
-
-    log_spotlight_verify(
-        f"RUN-START snapshot_id={snapshot_id} resumed_completed_severities={completed_severities} "
-        f"prior_withheld_records={len(prior_withheld_records or [])} "
-        f"shrink_ladder={SPOTLIGHT_PAGE_SIZE_SHRINK_LADDER} backoff={SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS}"
+    log_falcon_assets(
+        f"Starting run for snapshot_id={snapshot_id}, resuming with completed severities "
+        f"{completed_severities} and {len(prior_withheld_records or [])} withheld record(s).",
+        "info",
     )
 
     client = create_spotlight_client(context_store)
@@ -5565,23 +5556,24 @@ def long_running_spotlight_execution():
     while True:
         cycle_start = time.monotonic()
         cycle_number += 1
-        log_spotlight_verify(f"LONG-RUNNING CYCLE-START cycle={cycle_number}")
+        log_falcon_assets(f"Long-running Spotlight cycle {cycle_number} starting.", "info")
         cycle_failed = False
         try:
             asyncio.run(fetch_spotlight_assets())
             consecutive_failures = 0
-            log_spotlight_verify(
-                f"LONG-RUNNING CYCLE-OK cycle={cycle_number} elapsed_min={(time.monotonic() - cycle_start) / 60:.1f}"
+            log_falcon_assets(
+                f"Long-running Spotlight cycle {cycle_number} completed successfully in "
+                f"{(time.monotonic() - cycle_start) / 60:.1f} minutes.",
+                "info",
             )
         except Exception as e:  # noqa: BLE001 - a single bad cycle must not kill the container
             cycle_failed = True
             consecutive_failures += 1
-            log_spotlight_verify(
-                f"LONG-RUNNING CYCLE-FAILED cycle={cycle_number} error_type={type(e).__name__} "
-                f"consecutive_failures={consecutive_failures}; container stays alive for the next cycle.",
-                "error",
+            error_message = (
+                f"Long-running Spotlight fetch cycle {cycle_number} failed "
+                f"({consecutive_failures} consecutive); the container stays alive for the next "
+                f"cycle. Error: {e}\n{traceback.format_exc()}"
             )
-            error_message = f"Long-running Spotlight fetch cycle failed: {e}\n{traceback.format_exc()}"
             demisto.error(error_message)
             log_falcon_assets(error_message, "error")
 

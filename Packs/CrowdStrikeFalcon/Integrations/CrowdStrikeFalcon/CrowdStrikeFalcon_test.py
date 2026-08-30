@@ -9461,18 +9461,18 @@ class TestSpotlightSeverityBasedFetch:
     @pytest.mark.asyncio
     async def test_parallel_fetch_plumbs_lost_records_from_severities_to_the_seal_line(self, mocker):
         """
-        Tests that per-severity lost-record counts actually reach the SEAL-GATE line.
+        Tests that per-severity lost-record counts actually reach the lost-record warning.
 
-        The severity fetcher and the seal log are covered separately, but nothing pins the wiring
-        between them. Deleting the accumulator argument in this orchestrator would silently reduce
-        every seal line to lost_records_total=0, which reads as a healthy snapshot.
+        The severity fetcher and the warning are covered separately, but nothing pins the wiring
+        between them. Deleting the accumulator argument in this orchestrator would silently suppress
+        the warning entirely, which reads as a healthy snapshot.
 
         Given:
             - Two severities report lost records (2 and 5) into the accumulator they are handed.
         When:
             - fetch_spotlight_by_severity_parallel runs a full cycle.
         Then:
-            - The SEAL-GATE line reports the summed total, proving the accumulator created here is
+            - The warning reports the summed total, proving the accumulator created here is
               the same object passed to the severities and on to finalize_severity_fetch.
         """
         from CrowdStrikeFalcon import fetch_spotlight_by_severity_parallel
@@ -9483,7 +9483,7 @@ class TestSpotlightSeverityBasedFetch:
 
         verify_lines: list = []
         mocker.patch(
-            "CrowdStrikeFalcon.log_spotlight_verify",
+            "CrowdStrikeFalcon.log_falcon_assets",
             side_effect=lambda line, *args, **kwargs: verify_lines.append(line),
         )
 
@@ -9528,11 +9528,10 @@ class TestSpotlightSeverityBasedFetch:
             completed_severities=[],
         )
 
-        seal_gate = next(line for line in verify_lines if line.startswith("SEAL-GATE"))
-        assert "lost_records_total=7" in seal_gate
-        breakdown = seal_gate.split("lost_by_severity=")[1].split(" withheld_records=")[0]
-        assert "'CRITICAL': 2" in breakdown
-        assert "'HIGH': 5" in breakdown
+        lost_line = next(line for line in verify_lines if "not stored by XSIAM" in line)
+        assert "7 record(s)" in lost_line
+        assert "'CRITICAL': 2" in lost_line
+        assert "'HIGH': 5" in lost_line
 
     @pytest.mark.asyncio
     async def test_fetch_spotlight_by_severity_parallel_one_severity_fails(self, mocker, capfd):
@@ -10908,13 +10907,13 @@ class TestSpotlightSeverityBasedFetch:
         assert seal_call["batch_number"] == 999999
 
     @pytest.mark.asyncio
-    async def test_finalize_seal_gate_reports_snapshot_level_lost_total(self, mocker):
+    async def test_finalize_warns_with_the_snapshot_level_lost_total(self, mocker):
         """
-        Tests that the SEAL-GATE line reports the snapshot-level lost-record total.
+        Tests that a lossy snapshot emits a warning carrying the snapshot-level lost-record total.
 
         The declared count already excludes lost records, so a lossy snapshot seals and looks healthy.
-        Per-severity SEVERITY-DONE lines carry the losses, but nothing sums them, which means finding
-        a shortfall requires manually adding six lines. This total makes a lossy seal self-evident.
+        Per-severity lines carry the losses, but nothing sums them, which means finding a shortfall
+        requires manually adding six lines. This total makes a lossy seal self-evident.
 
         Given:
             - All severities completed.
@@ -10922,7 +10921,7 @@ class TestSpotlightSeverityBasedFetch:
         When:
             - finalize_severity_fetch is called with the per-severity lost counts.
         Then:
-            - The SEAL-GATE line reports lost_records_total=7.
+            - A single warning reports 7 lost records.
             - The per-severity breakdown lists only the lossy severities, so a clean seal stays quiet.
             - The snapshot still seals: lost records do not block the seal.
         """
@@ -10932,7 +10931,7 @@ class TestSpotlightSeverityBasedFetch:
 
         verify_lines: list = []
         mocker.patch(
-            "CrowdStrikeFalcon.log_spotlight_verify",
+            "CrowdStrikeFalcon.log_falcon_assets",
             side_effect=lambda line, *args, **kwargs: verify_lines.append(line),
         )
 
@@ -10970,33 +10969,32 @@ class TestSpotlightSeverityBasedFetch:
             lost_records_by_severity=lost_records_by_severity,
         )
 
-        seal_gate_lines = [line for line in verify_lines if line.startswith("SEAL-GATE")]
-        assert len(seal_gate_lines) == 1
-        seal_gate = seal_gate_lines[0]
+        lost_lines = [line for line in verify_lines if "not stored by XSIAM" in line]
+        assert len(lost_lines) == 1
+        lost_line = lost_lines[0]
 
-        assert "lost_records_total=7" in seal_gate
-        # Scope the breakdown assertions to the lost_by_severity field: severity names also appear
-        # in the completed= list earlier on the same line.
-        breakdown = seal_gate.split("lost_by_severity=")[1].split(" withheld_records=")[0]
-        assert "'CRITICAL': 3" in breakdown
-        assert "'LOW': 4" in breakdown
+        assert "7 record(s)" in lost_line
+        assert "'CRITICAL': 3" in lost_line
+        assert "'LOW': 4" in lost_line
         # Only the lossy severities appear, so a clean run does not print six zeros.
-        assert "'HIGH'" not in breakdown
+        assert "'HIGH'" not in lost_line
         # Lost records are non-fatal: the snapshot still seals.
         assert mock_create_task.called
 
     @pytest.mark.asyncio
-    async def test_finalize_seal_gate_reports_zero_lost_total_on_a_clean_run(self, mocker):
+    async def test_finalize_stays_quiet_about_lost_records_on_a_clean_run(self, mocker):
         """
-        Tests that a clean run reports an explicit zero lost total with an empty breakdown.
+        Tests that a clean run emits no lost-record warning at all.
+
+        The warning is the signal that a snapshot sealed smaller than what Falcon returned, so it
+        must not fire on a healthy run - otherwise it stops meaning anything.
 
         Given:
             - All severities completed with no lost records.
         When:
             - finalize_severity_fetch is called.
         Then:
-            - The SEAL-GATE line reports lost_records_total=0 and an empty per-severity breakdown,
-              which is the signal that the snapshot is complete rather than merely consistent.
+            - No lost-record warning is emitted.
         """
         from CrowdStrikeFalcon import finalize_severity_fetch, SPOTLIGHT_SEVERITIES
 
@@ -11004,7 +11002,7 @@ class TestSpotlightSeverityBasedFetch:
 
         verify_lines: list = []
         mocker.patch(
-            "CrowdStrikeFalcon.log_spotlight_verify",
+            "CrowdStrikeFalcon.log_falcon_assets",
             side_effect=lambda line, *args, **kwargs: verify_lines.append(line),
         )
 
@@ -11038,9 +11036,7 @@ class TestSpotlightSeverityBasedFetch:
             lost_records_by_severity={severity: 0 for severity in SPOTLIGHT_SEVERITIES},
         )
 
-        seal_gate = next(line for line in verify_lines if line.startswith("SEAL-GATE"))
-        assert "lost_records_total=0" in seal_gate
-        assert "lost_by_severity={}" in seal_gate
+        assert not [line for line in verify_lines if "not stored by XSIAM" in line]
 
     @pytest.mark.asyncio
     async def test_finalize_skips_seal_when_no_withheld_records(self, mocker):
@@ -12139,7 +12135,9 @@ class TestLongRunningSpotlightExecution:
 
         assert mock_fetch.call_count == 3, "A failing cycle must not stop the loop"
         logged = [call.args[0] for call in mock_log.call_args_list]
-        assert any("cycle failed" in message and "boom" in message for message in logged), "The failing cycle must be reported"
+        # Assert on the diagnostic content rather than the exact phrasing: the log must say a cycle
+        # failed and must carry the underlying error, which is what makes the line actionable.
+        assert any("failed" in message and "boom" in message for message in logged), "The failing cycle must be reported"
 
     def test_subtracts_elapsed_from_interval(self, mocker):
         """
