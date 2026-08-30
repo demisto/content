@@ -2110,6 +2110,18 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
     service_account_email = args.get("service_account_email")
     service_account_scopes = args.get("service_account_scopes")
     labels = args.get("labels")
+    machine_type = args.get("machine_type", "")
+
+    # Accept either a bare machine type name (e.g. n1-standard-1) or a full/partial URL
+    # (e.g. zones/zone/machineTypes/n1-standard-1), consistent with gcp-compute-instance-machine-type-set.
+    if "/" not in machine_type:
+        machine_type = f"zones/{zone}/machineTypes/{machine_type}"
+
+    if bool(service_account_email) != bool(service_account_scopes):
+        raise DemistoException(
+            "The arguments service_account_email and service_account_scopes must be provided together. "
+            "Provide both to attach a service account to the instance, or neither to omit it."
+        )
 
     access_config: dict[str, Any] = {"natIP": args.get("external_nat_ip")}
     if argToBoolean(args.get("external_internet_access", "false")):
@@ -2121,7 +2133,7 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
         {
             "name": name.lower() if name else None,
             "description": args.get("description"),
-            "machineType": f"zones/{zone}/machineTypes/{args.get('machine_type')}",
+            "machineType": machine_type,
             "canIpForward": argToBoolean(args["can_ip_forward"]) if args.get("can_ip_forward") is not None else None,
             "tags": {
                 "items": argToList(args.get("tags")),
@@ -2150,7 +2162,7 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
             ],
             "metadata": {"items": parse_metadata_items(metadata_items)} if metadata_items else None,
             "serviceAccounts": [{"email": service_account_email, "scopes": argToList(service_account_scopes)}]
-            if service_account_email and service_account_scopes
+            if service_account_email
             else None,
             "labels": parse_labels(labels) if labels else None,
             "deletionProtection": argToBoolean(args["deletion_protection"])
@@ -2163,7 +2175,7 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
     response = compute.instances().insert(project=project_id, zone=zone, body=body).execute()  # pylint: disable=E1101
 
     hr = tableToMarkdown(
-        f"VM instance {args.get('name')} was created in project {project_id}",
+        f"VM instance {args.get('name')} is being created in project {project_id}",
         t=response,
         headers=OPERATION_TABLE,
         headerTransform=pascalToSpace,
@@ -2202,7 +2214,7 @@ def compute_instance_delete(creds: Credentials, args: dict[str, Any]) -> Command
     )
 
     hr = tableToMarkdown(
-        f"VM instance {resource_name} was deleted in project {project_id}",
+        f"VM instance {resource_name} is being deleted in project {project_id}",
         t=response,
         headers=OPERATION_TABLE,
         headerTransform=pascalToSpace,
@@ -2241,7 +2253,7 @@ def compute_instance_reset(creds: Credentials, args: dict[str, Any]) -> CommandR
     )
 
     hr = tableToMarkdown(
-        f"VM instance {resource_name} was reset in project {project_id}",
+        f"VM instance {resource_name} is being reset in project {project_id}",
         t=response,
         headers=OPERATION_TABLE,
         headerTransform=pascalToSpace,
@@ -2297,7 +2309,7 @@ def compute_instance_metadata_set(creds: Credentials, args: dict[str, Any]) -> C
     )
 
     hr = tableToMarkdown(
-        f"VM instance {resource_name} metadata was updated in project {project_id}",
+        f"VM instance {resource_name} metadata is being updated in project {project_id}",
         t=response,
         headers=OPERATION_TABLE,
         headerTransform=pascalToSpace,
@@ -2344,7 +2356,7 @@ def compute_instance_machine_type_set(creds: Credentials, args: dict[str, Any]) 
     )
 
     hr = tableToMarkdown(
-        f"VM instance {resource_name} machine type was updated in project {project_id}",
+        f"VM instance {resource_name} machine type is being updated in project {project_id}",
         t=response,
         headers=OPERATION_TABLE,
         headerTransform=pascalToSpace,
@@ -2367,7 +2379,7 @@ def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) 
     Args:
         creds (Credentials): GCP credentials.
         args (dict[str, Any]): Must include 'project_id'. Supports 'filters', 'order_by',
-            'limit', and 'page_token'.
+            'limit', and 'next_token'.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2376,7 +2388,7 @@ def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) 
     limit = arg_to_number(args.get("limit"))
     filters = args.get("filters")
     order_by = args.get("order_by")
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
     if limit is not None:
         validate_limit(limit)
 
@@ -2385,7 +2397,7 @@ def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) 
         "filter": filters,
         "maxResults": limit,
         "orderBy": order_by,
-        "pageToken": page_token,
+        "pageToken": next_token,
     }
     remove_nulls_from_dictionary(request_params)
 
@@ -2419,7 +2431,7 @@ def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) 
     outputs = remove_empty_elements(
         {
             "GCP.Compute.Instances(val.id && val.id == obj.id)": instances,
-            "GCP.Compute(true)": {"InstancesNextPageToken": response.get("nextPageToken")},
+            "GCP.Compute(true)": {"AggregatedInstancesNextToken": response.get("nextPageToken")},
         }
     )
 

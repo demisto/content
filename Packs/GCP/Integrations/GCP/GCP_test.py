@@ -6731,6 +6731,48 @@ def test_compute_instance_insert_minimal_body(mocker):
     assert body == {"name": "instance-1", "machineType": "zones/us-central1-a/machineTypes/e2-medium"}
 
 
+@pytest.mark.parametrize(
+    "machine_type, expected",
+    [
+        pytest.param("e2-medium", "zones/us-central1-a/machineTypes/e2-medium", id="bare_name"),
+        pytest.param(
+            "zones/us-central1-a/machineTypes/e2-medium",
+            "zones/us-central1-a/machineTypes/e2-medium",
+            id="partial_url",
+        ),
+        pytest.param(
+            "https://www.googleapis.com/compute/v1/projects/p/zones/us-central1-a/machineTypes/e2-medium",
+            "https://www.googleapis.com/compute/v1/projects/p/zones/us-central1-a/machineTypes/e2-medium",
+            id="full_url",
+        ),
+    ],
+)
+def test_compute_instance_insert_machine_type_formats(mocker, machine_type, expected):
+    """
+    Given: A machine_type given as a bare name, a partial URL, or a full URL.
+    When: compute_instance_insert is called.
+    Then: The bare name is zone-qualified and URLs are passed through unchanged,
+          consistent with compute_instance_machine_type_set.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": machine_type,
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.insert.return_value.execute.return_value = {"id": "op-4", "status": "PENDING"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    assert mock_instances.insert.call_args[1]["body"]["machineType"] == expected
+
+
 def test_compute_instance_insert_invalid_metadata(mocker):
     """
     Given: metadata_items in an invalid format.
@@ -6750,6 +6792,70 @@ def test_compute_instance_insert_invalid_metadata(mocker):
 
     with pytest.raises(ValueError, match="Could not parse field"):
         compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+
+@pytest.mark.parametrize(
+    "service_account_args",
+    [
+        pytest.param({"service_account_email": "sa@test-project.iam.gserviceaccount.com"}, id="email_only"),
+        pytest.param({"service_account_scopes": "https://www.googleapis.com/auth/compute"}, id="scopes_only"),
+    ],
+)
+def test_compute_instance_insert_partial_service_account(mocker, service_account_args):
+    """
+    Given: Only one of service_account_email and service_account_scopes.
+    When: compute_instance_insert is called.
+    Then: It raises a DemistoException instead of silently omitting the service account.
+    """
+    from GCP import compute_instance_insert, DemistoException
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+        **service_account_args,
+    }
+    mock_compute = mocker.Mock()
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    with pytest.raises(DemistoException, match="must be provided together"):
+        compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    mock_compute.instances.return_value.insert.assert_not_called()
+
+
+def test_compute_instance_insert_with_service_account(mocker):
+    """
+    Given: Both service_account_email and service_account_scopes.
+    When: compute_instance_insert is called.
+    Then: The serviceAccounts entry is built with the email and the parsed scopes list.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+        "service_account_email": "sa@test-project.iam.gserviceaccount.com",
+        "service_account_scopes": "https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/logging.write",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.insert.return_value.execute.return_value = {"id": "op-3", "status": "PENDING"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    body = mock_instances.insert.call_args[1]["body"]
+    assert body["serviceAccounts"] == [
+        {
+            "email": "sa@test-project.iam.gserviceaccount.com",
+            "scopes": ["https://www.googleapis.com/auth/compute", "https://www.googleapis.com/auth/logging.write"],
+        }
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -6777,7 +6883,7 @@ def test_compute_instance_delete_success(mocker):
     assert result.outputs_prefix == "GCP.Compute.Operations"
     assert result.outputs == mock_response
     mock_instances.delete.assert_called_once_with(project="test-project", zone="us-central1-a", instance="instance-1")
-    assert "instance-1 was deleted" in result.readable_output
+    assert "VM instance instance-1 is being deleted in project test-project" in result.readable_output
 
 
 def test_compute_instance_delete_extracts_zone_from_url(mocker):
@@ -6851,7 +6957,7 @@ def test_compute_instance_reset_success(mocker):
     assert result.outputs_prefix == "GCP.Compute.Operations"
     assert result.outputs == mock_response
     mock_instances.reset.assert_called_once_with(project="test-project", zone="us-central1-a", instance="instance-1")
-    assert "instance-1 was reset" in result.readable_output
+    assert "VM instance instance-1 is being reset in project test-project" in result.readable_output
 
 
 def test_compute_instance_reset_permission_error(mocker):
@@ -7106,13 +7212,13 @@ def test_compute_instances_aggregated_list_success(mocker):
     instances = result.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]
     assert len(instances) == 2
     assert {i["id"] for i in instances} == {"1", "2"}
-    assert result.outputs["GCP.Compute(true)"]["InstancesNextPageToken"] == "token-xyz"
+    assert result.outputs["GCP.Compute(true)"]["AggregatedInstancesNextToken"] == "token-xyz"
     mock_instances.aggregatedList.assert_called_once_with(project="test-project")
 
 
 def test_compute_instances_aggregated_list_with_filters_and_pagination(mocker):
     """
-    Given: filters, order_by, limit and page_token arguments.
+    Given: filters, order_by, limit and next_token arguments.
     When: compute_instances_aggregated_list is called.
     Then: All request params are forwarded and null params are omitted.
     """
@@ -7123,7 +7229,7 @@ def test_compute_instances_aggregated_list_with_filters_and_pagination(mocker):
         "filters": "status=RUNNING",
         "order_by": "creationTimestamp desc",
         "limit": "10",
-        "page_token": "page-1",
+        "next_token": "page-1",
     }
     mock_compute = mocker.Mock()
     mock_instances = mocker.Mock()
