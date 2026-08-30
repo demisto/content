@@ -1690,10 +1690,10 @@ Creates a new GCP project under the specified parent (organization or folder). R
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (e.g. tokyo-rain-123). | Required |
-| parent | The resource name of the parent under which to create the project, in the form "organizations/{organization_id}" or "folders/{folder_id}". | Required |
+| parent | The resource name of the parent under which to create the project, in the form "organizations/[organization_id]" or "folders/[folder_id]". | Required |
 | display_name | The user-assigned display name of the project. Must be 4 to 30 characters. | Optional |
-| label_keys | A comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
-| label_values | A comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys. | Optional |
+| label_keys | The comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
+| label_values | The comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys. | Optional |
 
 #### Context Output
 
@@ -1703,9 +1703,9 @@ Creates a new GCP project under the specified parent (organization or folder). R
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
-| GCP.ResourceManager.Projects.createTime | Date | The time the project was created. |
+| GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
-| GCP.ResourceManager.Projects.labels | Unknown | The labels associated with the project. |
+| GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
 
 ### gcp-resource-manager-project-get
 
@@ -1730,9 +1730,9 @@ Retrieves a GCP project by its project ID. Required Permission: resourcemanager.
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
-| GCP.ResourceManager.Projects.createTime | Date | The time the project was created. |
+| GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
-| GCP.ResourceManager.Projects.labels | Unknown | The labels associated with the project. |
+| GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
 
 ### gcp-resource-manager-project-search
 
@@ -1747,9 +1747,10 @@ Searches for GCP projects that are visible to the caller and match an optional q
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | An optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.<key> (e.g. "state:ACTIVE" or "displayName:how*"). | Optional |
-| limit | The maximum number of results to return. Valid range 1-500. Default is 50. | Optional |
-| page_token | A pagination token returned from a previous call, indicating where the listing should continue. | Optional |
+| query | The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (e.g. "state:ACTIVE" or "displayName:how*"). | Optional |
+| limit | The maximum number of results to return across all pages. Default is 50. | Optional |
+| page_size | The maximum number of results to return per API request. Used together with limit to control internal pagination. Default is 50. | Optional |
+| page_token | The pagination token returned from a previous call, indicating where the listing should continue. | Optional |
 
 #### Context Output
 
@@ -1759,9 +1760,9 @@ Searches for GCP projects that are visible to the caller and match an optional q
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
-| GCP.ResourceManager.Projects.createTime | Date | The time the project was created. |
+| GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
-| GCP.ResourceManager.Projects.labels | Unknown | The labels associated with the project. |
+| GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
 | GCP.ResourceManager.ProjectsNextPageToken | String | The token to use to retrieve the next batch of projects. |
 
 ### gcp-resource-manager-project-update
@@ -1779,8 +1780,8 @@ Updates the display name and/or labels of an existing GCP project. Required Perm
 | --- | --- | --- |
 | project_id | The unique ID of the project to update (e.g. tokyo-rain-123). | Required |
 | display_name | The new display name for the project. Must be 4 to 30 characters. | Optional |
-| label_keys | A comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
-| label_values | A comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys. | Optional |
+| label_keys | The comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
+| label_values | The comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys. | Optional |
 
 #### Context Output
 
@@ -1790,9 +1791,9 @@ Updates the display name and/or labels of an existing GCP project. Required Perm
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
-| GCP.ResourceManager.Projects.createTime | Date | The time the project was created. |
+| GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
-| GCP.ResourceManager.Projects.labels | Unknown | The labels associated with the project. |
+| GCP.ResourceManager.Projects.labels | Object | The labels associated with the project. |
 
 ### gcp-resource-manager-project-delete
 
@@ -1817,7 +1818,7 @@ Marks a GCP project for deletion (sets its state to DELETE_REQUESTED). Required 
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
-| GCP.ResourceManager.Projects.createTime | Date | The time the project was created. |
+| GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
 
 ### gcp-resource-manager-project-undelete
@@ -1843,7 +1844,7 @@ Restores a GCP project that was previously marked for deletion. Required Permiss
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
-| GCP.ResourceManager.Projects.createTime | Date | The time the project was created. |
+| GCP.ResourceManager.Projects.createTime | String | The time the project was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.Projects.parent | String | The resource name of the project's parent. |
 
 ### gcp-resource-manager-organization-search
@@ -1859,9 +1860,10 @@ Searches for GCP organizations that are visible to the caller and match an optio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | An optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (e.g. "domain:google.com"). | Optional |
-| limit | The maximum number of results to return. Valid range 1-500. Default is 50. | Optional |
-| page_token | A pagination token returned from a previous call, indicating where the listing should continue. | Optional |
+| query | The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (e.g. "domain:google.com"). | Optional |
+| limit | The maximum number of results to return across all pages. Default is 50. | Optional |
+| page_size | The maximum number of results to return per API request. Used together with limit to control internal pagination. Default is 50. | Optional |
+| page_token | The pagination token returned from a previous call, indicating where the listing should continue. | Optional |
 
 #### Context Output
 
@@ -1871,7 +1873,7 @@ Searches for GCP organizations that are visible to the caller and match an optio
 | GCP.ResourceManager.Organizations.displayName | String | The organization's display name. |
 | GCP.ResourceManager.Organizations.state | String | The organization's current lifecycle state. |
 | GCP.ResourceManager.Organizations.directoryCustomerId | String | The G Suite / Cloud Identity customer ID used in the Directory API. |
-| GCP.ResourceManager.Organizations.createTime | Date | The time the organization was created. |
+| GCP.ResourceManager.Organizations.createTime | String | The time the organization was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |
 | GCP.ResourceManager.OrganizationsNextPageToken | String | The token to use to retrieve the next batch of organizations. |
 
 ### gcp-resource-manager-organization-get
@@ -1887,7 +1889,7 @@ Retrieves a GCP organization by its resource name. Required Permission: resource
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The resource name of the organization to fetch, in the form "organizations/{organization_id}" (e.g. organizations/1234). | Required |
+| name | The resource name of the organization to fetch, in the form "organizations/[organization_id]" (e.g. organizations/1234). | Required |
 
 #### Context Output
 
@@ -1897,4 +1899,4 @@ Retrieves a GCP organization by its resource name. Required Permission: resource
 | GCP.ResourceManager.Organizations.displayName | String | The organization's display name. |
 | GCP.ResourceManager.Organizations.state | String | The organization's current lifecycle state. |
 | GCP.ResourceManager.Organizations.directoryCustomerId | String | The G Suite / Cloud Identity customer ID used in the Directory API. |
-| GCP.ResourceManager.Organizations.createTime | Date | The time the organization was created. |
+| GCP.ResourceManager.Organizations.createTime | String | The time the organization was created, in ISO 8601 format \(for example, "2024-01-15T12:34:56Z"\). |

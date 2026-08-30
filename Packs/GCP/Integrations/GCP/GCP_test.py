@@ -6796,7 +6796,7 @@ def test_resource_manager_project_get_success(mocker):
 def test_resource_manager_project_search_success(mocker):
     """
     Given: A mocked Resource Manager client whose projects.search returns projects and a next page token.
-    When: resource_manager_project_search is called with a query.
+    When: resource_manager_project_search is called with a query and a limit that stops after the first page.
     Then: It returns CommandResults with the projects list and the next-page-token output.
     """
     from GCP import resource_manager_project_search
@@ -6808,12 +6808,37 @@ def test_resource_manager_project_search_success(mocker):
     }
     mocker.patch("GCP.build", return_value=mock_rm)
 
-    result = resource_manager_project_search(mocker.Mock(spec=Credentials), {"query": "state:ACTIVE"})
+    result = resource_manager_project_search(mocker.Mock(spec=Credentials), {"query": "state:ACTIVE", "limit": "1"})
 
     projects_output = result.outputs["GCP.ResourceManager.Projects(val.projectId && val.projectId == obj.projectId)"]
     assert projects_output == [_RM_PROJECT_RESPONSE]
     assert result.outputs["GCP.ResourceManager(true)"]["ProjectsNextPageToken"] == "next-token"
     assert mock_rm.projects().search.call_args[1]["query"] == "state:ACTIVE"
+
+
+def test_resource_manager_project_search_paginates_until_limit(mocker):
+    """
+    Given: A mocked Resource Manager client that returns one project per page across multiple pages.
+    When: resource_manager_project_search is called with a limit spanning multiple pages.
+    Then: The function iterates internally using pageToken and accumulates results up to the limit.
+    """
+    from GCP import resource_manager_project_search
+
+    project_a = dict(_RM_PROJECT_RESPONSE, projectId="proj-a")
+    project_b = dict(_RM_PROJECT_RESPONSE, projectId="proj-b")
+    mock_rm = MagicMock()
+    mock_rm.projects().search().execute.side_effect = [
+        {"projects": [project_a], "nextPageToken": "token-1"},
+        {"projects": [project_b]},
+    ]
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    result = resource_manager_project_search(mocker.Mock(spec=Credentials), {"limit": "5"})
+
+    projects_output = result.outputs["GCP.ResourceManager.Projects(val.projectId && val.projectId == obj.projectId)"]
+    assert projects_output == [project_a, project_b]
+    # nextPageToken is absent on the last page, so no ProjectsNextPageToken output is emitted.
+    assert "GCP.ResourceManager(true)" not in result.outputs
 
 
 def test_resource_manager_project_search_empty(mocker):
@@ -6834,18 +6859,21 @@ def test_resource_manager_project_search_empty(mocker):
     assert not result.outputs
 
 
-def test_resource_manager_project_search_invalid_limit(mocker):
+def test_resource_manager_project_search_page_size_bounded_by_limit(mocker):
     """
-    Given: A limit argument outside the allowed range.
+    Given: A limit smaller than the default page size.
     When: resource_manager_project_search is called.
-    Then: A DemistoException is raised by validate_limit.
+    Then: The pageSize sent to the API is bounded by the remaining limit, not the page_size default.
     """
     from GCP import resource_manager_project_search
-    from CommonServerPython import DemistoException
 
-    mocker.patch("GCP.build", return_value=MagicMock())
-    with pytest.raises(DemistoException, match="acceptable values of the argument limit"):
-        resource_manager_project_search(mocker.Mock(spec=Credentials), {"limit": "501"})
+    mock_rm = MagicMock()
+    mock_rm.projects().search().execute.return_value = {"projects": [_RM_PROJECT_RESPONSE]}
+    mocker.patch("GCP.build", return_value=mock_rm)
+
+    resource_manager_project_search(mocker.Mock(spec=Credentials), {"limit": "1", "page_size": "50"})
+
+    assert mock_rm.projects().search.call_args[1]["pageSize"] == 1
 
 
 def test_resource_manager_project_update_success(mocker):

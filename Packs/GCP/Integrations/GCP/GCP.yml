@@ -4229,15 +4229,15 @@ script:
       description: The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (e.g. tokyo-rain-123).
       required: true
     - name: parent
-      description: The resource name of the parent under which to create the project, in the form "organizations/{organization_id}" or "folders/{folder_id}".
+      description: The resource name of the parent under which to create the project, in the form "organizations/[organization_id]" or "folders/[folder_id]".
       required: true
     - name: display_name
       description: The user-assigned display name of the project. Must be 4 to 30 characters.
     - name: label_keys
-      description: A comma-separated list of label keys to associate with the project. Must be the same length as label_values.
+      description: The comma-separated list of label keys to associate with the project. Must be the same length as label_values.
       isArray: true
     - name: label_values
-      description: A comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys.
+      description: The comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys.
       isArray: true
     outputs:
     - contextPath: GCP.ResourceManager.Projects.name
@@ -4253,14 +4253,14 @@ script:
       description: The project lifecycle state.
       type: String
     - contextPath: GCP.ResourceManager.Projects.createTime
-      description: The time the project was created.
-      type: Date
+      description: The time the project was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
     - contextPath: GCP.ResourceManager.Projects.parent
       description: The resource name of the project's parent.
       type: String
     - contextPath: GCP.ResourceManager.Projects.labels
       description: The labels associated with the project.
-      type: Unknown
+      type: Object
   - name: gcp-resource-manager-project-get
     description: "Retrieves a GCP project by its project ID. Required Permission: resourcemanager.projects.get."
     arguments:
@@ -4281,24 +4281,27 @@ script:
       description: The project lifecycle state.
       type: String
     - contextPath: GCP.ResourceManager.Projects.createTime
-      description: The time the project was created.
-      type: Date
+      description: The time the project was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
     - contextPath: GCP.ResourceManager.Projects.parent
       description: The resource name of the project's parent.
       type: String
     - contextPath: GCP.ResourceManager.Projects.labels
       description: The labels associated with the project.
-      type: Unknown
+      type: Object
   - name: gcp-resource-manager-project-search
     description: "Searches for GCP projects that are visible to the caller and match an optional query. Required Permission: resourcemanager.projects.get."
     arguments:
     - name: query
-      description: 'An optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.<key> (e.g. "state:ACTIVE" or "displayName:how*").'
+      description: 'The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (e.g. "state:ACTIVE" or "displayName:how*").'
     - name: limit
-      description: The maximum number of results to return. Valid range 1-500.
+      description: The maximum number of results to return across all pages.
+      defaultValue: '50'
+    - name: page_size
+      description: The maximum number of results to return per API request. Used together with limit to control internal pagination.
       defaultValue: '50'
     - name: page_token
-      description: A pagination token returned from a previous call, indicating where the listing should continue.
+      description: The pagination token returned from a previous call, indicating where the listing should continue.
     outputs:
     - contextPath: GCP.ResourceManager.Projects.name
       description: The resource name of the project (e.g. projects/415104041262).
@@ -4313,14 +4316,14 @@ script:
       description: The project lifecycle state.
       type: String
     - contextPath: GCP.ResourceManager.Projects.createTime
-      description: The time the project was created.
-      type: Date
+      description: The time the project was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
     - contextPath: GCP.ResourceManager.Projects.parent
       description: The resource name of the project's parent.
       type: String
     - contextPath: GCP.ResourceManager.Projects.labels
       description: The labels associated with the project.
-      type: Unknown
+      type: Object
     - contextPath: GCP.ResourceManager.ProjectsNextPageToken
       description: The token to use to retrieve the next batch of projects.
       type: String
@@ -4333,10 +4336,10 @@ script:
     - name: display_name
       description: The new display name for the project. Must be 4 to 30 characters.
     - name: label_keys
-      description: A comma-separated list of label keys to associate with the project. Must be the same length as label_values.
+      description: The comma-separated list of label keys to associate with the project. Must be the same length as label_values.
       isArray: true
     - name: label_values
-      description: A comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys.
+      description: The comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys.
       isArray: true
     outputs:
     - contextPath: GCP.ResourceManager.Projects.name
@@ -4352,14 +4355,14 @@ script:
       description: The project lifecycle state.
       type: String
     - contextPath: GCP.ResourceManager.Projects.createTime
-      description: The time the project was created.
-      type: Date
+      description: The time the project was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
     - contextPath: GCP.ResourceManager.Projects.parent
       description: The resource name of the project's parent.
       type: String
     - contextPath: GCP.ResourceManager.Projects.labels
       description: The labels associated with the project.
-      type: Unknown
+      type: Object
   - name: gcp-resource-manager-project-delete
     description: "Marks a GCP project for deletion (sets its state to DELETE_REQUESTED). Required Permission: resourcemanager.projects.delete."
     execution: true
@@ -4381,8 +4384,8 @@ script:
       description: The project lifecycle state.
       type: String
     - contextPath: GCP.ResourceManager.Projects.createTime
-      description: The time the project was created.
-      type: Date
+      description: The time the project was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
     - contextPath: GCP.ResourceManager.Projects.parent
       description: The resource name of the project's parent.
       type: String
@@ -4406,8 +4409,8 @@ script:
       description: The project lifecycle state.
       type: String
     - contextPath: GCP.ResourceManager.Projects.createTime
-      description: The time the project was created.
-      type: Date
+      description: The time the project was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
     - contextPath: GCP.ResourceManager.Projects.parent
       description: The resource name of the project's parent.
       type: String
@@ -4415,15 +4418,18 @@ script:
     description: "Searches for GCP organizations that are visible to the caller and match an optional query. Required Permission: resourcemanager.organizations.get."
     arguments:
     - name: query
-      description: 'An optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (e.g. "domain:google.com").'
+      description: 'The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (e.g. "domain:google.com").'
     - name: limit
-      description: The maximum number of results to return. Valid range 1-500.
+      description: The maximum number of results to return across all pages.
+      defaultValue: '50'
+    - name: page_size
+      description: The maximum number of results to return per API request. Used together with limit to control internal pagination.
       defaultValue: '50'
     - name: page_token
-      description: A pagination token returned from a previous call, indicating where the listing should continue.
+      description: The pagination token returned from a previous call, indicating where the listing should continue.
     outputs:
     - contextPath: GCP.ResourceManager.Organizations.name
-      description: 'The resource name of the organization, in the form "organizations/{organization_id}".'
+      description: 'The resource name of the organization, in the form "organizations/[organization_id]".'
       type: String
     - contextPath: GCP.ResourceManager.Organizations.displayName
       description: The organization's display name.
@@ -4435,8 +4441,8 @@ script:
       description: The G Suite / Cloud Identity customer ID used in the Directory API.
       type: String
     - contextPath: GCP.ResourceManager.Organizations.createTime
-      description: The time the organization was created.
-      type: Date
+      description: The time the organization was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
     - contextPath: GCP.ResourceManager.OrganizationsNextPageToken
       description: The token to use to retrieve the next batch of organizations.
       type: String
@@ -4444,11 +4450,11 @@ script:
     description: "Retrieves a GCP organization by its resource name. Required Permission: resourcemanager.organizations.get."
     arguments:
     - name: name
-      description: 'The resource name of the organization to fetch, in the form "organizations/{organization_id}" (e.g. organizations/1234).'
+      description: 'The resource name of the organization to fetch, in the form "organizations/[organization_id]" (e.g. organizations/1234).'
       required: true
     outputs:
     - contextPath: GCP.ResourceManager.Organizations.name
-      description: 'The resource name of the organization, in the form "organizations/{organization_id}".'
+      description: 'The resource name of the organization, in the form "organizations/[organization_id]".'
       type: String
     - contextPath: GCP.ResourceManager.Organizations.displayName
       description: The organization's display name.
@@ -4460,8 +4466,8 @@ script:
       description: The G Suite / Cloud Identity customer ID used in the Directory API.
       type: String
     - contextPath: GCP.ResourceManager.Organizations.createTime
-      description: The time the organization was created.
-      type: Date
+      description: The time the organization was created, in ISO 8601 format (for example, "2024-01-15T12:34:56Z").
+      type: String
 
   isfetch: false
   runonce: false

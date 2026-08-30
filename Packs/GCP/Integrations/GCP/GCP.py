@@ -2021,7 +2021,7 @@ def resource_manager_project_search(creds: Credentials, args: dict[str, Any]) ->
 
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): May include 'query', 'limit', and 'page_token'.
+        args (dict[str, Any]): May include 'query', 'limit', 'page_size', and 'page_token'.
 
     Returns:
         CommandResults: A list of matching Project resources.
@@ -2029,20 +2029,28 @@ def resource_manager_project_search(creds: Credentials, args: dict[str, Any]) ->
     query = args.get("query")
     page_token = args.get("page_token")
     limit = arg_to_number(args.get("limit")) or 50
-    validate_limit(limit)
+    page_size = arg_to_number(args.get("page_size")) or 50
 
     resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-    response = (
-        resource_manager.projects()  # pylint: disable=E1101
-        .search(query=query, pageSize=limit, pageToken=page_token)
-        .execute()
-    )
+    projects: list[dict[str, Any]] = []
+    next_page_token = None
+    while True:
+        response = (
+            resource_manager.projects()  # pylint: disable=E1101
+            .search(query=query, pageSize=min(limit - len(projects), page_size), pageToken=page_token)
+            .execute()
+        )
+        current_projects = response.get("projects", [])
+        projects.extend(current_projects)
 
-    projects = response.get("projects", [])
+        next_page_token = response.get("nextPageToken")
+        page_token = next_page_token
+        if not page_token or len(projects) >= limit or not current_projects:
+            break
+
     if not projects:
         return CommandResults(readable_output="No projects found.")
 
-    next_page_token = response.get("nextPageToken")
     metadata = (
         "Run the following command to retrieve the next batch of projects:\n"
         f"!gcp-resource-manager-project-search page_token={next_page_token}"
@@ -2063,7 +2071,7 @@ def resource_manager_project_search(creds: Credentials, args: dict[str, Any]) ->
         "GCP.ResourceManager.Projects(val.projectId && val.projectId == obj.projectId)": projects,
         "GCP.ResourceManager(true)": {"ProjectsNextPageToken": next_page_token},
     }
-    remove_empty_elements(outputs)
+    outputs = remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
         outputs=outputs,
@@ -2193,7 +2201,7 @@ def resource_manager_organization_search(creds: Credentials, args: dict[str, Any
 
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): May include 'query', 'limit', and 'page_token'.
+        args (dict[str, Any]): May include 'query', 'limit', 'page_size', and 'page_token'.
 
     Returns:
         CommandResults: A list of matching Organization resources.
@@ -2201,20 +2209,28 @@ def resource_manager_organization_search(creds: Credentials, args: dict[str, Any
     query = args.get("query")
     page_token = args.get("page_token")
     limit = arg_to_number(args.get("limit")) or 50
-    validate_limit(limit)
+    page_size = arg_to_number(args.get("page_size")) or 50
 
     resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-    response = (
-        resource_manager.organizations()  # pylint: disable=E1101
-        .search(query=query, pageSize=limit, pageToken=page_token)
-        .execute()
-    )
+    organizations: list[dict[str, Any]] = []
+    next_page_token = None
+    while True:
+        response = (
+            resource_manager.organizations()  # pylint: disable=E1101
+            .search(query=query, pageSize=min(limit - len(organizations), page_size), pageToken=page_token)
+            .execute()
+        )
+        current_organizations = response.get("organizations", [])
+        organizations.extend(current_organizations)
 
-    organizations = response.get("organizations", [])
+        next_page_token = response.get("nextPageToken")
+        page_token = next_page_token
+        if not page_token or len(organizations) >= limit or not current_organizations:
+            break
+
     if not organizations:
         return CommandResults(readable_output="No organizations found.")
 
-    next_page_token = response.get("nextPageToken")
     metadata = (
         "Run the following command to retrieve the next batch of organizations:\n"
         f"!gcp-resource-manager-organization-search page_token={next_page_token}"
@@ -2235,7 +2251,7 @@ def resource_manager_organization_search(creds: Credentials, args: dict[str, Any
         "GCP.ResourceManager.Organizations(val.name && val.name == obj.name)": organizations,
         "GCP.ResourceManager(true)": {"OrganizationsNextPageToken": next_page_token},
     }
-    remove_empty_elements(outputs)
+    outputs = remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
         outputs=outputs,
