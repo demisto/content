@@ -109,7 +109,7 @@ class Credentials(BaseModel):
     password: str
 
 
-def set_authorization(request: IntegrationHTTPRequest, auth_credentials):
+def set_authorization(request: IntegrationHTTPRequest, auth_credentials: dict) -> None:
     """Automatic authorization.
     Supports {Authorization: Bearer __token__}
     or Basic Auth.
@@ -328,8 +328,8 @@ class DefenderClient(IntegrationEventsClient):
 class DefenderGetEvents(IntegrationGetEvents):
     client: DefenderClient
 
-    def _iter_events(self, event_type_name, event_filter):
-        self.last_timestamp = {}
+    def _iter_events(self, event_type_name: str, event_filter: "EventFilter"):
+        self.last_timestamp: dict = {}
         base_url = self.base_url
         self.client.authenticate()
 
@@ -355,8 +355,7 @@ class DefenderGetEvents(IntegrationGetEvents):
             "sortDirection": "asc",
         }
         demisto.debug(
-            f"MD: Sending API call {self.client.request.method} {self.client.request.url} "
-            f"body={self.client.request.json}"
+            f"MD: Sending API call {self.client.request.method} {self.client.request.url} body={self.client.request.json}"
         )
         response = self.client.call(self.client.request).json()
         events = response.get("data", [])
@@ -468,8 +467,12 @@ def select_event_filters(requested_event_types: list) -> list[EventFilter]:
     return [event_filter for ui_name, event_filter in UI_NAME_TO_EVENT_FILTERS.items() if ui_name in requested_event_types]
 
 
-def main(command: str, demisto_params: dict):
+def main(command: str, demisto_params: dict | None = None):
     demisto.debug(f"MD: Command being called is {command}")
+
+    if demisto_params is None:
+        # Args is always stronger. getLastRun is even stronger.
+        demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
     try:
         demisto_params["client_secret"] = demisto_params["credentials"]["password"]
@@ -532,6 +535,9 @@ def main(command: str, demisto_params: dict):
                     # publishing events to XSIAM
                     send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
 
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented")
+
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
@@ -540,6 +546,4 @@ def main(command: str, demisto_params: dict):
 
 """ ENTRY POINT """
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
-    # Args is always stronger. Get getIntegrationContext even stronger
-    compound_demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
-    main(demisto.command(), compound_demisto_params)
+    main(demisto.command())

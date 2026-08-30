@@ -1,6 +1,5 @@
 """Unit tests for the Microsoft Defender for Cloud Apps Event Collector."""
 
-
 import demistomock as demisto
 import pytest
 from freezegun import freeze_time
