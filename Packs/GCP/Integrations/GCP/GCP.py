@@ -1917,6 +1917,29 @@ def _parse_organization(organization: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _validate_positive_int(value: Any, arg_name: str, default: int = 50) -> int:
+    """
+    Parses a numeric argument and ensures it is a positive integer.
+
+    Args:
+        value (Any): The raw argument value.
+        arg_name (str): The argument name, used in the error message.
+        default (int): The value to return when the argument is not provided.
+
+    Returns:
+        int: The parsed positive integer, or the default when the argument is absent.
+
+    Raises:
+        ValueError: If the provided value is not greater than 0.
+    """
+    number = arg_to_number(value)
+    if number is None:
+        return default
+    if number <= 0:
+        raise ValueError(f"The '{arg_name}' argument must be greater than 0.")
+    return number
+
+
 def _build_project_labels(label_keys_arg: Any, label_values_arg: Any) -> dict[str, str] | None:
     """
     Builds a labels dictionary from the ``label_keys`` and ``label_values`` list arguments.
@@ -2028,8 +2051,8 @@ def resource_manager_project_search(creds: Credentials, args: dict[str, Any]) ->
     """
     query = args.get("query")
     page_token = args.get("page_token")
-    limit = arg_to_number(args.get("limit")) or 50
-    page_size = arg_to_number(args.get("page_size")) or 50
+    limit = _validate_positive_int(args.get("limit"), "limit")
+    page_size = _validate_positive_int(args.get("page_size"), "page_size")
 
     resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
     projects: list[dict[str, Any]] = []
@@ -2208,8 +2231,8 @@ def resource_manager_organization_search(creds: Credentials, args: dict[str, Any
     """
     query = args.get("query")
     page_token = args.get("page_token")
-    limit = arg_to_number(args.get("limit")) or 50
-    page_size = arg_to_number(args.get("page_size")) or 50
+    limit = _validate_positive_int(args.get("limit"), "limit")
+    page_size = _validate_positive_int(args.get("page_size"), "page_size")
 
     resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
     organizations: list[dict[str, Any]] = []

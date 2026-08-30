@@ -6876,6 +6876,20 @@ def test_resource_manager_project_search_page_size_bounded_by_limit(mocker):
     assert mock_rm.projects().search.call_args[1]["pageSize"] == 1
 
 
+@pytest.mark.parametrize("bad_arg", [{"limit": "-1"}, {"limit": "0"}, {"page_size": "-5"}, {"page_size": "0"}])
+def test_resource_manager_project_search_rejects_non_positive_pagination(mocker, bad_arg):
+    """
+    Given: A non-positive limit or page_size argument.
+    When: resource_manager_project_search is called.
+    Then: A ValueError is raised before any API call.
+    """
+    from GCP import resource_manager_project_search
+
+    mocker.patch("GCP.build", return_value=MagicMock())
+    with pytest.raises(ValueError, match="must be greater than 0"):
+        resource_manager_project_search(mocker.Mock(spec=Credentials), bad_arg)
+
+
 def test_resource_manager_project_update_success(mocker):
     """
     Given: A mocked Resource Manager client whose projects.patch returns a completed Operation.
