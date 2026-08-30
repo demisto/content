@@ -61,7 +61,7 @@ configuration:
   section: Collect
   required: false
   defaultvalue: '1000'
-  additionalinfo: Events are retrieved in pages of up to 100 (the API page-size limit) until this number is reached.
+  additionalinfo: The number of events to retrieve. Events are retrieved in pages of up to 100 (the API page-size limit) until this number is reached.
 - display: Fetch events
   name: isFetchEvents
   type: 8

@@ -1,11 +1,19 @@
 """Unit tests for the Microsoft Defender for Cloud Apps Event Collector."""
 
-import demistomock as demisto
+import json
 
+import demistomock as demisto
+import pytest
+from freezegun import freeze_time
+
+from CommonServerPython import DemistoException
 from MicrosoftDefenderEventCollector import (
+    AUTH_ERROR_MSG,
     DEFAULT_LIMIT,
+    DefenderClient,
     DefenderGetEvents,
     IntegrationOptions,
+    module_test,
 )
 
 
@@ -159,21 +167,20 @@ class TestRunPaginationRegression:
         assert len(result) == 1015
 
 
+# Frozen instant used for the watermark tests. 1_700_000_000_000 ms == 2023-11-14T22:13:20Z,
+# so datetime.now(timezone.utc).timestamp() * 1000 == NOW_MS while frozen.
+NOW_MS = 1_700_000_000_000
+FROZEN_TIME = "2023-11-14T22:13:20Z"
+
+
+@freeze_time(FROZEN_TIME)
 class TestGetLastRunWatermark:
     """Regression for XSUP-72224: a fetched type that returns 0 events must still get a
     watermark, otherwise it re-scans the same first-fetch lookback window forever."""
 
-    NOW_MS = 1_700_000_000_000
-
     def _patch_env(self, mocker, stored_last_run: dict):
         mocker.patch.object(demisto, "getLastRun", return_value=dict(stored_last_run))
         mocker.patch.object(demisto, "debug")
-        # Freeze "now" so the seeded watermark is deterministic.
-        import MicrosoftDefenderEventCollector as md
-
-        fake_dt = mocker.Mock()
-        fake_dt.now.return_value.timestamp.return_value = self.NOW_MS / 1000
-        mocker.patch.object(md, "datetime", fake_dt)
 
     def test_empty_type_with_no_watermark_is_seeded_forward(self, mocker):
         """login/admin return 0 events and have no prior watermark -> seeded to 'now'."""
@@ -183,8 +190,8 @@ class TestGetLastRunWatermark:
         last_run = DefenderGetEvents.get_last_run(events, fetched_types=["alerts", "activities_login", "activities_admin"])
 
         assert last_run["alerts"] == 112  # type with events advances to max+1
-        assert last_run["activities_login"] == self.NOW_MS  # 0-event type seeded forward
-        assert last_run["activities_admin"] == self.NOW_MS  # 0-event type seeded forward
+        assert last_run["activities_login"] == NOW_MS  # 0-event type seeded forward
+        assert last_run["activities_admin"] == NOW_MS  # 0-event type seeded forward
 
     def test_empty_type_with_existing_watermark_is_preserved(self, mocker):
         """A 0-event type that already has a watermark must keep it (no data skipped)."""
@@ -218,3 +225,142 @@ class TestGetLastRunWatermark:
 
         assert "activities_login" not in last_run
         assert "activities_admin" not in last_run
+
+
+class _FakeResponse:
+    """Minimal stand-in for requests.Response exposing only .json()."""
+
+    def __init__(self, payload: dict):
+        self._payload = payload
+
+    def json(self):
+        return self._payload
+
+
+def _make_defender_get_events_with_client(pages: list[dict], mocker) -> DefenderGetEvents:
+    """Build a DefenderGetEvents whose client returns the given API payloads in order.
+
+    Each element of `pages` is a raw API response dict (e.g. {"data": [...], "hasNext": bool}).
+    The client's network/auth side effects are stubbed so _iter_events can be exercised
+    end-to-end without HTTP.
+    """
+    get_events = DefenderGetEvents.__new__(DefenderGetEvents)
+    get_events.base_url = "https://example.test/api/v1/"
+
+    client = DefenderClient.__new__(DefenderClient)
+    client.after = 1000
+    client.request = mocker.Mock()
+    client.request.params = {}
+    # authenticate() and set_request_filter() must be no-ops / simple for the test.
+    client.authenticate = mocker.Mock()  # type: ignore[method-assign]
+    responses = [_FakeResponse(p) for p in pages]
+    client.call = mocker.Mock(side_effect=responses)  # type: ignore[method-assign]
+    client.set_request_filter = mocker.Mock()  # type: ignore[method-assign]
+    get_events.client = client
+    return get_events
+
+
+class TestIterEventsPagination:
+    """Coverage for DefenderGetEvents._iter_events: pagination, event tagging, and the
+    per-type start window taken from the last run."""
+
+    def test_single_page_no_next_yields_once_and_tags_type(self, mocker):
+        """A response with hasNext=False yields exactly one page and tags each event's type."""
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        payload = {"data": [{"timestamp": 1}, {"timestamp": 2}], "hasNext": False}
+        get_events = _make_defender_get_events_with_client([payload], mocker)
+
+        pages = list(get_events._iter_events("alerts", {"type": "alerts", "filters": {}}))
+
+        assert len(pages) == 1
+        assert len(pages[0]) == 2
+        assert all(e["event_type_name"] == "alerts" for e in pages[0])
+        # A single call means the client was hit once and pagination did not continue.
+        assert get_events.client.call.call_count == 1
+        get_events.client.set_request_filter.assert_not_called()
+
+    def test_paginates_until_has_next_false(self, mocker):
+        """_iter_events follows hasNext, advancing the filter by the last event each page."""
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        pages_payload = [
+            {"data": [{"timestamp": 10}, {"timestamp": 20}], "hasNext": True},
+            {"data": [{"timestamp": 30}, {"timestamp": 40}], "hasNext": True},
+            {"data": [{"timestamp": 50}], "hasNext": False},
+        ]
+        get_events = _make_defender_get_events_with_client(pages_payload, mocker)
+
+        pages = list(get_events._iter_events("activities_login", {"type": "activities", "filters": {}}))
+
+        # All three pages are yielded and the client was called three times.
+        assert [len(p) for p in pages] == [2, 2, 1]
+        assert get_events.client.call.call_count == 3
+        # set_request_filter is called once per continuation (2 times for 3 pages).
+        assert get_events.client.set_request_filter.call_count == 2
+
+    def test_last_run_window_overrides_client_after(self, mocker):
+        """When a per-type watermark exists in the last run, it is used as the start filter."""
+        mocker.patch.object(demisto, "getLastRun", return_value={"alerts": 8888})
+        mocker.patch.object(demisto, "debug")
+        payload = {"data": [{"timestamp": 9999}], "hasNext": False}
+        get_events = _make_defender_get_events_with_client([payload], mocker)
+
+        list(get_events._iter_events("alerts", {"type": "alerts", "filters": {}}))
+
+        # The request filters must carry the per-type watermark (8888), not client.after (1000).
+        sent_filters = json.loads(get_events.client.request.params["filters"])
+        assert sent_filters["date"] == {"gte": 8888}
+
+
+class TestSetRequestFilter:
+    """Coverage for DefenderClient.set_request_filter: the +1ms forward advance."""
+
+    def test_advances_gte_by_one_millisecond(self, mocker):
+        client = DefenderClient.__new__(DefenderClient)
+        client.request = mocker.Mock()
+        client.request.params = {"filters": json.dumps({"date": {"gte": 100}})}
+
+        client.set_request_filter(1_700_000_000_000)
+
+        updated = json.loads(client.request.params["filters"])
+        assert updated["date"] == {"gte": 1_700_000_000_001}  # last timestamp + 1 ms
+
+    def test_preserves_other_filter_keys(self, mocker):
+        client = DefenderClient.__new__(DefenderClient)
+        client.request = mocker.Mock()
+        client.request.params = {"filters": json.dumps({"date": {"gte": 1}, "activity.type": {"eq": True}})}
+
+        client.set_request_filter(500)
+
+        updated = json.loads(client.request.params["filters"])
+        assert updated["activity.type"] == {"eq": True}  # unrelated filters untouched
+        assert updated["date"] == {"gte": 501}
+
+
+class TestModuleTest:
+    """Coverage for module_test: success returns 'ok'; auth errors map to a readable message."""
+
+    def test_returns_ok_on_success(self, mocker):
+        get_events = mocker.Mock()
+        get_events.client.request.params = {}
+        get_events.run.return_value = []
+
+        assert module_test(get_events) == "ok"
+        # module_test probes with a minimal limit of 1.
+        assert get_events.options.limit == 1
+
+    def test_auth_error_returns_readable_message(self, mocker):
+        get_events = mocker.Mock()
+        get_events.client.request.params = {}
+        get_events.run.side_effect = DemistoException("403 Forbidden")
+
+        assert module_test(get_events) == AUTH_ERROR_MSG
+
+    def test_non_auth_error_is_raised(self, mocker):
+        get_events = mocker.Mock()
+        get_events.client.request.params = {}
+        get_events.run.side_effect = DemistoException("500 Internal Server Error")
+
+        with pytest.raises(DemistoException):
+            module_test(get_events)
