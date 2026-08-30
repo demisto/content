@@ -82,6 +82,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 defaultmapperin: GravityZone - Incoming Mapper
 defaultclassifier: GravityZone - Classifier
 description: GravityZone provides secure access to incident and endpoint data and enables remediation actions through its APIs.
