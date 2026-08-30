@@ -787,15 +787,19 @@ def test_access_token(requests_mock):
     with pytest.raises(DemistoException) as e:
         requests_mock.post(token_url, status_code=401)
         client.get_access_token()
-    assert e.value.args[0] == (
-        "Authorization Error: The provided credentials for Cisco Umbrella Reporting are invalid."
-        " Please provide a valid Client ID and Client Secret."
-    )
+    assert "The provided credentials for Cisco Umbrella Reporting are invalid" in e.value.args[0]
+    assert "Reports" in e.value.args[0]
 
     with pytest.raises(DemistoException) as e:
-        requests_mock.post(token_url, status_code=400)
+        requests_mock.post(token_url, status_code=403)
         client.get_access_token()
-    assert e.value.args[0] == "Error: something went wrong, please try again."
+    assert "missing the required scopes" in e.value.args[0]
+
+    with pytest.raises(DemistoException) as e:
+        requests_mock.post(token_url, status_code=400, text="bad request body")
+        client.get_access_token()
+    assert "Failed to authenticate to Cisco Umbrella (HTTP 400)" in e.value.args[0]
+    assert "bad request body" in e.value.args[0]
 
 
 @pytest.mark.parametrize(
