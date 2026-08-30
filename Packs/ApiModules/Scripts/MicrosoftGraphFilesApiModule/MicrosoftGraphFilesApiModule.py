@@ -85,20 +85,6 @@ def _is_text_mime(mime: str) -> bool:
     return mime.startswith("text/") or mime in _TEXT_MIME_EXACT
 
 
-def _encode_sharing_url(url: str) -> str:
-    """Encode a SharePoint/OneDrive sharing URL into the Graph ``/shares/{id}`` token.
-
-    Microsoft Graph resolves a sharing link to a DriveItem via a share ID built by
-    base64url-encoding the URL, trimming ``=`` padding, and prefixing with ``u!``.
-    See https://learn.microsoft.com/en-us/graph/api/shares-get.
-
-    :param url: The SharePoint/OneDrive sharing URL.
-    :return: The ``u!...`` share token.
-    """
-    encoded = base64.urlsafe_b64encode(url.encode("utf-8")).decode("ascii").rstrip("=")
-    return f"u!{encoded}"
-
-
 def parse_key_to_context(obj: dict) -> dict:
     """Parse graph api data as received from Microsoft Graph API into Demisto's conventions
 
@@ -815,7 +801,7 @@ class MsGraphClient:
         :param url: The SharePoint/OneDrive sharing URL.
         :return: The DriveItem metadata (id, name, size, file.mimeType, webUrl, ...).
         """
-        share_id = _encode_sharing_url(url)
+        share_id = encode_sharing_url(url)
         uri = f"shares/{share_id}/driveItem"
         return self.ms_client.http_request(method="GET", url_suffix=uri)
 
@@ -825,7 +811,7 @@ class MsGraphClient:
         :param url: The SharePoint/OneDrive sharing URL.
         :return: The file content as raw bytes.
         """
-        share_id = _encode_sharing_url(url)
+        share_id = encode_sharing_url(url)
         uri = f"shares/{share_id}/driveItem/content"
         response = self.ms_client.http_request(method="GET", url_suffix=uri, resp_type="response")
         return response.content
@@ -1086,14 +1072,25 @@ def get_file_content_command(client: MsGraphClient, args: dict[str, str]) -> Com
     try:
         response = client.get_driveitem_by_share_url(url)
     except DemistoException as error:
+        error_text = str(error).lower()
         # SharePoint Site Pages (.aspx) are not stored in a document library and cannot be
         # resolved as a DriveItem. Surface a clear, actionable message instead of the raw
         # Graph 'invalidRequest' error.
-        error_text = str(error).lower()
         if "cannot be accessed as a drive item" in error_text or "site pages" in error_text:
             raise ValueError(
                 f"The URL '{url}' points to a SharePoint Site Page, which is not a downloadable file. "
                 "Provide a sharing URL to a document (e.g. a file in a document library)."
+            ) from error
+        # Access denied / not found usually means the file is not shared with the connector's
+        # application, or the sharing URL is invalid/expired. Surface an actionable message
+        # instead of the raw Graph 403/404 (parity with the Google Drive get-file-content).
+        if any(
+            marker in error_text for marker in ("accessdenied", "access denied", "403", "404", "itemnotfound", "unauthorized")
+        ):
+            demisto.error(f"get-file-content: access denied/not found for url={url}, full error: {error}")
+            raise ValueError(
+                f"Cannot access the file at '{url}'. Ensure the sharing URL is valid and that the file "
+                "is shared with the application configured in this integration."
             ) from error
         raise
 

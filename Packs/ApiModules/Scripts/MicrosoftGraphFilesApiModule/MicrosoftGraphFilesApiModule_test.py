@@ -10,7 +10,6 @@ from CommonServerPython import CommandResults, DemistoException
 from MicrosoftGraphFilesApiModule import (
     MsGraphClient,
     _decode_sharepoint_login_name,
-    _encode_sharing_url,
     _is_text_mime,
     _summarize_identity_set,
     _summarize_permission_grantees,
@@ -2268,6 +2267,50 @@ def test_get_file_content_command_site_page_error(mocker: MockerFixture):
         side_effect=DemistoException("Site Pages cannot be accessed as a drive item"),
     )
     with pytest.raises(ValueError, match="SharePoint Site Page"):
+        get_file_content_command(CLIENT_MOCKER, {"url": url})
+
+
+@pytest.mark.parametrize(
+    "graph_error",
+    [
+        "accessDenied",
+        "Access Denied",
+        "403 Forbidden",
+        "404 Not Found",
+        "itemNotFound",
+        "Unauthorized",
+    ],
+)
+def test_get_file_content_command_access_denied(mocker: MockerFixture, graph_error: str):
+    """
+    Given: A sharing URL the connector's application cannot access (Graph 403/404/accessDenied).
+    When: Running get-file-content.
+    Then: A friendly, actionable ValueError is raised instead of the raw Graph error
+          (parity with the Google Drive get-file-content access-denied mapping).
+    """
+    url = "https://contoso.sharepoint.com/:x:/r/personal/fake_user/Documents/report.csv"
+    mocker.patch.object(
+        CLIENT_MOCKER,
+        "get_driveitem_by_share_url",
+        side_effect=DemistoException(graph_error),
+    )
+    with pytest.raises(ValueError, match="Cannot access the file"):
+        get_file_content_command(CLIENT_MOCKER, {"url": url})
+
+
+def test_get_file_content_command_other_demisto_exception_propagates(mocker: MockerFixture):
+    """
+    Given: A sharing URL where Graph fails with an unrelated error (not access/site-page).
+    When: Running get-file-content.
+    Then: The original DemistoException propagates unchanged (no over-broad mapping).
+    """
+    url = "https://contoso.sharepoint.com/:x:/r/personal/fake_user/Documents/report.csv"
+    mocker.patch.object(
+        CLIENT_MOCKER,
+        "get_driveitem_by_share_url",
+        side_effect=DemistoException("Internal server error"),
+    )
+    with pytest.raises(DemistoException, match="Internal server error"):
         get_file_content_command(CLIENT_MOCKER, {"url": url})
 
 
