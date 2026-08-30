@@ -12191,6 +12191,83 @@ class TestLongRunningSpotlightExecution:
 
         mock_cnapp.assert_not_called()
 
+    def test_failed_cycle_retries_quickly_instead_of_waiting_the_interval(self, mocker):
+        """
+        Given: A cycle that fails almost immediately (bad credentials, tripped circuit breaker).
+        When: The loop decides how long to wait.
+        Then: It retries after the short failure delay rather than idling out the remaining ~24
+              hours, which would strand the instance for a day over a fault clearing in minutes.
+        """
+        from CrowdStrikeFalcon import LONG_RUNNING_FAILURE_RETRY_MINUTES
+
+        sleeps, _fetch, _cnapp, _log = self._run_loop(
+            mocker, cycle_durations=[5], fetch_side_effect=[Exception("bad credentials")]
+        )
+
+        assert sleeps == [LONG_RUNNING_FAILURE_RETRY_MINUTES * 60]
+
+    def test_consecutive_failures_back_off_exponentially_up_to_the_cap(self, mocker):
+        """
+        Given: Five consecutive failing cycles.
+        When: Each failure schedules the next retry.
+        Then: The delay doubles per failure and then holds at the cap, so a persistent fault is
+              retried without hammering the API.
+        """
+        from CrowdStrikeFalcon import LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES, LONG_RUNNING_FAILURE_RETRY_MINUTES
+
+        failures = [Exception("still down")] * 5
+        sleeps, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[5] * 5, fetch_side_effect=failures)
+
+        expected = [
+            min(LONG_RUNNING_FAILURE_RETRY_MINUTES * (2**attempt), LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES) * 60
+            for attempt in range(5)
+        ]
+        assert sleeps == expected
+        assert sleeps[-1] == LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES * 60, "The backoff must stop growing at the cap"
+
+    def test_backoff_resets_after_a_successful_cycle(self, mocker):
+        """
+        Given: A failure, then a success, then another failure.
+        When: The second failure schedules its retry.
+        Then: It waits the base delay again, not the doubled one - a success clears the streak, so
+              an unrelated failure a week later is not punished for an old one.
+        """
+        from CrowdStrikeFalcon import LONG_RUNNING_FAILURE_RETRY_MINUTES
+
+        side_effects = [Exception("transient"), None, Exception("unrelated")]
+        sleeps, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[5, 5, 5], fetch_side_effect=side_effects)
+
+        base_delay = LONG_RUNNING_FAILURE_RETRY_MINUTES * 60
+        assert sleeps[0] == base_delay
+        assert sleeps[2] == base_delay, "A success must reset the consecutive-failure count"
+
+    def test_failure_never_waits_longer_than_the_normal_schedule(self, mocker):
+        """
+        Given: A cycle that fails only after running longer than the whole interval.
+        When: The retry delay is computed.
+        Then: Sleep is 0 - the failure path may only ever shorten the wait, never extend it, and
+              never goes negative.
+        """
+        thirty_hours = 30 * 3600
+        sleeps, _fetch, _cnapp, _log = self._run_loop(
+            mocker, cycle_durations=[thirty_hours], fetch_side_effect=[Exception("late failure")]
+        )
+
+        assert sleeps == [0.0]
+
+    def test_successful_cycle_keeps_the_full_interval(self, mocker):
+        """
+        Given: A successful cycle.
+        When: The loop sleeps.
+        Then: The failure backoff does not apply - the 24 hour cadence is unchanged.
+        """
+        from CrowdStrikeFalcon import LONG_RUNNING_ASSETS_INTERVAL_MINUTES
+
+        one_hour = 3600
+        sleeps, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[one_hour])
+
+        assert sleeps == [LONG_RUNNING_ASSETS_INTERVAL_MINUTES * 60 - one_hour]
+
 
 class TestXsiamSendFailureIsNotCounted:
     """XSUP-71944: a failed XSIAM send must never be counted as stored.

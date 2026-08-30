@@ -109,6 +109,12 @@ SPOTLIGHT_LOOKBACK_DAYS = 100  # Only fetch vulnerabilities updated within this 
 # Period between Spotlight fetch cycle starts for a long-running instance. Not configurable, so it
 # can never be set below the time a full fetch needs (~2.3h typical, longer on large tenants).
 LONG_RUNNING_ASSETS_INTERVAL_MINUTES = 1440
+# Retry delay after a FAILED cycle, doubling per consecutive failure up to the cap. Without this a
+# cycle that dies in seconds (bad credentials, tripped circuit breaker) would wait out the full
+# interval, leaving the instance idle for ~24h over a fault that may clear in minutes. Capped so a
+# persistent fault does not hammer the API, and never applied to a successful cycle.
+LONG_RUNNING_FAILURE_RETRY_MINUTES = 5
+LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES = 60
 RECON_API_LIMIT = 100
 MAX_FETCH_RECON = 100
 
@@ -5543,6 +5549,11 @@ def long_running_spotlight_execution():
     Cycles are strictly sequential and start every LONG_RUNNING_ASSETS_INTERVAL_MINUTES
     (24 hours, not configurable). A cycle that overruns the period simply starts the next one
     immediately, so cycles never overlap.
+
+    A cycle that *fails* does not wait out the remaining interval: it retries after
+    LONG_RUNNING_FAILURE_RETRY_MINUTES, doubling per consecutive failure up to
+    LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES, so a fault that clears in minutes does not cost a full
+    day of collection. The retry delay never exceeds what the normal schedule would have waited.
     """
     log_falcon_assets(
         f"Starting long-running Spotlight fetch loop (interval: {LONG_RUNNING_ASSETS_INTERVAL_MINUTES} minutes).",
@@ -5550,19 +5561,24 @@ def long_running_spotlight_execution():
     )
 
     cycle_number = 0
+    consecutive_failures = 0
     while True:
         cycle_start = time.monotonic()
         cycle_number += 1
         log_spotlight_verify(f"LONG-RUNNING CYCLE-START cycle={cycle_number}")
+        cycle_failed = False
         try:
             asyncio.run(fetch_spotlight_assets())
+            consecutive_failures = 0
             log_spotlight_verify(
                 f"LONG-RUNNING CYCLE-OK cycle={cycle_number} elapsed_min={(time.monotonic() - cycle_start) / 60:.1f}"
             )
         except Exception as e:  # noqa: BLE001 - a single bad cycle must not kill the container
+            cycle_failed = True
+            consecutive_failures += 1
             log_spotlight_verify(
-                f"LONG-RUNNING CYCLE-FAILED cycle={cycle_number} error_type={type(e).__name__}; "
-                f"container stays alive for the next cycle.",
+                f"LONG-RUNNING CYCLE-FAILED cycle={cycle_number} error_type={type(e).__name__} "
+                f"consecutive_failures={consecutive_failures}; container stays alive for the next cycle.",
                 "error",
             )
             error_message = f"Long-running Spotlight fetch cycle failed: {e}\n{traceback.format_exc()}"
@@ -5573,7 +5589,24 @@ def long_running_spotlight_execution():
         # Interval is a period between cycle starts, not a gap between cycles: a 3-hour fetch on a
         # 24-hour interval still starts every 24 hours instead of every 27.
         sleep_seconds = max(0.0, LONG_RUNNING_ASSETS_INTERVAL_MINUTES * 60 - elapsed)
-        if sleep_seconds:
+
+        if cycle_failed:
+            # A failed cycle can end in seconds (bad credentials, tripped circuit breaker), and
+            # waiting out the remaining interval would idle the instance for ~24h over a fault that
+            # may clear in minutes. Back off exponentially so a persistent fault is not hammered,
+            # and never wait longer than the normal schedule would have.
+            backoff_minutes = min(
+                LONG_RUNNING_FAILURE_RETRY_MINUTES * (2 ** (consecutive_failures - 1)),
+                LONG_RUNNING_FAILURE_RETRY_MAX_MINUTES,
+            )
+            sleep_seconds = min(sleep_seconds, backoff_minutes * 60)
+            log_falcon_assets(
+                f"Long-running Spotlight cycle failed after {elapsed / 60:.1f} minutes "
+                f"({consecutive_failures} consecutive); retrying in {sleep_seconds / 60:.1f} minutes "
+                f"instead of waiting out the {LONG_RUNNING_ASSETS_INTERVAL_MINUTES}-minute interval.",
+                "warning",
+            )
+        elif sleep_seconds:
             log_falcon_assets(
                 f"Long-running Spotlight cycle finished in {elapsed / 60:.1f} minutes; "
                 f"sleeping {sleep_seconds / 60:.1f} minutes until the next cycle.",
