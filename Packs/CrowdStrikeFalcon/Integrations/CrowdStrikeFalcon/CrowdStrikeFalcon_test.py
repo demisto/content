@@ -12332,9 +12332,7 @@ class TestXsiamSendFailureIsNotCounted:
         self._patch_session_post(mocker, 502, "Bad Gateway")
 
         with pytest.raises(DemistoException, match="NOT stored and must not be counted"):
-            await xsiam_api_call_async(
-                xsiam_url="https://api-mock", zipped_data=b"x", headers={}, num_of_attempts=1, data_type="assets"
-            )
+            await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=1, data_type="assets")
 
     @pytest.mark.asyncio
     async def test_bad_gateway_batch_reports_zero_records_stored(self, mocker):
@@ -12458,9 +12456,7 @@ class TestXsiamSendFailureIsNotCounted:
         session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
         mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
 
-        await xsiam_api_call_async(
-            xsiam_url="https://api-mock", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets"
-        )
+        await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
 
         assert responses == [], "Both the throttled and the accepted response should have been consumed"
 
@@ -12590,9 +12586,7 @@ class TestXsiamSendFailureIsNotCounted:
         self._patch_session_post(mocker, 429, "Too Many Requests")
 
         with pytest.raises(DemistoException, match="NOT stored and must not be counted"):
-            await xsiam_api_call_async(
-                xsiam_url="https://api-mock", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets"
-            )
+            await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
 
     @pytest.mark.asyncio
     async def test_batch_counts_only_the_chunks_xsiam_accepted(self, mocker):
@@ -12737,9 +12731,7 @@ class TestXsiamSendFailureIsNotCounted:
         session = self._patch_session_post(mocker, 500, "Internal Server Error")
 
         with pytest.raises(DemistoException):
-            await xsiam_api_call_async(
-                xsiam_url="https://api-mock", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets"
-            )
+            await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
 
         assert session.post.call_count == 3, "A transient 5xx must exhaust the retry budget, not fail on the first attempt"
 
