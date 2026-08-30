@@ -1692,14 +1692,14 @@ Creates a new GCP project under the specified parent (organization or folder). R
 | project_id | The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (e.g. tokyo-rain-123). | Optional |
 | parent | The resource name of the parent under which to create the project, in the form "organizations/[organization_id]" or "folders/[folder_id]". | Required |
 | display_name | The user-assigned display name of the project. Must be 4 to 30 characters. | Optional |
-| label_keys | The comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
-| label_values | The comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys. | Optional |
+| label_keys | A comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
+| label_values | A comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.ResourceManager.Projects.name | String | The resource name of the project \(e.g. projects/415104041262\). |
+| GCP.ResourceManager.Projects.name | String | The resource name of the project \(for example, projects/415104041262\). |
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
@@ -1720,13 +1720,13 @@ Retrieves a GCP project by its project ID. Required Permission: resourcemanager.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The unique ID of the project to fetch (e.g. tokyo-rain-123). | Optional |
+| project_id | The unique ID of the project to fetch (for example, tokyo-rain-123). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.ResourceManager.Projects.name | String | The resource name of the project \(e.g. projects/415104041262\). |
+| GCP.ResourceManager.Projects.name | String | The resource name of the project \(for example, projects/415104041262\). |
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
@@ -1747,7 +1747,7 @@ Searches for GCP projects that are visible to the caller and match an optional q
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (e.g. "state:ACTIVE" or "displayName:how*"). | Optional |
+| query | The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (for example, "state:ACTIVE" or "displayName:how*"). | Optional |
 | limit | The maximum number of results to return across all pages. Default is 50. | Optional |
 | page_size | The maximum number of results to return per API request. Used together with limit to control internal pagination. Default is 50. | Optional |
 | page_token | The pagination token returned from a previous call, indicating where the listing should continue. | Optional |
@@ -1756,7 +1756,7 @@ Searches for GCP projects that are visible to the caller and match an optional q
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.ResourceManager.Projects.name | String | The resource name of the project \(e.g. projects/415104041262\). |
+| GCP.ResourceManager.Projects.name | String | The resource name of the project \(for example, projects/415104041262\). |
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
@@ -1778,16 +1778,16 @@ Updates the display name and/or labels of an existing GCP project. Required Perm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The unique ID of the project to update (e.g. tokyo-rain-123). | Optional |
+| project_id | The unique ID of the project to update (for example, tokyo-rain-123). | Optional |
 | display_name | The new display name for the project. Must be 4 to 30 characters. | Optional |
-| label_keys | The comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
-| label_values | The comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys. | Optional |
+| label_keys | A comma-separated list of label keys to associate with the project. Must be the same length as label_values. | Optional |
+| label_values | A comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.ResourceManager.Projects.name | String | The resource name of the project \(e.g. projects/415104041262\). |
+| GCP.ResourceManager.Projects.name | String | The resource name of the project \(for example, projects/415104041262\). |
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
@@ -1808,13 +1808,13 @@ Marks a GCP project for deletion (sets its state to DELETE_REQUESTED). Required 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The unique ID of the project to delete (e.g. tokyo-rain-123). | Optional |
+| project_id | The unique ID of the project to delete (for example, tokyo-rain-123). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.ResourceManager.Projects.name | String | The resource name of the project \(e.g. projects/415104041262\). |
+| GCP.ResourceManager.Projects.name | String | The resource name of the project \(for example, projects/415104041262\). |
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
@@ -1834,13 +1834,13 @@ Restores a GCP project that was previously marked for deletion. Required Permiss
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The unique ID of the project to restore (e.g. tokyo-rain-123). | Optional |
+| project_id | The unique ID of the project to restore (for example, tokyo-rain-123). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.ResourceManager.Projects.name | String | The resource name of the project \(e.g. projects/415104041262\). |
+| GCP.ResourceManager.Projects.name | String | The resource name of the project \(for example, projects/415104041262\). |
 | GCP.ResourceManager.Projects.projectId | String | The unique, user-assigned ID of the project. |
 | GCP.ResourceManager.Projects.displayName | String | The user-assigned display name of the project. |
 | GCP.ResourceManager.Projects.state | String | The project lifecycle state. |
@@ -1860,7 +1860,7 @@ Searches for GCP organizations that are visible to the caller and match an optio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (e.g. "domain:google.com"). | Optional |
+| query | The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (for example, "domain:google.com"). | Optional |
 | limit | The maximum number of results to return across all pages. Default is 50. | Optional |
 | page_size | The maximum number of results to return per API request. Used together with limit to control internal pagination. Default is 50. | Optional |
 | page_token | The pagination token returned from a previous call, indicating where the listing should continue. | Optional |
@@ -1869,7 +1869,7 @@ Searches for GCP organizations that are visible to the caller and match an optio
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.ResourceManager.Organizations.name | String | The resource name of the organization, in the form "organizations/\{organization_id\}". |
+| GCP.ResourceManager.Organizations.name | String | The resource name of the organization, in the form "organizations/[organization_id]". |
 | GCP.ResourceManager.Organizations.displayName | String | The organization's display name. |
 | GCP.ResourceManager.Organizations.state | String | The organization's current lifecycle state. |
 | GCP.ResourceManager.Organizations.directoryCustomerId | String | The G Suite / Cloud Identity customer ID used in the Directory API. |
@@ -1889,13 +1889,13 @@ Retrieves a GCP organization by its resource name. Required Permission: resource
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The resource name of the organization to fetch, in the form "organizations/[organization_id]" (e.g. organizations/1234). | Required |
+| name | The resource name of the organization to fetch, in the form "organizations/[organization_id]" (for example, organizations/1234). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.ResourceManager.Organizations.name | String | The resource name of the organization, in the form "organizations/\{organization_id\}". |
+| GCP.ResourceManager.Organizations.name | String | The resource name of the organization, in the form "organizations/[organization_id]". |
 | GCP.ResourceManager.Organizations.displayName | String | The organization's display name. |
 | GCP.ResourceManager.Organizations.state | String | The organization's current lifecycle state. |
 | GCP.ResourceManager.Organizations.directoryCustomerId | String | The G Suite / Cloud Identity customer ID used in the Directory API. |
