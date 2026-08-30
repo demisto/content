@@ -70,6 +70,9 @@ configuration:
   required: false
   additionalinfo: Caps the number of Darkmon records ingested as incidents per fetch cycle to protect the war room from sudden backlogs.
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Darkmon incident types to fetch
   name: incident_types_to_fetch
   defaultvalue: Compromised Credential,Critical CVE
@@ -88,10 +91,26 @@ configuration:
   name: incidentType
   type: 13
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python
