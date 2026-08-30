@@ -466,12 +466,12 @@ def test_fetch_alerts_does_not_mutate_last_run(mocker):
     [
         (
             {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-            {"$filter": "Category eq 'Malware' and Severity eq 'High' and status eq 'resolved'"},
+            {"$filter": "(Category eq 'Malware' and Severity eq 'High') and status eq 'resolved'"},
             True,
         ),
         (
             {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
-            {"$top": "50", "$filter": "Category eq 'Malware' and Severity eq 'High' and status eq 'resolved'"},
+            {"$top": "50", "$filter": "(Category eq 'Malware' and Severity eq 'High') and status eq 'resolved'"},
             False,
         ),
         ({"page": "2"}, {"$top": "50", "$skip": 100, "$filter": ""}, False),
@@ -490,12 +490,43 @@ def test_create_search_alerts_filters(args, expected_params, is_fetch):
 
     Then:
     - Ensure that the right fields were parsed into the query.
-    - Case 1: Should include both the value of the filter field from the args and the status.
-    - Case 2: Should include the filter and status in the $filter field, and 50 in the $top field.
+    - Case 1: Should include both the value of the filter field from the args (wrapped in parentheses) and the status.
+    - Case 2: Should include the filter (wrapped in parentheses) and status in the $filter field, and 50 in the $top field.
     - Case 3: Should return a params dict with empty $filter field, 50 in the $top field, and 100 in the $skip field.
     """
     params = create_search_alerts_filters(args, is_fetch=is_fetch)
     assert params == expected_params
+
+
+@pytest.mark.parametrize(
+    "user_filter",
+    [
+        "severity eq 'high' or severity eq 'medium'",
+        "severity eq 'high'",
+    ],
+)
+def test_create_search_alerts_filters_wraps_user_filter_in_parentheses(user_filter):
+    """
+    Given:
+    - A time window (time_from/time_to) and a user-provided OData filter that may contain an `or` clause.
+
+    When:
+    - Running create_search_alerts_filters (the fetch-alerts path).
+
+    Then:
+    - The user filter must be wrapped in parentheses so that OData `and`/`or` precedence does not let an
+      `or` clause escape the createdDateTime time window (regression test for the "pulls ~6 months of alerts" bug).
+    """
+    args = {
+        "time_from": "2020-04-20T10:00:00Z",
+        "time_to": "2020-04-20T11:00:00Z",
+        "filter": user_filter,
+    }
+
+    params = create_search_alerts_filters(args, is_fetch=True)
+
+    expected = "createdDateTime ge 2020-04-20T10:00:00Z and " "createdDateTime le 2020-04-20T11:00:00Z and " f"({user_filter})"
+    assert params["$filter"] == expected
 
 
 @pytest.mark.parametrize(

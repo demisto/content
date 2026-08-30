@@ -1,4 +1,7 @@
 category: Network Security
+sectionorder:
+- Connect
+- Collect
 provider: BlueCat Networks
 commonfields:
   id: Indeni
@@ -9,32 +12,46 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Server URL
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Key
   name: apikey
   required: true
   type: 4
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - additionalinfo: If true, only Palo Alto Networks Vulnerability issues will be pulled. If false, all issues will be pulled.
   defaultvalue: 'true'
   display: Only Pull Palo Alto Networks Vulnerability Issues
   name: onlyPullPanCveIssues
   type: 8
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: INFO
   display: Lowest Issue Severity To Pull
   name: issueSeverity
@@ -45,11 +62,13 @@ configuration:
   - INFO
   type: 15
   required: false
+  section: Collect
 - defaultvalue: '20'
   display: Number of issues to pull per fetch
   name: maxPullSize
   type: 0
   required: false
+  section: Collect
 description: Indeni is a turn-key automated monitoring providing visibility for security infrastructure. Indeni's production-ready Knowledge is curated from vetted, community-sourced experience, to deliver automation of tedious tasks with integration with your existing processes.
 display: Indeni
 name: Indeni
