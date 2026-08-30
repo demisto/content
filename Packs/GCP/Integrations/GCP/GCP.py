@@ -15,16 +15,18 @@ from cryptography.hazmat.primitives.asymmetric import padding
 
 urllib3.disable_warnings()
 
+# The context of a CryptoKey unifies the raw API response with the identifiers the integration adds,
+# so the table mixes the API's camelCase fields with those PascalCase identifiers.
 KMS_KEY_TABLE = [
     "Name",
     "Project",
     "Location",
     "KeyRing",
-    "Purpose",
-    "CreationTime",
-    "NextRotationTime",
-    "RotationPeriod",
-    "Labels",
+    "purpose",
+    "createTime",
+    "nextRotationTime",
+    "rotationPeriod",
+    "labels",
 ]
 
 # The KMS locations the "all locations" listing commands sweep when `all_locations` is set.
@@ -2548,7 +2550,10 @@ def _kms_resolve_version_name(kms_client, project_id: str, location: str, key_ri
 
 
 def _kms_key_ring_to_context(key_ring: dict[str, Any], project_id: str, location: str) -> dict[str, Any]:
-    """Normalizes a KeyRing API response into the integration's context format.
+    """Enriches a KeyRing API response with the fields that identify it in the context.
+
+    The API response is kept as-is and only the fields it does not carry are added to it, so the
+    returned object unifies the raw resource with the integration's identifiers.
 
     Args:
         key_ring (dict[str, Any]): The KeyRing resource returned by the Cloud KMS API.
@@ -2556,22 +2561,24 @@ def _kms_key_ring_to_context(key_ring: dict[str, Any], project_id: str, location
         location (str): The KMS location.
 
     Returns:
-        dict[str, Any]: The normalized KeyRing context entry.
+        dict[str, Any]: The enriched KeyRing context entry.
     """
     full_name = key_ring.get("name", "")
-    context = {
+    context = key_ring | {
         "Name": full_name.rsplit("/", 1)[-1] if full_name else "",
         "ResourceName": full_name,
         "Project": project_id,
         "Location": location,
-        "CreationTime": _format_gcp_datetime(key_ring.get("createTime")),
     }
 
     return remove_empty_elements(context)  # type: ignore[return-value]
 
 
 def _kms_key_to_context(key: dict[str, Any], project_id: str, location: str, key_ring: str) -> dict[str, Any]:
-    """Normalizes a CryptoKey API response into the integration's context format.
+    """Enriches a CryptoKey API response with the fields that identify it in the context.
+
+    The API response is kept as-is and only the fields it does not carry are added to it, so the
+    returned object unifies the raw resource with the integration's identifiers.
 
     Args:
         key (dict[str, Any]): The CryptoKey resource returned by the Cloud KMS API.
@@ -2580,36 +2587,16 @@ def _kms_key_to_context(key: dict[str, Any], project_id: str, location: str, key
         key_ring (str): The KeyRing ID.
 
     Returns:
-        dict[str, Any]: The normalized CryptoKey context entry.
+        dict[str, Any]: The enriched CryptoKey context entry.
     """
     full_name = key.get("name", "")
-    context = {
+    context = key | {
         "Name": full_name.rsplit("/", 1)[-1] if full_name else "",
         "ResourceName": full_name,
         "Project": project_id,
         "Location": location,
         "KeyRing": key_ring,
-        "Purpose": key.get("purpose"),
-        "CreationTime": _format_gcp_datetime(key.get("createTime")),
-        "NextRotationTime": _format_gcp_datetime(key.get("nextRotationTime")),
-        "RotationPeriod": key.get("rotationPeriod"),
-        "Labels": key.get("labels"),
-        "VersionTemplate": {
-            "ProtectionLevel": key.get("versionTemplate", {}).get("protectionLevel"),
-            "Algorithm": key.get("versionTemplate", {}).get("algorithm"),
-        },
     }
-
-    # Asymmetric keys do not expose a primary CryptoKeyVersion, so it is only added when present.
-    if primary := key.get("primary"):
-        context["PrimaryCryptoKeyVersion"] = {
-            "Name": primary.get("name"),
-            "State": primary.get("state"),
-            "CreationTime": _format_gcp_datetime(primary.get("createTime")),
-            "ProtectionLevel": primary.get("protectionLevel"),
-            "Algorithm": primary.get("algorithm"),
-            "GenerateTime": _format_gcp_datetime(primary.get("generateTime")),
-        }
 
     return remove_empty_elements(context)  # type: ignore[return-value]
 
@@ -2845,7 +2832,7 @@ def kms_key_rings_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
     hr = tableToMarkdown(
         "GCP KMS Key Rings",
         key_rings,
-        headers=["Name", "Location", "CreationTime"],
+        headers=["Name", "Location", "createTime"],
         removeNull=True,
         headerTransform=pascalToSpace,
         metadata=metadata,

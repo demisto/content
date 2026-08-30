@@ -6696,7 +6696,7 @@ def test_kms_key_rings_list_success(mocker):
     Given: A project whose global location holds a single key ring.
     When: kms_key_rings_list is called.
     Then: The key rings are listed for the requested location and returned under GCP.KMS.KeyRings,
-          normalized to the PascalCase context format.
+          with the API response enriched by the identifying fields.
     """
     from GCP import kms_key_rings_list
 
@@ -6716,11 +6716,12 @@ def test_kms_key_rings_list_success(mocker):
     key_rings.list.assert_called_once_with(parent="projects/mock_project_id/locations/global", pageSize=50)
     entry = result.outputs["GCP.KMS.KeyRings(val.ResourceName && val.ResourceName == obj.ResourceName)"][0]
     assert entry == {
+        "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring",
+        "createTime": "2024-01-01T00:00:00Z",
         "Name": "mock_key_ring",
         "ResourceName": "projects/mock_project_id/locations/global/keyRings/mock_key_ring",
         "Project": "mock_project_id",
         "Location": "global",
-        "CreationTime": "2024-01-01 00:00:00",
     }
 
 
@@ -7040,15 +7041,16 @@ def test_kms_key_get_success(mocker):
     crypto_keys.get.assert_called_once_with(name=key_name)
     assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
     assert result.outputs["Name"] == "mock_crypto_key"
-    assert result.outputs["PrimaryCryptoKeyVersion"]["State"] == "ENABLED"
-    assert result.outputs["VersionTemplate"]["Algorithm"] == "GOOGLE_SYMMETRIC_ENCRYPTION"
+    assert result.outputs["ResourceName"] == key_name
+    assert result.outputs["primary"]["state"] == "ENABLED"
+    assert result.outputs["versionTemplate"]["algorithm"] == "GOOGLE_SYMMETRIC_ENCRYPTION"
 
 
 def test_kms_key_get_asymmetric_key_without_primary_version(mocker):
     """
     Given: An asymmetric crypto key, which the API returns without a primary version.
     When: kms_key_get is called.
-    Then: The context omits PrimaryCryptoKeyVersion instead of emitting an empty object.
+    Then: The context omits the primary version instead of emitting an empty object.
     """
     from GCP import kms_key_get
 
@@ -7062,7 +7064,7 @@ def test_kms_key_get_asymmetric_key_without_primary_version(mocker):
     args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_asym_key"}
     result = kms_key_get(creds, args)
 
-    assert "PrimaryCryptoKeyVersion" not in result.outputs
+    assert "primary" not in result.outputs
 
 
 def test_kms_key_get_permission_error_is_handled(mocker):
