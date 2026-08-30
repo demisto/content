@@ -885,6 +885,18 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
     """
     command_name = "pan-os-commit"
     res_commit = run_execute_command(command_name, {"polling": True})
+    responses.append(res_commit)
+    # Surface a failed commit instead of silently treating it as "no changes to commit".
+    if is_error(res_commit):
+        commit_output = {"Status": "Failure"}
+        return PollResult(
+            response=CommandResults(
+                outputs=commit_output,
+                readable_output=tableToMarkdown("Commit Status:", commit_output, removeNull=True),
+            ),
+            args_for_next_run=args,
+            continue_to_poll=False,
+        )
     polling_args = res_commit[0].get("Metadata", {}).get("pollingArgs", {})
     job_id = polling_args.get("commit_job_id")
     if job_id:
@@ -904,7 +916,6 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
         "timeout": arg_to_number(args.get("timeout", 1200)),
         "polling": True,
     }
-    responses.append(res_commit)
     return PollResult(
         response=commit_output,
         continue_to_poll=continue_to_poll,
@@ -943,8 +954,11 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
         )
     result_commit_status = raw_contents.get("response", {}).get("result", {}).get("job", {})
     job_result = result_commit_status.get("result")
-    commit_output = {"JobID": commit_job_id, "Status": "Success" if job_result == "OK" else "Failure"}
     continue_to_poll = result_commit_status.get("status") != "FIN"
+    if continue_to_poll:
+        commit_output = {"JobID": commit_job_id, "Status": "Pending"}
+    else:
+        commit_output = {"JobID": commit_job_id, "Status": "Success" if job_result == "OK" else "Failure"}
     return PollResult(
         response=CommandResults(
             outputs=commit_output,
@@ -969,6 +983,17 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
     command_name = "pan-os-push-to-device-group"
     res_push_to_device = run_execute_command(command_name, {"polling": True})
     responses.append(res_push_to_device)
+    # Surface a failed push instead of silently treating it as "no changes to push".
+    if is_error(res_push_to_device):
+        push_output = {"Status": "Failure"}
+        return PollResult(
+            response=CommandResults(
+                outputs=push_output,
+                readable_output=tableToMarkdown("Push to Device Group:", push_output, removeNull=True),
+            ),
+            args_for_next_run=args,
+            continue_to_poll=False,
+        )
     polling_args = res_push_to_device[0].get("Metadata", {}).get("pollingArgs", {})
     job_id = polling_args.get("push_job_id")
     device_group = polling_args.get("device-group")

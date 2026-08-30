@@ -17,7 +17,10 @@ from BlockDomain import (
     is_valid_fqdn,
     is_wildcard,
     normalize_tags,
+    pan_os_commit,
+    pan_os_commit_status,
     pan_os_push_status,
+    pan_os_push_to_device,
     run_execute_command,
     validate_domains,
 )
@@ -1414,6 +1417,91 @@ def test_build_final_command_results_empty_rows_is_not_error_entry():
     result = build_final_command_results([], verbose=False, responses=[])
     assert result.entry_type != BlockDomain.EntryType.ERROR
     assert "All runs failed" not in result.readable_output
+
+
+def test_pan_os_commit_status_reports_pending_while_job_active(monkeypatch):
+    """
+    Given:
+       - pan-os-commit-status returns a job with result 'OK' but status 'ACT' (still running).
+    When:
+       - Calling pan_os_commit_status.
+    Then:
+       - The war-room output must NOT show 'Success' while the job is still active; it reports
+         'Pending' (job.result 'OK' and job.status 'ACT' are independent PAN-OS fields, and success
+         is only reported once the job status is 'FIN').
+    """
+    active_entry = {
+        "Type": 1,
+        "Contents": {"response": {"result": {"job": {"result": "OK", "status": "ACT"}}}},
+        "HumanReadable": "",
+        "EntryContext": {},
+    }
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", lambda *a, **k: [active_entry])
+
+    result = pan_os_commit_status({"commit_job_id": "123"}, [])
+
+    assert result.outputs == {"JobID": "123", "Status": "Pending"}  # type: ignore[attr-defined]
+
+
+def test_pan_os_commit_status_reports_success_only_when_finished(monkeypatch):
+    """
+    Given:
+       - pan-os-commit-status returns a finished job (status 'FIN') with result 'OK'.
+    When:
+       - Calling pan_os_commit_status.
+    Then:
+       - The output reports 'Success' and polling stops.
+    """
+    fin_entry = {
+        "Type": 1,
+        "Contents": {"response": {"result": {"job": {"result": "OK", "status": "FIN"}}}},
+        "HumanReadable": "",
+        "EntryContext": {},
+    }
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", lambda *a, **k: [fin_entry])
+
+    result = pan_os_commit_status({"commit_job_id": "123"}, [])
+
+    assert result.outputs == {"JobID": "123", "Status": "Success"}  # type: ignore[attr-defined]
+    assert not BlockDomain.is_polling_in_progress(result)
+
+
+def test_pan_os_commit_reports_failure_on_error(monkeypatch):
+    """
+    Given:
+       - pan-os-commit returns an error entry.
+    When:
+       - Calling pan_os_commit.
+    Then:
+       - The failure is surfaced (Status 'Failure') and polling stops, instead of being silently
+         treated as 'no changes to commit'.
+    """
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", lambda *a, **k: [err_entry("commit failed")])
+    monkeypatch.setattr(BlockDomain.demisto, "setContext", lambda *a, **k: None)
+
+    result = pan_os_commit({}, [])
+
+    assert result.outputs == {"Status": "Failure"}  # type: ignore[attr-defined]
+    assert not BlockDomain.is_polling_in_progress(result)
+
+
+def test_pan_os_push_to_device_reports_failure_on_error(monkeypatch):
+    """
+    Given:
+       - pan-os-push-to-device-group returns an error entry.
+    When:
+       - Calling pan_os_push_to_device.
+    Then:
+       - The failure is surfaced (Status 'Failure') and polling stops, instead of being silently
+         treated as 'no changes to push'.
+    """
+    monkeypatch.setattr(BlockDomain.demisto, "executeCommand", lambda *a, **k: [err_entry("push failed")])
+    monkeypatch.setattr(BlockDomain.demisto, "setContext", lambda *a, **k: None)
+
+    result = pan_os_push_to_device({}, [])
+
+    assert result.outputs == {"Status": "Failure"}  # type: ignore[attr-defined]
+    assert not BlockDomain.is_polling_in_progress(result)
 
 
 def test_pan_os_push_status_error_contents_is_terminal_failure(monkeypatch):
