@@ -4226,7 +4226,7 @@ script:
     description: "Creates a new GCP project under the specified parent (organization or folder). Required Permission: resourcemanager.projects.create."
     arguments:
     - name: project_id
-      description: The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (e.g. tokyo-rain-123).
+      description: The unique, user-assigned ID of the project to create. Must be 6 to 30 lowercase letters, digits, or hyphens, and must start with a letter. Trailing hyphens are prohibited (for example, tokyo-rain-123).
       required: false
       required:platform: true
     - name: parent
@@ -4235,14 +4235,14 @@ script:
     - name: display_name
       description: The user-assigned display name of the project. Must be 4 to 30 characters.
     - name: label_keys
-      description: The comma-separated list of label keys to associate with the project. Must be the same length as label_values.
+      description: A comma-separated list of label keys to associate with the project. Must be the same length as label_values.
       isArray: true
     - name: label_values
-      description: The comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys.
+      description: A comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys.
       isArray: true
     outputs:
     - contextPath: GCP.ResourceManager.Projects.name
-      description: The resource name of the project (e.g. projects/415104041262).
+      description: The resource name of the project (for example, projects/415104041262).
       type: String
     - contextPath: GCP.ResourceManager.Projects.projectId
       description: The unique, user-assigned ID of the project.
@@ -4266,12 +4266,12 @@ script:
     description: "Retrieves a GCP project by its project ID. Required Permission: resourcemanager.projects.get."
     arguments:
     - name: project_id
-      description: The unique ID of the project to fetch (e.g. tokyo-rain-123).
+      description: The unique ID of the project to fetch (for example, tokyo-rain-123).
       required: false
       required:platform: true
     outputs:
     - contextPath: GCP.ResourceManager.Projects.name
-      description: The resource name of the project (e.g. projects/415104041262).
+      description: The resource name of the project (for example, projects/415104041262).
       type: String
     - contextPath: GCP.ResourceManager.Projects.projectId
       description: The unique, user-assigned ID of the project.
@@ -4295,7 +4295,7 @@ script:
     description: "Searches for GCP projects that are visible to the caller and match an optional query. Required Permission: resourcemanager.projects.get."
     arguments:
     - name: query
-      description: 'The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (e.g. "state:ACTIVE" or "displayName:how*").'
+      description: 'The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (for example, "state:ACTIVE" or "displayName:how*").'
     - name: limit
       description: The maximum number of results to return across all pages.
       defaultValue: '50'
@@ -4306,7 +4306,7 @@ script:
       description: The pagination token returned from a previous call, indicating where the listing should continue.
     outputs:
     - contextPath: GCP.ResourceManager.Projects.name
-      description: The resource name of the project (e.g. projects/415104041262).
+      description: The resource name of the project (for example, projects/415104041262).
       type: String
     - contextPath: GCP.ResourceManager.Projects.projectId
       description: The unique, user-assigned ID of the project.
@@ -4333,20 +4333,20 @@ script:
     description: "Updates the display name and/or labels of an existing GCP project. Required Permission: resourcemanager.projects.update."
     arguments:
     - name: project_id
-      description: The unique ID of the project to update (e.g. tokyo-rain-123).
+      description: The unique ID of the project to update (for example, tokyo-rain-123).
       required: false
       required:platform: true
     - name: display_name
       description: The new display name for the project. Must be 4 to 30 characters.
     - name: label_keys
-      description: The comma-separated list of label keys to associate with the project. Must be the same length as label_values.
+      description: A comma-separated list of label keys to associate with the project. Must be the same length as label_values.
       isArray: true
     - name: label_values
-      description: The comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys.
+      description: A comma-separated list of label values to associate with the project. Each value is paired with the key at the corresponding index in label_keys.
       isArray: true
     outputs:
     - contextPath: GCP.ResourceManager.Projects.name
-      description: The resource name of the project (e.g. projects/415104041262).
+      description: The resource name of the project (for example, projects/415104041262).
       type: String
     - contextPath: GCP.ResourceManager.Projects.projectId
       description: The unique, user-assigned ID of the project.
@@ -4371,12 +4371,12 @@ script:
     execution: true
     arguments:
     - name: project_id
-      description: The unique ID of the project to delete (e.g. tokyo-rain-123).
+      description: The unique ID of the project to delete (for example, tokyo-rain-123).
       required: false
       required:platform: true
     outputs:
     - contextPath: GCP.ResourceManager.Projects.name
-      description: The resource name of the project (e.g. projects/415104041262).
+      description: The resource name of the project (for example, projects/415104041262).
       type: String
     - contextPath: GCP.ResourceManager.Projects.projectId
       description: The unique, user-assigned ID of the project.
@@ -4397,12 +4397,12 @@ script:
     description: "Restores a GCP project that was previously marked for deletion. Required Permission: resourcemanager.projects.undelete."
     arguments:
     - name: project_id
-      description: The unique ID of the project to restore (e.g. tokyo-rain-123).
+      description: The unique ID of the project to restore (for example, tokyo-rain-123).
       required: false
       required:platform: true
     outputs:
     - contextPath: GCP.ResourceManager.Projects.name
-      description: The resource name of the project (e.g. projects/415104041262).
+      description: The resource name of the project (for example, projects/415104041262).
       type: String
     - contextPath: GCP.ResourceManager.Projects.projectId
       description: The unique, user-assigned ID of the project.
@@ -4423,7 +4423,7 @@ script:
     description: "Searches for GCP organizations that are visible to the caller and match an optional query. Required Permission: resourcemanager.organizations.get."
     arguments:
     - name: query
-      description: 'The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (e.g. "domain:google.com").'
+      description: 'The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (for example, "domain:google.com").'
     - name: limit
       description: The maximum number of results to return across all pages.
       defaultValue: '50'
