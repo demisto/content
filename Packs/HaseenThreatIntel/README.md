@@ -65,7 +65,7 @@ To consume Haseen threat intelligence feeds, the following prerequisites are req
 - Active Haseen membership and at least one active account under this organization to generate the API token.
 - Public IPs of the organization need to be registered in two places within the Haseen Portal:
   - **Risk → Public IP Addresses**
-  - **Entity Management → Entity's IP addresses** (required so XSOAR requests to the Haseen URL are allowed)
+  - **Entity Management → Entity's IP addresses** (required so Cortex XSOAR requests to the Haseen URL are allowed)
 
 ### Technical Requirements
 
@@ -166,7 +166,7 @@ The primary purpose of the integration is to operationalize Haseen intelligence 
 - **Automated Feed Retrieval** — automatically download intelligence feeds from Haseen once new indicators are added/updated.
 - **STIX Parsing** — parse STIX content and identify actionable intelligence objects.
 - **Indicator Extraction** — extract relevant indicators and observables from STIX bundles.
-- **Normalization** — convert Haseen intelligence into XSOAR-native indicator formats.
+- **Normalization** — convert Haseen intelligence into Cortex XSOAR-native indicator formats.
 - **Deduplication** — prevent duplicate indicators from being created within the platform.
 - **Enrichment** — apply metadata such as source, feed name, confidence, labels, TLP, and intelligence context.
 - **Operationalization** — make threat intelligence immediately available to detection, threat hunting, incident response, and automated correlation use cases.
@@ -184,7 +184,7 @@ The primary purpose of the integration is to operationalize Haseen intelligence 
          |  STIX v2
          v
 +-------------------------+
-| Haseen XSOAR Integration|
+| Haseen Cortex XSOAR Integration|
 +-------------------------+
          |
          v
@@ -215,7 +215,7 @@ Detection  Threat Hunt  IR Workflows
 ## Feed behaviour
 
 - **Full-dump endpoint** — Haseen returns the entire STIX bundle on every request (no `modified_after` server-side delta). The integration deduplicates against its own seen-indicator watermark so each indicator is emitted once.
-- **Relationship-aware** — STIX `relationship` objects are parsed into XSOAR indicator relationships (e.g. malware → file hash), in addition to the indicators themselves.
+- **Relationship-aware** — STIX `relationship` objects are parsed into Cortex XSOAR indicator relationships (e.g. malware → file hash), in addition to the indicators themselves.
 - **Rate limit** — Haseen permits 2 requests per hour per export. Configure the fetch interval to 60 minutes or higher.
 
 ---

@@ -1,8 +1,9 @@
 """IMPORTS"""
 
+from __future__ import annotations
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 import re
 import base64
 import json
@@ -379,9 +380,7 @@ def parse_stix_bundle(bundle: dict[str, Any], tags: list[str] | None = None) -> 
                 and isinstance(value, str)
                 and value.strip().lower() in {"attributed", "unattributed", "unknown", "n/a", ""}
             ):
-                demisto.debug(
-                    f"{INTEGRATION_NAME}: skipping threat-actor {obj.get('id')} " f"(no real actor name, got {value!r})"
-                )
+                demisto.debug(f"{INTEGRATION_NAME}: skipping threat-actor {obj.get('id')} (no real actor name, got {value!r})")
                 continue
 
         if not value or not cortex_type:
@@ -507,7 +506,7 @@ def _indicator_fingerprint(ind: dict[str, Any]) -> str:
 
 
 def fetch_indicators_command(
-    client,
+    client: Client,
     first_fetch: str,
     limit: int,
     last_run: dict,
@@ -607,14 +606,14 @@ def fetch_indicators_command(
         new_indicators = new_indicators[:limit]
 
     if not new_indicators:
-        demisto.debug(f"{INTEGRATION_NAME}: no new/updated indicators since {last_modified}; " f"skipping ingest this cycle.")
+        demisto.debug(f"{INTEGRATION_NAME}: no new/updated indicators since {last_modified}; skipping ingest this cycle.")
 
     last_run["seen"] = updated_seen
     last_run["last_modified"] = latest_modified
     return new_indicators, last_run
 
 
-def test_module(client) -> str:
+def test_module(client: Client) -> str:
     """
     Validate connectivity and a successful bundle parse.
     """
@@ -683,7 +682,7 @@ class Client(BaseClient):
 """ MAIN """
 
 
-def main():
+def main() -> None:
     params = demisto.params()
     url = params.get("url", "").rstrip("/")
     token = params.get("api_token") or {}
@@ -739,7 +738,7 @@ def main():
 
             batch_size = 2000
             for i in range(0, len(indicators), batch_size):
-                demisto.createIndicators(indicators[i: i + batch_size])
+                demisto.createIndicators(indicators[i : i + batch_size])
             set_feed_last_run(new_last_run)
             # Mirror the seen watermark into the integration context so it can
             # never be silently reset by the feed framework.

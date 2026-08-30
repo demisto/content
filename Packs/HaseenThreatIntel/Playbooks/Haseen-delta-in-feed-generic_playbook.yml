@@ -492,7 +492,7 @@ tasks:
       - "51"
     scriptarguments:
       query:
-        simple: (sourceInstances:"Haseen Threat Intel_instance_1") and (sourcetimestamp:>="24
+        simple: (sourceInstances:"Haseen Threat Intel") and (sourcetimestamp:>="24
           hours ago" or lastSeen:>="24 hours ago")
       size:
         simple: "300"

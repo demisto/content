@@ -28,7 +28,7 @@ The integration operationalizes Haseen intelligence inside Cortex XSOAR through 
 1. **Automated Feed Retrieval** — downloads the Haseen STIX 2.x bundle from the configured export endpoint once new indicators are added/updated.
 2. **STIX Parsing** — parses the STIX content and identifies actionable intelligence objects (indicators, malware, threat actors, relationships).
 3. **Indicator Extraction** — extracts relevant indicators and observables from the STIX bundle.
-4. **Normalization** — converts Haseen intelligence into XSOAR-native indicator formats.
+4. **Normalization** — converts Haseen intelligence into Cortex XSOAR-native indicator formats.
 5. **Deduplication** — prevents duplicate indicators from being created within the platform (seen-indicator watermark across fetches).
 6. **Enrichment** — applies metadata such as source, feed name, confidence, labels, TLP, and intelligence context.
 7. **Operationalization** — makes threat intelligence immediately available to detection, threat hunting, incident response, and automated correlation use cases.

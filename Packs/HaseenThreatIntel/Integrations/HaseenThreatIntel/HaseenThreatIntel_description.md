@@ -20,6 +20,6 @@ Haseen permits **2 requests per hour per export type**. Exceeding this returns a
 
 This is a **full-dump** STIX 2.x endpoint — it returns the entire bundle on every
 request rather than a `modified_after` delta. The integration parses the bundle
-and relies on the XSOAR feed engine to deduplicate and merge indicators, applying
+and relies on the Cortex XSOAR feed engine to deduplicate and merge indicators, applying
 the configured **Tags**, **Reputation**, **Source Reliability**, **TLP Color**, and
 **Bypass exclusion list** settings.
