@@ -136,19 +136,6 @@ def parse_json_object_arg(raw: Any, arg_name: str) -> dict:
     return parsed
 
 
-def merge_patch_headers() -> dict:
-    """
-    Build the headers for a JSON merge patch request.
-    Starts from the default headers (so that X-Vault-Token / X-Vault-Namespace / X-Vault-Request are preserved)
-    and overrides only the Content-Type.
-    Returns:
-        dict: The default headers with a "application/merge-patch+json" Content-Type.
-    """
-    headers = get_headers()
-    headers["Content-Type"] = "application/merge-patch+json"
-    return headers
-
-
 """ FUNCTIONS """
 
 
@@ -359,7 +346,7 @@ def build_secret_metadata_body(args: dict) -> dict:
     return body
 
 
-def create_secret_metadata_command():
+def create_update_secret_metadata_command():
     """
     Create or replace the metadata of a secret at the specified location in a KV V2 engine.
     Fields that are not supplied are reset to their server defaults.
@@ -381,36 +368,7 @@ def create_secret_metadata_command():
     path = build_kv2_path(engine_path, "metadata", secret_path)
     body = build_secret_metadata_body(args)
 
-    # TODO: Currently the `post` method overwrites existing entries! Must address it via documentation or other means.
     send_request(path, "post", body=body)
-
-    return_results(CommandResults(readable_output=f'Secret "{secret_path}" was successfully written to engine "{engine_path}"'))
-
-
-def update_secret_metadata_command():
-    """
-    Patch an existing metadata entry of a secret at the specified location in a KV V2 engine,
-    using a JSON merge patch. Fields that are not supplied are left untouched.
-    Requires Vault 1.9 or later and the "patch" ACL capability on the metadata path.
-    Args:
-        args (dict): A dictionary containing the following keys:
-            - 'engine' (required): The KV V2 engine path, e.g., "kv/".
-            - 'secret_path' (required): The secret path, e.g., "my-secret".
-            - 'max_versions': The number of versions to keep per key.
-            - 'cas_required': Whether the cas parameter is required on all write requests to this key.
-            - 'delete_version_after': A duration, e.g., "3h25m19s", after which new versions are deleted.
-            - 'custom_metadata': A JSON object of user-provided metadata, e.g., {"foo": "abc"}.
-    Returns:
-        CommandResults: The command results object containing a success message as readable output.
-    """
-    args = demisto.args()
-    engine_path = args.get("engine")
-    secret_path = args.get("secret_path")
-
-    path = build_kv2_path(engine_path, "metadata", secret_path)
-    body = build_secret_metadata_body(args)
-
-    send_request(path, "patch", body=body, headers=merge_patch_headers())
 
     return_results(CommandResults(readable_output=f'Secret "{secret_path}" was successfully written to engine "{engine_path}"'))
 
@@ -1006,10 +964,8 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
             get_policy_command()
         elif command == "hashicorp-get-secret-metadata":
             get_secret_metadata_command()
-        elif command == "hashicorp-create-secret-metadata":
-            create_secret_metadata_command()
-        elif command == "hashicorp-update-secret-metadata":
-            update_secret_metadata_command()
+        elif command == "hashicorp-create-update-secret-metadata":
+            create_update_secret_metadata_command()
         elif command == "hashicorp-delete-secret":
             delete_secret_command()
         elif command == "hashicorp-undelete-secret":
