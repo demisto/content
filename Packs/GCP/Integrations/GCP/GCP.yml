@@ -2875,6 +2875,204 @@ script:
       description: Type of the resource. Always compute#network for networks.
       type: string
 
+# gcp-compute-machine-type-get
+  - arguments:
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: project_id
+      required: false
+      required:platform: true
+    - description: The name of the zone for this request.
+      name: zone
+      required: true
+    - description: Name of the machine type to return.
+      name: machine_type
+      required: true
+    description: "Returns the specified machine type. Required permission: compute.machineTypes.get."
+    name: gcp-compute-machine-type-get
+    outputs:
+    - contextPath: GCP.Compute.MachineTypes.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.creationTimestamp
+      description: Creation timestamp in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.name
+      description: Name of the resource.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.description
+      description: An optional textual description of the resource.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.guestCpus
+      description: The number of virtual CPUs that are available to the instance.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.memoryMb
+      description: The amount of physical memory available to the instance, defined in MB.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.imageSpaceGb
+      description: This property is deprecated and will never be populated with any relevant values.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.scratchDisks
+      description: A list of extended scratch disks assigned to the instance, containing the diskGb field.
+      type: Unknown
+    - contextPath: GCP.Compute.MachineTypes.maximumPersistentDisks
+      description: Maximum persistent disks allowed.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb
+      description: Maximum total persistent disks size (GB) allowed.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.deprecated
+      description: The deprecation status associated with this machine type, containing the state, replacement, deprecated, obsolete, and deleted fields.
+      type: Unknown
+    - contextPath: GCP.Compute.MachineTypes.zone
+      description: The name of the zone where the machine type resides, such as us-central1-a.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.isSharedCpu
+      description: Whether this machine type has a shared CPU. See Shared-core machine types for more information.
+      type: boolean
+    - contextPath: GCP.Compute.MachineTypes.kind
+      description: The type of the resource. Always compute#machineType for machine types.
+      type: string
+
+# gcp-compute-machine-types-list
+  - arguments:
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: project_id
+      required: false
+      required:platform: true
+    - description: The name of the zone for this request.
+      name: zone
+      required: true
+    - defaultValue: '50'
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      name: limit
+    - description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type.
+      name: filters
+    - description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+      name: order_by
+    - description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+      name: page_token
+    description: "Retrieves a list of machine types available in the specified zone. Required permission: compute.machineTypes.list."
+    name: gcp-compute-machine-types-list
+    outputs:
+    - contextPath: GCP.Compute.MachineTypes.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.creationTimestamp
+      description: Creation timestamp in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.name
+      description: Name of the resource.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.description
+      description: An optional textual description of the resource.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.guestCpus
+      description: The number of virtual CPUs that are available to the instance.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.memoryMb
+      description: The amount of physical memory available to the instance, defined in MB.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.imageSpaceGb
+      description: This property is deprecated and will never be populated with any relevant values.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.scratchDisks
+      description: A list of extended scratch disks assigned to the instance, containing the diskGb field.
+      type: Unknown
+    - contextPath: GCP.Compute.MachineTypes.maximumPersistentDisks
+      description: Maximum persistent disks allowed.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb
+      description: Maximum total persistent disks size (GB) allowed.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.deprecated
+      description: The deprecation status associated with this machine type, containing the state, replacement, deprecated, obsolete, and deleted fields.
+      type: Unknown
+    - contextPath: GCP.Compute.MachineTypes.zone
+      description: The name of the zone where the machine type resides, such as us-central1-a.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.isSharedCpu
+      description: Whether this machine type has a shared CPU. See Shared-core machine types for more information.
+      type: boolean
+    - contextPath: GCP.Compute.MachineTypes.kind
+      description: The type of the resource. Always compute#machineType for machine types.
+      type: string
+    - contextPath: GCP.Compute.MachineTypesNextPageToken
+      description: The token to use when requesting the next set of machine types.
+      type: string
+
+# gcp-compute-machine-types-aggregated-list
+  - arguments:
+    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      name: project_id
+      required: false
+      required:platform: true
+    - defaultValue: '50'
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      name: limit
+    - description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type.
+      name: filters
+    - description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+      name: order_by
+    - description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+      name: page_token
+    description: "Retrieves an aggregated list of machine types across all zones of the specified project. Required permission: compute.machineTypes.list."
+    name: gcp-compute-machine-types-aggregated-list
+    outputs:
+    - contextPath: GCP.Compute.MachineTypes.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.creationTimestamp
+      description: Creation timestamp in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.name
+      description: Name of the resource.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.description
+      description: An optional textual description of the resource.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.guestCpus
+      description: The number of virtual CPUs that are available to the instance.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.memoryMb
+      description: The amount of physical memory available to the instance, defined in MB.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.imageSpaceGb
+      description: This property is deprecated and will never be populated with any relevant values.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.scratchDisks
+      description: A list of extended scratch disks assigned to the instance, containing the diskGb field.
+      type: Unknown
+    - contextPath: GCP.Compute.MachineTypes.maximumPersistentDisks
+      description: Maximum persistent disks allowed.
+      type: number
+    - contextPath: GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb
+      description: Maximum total persistent disks size (GB) allowed.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.deprecated
+      description: The deprecation status associated with this machine type, containing the state, replacement, deprecated, obsolete, and deleted fields.
+      type: Unknown
+    - contextPath: GCP.Compute.MachineTypes.zone
+      description: The name of the zone where the machine type resides, such as us-central1-a.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.MachineTypes.isSharedCpu
+      description: Whether this machine type has a shared CPU. See Shared-core machine types for more information.
+      type: boolean
+    - contextPath: GCP.Compute.MachineTypes.kind
+      description: The type of the resource. Always compute#machineType for machine types.
+      type: string
+    - contextPath: GCP.Compute.MachineTypesAggregatedNextPageToken
+      description: The token to use when requesting the next set of aggregated machine types.
+      type: string
+
 
 # gcp-compute-network-insert
   - arguments:
