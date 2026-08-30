@@ -1059,51 +1059,79 @@ script:
       - "false"
       description: Whether to enable Stackdriver Kubernetes monitoring and logging on the cluster.
     outputs:
-    - contextPath: GCP.Container.Operations.clusterConditions
-      description: Which conditions caused the current cluster state.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.detail
-      description: Detailed operation progress, if available.
-      type: String
-    - contextPath: GCP.Container.Operations.endTime
-      description: The time the operation completed, in RFC3339 text format.
-      type: String
-    - contextPath: GCP.Container.Operations.error
-      description: The error result of the operation in case of failure.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.location
-      description: The name of the Google Compute Engine zone or region in which the cluster resides.
-      type: String
     - contextPath: GCP.Container.Operations.name
-      description: The server-assigned ID for the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.nodepoolConditions
-      description: Which conditions caused the current node pool state.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.operationType
-      description: The operation type.
-      type: String
-    - contextPath: GCP.Container.Operations.progress
-      description: Progress information for an operation.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.selfLink
-      description: Server-defined URI for the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.startTime
-      description: The time the operation started, in RFC3339 text format.
-      type: String
-    - contextPath: GCP.Container.Operations.status
-      description: The current status of the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.statusMessage
-      description: If an error has occurred, a textual description of the error.
-      type: String
-    - contextPath: GCP.Container.Operations.targetLink
-      description: Server-defined URI for the target of the operation.
+      description: The name of the GKE cluster.
       type: String
     - contextPath: GCP.Container.Operations.zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place.
+      description: The zone of the GKE cluster.
       type: String
+    - contextPath: GCP.Container.Operations.enableStackdriverLogging
+      description: Whether Stackdriver Logging is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enableStackdriverMonitoring
+      description: Whether Stackdriver Monitoring is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enablePrivateNodes
+      description: Whether private nodes are enabled for the GKE cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enablePrivateEndpoint
+      description: Whether private endpoint is enabled for the GKE cluster control plane.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enableHttpsOnly
+      description: Whether HTTPS-only traffic is enforced for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enableNetworkPolicy
+      description: Whether network policies are enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enableAutoscaling
+      description: Whether autoscaling is enabled for the cluster nodes.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enableIstio
+      description: Whether Istio is enabled for the GKE cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enablePodSecurityPolicy
+      description: Whether PodSecurityPolicy is enabled for the GKE cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enableBinaryAuthorization
+      description: Whether Binary Authorization is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.enableLegacyABAC
+      description: Whether legacy ABAC is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.clusterIpv4Cidr
+      description: The cluster’s IPv4 CIDR block.
+      type: String
+    - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
+      description: List of authorized CIDR blocks that can access the GKE cluster master.
+      type: Unknown
+    - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
+      description: Whether master authorized networks are enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.network
+      description: The network to which the GKE cluster belongs.
+      type: String
+    - contextPath: GCP.Container.Operations.subnetwork
+      description: The subnetwork to which the GKE cluster belongs.
+      type: String
+    - contextPath: GCP.Container.Operations.loggingService
+      description: The logging service used for the cluster (e.g., "logging.googleapis.com").
+      type: String
+    - contextPath: GCP.Container.Operations.monitoringService
+      description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
+      type: String
+    - contextPath: GCP.Container.Operations.nodePools
+      description: A list of node pools in the cluster, with their configuration and security settings.
+      type: Unknown
+    - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
+      description: Whether private nodes are enabled in the cluster.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint
+      description: Whether private endpoint is enabled for the cluster control plane.
+      type: Boolean
+    - contextPath: GCP.Container.Operations.masterVersion
+      description: The current version of the Kubernetes master in the GKE cluster.
+      type: String
+
   - name: gcp-container-cluster-security-update-enable-gke-cluster-intra-node-visibility-quick-action
     description: "Enables intra-node visibility on a GKE cluster for enhanced network monitoring. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     prettyname: Enable GKE Cluster Intra-Node Visibility
@@ -1141,51 +1169,79 @@ script:
         hidden: true
         description: Enable intra-node visibility.
     outputs:
-    - contextPath: GCP.Container.Operations.clusterConditions
-      description: Which conditions caused the current cluster state.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.detail
-      description: Detailed operation progress, if available.
-      type: String
-    - contextPath: GCP.Container.Operations.endTime
-      description: The time the operation completed, in RFC3339 text format.
-      type: String
-    - contextPath: GCP.Container.Operations.error
-      description: The error result of the operation in case of failure.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.location
-      description: The name of the Google Compute Engine zone or region in which the cluster resides.
-      type: String
-    - contextPath: GCP.Container.Operations.name
-      description: The server-assigned ID for the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.nodepoolConditions
-      description: Which conditions caused the current node pool state.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.operationType
-      description: The operation type.
-      type: String
-    - contextPath: GCP.Container.Operations.progress
-      description: Progress information for an operation.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.selfLink
-      description: Server-defined URI for the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.startTime
-      description: The time the operation started, in RFC3339 text format.
-      type: String
-    - contextPath: GCP.Container.Operations.status
-      description: The current status of the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.statusMessage
-      description: If an error has occurred, a textual description of the error.
-      type: String
-    - contextPath: GCP.Container.Operations.targetLink
-      description: Server-defined URI for the target of the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place.
-      type: String
+      - contextPath: GCP.Container.Operations.name
+        description: The name of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.zone
+        description: The zone of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.enableStackdriverLogging
+        description: Whether Stackdriver Logging is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableStackdriverMonitoring
+        description: Whether Stackdriver Monitoring is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateNodes
+        description: Whether private nodes are enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the GKE cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableHttpsOnly
+        description: Whether HTTPS-only traffic is enforced for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableNetworkPolicy
+        description: Whether network policies are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableAutoscaling
+        description: Whether autoscaling is enabled for the cluster nodes.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableIstio
+        description: Whether Istio is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePodSecurityPolicy
+        description: Whether PodSecurityPolicy is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableBinaryAuthorization
+        description: Whether Binary Authorization is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableLegacyABAC
+        description: Whether legacy ABAC is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.clusterIpv4Cidr
+        description: The cluster's IPv4 CIDR block.
+        type: String
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
+        description: List of authorized CIDR blocks that can access the GKE cluster master.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
+        description: Whether master authorized networks are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.network
+        description: The network to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.subnetwork
+        description: The subnetwork to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.loggingService
+        description: The logging service used for the cluster (e.g., "logging.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.monitoringService
+        description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.nodePools
+        description: A list of node pools in the cluster, with their configuration and security settings.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
+        description: Whether private nodes are enabled in the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.masterVersion
+        description: The current version of the Kubernetes master in the GKE cluster.
+        type: String
+
   - name: gcp-container-cluster-security-update-enable-master-authorized-networks-on-gke-quick-action
     description: "Enables Master Authorized Networks on a GKE cluster to restrict API server access. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
     prettyname: Enable Master Authorized Networks on GKE
@@ -1219,51 +1275,79 @@ script:
         hidden: true
         description: Enable Master Authorized Networks.
     outputs:
-    - contextPath: GCP.Container.Operations.clusterConditions
-      description: Which conditions caused the current cluster state.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.detail
-      description: Detailed operation progress, if available.
-      type: String
-    - contextPath: GCP.Container.Operations.endTime
-      description: The time the operation completed, in RFC3339 text format.
-      type: String
-    - contextPath: GCP.Container.Operations.error
-      description: The error result of the operation in case of failure.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.location
-      description: The name of the Google Compute Engine zone or region in which the cluster resides.
-      type: String
-    - contextPath: GCP.Container.Operations.name
-      description: The server-assigned ID for the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.nodepoolConditions
-      description: Which conditions caused the current node pool state.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.operationType
-      description: The operation type.
-      type: String
-    - contextPath: GCP.Container.Operations.progress
-      description: Progress information for an operation.
-      type: Unknown
-    - contextPath: GCP.Container.Operations.selfLink
-      description: Server-defined URI for the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.startTime
-      description: The time the operation started, in RFC3339 text format.
-      type: String
-    - contextPath: GCP.Container.Operations.status
-      description: The current status of the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.statusMessage
-      description: If an error has occurred, a textual description of the error.
-      type: String
-    - contextPath: GCP.Container.Operations.targetLink
-      description: Server-defined URI for the target of the operation.
-      type: String
-    - contextPath: GCP.Container.Operations.zone
-      description: The name of the Google Compute Engine zone in which the operation is taking place.
-      type: String
+      - contextPath: GCP.Container.Operations.name
+        description: The name of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.zone
+        description: The zone of the GKE cluster.
+        type: String
+      - contextPath: GCP.Container.Operations.enableStackdriverLogging
+        description: Whether Stackdriver Logging is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableStackdriverMonitoring
+        description: Whether Stackdriver Monitoring is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateNodes
+        description: Whether private nodes are enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the GKE cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableHttpsOnly
+        description: Whether HTTPS-only traffic is enforced for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableNetworkPolicy
+        description: Whether network policies are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableAutoscaling
+        description: Whether autoscaling is enabled for the cluster nodes.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableIstio
+        description: Whether Istio is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enablePodSecurityPolicy
+        description: Whether PodSecurityPolicy is enabled for the GKE cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableBinaryAuthorization
+        description: Whether Binary Authorization is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.enableLegacyABAC
+        description: Whether legacy ABAC is enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.clusterIpv4Cidr
+        description: The cluster's IPv4 CIDR block.
+        type: String
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks
+        description: List of authorized CIDR blocks that can access the GKE cluster master.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled
+        description: Whether master authorized networks are enabled for the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.network
+        description: The network to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.subnetwork
+        description: The subnetwork to which the GKE cluster belongs.
+        type: String
+      - contextPath: GCP.Container.Operations.loggingService
+        description: The logging service used for the cluster (e.g., "logging.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.monitoringService
+        description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
+        type: String
+      - contextPath: GCP.Container.Operations.nodePools
+        description: A list of node pools in the cluster, with their configuration and security settings.
+        type: Unknown
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateNodes
+        description: Whether private nodes are enabled in the cluster.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint
+        description: Whether private endpoint is enabled for the cluster control plane.
+        type: Boolean
+      - contextPath: GCP.Container.Operations.masterVersion
+        description: The current version of the Kubernetes master in the GKE cluster.
+        type: String
+
   - name: gcp-container-cluster-legacy-abac-auth-set
     description: "Enables or disables legacy ABAC authorization for a GKE cluster. Required permissions: container.clusters.update."
     arguments:

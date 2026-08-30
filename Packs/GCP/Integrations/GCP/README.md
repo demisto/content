@@ -131,7 +131,7 @@ Enables flow logs or Private Google Access on a subnet. Required permissions: co
 ### gcp-container-cluster-security-update
 
 ***
-Configures security settings for GKE clusters, including access controls and visibility. Only one update may be applied to a cluster per request. Provide exactly one of the supported security flags. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
+Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
 
 #### Base Command
 
@@ -146,32 +146,36 @@ Configures security settings for GKE clusters, including access controls and vis
 | resource_name | Name of the GKE cluster. | Required |
 | enable_intra_node_visibility | Enable intra-node visibility. Possible values are: true, false. | Optional |
 | enable_master_authorized_networks | Enable Master Authorized Networks. Possible values are: true, false. | Optional |
-| cidrs | A comma-separated list of up to 50 CIDR blocks (for example, "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
-| enable_binary_authorization | Whether to enable Binary Authorization on the cluster. Possible values are: true, false. | Optional |
-| enable_http_load_balancing | Whether to enable the HTTP load balancing add-on on the cluster. Possible values are: true, false. | Optional |
-| enable_kubernetes_dashboard | Whether to enable the Kubernetes dashboard add-on on the cluster. Possible values are: true, false. | Optional |
-| enable_network_policy | Whether to enable the network policy add-on on the cluster. Possible values are: true, false. | Optional |
-| enable_stackdriver_kubernetes | Whether to enable Stackdriver Kubernetes monitoring and logging on the cluster. Possible values are: true, false. | Optional |
+| cidrs | Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Container.Operations.clusterConditions | Unknown | Which conditions caused the current cluster state. |
-| GCP.Container.Operations.detail | String | Detailed operation progress, if available. |
-| GCP.Container.Operations.endTime | String | The time the operation completed, in RFC3339 text format. |
-| GCP.Container.Operations.error | Unknown | The error result of the operation in case of failure. |
-| GCP.Container.Operations.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
-| GCP.Container.Operations.name | String | The server-assigned ID for the operation. |
-| GCP.Container.Operations.nodepoolConditions | Unknown | Which conditions caused the current node pool state. |
-| GCP.Container.Operations.operationType | String | The operation type. |
-| GCP.Container.Operations.progress | Unknown | Progress information for an operation. |
-| GCP.Container.Operations.selfLink | String | Server-defined URI for the operation. |
-| GCP.Container.Operations.startTime | String | The time the operation started, in RFC3339 text format. |
-| GCP.Container.Operations.status | String | The current status of the operation. |
-| GCP.Container.Operations.statusMessage | String | If an error has occurred, a textual description of the error. |
-| GCP.Container.Operations.targetLink | String | Server-defined URI for the target of the operation. |
-| GCP.Container.Operations.zone | String | The name of the Google Compute Engine zone in which the operation is taking place. |
+| GCP.Container.Operations.name | String | The name of the GKE cluster. |
+| GCP.Container.Operations.zone | String | The zone of the GKE cluster. |
+| GCP.Container.Operations.enableStackdriverLogging | Boolean | Whether Stackdriver Logging is enabled for the cluster. |
+| GCP.Container.Operations.enableStackdriverMonitoring | Boolean | Whether Stackdriver Monitoring is enabled for the cluster. |
+| GCP.Container.Operations.enablePrivateNodes | Boolean | Whether private nodes are enabled for the GKE cluster. |
+| GCP.Container.Operations.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the GKE cluster control plane. |
+| GCP.Container.Operations.enableHttpsOnly | Boolean | Whether HTTPS-only traffic is enforced for the cluster. |
+| GCP.Container.Operations.enableNetworkPolicy | Boolean | Whether network policies are enabled for the cluster. |
+| GCP.Container.Operations.enableAutoscaling | Boolean | Whether autoscaling is enabled for the cluster nodes. |
+| GCP.Container.Operations.enableIstio | Boolean | Whether Istio is enabled for the GKE cluster. |
+| GCP.Container.Operations.enablePodSecurityPolicy | Boolean | Whether PodSecurityPolicy is enabled for the GKE cluster. |
+| GCP.Container.Operations.enableBinaryAuthorization | Boolean | Whether Binary Authorization is enabled for the cluster. |
+| GCP.Container.Operations.enableLegacyABAC | Boolean | Whether legacy ABAC is enabled for the cluster. |
+| GCP.Container.Operations.clusterIpv4Cidr | String | The cluster’s IPv4 CIDR block. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.cidrBlocks | Unknown | List of authorized CIDR blocks that can access the GKE cluster master. |
+| GCP.Container.Operations.masterAuthorizedNetworksConfig.enabled | Boolean | Whether master authorized networks are enabled for the cluster. |
+| GCP.Container.Operations.network | String | The network to which the GKE cluster belongs. |
+| GCP.Container.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
+| GCP.Container.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
+| GCP.Container.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
+| GCP.Container.Operations.nodePools | Unknown | A list of node pools in the cluster, with their configuration and security settings. |
+| GCP.Container.Operations.privateClusterConfig.enablePrivateNodes | Boolean | Whether private nodes are enabled in the cluster. |
+| GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
+| GCP.Container.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
 
 ### gcp-container-cluster-legacy-abac-auth-set
 
