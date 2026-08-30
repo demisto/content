@@ -5786,6 +5786,30 @@ def test_test_connectivity_container_uses_clusters_list(mocker):
     )
 
 
+def test_test_connectivity_logging_uses_entries_list(mocker):
+    """
+    Given:
+        - The LOGGING service and a built API client.
+    When:
+        - test_connectivity is called.
+    Then:
+        - A project-scoped log entries list is invoked (Logging has no project testIamPermissions),
+          so no NotImplementedError is raised.
+    """
+    from GCP import GCPServices
+    from google.oauth2.credentials import Credentials
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.LOGGING, "build", return_value=mock_client)
+
+    GCPServices.LOGGING.test_connectivity(creds, "dummy-project-id")
+
+    mock_client.entries.return_value.list.assert_called_once_with(
+        body={"resourceNames": ["projects/dummy-project-id"], "pageSize": 1}
+    )
+
+
 def test_test_all_services_wraps_results_into_tuples(mocker):
     """
     Given:
@@ -6452,9 +6476,7 @@ def test_command_map_parser_ignores_commented_out_entries():
     commented_out = set(re.findall(r'^\s*#\s*"([a-z0-9][a-z0-9\-]*)"\s*:', _PY_SOURCE, flags=re.MULTILINE))
     leaked = sorted(commented_out & _COMMAND_MAP.keys())
 
-    assert not leaked, (
-        "The following commands are commented out in GCP.py but were parsed as wired " f"in the command_map: {leaked}"
-    )
+    assert not leaked, f"The following commands are commented out in GCP.py but were parsed as wired in the command_map: {leaked}"
 
 
 def test_command_map_handlers_resolve_to_real_functions():
@@ -6480,9 +6502,9 @@ def test_yml_commands_are_wired_in_py():
     Then: Every non-quick-action YML command must be wired in the .py.
     """
     missing = sorted(name for name in _YML_SPEC if name not in _COMMAND_MAP)
-    assert not missing, (
-        "The following commands are declared in GCP.yml but are NOT wired in the " f"command_map in GCP.py: {missing}"
-    )
+    assert (
+        not missing
+    ), f"The following commands are declared in GCP.yml but are NOT wired in the command_map in GCP.py: {missing}"
 
 
 def test_yml_args_match_py_handler_verbatim():
@@ -6652,3 +6674,157 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# Migrated from the legacy GoogleCloudLogging integration
+# (command: gcp-logging-log-entries-list -> logging_log_entries_list).
+# ---------------------------------------------------------------------------
+
+
+def test_logging_log_entries_list_success(mocker):
+    """
+    Given: Valid credentials and snake_case args scoping the request to a project.
+    When: logging_log_entries_list is called.
+    Then: It POSTs the expected request body to entries().list in a single call and returns
+          CommandResults with the GCP.Logging.LogEntries context path and the LogEntriesNextToken.
+    """
+    from GCP import logging_log_entries_list
+
+    mock_response = util_load_json("test_data/logging_log_entries_list_response.json")
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {
+        "project_id": "mock_project_id",
+        "filter": None,
+        "order_by": None,
+        "limit": 3,
+    }
+    result = logging_log_entries_list(mock_creds, args)
+
+    # A single API call is made (no internal accumulation).
+    mock_logging.entries.return_value.list.return_value.execute.assert_called_once()
+    request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
+    assert request_body["resourceNames"] == ["projects/mock_project_id"]
+    assert request_body["pageSize"] == 3
+    assert result.outputs["GCP.Logging.LogEntries(val.insertId && val.insertId == obj.insertId)"] == mock_response.get("entries")
+    assert result.outputs["GCP.Logging(true)"]["LogEntriesNextToken"] == "xxxxxx-xxxxxx"
+
+
+def test_logging_log_entries_list_multiple_resources(mocker):
+    """
+    Given: Args providing project, organization, billing account, and folder resources.
+    When: logging_log_entries_list is called.
+    Then: The request body's resourceNames contains the correctly prefixed resource paths.
+    """
+    from GCP import logging_log_entries_list
+
+    single_page = {"entries": [{"insertId": "a1"}]}
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = single_page
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {
+        "project_id": "mock_project_id",
+        "organization_names": "mock_org",
+        "billing_account_names": "mock_billing",
+        "folder_names": "mock_folder",
+        "limit": 5,
+    }
+    logging_log_entries_list(mock_creds, args)
+
+    request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
+    assert request_body["resourceNames"] == [
+        "projects/mock_project_id",
+        "organizations/mock_org",
+        "billingAccounts/mock_billing",
+        "folders/mock_folder",
+    ]
+
+
+def test_logging_log_entries_list_next_token(mocker):
+    """
+    Given: Args providing a next_token and limit.
+    When: logging_log_entries_list is called.
+    Then: The request carries the supplied pageToken and uses limit as the pageSize.
+    """
+    from GCP import logging_log_entries_list
+
+    single_page = {"entries": [{"insertId": "a1"}]}
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = single_page
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    args = {
+        "project_id": "mock_project_id",
+        "next_token": "mock_next_token",
+        "limit": 3,
+    }
+    logging_log_entries_list(mock_creds, args)
+
+    request_body = mock_logging.entries.return_value.list.call_args[1]["body"]
+    assert request_body["pageToken"] == "mock_next_token"
+    assert request_body["pageSize"] == 3
+
+
+def test_logging_log_entries_list_no_resources(mocker):
+    """
+    Given: Args that provide none of the parent resource identifiers.
+    When: logging_log_entries_list is called.
+    Then: It raises a DemistoException instructing the caller to provide at least one resource.
+    """
+    from GCP import logging_log_entries_list
+    from CommonServerPython import DemistoException
+
+    mock_creds = mocker.MagicMock()
+
+    with pytest.raises(DemistoException) as e:
+        logging_log_entries_list(mock_creds, {})
+
+    assert "At least one of the following resources must be provided" in str(e.value)
+
+
+def test_logging_log_entries_list_empty_results(mocker):
+    """
+    Given: A mocked Logging client returning no entries and no nextPageToken.
+    When: logging_log_entries_list is called.
+    Then: It returns CommandResults with an empty entries list and a null LogEntriesNextToken.
+    """
+    from GCP import logging_log_entries_list
+
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    mock_logging.entries.return_value.list.return_value.execute.return_value = {"entries": []}
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    result = logging_log_entries_list(mock_creds, {"project_id": "mock_project_id"})
+
+    assert result.outputs["GCP.Logging.LogEntries(val.insertId && val.insertId == obj.insertId)"] == []
+    assert result.outputs["GCP.Logging(true)"]["LogEntriesNextToken"] is None
+
+
+def test_logging_log_entries_list_api_error_propagates(mocker):
+    """
+    Given: A mocked Logging client whose entries().list raises a 403 HttpError.
+    When: logging_log_entries_list is called.
+    Then: The HttpError propagates out of the handler (to be handled by main()),
+          rather than being swallowed or converted.
+    """
+    from GCP import logging_log_entries_list
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.MagicMock()
+    mock_logging = mocker.MagicMock()
+    http_error = _make_http_error(403, '{"error": {"code": 403, "message": "caller does not have permission"}}')
+    mock_logging.entries.return_value.list.return_value.execute.side_effect = http_error
+    mocker.patch("GCP.build", return_value=mock_logging)
+
+    with pytest.raises(HttpError) as e:
+        logging_log_entries_list(mock_creds, {"project_id": "mock_project_id"})
+
+    assert e.value.resp.status == 403
