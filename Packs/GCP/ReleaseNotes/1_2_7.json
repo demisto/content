@@ -1,0 +1,7 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "GCP scenario C breaking change note.",
+    "forceUpdate": {
+        "breakingChangesNotesLoosely": "GCP loosely breaking change note (scenario C)."
+    }
+}

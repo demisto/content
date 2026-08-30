@@ -1,0 +1,8 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### Box Event Collector\nThe 'Maximum number of events per page' parameter that caps the total number of events returned. Update any scripts or automations that pass 'page_size' to this command to use 'limit'.",
+	"forceUpdate": {
+        "breakingChangesNotesLoosely": "",
+        "breakingChangesNotesTightly": "#### Box Event Collector\nThe 'Maximum number of events per page' that pass 'page_size' to this command to use 'limit'."
+    }
+}

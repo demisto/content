@@ -1,0 +1,11 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "QRadar scenario H overall breaking change (all items).",
+    "forceUpdate": {
+        "breakingChangesNotesLoosely": "QRadar loosely breaking change note (scenario H).",
+        "breakingChangesNotesTightly": {
+            "message": "QRadar tightly banner message (scenario H).",
+            "moreInfo": "QRadar tightly detailed modal text (scenario H)."
+        }
+    }
+}
