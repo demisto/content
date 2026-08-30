@@ -354,6 +354,10 @@ class DefenderGetEvents(IntegrationGetEvents):
             "limit": event_filter.page_size,
             "sortDirection": "asc",
         }
+        demisto.debug(
+            f"MD: Sending API call {self.client.request.method} {self.client.request.url} "
+            f"body={self.client.request.json}"
+        )
         response = self.client.call(self.client.request).json()
         events = response.get("data", [])
         demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
