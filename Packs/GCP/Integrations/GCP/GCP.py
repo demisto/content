@@ -1809,8 +1809,12 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
             if "enable_network_policy" in args
             else None,
         },
-        "desiredMonitoringService": "monitoring.googleapis.com/kubernetes" if enable_stackdriver else None,
-        "desiredLoggingService": "logging.googleapis.com/kubernetes" if enable_stackdriver else None,
+        "desiredMonitoringService": ("monitoring.googleapis.com/kubernetes" if enable_stackdriver else "none")
+        if enable_stackdriver is not None
+        else None,
+        "desiredLoggingService": ("logging.googleapis.com/kubernetes" if enable_stackdriver else "none")
+        if enable_stackdriver is not None
+        else None,
     }
     update_fields = remove_empty_elements(update_fields)
 
