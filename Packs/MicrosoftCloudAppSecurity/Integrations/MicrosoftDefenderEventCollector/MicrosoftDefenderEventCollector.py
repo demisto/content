@@ -94,6 +94,9 @@ class IntegrationHTTPRequest(BaseModel):
     headers: dict = {}  # type: ignore[type-arg]
     auth: HTTPBasicAuth | None = None
     data: Any = None
+    # JSON body sent with the request (requests sets Content-Type: application/json). The
+    # activities API reads paging params (filters, limit, sortDirection) from the POST body.
+    json: Any = None
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
@@ -293,8 +296,11 @@ class DefenderAuthenticator(BaseModel):
 
 
 class DefenderHTTPRequest(IntegrationHTTPRequest):
-    params: dict = {"sortDirection": "asc"}
-    method: Method = Method.GET
+    # The activities API honors paging (limit up to 5000) only via a POST JSON body; the GET
+    # query param `limit` is silently ignored and caps pages at 100. The body is populated
+    # per-request in DefenderGetEvents._iter_events.
+    json: dict = {"sortDirection": "asc"}
+    method: Method = Method.POST
 
     _normalize_url = validator("url", pre=True, allow_reuse=True)(lambda base_url: f"{base_url}/api/v1/")  # type: ignore[type-var]
 
@@ -312,9 +318,8 @@ class DefenderClient(IntegrationEventsClient):
         super().__init__(request, options)
 
     def set_request_filter(self, after: Any):
-        curr_filters = json.loads(self.request.params["filters"])
-        curr_filters["date"] = {"gte": after + 1}
-        self.request.params["filters"] = json.dumps(curr_filters)
+        # Advance the pagination window inside the POST JSON body.
+        self.request.json["filters"]["date"] = {"gte": after + 1}
 
     def authenticate(self):
         self.authenticator.set_authorization(self.request)
@@ -329,7 +334,6 @@ class DefenderGetEvents(IntegrationGetEvents):
         self.client.authenticate()
 
         endpoint_details = event_filter.attributes
-        self.client.request.params.pop("filters", None)
         self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
 
         # get the filter for this type
@@ -341,13 +345,15 @@ class DefenderGetEvents(IntegrationGetEvents):
             filters["date"] = {"gte": after}  # type: ignore
 
         demisto.debug(f"MD: Sending request with filters {filters}")
-        self.client.request.params["filters"] = json.dumps(filters)
-        # Request a page size from the API (up to 5000 for the activities endpoint) instead of
-        # relying on the API default (~100). This is the real throughput lever; without it every
-        # page returns only ~100 events regardless of how large the backlog is. The page size is
-        # a per-type constant on the EventFilter, decoupled from the per-cycle cap, so run() can
-        # still page multiple times.
-        self.client.request.params["limit"] = event_filter.page_size
+        # The activities API honors a large page size (up to 5000) only via a POST JSON body;
+        # the GET query param `limit` is silently ignored and caps pages at 100. Send filters and
+        # the per-type page size (a constant on the EventFilter, decoupled from the per-cycle cap
+        # so run() can still page multiple times) in the request body.
+        self.client.request.json = {
+            "filters": filters,
+            "limit": event_filter.page_size,
+            "sortDirection": "asc",
+        }
         response = self.client.call(self.client.request).json()
         events = response.get("data", [])
         demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
@@ -427,8 +433,8 @@ def module_test(get_events: DefenderGetEvents) -> str:
     """
 
     try:
-        get_events.client.request.params = {"limit": 1}
-        # Probe with a minimal per-cycle cap for every type so test-module stays cheap.
+        # Probe with a minimal per-cycle cap for every type so test-module stops after one event
+        # per type (the request body, including page size, is rebuilt per type in _iter_events).
         get_events.options.alerts_limit = 1
         get_events.options.activities_limit = 1
         get_events.run()

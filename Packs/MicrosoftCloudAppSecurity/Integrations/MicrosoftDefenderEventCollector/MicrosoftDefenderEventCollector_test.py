@@ -1,6 +1,5 @@
 """Unit tests for the Microsoft Defender for Cloud Apps Event Collector."""
 
-import json
 
 import demistomock as demisto
 import pytest
@@ -330,7 +329,7 @@ def _make_defender_get_events_with_client(pages: list[dict], mocker) -> Defender
     client = DefenderClient.__new__(DefenderClient)
     client.after = 1000
     client.request = mocker.Mock()
-    client.request.params = {}
+    client.request.json = {}
     # authenticate() and set_request_filter() must be no-ops / simple for the test.
     client.authenticate = mocker.Mock()  # type: ignore[method-assign]
     responses = [_FakeResponse(p) for p in pages]
@@ -392,7 +391,7 @@ class TestIterEventsPagination:
         list(get_events._iter_events("alerts", ALERTS_FILTER))
 
         # The request filters must carry the per-type watermark (8888), not client.after (1000).
-        sent_filters = json.loads(get_events.client.request.params["filters"])
+        sent_filters = get_events.client.request.json["filters"]
         assert sent_filters["date"] == {"gte": 8888}
 
     def test_alerts_page_size_sent_to_api(self, mocker):
@@ -404,7 +403,7 @@ class TestIterEventsPagination:
 
         list(get_events._iter_events("alerts", ALERTS_FILTER))
 
-        assert get_events.client.request.params["limit"] == ALERTS_PAGE_SIZE
+        assert get_events.client.request.json["limit"] == ALERTS_PAGE_SIZE
 
     def test_activities_page_size_sent_to_api(self, mocker):
         """The activities endpoint requests its larger per-type page size (5000) as the API `limit`.
@@ -418,7 +417,7 @@ class TestIterEventsPagination:
 
         list(get_events._iter_events("activities_login", LOGIN_ACTIVITIES_FILTER))
 
-        assert get_events.client.request.params["limit"] == ACTIVITIES_PAGE_SIZE
+        assert get_events.client.request.json["limit"] == ACTIVITIES_PAGE_SIZE
 
 
 class TestSetRequestFilter:
@@ -427,21 +426,21 @@ class TestSetRequestFilter:
     def test_advances_gte_by_one_millisecond(self, mocker):
         client = DefenderClient.__new__(DefenderClient)
         client.request = mocker.Mock()
-        client.request.params = {"filters": json.dumps({"date": {"gte": 100}})}
+        client.request.json = {"filters": {"date": {"gte": 100}}}
 
         client.set_request_filter(1_700_000_000_000)
 
-        updated = json.loads(client.request.params["filters"])
+        updated = client.request.json["filters"]
         assert updated["date"] == {"gte": 1_700_000_000_001}  # last timestamp + 1 ms
 
     def test_preserves_other_filter_keys(self, mocker):
         client = DefenderClient.__new__(DefenderClient)
         client.request = mocker.Mock()
-        client.request.params = {"filters": json.dumps({"date": {"gte": 1}, "activity.type": {"eq": True}})}
+        client.request.json = {"filters": {"date": {"gte": 1}, "activity.type": {"eq": True}}}
 
         client.set_request_filter(500)
 
-        updated = json.loads(client.request.params["filters"])
+        updated = client.request.json["filters"]
         assert updated["activity.type"] == {"eq": True}  # unrelated filters untouched
         assert updated["date"] == {"gte": 501}
 
