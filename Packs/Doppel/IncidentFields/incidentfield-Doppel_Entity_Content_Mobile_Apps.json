@@ -1,18 +1,18 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Doppel Alert Domains"
+        "Doppel Alert Mobile_Apps"
     ],
     "caseInsensitive": true,
-    "cliName": "doppelentitycontent",
+    "cliName": "doppelentitycontentmobileapps",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "domain",
+            "displayName": "external_created_at",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "domain",
+            "key": "external_created_at",
             "orgType": "",
             "required": false,
             "script": "",
@@ -21,11 +21,11 @@
             "width": 150
         },
         {
-            "displayName": "registrar",
+            "displayName": "title",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "registrar",
+            "key": "title",
             "orgType": "",
             "required": false,
             "script": "",
@@ -34,11 +34,11 @@
             "width": 150
         },
         {
-            "displayName": "ip_address",
+            "displayName": "platform_name",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "ip_address",
+            "key": "platform_name",
             "orgType": "",
             "required": false,
             "script": "",
@@ -47,11 +47,11 @@
             "width": 150
         },
         {
-            "displayName": "contact_email",
+            "displayName": "app_id",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "contact_email",
+            "key": "app_id",
             "orgType": "",
             "required": false,
             "script": "",
@@ -60,11 +60,11 @@
             "width": 150
         },
         {
-            "displayName": "country_code",
+            "displayName": "bundle_id",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "country_code",
+            "key": "bundle_id",
             "orgType": "",
             "required": false,
             "script": "",
@@ -73,11 +73,11 @@
             "width": 150
         },
         {
-            "displayName": "hosting_provider",
+            "displayName": "developer_id",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "hosting_provider",
+            "key": "developer_id",
             "orgType": "",
             "required": false,
             "script": "",
@@ -86,29 +86,16 @@
             "width": 150
         },
         {
-            "displayName": "mx_records",
+            "displayName": "developer_name",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "mx_records",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": [],
-            "type": "longText",
-            "width": 150
-        },
-        {
-            "displayName": "nameservers",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "nameservers",
+            "key": "developer_name",
             "orgType": "",
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "longText",
+            "type": "shortText",
             "width": 150
         }
     ],
@@ -119,10 +106,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_doppelentitycontent",
+    "id": "incident_doppelentitycontentmobileapps",
     "isReadOnly": false,
     "locked": false,
-    "name": "Doppel Entity Content",
+    "name": "Doppel Entity Content Mobile Apps",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
