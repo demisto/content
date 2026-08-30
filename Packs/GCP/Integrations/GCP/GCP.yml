@@ -3402,7 +3402,8 @@ script:
     - name: metadata_fingerprint
       description: A fingerprint hash of the metadata's contents, used for optimistic locking. If not provided, the current fingerprint is fetched automatically from the instance (requires the compute.instances.get permission).
     - name: metadata_items
-      description: 'The metadata key/value pairs to set on the instance, in the format: key=abc,value=123;key=fed,value=456.'
+      description: 'The metadata key/value pairs to set on the instance, in the format: key=abc,value=123;key=fed,value=456. This replaces the instance metadata in full rather than merging, so any key that is not listed is removed, including keys such as ssh-keys and startup-script. Pass an empty value to clear all metadata.'
+      required: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
       description: The unique identifier for the resource. This identifier is defined by the server.

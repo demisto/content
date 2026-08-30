@@ -7045,15 +7045,37 @@ def test_compute_instance_metadata_set_auto_fetch_fingerprint(mocker):
     assert body["items"] == [{"key": "foo", "value": "bar"}]
 
 
-def test_compute_instance_metadata_set_empty_body(mocker):
+def test_compute_instance_metadata_set_missing_items_is_rejected(mocker):
     """
-    Given: No metadata_fingerprint and no metadata_items, and an instance with no metadata fingerprint.
+    Given: No metadata_items argument at all.
     When: compute_instance_metadata_set is called.
-    Then: The body sent to the API is empty (clears metadata).
+    Then: A DemistoException is raised before any API call, since setMetadata replaces metadata
+          in full and would otherwise silently delete all existing keys.
+    """
+    from GCP import compute_instance_metadata_set, DemistoException
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "resource_name": "instance-1"}
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    with pytest.raises(DemistoException, match="The 'metadata_items' argument is required"):
+        compute_instance_metadata_set(mocker.Mock(spec=Credentials), args)
+
+    mock_instances.setMetadata.assert_not_called()
+    mock_instances.get.assert_not_called()
+
+
+def test_compute_instance_metadata_set_explicit_empty_clears_metadata(mocker):
+    """
+    Given: An explicitly empty metadata_items value and an instance with no metadata fingerprint.
+    When: compute_instance_metadata_set is called.
+    Then: An empty body is sent, deliberately clearing all instance metadata.
     """
     from GCP import compute_instance_metadata_set
 
-    args = {"project_id": "test-project", "zone": "us-central1-a", "resource_name": "instance-1"}
+    args = {"project_id": "test-project", "zone": "us-central1-a", "resource_name": "instance-1", "metadata_items": ""}
     mock_compute = mocker.Mock()
     mock_instances = mocker.Mock()
     mock_compute.instances.return_value = mock_instances
@@ -7064,6 +7086,62 @@ def test_compute_instance_metadata_set_empty_body(mocker):
     compute_instance_metadata_set(mocker.Mock(spec=Credentials), args)
 
     assert mock_instances.setMetadata.call_args[1]["body"] == {}
+
+
+def test_compute_instance_insert_false_booleans_are_preserved(mocker):
+    """
+    Given: Boolean arguments explicitly set to false.
+    When: compute_instance_insert is called.
+    Then: The false values survive remove_empty_elements and reach the API body, rather than
+          being stripped as empty or dropped as None.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+        "can_ip_forward": "false",
+        "disk_boot": "false",
+        "disk_auto_delete": "false",
+        "deletion_protection": "false",
+        "disk_source": "disks/disk-1",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.insert.return_value.execute.return_value = {"id": "op-bool"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    body = mock_instances.insert.call_args[1]["body"]
+    assert body["canIpForward"] is False
+    assert body["deletionProtection"] is False
+    assert body["disks"][0]["boot"] is False
+    assert body["disks"][0]["autoDelete"] is False
+
+
+def test_compute_instance_insert_invalid_boolean_is_rejected(mocker):
+    """
+    Given: A boolean argument with a non-boolean value.
+    When: compute_instance_insert is called.
+    Then: arg_to_bool_or_none raises rather than silently coercing the value.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+        "deletion_protection": "not-a-bool",
+    }
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mocker.Mock())
+
+    with pytest.raises(ValueError):
+        compute_instance_insert(mocker.Mock(spec=Credentials), args)
 
 
 def test_compute_instance_metadata_set_invalid_items(mocker):
@@ -7213,7 +7291,10 @@ def test_compute_instances_aggregated_list_success(mocker):
     assert len(instances) == 2
     assert {i["id"] for i in instances} == {"1", "2"}
     assert result.outputs["GCP.Compute(true)"]["AggregatedInstancesNextToken"] == "token-xyz"
-    mock_instances.aggregatedList.assert_called_once_with(project="test-project")
+    # The declared YAML default of 50 is applied when the caller omits limit.
+    mock_instances.aggregatedList.assert_called_once_with(project="test-project", maxResults=50)
+    assert "inst-a" in result.readable_output
+    assert "next_token=token-xyz" in result.readable_output
 
 
 def test_compute_instances_aggregated_list_with_filters_and_pagination(mocker):
@@ -7252,7 +7333,8 @@ def test_compute_instances_aggregated_list_empty(mocker):
     """
     Given: An aggregatedList response with no instances.
     When: compute_instances_aggregated_list is called.
-    Then: It returns an empty instances list without a next page token key.
+    Then: It returns an empty instances list, a null next token that clears any stale
+          context value, and a "no results" readable output.
     """
     from GCP import compute_instances_aggregated_list
 
@@ -7265,5 +7347,68 @@ def test_compute_instances_aggregated_list_empty(mocker):
 
     result = compute_instances_aggregated_list(mocker.Mock(spec=Credentials), args)
 
-    assert result.outputs.get("GCP.Compute.Instances(val.id && val.id == obj.id)") is None
-    assert "GCP.Compute(true)" not in result.outputs
+    assert result.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"] == []
+    assert result.outputs["GCP.Compute(true)"]["AggregatedInstancesNextToken"] is None
+    assert result.readable_output == "No instances were found."
+
+
+def test_compute_instances_aggregated_list_last_page_clears_token(mocker):
+    """
+    Given: An aggregatedList response for the last page, which carries no nextPageToken.
+    When: compute_instances_aggregated_list is called.
+    Then: AggregatedInstancesNextToken is emitted as None so a token left in the context by a
+          previous page is overwritten rather than re-used.
+    """
+    from GCP import compute_instances_aggregated_list
+
+    args = {"project_id": "test-project", "next_token": "page-2"}
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.aggregatedList.return_value.execute.return_value = {
+        "items": {"zones/us-central1-a": {"instances": [{"id": "9", "name": "inst-last"}]}}
+    }
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    result = compute_instances_aggregated_list(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs["GCP.Compute(true)"]["AggregatedInstancesNextToken"] is None
+    assert "Run the following command" not in result.readable_output
+
+
+def test_compute_instances_aggregated_list_limit_above_max(mocker):
+    """
+    Given: A limit above the accepted 1-500 range.
+    When: compute_instances_aggregated_list is called.
+    Then: A DemistoException is raised before any API call is made.
+    """
+    from GCP import compute_instances_aggregated_list, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+        compute_instances_aggregated_list(mocker.Mock(spec=Credentials), {"project_id": "test-project", "limit": "501"})
+
+    mock_instances.aggregatedList.assert_not_called()
+
+
+def test_compute_instances_aggregated_list_zero_limit_falls_back_to_default(mocker):
+    """
+    Given: An explicit limit of 0, which would otherwise request zero results.
+    When: compute_instances_aggregated_list is called.
+    Then: The limit falls back to the default of 50 rather than being sent as 0.
+    """
+    from GCP import compute_instances_aggregated_list
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.aggregatedList.return_value.execute.return_value = {"items": {}}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instances_aggregated_list(mocker.Mock(spec=Credentials), {"project_id": "test-project", "limit": "0"})
+
+    mock_instances.aggregatedList.assert_called_once_with(project="test-project", maxResults=50)

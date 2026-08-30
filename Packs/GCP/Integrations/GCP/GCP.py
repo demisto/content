@@ -2124,7 +2124,7 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
         )
 
     access_config: dict[str, Any] = {"natIP": args.get("external_nat_ip")}
-    if argToBoolean(args.get("external_internet_access", "false")):
+    if arg_to_bool_or_none(args.get("external_internet_access")):
         access_config.update({"type": "ONE_TO_ONE_NAT", "name": "External NAT"})
 
     # Build the full instance body, then recursively strip empty elements. Note that
@@ -2134,7 +2134,7 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
             "name": name.lower() if name else None,
             "description": args.get("description"),
             "machineType": machine_type,
-            "canIpForward": argToBoolean(args["can_ip_forward"]) if args.get("can_ip_forward") is not None else None,
+            "canIpForward": arg_to_bool_or_none(args.get("can_ip_forward")),
             "tags": {
                 "items": argToList(args.get("tags")),
                 "fingerprint": args.get("tags_fingerprint"),
@@ -2151,8 +2151,8 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
                 {
                     "source": args.get("disk_source"),
                     "deviceName": args.get("disk_device_name"),
-                    "boot": argToBoolean(args["disk_boot"]) if args.get("disk_boot") is not None else None,
-                    "autoDelete": argToBoolean(args["disk_auto_delete"]) if args.get("disk_auto_delete") is not None else None,
+                    "boot": arg_to_bool_or_none(args.get("disk_boot")),
+                    "autoDelete": arg_to_bool_or_none(args.get("disk_auto_delete")),
                     "initializeParams": {
                         "sourceImage": args.get("source_image"),
                         "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
@@ -2165,9 +2165,7 @@ def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> Command
             if service_account_email
             else None,
             "labels": parse_labels(labels) if labels else None,
-            "deletionProtection": argToBoolean(args["deletion_protection"])
-            if args.get("deletion_protection") is not None
-            else None,
+            "deletionProtection": arg_to_bool_or_none(args.get("deletion_protection")),
         }
     )
 
@@ -2273,13 +2271,25 @@ def compute_instance_metadata_set(creds: Credentials, args: dict[str, Any]) -> C
     """
     Sets metadata for the specified Compute Engine VM instance.
 
+    Note that GCP's setMetadata API replaces the instance metadata in full rather than merging,
+    so any key absent from 'metadata_items' is removed from the instance.
+
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and
+            'metadata_items'.
 
     Returns:
         CommandResults: Result of the VM instance set metadata operation.
     """
+    metadata_items = args.get("metadata_items")
+    if metadata_items is None:
+        raise DemistoException(
+            "The 'metadata_items' argument is required. The GCP setMetadata API replaces the instance "
+            "metadata in full, so omitting it would delete all existing metadata, including keys such as "
+            "ssh-keys and startup-script. Pass an empty value explicitly to clear all metadata."
+        )
+
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
     resource_name = args.get("resource_name")
@@ -2299,8 +2309,10 @@ def compute_instance_metadata_set(creds: Credentials, args: dict[str, Any]) -> C
         metadata_fingerprint = instance.get("metadata", {}).get("fingerprint")
     if metadata_fingerprint:
         body["fingerprint"] = metadata_fingerprint
-    if metadata_items := args.get("metadata_items"):
+    if metadata_items:
         body["items"] = parse_metadata_items(metadata_items)
+
+    demisto.debug(f"[GCP: compute_instance_metadata_set] Body for {resource_name}: {body}")
 
     response = (
         compute.instances()  # pylint: disable=E1101
@@ -2379,18 +2391,18 @@ def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) 
     Args:
         creds (Credentials): GCP credentials.
         args (dict[str, Any]): Must include 'project_id'. Supports 'filters', 'order_by',
-            'limit', and 'next_token'.
+            'limit' (1-500, defaults to 50), and 'next_token'.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     project_id = args.get("project_id")
-    limit = arg_to_number(args.get("limit"))
+    # A missing limit - or an explicit 0, which would request zero results - falls back to 50.
+    limit = arg_to_number(args.get("limit")) or 50
     filters = args.get("filters")
     order_by = args.get("order_by")
     next_token = args.get("next_token")
-    if limit is not None:
-        validate_limit(limit)
+    validate_limit(limit)
 
     request_params: dict[str, Any] = {
         "project": project_id,
@@ -2400,40 +2412,47 @@ def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) 
         "pageToken": next_token,
     }
     remove_nulls_from_dictionary(request_params)
+    demisto.debug(f"[GCP: compute_instances_aggregated_list] Request params: {request_params}")
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.instances().aggregatedList(**request_params).execute()  # pylint: disable=E1101
 
     instances: list[dict[str, Any]] = []
-    for scope in response.get("items", {}).values():
-        if "warning" not in scope:
-            instances.extend(scope.get("instances", []) or [])
+    for scope_name, scope in response.get("items", {}).items():
+        if "warning" in scope:
+            demisto.debug(f"[GCP: compute_instances_aggregated_list] Skipping scope {scope_name}: {scope['warning']}")
+            continue
+        instances.extend(scope.get("instances") or [])
 
-    hr_data = [
-        {
-            "id": instance.get("id"),
-            "name": instance.get("name"),
-            "status": instance.get("status"),
-            "machineType": instance.get("machineType"),
-            "zone": instance.get("zone"),
-        }
-        for instance in instances
-    ]
+    demisto.debug(f"[GCP: compute_instances_aggregated_list] Instances returned: {len(instances)}")
 
-    readable_output = tableToMarkdown(
-        f"GCP Compute Instances in project {project_id}",
-        hr_data,
-        headers=["id", "name", "status", "machineType", "zone"],
-        headerTransform=pascalToSpace,
-        removeNull=True,
+    next_page_token = response.get("nextPageToken")
+    metadata = (
+        "Run the following command to retrieve the next batch of instances:\n"
+        f"!gcp-compute-instances-aggregated-list project_id={project_id} next_token={next_page_token}"
+        if next_page_token
+        else None
     )
 
-    outputs = remove_empty_elements(
-        {
-            "GCP.Compute.Instances(val.id && val.id == obj.id)": instances,
-            "GCP.Compute(true)": {"AggregatedInstancesNextToken": response.get("nextPageToken")},
-        }
+    readable_output = (
+        tableToMarkdown(
+            f"GCP Compute Instances in project {project_id}",
+            instances,
+            headers=["id", "name", "status", "machineType", "zone"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=metadata,
+        )
+        if instances
+        else "No instances were found."
     )
+
+    outputs = {
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": instances,
+        # The token is always emitted, even when None, so that a token from a previous page is
+        # overwritten in the context rather than lingering after the last page was reached.
+        "GCP.Compute(true)": {"AggregatedInstancesNextToken": next_page_token},
+    }
 
     return CommandResults(
         readable_output=readable_output,
