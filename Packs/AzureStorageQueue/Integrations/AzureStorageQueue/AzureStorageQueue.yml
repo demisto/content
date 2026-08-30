@@ -1,4 +1,7 @@
 category: IT Services
+sectionorder:
+- Connect
+- Collect
 provider: Microsoft
 commonfields:
   id: Azure Storage Queue
@@ -9,44 +12,60 @@ configuration:
   name: credentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   required: false
+  section: Connect
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Default is 10. Maximum is 32 (due to an API limit).
   defaultvalue: '10'
   display: Maximum incidents for one fetch.
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: The name of the queue from which the messages will be retrieved.
   display: Queue name
   name: queue_name
   type: 0
   required: false
+  section: Connect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 description: Create and Manage Azure Storage Queues and Messages.
 display: Azure Storage Queue
 name: Azure Storage Queue
