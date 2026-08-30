@@ -475,7 +475,15 @@ def main(command: str, demisto_params: dict):
             after = int(timestamp.timestamp() * 1000)  # type: ignore
             demisto.debug(f"MD: Parsed the after arg: {after}")
 
+        # Drop empty/None per-cycle limits so pydantic applies the per-type Field defaults
+        # (an unset instance config field is passed as None, which would fail int validation).
+        for limit_key in ("alerts_limit", "activities_limit"):
+            if demisto_params.get(limit_key) in (None, ""):
+                demisto.debug(f"MD: {limit_key} not set, falling back to per-type default.")
+                demisto_params.pop(limit_key, None)
+
         options = IntegrationOptions.parse_obj(demisto_params)
+        demisto.debug(f"MD: Using per-cycle caps {options.alerts_limit=}, {options.activities_limit=}")
         request = DefenderHTTPRequest.parse_obj(demisto_params)
         authenticator = DefenderAuthenticator.parse_obj(demisto_params)
 
