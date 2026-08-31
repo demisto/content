@@ -2970,7 +2970,7 @@ def compute_global_operation_get(creds: Credentials, args: dict[str, Any]) -> Co
     operation = args.get("operation")
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.globalOperations().get(project=project_id, operation=operation).execute()  # pylint: disable=E1101
-    demisto.debug(f"Global operation get response for {project_id}: \n{response}")
+    demisto.debug(f"[GCP] Retrieved global operation {response.get('name')} with status {response.get('status')}.")
     hr = tableToMarkdown(
         f"GCP Compute Global Operation: {operation}",
         response,
@@ -3006,7 +3006,7 @@ def compute_zone_operation_get(creds: Credentials, args: dict[str, Any]) -> Comm
     operation = args.get("operation")
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.zoneOperations().get(project=project_id, zone=zone, operation=operation).execute()  # pylint: disable=E1101
-    demisto.debug(f"Zone operation get response for {project_id}: \n{response}")
+    demisto.debug(f"[GCP] Retrieved zone operation {response.get('name')} with status {response.get('status')}.")
     hr = tableToMarkdown(
         f"GCP Compute Zone Operation: {operation}",
         response,
@@ -3042,7 +3042,7 @@ def compute_region_operation_get(creds: Credentials, args: dict[str, Any]) -> Co
     operation = args.get("operation")
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.regionOperations().get(project=project_id, region=region, operation=operation).execute()  # pylint: disable=E1101
-    demisto.debug(f"Region operation get response for {project_id}: \n{response}")
+    demisto.debug(f"[GCP] Retrieved region operation {response.get('name')} with status {response.get('status')}.")
     hr = tableToMarkdown(
         f"GCP Compute Region Operation: {operation}",
         response,
@@ -3068,7 +3068,7 @@ def compute_global_operation_list(creds: Credentials, args: dict[str, Any]) -> C
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
             - limit (int, optional): Maximum number of results to return (1-500).
-            - page_token (str, optional): Token for pagination.
+            - next_token (str, optional): Token for pagination.
             - filter (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
 
@@ -3078,7 +3078,7 @@ def compute_global_operation_list(creds: Credentials, args: dict[str, Any]) -> C
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit")) or 50
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
     flt = args.get("filter")
     order_by = args.get("order_by")
     validate_limit(limit)
@@ -3086,7 +3086,7 @@ def compute_global_operation_list(creds: Credentials, args: dict[str, Any]) -> C
     params: dict[str, Any] = {
         "project": project_id,
         "maxResults": limit,
-        "pageToken": page_token,
+        "pageToken": next_token,
         "filter": flt,
         "orderBy": order_by,
     }
@@ -3094,28 +3094,21 @@ def compute_global_operation_list(creds: Credentials, args: dict[str, Any]) -> C
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.globalOperations().list(**params).execute()  # pylint: disable=E1101
-    demisto.debug(f"GCP Compute Global Operations \nresponse: \n{response}")
     items = response.get("items", [])
+    demisto.debug(f"[GCP] Retrieved {len(items)} global operations for project {project_id}.")
     if not items:
         return CommandResults(readable_output="No global operations were found.")
-    next_token = response.get("nextPageToken")
-    metadata = (
-        "Run the following command to retrieve the next batch of operations:\n"
-        f"!gcp-compute-global-operation-list project_id={project_id} page_token={next_token}"
-        if next_token
-        else None
-    )
+    next_page_token = response.get("nextPageToken")
     hr = tableToMarkdown(
         "GCP Compute Global Operations",
         items,
         headers=OPERATION_TABLE,
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
     outputs = {
         "GCP.Compute.Operations(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"GlobalOperationsNextToken": next_token},
+        "GCP.Compute(true)": {"GlobalOperationsNextToken": next_page_token},
     }
     return CommandResults(
         readable_output=hr,
@@ -3134,7 +3127,7 @@ def compute_zone_operation_list(creds: Credentials, args: dict[str, Any]) -> Com
             - project_id (str): The GCP project ID.
             - zone (str): The name of the zone for this request.
             - limit (int, optional): Maximum number of results to return (1-500).
-            - page_token (str, optional): Token for pagination.
+            - next_token (str, optional): Token for pagination.
             - filter (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
 
@@ -3145,7 +3138,7 @@ def compute_zone_operation_list(creds: Credentials, args: dict[str, Any]) -> Com
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
     limit = arg_to_number(args.get("limit")) or 50
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
     flt = args.get("filter")
     order_by = args.get("order_by")
     validate_limit(limit)
@@ -3154,7 +3147,7 @@ def compute_zone_operation_list(creds: Credentials, args: dict[str, Any]) -> Com
         "project": project_id,
         "zone": zone,
         "maxResults": limit,
-        "pageToken": page_token,
+        "pageToken": next_token,
         "filter": flt,
         "orderBy": order_by,
     }
@@ -3162,28 +3155,21 @@ def compute_zone_operation_list(creds: Credentials, args: dict[str, Any]) -> Com
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.zoneOperations().list(**params).execute()  # pylint: disable=E1101
-    demisto.debug(f"GCP Compute Zone Operations \nresponse: \n{response}")
     items = response.get("items", [])
+    demisto.debug(f"[GCP] Retrieved {len(items)} zone operations for project {project_id} in zone {zone}.")
     if not items:
         return CommandResults(readable_output="No zone operations were found.")
-    next_token = response.get("nextPageToken")
-    metadata = (
-        "Run the following command to retrieve the next batch of operations:\n"
-        f"!gcp-compute-zone-operation-list project_id={project_id} zone={zone} page_token={next_token}"
-        if next_token
-        else None
-    )
+    next_page_token = response.get("nextPageToken")
     hr = tableToMarkdown(
         "GCP Compute Zone Operations",
         items,
         headers=OPERATION_TABLE,
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
     outputs = {
         "GCP.Compute.Operations(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"ZoneOperationsNextToken": next_token},
+        "GCP.Compute(true)": {"ZoneOperationsNextToken": next_page_token},
     }
     return CommandResults(
         readable_output=hr,
@@ -3202,7 +3188,7 @@ def compute_region_operation_list(creds: Credentials, args: dict[str, Any]) -> C
             - project_id (str): The GCP project ID.
             - region (str): The name of the region for this request.
             - limit (int, optional): Maximum number of results to return (1-500).
-            - page_token (str, optional): Token for pagination.
+            - next_token (str, optional): Token for pagination.
             - filter (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
 
@@ -3213,7 +3199,7 @@ def compute_region_operation_list(creds: Credentials, args: dict[str, Any]) -> C
     project_id = args.get("project_id")
     region = args.get("region")
     limit = arg_to_number(args.get("limit")) or 50
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
     flt = args.get("filter")
     order_by = args.get("order_by")
     validate_limit(limit)
@@ -3222,7 +3208,7 @@ def compute_region_operation_list(creds: Credentials, args: dict[str, Any]) -> C
         "project": project_id,
         "region": region,
         "maxResults": limit,
-        "pageToken": page_token,
+        "pageToken": next_token,
         "filter": flt,
         "orderBy": order_by,
     }
@@ -3230,28 +3216,21 @@ def compute_region_operation_list(creds: Credentials, args: dict[str, Any]) -> C
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.regionOperations().list(**params).execute()  # pylint: disable=E1101
-    demisto.debug(f"GCP Compute Region Operations \nresponse: \n{response}")
     items = response.get("items", [])
+    demisto.debug(f"[GCP] Retrieved {len(items)} region operations for project {project_id} in region {region}.")
     if not items:
         return CommandResults(readable_output="No region operations were found.")
-    next_token = response.get("nextPageToken")
-    metadata = (
-        "Run the following command to retrieve the next batch of operations:\n"
-        f"!gcp-compute-region-operation-list project_id={project_id} region={region} page_token={next_token}"
-        if next_token
-        else None
-    )
+    next_page_token = response.get("nextPageToken")
     hr = tableToMarkdown(
         "GCP Compute Region Operations",
         items,
         headers=OPERATION_TABLE,
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
     outputs = {
         "GCP.Compute.Operations(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"RegionOperationsNextToken": next_token},
+        "GCP.Compute(true)": {"RegionOperationsNextToken": next_page_token},
     }
     return CommandResults(
         readable_output=hr,

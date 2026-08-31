@@ -6760,7 +6760,7 @@ def test_compute_global_operation_list_with_pagination_and_filter(mocker):
     """
     from GCP import compute_global_operation_list
 
-    args = {"project_id": "p1", "limit": "2", "page_token": "t0", "filter": "status = DONE", "order_by": "creationTimestamp desc"}
+    args = {"project_id": "p1", "limit": "2", "next_token": "t0", "filter": "status = DONE", "order_by": "creationTimestamp desc"}
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_compute = mocker.Mock()
