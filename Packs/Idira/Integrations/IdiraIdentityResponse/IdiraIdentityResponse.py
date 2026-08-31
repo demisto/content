@@ -24,9 +24,6 @@ INTEGRATION_NAME = "Idira Identity Response"
 
 class Config:
     """Global static configuration (telemetry vendor fields, token defaults)."""
-
-    # Telemetry (guide section 6). Confirm final values with the Idira TAM
-    # before certification.
     INTEGRATION_VERSION = "1.0"
     INTEGRATION_TYPE = "SOAR"
     VENDOR_NAME = "Palo Alto Networks"
@@ -59,7 +56,7 @@ POLICY_STATUS_ENABLED = "Enabled"
 def generate_telemetry_header() -> str:
     """Build the base64-encoded ``x-cybr-telemetry`` header value.
 
-    Format (guide section 6): ampersand-delimited key=value pairs
+    Format: ampersand-delimited key=value pairs
     ``in=<name>&it=<type>&iv=<version>&vn=<vendor>``.
     """
     telemetry_data = (
@@ -206,7 +203,7 @@ class Client(BaseClient):
         params: dict[str, Any] | None = None,
         _is_retry: bool = False,
     ) -> Any:
-        """Execute an authenticated request and map errors per guide section 10.
+        """Execute an authenticated request and map.
 
         Returns the parsed JSON body (``{}`` for 204/empty). A 409 is treated as
         an idempotent success and returns ``{"status_code": 409}`` so callers can
@@ -343,7 +340,7 @@ def test_module(client: Client) -> str:
 
 
 def get_user_by_name_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Resolve a username to its user unique ID (guide 7.1)."""
+    """Resolve a username to its user unique ID."""
     username = args["username"]
     response = client.identity_request("/CDirectoryService/GetUserByName", {'username': username})
     user_id = _extract_user_id(response)
@@ -359,7 +356,7 @@ def get_user_by_name_command(client: Client, args: dict[str, Any]) -> CommandRes
 
 
 def _set_user_state(client: Client, user_id: str, state: str) -> CommandResults:
-    """Set a user's account state via SetUserState (guide 7.4)."""
+    """Set a user's account state via SetUserState."""
     response = client.identity_request("/CDirectoryService/SetUserState", {"ID": user_id, "state": state})
 
     success = _identity_success(response)
@@ -402,7 +399,7 @@ def force_logout_command(client: Client, args: dict[str, Any]) -> CommandResults
 
 
 def expire_password_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Require the user to set a new password at next login (guide 7.4, ChangeUser)."""
+    """Require the user to set a new password at next login."""
     username = args["username"]
     response = client.identity_request(
         "/CDirectoryService/ChangeUser", {"Name": username, "ForcePasswordChangeNext": True}
@@ -444,7 +441,7 @@ ACCOUNT_OUTPUT_FIELDS = ("id", "name", "userName", "safeName", "platformId", "ad
 
 
 def get_account_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Resolve privileged account(s) to their internal ID(s) (guide 7.2).
+    """Resolve privileged account(s) to their internal ID(s).
 
     Rotate and verify calls require the internal account ID; run this first.
     """
@@ -471,7 +468,7 @@ def get_account_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def get_account_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Fetch a single account's details by ID (guide 7.2, Resolve-A2)."""
+    """Fetch a single account's details by ID."""
     account_id = args["account_id"]
     response = client.privilege_cloud_request(f"/Accounts/{account_id}", method="GET")
 
@@ -503,7 +500,7 @@ SESSION_OUTPUT_FIELDS = (
 
 
 def list_sessions_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """List active privileged sessions to resolve a SessionGuid (guide 7.3).
+    """List active privileged sessions to resolve a SessionGuid.
 
     Check the ``CanTerminate`` / ``CanSuspend`` flags before acting on a session.
     """
@@ -529,7 +526,7 @@ def list_sessions_command(client: Client, args: dict[str, Any]) -> CommandResult
 
 
 def terminate_session_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Terminate a live privileged session by GUID (guide 7.5)."""
+    """Terminate a live privileged session by GUID."""
     session_guid = args["session_guid"]
     response = client.privilege_cloud_request(f"/LiveSessions/{session_guid}/Terminate/")
 
@@ -544,7 +541,7 @@ def terminate_session_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 def _session_pause_action(client: Client, session_guid: str, action: str) -> CommandResults:
-    """Suspend or resume a live session by GUID (guide 7.6). Not for SSH/OPM."""
+    """Suspend or resume a live session by GUID. Not for SSH/OPM."""
     response = client.privilege_cloud_request(f"/LiveSessions/{session_guid}/{action}/")
 
     outputs = {"SessionGuid": session_guid, "Action": action, "Success": True}
@@ -569,7 +566,7 @@ def resume_session_command(client: Client, args: dict[str, Any]) -> CommandResul
 
 
 def rotate_credential_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Trigger an immediate CPM credential change on an account (guide 7.7)."""
+    """Trigger an immediate CPM credential change on an account."""
     account_id = args["account_id"]
     change_for_group = argToBoolean(args.get("change_creds_for_group", False))
     response = client.privilege_cloud_request(
@@ -587,7 +584,7 @@ def rotate_credential_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 def verify_credential_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Mark an account for CPM verification (guide 7.7)."""
+    """Mark an account for CPM verification."""
     account_id = args["account_id"]
     response = client.privilege_cloud_request(f"/Accounts/{account_id}/Verify/")
 
@@ -602,7 +599,7 @@ def verify_credential_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 def vault_account_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Bring an unmanaged risky account under Idira management (guide 7.7)."""
+    """Bring an unmanaged risky account under Idira management."""
     body: dict[str, Any] = {
         "platformId": args["platform_id"],
         "safeName": args["safe_name"],
@@ -645,7 +642,7 @@ def vault_account_command(client: Client, args: dict[str, Any]) -> CommandResult
 
 
 def disable_access_policy_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Revoke standing/JIT access by disabling a SIA access policy (guide 7.8).
+    """Revoke standing/JIT access by disabling a SIA access policy.
 
     Reversible: re-run with ``status=Enabled``.
     """
