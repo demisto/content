@@ -198,8 +198,8 @@ class TestMicrosoftGraphSecurityDeleteMail:
         self.args = {"case_id": "case-123", "search_id": "search-456"}
 
         def execute_command_mock(cmd, args):
-            if cmd == "msg-list-case-operation":
-                return [{"action": "estimateStatistics", "search": {"id": "search-456"}, "status": "running"}]
+            if cmd == "msg-get-last-estimate-statistics-operation":
+                return [{"status": "running"}]
             return []
 
         mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=execute_command_mock)
@@ -215,17 +215,15 @@ class TestMicrosoftGraphSecurityDeleteMail:
         When:
             Polling for estimate completion.
         Then:
-            It should execute the purge command, delete the search, and return 'Success'.
+            It should execute the purge command, delete the search, and return SUCCESS_MESSAGE.
         """
         self.args = {"case_id": "case-123", "search_id": "search-456"}
         mock_execute = mocker.patch.object(DeleteReportedEmail, "execute_command")
 
         def execute_command_mock(cmd, args):
-            if cmd == "msg-list-case-operation":
+            if cmd == "msg-get-last-estimate-statistics-operation":
                 return [
                     {
-                        "action": "estimateStatistics",
-                        "search": {"id": "search-456"},
                         "status": "succeeded",
                         "indexedItemCount": 1,
                         "totalItemCount": 0,
@@ -236,10 +234,10 @@ class TestMicrosoftGraphSecurityDeleteMail:
         mock_execute.side_effect = execute_command_mock
         res, scheduled = microsoft_graph_security_delete_mail(self.args, self.message_id, self.using_brand, self.delete_type)
 
-        assert res == "Success"
+        assert res == DeleteReportedEmail.SUCCESS_MESSAGE
         assert scheduled is None
         mock_execute.assert_any_call("msg-purge-ediscovery-data", mocker.ANY)
-        # Search is not deleted to prevent cancelling async purge
+        mock_execute.assert_any_call("msg-delete-ediscovery-search", mocker.ANY)
 
     def test_polling_email_missing(self, mocker):
         """
@@ -253,11 +251,9 @@ class TestMicrosoftGraphSecurityDeleteMail:
         self.args = {"case_id": "case-123", "search_id": "search-456"}
 
         def execute_command_mock(cmd, args):
-            if cmd == "msg-list-case-operation":
+            if cmd == "msg-get-last-estimate-statistics-operation":
                 return [
                     {
-                        "action": "estimateStatistics",
-                        "search": {"id": "search-456"},
                         "status": "succeeded",
                         "indexedItemCount": 0,
                         "totalItemCount": 0,
@@ -274,8 +270,8 @@ class TestMicrosoftGraphSecurityDeleteMail:
         self.args = {"case_id": "case-123", "search_id": "search-456"}
 
         def execute_command_mock(cmd, args):
-            if cmd == "msg-list-case-operation":
-                return [{"action": "estimateStatistics", "search": {"id": "search-456"}, "status": "failed"}]
+            if cmd == "msg-get-last-estimate-statistics-operation":
+                return [{"status": "failed"}]
             return []
 
         mocker.patch.object(DeleteReportedEmail, "execute_command", side_effect=execute_command_mock)

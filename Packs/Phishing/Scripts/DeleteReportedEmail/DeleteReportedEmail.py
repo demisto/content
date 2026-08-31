@@ -1,6 +1,7 @@
 import re
 import time
 from collections.abc import Callable
+from typing import Any
 from urllib.parse import quote, unquote
 
 import demistomock as demisto  # noqa: F401
@@ -20,6 +21,8 @@ EMAIL_INTEGRATIONS = [
 # RFC 5322 msg-id is <id-left@id-right> with a constrained charset
 MESSAGE_ID_REGEX = re.compile(r"<[^\s<>]+@[^\s<>]+>")
 seconds = time.time()
+
+SUCCESS_MESSAGE = "Success - Purge initiated (it may take a few minutes for the email to be removed from the mailbox)"
 
 
 class MissingEmailException(Exception):
@@ -141,7 +144,7 @@ def schedule_next_command(args: dict):
         **args,
     }
     return ScheduledCommand(
-        command="DeleteReportedEmail",
+        command="DeleteReportedEmail1",
         next_run_in_seconds=60,
         args=polling_args,
         timeout_in_seconds=600,
@@ -160,15 +163,16 @@ def was_email_already_deleted(search_args: dict, e: str):
         'Skipped', if the email was not found in the mailbox and was not previously deleted by this script
 
     """
-    delete_email_from_context = demisto.get(demisto.context(), "DeleteReportedEmail")
+    delete_email_from_context = demisto.get(demisto.context(), "DeleteReportedEmail1")
     if delete_email_from_context:
         if not isinstance(delete_email_from_context, list):
             delete_email_from_context = [delete_email_from_context]
         for item in delete_email_from_context:
             message_id = item.get("message_id")
-            if message_id == search_args.get("message-id") and item.get("result") == "Success":
+            result_str = item.get("result", "")
+            if message_id == search_args.get("message-id") and ("Success" in result_str or "Purge" in result_str):
                 demisto.debug(f"Email {message_id} was already deleted successfully in a previous run.")
-                return "Success", ""
+                return result_str, ""
     return "Skipped", e
 
 
@@ -184,7 +188,7 @@ def _extract_graph_objects(response: Any) -> list:
     if isinstance(response, dict):
         demisto.debug("Response is a dict.")
         if "value" in response and isinstance(response.get("value"), list):
-            demisto.debug(f"Found 'value' array with {len(response.get('value', []))} items. Recursively flattening.")
+            demisto.debug(f"Found 'value' array with {len(response.get('value', []))} items.")
             return _extract_graph_objects(response.get("value", []))
         return [response]
     demisto.debug("Response is neither list nor dict. Returning empty list.")
@@ -242,9 +246,10 @@ def microsoft_graph_security_delete_mail(
     )
     check_demisto_version()
 
-    if was_email_already_deleted({"message-id": message_id}, "")[0] == "Success":
+    already_deleted_res, _ = was_email_already_deleted({"message-id": message_id}, "")
+    if already_deleted_res != "Skipped":
         demisto.debug("Email already deleted according to context. Exiting with Success.")
-        return "Success", None
+        return already_deleted_res, None
 
     case_name = "XSOAR Delete Reported Email"
     case_id = args.get("case_id")
@@ -252,7 +257,7 @@ def microsoft_graph_security_delete_mail(
     demisto.debug(f"Current State -> case_id: {case_id}, search_id: {search_id}")
 
     # ==========================================
-    # STEP 1: First Run - Setup and Trigger
+    # STEP 1: First Run - Setup and Trigger Estimate
     # ==========================================
     if not case_id or not search_id:
         demisto.debug("First run detected (missing case_id or search_id). Initializing eDiscovery flow...")
@@ -290,37 +295,31 @@ def microsoft_graph_security_delete_mail(
         return "In Progress", schedule_next_command(args)
 
     # ==========================================
-    # STEP 2: Polling Run - Check Status & Purge
+    # STEP 2: Polling Run - Check Estimate Status & Trigger Purge
     # ==========================================
-    demisto.debug("Polling run detected. Checking estimate statistics status via case operations...")
-    # Script-only workaround: read raw status via msg-list-case-operation to handle partiallySucceeded
-    status_res = execute_command("msg-list-case-operation", {"using-brand": using_brand, "case_id": case_id})
+    demisto.debug("Polling run detected. Checking estimate statistics status...")
+    status_res = execute_command(
+        "msg-get-last-estimate-statistics-operation", {"using-brand": using_brand, "case_id": case_id, "search_id": search_id}
+    )
 
     status_objs = _extract_graph_objects(status_res)
-    raw_status = {}
-    for obj in status_objs:
-        if str(obj.get("action", "")).lower() == "estimatestatistics":
-            search_ref = obj.get("search", {}).get("id")
-            if search_ref == search_id:
-                raw_status = obj
-                break
-
+    raw_status = status_objs[0] if status_objs else {}
     status = str(raw_status.get("status", "")).lower()
     demisto.debug(f"Raw status object: {raw_status}")
-    demisto.debug(f"Extracted status string: '{status}'")
+    demisto.debug(f"Extracted estimate status string: '{status}'")
 
     if status in ["running", "notstarted", ""]:
-        demisto.debug("Operation still running or not started. Returning 'In Progress' to poll again.")
+        demisto.debug("Estimate operation still running or not started. Returning 'In Progress' to poll again.")
         return "In Progress", schedule_next_command(args)
 
     if status == "failed":
-        demisto.debug(f"Operation failed! Cleaning up search and raising DeletionFailed exception for search_id: {search_id}")
+        demisto.debug(f"Estimate operation failed! Raising DeletionFailed exception for search_id: {search_id}")
         execute_command("msg-delete-ediscovery-search", {"using-brand": using_brand, "case_id": case_id, "search_id": search_id})
         raise DeletionFailed(f"eDiscovery estimate statistics failed for search_id: {search_id}")
 
     indexed_items = int(raw_status.get("indexedItemCount") or 0)
     total_items = int(raw_status.get("totalItemCount") or 0)
-    demisto.debug(f"Operation completed. indexedItemCount: {indexed_items}, totalItemCount: {total_items}")
+    demisto.debug(f"Estimate operation completed. indexedItemCount: {indexed_items}, totalItemCount: {total_items}")
 
     if indexed_items == 0 and total_items == 0:
         demisto.debug("No items found. Cleaning up search and raising MissingEmailException.")
@@ -341,14 +340,16 @@ def microsoft_graph_security_delete_mail(
                 "purge_areas": "mailboxes",
             },
         )
-        demisto.debug("Purge command initiated. Skipping immediate search deletion to avoid cancelling the asynchronous purge.")
     except Exception as e:
         demisto.debug(f"Purge command failed: {e}. Cleaning up search.")
         execute_command("msg-delete-ediscovery-search", {"using-brand": using_brand, "case_id": case_id, "search_id": search_id})
         raise
 
-    demisto.debug("Deletion flow completed successfully.")
-    return "Success", None
+    demisto.debug(f"Cleaning up eDiscovery search {search_id} post-purge trigger.")
+    execute_command("msg-delete-ediscovery-search", {"using-brand": using_brand, "case_id": case_id, "search_id": search_id})
+
+    demisto.debug("Deletion flow completed successfully via Fire-and-Forget.")
+    return SUCCESS_MESSAGE, None
 
 
 def extract_message_id(search_result: list, search_function: str) -> str | None:
@@ -604,7 +605,7 @@ def main():
                     search_args,
                     headerTransform=string_to_table_header,
                 ),
-                outputs_prefix="DeleteReportedEmail",
+                outputs_prefix="DeleteReportedEmail1",
                 outputs_key_field="message_id",
                 raw_response="",
                 outputs=search_args,

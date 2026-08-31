@@ -9,18 +9,12 @@ args:
   name: delete_from_brand
 - description: 'Argument used for the generic polling flow within the security and compliance search.'
   name: search_name
-- description: 'The eDiscovery case ID, set automatically between polling cycles. Should not be set by the user.'
+- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the case ID. Should not be set by the user.'
   name: case_id
   hidden: true
-  type: shortText
-- description: 'The eDiscovery search ID, set automatically between polling cycles. Should not be set by the user.'
+- description: 'Argument used for the MS Graph eDiscovery polling flow to hold the search ID. Should not be set by the user.'
   name: search_id
   hidden: true
-  type: shortText
-- description: 'The purge operation ID, set automatically between polling cycles. Should not be set by the user.'
-  name: purge_operation_id
-  hidden: true
-  type: shortText
 - auto: PREDEFINED
   description: Whether to use the Cortex XSOAR built-in polling to retrieve the result when it's ready.
   name: polling
@@ -29,23 +23,11 @@ args:
   - 'false'
 - description: Interval in seconds between each poll.
   name: interval_in_seconds
-- description: 'The Microsoft Graph eDiscovery estimate operation ID used for the polling flow.'
-  name: estimate_operation_id
-  hidden: true
-  type: shortText
-- description: 'The Microsoft Graph eDiscovery poll count used for the polling flow.'
-  name: poll_count
-  hidden: true
-  type: number
-- description: 'The Microsoft Graph eDiscovery timestamp for when polling started.'
-  name: poll_started_at
-  hidden: true
-  type: shortText
 comment: 'Use this script to delete a reported phishing email from the mailbox it was reported to.'
 commonfields:
-  id: DeleteReportedEmail
+  id: DeleteReportedEmail1
   version: -1
-name: DeleteReportedEmail
+name: DeleteReportedEmail1
 polling: true
 outputs:
 - contextPath: DeleteReportedEmail.result
