@@ -2708,6 +2708,4 @@ def test_delete_unified_exclusions(mocker, requests_mock):
 
     assert outputs["Affected"] == 1
     assert requests_mock.request_history[0].method == "DELETE"
-    assert requests_mock.last_request.json() == {
-        "data": {"exclusions": [{"id": "2543493559305834189", "type": "path"}]}
-    }
+    assert requests_mock.last_request.json() == {"data": {"exclusions": [{"id": "2543493559305834189", "type": "path"}]}}
