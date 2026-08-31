@@ -1,18 +1,18 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Doppel Alert Domains"
+        "Doppel Alert Telco"
     ],
     "caseInsensitive": true,
-    "cliName": "doppelentitycontent",
+    "cliName": "doppelentitycontenttelco",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "domain",
+            "displayName": "entity_created_at",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "domain",
+            "key": "entity_created_at",
             "orgType": "",
             "required": false,
             "script": "",
@@ -21,37 +21,11 @@
             "width": 150
         },
         {
-            "displayName": "registrar",
+            "displayName": "entity_updated_at",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "registrar",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "ip_address",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "ip_address",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "contact_email",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "contact_email",
+            "key": "entity_updated_at",
             "orgType": "",
             "required": false,
             "script": "",
@@ -73,42 +47,16 @@
             "width": 150
         },
         {
-            "displayName": "hosting_provider",
+            "displayName": "telco_provider",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "hosting_provider",
+            "key": "telco_provider",
             "orgType": "",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "mx_records",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "mx_records",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": [],
-            "type": "longText",
-            "width": 150
-        },
-        {
-            "displayName": "nameservers",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "nameservers",
-            "orgType": "",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "longText",
             "width": 150
         }
     ],
@@ -119,10 +67,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_doppelentitycontent",
+    "id": "incident_doppelentitycontenttelco",
     "isReadOnly": false,
     "locked": false,
-    "name": "Doppel Entity Content",
+    "name": "Doppel Entity Content Telco",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
