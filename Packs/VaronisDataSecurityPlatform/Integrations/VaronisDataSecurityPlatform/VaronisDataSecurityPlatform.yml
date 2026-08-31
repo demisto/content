@@ -1,7 +1,7 @@
 category: Analytics & SIEM
 provider: Varonis
 commonfields:
-  id: VaronisDataSecurityPlatform
+  id: VaronisDataSecurityPlatform_dev
   version: -1
 configuration:
 - display: Fetch incidents
@@ -64,8 +64,8 @@ configuration:
   type: 15
   required: false
 description: Streamline alerts and related forensic information from Varonis DSP.
-display: Varonis Data Security Platform
-name: VaronisDataSecurityPlatform
+display: Varonis Data Security Platform_dev
+name: VaronisDataSecurityPlatform_dev
 script:
   commands:
   - arguments:
@@ -375,7 +375,7 @@ script:
     - contextPath: Varonis.Pagination.PageSize
       description: Number of records on the page.
       type: Number
-  dockerimage: demisto/ntlm:1.0.0.9067966
+  dockerimage: devdemisto/ntlm:1.0.0.12535775
   isfetch: true
   runonce: false
   script: '-'
