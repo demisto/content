@@ -329,6 +329,53 @@ script:
     - contextPath: GCP.Compute.Firewall.targetTags
       description: Target instance tags.
       type: Unknown
+  - name: gcp-compute-firewall-delete
+    description: "Deletes the specified firewall rule. Required permission: compute.firewalls.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_name
+      required: true
+      description: The name of the firewall rule to delete.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: Unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: Type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: Current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: Progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: Unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
   - name: gcp-compute-snapshots-list
     description: "Lists snapshots in a specific project. Required permission: compute.snapshots.list."
     arguments:
@@ -490,6 +537,160 @@ script:
     - contextPath: GCP.Compute.Snapshot.storageLocations
       description: List of storage locations for the snapshot.
       type: Unknown
+  - name: gcp-compute-snapshot-delete
+    description: "Deletes the specified snapshot. Deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. Required permission: compute.snapshots.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_name
+      required: true
+      description: The name of the snapshot to delete.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: Unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: Type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: Current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: Progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: Unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
+  - name: gcp-compute-snapshot-labels-set
+    description: "Sets the labels on a snapshot. Required permissions: compute.snapshots.setLabels, compute.snapshots.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_name
+      required: true
+      description: The name of the snapshot for this request.
+    - name: labels
+      required: true
+      description: 'A list of labels to apply for this resource. Each label key and value must comply with RFC1035. Example: key=abc,value=123;key=def,value=456.'
+    - name: label_fingerprint
+      required: true
+      description: The fingerprint of the previous set of labels for this resource, used to detect conflicts. Run gcp-compute-snapshot-get to retrieve the latest fingerprint.
+    - name: add_labels
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to add the new labels to the existing ones or override the previous labels with the new ones. True - add, False - override.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: Unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: Type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: Current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: Progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: Unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
+  - name: gcp-compute-project-info-metadata-add
+    description: "Adds or updates project-wide metadata. The existing common instance metadata is fetched and merged with the provided items, where a provided item overrides an existing item with the same key. Required permissions: compute.projects.setCommonInstanceMetadata, compute.projects.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: metadata
+      required: true
+      description: 'Metadata to be made available to the guest operating system running on the instances. Each entry is a key/value pair separated by '';'' like so: key=abc,value=123;key=def,value=456.'
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: Unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: Type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: Current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: Progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: Unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
   - name: gcp-compute-instances-aggregated-list-by-ip
     description: "Returns an aggregated list of instances across all zones that can be filtered by internal or external IP. Required permission: cloudasset.assets.searchAllResources."
     arguments:
