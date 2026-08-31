@@ -3,6 +3,7 @@ import demistomock as demisto  # noqa: F401
 
 """ IMPORTS """
 import base64
+import os
 from urllib.parse import parse_qs, quote, urlparse
 
 from MicrosoftApiModule import *  # noqa: E402
@@ -22,6 +23,28 @@ RESPONSE_KEYS_DICTIONARY = {
 
 EXCLUDE_LIST = ["eTag", "cTag", "quota"]
 
+# get-file-content: approved file formats and size limit.
+APPROVED_EXTENSIONS = {".md", ".json", ".jsonl", ".csv", ".docx"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+# Mapping of MIME types to approved file extensions, used as a fallback when the
+# file name has no (or a non-approved) extension.
+MIME_TO_EXTENSION = {
+    "text/markdown": ".md",
+    "text/x-markdown": ".md",
+    "application/json": ".json",
+    "application/jsonl": ".jsonl",
+    "application/x-jsonlines": ".jsonl",
+    "text/csv": ".csv",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+}
+
+# MIME types whose payload is plain text and safe to return inline as utf-8
+# (with errors="replace"). Anything not matching is treated as binary and base64-encoded.
+_TEXT_MIME_EXACT: set[str] = {"application/json", "application/xml", "image/svg+xml"}
+
+FILE_CONTENT_OUTPUT_PREFIX = "FileContent"
+
 # The MS Graph resources a driveItem can be addressed under.
 VALID_OBJECT_TYPES = ("drives", "groups", "sites", "users")
 
@@ -34,6 +57,32 @@ DRIVEITEM_SELECT_FIELDS = (
 # The role keys an identitySet may nest an identity under, in preference order. 'siteUser'
 # matters for SharePoint sharing entries, where it is often the only one populated.
 IDENTITY_ROLE_KEYS = ("user", "siteUser", "group", "application", "device")
+
+
+def get_approved_extension(file_name: str, mime_type: str = None) -> Optional[str]:
+    """Return the approved file extension for the given file name or MIME type, or None if not approved."""
+    if file_name:
+        _, ext = os.path.splitext(file_name.lower())
+        if ext in APPROVED_EXTENSIONS:
+            return ext
+
+    if mime_type:
+        mime_ext = MIME_TO_EXTENSION.get(mime_type.lower())
+        if mime_ext in APPROVED_EXTENSIONS:
+            return mime_ext
+
+    return None
+
+
+def is_approved_file(file_name: str, mime_type: str = None) -> bool:
+    return get_approved_extension(file_name, mime_type) is not None
+
+
+def _is_text_mime(mime: str) -> bool:
+    """Return True when the given MIME type represents text-decodable content."""
+    if not mime:
+        return False
+    return mime.startswith("text/") or mime in _TEXT_MIME_EXACT
 
 
 def parse_key_to_context(obj: dict) -> dict:
@@ -746,6 +795,27 @@ class MsGraphClient:
 
         return self.ms_client.http_request(method="GET", url_suffix=uri, resp_type="response")
 
+    def get_driveitem_by_share_url(self, url: str) -> dict:
+        """Resolve a SharePoint/OneDrive sharing URL to its DriveItem metadata.
+
+        :param url: The SharePoint/OneDrive sharing URL.
+        :return: The DriveItem metadata (id, name, size, file.mimeType, webUrl, ...).
+        """
+        share_id = encode_sharing_url(url)
+        uri = f"shares/{share_id}/driveItem"
+        return self.ms_client.http_request(method="GET", url_suffix=uri)
+
+    def download_driveitem_by_share_url(self, url: str) -> bytes:
+        """Download the raw bytes of the file behind a SharePoint/OneDrive sharing URL.
+
+        :param url: The SharePoint/OneDrive sharing URL.
+        :return: The file content as raw bytes.
+        """
+        share_id = encode_sharing_url(url)
+        uri = f"shares/{share_id}/driveItem/content"
+        response = self.ms_client.http_request(method="GET", url_suffix=uri, resp_type="response")
+        return response.content
+
     def create_new_folder(self, object_type: str, object_type_id: str, parent_id: str, folder_name: str) -> dict:
         """
         Create a new folder in a Drive with a specified parent item or path.
@@ -978,6 +1048,105 @@ def test_function(client: MsGraphClient) -> str:
 
     client.ms_client.http_request(url_suffix="sites", timeout=7, method="GET")
     return response
+
+
+def get_file_content_command(client: MsGraphClient, args: dict[str, str]) -> CommandResults:
+    """get-file-content
+
+    Retrieves a file from SharePoint/OneDrive by its sharing URL and returns it in a
+    generic unified format.
+
+    Text-based files (csv / json / jsonl / markdown) populate ``Content`` with the
+    decoded text and ``Type`` holds the MIME type (e.g. ``text/csv``). Binary files
+    (e.g. docx) populate ``Content`` with the **base64-encoded** payload and ``Type``
+    is suffixed with ``;base64`` so downstream consumers can detect and decode it.
+
+    :param client: Client object.
+    :param args: Command arguments.
+    :return: Command Result.
+    """
+    url = args.get("url", "")
+    if not url:
+        raise ValueError("The 'url' argument is required.")
+
+    try:
+        response = client.get_driveitem_by_share_url(url)
+    except DemistoException as error:
+        error_text = str(error).lower()
+        # SharePoint Site Pages (.aspx) are not stored in a document library and cannot be
+        # resolved as a DriveItem. Surface a clear, actionable message instead of the raw
+        # Graph 'invalidRequest' error.
+        if "cannot be accessed as a drive item" in error_text or "site pages" in error_text:
+            raise ValueError(
+                f"The URL '{url}' points to a SharePoint Site Page, which is not a downloadable file. "
+                "Provide a sharing URL to a document (e.g. a file in a document library)."
+            ) from error
+        # Access denied / not found usually means the file is not shared with the connector's
+        # application, or the sharing URL is invalid/expired. Surface an actionable message
+        # instead of the raw Graph 403/404 (parity with the Google Drive get-file-content).
+        if any(
+            marker in error_text for marker in ("accessdenied", "access denied", "403", "404", "itemnotfound", "unauthorized")
+        ):
+            demisto.error(f"get-file-content: access denied/not found for url={url}, full error: {error}")
+            raise ValueError(
+                f"Cannot access the file at '{url}'. Ensure the sharing URL is valid and that the file "
+                "is shared with the application configured in this integration."
+            ) from error
+        raise
+
+    file_name = response.get("name", "")
+    file_id = response.get("id", "")
+    mime_type = (response.get("file") or {}).get("mimeType", "")
+    demisto.debug(f"get-file-content: file_id={file_id} mime_type={mime_type}")
+
+    # Check file format
+    if not is_approved_file(file_name, mime_type):
+        supported = ", ".join(sorted(APPROVED_EXTENSIONS))
+        raise ValueError(f"File format not approved: {file_name} ({mime_type}). Supported formats: {supported}.")
+
+    # Check file size (limit to 5MB = 5 * 1024 * 1024 bytes)
+    size_bytes = response.get("size")
+    if size_bytes and int(size_bytes) > MAX_FILE_SIZE:
+        size_mb = int(size_bytes) / (1024 * 1024)
+        limit_mb = MAX_FILE_SIZE / (1024 * 1024)
+        raise ValueError(
+            f"The file '{file_name}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB."
+        )
+
+    raw_bytes = client.download_driveitem_by_share_url(url)
+
+    if _is_text_mime(mime_type):
+        # Text payload — decode with replacement so a single bad byte cannot crash us.
+        content = raw_bytes.decode("utf-8", errors="replace")
+        output_type = mime_type
+    else:
+        # Binary payload (docx, etc.) — base64-encode and tag with ';base64'
+        # so downstream consumers can detect that Content must be base64-decoded.
+        content = base64.b64encode(raw_bytes).decode("ascii")
+        output_type = f"{mime_type};base64"
+
+    generic_output = assign_params(
+        Title=file_name,
+        Type=output_type,
+        Name=file_name,
+        Content=content,
+        Url=url,
+        Id=file_id,
+    )
+
+    readable_hr = tableToMarkdown(
+        "Generic File Content",
+        generic_output,
+        headers=["Id", "Title", "Type", "Url"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=FILE_CONTENT_OUTPUT_PREFIX,
+        outputs=generic_output,
+        readable_output=readable_hr,
+        raw_response=response,
+    )
 
 
 def download_file_command(client: MsGraphClient, args: dict[str, str]) -> dict:
@@ -2325,6 +2494,8 @@ def run_microsoft_graph_files_integration():
             return_results(get_sensitivity_label_command(client, args))
         elif command == "msgraph-assign-sensitivity-label":
             return_results(assign_sensitivity_label_command(client, args))
+        elif command == "get-file-content":
+            return_results(get_file_content_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as e:

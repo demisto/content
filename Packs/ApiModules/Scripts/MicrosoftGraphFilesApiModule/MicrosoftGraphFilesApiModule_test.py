@@ -10,10 +10,13 @@ from CommonServerPython import CommandResults, DemistoException
 from MicrosoftGraphFilesApiModule import (
     MsGraphClient,
     _decode_sharepoint_login_name,
+    _is_text_mime,
     _summarize_identity_set,
     _summarize_permission_grantees,
     assign_sensitivity_label_command,
     copy_driveitem_command,
+    get_file_content_command,
+    is_approved_file,
     create_new_folder_command,
     create_site_permissions_command,
     delete_driveitem_permission_command,
@@ -2119,6 +2122,196 @@ def test_assign_sensitivity_label_propagates_http_errors(mocker: MockerFixture, 
     with pytest.raises(DemistoException) as exc_info:
         assign_sensitivity_label_command(CLIENT_MOCKER, args)
     assert error_message in str(exc_info.value)
+
+
+# ----------------------- get-file-content -----------------------
+
+
+@pytest.mark.parametrize(
+    "file_name, mime_type, expected",
+    [
+        ("report.docx", "", True),
+        ("data.csv", "", True),
+        ("notes.md", "", True),
+        ("payload.json", "", True),
+        ("lines.jsonl", "", True),
+        ("image.png", "image/png", False),
+        ("archive.zip", "application/zip", False),
+        ("", "text/csv", True),
+        ("", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", True),
+        ("", "application/pdf", False),
+    ],
+)
+def test_is_approved_file(file_name, mime_type, expected):
+    assert is_approved_file(file_name, mime_type) is expected
+
+
+@pytest.mark.parametrize(
+    "mime, expected",
+    [
+        ("text/csv", True),
+        ("text/plain", True),
+        ("application/json", True),
+        ("application/xml", True),
+        ("image/svg+xml", True),
+        ("application/vnd.openxmlformats-officedocument.wordprocessingml.document", False),
+        ("application/pdf", False),
+        ("", False),
+    ],
+)
+def test_is_text_mime(mime, expected):
+    assert _is_text_mime(mime) is expected
+
+
+def test_get_file_content_command_text_file(mocker: MockerFixture):
+    """
+    Given: A sharing URL for a text (csv) file.
+    When: Running get-file-content.
+    Then: Content is returned inline (decoded) and Type is the plain MIME type (no ';base64').
+    """
+    url = "https://contoso.sharepoint.com/:x:/s/site/csv1"
+    mocker.patch.object(
+        CLIENT_MOCKER,
+        "get_driveitem_by_share_url",
+        return_value={"id": "item1", "name": "data.csv", "size": 10, "file": {"mimeType": "text/csv"}},
+    )
+    mocker.patch.object(CLIENT_MOCKER, "download_driveitem_by_share_url", return_value=b"a,b,c\n1,2,3")
+
+    result = get_file_content_command(CLIENT_MOCKER, {"url": url})
+
+    assert result.outputs_prefix == "FileContent"
+    assert result.outputs["Type"] == "text/csv"
+    assert result.outputs["Content"] == "a,b,c\n1,2,3"
+    assert result.outputs["Name"] == "data.csv"
+    assert result.outputs["Id"] == "item1"
+    assert result.outputs["Url"] == url
+
+
+def test_get_file_content_command_binary_file_base64(mocker: MockerFixture):
+    """
+    Given: A sharing URL for a binary (docx) file.
+    When: Running get-file-content.
+    Then: Content is base64-encoded and Type is suffixed with ';base64' and decodes back to the raw bytes.
+    """
+    import base64 as _b64
+
+    url = "https://contoso.sharepoint.com/:w:/s/site/docx1"
+    raw = b"\x50\x4b\x03\x04binary-docx-bytes"
+    docx_mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    mocker.patch.object(
+        CLIENT_MOCKER,
+        "get_driveitem_by_share_url",
+        return_value={"id": "item2", "name": "report.docx", "size": len(raw), "file": {"mimeType": docx_mime}},
+    )
+    mocker.patch.object(CLIENT_MOCKER, "download_driveitem_by_share_url", return_value=raw)
+
+    result = get_file_content_command(CLIENT_MOCKER, {"url": url})
+
+    assert result.outputs["Type"] == f"{docx_mime};base64"
+    assert _b64.b64decode(result.outputs["Content"]) == raw
+
+
+def test_get_file_content_command_unapproved_format(mocker: MockerFixture):
+    """
+    Given: A sharing URL for a file whose format is not approved.
+    When: Running get-file-content.
+    Then: A ValueError is raised listing the supported formats.
+    """
+    url = "https://contoso.sharepoint.com/:i:/s/site/png1"
+    mocker.patch.object(
+        CLIENT_MOCKER,
+        "get_driveitem_by_share_url",
+        return_value={"id": "item3", "name": "image.png", "size": 10, "file": {"mimeType": "image/png"}},
+    )
+    with pytest.raises(ValueError, match="File format not approved"):
+        get_file_content_command(CLIENT_MOCKER, {"url": url})
+
+
+def test_get_file_content_command_exceeds_size_limit(mocker: MockerFixture):
+    """
+    Given: A sharing URL for an approved file larger than the 5 MB limit.
+    When: Running get-file-content.
+    Then: A ValueError about the maximum allowed size is raised.
+    """
+    url = "https://contoso.sharepoint.com/:w:/s/site/big"
+    docx_mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    mocker.patch.object(
+        CLIENT_MOCKER,
+        "get_driveitem_by_share_url",
+        return_value={"id": "item4", "name": "big.docx", "size": 6 * 1024 * 1024, "file": {"mimeType": docx_mime}},
+    )
+    with pytest.raises(ValueError, match="exceeds the maximum allowed size"):
+        get_file_content_command(CLIENT_MOCKER, {"url": url})
+
+
+def test_get_file_content_command_missing_url():
+    """
+    Given: No 'url' argument.
+    When: Running get-file-content.
+    Then: A ValueError about the required 'url' argument is raised.
+    """
+    with pytest.raises(ValueError, match="The 'url' argument is required."):
+        get_file_content_command(CLIENT_MOCKER, {})
+
+
+def test_get_file_content_command_site_page_error(mocker: MockerFixture):
+    """
+    Given: A sharing URL that points to a SharePoint Site Page (.aspx).
+    When: Running get-file-content and Graph returns 'Site Pages cannot be accessed as a drive item'.
+    Then: A clear ValueError about Site Pages is raised instead of the raw Graph error.
+    """
+    url = "https://contoso.sharepoint.com/sites/site/SitePages/Home.aspx"
+    mocker.patch.object(
+        CLIENT_MOCKER,
+        "get_driveitem_by_share_url",
+        side_effect=DemistoException("Site Pages cannot be accessed as a drive item"),
+    )
+    with pytest.raises(ValueError, match="SharePoint Site Page"):
+        get_file_content_command(CLIENT_MOCKER, {"url": url})
+
+
+@pytest.mark.parametrize(
+    "graph_error",
+    [
+        "accessDenied",
+        "Access Denied",
+        "403 Forbidden",
+        "404 Not Found",
+        "itemNotFound",
+        "Unauthorized",
+    ],
+)
+def test_get_file_content_command_access_denied(mocker: MockerFixture, graph_error: str):
+    """
+    Given: A sharing URL the connector's application cannot access (Graph 403/404/accessDenied).
+    When: Running get-file-content.
+    Then: A friendly, actionable ValueError is raised instead of the raw Graph error
+          (parity with the Google Drive get-file-content access-denied mapping).
+    """
+    url = "https://contoso.sharepoint.com/:x:/r/personal/fake_user/Documents/report.csv"
+    mocker.patch.object(
+        CLIENT_MOCKER,
+        "get_driveitem_by_share_url",
+        side_effect=DemistoException(graph_error),
+    )
+    with pytest.raises(ValueError, match="Cannot access the file"):
+        get_file_content_command(CLIENT_MOCKER, {"url": url})
+
+
+def test_get_file_content_command_other_demisto_exception_propagates(mocker: MockerFixture):
+    """
+    Given: A sharing URL where Graph fails with an unrelated error (not access/site-page).
+    When: Running get-file-content.
+    Then: The original DemistoException propagates unchanged (no over-broad mapping).
+    """
+    url = "https://contoso.sharepoint.com/:x:/r/personal/fake_user/Documents/report.csv"
+    mocker.patch.object(
+        CLIENT_MOCKER,
+        "get_driveitem_by_share_url",
+        side_effect=DemistoException("Internal server error"),
+    )
+    with pytest.raises(DemistoException, match="Internal server error"):
+        get_file_content_command(CLIENT_MOCKER, {"url": url})
 
 
 @pytest.mark.parametrize(
