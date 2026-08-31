@@ -5456,7 +5456,7 @@ def test_get_credentials_marketplace_missing_credentials_raises(mocker):
     When:
         - get_credentials is called.
     Then:
-        - DemistoException is raised indicating project_id is missing.
+        - DemistoException is raised indicating the identifier/project_id is missing.
     """
     from GCP import get_credentials
     from CommonServerPython import DemistoException
@@ -5467,7 +5467,7 @@ def test_get_credentials_marketplace_missing_credentials_raises(mocker):
     # Simulate CTS call failing (no connector context)
     mocker.patch("GCP.get_cloud_credentials", side_effect=Exception("no connector"))
 
-    with pytest.raises(DemistoException, match="Missing required parameter 'project_id'"):
+    with pytest.raises(DemistoException, match="Missing required parameter"):
         get_credentials(args, params)
 
 

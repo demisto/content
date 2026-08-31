@@ -2044,11 +2044,13 @@ def resource_manager_project_search(creds: Credentials, args: dict[str, Any]) ->
 
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): May include 'query', 'limit', 'page_size', and 'page_token'.
+        args (dict[str, Any]): May include 'project_id', 'query', 'limit', 'page_size', and 'page_token'.
 
     Returns:
         CommandResults: A list of matching Project resources.
     """
+    # identifier selects the account to authenticate as (consumed by get_credentials); it does not filter results.
+    args.get("identifier")
     query = args.get("query")
     page_token = args.get("page_token")
     limit = _validate_positive_int(args.get("limit"), "limit")
@@ -2229,6 +2231,8 @@ def resource_manager_organization_search(creds: Credentials, args: dict[str, Any
     Returns:
         CommandResults: A list of matching Organization resources.
     """
+    # identifier selects the account to authenticate as (consumed by get_credentials); it does not filter results.
+    args.get("identifier")
     query = args.get("query")
     page_token = args.get("page_token")
     limit = _validate_positive_int(args.get("limit"), "limit")
@@ -2293,6 +2297,8 @@ def resource_manager_organization_get(creds: Credentials, args: dict[str, Any]) 
     Returns:
         CommandResults: The requested Organization resource.
     """
+    # identifier selects the account to authenticate as (consumed by get_credentials); it does not filter results.
+    args.get("identifier")
     name = args.get("name")
 
     resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
@@ -3062,12 +3068,17 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         return creds
 
     # --- Cortex Platform path: CTS token-based authentication ---
-    project_id = args.get("project_id")
-    if not project_id:
-        raise DemistoException("Missing required parameter 'project_id'")
+    # Resource commands provide ``project_id``; global commands provide ``identifier`` (project,
+    # folder, or organization ID). Either is used solely to create the CTS token.
+    identifier = args.get("project_id") or args.get("identifier")
+    if not identifier:
+        raise DemistoException(
+            "Missing required parameter. Provide 'project_id' (resource commands) or 'identifier' "
+            "(a project, folder, or organization ID for global commands) to create the CTS token."
+        )
 
     try:
-        credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
+        credential_data = get_cloud_credentials(CloudTypes.GCP.value, identifier)
     except Exception as e:
         raise DemistoException(f"Failed to authenticate with GCP via CTS: {str(e)}")
 
@@ -3076,7 +3087,7 @@ def get_credentials(args: dict, params: dict) -> Credentials:
         raise DemistoException("Failed to retrieve GCP access token - token is missing from CTS credentials")
 
     creds = Credentials(token=token)
-    demisto.debug(f"[GCP get_credentials] {project_id}: Using CTS token-based credentials (Cortex Platform path)")
+    demisto.debug(f"[GCP get_credentials] {identifier}: Using CTS token-based credentials (Cortex Platform path)")
     return creds
 
 

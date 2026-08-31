@@ -4294,6 +4294,10 @@ script:
   - name: gcp-resource-manager-project-search
     description: "Searches for GCP projects that are visible to the caller and match an optional query. Required Permission: resourcemanager.projects.get."
     arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0.
+      required: false
+      required:platform: true
     - name: query
       description: 'The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (for example, "state:ACTIVE" or "displayName:how*").'
     - name: limit
@@ -4422,6 +4426,10 @@ script:
   - name: gcp-resource-manager-organization-search
     description: "Searches for GCP organizations that are visible to the caller and match an optional query. Required Permission: resourcemanager.organizations.get."
     arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0.
+      required: false
+      required:platform: true
     - name: query
       description: 'The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (for example, "domain:google.com").'
     - name: limit
@@ -4454,6 +4462,10 @@ script:
   - name: gcp-resource-manager-organization-get
     description: "Retrieves a GCP organization by its resource name. Required Permission: resourcemanager.organizations.get."
     arguments:
+    - name: identifier
+      description: The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0.
+      required: false
+      required:platform: true
     - name: name
       description: 'The resource name of the organization to fetch, in the form "organizations/[organization_id]" (e.g. organizations/1234).'
       required: true

@@ -1815,6 +1815,7 @@ Searches for GCP projects that are visible to the caller and match an optional q
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0. | Optional |
 | query | The optional query string to filter the projects. Supported fields include displayName, parent, id, state, and labels.[KEY] (for example, "state:ACTIVE" or "displayName:how*"). | Optional |
 | limit | The maximum number of results to return across all pages. Default is 50. | Optional |
 | page_size | The maximum number of results to return per API request. Used together with limit to control internal pagination. Default is 50. | Optional |
@@ -1835,7 +1836,7 @@ Searches for GCP projects that are visible to the caller and match an optional q
 
 #### Command example
 
-```!gcp-resource-manager-project-search query="state:ACTIVE" limit=2```
+```!gcp-resource-manager-project-search identifier=id query="state:ACTIVE" limit=2```
 
 #### Context Example
 
@@ -2066,6 +2067,7 @@ Searches for GCP organizations that are visible to the caller and match an optio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0. | Optional |
 | query | The optional query string to filter the organizations. Organizations may be filtered by owner.directoryCustomerId or by domain (for example, "domain:google.com"). | Optional |
 | limit | The maximum number of results to return across all pages. Default is 50. | Optional |
 | page_size | The maximum number of results to return per API request. Used together with limit to control internal pagination. Default is 50. | Optional |
@@ -2084,7 +2086,7 @@ Searches for GCP organizations that are visible to the caller and match an optio
 
 #### Command example
 
-```!gcp-resource-manager-organization-search query="domain:example.com"```
+```!gcp-resource-manager-organization-search identifier=id query="domain:example.com"```
 
 #### Context Example
 
@@ -2127,6 +2129,7 @@ Retrieves a GCP organization by its resource name. Required Permission: resource
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| identifier | The GCP resource identifier of the account to authenticate as - a project ID, folder ID, or organization ID. Required for creating the CTS token on Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Used only to obtain credentials, not to filter results. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0. | Optional |
 | name | The resource name of the organization to fetch, in the form "organizations/[organization_id]" (for example, organizations/1234). | Required |
 
 #### Context Output
@@ -2141,7 +2144,7 @@ Retrieves a GCP organization by its resource name. Required Permission: resource
 
 #### Command example
 
-```!gcp-resource-manager-organization-get name=organizations/123456789012```
+```!gcp-resource-manager-organization-get identifier=id name=organizations/123456789012```
 
 #### Context Example
 
