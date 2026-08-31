@@ -1,7 +1,7 @@
 category: Analytics & SIEM
 provider: Varonis
 commonfields:
-  id: VaronisDataSecurityPlatform_dev
+  id: VaronisDataSecurityPlatform
   version: -1
 configuration:
 - display: Fetch incidents
@@ -64,8 +64,8 @@ configuration:
   type: 15
   required: false
 description: Streamline alerts and related forensic information from Varonis DSP.
-display: Varonis Data Security Platform_dev
-name: VaronisDataSecurityPlatform_dev
+display: Varonis Data Security Platform
+name: VaronisDataSecurityPlatform
 script:
   commands:
   - arguments:
