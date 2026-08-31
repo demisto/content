@@ -5,7 +5,8 @@
     "id": "incident_panoraysfindingsubcategory",
     "name": "Panorays Finding Sub Category",
     "associatedTypes": [
-        "Panorays Finding"
+        "Panorays Finding",
+        "Panorays Supplier Finding"
     ],
     "associatedToAll": false,
     "type": "shortText",

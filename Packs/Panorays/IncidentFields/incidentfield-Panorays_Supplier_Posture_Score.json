@@ -1,0 +1,18 @@
+{
+    "cliName": "panorayssupplierposturescore",
+    "description": "The external posture score of the supplier as calculated by Panorays.",
+    "group": 0,
+    "id": "incident_panorayssupplierposturescore",
+    "name": "Panorays Supplier Posture Score",
+    "associatedTypes": [
+        "Panorays Supplier Finding"
+    ],
+    "associatedToAll": false,
+    "type": "number",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "required": false,
+    "unsearchable": true
+}

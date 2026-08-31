@@ -1,0 +1,18 @@
+{
+    "cliName": "panorayssupplierdomain",
+    "description": "The primary domain of the supplier the finding belongs to.",
+    "group": 0,
+    "id": "incident_panorayssupplierdomain",
+    "name": "Panorays Supplier Domain",
+    "associatedTypes": [
+        "Panorays Supplier Finding"
+    ],
+    "associatedToAll": false,
+    "type": "shortText",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "required": false,
+    "unsearchable": true
+}

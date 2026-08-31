@@ -1,0 +1,18 @@
+{
+    "cliName": "panorayssupplierrisk",
+    "description": "The overall risk level of the supplier in Panorays, as a numeric value.",
+    "group": 0,
+    "id": "incident_panorayssupplierrisk",
+    "name": "Panorays Supplier Risk",
+    "associatedTypes": [
+        "Panorays Supplier Finding"
+    ],
+    "associatedToAll": false,
+    "type": "number",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "required": false,
+    "unsearchable": true
+}

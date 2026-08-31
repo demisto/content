@@ -1,0 +1,18 @@
+{
+    "cliName": "panorayssuppliertags",
+    "description": "The tags assigned to the supplier in Panorays, as a comma-separated list.",
+    "group": 0,
+    "id": "incident_panorayssuppliertags",
+    "name": "Panorays Supplier Tags",
+    "associatedTypes": [
+        "Panorays Supplier Finding"
+    ],
+    "associatedToAll": false,
+    "type": "longText",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "required": false,
+    "unsearchable": true
+}

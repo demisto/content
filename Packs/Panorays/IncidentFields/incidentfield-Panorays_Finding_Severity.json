@@ -5,7 +5,8 @@
     "id": "incident_panoraysfindingseverity",
     "name": "Panorays Finding Severity",
     "associatedTypes": [
-        "Panorays Finding"
+        "Panorays Finding",
+        "Panorays Supplier Finding"
     ],
     "associatedToAll": false,
     "type": "shortText",

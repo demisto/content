@@ -1,0 +1,18 @@
+{
+    "cliName": "panorayssuppliercombinedscore",
+    "description": "The combined Panorays risk score of the supplier.",
+    "group": 0,
+    "id": "incident_panorayssuppliercombinedscore",
+    "name": "Panorays Supplier Combined Score",
+    "associatedTypes": [
+        "Panorays Supplier Finding"
+    ],
+    "associatedToAll": false,
+    "type": "number",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "required": false,
+    "unsearchable": true
+}

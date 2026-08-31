@@ -7,7 +7,7 @@ commonfields:
 name: PanoraysFindingsAPI
 display: Panorays Findings API
 category: Vulnerability Management
-description: Retrieve and monitor internal security findings for your organization from the Panorays platform to streamline self-assessment posture and automate internal incident response within Cortex XSOAR.
+description: Retrieve and monitor internal security findings for your organization, and critical findings across your supplier (third-party) portfolio, from the Panorays platform to automate incident response within Cortex XSOAR.
 fromversion: "6.0.0"
 provider: Panorays
 configuration:
@@ -33,11 +33,30 @@ configuration:
   type: 8
   required: false
   section: Connect
+- display: Maximum API requests per minute
+  name: rate_limit
+  defaultvalue: "120"
+  type: 0
+  required: false
+  additionalinfo: The Panorays API permits 150 requests per minute and blocks the caller for one hour when that is exceeded. Keep this below 150.
+  section: Connect
+  advanced: true
+- display: Findings scope
+  name: findings_scope
+  defaultvalue: Company Findings
+  type: 15
+  required: false
+  options:
+  - Company Findings
+  - Supplier Findings
+  additionalinfo: Whether this instance fetches your own organization's findings or findings across your supplier portfolio. Configure a separate instance for each scope.
+  section: Collect
 - display: Maximum number of incidents to fetch per run
   name: max_fetch
   defaultvalue: "50"
   type: 0
   required: false
+  additionalinfo: When fetching supplier findings, a run that reaches this limit part-way through a supplier resumes on that same supplier next run, so the limit is honored without skipping findings.
   section: Collect
   supportedModules:
   - agentix
@@ -48,6 +67,59 @@ configuration:
   type: 0
   required: false
   section: Collect
+- display: Supplier finding severities
+  name: supplier_finding_severity
+  defaultvalue: CRITICAL
+  type: 16
+  required: false
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  - INFO
+  additionalinfo: Only applies when Findings scope is "Supplier Findings". Only findings with these severities create incidents.
+  section: Collect
+- display: Supplier finding statuses
+  name: supplier_finding_status
+  defaultvalue: OPEN,REOPENED
+  type: 0
+  required: false
+  additionalinfo: Comma-separated finding statuses to fetch. Known values are OPEN, REOPENED, and DONE. The default excludes DONE so that remediated findings do not create incidents, while still covering findings that were reopened. Only applies when Findings scope is "Supplier Findings". Leave empty to fetch all statuses.
+  section: Collect
+- display: Date field to fetch by
+  name: date_field
+  defaultvalue: update_ts
+  type: 15
+  required: false
+  options:
+  - update_ts
+  - insert_ts
+  additionalinfo: Use update_ts to also pick up findings whose severity or status changed. Use insert_ts to fetch only newly discovered findings.
+  section: Collect
+  advanced: true
+- display: Supplier segment IDs
+  name: segment_ids
+  type: 0
+  required: false
+  additionalinfo: Optional comma-separated segment IDs. When set, only suppliers in these segments are polled.
+  section: Collect
+  advanced: true
+- display: Supplier tags
+  name: supplier_tags
+  type: 0
+  required: false
+  additionalinfo: Optional comma-separated supplier tags. When set, only suppliers carrying these tags are polled.
+  section: Collect
+  advanced: true
+- display: Supplier list cache TTL (hours)
+  name: supplier_cache_ttl
+  defaultvalue: "12"
+  type: 0
+  required: false
+  additionalinfo: How long the supplier portfolio is cached before being re-enumerated. Lower this if suppliers are added frequently.
+  section: Collect
+  advanced: true
 - display: Incident type
   name: incidentType
   type: 13
@@ -58,7 +130,7 @@ configuration:
   - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
-  defaultvalue: '1'
+  defaultvalue: '15'
   required: false
   type: 19
   section: Collect
@@ -82,13 +154,152 @@ script:
   isfetch: true
   commands:
   - name: panorays-finding-list
-    description: Lists the company findings as detected by Panorays.
+    description: Lists your own organization's findings as detected by Panorays.
     arguments:
     - name: limit
       defaultValue: "50"
       description: The maximum number of findings to return.
     - name: page
-      defaultValue: "1"
-      description: The page number of results to retrieve.
+      description: Deprecated. The Panorays API uses cursor pagination, so this argument is ignored.
+      deprecated: true
+    - name: severity
+      description: Comma-separated list of severities to filter by, for example "CRITICAL,HIGH".
+      isArray: true
+    - name: status
+      description: Comma-separated list of finding statuses to filter by, for example "OPEN".
+      isArray: true
+    - name: asset_name
+      description: Comma-separated list of asset names to filter by.
+      isArray: true
+    outputs:
+    - contextPath: Panorays.Finding.id
+      description: The unique identifier of the finding.
+      type: String
+    - contextPath: Panorays.Finding.severity
+      description: The severity of the finding.
+      type: String
+    - contextPath: Panorays.Finding.status
+      description: The status of the finding.
+      type: String
+    - contextPath: Panorays.Finding.category
+      description: The category of the finding.
+      type: String
+    - contextPath: Panorays.Finding.sub_category
+      description: The sub category of the finding.
+      type: String
+    - contextPath: Panorays.Finding.asset_name
+      description: The asset the finding was detected on.
+      type: String
+    - contextPath: Panorays.Finding.finding_text
+      description: The finding text.
+      type: String
+    - contextPath: Panorays.Finding.insert_ts
+      description: The timestamp the finding was first detected.
+      type: Date
+    - contextPath: Panorays.Finding.update_ts
+      description: The timestamp the finding was last updated.
+      type: Date
+  - name: panorays-supplier-list
+    description: Lists the suppliers (third parties) in your Panorays portfolio.
+    arguments:
+    - name: limit
+      defaultValue: "50"
+      description: The maximum number of suppliers to return.
+    - name: names
+      description: Comma-separated list of supplier names to search by.
+      isArray: true
+    - name: ids
+      description: Comma-separated list of supplier IDs to search by.
+      isArray: true
+    - name: tags
+      description: Comma-separated list of supplier tags to search by.
+      isArray: true
+    - name: segment_ids
+      description: Comma-separated list of segment IDs to search by.
+      isArray: true
+    outputs:
+    - contextPath: Panorays.Supplier.id
+      description: The unique identifier of the supplier.
+      type: String
+    - contextPath: Panorays.Supplier.name
+      description: The name of the supplier.
+      type: String
+    - contextPath: Panorays.Supplier.primary_domain
+      description: The primary domain of the supplier.
+      type: String
+    - contextPath: Panorays.Supplier.business_impact
+      description: The business impact classification of the supplier.
+      type: String
+    - contextPath: Panorays.Supplier.combined_score
+      description: The combined Panorays risk score of the supplier.
+      type: Number
+    - contextPath: Panorays.Supplier.posture_score
+      description: The external posture score of the supplier.
+      type: Number
+    - contextPath: Panorays.Supplier.risk
+      description: The overall risk rating of the supplier.
+      type: String
+    - contextPath: Panorays.Supplier.tags
+      description: The tags assigned to the supplier.
+      type: String
+  - name: panorays-supplier-finding-list
+    description: Lists the findings detected by Panorays for a specific supplier (third party).
+    arguments:
+    - name: supplier_id
+      description: The ID of the supplier whose findings are returned. Use panorays-supplier-list to obtain supplier IDs.
+      required: true
+    - name: limit
+      defaultValue: "50"
+      description: The maximum number of findings to return.
+    - name: severity
+      description: Comma-separated list of severities to filter by, for example "CRITICAL,HIGH".
+      isArray: true
+    - name: status
+      description: Comma-separated list of finding statuses to filter by, for example "OPEN".
+      isArray: true
+    - name: asset_name
+      description: Comma-separated list of asset names to filter by.
+      isArray: true
+    - name: date_field
+      description: The date field the date range filter applies to.
+      auto: PREDEFINED
+      predefined:
+      - insert_ts
+      - update_ts
+    - name: date_range_from
+      description: Start date for the date range filter, in YYYY-MM-DD format.
+    - name: date_range_to
+      description: End date for the date range filter, in YYYY-MM-DD format. Defaults to today.
+    outputs:
+    - contextPath: Panorays.SupplierFinding.id
+      description: The unique identifier of the finding.
+      type: String
+    - contextPath: Panorays.SupplierFinding.supplier_id
+      description: The ID of the supplier the finding belongs to.
+      type: String
+    - contextPath: Panorays.SupplierFinding.severity
+      description: The severity of the finding.
+      type: String
+    - contextPath: Panorays.SupplierFinding.status
+      description: The status of the finding.
+      type: String
+    - contextPath: Panorays.SupplierFinding.category
+      description: The category of the finding.
+      type: String
+    - contextPath: Panorays.SupplierFinding.sub_category
+      description: The sub category of the finding.
+      type: String
+    - contextPath: Panorays.SupplierFinding.asset_name
+      description: The asset the finding was detected on.
+      type: String
+    - contextPath: Panorays.SupplierFinding.finding_text
+      description: The finding text.
+      type: String
+    - contextPath: Panorays.SupplierFinding.insert_ts
+      description: The timestamp the finding was first detected.
+      type: Date
+    - contextPath: Panorays.SupplierFinding.update_ts
+      description: The timestamp the finding was last updated.
+      type: Date
 tests:
 - No tests

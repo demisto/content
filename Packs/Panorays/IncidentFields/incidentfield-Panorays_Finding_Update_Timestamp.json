@@ -5,7 +5,8 @@
     "id": "incident_panoraysfindingupdatets",
     "name": "Panorays Finding Update Timestamp",
     "associatedTypes": [
-        "Panorays Finding"
+        "Panorays Finding",
+        "Panorays Supplier Finding"
     ],
     "associatedToAll": false,
     "type": "shortText",

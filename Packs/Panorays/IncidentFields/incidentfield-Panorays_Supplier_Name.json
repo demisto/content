@@ -1,0 +1,18 @@
+{
+    "cliName": "panorayssuppliername",
+    "description": "The name of the supplier (third party) the finding belongs to.",
+    "group": 0,
+    "id": "incident_panorayssuppliername",
+    "name": "Panorays Supplier Name",
+    "associatedTypes": [
+        "Panorays Supplier Finding"
+    ],
+    "associatedToAll": false,
+    "type": "shortText",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "required": false,
+    "unsearchable": true
+}

@@ -5,7 +5,8 @@
     "id": "incident_panoraysfindingfindingtext",
     "name": "Panorays Finding Text",
     "associatedTypes": [
-        "Panorays Finding"
+        "Panorays Finding",
+        "Panorays Supplier Finding"
     ],
     "associatedToAll": false,
     "type": "longText",
