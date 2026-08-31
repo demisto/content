@@ -289,9 +289,15 @@ def parse_time(t):
             parsed = parsed.replace(tzinfo=None)
         return parsed.isoformat() + "Z"
     except (TypeError, ValueError) as e:
-        demisto.debug(f"parsedate_to_datetime failed for Date header {t!r}: {e}. Falling back to manual parsing.")
+        demisto.debug(
+            f"parsedate_to_datetime failed for Date header {t!r}: {e}. Falling back to manual parsing."
+            f"\n{traceback.format_exc()}"
+        )
 
-    base_time, _, _, _, _ = TIME_REGEX.findall(t)[0]
+    matches = TIME_REGEX.findall(t)
+    if not matches:
+        raise ValueError(f"Unsupported Date header format: {t!r}")
+    base_time, _, _, _, _ = matches[0]
     for time_format in ("%a, %d %b %Y %H:%M:%S", "%d %b %Y %H:%M:%S"):
         try:
             return datetime.strptime(base_time, time_format).isoformat() + "Z"

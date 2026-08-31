@@ -215,10 +215,11 @@ def test_parse_time_variants(mocker, date_header, expected):
     assert parse_time(date_header) == expected
 
 
-def test_parse_time_invalid(mocker):
+@pytest.mark.parametrize("date_header", ["not a valid date", ""])
+def test_parse_time_invalid(mocker, date_header):
     """
     Given
-    - A Date header that cannot be parsed by any supported format
+    - A Date header that cannot be parsed by any supported format (including an empty string)
     When
     - parse_time is called
     Then
@@ -228,4 +229,4 @@ def test_parse_time_invalid(mocker):
     from MailListener_POP3 import parse_time
 
     with pytest.raises(ValueError):
-        parse_time("not a valid date")
+        parse_time(date_header)
