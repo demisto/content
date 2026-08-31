@@ -144,7 +144,7 @@ def schedule_next_command(args: dict):
         **args,
     }
     return ScheduledCommand(
-        command="DeleteReportedEmail1",
+        command="DeleteReportedEmail",
         next_run_in_seconds=60,
         args=polling_args,
         timeout_in_seconds=600,
@@ -163,7 +163,7 @@ def was_email_already_deleted(search_args: dict, e: str):
         'Skipped', if the email was not found in the mailbox and was not previously deleted by this script
 
     """
-    delete_email_from_context = demisto.get(demisto.context(), "DeleteReportedEmail1")
+    delete_email_from_context = demisto.get(demisto.context(), "DeleteReportedEmail")
     if delete_email_from_context:
         if not isinstance(delete_email_from_context, list):
             delete_email_from_context = [delete_email_from_context]
@@ -605,7 +605,7 @@ def main():
                     search_args,
                     headerTransform=string_to_table_header,
                 ),
-                outputs_prefix="DeleteReportedEmail1",
+                outputs_prefix="DeleteReportedEmail",
                 outputs_key_field="message_id",
                 raw_response="",
                 outputs=search_args,
