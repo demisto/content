@@ -61,8 +61,11 @@ def _make_get_events(options: IntegrationOptions, pages_by_type: dict) -> Defend
     get_events.options = options
     # run() iterates filter_name_to_event_filter.items() and reads the per-type cap from options.
     get_events.filter_name_to_event_filter = {event_type: _event_filter(event_type) for event_type in pages_by_type}
+    # run() deep-copies self.client per worker thread; use a trivially copyable placeholder since
+    # _iter_events is stubbed and never touches the client here.
+    get_events.client = None  # type: ignore[assignment]
 
-    def fake_iter_events(event_type_name, _event_filter):
+    def fake_iter_events(event_type_name, _event_filter, after=None, client=None):
         yield from pages_by_type[event_type_name]
 
     get_events._iter_events = fake_iter_events  # type: ignore[method-assign]
@@ -191,16 +194,18 @@ class TestRunPaginationRegression:
         # The failure path logs via demisto.error; mock it so nothing leaks to stdout
         # (the test harness fails on unexpected stdout) and to assert the error is logged.
         error_mock = mocker.patch.object(demisto, "error")
+        mocker.patch.object(demisto, "getLastRun", return_value={})
         options = _options()
         get_events = DefenderGetEvents.__new__(DefenderGetEvents)
         get_events.options = options
+        get_events.client = None  # type: ignore[assignment]  # _iter_events is stubbed; client unused
         get_events.filter_name_to_event_filter = {
             "activities_login": _event_filter("activities_login"),
             "activities_admin": _event_filter("activities_admin"),
             "alerts": _event_filter("alerts"),
         }
 
-        def failing_iter(event_type_name, _event_filter):
+        def failing_iter(event_type_name, _event_filter, after=None, client=None):
             if event_type_name == "activities_login":
                 raise RuntimeError("simulated API failure (e.g., 429/timeout)")
             yield _events(event_type_name, 20)
@@ -216,6 +221,28 @@ class TestRunPaginationRegression:
         assert not [e for e in result if e["event_type_name"] == "activities_login"]
         # The failure was logged (and not raised) so the cycle completed for the healthy types.
         assert error_mock.called
+
+    def test_all_types_are_fetched_concurrently_none_starved(self, mocker):
+        """XSUP-72224 starvation fix: every type is fetched in its own thread, so a high-volume
+        type (activities_login) can no longer be starved by another type monopolizing the run.
+
+        A slow, high-volume activities_login and the other types all contribute their events in a
+        single run() (concurrent execution), proving no type is skipped."""
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        options = _options()
+        pages_by_type = {
+            "activities_login": [_events("activities_login", 50)],
+            "activities_admin": [_events("activities_admin", 20)],
+            "alerts": [_events("alerts", 20)],
+        }
+        get_events = _make_get_events(options, pages_by_type)
+
+        result = get_events.run()
+
+        by_type = {t: len([e for e in result if e["event_type_name"] == t]) for t in pages_by_type}
+        # All three types are represented — none is starved.
+        assert by_type == {"activities_login": 50, "activities_admin": 20, "alerts": 20}
 
     def test_low_volume_types_are_not_discarded_when_below_limit(self):
         """Regression for XSUP-72224 second bug: low-volume types must NOT be dropped.
@@ -358,8 +385,8 @@ class TestIterEventsPagination:
         assert get_events.client.call.call_count == 1
         get_events.client.set_request_filter.assert_not_called()
 
-    def test_paginates_until_has_next_false(self, mocker):
-        """_iter_events follows hasNext, advancing the filter by the last event each page."""
+    def test_alerts_paginates_until_has_next_false(self, mocker):
+        """Alerts (no scan mode) follows hasNext, advancing the filter by the last event each page."""
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch.object(demisto, "debug")
         pages_payload = [
@@ -369,10 +396,10 @@ class TestIterEventsPagination:
         ]
         get_events = _make_defender_get_events_with_client(pages_payload, mocker)
 
-        # Capture each page length as it is yielded: _iter_events pops the last event off the
-        # previously-yielded page to advance pagination (as run() consumes each page before the
-        # next), so lengths must be read during iteration, not from an eagerly-collected list.
-        page_lengths = [len(page) for page in get_events._iter_events("activities_login", LOGIN_ACTIVITIES_FILTER)]
+        # Capture each page length as it is yielded: for alerts, _iter_events pops the last event
+        # off the previously-yielded page to advance pagination (as run() consumes each page before
+        # the next), so lengths must be read during iteration, not from an eagerly-collected list.
+        page_lengths = [len(page) for page in get_events._iter_events("alerts", ALERTS_FILTER)]
 
         # All three pages are yielded and the client was called three times.
         assert page_lengths == [2, 2, 1]
@@ -380,21 +407,46 @@ class TestIterEventsPagination:
         # set_request_filter is called once per continuation (2 times for 3 pages).
         assert get_events.client.set_request_filter.call_count == 2
 
+    def test_activities_scan_paginates_via_next_query_filters(self, mocker):
+        """Activities (scan mode) follows hasNext, using the server-provided nextQueryFilters
+        cursor as the next request's filters and NOT popping/advancing the date filter itself."""
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        pages_payload = [
+            {"data": [{"timestamp": 10}, {"timestamp": 20}], "hasNext": True, "nextQueryFilters": {"cursor": "A"}},
+            {"data": [{"timestamp": 30}, {"timestamp": 40}], "hasNext": True, "nextQueryFilters": {"cursor": "B"}},
+            {"data": [{"timestamp": 50}], "hasNext": False},
+        ]
+        get_events = _make_defender_get_events_with_client(pages_payload, mocker)
+
+        page_lengths = [len(page) for page in get_events._iter_events("activities_login", LOGIN_ACTIVITIES_FILTER)]
+
+        # In scan mode the server drops the tail itself, so no page is shortened by a client-side
+        # pop: all three pages are yielded intact.
+        assert page_lengths == [2, 2, 1]
+        assert get_events.client.call.call_count == 3
+        # The date filter is NOT advanced by us in scan mode; nextQueryFilters drives pagination.
+        get_events.client.set_request_filter.assert_not_called()
+        # The last request used the second page's nextQueryFilters cursor verbatim.
+        assert get_events.client.request.json["filters"] == {"cursor": "B"}
+
     def test_last_run_window_overrides_client_after(self, mocker):
-        """When a per-type watermark exists in the last run, it is used as the start filter."""
-        mocker.patch.object(demisto, "getLastRun", return_value={"alerts": 8888})
+        """When a per-type watermark is passed in (read once by run()), it is used as the start
+        filter instead of the client's first-fetch default."""
         mocker.patch.object(demisto, "debug")
         payload = {"data": [{"timestamp": 9999}], "hasNext": False}
         get_events = _make_defender_get_events_with_client([payload], mocker)
 
-        list(get_events._iter_events("alerts", ALERTS_FILTER))
+        # run() reads getLastRun() once and passes the per-type watermark down as `after`.
+        list(get_events._iter_events("alerts", ALERTS_FILTER, after=8888))
 
         # The request filters must carry the per-type watermark (8888), not client.after (1000).
         sent_filters = get_events.client.request.json["filters"]
         assert sent_filters["date"] == {"gte": 8888}
 
     def test_alerts_page_size_sent_to_api(self, mocker):
-        """The alerts endpoint requests its per-type page size (100) as the API `limit`."""
+        """The alerts endpoint requests its per-type page size (100) as the API `limit` and does
+        NOT enable scan mode (the alerts endpoint does not support it)."""
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch.object(demisto, "debug")
         payload = {"data": [{"timestamp": 1}], "hasNext": False}
@@ -403,11 +455,14 @@ class TestIterEventsPagination:
         list(get_events._iter_events("alerts", ALERTS_FILTER))
 
         assert get_events.client.request.json["limit"] == ALERTS_PAGE_SIZE
+        assert "isScan" not in get_events.client.request.json
 
     def test_activities_page_size_sent_to_api(self, mocker):
-        """The activities endpoint requests its larger per-type page size (5000) as the API `limit`.
+        """The activities endpoint requests its larger per-type page size (5000) as the API `limit`
+        and enables scan mode (isScan=true).
 
-        This is the core throughput fix (XSUP-72224): without it each page returned only ~100.
+        This is the core throughput fix (XSUP-72224): the large page size is only honored in scan
+        mode; without it each page returned only ~100.
         """
         mocker.patch.object(demisto, "getLastRun", return_value={})
         mocker.patch.object(demisto, "debug")
@@ -417,6 +472,7 @@ class TestIterEventsPagination:
         list(get_events._iter_events("activities_login", LOGIN_ACTIVITIES_FILTER))
 
         assert get_events.client.request.json["limit"] == ACTIVITIES_PAGE_SIZE
+        assert get_events.client.request.json["isScan"] is True
 
 
 class TestSetRequestFilter:

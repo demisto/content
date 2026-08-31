@@ -1,6 +1,8 @@
+import copy
 import traceback
 from abc import ABC
 from collections.abc import Callable, Iterable
+from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from typing import Any, NamedTuple
 
@@ -20,13 +22,14 @@ from CommonServerUserPython import *  # noqa
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
 
 # Per-type API page size (events requested per API call) and per-cycle cap (max events fetched
-# per event type per cycle). The alerts endpoint caps a page at 100; the activities endpoint
-# accepts up to 5000 per page. The per-cycle cap for activities is 10 pages (10 * 5000 = 50000)
-# so a single cycle can drain a large backlog while still being bounded.
+# per event type per cycle). The activities endpoint honors a larger page size only in scan mode
+# (isScan=true); the per-cycle cap bounds how many events a single cycle drains per type. Event
+# types are fetched concurrently (one thread each) so no type is starved, and each cycle stays
+# short enough to complete within the execution timeout.
 ALERTS_PAGE_SIZE = 100
 ALERTS_LIMIT = 1000
-ACTIVITIES_PAGE_SIZE = 5000
-ACTIVITIES_LIMIT = 50000
+ACTIVITIES_PAGE_SIZE = 500
+ACTIVITIES_LIMIT = 5000
 
 
 class EventFilter(NamedTuple):
@@ -194,39 +197,60 @@ class IntegrationGetEvents(ABC):
         self.base_url = base_url
 
     def run(self):
-        final_stored_all_types = []
-        # In this integration we need to do 3 API calls:
-        # - activities with filter to get the admin events
-        # - activities with different filter to get the login events
-        # - alerts with no filter
-        # Each event type is fetched independently: a failure in one type is caught
-        # and logged so the remaining types can still be collected in the same cycle.
-        for event_type_name, event_filter in self.filter_name_to_event_filter.items():
-            # Per-cycle cap is per-type and user-configurable: alerts vs activities. The alerts
-            # endpoint is identified by its attributes["type"]; admin + login share "activities".
-            is_alerts = event_filter.attributes["type"] == "alerts"
-            per_cycle_limit = self.options.alerts_limit if is_alerts else self.options.activities_limit
-            stored_per_type: list = []
-            try:
-                for logs in self._iter_events(event_type_name, event_filter):
-                    stored_per_type.extend(logs)
-                    if len(stored_per_type) >= per_cycle_limit:
-                        demisto.debug(f"[Slicing Events] reached {per_cycle_limit=} for {event_type_name=}, slicing per type.")
-                        stored_per_type = stored_per_type[:per_cycle_limit]
-                        break
-            except Exception as e:
-                # Discard this type's partial batch so its watermark is NOT advanced past
-                # unfetched events (no data loss); it will be retried on the next cycle.
-                # Other event types continue unaffected.
-                demisto.error(
-                    f"[Fetch Events] failed fetching {event_type_name=}, skipping it this cycle. "
-                    f"Error: {e!s}\n{traceback.format_exc()}"
-                )
-                continue
-            final_stored_all_types.extend(stored_per_type)
-            demisto.debug(f"[MicrosoftDefender] kept {len(stored_per_type)} events for {event_type_name=}")
+        # In this integration we fetch 3 event types (activities_admin, activities_login, alerts).
+        # They are fetched CONCURRENTLY (one thread each): a high-volume type (e.g. activities_login)
+        # must not starve the others by monopolizing a single sequential run. Each type paginates
+        # with its own cloned client (so request state does not race) and advances its own watermark.
+        #
+        # Thread-safety (mirrors the Koi collector pattern): getLastRun() is read ONCE here on the
+        # main thread and the per-type start watermark is passed into each worker; worker threads do
+        # HTTP only and never touch demisto server state.
+        last_run = demisto.getLastRun()
+        final_stored_all_types: list = []
+        if not self.filter_name_to_event_filter:
+            return final_stored_all_types
+        with ThreadPoolExecutor(max_workers=len(self.filter_name_to_event_filter)) as executor:
+            future_to_type = {
+                executor.submit(
+                    self._fetch_type, event_type_name, event_filter, last_run.get(event_type_name)
+                ): event_type_name
+                for event_type_name, event_filter in self.filter_name_to_event_filter.items()
+            }
+            for future in future_to_type:
+                final_stored_all_types.extend(future.result())
         demisto.debug(f"[MicrosoftDefender] keeping {len(final_stored_all_types)} events from all event types")
         return final_stored_all_types
+
+    def _fetch_type(self, event_type_name: str, event_filter: "EventFilter", after: Any) -> list:
+        """Fetch a single event type up to its per-cycle cap, on its own cloned client.
+
+        Runs in its own thread so one high-volume type cannot starve the others. `after` is the
+        per-type start watermark read once on the main thread. A failure is caught and logged so
+        the type's watermark is NOT advanced past unfetched events (no data loss); it is retried
+        next cycle, and other types are unaffected.
+        """
+        # Per-cycle cap is per-type: alerts vs activities. The alerts endpoint is identified by its
+        # attributes["type"]; admin + login share "activities".
+        is_alerts = event_filter.attributes["type"] == "alerts"
+        per_cycle_limit = self.options.alerts_limit if is_alerts else self.options.activities_limit
+        # Deep-copy the client so each thread mutates its own request (url/json) without racing.
+        client = copy.deepcopy(self.client)
+        stored_per_type: list = []
+        try:
+            for logs in self._iter_events(event_type_name, event_filter, after, client=client):
+                stored_per_type.extend(logs)
+                if len(stored_per_type) >= per_cycle_limit:
+                    demisto.debug(f"[Slicing Events] reached {per_cycle_limit=} for {event_type_name=}, slicing per type.")
+                    stored_per_type = stored_per_type[:per_cycle_limit]
+                    break
+        except Exception as e:
+            demisto.error(
+                f"[Fetch Events] failed fetching {event_type_name=}, skipping it this cycle. "
+                f"Error: {e!s}\n{traceback.format_exc()}"
+            )
+            return []
+        demisto.debug(f"[MicrosoftDefender] kept {len(stored_per_type)} events for {event_type_name=}")
+        return stored_per_type
 
     def call(self) -> requests.Response:
         return self.client.call(self.client.request)
@@ -240,8 +264,12 @@ class IntegrationGetEvents(ABC):
         return {"after": events[-1]["created"]}
 
     @abstractmethod
-    def _iter_events(self, event_type_name: str, event_filter: "EventFilter"):
-        """Create iterators with Yield"""
+    def _iter_events(self, event_type_name: str, event_filter: "EventFilter", after: Any = None, client: Any = None):
+        """Create iterators with Yield.
+
+        `after` is the per-type start watermark (read once on the main thread) and `client` is the
+        per-thread client used for concurrent fetching; both are optional for direct calls.
+        """
         raise NotImplementedError
 
 
@@ -328,18 +356,25 @@ class DefenderClient(IntegrationEventsClient):
 class DefenderGetEvents(IntegrationGetEvents):
     client: DefenderClient
 
-    def _iter_events(self, event_type_name: str, event_filter: "EventFilter"):
+    def _iter_events(
+        self, event_type_name: str, event_filter: "EventFilter", after: Any = None, client: "DefenderClient | None" = None
+    ):
+        # Each concurrent type fetch passes its own cloned client so request state does not race.
+        # Falls back to self.client when called directly (e.g. in unit tests).
+        client = client or self.client
+        # `after` is the per-type start watermark read once on the main thread (thread-safe); fall
+        # back to the client's first-fetch default when no watermark exists yet.
+        after = after or client.after
         self.last_timestamp: dict = {}
         base_url = self.base_url
-        self.client.authenticate()
+        client.authenticate()
 
         endpoint_details = event_filter.attributes
-        self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
+        client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
 
         # get the filter for this type
         filters = endpoint_details["filters"]
 
-        after = demisto.getLastRun().get(event_type_name) or self.client.after
         # add the time filter
         if after:
             filters["date"] = {"gte": after}  # type: ignore
@@ -350,17 +385,15 @@ class DefenderGetEvents(IntegrationGetEvents):
         # alerts endpoint has no scan mode: it caps at 100/page and we advance the date filter
         # ourselves (its volume is low, so this is not a bottleneck).
         is_scan = endpoint_details["type"] == "activities"
-        self.client.request.json = {
+        client.request.json = {
             "filters": filters,
             "limit": event_filter.page_size,
             "sortDirection": "asc",
         }
         if is_scan:
-            self.client.request.json["isScan"] = True
-        demisto.debug(
-            f"MD: Sending API call {self.client.request.method} {self.client.request.url} body={self.client.request.json}"
-        )
-        response = self.client.call(self.client.request).json()
+            client.request.json["isScan"] = True
+        demisto.debug(f"MD: Sending API call {client.request.method} {client.request.url} body={client.request.json}")
+        response = client.call(client.request).json()
         events = response.get("data", [])
         demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
 
@@ -377,11 +410,11 @@ class DefenderGetEvents(IntegrationGetEvents):
             if is_scan:
                 # Scan mode: reuse the server's cursor verbatim (it already drops the tail so all
                 # data is listed exactly once); do NOT advance the date filter ourselves.
-                self.client.request.json["filters"] = response.get("nextQueryFilters")
+                client.request.json["filters"] = response.get("nextQueryFilters")
             else:
                 last = events.pop()
-                self.client.set_request_filter(last["timestamp"])
-            response = self.client.call(self.client.request).json()
+                client.set_request_filter(last["timestamp"])
+            response = client.call(client.request).json()
             events = response.get("data", [])
             demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
             # add new field with the event type
