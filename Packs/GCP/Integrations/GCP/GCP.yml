@@ -2684,22 +2684,22 @@ script:
       type: string
 
 # gcp-compute-regions-list
-  - arguments:
-    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      name: project_id
+  - name: gcp-compute-regions-list
+    description: "Retrieves the list of region resources available to the specified project. Required permission: compute.regions.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
-    - defaultValue: '50'
+    - name: limit
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
-      name: limit
-    - description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a region named example-region by specifying name != example-region.
-      name: filters
-    - description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
-      name: order_by
-    - description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
-      name: page_token
-    description: "Retrieves the list of region resources available to the specified project. Required permission: compute.regions.list."
-    name: gcp-compute-regions-list
+      defaultValue: '50'
+    - name: filters
+      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a region named example-region by specifying name != example-region.
+    - name: order_by
+      description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+    - name: page_token
+      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.Regions.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -2882,22 +2882,22 @@ script:
       type: string
 
 # gcp-compute-zones-list
-  - arguments:
-    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      name: project_id
+  - name: gcp-compute-zones-list
+    description: "Retrieves the list of zone resources available to the specified project. Required permission: compute.zones.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
-    - defaultValue: '50'
+    - name: limit
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
-      name: limit
-    - description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a zone named example-zone by specifying name != example-zone.
-      name: filters
-    - description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
-      name: order_by
-    - description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
-      name: page_token
-    description: "Retrieves the list of zone resources available to the specified project. Required permission: compute.zones.list."
-    name: gcp-compute-zones-list
+      defaultValue: '50'
+    - name: filters
+      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a zone named example-zone by specifying name != example-zone.
+    - name: order_by
+      description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+    - name: page_token
+      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.Zones.id
       description: The unique identifier for the resource. This identifier is defined by the server.
