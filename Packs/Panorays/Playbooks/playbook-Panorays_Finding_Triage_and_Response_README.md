@@ -62,4 +62,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Panorays Finding - Triage and Response](../doc_files/Panorays_Finding_-_Triage_and_Response.png)
+![Panorays Finding - Triage and Response](../doc_files/Panorays_Finding_Triage_and_Response.png)

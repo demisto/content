@@ -22,7 +22,7 @@ specific external ITSM tool:
   empty severity value is routed to a manual review task rather than being auto-closed.
 * Reminds the analyst to sync the resolved status back to Panorays.
 
-![Panorays Finding - Triage and Response](doc_files/Panorays_Finding_-_Triage_and_Response.png)
+![Panorays Finding - Triage and Response](doc_files/Panorays_Finding_Triage_and_Response.png)
 
 ### Extending with your own ITSM
 

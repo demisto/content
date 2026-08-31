@@ -3,7 +3,6 @@
     "version": -1,
     "name": "Panorays Finding",
     "prevName": "Panorays Finding",
-    "description": "A security finding detected by Panorays.",
     "color": "#295AFF",
     "playbookId": "Panorays Finding - Triage and Response",
     "hours": 0,
@@ -21,5 +20,9 @@
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

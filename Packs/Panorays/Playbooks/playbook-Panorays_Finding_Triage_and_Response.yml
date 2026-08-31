@@ -58,9 +58,9 @@ tasks:
       description: >-
         Calls PanoraysCheckOlderDuplicate, which looks up other open/pending "Panorays Finding" incidents with
         the same Finding ID and a lower incident ID than this one, and returns a single explicit boolean output.
-      script: '|||PanoraysCheckOlderDuplicate'
+      scriptName: PanoraysCheckOlderDuplicate
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     scriptarguments:
       finding_id:
