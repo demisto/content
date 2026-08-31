@@ -1054,7 +1054,8 @@ script:
         type: String
 
   - name: gcp-container-cluster-security-update
-    description: "Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
+    description: "Configures security settings for GKE clusters, including access controls and visibility. The command is deprecated, please use gcp-gke-cluster-security-update. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
+    deprecated: true
     arguments:
     - name: project_id
       required: false
@@ -1156,6 +1157,112 @@ script:
       description: Whether private endpoint is enabled for the cluster control plane.
       type: Boolean
     - contextPath: GCP.Container.Operations.masterVersion
+      description: The current version of the Kubernetes master in the GKE cluster.
+      type: String
+
+  - name: gcp-gke-cluster-security-update
+    description: "Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      required: true
+      description: GCP region.
+    - name: resource_name
+      required: true
+      description: Name of the GKE cluster.
+    - name: enable_intra_node_visibility
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Enable intra-node visibility.
+    - name: enable_master_authorized_networks
+      required: false
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: Enable Master Authorized Networks.
+    - name: cidrs
+      description: |
+        Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
+        If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
+      isArray: true
+    outputs:
+    - contextPath: GCP.GKE.Operations.name
+      description: The name of the GKE cluster.
+      type: String
+    - contextPath: GCP.GKE.Operations.zone
+      description: The zone of the GKE cluster.
+      type: String
+    - contextPath: GCP.GKE.Operations.enableStackdriverLogging
+      description: Whether Stackdriver Logging is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enableStackdriverMonitoring
+      description: Whether Stackdriver Monitoring is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enablePrivateNodes
+      description: Whether private nodes are enabled for the GKE cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enablePrivateEndpoint
+      description: Whether private endpoint is enabled for the GKE cluster control plane.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enableHttpsOnly
+      description: Whether HTTPS-only traffic is enforced for the cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enableNetworkPolicy
+      description: Whether network policies are enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enableAutoscaling
+      description: Whether autoscaling is enabled for the cluster nodes.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enableIstio
+      description: Whether Istio is enabled for the GKE cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enablePodSecurityPolicy
+      description: Whether PodSecurityPolicy is enabled for the GKE cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enableBinaryAuthorization
+      description: Whether Binary Authorization is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.enableLegacyABAC
+      description: Whether legacy ABAC is enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.clusterIpv4Cidr
+      description: The cluster’s IPv4 CIDR block.
+      type: String
+    - contextPath: GCP.GKE.Operations.masterAuthorizedNetworksConfig.cidrBlocks
+      description: List of authorized CIDR blocks that can access the GKE cluster master.
+      type: Unknown
+    - contextPath: GCP.GKE.Operations.masterAuthorizedNetworksConfig.enabled
+      description: Whether master authorized networks are enabled for the cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.network
+      description: The network to which the GKE cluster belongs.
+      type: String
+    - contextPath: GCP.GKE.Operations.subnetwork
+      description: The subnetwork to which the GKE cluster belongs.
+      type: String
+    - contextPath: GCP.GKE.Operations.loggingService
+      description: The logging service used for the cluster (e.g., "logging.googleapis.com").
+      type: String
+    - contextPath: GCP.GKE.Operations.monitoringService
+      description: The monitoring service used for the cluster (e.g., "monitoring.googleapis.com").
+      type: String
+    - contextPath: GCP.GKE.Operations.nodePools
+      description: A list of node pools in the cluster, with their configuration and security settings.
+      type: Unknown
+    - contextPath: GCP.GKE.Operations.privateClusterConfig.enablePrivateNodes
+      description: Whether private nodes are enabled in the cluster.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.privateClusterConfig.enablePrivateEndpoint
+      description: Whether private endpoint is enabled for the cluster control plane.
+      type: Boolean
+    - contextPath: GCP.GKE.Operations.masterVersion
       description: The current version of the Kubernetes master in the GKE cluster.
       type: String
 

@@ -338,6 +338,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
     ),
+    "gcp-gke-cluster-security-update": (
+        GCPServices.CONTAINER,
+        ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
+    ),
     "gcp-bq-dataset-policy-remove": (
         GCPServices.BIGQUERY,
         ["bigquery.datasets.update", "bigquery.datasets.get", "bigquery.datasets.getIamPolicy", "bigquery.datasets.setIamPolicy"],
@@ -1838,7 +1842,10 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
         removeNull=True,
     )
 
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response)
+    command_name = demisto.command()
+    prefix = "GCP.Container.Operations" if command_name == "gcp-container-cluster-security-update" else "GCP.GKE.Operations"
+
+    return CommandResults(readable_output=hr, outputs_prefix=prefix, outputs=response)
 
 
 def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -3089,6 +3096,7 @@ def main():  # pragma: no cover
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
             # Container (GKE) commands
             "gcp-container-cluster-security-update": container_cluster_security_update,
+            "gcp-gke-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # BigQuery commands
