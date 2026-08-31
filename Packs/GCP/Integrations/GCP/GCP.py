@@ -309,6 +309,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.STORAGE,
         ["storage.objects.setIamPolicy"],
     ),
+    "gcp-compute-zone-operation-wait": (GCPServices.COMPUTE, ["compute.zoneOperations.get"]),
+    "gcp-compute-region-operation-wait": (GCPServices.COMPUTE, ["compute.regionOperations.get"]),
+    "gcp-compute-global-operation-wait": (GCPServices.COMPUTE, ["compute.globalOperations.get"]),
     "gcp-compute-network-get": (GCPServices.COMPUTE, ["compute.networks.get"]),
     "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
     "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
@@ -348,6 +351,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
+OPERATION_DONE_STATUS = "DONE"  # The terminal status of a Compute Engine long-running operation.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for wait commands.
+DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -2794,6 +2800,166 @@ def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
 
 
+def _compute_operation_poll_result(
+    operations_resource: Any,
+    request_kwargs: dict[str, Any],
+    command_name: str,
+    args: dict[str, Any],
+    interval: int,
+    timeout: int,
+    outputs_prefix: str,
+) -> CommandResults:
+    """
+    Retrieves a Compute Engine long-running operation and schedules another poll while it is not done.
+
+    As long as the operation has not reached the ``DONE`` status, the returned CommandResults carries a
+    ScheduledCommand so the server re-runs the command after ``interval`` seconds, until ``timeout`` is reached.
+
+    Args:
+        operations_resource (Any): The Compute Engine operations resource to query
+            (``zoneOperations()``, ``regionOperations()`` or ``globalOperations()``).
+        request_kwargs (dict[str, Any]): The scope keyword arguments of the ``get`` request,
+            including the ``operation`` name.
+        command_name (str): The command name used to schedule the next polling run.
+        args (dict[str, Any]): The command arguments, reused for the next polling run.
+        interval (int): The interval in seconds between polling attempts.
+        timeout (int): The timeout in seconds until polling ends.
+        outputs_prefix (str): The context output prefix of the returned operation.
+
+    Returns:
+        CommandResults: The completed operation, or a scheduled command to poll again.
+
+    Raises:
+        DemistoException: If the operation completed with an error.
+    """
+    operation_name = request_kwargs["operation"]
+    response = operations_resource.get(**request_kwargs).execute()
+    status = response.get("status")
+    demisto.debug(f"[GCP] {command_name}: operation {operation_name} status is {status}")
+
+    if status != OPERATION_DONE_STATUS:
+        return CommandResults(
+            readable_output=f"Waiting for operation {operation_name} to complete. Current status: {status}.",
+            scheduled_command=ScheduledCommand(
+                command=command_name,
+                next_run_in_seconds=interval,
+                args=args,
+                timeout_in_seconds=timeout,
+            ),
+        )
+
+    if error := response.get("error"):
+        raise DemistoException(f"Operation {operation_name} completed with an error: {error}")
+
+    readable_output = tableToMarkdown(
+        f"Operation {operation_name} completed successfully",
+        response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=outputs_prefix,
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_zone_operation_wait(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Waits for a zonal Compute Engine operation to reach the DONE status.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+
+    Returns:
+        CommandResults: The completed operation, or a scheduled command to poll again.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    operation_name = args.get("operation_name")
+    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
+    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.zoneOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "zone": zone, "operation": operation_name},
+        command_name="gcp-compute-zone-operation-wait",
+        args=args,
+        interval=interval,
+        timeout=timeout,
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
+def gcp_compute_region_operation_wait(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Waits for a regional Compute Engine operation to reach the DONE status.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'region' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+
+    Returns:
+        CommandResults: The completed operation, or a scheduled command to poll again.
+    """
+    project_id = args.get("project_id")
+    region = args.get("region")
+    operation_name = args.get("operation_name")
+    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
+    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.regionOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "region": region, "operation": operation_name},
+        command_name="gcp-compute-region-operation-wait",
+        args=args,
+        interval=interval,
+        timeout=timeout,
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
+def gcp_compute_global_operation_wait(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Waits for a global Compute Engine operation to reach the DONE status.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+
+    Returns:
+        CommandResults: The completed operation, or a scheduled command to poll again.
+    """
+    project_id = args.get("project_id")
+    operation_name = args.get("operation_name")
+    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
+    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.globalOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "operation": operation_name},
+        command_name="gcp-compute-global-operation-wait",
+        args=args,
+        interval=interval,
+        timeout=timeout,
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
 def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Creates a subnet-mode network in the specified project using the data provided.
@@ -2988,6 +3154,9 @@ def main():  # pragma: no cover
             "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
             "gcp-compute-region-get": gcp_compute_region_get,
             "gcp-compute-zone-get": gcp_compute_zone_get,
+            "gcp-compute-zone-operation-wait": gcp_compute_zone_operation_wait,
+            "gcp-compute-region-operation-wait": gcp_compute_region_operation_wait,
+            "gcp-compute-global-operation-wait": gcp_compute_global_operation_wait,
             "gcp-compute-networks-list": gcp_compute_networks_list,
             "gcp-compute-network-insert": gcp_compute_network_insert,
             # Storage commands
