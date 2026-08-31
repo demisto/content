@@ -250,7 +250,7 @@ class ComplianceClient(BaseClient):
         # _apply_ucp_api_key below); the header written here is superseded by the UCP context.
         self.headers = {"accept": "application/json", "x-api-key": self.api_key}
 
-    def _apply_ucp_api_key(self, credentials, ctx):
+    def _apply_ucp_api_key(self, credentials: dict, ctx: "UcpRequestContext") -> None:
         """Override the default ``Authorization: Bearer …`` placement.
 
         The Anthropic Compliance API rejects Bearer auth; it requires ``x-api-key: {key}``. The

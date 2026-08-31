@@ -1,3 +1,5 @@
+## Anthropic Claude Standard Connector
+
 This integration is configured automatically as part of the **Anthropic Claude Standard Connector**. Do not configure this integration directly — set it up from the connector page instead.
 
 It exposes only the two irreversible Compliance API delete commands
