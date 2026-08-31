@@ -324,10 +324,10 @@ tasks:
       version: -1
       name: Print finding summary to War Room (Critical/High)
       description: Writes a summary of the finding to the War Room before handing off to the manual remediation task.
-      script: '|||Print'
+      script: Builtin|||Print
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     scriptarguments:
       value:
         simple: >-
@@ -414,10 +414,10 @@ tasks:
       version: -1
       name: Print finding summary to War Room (Medium)
       description: Writes a summary of the finding to the War Room before handing off to the manual review task.
-      script: '|||Print'
+      script: Builtin|||Print
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     scriptarguments:
       value:
         simple: >-
@@ -473,10 +473,10 @@ tasks:
       version: -1
       name: Print Panorays sync reminder to War Room
       description: Writes a reminder to the War Room before the manual reminder task.
-      script: '|||Print'
+      script: Builtin|||Print
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     scriptarguments:
       value:
         simple: >-
@@ -530,10 +530,10 @@ tasks:
       version: -1
       name: Print unrecognized severity summary to War Room
       description: Writes a summary of the finding to the War Room before handing off to the manual review task.
-      script: '|||Print'
+      script: Builtin|||Print
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     scriptarguments:
       value:
         simple: >-
