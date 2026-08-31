@@ -1,7 +1,6 @@
-
 fromversion: 8.15.0
-id: CohesityHelios_ModelingRule
-name: CohesityHelios Modeling Rule
+id: Cohesity_Helios_ModelingRule
+name: Cohesity Helios Modeling Rule
 rules: ''
 schema: ''
 tags: ''

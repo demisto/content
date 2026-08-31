@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: IvantiPulseSecureVTM_ModelingRule
-name: IvantiPulseSecureVTM Modeling Rule
+id: Ivanti_VTM_ModelingRule
+name: Ivanti VTM Modeling Rule
 rules: ''
 schema: ''
 tags: ''
