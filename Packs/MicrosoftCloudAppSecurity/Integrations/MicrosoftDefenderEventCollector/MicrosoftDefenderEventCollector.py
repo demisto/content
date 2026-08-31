@@ -345,15 +345,18 @@ class DefenderGetEvents(IntegrationGetEvents):
             filters["date"] = {"gte": after}  # type: ignore
 
         demisto.debug(f"MD: Sending request with filters {filters}")
-        # The activities API honors a large page size (up to 5000) only via a POST JSON body;
-        # the GET query param `limit` is silently ignored and caps pages at 100. Send filters and
-        # the per-type page size (a constant on the EventFilter, decoupled from the per-cycle cap
-        # so run() can still page multiple times) in the request body.
+        # The activities endpoint only returns large pages (up to 5000) in "scan mode"
+        # (isScan=true), and then paginates via a server-provided `nextQueryFilters` cursor. The
+        # alerts endpoint has no scan mode: it caps at 100/page and we advance the date filter
+        # ourselves (its volume is low, so this is not a bottleneck).
+        is_scan = endpoint_details["type"] == "activities"
         self.client.request.json = {
             "filters": filters,
             "limit": event_filter.page_size,
             "sortDirection": "asc",
         }
+        if is_scan:
+            self.client.request.json["isScan"] = True
         demisto.debug(
             f"MD: Sending API call {self.client.request.method} {self.client.request.url} body={self.client.request.json}"
         )
@@ -371,8 +374,13 @@ class DefenderGetEvents(IntegrationGetEvents):
 
         while has_next:
             demisto.debug("MD: Got more events to fetch")
-            last = events.pop()
-            self.client.set_request_filter(last["timestamp"])
+            if is_scan:
+                # Scan mode: reuse the server's cursor verbatim (it already drops the tail so all
+                # data is listed exactly once); do NOT advance the date filter ourselves.
+                self.client.request.json["filters"] = response.get("nextQueryFilters")
+            else:
+                last = events.pop()
+                self.client.set_request_filter(last["timestamp"])
             response = self.client.call(self.client.request).json()
             events = response.get("data", [])
             demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
