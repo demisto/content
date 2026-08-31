@@ -5,10 +5,7 @@ from CommonServerPython import *  # noqa: F401
 def check_older_duplicate(finding_id: str, this_incident_id: str) -> bool:
     """Returns True if an open/pending "Panorays Finding" incident with the same finding_id and a lower
     incident ID than this_incident_id already exists."""
-    query = (
-        f'type:"Panorays Finding" and -status:2 and panoraysfindingid:"{finding_id}" '
-        f'and id:<{this_incident_id}'
-    )
+    query = f'type:"Panorays Finding" and -status:2 and panoraysfindingid:"{finding_id}" ' f"and id:<{this_incident_id}"
     result = demisto.executeCommand("getIncidents", {"query": query, "size": "1"})
     if not result:
         return False
