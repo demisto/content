@@ -5332,6 +5332,52 @@ class TestGCPComputeRegionsList:
         assert result.readable_output == "No regions were found in project 'test-project'."
         assert not result.outputs
 
+    def test_gcp_compute_regions_list_empty_items_with_next_token(self, mocker):
+        """
+        Given: A mocked Compute API returning no items but a next page token.
+        When: gcp_compute_regions_list is called with the project ID.
+        Then: The next token is still returned in the outputs so pagination can continue.
+        """
+        from GCP import GCPServices, gcp_compute_regions_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_regions = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {"items": [], "nextPageToken": "next-token-789"}
+        mock_regions.list.return_value = mock_list
+        mock_compute.regions.return_value = mock_regions
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
+
+        assert result.outputs == {"GCP.Compute(true)": {"RegionsNextToken": "next-token-789"}}
+        assert "next-token-789" in result.readable_output
+
+    @pytest.mark.parametrize("limit", ["", "0"])
+    def test_gcp_compute_regions_list_falsy_limit_falls_back_to_default(self, mocker, limit):
+        """
+        Given: A limit argument that resolves to a falsy value (an empty string or zero).
+        When: gcp_compute_regions_list is called.
+        Then: The default limit is used instead of raising a TypeError or requesting zero results.
+        """
+        from GCP import GCPServices, gcp_compute_regions_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_regions = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {"items": [{"id": "1000", "name": "us-central1", "status": "UP"}]}
+        mock_regions.list.return_value = mock_list
+        mock_compute.regions.return_value = mock_regions
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        gcp_compute_regions_list(mock_creds, {"project_id": "test-project", "limit": limit})
+
+        assert mock_regions.list.call_args[1]["maxResults"] == 50
+
     def test_gcp_compute_regions_list_api_exception(self, mocker):
         """
         Given: A mocked Compute API that raises an error when listing regions.
@@ -5468,6 +5514,52 @@ class TestGCPComputeZonesList:
 
         assert result.readable_output == "No zones were found in project 'test-project'."
         assert not result.outputs
+
+    def test_gcp_compute_zones_list_empty_items_with_next_token(self, mocker):
+        """
+        Given: A mocked Compute API returning no items but a next page token.
+        When: gcp_compute_zones_list is called with the project ID.
+        Then: The next token is still returned in the outputs so pagination can continue.
+        """
+        from GCP import GCPServices, gcp_compute_zones_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_zones = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {"items": [], "nextPageToken": "next-token-abc"}
+        mock_zones.list.return_value = mock_list
+        mock_compute.zones.return_value = mock_zones
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_zones_list(mock_creds, {"project_id": "test-project"})
+
+        assert result.outputs == {"GCP.Compute(true)": {"ZonesNextToken": "next-token-abc"}}
+        assert "next-token-abc" in result.readable_output
+
+    @pytest.mark.parametrize("limit", ["", "0"])
+    def test_gcp_compute_zones_list_falsy_limit_falls_back_to_default(self, mocker, limit):
+        """
+        Given: A limit argument that resolves to a falsy value (an empty string or zero).
+        When: gcp_compute_zones_list is called.
+        Then: The default limit is used instead of raising a TypeError or requesting zero results.
+        """
+        from GCP import GCPServices, gcp_compute_zones_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_zones = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {"items": [{"id": "3000", "name": "us-central1-a", "status": "UP"}]}
+        mock_zones.list.return_value = mock_list
+        mock_compute.zones.return_value = mock_zones
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        gcp_compute_zones_list(mock_creds, {"project_id": "test-project", "limit": limit})
+
+        assert mock_zones.list.call_args[1]["maxResults"] == 50
 
     def test_gcp_compute_zones_list_api_exception(self, mocker):
         """

@@ -350,6 +350,7 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
+DEFAULT_LIST_LIMIT = 50
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -2743,7 +2744,7 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
         and the pagination token under `GCP.Compute.RegionsNextToken`.
     """
     project = args.get("project_id")
-    limit = arg_to_number(args.get("limit", 50))
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIST_LIMIT
     validate_limit(limit)
 
     params: dict[str, Any] = {
@@ -2760,10 +2761,10 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
     response = compute.regions().list(**params).execute()  # pylint: disable=E1101
 
     items = response.get("items", [])
-    if not items:
+    next_token = response.get("nextPageToken")
+    if not items and not next_token:
         return CommandResults(readable_output=f"No regions were found in project '{project}'.", raw_response=response)
 
-    next_token = response.get("nextPageToken")
     metadata = (
         "Run the following command to retrieve the next batch of regions:\n"
         f"!gcp-compute-regions-list project_id={project} page_token={next_token}"
@@ -2780,13 +2781,14 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
         headerTransform=pascalToSpace,
     )
 
-    outputs = {
+    outputs: dict[str, Any] = {
         "GCP.Compute.Regions(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"RegionsNextToken": next_token},
+        "GCP.Compute(true)": {"RegionsNextToken": next_token} if next_token else None,
     }
+    outputs = {context_path: value for context_path, value in outputs.items() if value}
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -2880,7 +2882,7 @@ def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandR
         and the pagination token under `GCP.Compute.ZonesNextToken`.
     """
     project = args.get("project_id")
-    limit = arg_to_number(args.get("limit", 50))
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIST_LIMIT
     validate_limit(limit)
 
     params: dict[str, Any] = {
@@ -2897,10 +2899,10 @@ def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandR
     response = compute.zones().list(**params).execute()  # pylint: disable=E1101
 
     items = response.get("items", [])
-    if not items:
+    next_token = response.get("nextPageToken")
+    if not items and not next_token:
         return CommandResults(readable_output=f"No zones were found in project '{project}'.", raw_response=response)
 
-    next_token = response.get("nextPageToken")
     metadata = (
         "Run the following command to retrieve the next batch of zones:\n"
         f"!gcp-compute-zones-list project_id={project} page_token={next_token}"
@@ -2917,13 +2919,14 @@ def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandR
         headerTransform=pascalToSpace,
     )
 
-    outputs = {
+    outputs: dict[str, Any] = {
         "GCP.Compute.Zones(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"ZonesNextToken": next_token},
+        "GCP.Compute(true)": {"ZonesNextToken": next_token} if next_token else None,
     }
+    outputs = {context_path: value for context_path, value in outputs.items() if value}
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 

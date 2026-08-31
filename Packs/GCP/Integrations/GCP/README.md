@@ -1302,35 +1302,88 @@ Retrieves the list of region resources available to the specified project. Requi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a region named example-region by specifying name != example-region. | Optional |
-| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
-| page_token | Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| limit | The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a region named example-region by specifying name != example-region. | Optional |
+| order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
+| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.Regions.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.Regions.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
-| GCP.Compute.Regions.name | string | Name of the resource. |
-| GCP.Compute.Regions.description | string | Textual description of the resource. |
-| GCP.Compute.Regions.status | string | Status of the region, either UP or DOWN. |
-| GCP.Compute.Regions.zones | string | A list of zones available in this region, in the form of resource URLs. |
-| GCP.Compute.Regions.quotas | string | Quotas assigned to this region. |
-| GCP.Compute.Regions.quotas.metric | string | Name of the quota metric. |
-| GCP.Compute.Regions.quotas.limit | string | Quota limit for this metric. |
-| GCP.Compute.Regions.quotas.usage | string | Current usage of this metric. |
-| GCP.Compute.Regions.quotas.owner | string | Owning resource. The resource to which this quota applies. |
+| GCP.Compute.Regions.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56.000-07:00\). |
+| GCP.Compute.Regions.name | string | The name of the resource. |
+| GCP.Compute.Regions.description | string | The textual description of the resource. |
+| GCP.Compute.Regions.status | string | The status of the region, either UP or DOWN. |
+| GCP.Compute.Regions.zones | string | The list of zones available in this region, in the form of resource URLs. |
+| GCP.Compute.Regions.quotas | string | The quotas assigned to this region. |
+| GCP.Compute.Regions.quotas.metric | string | The name of the quota metric. |
+| GCP.Compute.Regions.quotas.limit | string | The quota limit for this metric. |
+| GCP.Compute.Regions.quotas.usage | string | The current usage of this metric. |
+| GCP.Compute.Regions.quotas.owner | string | The owning resource, meaning the resource to which this quota applies. |
 | GCP.Compute.Regions.deprecated | string | The deprecation status associated with this region. |
 | GCP.Compute.Regions.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
 | GCP.Compute.Regions.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. |
-| GCP.Compute.Regions.deprecated.deprecated | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Regions.deprecated.obsolete | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Regions.deprecated.deleted | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Regions.selfLink | string | Server-defined URL for the resource. |
-| GCP.Compute.Regions.kind | string | Type of the resource. Always compute\#region for regions. |
-| GCP.Compute.RegionsNextToken | string | Next page token for pagination. |
+| GCP.Compute.Regions.deprecated.deprecated | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Regions.deprecated.obsolete | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Regions.deprecated.deleted | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Regions.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Regions.kind | string | The type of the resource. Always compute\#region for regions. |
+| GCP.Compute.RegionsNextToken | string | The next page token to use for retrieving the next page of regions. |
+
+#### Command example
+
+```!gcp-compute-regions-list project_id=project-id limit=2```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "Compute": {
+            "Regions": [
+                {
+                    "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                    "id": "1220",
+                    "kind": "compute#region",
+                    "name": "us-central1",
+                    "selfLink": "https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1",
+                    "status": "UP",
+                    "zones": [
+                        "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-central1-a",
+                        "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-central1-b"
+                    ]
+                },
+                {
+                    "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                    "id": "1230",
+                    "kind": "compute#region",
+                    "name": "us-east1",
+                    "selfLink": "https://www.googleapis.com/compute/v1/projects/project-id/regions/us-east1",
+                    "status": "UP",
+                    "zones": [
+                        "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-east1-b"
+                    ]
+                }
+            ],
+            "RegionsNextToken": "CAIQAA=="
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GCP Compute Regions
+>
+>Run the following command to retrieve the next batch of regions:
+>!gcp-compute-regions-list project_id=project-id page_token=CAIQAA==
+>
+>|Id|Name|Status|Creation Timestamp|
+>|---|---|---|---|
+>| 1220 | us-central1 | UP | 1969-12-31T16:00:00.000-08:00 |
+>| 1230 | us-east1 | UP | 1969-12-31T16:00:00.000-08:00 |
 
 ### gcp-compute-zone-get
 
@@ -1382,31 +1435,86 @@ Retrieves the list of zone resources available to the specified project. Require
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a zone named example-zone by specifying name != example-zone. | Optional |
-| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
-| page_token | Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| limit | The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a zone named example-zone by specifying name != example-zone. | Optional |
+| order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
+| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.Zones.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.Zones.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
-| GCP.Compute.Zones.name | string | Name of the resource. |
-| GCP.Compute.Zones.description | string | Textual description of the resource. |
-| GCP.Compute.Zones.status | string | Status of the zone, either UP or DOWN. |
+| GCP.Compute.Zones.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56.000-07:00\). |
+| GCP.Compute.Zones.name | string | The name of the resource. |
+| GCP.Compute.Zones.description | string | The textual description of the resource. |
+| GCP.Compute.Zones.status | string | The status of the zone, either UP or DOWN. |
 | GCP.Compute.Zones.deprecated | string | The deprecation status associated with this zone. |
 | GCP.Compute.Zones.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
 | GCP.Compute.Zones.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. |
-| GCP.Compute.Zones.deprecated.deprecated | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Zones.deprecated.obsolete | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Zones.deprecated.deleted | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Zones.region | string | Full URL reference to the region which hosts the zone. |
-| GCP.Compute.Zones.selfLink | string | Server-defined URL for the resource. |
-| GCP.Compute.Zones.availableCpuPlatforms | string | Available cpu/platform selections for the zone. |
-| GCP.Compute.Zones.kind | string | Type of the resource. Always compute\#zone for zones. |
-| GCP.Compute.ZonesNextToken | string | Next page token for pagination. |
+| GCP.Compute.Zones.deprecated.deprecated | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Zones.deprecated.obsolete | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Zones.deprecated.deleted | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Zones.region | string | The full URL reference to the region which hosts the zone. |
+| GCP.Compute.Zones.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Zones.availableCpuPlatforms | string | The available CPU platform selections for the zone. |
+| GCP.Compute.Zones.kind | string | The type of the resource. Always compute\#zone for zones. |
+| GCP.Compute.ZonesNextToken | string | The next page token to use for retrieving the next page of zones. |
+
+#### Command example
+
+```!gcp-compute-zones-list project_id=project-id limit=2```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "Compute": {
+            "Zones": [
+                {
+                    "availableCpuPlatforms": [
+                        "Intel Broadwell",
+                        "Intel Cascade Lake"
+                    ],
+                    "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                    "id": "2231",
+                    "kind": "compute#zone",
+                    "name": "us-central1-a",
+                    "region": "https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1",
+                    "selfLink": "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-central1-a",
+                    "status": "UP"
+                },
+                {
+                    "availableCpuPlatforms": [
+                        "Intel Broadwell"
+                    ],
+                    "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                    "id": "2232",
+                    "kind": "compute#zone",
+                    "name": "us-central1-b",
+                    "region": "https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1",
+                    "selfLink": "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-central1-b",
+                    "status": "UP"
+                }
+            ],
+            "ZonesNextToken": "CAIQAA=="
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GCP Compute Zones
+>
+>Run the following command to retrieve the next batch of zones:
+>!gcp-compute-zones-list project_id=project-id page_token=CAIQAA==
+>
+>|Id|Name|Status|Region|Creation Timestamp|
+>|---|---|---|---|---|
+>| 2231 | us-central1-a | UP | https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1 | 1969-12-31T16:00:00.000-08:00 |
+>| 2232 | us-central1-b | UP | https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1 | 1969-12-31T16:00:00.000-08:00 |
 
 ### gcp-compute-networks-list
 

@@ -2690,13 +2690,13 @@ script:
       required: false
       required:platform: true
     - defaultValue: '50'
-      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
       name: limit
-    - description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a region named example-region by specifying name != example-region.
+    - description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a region named example-region by specifying name != example-region.
       name: filters
-    - description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+    - description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
       name: order_by
-    - description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
       name: page_token
     description: "Retrieves the list of region resources available to the specified project. Required permission: compute.regions.list."
     name: gcp-compute-regions-list
@@ -2705,34 +2705,34 @@ script:
       description: The unique identifier for the resource. This identifier is defined by the server.
       type: string
     - contextPath: GCP.Compute.Regions.creationTimestamp
-      description: Creation timestamp in RFC3339 text format.
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56.000-07:00).
       type: string
     - contextPath: GCP.Compute.Regions.name
-      description: Name of the resource.
+      description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Regions.description
-      description: Textual description of the resource.
+      description: The textual description of the resource.
       type: string
     - contextPath: GCP.Compute.Regions.status
-      description: Status of the region, either UP or DOWN.
+      description: The status of the region, either UP or DOWN.
       type: string
     - contextPath: GCP.Compute.Regions.zones
-      description: A list of zones available in this region, in the form of resource URLs.
+      description: The list of zones available in this region, in the form of resource URLs.
       type: string
     - contextPath: GCP.Compute.Regions.quotas
-      description: Quotas assigned to this region.
+      description: The quotas assigned to this region.
       type: string
     - contextPath: GCP.Compute.Regions.quotas.metric
-      description: Name of the quota metric.
+      description: The name of the quota metric.
       type: string
     - contextPath: GCP.Compute.Regions.quotas.limit
-      description: Quota limit for this metric.
+      description: The quota limit for this metric.
       type: string
     - contextPath: GCP.Compute.Regions.quotas.usage
-      description: Current usage of this metric.
+      description: The current usage of this metric.
       type: string
     - contextPath: GCP.Compute.Regions.quotas.owner
-      description: Owning resource. The resource to which this quota applies.
+      description: The owning resource, meaning the resource to which this quota applies.
       type: string
     - contextPath: GCP.Compute.Regions.deprecated
       description: The deprecation status associated with this region.
@@ -2744,22 +2744,22 @@ script:
       description: The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource.
       type: string
     - contextPath: GCP.Compute.Regions.deprecated.deprecated
-      description: An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. This is only informational and the status will not change unless the client explicitly changes it.
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
       type: string
     - contextPath: GCP.Compute.Regions.deprecated.obsolete
-      description: An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it.
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
       type: string
     - contextPath: GCP.Compute.Regions.deprecated.deleted
-      description: An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it.
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
       type: string
     - contextPath: GCP.Compute.Regions.selfLink
-      description: Server-defined URL for the resource.
+      description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Regions.kind
-      description: Type of the resource. Always compute#region for regions.
+      description: The type of the resource. Always compute#region for regions.
       type: string
     - contextPath: GCP.Compute.RegionsNextToken
-      description: Next page token for pagination.
+      description: The next page token to use for retrieving the next page of regions.
       type: string
 
 # gcp-compute-instance-group-get
@@ -2888,13 +2888,13 @@ script:
       required: false
       required:platform: true
     - defaultValue: '50'
-      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
       name: limit
-    - description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a zone named example-zone by specifying name != example-zone.
+    - description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a zone named example-zone by specifying name != example-zone.
       name: filters
-    - description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+    - description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
       name: order_by
-    - description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
       name: page_token
     description: "Retrieves the list of zone resources available to the specified project. Required permission: compute.zones.list."
     name: gcp-compute-zones-list
@@ -2903,16 +2903,16 @@ script:
       description: The unique identifier for the resource. This identifier is defined by the server.
       type: string
     - contextPath: GCP.Compute.Zones.creationTimestamp
-      description: Creation timestamp in RFC3339 text format.
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56.000-07:00).
       type: string
     - contextPath: GCP.Compute.Zones.name
-      description: Name of the resource.
+      description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Zones.description
-      description: Textual description of the resource.
+      description: The textual description of the resource.
       type: string
     - contextPath: GCP.Compute.Zones.status
-      description: Status of the zone, either UP or DOWN.
+      description: The status of the zone, either UP or DOWN.
       type: string
     - contextPath: GCP.Compute.Zones.deprecated
       description: The deprecation status associated with this zone.
@@ -2924,28 +2924,28 @@ script:
       description: The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource.
       type: string
     - contextPath: GCP.Compute.Zones.deprecated.deprecated
-      description: An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. This is only informational and the status will not change unless the client explicitly changes it.
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
       type: string
     - contextPath: GCP.Compute.Zones.deprecated.obsolete
-      description: An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it.
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
       type: string
     - contextPath: GCP.Compute.Zones.deprecated.deleted
-      description: An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it.
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
       type: string
     - contextPath: GCP.Compute.Zones.region
-      description: Full URL reference to the region which hosts the zone.
+      description: The full URL reference to the region which hosts the zone.
       type: string
     - contextPath: GCP.Compute.Zones.selfLink
-      description: Server-defined URL for the resource.
+      description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Zones.availableCpuPlatforms
-      description: Available cpu/platform selections for the zone.
+      description: The available CPU platform selections for the zone.
       type: string
     - contextPath: GCP.Compute.Zones.kind
-      description: Type of the resource. Always compute#zone for zones.
+      description: The type of the resource. Always compute#zone for zones.
       type: string
     - contextPath: GCP.Compute.ZonesNextToken
-      description: Next page token for pagination.
+      description: The next page token to use for retrieving the next page of zones.
       type: string
 
 # gcp-compute-networks-list
