@@ -281,4 +281,6 @@ filter cloud_provider = "azure"
     azure_username_4 = json_extract_scalar(model, "$.data.AwsUser.Name"),
     azure_username_5 = json_extract_scalar(model, "$.data.AzureWebAppService.ResourceGroup.model.name"),
     azure_username_6 = json_extract_scalar(model, "$.data.AzurePrincipal.Name")
-| alter xdm.target.user.username = coalesce(azure_username_1, azure_username_2, azure_username_3, azure_username_4, azure_username_5, azure_username_6),        xdm.target.identity.username = coalesce(azure_username_1, azure_username_2, azure_username_3, azure_username_4, azure_username_5, azure_username_6);
+| alter 
+        xdm.target.user.username = coalesce(azure_username_1, azure_username_2, azure_username_3, azure_username_4, azure_username_5, azure_username_6),
+        xdm.target.identity.username = coalesce(azure_username_1, azure_username_2, azure_username_3, azure_username_4, azure_username_5, azure_username_6);
