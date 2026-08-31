@@ -41,10 +41,16 @@ def main(args):
         },
     )
 
-    if is_demisto_version_ge("8.0.0"):
-        indicators = indicator_res[0]["response"]["iocObjects"]
+    # `execute_command` collapses a single result entry to a dict but returns a
+    # list when multiple entries are present.
+    if isinstance(indicator_res, list):
+        demisto.debug(f"indicator_res is a list of length {len(indicator_res)}")
+        response = indicator_res[0].get("response", {}) if indicator_res else {}
     else:
-        indicators = indicator_res["response"]["iocObjects"]
+        demisto.debug("indicator_res is a dict")
+        response = indicator_res.get("response", {})
+
+    indicators = response.get("iocObjects", [])
 
     res = []
     for indicator in indicators:

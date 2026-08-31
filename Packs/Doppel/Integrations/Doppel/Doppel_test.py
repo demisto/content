@@ -20,6 +20,7 @@ from Doppel import (
     _get_last_fetch_datetime,
     _get_mirroring_fields,
     _get_remote_updated_incident_data_with_entry,
+    _normalize_entity_content_for_grid,
     _parse_fetch_timeout,
     _parse_max_fetch,
     _incident_alert_id,
@@ -380,25 +381,34 @@ def test_get_remote_data_command_rate_limit_exception(mocker, capfd):
 
 
 def test_update_remote_system_command(client, mocker):
-    """Test update_remote_system_command function."""
-
-    # Mocking demisto functions using mocker.patch.object
-    mock_debug = mocker.patch.object(demisto, "debug")
-    mock_error = mocker.patch.object(demisto, "error")
-
-    args = {
-        "data": {"queue_state": "archived"},
-        "incidentChanged": True,
-        "remoteId": "123",
+    """Closing an XSOAR incident archives the Doppel alert and preserves live entity_state."""
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+    client.get_alert.return_value = {
+        "id": "123",
+        "queue_state": "needs_review",
+        "entity_state": "down",
     }
 
-    # Run the function
+    args = {
+        "data": {"queue_state": "needs_review"},
+        "delta": {"closeNotes": "Resolved in XSOAR"},
+        "incidentChanged": True,
+        "remoteId": "123",
+        "status": IncidentStatus.DONE,
+    }
+
     result = update_remote_system_command(client, args)
 
-    # Assertions
-    assert result == "123", "Returned remoteId should match input"
-    mock_debug.assert_called()  # Ensure debug logs are being generated
-    mock_error.assert_not_called()  # Ensure no errors were logged
+    assert result == "123"
+    client.get_alert.assert_called_once_with(id="123", entity="")
+    client.update_alert.assert_called_once_with(
+        queue_state="archived",
+        entity_state="down",
+        comment="Resolved in XSOAR",
+        alert_id="123",
+    )
+    demisto.error.assert_not_called()
 
 
 def test_update_remote_system_incident_not_closed(mocker, capfd):
@@ -414,13 +424,138 @@ def test_update_remote_system_incident_not_closed(mocker, capfd):
         "entries": [],
         "incidentChanged": True,
         "remoteId": "123456",
-        "inc_status": 1,  # Not DONE (assuming DONE = 2)
+        "status": IncidentStatus.ACTIVE,
     }
 
     with capfd.disabled():
         update_remote_system_command(client, args)
 
     demisto.debug.assert_called_with("Incident not closed. Skipping update for remote ID [123456].")
+    client.get_alert.assert_not_called()
+    client.update_alert.assert_not_called()
+
+
+def test_update_remote_system_already_archived_with_comment(client, mocker):
+    """Already-archived alerts still receive close notes when the XSOAR incident is closed."""
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+    client.get_alert.return_value = {
+        "id": "123",
+        "queue_state": "archived",
+        "entity_state": "down",
+    }
+
+    args = {
+        "data": {},
+        "delta": {"closeNotes": "Closing note"},
+        "incidentChanged": True,
+        "remoteId": "123",
+        "status": IncidentStatus.DONE,
+    }
+
+    assert update_remote_system_command(client, args) == "123"
+    client.update_alert.assert_called_once_with(
+        queue_state="archived",
+        entity_state="down",
+        comment="Closing note",
+        alert_id="123",
+    )
+
+
+def test_update_remote_system_already_archived_without_comment(client, mocker):
+    """Skip the API call when the alert is already archived and there are no close notes."""
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+    client.get_alert.return_value = {
+        "id": "123",
+        "queue_state": "archived",
+        "entity_state": "down",
+    }
+
+    args = {
+        "data": {},
+        "delta": {},
+        "incidentChanged": True,
+        "remoteId": "123",
+        "status": IncidentStatus.DONE,
+    }
+
+    assert update_remote_system_command(client, args) == "123"
+    client.update_alert.assert_not_called()
+
+
+def test_normalize_entity_content_for_grid_root_domain():
+    """Domains entity_content.root_domain becomes a one-row grid list."""
+    entity_content = {
+        "root_domain": {
+            "domain": "1.com",
+            "registrar": None,
+            "ip_address": None,
+            "mx_records": [],
+            "nameservers": [],
+        }
+    }
+    assert _normalize_entity_content_for_grid(entity_content) == [
+        {
+            "domain": "1.com",
+            "registrar": None,
+            "ip_address": None,
+            "mx_records": [],
+            "nameservers": [],
+        }
+    ]
+
+
+def test_normalize_entity_content_for_grid_passthrough_list():
+    """Already-normalized lists are returned unchanged (dict rows only)."""
+    rows = [{"domain": "a.com"}, {"domain": "b.com"}]
+    assert _normalize_entity_content_for_grid(rows) == rows
+    assert _normalize_entity_content_for_grid([]) == []
+    assert _normalize_entity_content_for_grid(None) == []
+
+
+def test_normalize_entity_content_for_grid_single_nested_dict():
+    """Non-domain archetypes ({archetype_key: {fields}}) unwrap the single nested dict."""
+    entity_content = {"social_media_post": {"full_text": "spam", "num_upvotes": 3}}
+    assert _normalize_entity_content_for_grid(entity_content) == [{"full_text": "spam", "num_upvotes": 3}]
+
+
+def test_normalize_entity_content_for_grid_flat_dict_fallback():
+    """A flat dict with no nested objects is used as the grid row so no data is dropped."""
+    entity_content = {"domain": "flat.com", "registrar": "R"}
+    assert _normalize_entity_content_for_grid(entity_content) == [{"domain": "flat.com", "registrar": "R"}]
+    # Ambiguous shapes with multiple nested dicts still return no rows.
+    ambiguous = {"a": {"x": 1}, "b": {"y": 2}}
+    assert _normalize_entity_content_for_grid(ambiguous) == []
+
+
+def test_alert_to_incident_normalizes_entity_content():
+    """Fetched incidents put grid-shaped entity_content into rawJSON for the mapper."""
+    alert = {
+        "id": "TST-3620",
+        "created_at": "2026-07-31T13:18:52.149692",
+        "severity": "medium",
+        "entity_content": {"root_domain": {"domain": "1.com", "registrar": None}},
+    }
+    incident = _alert_to_incident(alert, {"mirror_direction": "Both"})
+    raw = json.loads(incident["rawJSON"])
+    assert raw["entity_content"] == [{"domain": "1.com", "registrar": None}]
+
+
+def test_get_remote_updated_incident_data_normalizes_entity_content():
+    """Incoming mirror sync also shapes entity_content for the grid field."""
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "TST-3620",
+        "queue_state": "archived",
+        "entity_content": {"root_domain": {"domain": "1.com"}},
+        "audit_logs": [],
+    }
+
+    updated_alert, _entries = _get_remote_updated_incident_data_with_entry(mock_client, "TST-3620", "2025-02-24T14:30:00.120000Z")
+
+    assert updated_alert is not None
+    assert updated_alert["entity_content"] == [{"domain": "1.com"}]
 
 
 def test_get_mapping_fields_command(client, mocker):
@@ -435,6 +570,12 @@ def test_get_mapping_fields_command(client, mocker):
     # Assertions
     assert result is not None, "Result should not be None"
     assert hasattr(result, "extract_mapping"), "Result should have extract_mapping method"
+
+    mapping = result.extract_mapping()
+    assert mapping["Doppel Alert"]["queue_state"] == "Queue State of the Doppel Alert"
+    assert mapping["Doppel Alert"]["entity_state"] == "Current state of the alert entity"
+    assert mapping["Doppel Alert"]["doppel_link"] == "Link to the alert in the Doppel platform"
+    assert mapping["Doppel Alert"]["entity_content"] == "Additional content related to the alert entity"
 
     mock_debug.assert_called()  # Ensure debug logs are generated
 
@@ -988,6 +1129,104 @@ def test_get_remote_updated_incident_data_with_entry():
 
     # Assertions
     assert updated_alert or updated_alert is None, "Updated alert should be either valid or None"
+
+
+def test_get_remote_updated_incident_data_never_synced_timestamp():
+    """
+    Given:
+        - A lastUpdate timestamp of a never-synced incident ("0001-01-01T00:00:00Z", no microseconds).
+    When:
+        - Running _get_remote_updated_incident_data_with_entry.
+    Then:
+        - The unparseable timestamp does not raise, and the updated alert is still returned
+          so the first incoming mirror sync completes.
+    """
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "12345",
+        "queue_state": "actioned",
+        "audit_logs": [{"timestamp": "2024-11-27T06:51:50.357664", "type": "alert_create"}],
+    }
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "12345", "0001-01-01T00:00:00Z")
+
+    assert updated_alert is not None
+    assert updated_alert["queue_state"] == "actioned"
+    assert len(entries) == 1
+
+
+def test_get_remote_updated_incident_data_no_audit_logs():
+    """
+    Given:
+        - An updated alert whose payload has no audit logs.
+    When:
+        - Running _get_remote_updated_incident_data_with_entry.
+    Then:
+        - The alert field updates are still returned (not discarded), with no note entries.
+    """
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "12345",
+        "queue_state": "actioned",
+    }
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "12345", "2025-02-24T14:30:00.120000Z")
+
+    assert updated_alert is not None
+    assert updated_alert["queue_state"] == "actioned"
+    assert entries == []
+
+
+def test_get_remote_updated_incident_data_empty_audit_logs():
+    """
+    Given:
+        - An updated alert whose audit_logs list is empty.
+    When:
+        - Running _get_remote_updated_incident_data_with_entry.
+    Then:
+        - No exception is raised and the alert field updates are still returned.
+    """
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "12345",
+        "queue_state": "actioned",
+        "audit_logs": [],
+    }
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "12345", "2025-02-24T14:30:00.120000Z")
+
+    assert updated_alert is not None
+    assert updated_alert["queue_state"] == "actioned"
+    assert entries == []
+
+
+def test_get_modified_remote_data_command_paginates(mocker):
+    """
+    Given:
+        - More modified alerts than fit in a single API page.
+    When:
+        - Running get_modified_remote_data_command.
+    Then:
+        - All pages are drained and every modified alert ID is returned exactly once.
+    """
+    mock_client = MagicMock()
+    first_page = [{"id": f"alert-{i:03d}"} for i in range(200)]
+    second_page = [{"id": f"alert-{i:03d}"} for i in range(200, 250)]
+    mock_client.get_alerts.side_effect = [{"alerts": first_page}, {"alerts": second_page}]
+
+    mocker.patch.object(demisto, "debug")
+
+    result = get_modified_remote_data_command(mock_client, {"lastUpdate": "2025-02-24T14:30:00Z"})
+
+    assert len(result.modified_incident_ids) == 250
+    assert result.modified_incident_ids[0] == "alert-000"
+    assert result.modified_incident_ids[-1] == "alert-249"
+    assert mock_client.get_alerts.call_count == 2
+    first_call_params = mock_client.get_alerts.call_args_list[0][1]["params"]
+    second_call_params = mock_client.get_alerts.call_args_list[1][1]["params"]
+    assert first_call_params["page"] == 0
+    assert second_call_params["page"] == 1
+    assert first_call_params["page_size"] == 200
 
 
 def test_client_initialization_with_proxy(mocker):
