@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: FortiManager_ModelingRule
-name: FortiManager Modeling Rule
+id: Fortinet_FortiManager_ModelingRule
+name: Fortinet FortiManager Modeling Rule
 rules: ''
 schema: ''
 tags: ''

@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: TrendMicroEmailSecurity_ModelingRule
-name: TrendMicroEmailSecurity Modeling Rule
+id: Trend_Micro_Email_Security_ModelingRule
+name: Trend Micro Email Security Modeling Rule
 rules: ''
 schema: ''
 supportedModules:

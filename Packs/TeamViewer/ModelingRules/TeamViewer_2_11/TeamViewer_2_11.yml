@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: TeamViewer_ModelingRule
-name: TeamViewer Modeling Rule
+id: TeamViewer_Tensor_ModelingRule
+name: TeamViewer Tensor Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
