@@ -13,7 +13,6 @@ including using custom fields.
 INTEGRATION_COMMAND = "jira-create-issue"
 DATE_FORMAT = "%Y-%m-%d"
 
-
 def validate_date_field(date_str: str):
     """
     Private method to validate the date field is in expected format
@@ -36,21 +35,22 @@ def parse_custom_fields(custom_fields: list[str]) -> dict[str, Any]:
     And are returned as a dict:
         `'customfield_10101': 'foo', 'customfield_10101': 'bar'`
 
+    Values may contain any characters including non-ASCII text (Korean, Japanese, etc.),
+    spaces, hyphens, @, /, and other special characters.
+
     Args:
-        - `custom_fields` (`List[str]`): List of custom fields.s
+        - `custom_fields` (`List[str]`): List of custom fields.
 
     Returns:
         - `Dict[str, Any]` representing the custom fields.
     """
 
     result: dict[str, Any] = {}
-    regex = r"(customfield_\d{5,})={1}(\w+)"
+    regex = r"(customfield_\d{5,})=([^,]+)"
 
     for custom_field in custom_fields:
-        field_regex_match = re.search(regex, custom_field)
-
-        if field_regex_match:
-            field_key, field_value = re.findall(regex, custom_field)[0]
+        for field_key, field_value in re.findall(regex, custom_field):
+            field_value = field_value.strip()
 
             if field_value.isnumeric() and not field_value.startswith("0"):
                 field_value = int(field_value)  # type: ignore
@@ -58,6 +58,31 @@ def parse_custom_fields(custom_fields: list[str]) -> dict[str, Any]:
             result[field_key] = field_value
 
     return result
+
+
+def validate_no_extra_args(args: dict[str, Any]) -> None:
+    """
+    Validate that no other arguments are provided alongside `customFields`.
+
+    When `customFields` is used, this script builds an `issueJson` payload internally.
+    JiraV3 rejects any call that mixes `issueJson` with other arguments (XSUP-33060).
+    All required fields (summary, projectKey, issueTypeName, etc.) must be included in
+    the `customFields` comma-separated list instead.
+
+    Args:
+        - `args` (`dict[str, Any]`): The full command arguments dict.
+
+    Raises:
+        - `DemistoException` if any argument other than `customFields` is present.
+    """
+    if len(args) > 1:
+        extra_args = sorted(k for k in args if k != "customFields")
+        raise DemistoException(
+            f"When using the `customFields` argument, additional arguments ({', '.join(extra_args)}) "
+            "cannot be provided. Include all required fields (e.g. summary, projectKey, issueTypeName) "
+            "inside the `customFields` comma-separated list. "
+            'For example: customFields="summary=My Issue,projectKey=PROJ,issueTypeName=Task,customfield_10214=value"'
+        )
 
 
 def add_custom_fields(args: dict[str, Any], custom_fields: dict[str, Any]) -> dict[str, Any]:
@@ -86,6 +111,7 @@ def main():  # pragma: no cover
             validate_date_field(args.get("dueDate"))
 
         if "customFields" in args:
+            validate_no_extra_args(args)
             demisto.debug("Found customFields arguments. Attempting to parse them...")
             custom_fields = parse_custom_fields(argToList(args.get("customFields")))
 

@@ -42,7 +42,13 @@ args:
 - name: parentIssueId
   description: Parent issue ID if you create a sub-task.
 - name: customFields
-  description: Comma-separated custom field keys and values to include in the created incident, e.g. `customfield_10101=foo,customfield_10102=bar`.
+  description: >-
+    Comma-separated list of field keys and values to include in the created issue.
+    Supports both standard fields and custom fields, e.g.
+    `summary=My Issue,projectKey=PROJ,issueTypeName=Task,customfield_10101=foo,customfield_10102=bar`.
+    Values may contain non-ASCII characters (Korean, Japanese, etc.), spaces, hyphens, and other special characters.
+    When this argument is used, all required fields (summary, projectKey, issueTypeName, etc.) must be
+    included here. Providing this argument alongside separate named arguments (e.g. summary) will raise an error.
   isArray: true
 outputs:
 - contextPath: Ticket.Id
