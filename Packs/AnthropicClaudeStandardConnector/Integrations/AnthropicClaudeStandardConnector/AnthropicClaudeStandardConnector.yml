@@ -23,11 +23,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  additionalinfo: Route requests through the system HTTPS proxy configured on the server.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
   section: Connect
+  additionalinfo: Bypass TLS certificate validation. Not recommended for production use.
   advanced: true
 description: 'This integration is configured automatically as part of the Anthropic Claude Standard Connector. Do not configure this integration directly — set it up from the connector page instead.'
 script:

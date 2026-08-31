@@ -1,13 +1,13 @@
 This integration is configured automatically as part of the Anthropic Claude Standard Connector. Do not configure this integration directly — set it up from the connector page instead.
-This integration was integrated and tested with version xx of AnthropicClaudeStandardConnector.
 
 ## Configure Anthropic Claude (Standard Connector) in Cortex
+
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Compliance Access Key | The Anthropic Compliance Access Key \(sk-ant-api01-...\) used for the delete commands. Requires the delete:compliance_user_data scope. | False |
-| Use system proxy settings |  | False |
-| Trust any certificate (not secure) |  | False |
+| Use system proxy settings | Route requests through the system HTTPS proxy configured on the server. | False |
+| Trust any certificate (not secure) | Bypass TLS certificate validation. Not recommended for production use. | False |
 
 ## Commands
 
