@@ -127,6 +127,35 @@ configuration:
   type: 8
   section: Connect
   required: false
+triggers:
+- conditions:
+  - name: api_version
+    operator: equal
+    value: V1 (API Key)
+  effects:
+  - name: credentials
+    action:
+      required: true
+  - name: client_credentials
+    action:
+      hidden: true
+- conditions:
+  - name: api_version
+    operator: equal
+    value: V2 (OAuth 2.0 Client Credentials)
+  effects:
+  - name: credentials
+    action:
+      hidden: true
+  - name: user_credentials
+    action:
+      hidden: true
+  - name: organization_code
+    action:
+      hidden: true
+  - name: client_credentials
+    action:
+      required: true
 description: |-
   Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.
   The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
