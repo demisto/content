@@ -13,6 +13,7 @@ including using custom fields.
 INTEGRATION_COMMAND = "jira-create-issue"
 DATE_FORMAT = "%Y-%m-%d"
 
+
 def validate_date_field(date_str: str):
     """
     Private method to validate the date field is in expected format
