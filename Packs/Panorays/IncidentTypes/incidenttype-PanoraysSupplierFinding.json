@@ -3,7 +3,6 @@
     "version": -1,
     "name": "Panorays Supplier Finding",
     "prevName": "Panorays Supplier Finding",
-    "description": "A security finding detected by Panorays on one of your suppliers (third parties).",
     "color": "#295AFF",
     "hours": 0,
     "days": 0,
@@ -20,5 +19,9 @@
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
