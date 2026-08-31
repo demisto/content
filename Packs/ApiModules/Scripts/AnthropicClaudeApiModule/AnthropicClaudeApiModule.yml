@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common Anthropic Claude Compliance API code shared by the AnthropicClaude and AnthropicClaudeStandardConnector integrations.
+comment: Provides common Anthropic Claude Compliance API code shared by the AnthropicClaude and AnthropicClaudeStandardConnector integrations.
 system: true
 scripttarget: 0
 dependson: {}

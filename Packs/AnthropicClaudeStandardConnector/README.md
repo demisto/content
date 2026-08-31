@@ -1,5 +1,7 @@
 # Anthropic Claude (Standard Connector)
 
+## What does this pack do?
+
 Satellite pack of the Anthropic Claude integration used for the Standard
 Connector deployment. It ships a narrow integration exposing only the two
 irreversible Compliance API delete commands
