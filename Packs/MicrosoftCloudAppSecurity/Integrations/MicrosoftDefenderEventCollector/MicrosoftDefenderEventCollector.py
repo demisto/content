@@ -507,6 +507,7 @@ def select_event_filters(requested_event_types: list) -> list[EventFilter]:
 
 
 def main(command: str, demisto_params: dict | None = None):
+    demisto.debug("MD: concurrent-fetch build is running (per-type event fetching enabled)")
     demisto.debug(f"MD: Command being called is {command}")
 
     if demisto_params is None:
