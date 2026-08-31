@@ -57,12 +57,12 @@ configuration:
     4. URLs
     5. Files
     
-    Default (total for all types): 20,000. Maximum (total for all types): 100,000.
+    Maximum (total for all types): 100,000.
   required: false
   section: Collect
   advanced: true
 - display: Feed Fetch Interval
-  additionalinfo: Feed fetch interval is set to 1 hour and is not configurable.
+  additionalinfo: The feed fetch interval, which is set to 1 hour and is not configurable.
   name: feedFetchInterval
   type: 19
   defaultvalue: '60'
