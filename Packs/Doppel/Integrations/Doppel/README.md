@@ -12,10 +12,10 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | --- | --- | --- |
 | Doppel Tenant URL | The Doppel server URL that will be used for calling the APIs. | True |
 | API Version | The Doppel API version to use. V1 authenticates with a static API Key; V2 authenticates with OAuth 2.0 client credentials \(Client ID and Client Secret\). New Doppel API capabilities are added to V2 only, so V2 is recommended. | True |
-| API Key | The API Key to use for connection with Doppel. Required when API Version is V1. | False |
-| Client ID / Client Secret | The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the **Version 2** tab on the **API Settings** page in Doppel Vision. | False |
-| User API Key | The User API Key \(Optional\) to use for connection with Doppel. Applies to API Version V1 only. | False |
-| Organization Code | Optional organization identifier used when your Doppel environment is organization-scoped. Applies to API Version V1 only; V2 scopes requests to your organization automatically. | False |
+| API Key \(V1\) | The API Key to use for connection with Doppel. Required when API Version is V1. | False |
+| User API Key \(V1\) | The User API Key \(Optional\) to use for connection with Doppel. Applies to API Version V1 only. | False |
+| Organization Code \(V1\) | Optional organization identifier used when your Doppel environment is organization-scoped. Applies to API Version V1 only; V2 scopes requests to your organization automatically. | False |
+| Client ID \(V2\) / Client Secret \(V2\) | The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the **Version 2** tab on the **API Settings** page in Doppel Vision. | False |
 | Trust Any Certificate (not secure) | When checked, SSL certificate verification is disabled. Use this only when the Doppel endpoint uses a self-signed or untrusted certificate. | False |
 | Use System Proxy Settings | When checked, the integration uses the system proxy defined in the XSOAR engine configuration (d1.conf). This is required if the engine routes outbound traffic through a local or organizational proxy. | False |
 | Fetch incidents |  | False |

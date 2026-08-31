@@ -26,33 +26,33 @@ configuration:
   section: Connect
 - additionalinfo: The API Key to use for connection with Doppel. Required when API Version is V1.
   display: ""
-  displaypassword: API Key
+  displaypassword: API Key (V1)
   hiddenusername: true
   name: credentials
   required: false
   type: 9
   section: Connect
-- additionalinfo: 'The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the Version 2 tab on the API Settings page in Doppel Vision.'
-  display: Client ID
-  displaypassword: Client Secret
-  name: client_credentials
-  required: false
-  type: 9
-  section: Connect
 - additionalinfo: The User API Key (Optional) to use for connection with Doppel. Applies to API Version V1 only.
   display: ""
-  displaypassword: User API Key
+  displaypassword: User API Key (V1)
   hiddenusername: true
   name: user_credentials
   required: false
   type: 9
   section: Connect
-- display: Organization Code
+- display: Organization Code (V1)
   name: organization_code
   required: false
   type: 0
   section: Connect
   additionalinfo: The Organization Code to use for connection with Doppel. Applies to API Version V1 only; V2 scopes requests to your organization automatically.
+- additionalinfo: 'The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the Version 2 tab on the API Settings page in Doppel Vision.'
+  display: Client ID (V2)
+  displaypassword: Client Secret (V2)
+  name: client_credentials
+  required: false
+  type: 9
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
