@@ -211,9 +211,7 @@ class IntegrationGetEvents(ABC):
             return final_stored_all_types
         with ThreadPoolExecutor(max_workers=len(self.filter_name_to_event_filter)) as executor:
             future_to_type = {
-                executor.submit(
-                    self._fetch_type, event_type_name, event_filter, last_run.get(event_type_name)
-                ): event_type_name
+                executor.submit(self._fetch_type, event_type_name, event_filter, last_run.get(event_type_name)): event_type_name
                 for event_type_name, event_filter in self.filter_name_to_event_filter.items()
             }
             for future in future_to_type:
