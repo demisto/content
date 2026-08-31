@@ -324,15 +324,15 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "container.clusters.list",
         ],
     ),
-    "gcp-container-cluster-legacy-abac-auth-set": (GCPServices.CONTAINER, ["container.clusters.update"]),
-    "gcp-container-clusters-list": (GCPServices.CONTAINER, ["container.clusters.list"]),
-    "gcp-container-cluster-get": (GCPServices.CONTAINER, ["container.clusters.get"]),
-    "gcp-container-node-pools-list": (GCPServices.CONTAINER, ["container.clusters.get"]),
-    "gcp-container-node-pool-get": (GCPServices.CONTAINER, ["container.clusters.get"]),
-    "gcp-container-node-pool-management-set": (GCPServices.CONTAINER, ["container.clusters.update"]),
-    "gcp-container-operations-list": (GCPServices.CONTAINER, ["container.operations.list"]),
-    "gcp-container-operation-get": (GCPServices.CONTAINER, ["container.operations.get"]),
-    "gcp-container-operation-cancel": (GCPServices.CONTAINER, ["container.operations.update"]),
+    "gcp-gke-cluster-legacy-abac-auth-set": (GCPServices.CONTAINER, ["container.clusters.update"]),
+    "gcp-gke-clusters-list": (GCPServices.CONTAINER, ["container.clusters.list"]),
+    "gcp-gke-cluster-get": (GCPServices.CONTAINER, ["container.clusters.get"]),
+    "gcp-gke-node-pools-list": (GCPServices.CONTAINER, ["container.clusters.get"]),
+    "gcp-gke-node-pool-get": (GCPServices.CONTAINER, ["container.clusters.get"]),
+    "gcp-gke-node-pool-management-set": (GCPServices.CONTAINER, ["container.clusters.update"]),
+    "gcp-gke-operations-list": (GCPServices.CONTAINER, ["container.operations.list"]),
+    "gcp-gke-operation-get": (GCPServices.CONTAINER, ["container.operations.get"]),
+    "gcp-gke-operation-cancel": (GCPServices.CONTAINER, ["container.operations.update"]),
     "gcp-bq-dataset-policy-remove": (
         GCPServices.BIGQUERY,
         ["bigquery.datasets.update", "bigquery.datasets.get", "bigquery.datasets.getIamPolicy", "bigquery.datasets.setIamPolicy"],
@@ -1703,16 +1703,19 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
-def _container_operation_result(response: dict[str, Any], title: str) -> CommandResults:
+def _container_operation_result(
+    response: dict[str, Any], title: str, outputs_prefix: str = "GCP.Container.Operations"
+) -> CommandResults:
     """
     Builds the standard CommandResults for a GKE operation response.
 
     Args:
         response (dict[str, Any]): The operation response returned by the container API.
         title (str): The human-readable table title for the operation.
+        outputs_prefix (str): The context output prefix for the operation.
 
     Returns:
-        CommandResults: Operation rendered under the GCP.Container.Operations context.
+        CommandResults: Operation rendered under the given operations context.
     """
     hr = tableToMarkdown(
         title,
@@ -1723,7 +1726,7 @@ def _container_operation_result(response: dict[str, Any], title: str) -> Command
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Container.Operations",
+        outputs_prefix=outputs_prefix,
         outputs=response,
         outputs_key_field="name",
         raw_response=response,
@@ -1849,7 +1852,9 @@ def container_cluster_legacy_abac_auth_set(creds: Credentials, args: dict[str, A
         .execute()
     )
     return _container_operation_result(
-        response, "Google Cloud Container Cluster Legacy ABAC Authorization Operation Started Successfully"
+        response,
+        "Google Cloud Container Cluster Legacy ABAC Authorization Operation Started Successfully",
+        outputs_prefix="GCP.GKE.Operations",
     )
 
 
@@ -1862,7 +1867,7 @@ def container_clusters_list(creds: Credentials, args: dict[str, Any]) -> Command
         args (dict[str, Any]): Must include 'project_id' and 'region' (location, e.g. "us-central1-c" or "-" for all).
 
     Returns:
-        CommandResults: The clusters under the GCP.Container.Clusters context.
+        CommandResults: The clusters under the GCP.GKE.Clusters context.
     """
     project_id = args.get("project_id")
     region = args.get("region")
@@ -1889,7 +1894,7 @@ def container_clusters_list(creds: Credentials, args: dict[str, Any]) -> Command
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Container.Clusters",
+        outputs_prefix="GCP.GKE.Clusters",
         outputs=clusters,
         outputs_key_field="name",
         raw_response=response,
@@ -1905,7 +1910,7 @@ def container_cluster_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
         args (dict[str, Any]): Must include 'project_id', 'region' and 'resource_name' (cluster name).
 
     Returns:
-        CommandResults: The cluster under the GCP.Container.Clusters context.
+        CommandResults: The cluster under the GCP.GKE.Clusters context.
     """
     project_id = args.get("project_id")
     region = args.get("region")
@@ -1929,7 +1934,7 @@ def container_cluster_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Container.Clusters",
+        outputs_prefix="GCP.GKE.Clusters",
         outputs=response,
         outputs_key_field="name",
         raw_response=response,
@@ -1945,7 +1950,7 @@ def container_node_pools_list(creds: Credentials, args: dict[str, Any]) -> Comma
         args (dict[str, Any]): Must include 'project_id', 'region' and 'cluster' (cluster name).
 
     Returns:
-        CommandResults: The node pools under the GCP.Container.NodePools context.
+        CommandResults: The node pools under the GCP.GKE.NodePools context.
     """
     project_id = args.get("project_id")
     region = args.get("region")
@@ -1974,7 +1979,7 @@ def container_node_pools_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Container.NodePools",
+        outputs_prefix="GCP.GKE.NodePools",
         outputs=node_pools,
         outputs_key_field="name",
         raw_response=response,
@@ -1990,7 +1995,7 @@ def container_node_pool_get(creds: Credentials, args: dict[str, Any]) -> Command
         args (dict[str, Any]): Must include 'project_id', 'region', 'cluster' and 'node_pool'.
 
     Returns:
-        CommandResults: The node pool under the GCP.Container.NodePools context.
+        CommandResults: The node pool under the GCP.GKE.NodePools context.
     """
     project_id = args.get("project_id")
     region = args.get("region")
@@ -2016,7 +2021,7 @@ def container_node_pool_get(creds: Credentials, args: dict[str, Any]) -> Command
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Container.NodePools",
+        outputs_prefix="GCP.GKE.NodePools",
         outputs=response,
         outputs_key_field="name",
         raw_response=response,
@@ -2062,7 +2067,9 @@ def container_node_pool_management_set(creds: Credentials, args: dict[str, Any])
         .execute()
     )
     return _container_operation_result(
-        response, "Google Cloud Container Node Pool Management Update Operation Started Successfully"
+        response,
+        "Google Cloud Container Node Pool Management Update Operation Started Successfully",
+        outputs_prefix="GCP.GKE.Operations",
     )
 
 
@@ -2075,7 +2082,7 @@ def container_operations_list(creds: Credentials, args: dict[str, Any]) -> Comma
         args (dict[str, Any]): Must include 'project_id' and 'region' (location, e.g. "us-central1-c" or "-" for all).
 
     Returns:
-        CommandResults: The operations under the GCP.Container.Operations context.
+        CommandResults: The operations under the GCP.GKE.Operations context.
     """
     project_id = args.get("project_id")
     region = args.get("region")
@@ -2102,7 +2109,7 @@ def container_operations_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Container.Operations",
+        outputs_prefix="GCP.GKE.Operations",
         outputs=operations,
         outputs_key_field="name",
         raw_response=response,
@@ -2118,7 +2125,7 @@ def container_operation_get(creds: Credentials, args: dict[str, Any]) -> Command
         args (dict[str, Any]): Must include 'project_id', 'region' and 'operation' (operation name).
 
     Returns:
-        CommandResults: The operation under the GCP.Container.Operations context.
+        CommandResults: The operation under the GCP.GKE.Operations context.
     """
     project_id = args.get("project_id")
     region = args.get("region")
@@ -2142,7 +2149,7 @@ def container_operation_get(creds: Credentials, args: dict[str, Any]) -> Command
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Container.Operations",
+        outputs_prefix="GCP.GKE.Operations",
         outputs=response,
         outputs_key_field="name",
         raw_response=response,
@@ -3425,15 +3432,15 @@ def main():  # pragma: no cover
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
             # Container (GKE) commands
             "gcp-container-cluster-security-update": container_cluster_security_update,
-            "gcp-container-cluster-legacy-abac-auth-set": container_cluster_legacy_abac_auth_set,
-            "gcp-container-clusters-list": container_clusters_list,
-            "gcp-container-cluster-get": container_cluster_get,
-            "gcp-container-node-pools-list": container_node_pools_list,
-            "gcp-container-node-pool-get": container_node_pool_get,
-            "gcp-container-node-pool-management-set": container_node_pool_management_set,
-            "gcp-container-operations-list": container_operations_list,
-            "gcp-container-operation-get": container_operation_get,
-            "gcp-container-operation-cancel": container_operation_cancel,
+            "gcp-gke-cluster-legacy-abac-auth-set": container_cluster_legacy_abac_auth_set,
+            "gcp-gke-clusters-list": container_clusters_list,
+            "gcp-gke-cluster-get": container_cluster_get,
+            "gcp-gke-node-pools-list": container_node_pools_list,
+            "gcp-gke-node-pool-get": container_node_pool_get,
+            "gcp-gke-node-pool-management-set": container_node_pool_management_set,
+            "gcp-gke-operations-list": container_operations_list,
+            "gcp-gke-operation-get": container_operation_get,
+            "gcp-gke-operation-cancel": container_operation_cancel,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # BigQuery commands

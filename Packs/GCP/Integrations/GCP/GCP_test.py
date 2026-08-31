@@ -6683,7 +6683,7 @@ def test_container_cluster_list_success(mocker):
     Given: Valid credentials and snake_case args for listing GKE clusters in a location.
     When: container_cluster_list is called.
     Then: It calls the container clusters().list endpoint with the correct parent and
-          returns CommandResults with the GCP.Container.Clusters prefix.
+          returns CommandResults with the GCP.GKE.Clusters prefix.
     """
     from GCP import container_clusters_list
 
@@ -6699,7 +6699,7 @@ def test_container_cluster_list_success(mocker):
 
     called_args, called_kwargs = mock_container.projects().locations().clusters().list.call_args
     assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c"
-    assert result.outputs_prefix == "GCP.Container.Clusters"
+    assert result.outputs_prefix == "GCP.GKE.Clusters"
     assert result.outputs == mock_response.get("clusters")
 
 
@@ -6728,7 +6728,7 @@ def test_container_cluster_get_success(mocker):
     Given: Valid credentials and snake_case args identifying a single GKE cluster.
     When: container_cluster_get is called.
     Then: It calls clusters().get with the correct name and returns the cluster in
-          the GCP.Container.Clusters context.
+          the GCP.GKE.Clusters context.
     """
     from GCP import container_cluster_get
 
@@ -6744,7 +6744,7 @@ def test_container_cluster_get_success(mocker):
 
     called_args, called_kwargs = mock_container.projects().locations().clusters().get.call_args
     assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
-    assert result.outputs_prefix == "GCP.Container.Clusters"
+    assert result.outputs_prefix == "GCP.GKE.Clusters"
     assert result.outputs == mock_response
 
 
@@ -6753,7 +6753,7 @@ def test_container_node_pool_list_success(mocker):
     Given: Valid credentials and snake_case args for listing node pools of a cluster.
     When: container_node_pool_list is called.
     Then: It calls nodePools().list with the correct parent and returns the node pools
-          in the GCP.Container.NodePools context.
+          in the GCP.GKE.NodePools context.
     """
     from GCP import container_node_pools_list
 
@@ -6769,7 +6769,7 @@ def test_container_node_pool_list_success(mocker):
 
     called_args, called_kwargs = mock_container.projects().locations().clusters().nodePools().list.call_args
     assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1"
-    assert result.outputs_prefix == "GCP.Container.NodePools"
+    assert result.outputs_prefix == "GCP.GKE.NodePools"
     assert result.outputs == mock_response.get("nodePools")
 
 
@@ -6778,7 +6778,7 @@ def test_container_node_pool_get_success(mocker):
     Given: Valid credentials and snake_case args identifying a single node pool.
     When: container_node_pool_get is called.
     Then: It calls nodePools().get with the correct name and returns the node pool in
-          the GCP.Container.NodePools context.
+          the GCP.GKE.NodePools context.
     """
     from GCP import container_node_pool_get
 
@@ -6801,7 +6801,7 @@ def test_container_node_pool_get_success(mocker):
     assert (
         called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/clusters/mock-cluster-1/nodePools/mock-pool-1"
     )
-    assert result.outputs_prefix == "GCP.Container.NodePools"
+    assert result.outputs_prefix == "GCP.GKE.NodePools"
     assert result.outputs == mock_response
 
 
@@ -6810,7 +6810,7 @@ def test_container_node_pool_management_set_success(mocker):
     Given: Valid credentials and snake_case args toggling node-pool auto-repair/auto-upgrade.
     When: container_node_pool_management_set is called.
     Then: It calls nodePools().setManagement with the correct name and management body and
-          returns the operation in the GCP.Container.Operations context.
+          returns the operation in the GCP.GKE.Operations context.
     """
     from GCP import container_node_pool_management_set
 
@@ -6837,7 +6837,7 @@ def test_container_node_pool_management_set_success(mocker):
     )
     assert called_kwargs["body"]["management"]["autoRepair"] is True
     assert called_kwargs["body"]["management"]["autoUpgrade"] is False
-    assert result.outputs_prefix == "GCP.Container.Operations"
+    assert result.outputs_prefix == "GCP.GKE.Operations"
     assert result.outputs == mock_response
 
 
@@ -6846,7 +6846,7 @@ def test_container_operation_list_success(mocker):
     Given: Valid credentials and snake_case args for listing GKE operations in a location.
     When: container_operation_list is called.
     Then: It calls operations().list with the correct parent and returns the operations in
-          the GCP.Container.Operations context.
+          the GCP.GKE.Operations context.
     """
     from GCP import container_operations_list
 
@@ -6862,7 +6862,7 @@ def test_container_operation_list_success(mocker):
 
     called_args, called_kwargs = mock_container.projects().locations().operations().list.call_args
     assert called_kwargs["parent"] == "projects/mock_project_id/locations/us-central1-c"
-    assert result.outputs_prefix == "GCP.Container.Operations"
+    assert result.outputs_prefix == "GCP.GKE.Operations"
     assert result.outputs == mock_response.get("operations")
 
 
@@ -6871,7 +6871,7 @@ def test_container_operation_get_success(mocker):
     Given: Valid credentials and snake_case args identifying a single GKE operation.
     When: container_operation_get is called.
     Then: It calls operations().get with the correct name and returns the operation in
-          the GCP.Container.Operations context.
+          the GCP.GKE.Operations context.
     """
     from GCP import container_operation_get
 
@@ -6887,7 +6887,7 @@ def test_container_operation_get_success(mocker):
 
     called_args, called_kwargs = mock_container.projects().locations().operations().get.call_args
     assert called_kwargs["name"] == "projects/mock_project_id/locations/us-central1-c/operations/operation-123"
-    assert result.outputs_prefix == "GCP.Container.Operations"
+    assert result.outputs_prefix == "GCP.GKE.Operations"
     assert result.outputs == mock_response
 
 
@@ -7018,7 +7018,7 @@ def test_container_cluster_legacy_abac_auth_set(mocker):
     Given: A GKE cluster needs legacy ABAC authorization enabled.
     When: container_cluster_legacy_abac_auth_set is called with enabled=true.
     Then: The function calls the dedicated setLegacyAbac endpoint with enabled True, returning the
-          operation in the GCP.Container.Operations context.
+          operation in the GCP.GKE.Operations context.
     """
     from GCP import container_cluster_legacy_abac_auth_set
 
