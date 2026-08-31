@@ -3668,7 +3668,8 @@ def get_unified_exclusions_command(client: Client, args: dict) -> CommandResults
             "Sentinel One - Listing unified exclusion items",
             context_entries,
             removeNull=True,
-            metadata="Provides summary information and details for all the unified exclusion items that matched your search criteria.",
+            metadata="Provides summary information and details for all the unified exclusion items"
+            " that matched your search criteria.",
         ),
         outputs_prefix="SentinelOne.UnifiedExclusions",
         outputs_key_field="ID",
