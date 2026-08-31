@@ -1691,30 +1691,30 @@ Retrieves an aggregated list of machine types across all zones of the specified 
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type. | Optional |
-| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
-| page_token | Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type. | Optional |
+| order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
+| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.MachineTypes.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.MachineTypes.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
-| GCP.Compute.MachineTypes.name | string | Name of the resource. |
-| GCP.Compute.MachineTypes.description | string | An optional textual description of the resource. |
+| GCP.Compute.MachineTypes.creationTimestamp | string | The creation timestamp in RFC3339 text format \(e.g., 2024-01-15T12:34:56Z\). |
+| GCP.Compute.MachineTypes.name | string | The name of the resource. |
+| GCP.Compute.MachineTypes.description | string | The optional textual description of the resource. |
 | GCP.Compute.MachineTypes.guestCpus | number | The number of virtual CPUs that are available to the instance. |
 | GCP.Compute.MachineTypes.memoryMb | number | The amount of physical memory available to the instance, defined in MB. |
-| GCP.Compute.MachineTypes.imageSpaceGb | number | This property is deprecated and will never be populated with any relevant values. |
-| GCP.Compute.MachineTypes.scratchDisks | Unknown | A list of extended scratch disks assigned to the instance, containing the diskGb field. |
-| GCP.Compute.MachineTypes.maximumPersistentDisks | number | Maximum persistent disks allowed. |
-| GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | Maximum total persistent disks size \(GB\) allowed. |
+| GCP.Compute.MachineTypes.imageSpaceGb | number | The image space in GB. This property is deprecated and will never be populated with any relevant values. |
+| GCP.Compute.MachineTypes.scratchDisks | Unknown | The list of extended scratch disks assigned to the instance, containing the diskGb field. |
+| GCP.Compute.MachineTypes.maximumPersistentDisks | number | The maximum persistent disks allowed. |
+| GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | The maximum total persistent disks size \(GB\) allowed. |
 | GCP.Compute.MachineTypes.deprecated | Unknown | The deprecation status associated with this machine type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
 | GCP.Compute.MachineTypes.zone | string | The name of the zone where the machine type resides, such as us-central1-a. |
-| GCP.Compute.MachineTypes.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.MachineTypes.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared-core machine types for more information. |
 | GCP.Compute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |
-| GCP.Compute.MachineTypesNextPageToken | string | The token to use when requesting the next set of machine types. |
+| GCP.Compute.MachineTypesAggregatedNextPageToken | string | The token to use when requesting the next set of aggregated machine types. |
 
 ### gcp-compute-machine-types-list
 
@@ -1732,30 +1732,30 @@ Retrieves a list of machine types available in the specified zone. Required perm
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type. | Optional |
-| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
-| page_token | Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type. | Optional |
+| order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
+| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.MachineTypes.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.MachineTypes.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
-| GCP.Compute.MachineTypes.name | string | Name of the resource. |
-| GCP.Compute.MachineTypes.description | string | An optional textual description of the resource. |
+| GCP.Compute.MachineTypes.creationTimestamp | string | The creation timestamp in RFC3339 text format \(e.g., 2024-01-15T12:34:56Z\). |
+| GCP.Compute.MachineTypes.name | string | The name of the resource. |
+| GCP.Compute.MachineTypes.description | string | The optional textual description of the resource. |
 | GCP.Compute.MachineTypes.guestCpus | number | The number of virtual CPUs that are available to the instance. |
 | GCP.Compute.MachineTypes.memoryMb | number | The amount of physical memory available to the instance, defined in MB. |
-| GCP.Compute.MachineTypes.imageSpaceGb | number | This property is deprecated and will never be populated with any relevant values. |
-| GCP.Compute.MachineTypes.scratchDisks | Unknown | A list of extended scratch disks assigned to the instance, containing the diskGb field. |
-| GCP.Compute.MachineTypes.maximumPersistentDisks | number | Maximum persistent disks allowed. |
-| GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | Maximum total persistent disks size \(GB\) allowed. |
+| GCP.Compute.MachineTypes.imageSpaceGb | number | The image space in GB. This property is deprecated and will never be populated with any relevant values. |
+| GCP.Compute.MachineTypes.scratchDisks | Unknown | The list of extended scratch disks assigned to the instance, containing the diskGb field. |
+| GCP.Compute.MachineTypes.maximumPersistentDisks | number | The maximum persistent disks allowed. |
+| GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | The maximum total persistent disks size \(GB\) allowed. |
 | GCP.Compute.MachineTypes.deprecated | Unknown | The deprecation status associated with this machine type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
 | GCP.Compute.MachineTypes.zone | string | The name of the zone where the machine type resides, such as us-central1-a. |
-| GCP.Compute.MachineTypes.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.MachineTypes.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared-core machine types for more information. |
 | GCP.Compute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |
-| GCP.Compute.MachineTypesAggregatedNextPageToken | string | The token to use when requesting the next set of aggregated machine types. |
+| GCP.Compute.MachineTypesNextPageToken | string | The token to use when requesting the next set of machine types. |
 
 ### gcp-compute-machine-type-get
 
@@ -1772,24 +1772,24 @@ Returns the specified machine type. Required permission: compute.machineTypes.ge
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
-| machine_type | Name of the machine type to return. | Required |
+| machine_type | The name of the machine type to return. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.Compute.MachineTypes.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.MachineTypes.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
-| GCP.Compute.MachineTypes.name | string | Name of the resource. |
-| GCP.Compute.MachineTypes.description | string | An optional textual description of the resource. |
+| GCP.Compute.MachineTypes.creationTimestamp | string | The creation timestamp in RFC3339 text format \(e.g., 2024-01-15T12:34:56Z\). |
+| GCP.Compute.MachineTypes.name | string | The name of the resource. |
+| GCP.Compute.MachineTypes.description | string | The optional textual description of the resource. |
 | GCP.Compute.MachineTypes.guestCpus | number | The number of virtual CPUs that are available to the instance. |
 | GCP.Compute.MachineTypes.memoryMb | number | The amount of physical memory available to the instance, defined in MB. |
-| GCP.Compute.MachineTypes.imageSpaceGb | number | This property is deprecated and will never be populated with any relevant values. |
-| GCP.Compute.MachineTypes.scratchDisks | Unknown | A list of extended scratch disks assigned to the instance, containing the diskGb field. |
-| GCP.Compute.MachineTypes.maximumPersistentDisks | number | Maximum persistent disks allowed. |
-| GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | Maximum total persistent disks size \(GB\) allowed. |
+| GCP.Compute.MachineTypes.imageSpaceGb | number | The image space in GB. This property is deprecated and will never be populated with any relevant values. |
+| GCP.Compute.MachineTypes.scratchDisks | Unknown | The list of extended scratch disks assigned to the instance, containing the diskGb field. |
+| GCP.Compute.MachineTypes.maximumPersistentDisks | number | The maximum persistent disks allowed. |
+| GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | The maximum total persistent disks size \(GB\) allowed. |
 | GCP.Compute.MachineTypes.deprecated | Unknown | The deprecation status associated with this machine type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
 | GCP.Compute.MachineTypes.zone | string | The name of the zone where the machine type resides, such as us-central1-a. |
-| GCP.Compute.MachineTypes.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.MachineTypes.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared-core machine types for more information. |
 | GCP.Compute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |

@@ -2965,7 +2965,7 @@ def gcp_compute_machine_type_get(creds: Credentials, args: dict[str, Any]) -> Co
     response = (
         compute.machineTypes().get(project=project_id, zone=zone, machineType=machine_type).execute()  # pylint: disable=E1101
     )
-    demisto.debug(f"GCP Compute machine type get response for {project_id}: \n{response}")
+    demisto.debug(f"GCP Compute machine type get response for {project_id}: retrieved machine type {response.get('name')}")
 
     readable_output = tableToMarkdown(
         f"GCP Compute Machine Type {machine_type}",
@@ -3009,10 +3009,12 @@ def gcp_compute_machine_types_list(creds: Credentials, args: dict[str, Any]) -> 
         .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
         .execute()
     )
-    demisto.debug(f"GCP Compute machine types list response for {project_id}: \n{response}")
-
     machine_types = response.get("items", [])
     next_page_token = response.get("nextPageToken")
+    demisto.debug(
+        f"GCP Compute machine types list response for {project_id}: "
+        f"{len(machine_types)} machine types returned, {next_page_token=}"
+    )
 
     metadata = (
         "Run the following command to retrieve the next batch of machine types:\n"
@@ -3065,14 +3067,16 @@ def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str
         .aggregatedList(project=project_id, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
         .execute()
     )
-    demisto.debug(f"GCP Compute machine types aggregated list response for {project_id}: \n{response}")
-
     machine_types: list[dict[str, Any]] = []
     for scoped_list in response.get("items", {}).values():
         if "warning" not in scoped_list:
             machine_types.extend(scoped_list.get("machineTypes", []))
 
     next_page_token = response.get("nextPageToken")
+    demisto.debug(
+        f"GCP Compute machine types aggregated list response for {project_id}: "
+        f"{len(machine_types)} machine types returned, {next_page_token=}"
+    )
 
     metadata = (
         "Run the following command to retrieve the next batch of machine types:\n"
