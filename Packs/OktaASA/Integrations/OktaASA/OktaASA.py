@@ -80,7 +80,8 @@ class OktaASAClient(BaseClient):
         """
 
         params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
-        self.generate_token_if_required()
+        if not should_use_ucp_auth():
+            self.generate_token_if_required()
         response = self.get_audit_events_request(params)
         return response.get("list", []), response.get("related_objects", {})
 

@@ -597,6 +597,58 @@ def test_search_events_first_page_is_empty_without_offset(mocker):
     assert timestamp is None
 
 
+def test_execute_audit_events_request_legacy_auth_when_ucp_disabled(mocker):
+    """
+    Given:
+    - OktaASAClient and UCP auth disabled (legacy / coexisting grouped connector path).
+
+    When:
+    - Call search_events (which calls execute_audit_events_request).
+
+    Then:
+    - The legacy self-managed token exchange (generate_token_if_required) IS invoked, so the
+      grouped connector's interpolation-driven auth path is preserved (coexistence).
+    """
+    from OktaASA import OktaASAClient
+
+    client = get_mock_client()
+    mocker.patch("OktaASA.should_use_ucp_auth", return_value=False)
+    generate_token_if_required_mocker = mocker.patch.object(OktaASAClient, "generate_token_if_required")
+    mocker.patch.object(OktaASAClient, "get_audit_events_request", return_value={"list": [], "related_objects": {}})
+
+    client.execute_audit_events_request(offset=None, count=10, descending=True, prev=None)
+
+    assert generate_token_if_required_mocker.call_count == 1
+
+
+def test_execute_audit_events_request_ucp_auth_skips_legacy_token(mocker):
+    """
+    Given:
+    - OktaASAClient and UCP auth enabled (typed profile brokered by the platform).
+
+    When:
+    - Call execute_audit_events_request.
+
+    Then:
+    - The legacy self-managed token exchange (generate_token_if_required) is NOT invoked; the
+      platform brokers the ASA /service_token exchange and BaseClient injects the Authorization
+      header, so the integration must not run its own auth or overwrite the injected header.
+    """
+    from OktaASA import OktaASAClient
+
+    client = get_mock_client()
+    mocker.patch("OktaASA.should_use_ucp_auth", return_value=True)
+    generate_token_if_required_mocker = mocker.patch.object(OktaASAClient, "generate_token_if_required")
+    get_audit_events_request_mocker = mocker.patch.object(
+        OktaASAClient, "get_audit_events_request", return_value={"list": [], "related_objects": {}}
+    )
+
+    client.execute_audit_events_request(offset=None, count=10, descending=True, prev=None)
+
+    assert generate_token_if_required_mocker.call_count == 0
+    assert get_audit_events_request_mocker.call_count == 1
+
+
 def test_search_events_first_page_is_empty_with_offset(mocker):
     """
     Given:
