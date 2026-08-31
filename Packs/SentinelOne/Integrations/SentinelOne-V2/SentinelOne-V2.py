@@ -3682,14 +3682,14 @@ def create_unified_exclusion_command(client: Client, args: dict) -> CommandResul
     Create a unified exclusion using type + value (e.g. path, hash, certificate).
     Uses the v2.1 unified-exclusions endpoint.
     """
-    exclusion_name = args.get("exclusion_name")
-    os_type = args.get("os_type")
-    mode_type = args.get("mode_type")
-    exclusion_type = args.get("exclusion_type")
-    value = args.get("value")
-    scope_level = args.get("scope_level")
+    exclusion_name = args["exclusion_name"]
+    os_type = args["os_type"]
+    mode_type = args["mode_type"]
+    exclusion_type = args["exclusion_type"]
+    value = args["value"]
+    scope_level = args["scope_level"]
     scope_level_id = args.get("scope_level_id")
-    reason = args.get("reason")
+    reason = args["reason"]
     description = args.get("description")
     threat_type = args.get("threat_type")
     engines = args.get("engines")
