@@ -118,6 +118,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+    - name: event_types_to_fetch
+      auto: PREDEFINED
+      description: A comma-separated list of event types to scope this run to. If not provided, all configured event types are fetched.
+      isArray: true
+      predefined:
+      - Alerts
+      - Admin activities
+      - Login activities
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: microsoft-defender-cloud-apps-auth-reset
     arguments: []
