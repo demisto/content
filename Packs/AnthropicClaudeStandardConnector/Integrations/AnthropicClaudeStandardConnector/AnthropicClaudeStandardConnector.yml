@@ -2,6 +2,7 @@ name: AnthropicClaudeStandardConnector
 display: Anthropic Claude (Standard Connector)
 category: Analytics & SIEM
 provider: Anthropic
+supportlevelheader: xsoar
 sectionorder:
 - Connect
 commonfields:

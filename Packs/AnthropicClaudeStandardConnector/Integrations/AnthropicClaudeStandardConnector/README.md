@@ -3,7 +3,6 @@ This integration was integrated and tested with version xx of AnthropicClaudeSta
 
 ## Configure Anthropic Claude (Standard Connector) in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Compliance Access Key | The Anthropic Compliance Access Key \(sk-ant-api01-...\) used for the delete commands. Requires the delete:compliance_user_data scope. | False |
@@ -28,7 +27,7 @@ Permanently delete a Claude file (a conversation file or a project binary file) 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The Claude file ID to permanently delete (e.g., claude_file_...). Deletes a file uploaded in a conversation or a project binary file (project_file). This is an irreversible hard delete. | Required | 
+| file_id | The Claude file ID to permanently delete (e.g., claude_file_...). Deletes a file uploaded in a conversation or a project binary file (project_file). This is an irreversible hard delete. | Required |
 
 #### Context Output
 
@@ -77,7 +76,7 @@ Permanently delete a Claude project document (a plain-text project_doc) via the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| document_id | The Claude project document ID to permanently delete (e.g., claude_proj_doc_...). Applies to project plain-text documents (project_doc). This is an irreversible hard delete. | Required | 
+| document_id | The Claude project document ID to permanently delete (e.g., claude_proj_doc_...). Applies to project plain-text documents (project_doc). This is an irreversible hard delete. | Required |
 
 #### Context Output
 
