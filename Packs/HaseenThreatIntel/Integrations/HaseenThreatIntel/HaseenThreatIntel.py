@@ -80,7 +80,6 @@ STIX_RELATIONSHIP_TYPE_MAP: dict[str, str] = {
 
 # Pattern operators we understand for value extraction.
 INDICATOR_EQUALS_VAL_PATTERN = re.compile(r"(\w+)\s*=\s*'([^']+)'")
-URL_IN_VAL_PATTERN = re.compile(r"value\s*IN\s*\(+('.*?')\)")
 
 # STIX 'modified'/'created' timestamps may carry UTC offsets (+03:00) or
 # variable precision. Parse to an aware datetime so delta comparisons are safe;
@@ -685,7 +684,7 @@ class Client(BaseClient):
 def main() -> None:
     params = demisto.params()
     url = params.get("url", "").rstrip("/")
-    token = params.get("api_token") or {}
+    token = params.get("api_token") or ""
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     first_fetch = params.get("first_fetch", "7 days")

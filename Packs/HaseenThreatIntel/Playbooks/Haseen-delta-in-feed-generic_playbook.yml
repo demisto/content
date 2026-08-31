@@ -1,9 +1,10 @@
 id: Haseen-delta-in-feed-generic_playbook
-version: 12
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Haseen-delta-in-feed-generic_playbook
-description: a template for the playbook you can use in Haseen Delta in Feed Triggered
-  Job
+description: Stages indicators newly fetched by the Haseen Threat Intel feed, gathers
+  their relationships, and walks the analyst through a hunt, manual-block-validation,
+  and closure flow.
 starttaskid: "0"
 tasks:
   "0":
@@ -848,5 +849,5 @@ view: |-
 inputs: []
 outputs: []
 sourceplaybookid: 4a07cd12-173b-47c4-8da6-928eaec9f03b
-fromversion: "5.0.0"
+fromversion: "6.10.0"
 toversion: ""

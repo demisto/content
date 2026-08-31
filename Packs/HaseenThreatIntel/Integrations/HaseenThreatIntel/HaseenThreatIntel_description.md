@@ -1,6 +1,10 @@
+# Haseen Threat Intel
+
 Fetches indicators of compromise from a STIX 2.x threat-intelligence feed and parses them into Cortex XSOAR indicators.
 
 ## Authentication
+
+Requires a **minimum role of Analyst** (and an account with access granted to the Haseen Threat Intelligence portal) to obtain the API token.
 
 Per the Haseen API Integration Guide, authentication is:
 

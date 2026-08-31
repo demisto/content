@@ -1,12 +1,10 @@
 # Haseen-delta-in-feed-generic playbook
 
-<!-- TODO: Mohamed — replace this with the official short description you want in the Marketplace. -->
-> **Short description (placeholder):** A template playbook to run on Haseen delta-in-feed trigger jobs — stage newly-fetched indicators, hunt, and optionally block selected IOCs. <!-- EDIT ME -->
-
+> **Short description:** A template playbook to run on Haseen delta-in-feed trigger jobs — stage newly-fetched indicators, hunt, and optionally block selected IOCs.
 
 ## Overview
 
-Triggered by the Haseen feed's delta-in-feed job after each fetch. The playbook picks up indicators that arrived from the Haseen Threat Intel instance within the last 24 hours, gathers their relationships, associates them to the incident, and walks the analyst through a hunt → manual-block-validation → close flow.
+Triggered by the Haseen feed's delta-in-feed job after each fetch. The playbook picks up indicators that arrived from the Haseen Threat Intel integration (`sourceBrands:"Haseen Threat Intel"`) within the last 24 hours, gathers their relationships, associates them to the incident, and walks the analyst through a hunt → manual-block-validation → close flow.
 
 
 ## Flow
@@ -36,5 +34,3 @@ The playbook is a template. Replace the three placeholder tasks with your own fl
 * **`Replace with your Hunting Flow`** — consume `StixIndicators.value` / `foundIndicators.value` and return hunt results.
 * **`Replace with your Blocking flow`** — consume `${Block IOCs Manual Validation.Answers.0..3}` (Domains / IPs / URLs / Hashes) and enforce blocks.
 * **`Replace with your Incident Closure logic`** — close the incident per your SOC's SOP.
-
-<!-- TODO: Mohamed — add screenshots, expected context paths, or sample outputs here. -->
