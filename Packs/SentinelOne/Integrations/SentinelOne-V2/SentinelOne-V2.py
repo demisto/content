@@ -3648,6 +3648,8 @@ def get_unified_exclusions_command(client: Client, args: dict) -> CommandResults
         context_entries.append(
             {
                 "ID": exclusion_item.get("id"),
+                "Name": exclusion_item.get("exclusionName"),
+                "Type": exclusion_item.get("type"),
                 "ModeType": exclusion_item.get("modeType"),
                 "Value": exclusion_item.get("value"),
                 "OsType": exclusion_item.get("osType"),
