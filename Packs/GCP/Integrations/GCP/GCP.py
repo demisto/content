@@ -316,12 +316,6 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-image-delete": (GCPServices.COMPUTE, ["compute.images.delete"]),
     "gcp-compute-image-labels-set": (GCPServices.COMPUTE, ["compute.images.setLabels"]),
     "gcp-compute-image-insert": (GCPServices.COMPUTE, ["compute.images.create"]),
-    # Legacy command name aliases (kept so existing playbooks keep working):
-    "gcp-compute-get-image-from-family": (GCPServices.COMPUTE, ["compute.images.get"]),
-    "gcp-compute-list-images": (GCPServices.COMPUTE, ["compute.images.list"]),
-    "gcp-compute-delete-image": (GCPServices.COMPUTE, ["compute.images.delete"]),
-    "gcp-compute-set-image-labels": (GCPServices.COMPUTE, ["compute.images.setLabels"]),
-    "gcp-compute-insert-image": (GCPServices.COMPUTE, ["compute.images.create"]),
     "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
     "gcp-compute-region-get": (GCPServices.COMPUTE, ["compute.regions.get"]),
     "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zones.get"]),
@@ -2751,7 +2745,7 @@ def gcp_compute_images_list(creds: Credentials, args: dict[str, Any]) -> Command
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
             - limit (int, optional): Maximum number of results to return (1-500).
-            - page_token (str, optional): Token for pagination.
+            - next_token (str, optional): Token for pagination.
             - filter (str, optional): Expression for filtering listed images.
             - order_by (str, optional): Sorts list results by a certain order.
 
@@ -2761,7 +2755,7 @@ def gcp_compute_images_list(creds: Credentials, args: dict[str, Any]) -> Command
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit")) or 50
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
     flt = args.get("filter")
     order_by = args.get("order_by")
     validate_limit(limit)
@@ -2769,7 +2763,7 @@ def gcp_compute_images_list(creds: Credentials, args: dict[str, Any]) -> Command
     params: dict[str, Any] = {
         "project": project_id,
         "maxResults": limit,
-        "pageToken": page_token,
+        "pageToken": next_token,
         "filter": flt,
         "orderBy": order_by,
     }
@@ -2777,28 +2771,20 @@ def gcp_compute_images_list(creds: Credentials, args: dict[str, Any]) -> Command
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.images().list(**params).execute()  # pylint: disable=E1101
-    demisto.debug(f"GCP Compute Images \nresponse: \n{response}")
     items = response.get("items", [])
-    next_token = response.get("nextPageToken")
-    metadata = (
-        "Run the following command to retrieve the next batch of images:\n"
-        f"!gcp-compute-images-list project_id={project_id} page_token={next_token}"
-        if next_token
-        else None
-    )
+    next_page_token = response.get("nextPageToken")
     headers = ["name", "id", "family", "status", "creationTimestamp"]
     readable_output = tableToMarkdown(
         "GCP Compute Images",
         items,
         headers=headers,
         removeNull=True,
-        metadata=metadata,
         headerTransform=pascalToSpace,
     )
 
     outputs = {
         "GCP.Compute.Images(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"ImagesNextToken": next_token},
+        "GCP.Compute(true)": {"ImagesNextToken": next_page_token},
     }
     return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
 
@@ -2887,13 +2873,13 @@ def gcp_compute_image_insert(creds: Credentials, args: dict[str, Any]) -> Comman
     """
     project_id = args.get("project_id")
     force_create = argToBoolean(args.get("force_create", False))
-    name = args.get("name")
+    name = args["name"]
     labels = args.get("labels")
     guest_os_features = argToList(args.get("guest_os_features"))
 
     body = remove_empty_elements(
         {
-            "name": name.lower() if name else None,
+            "name": name.lower(),
             "description": args.get("description"),
             "sourceDisk": args.get("source_disk"),
             "sourceImage": args.get("source_image"),
@@ -3256,12 +3242,6 @@ def main():  # pragma: no cover
             "gcp-compute-image-delete": gcp_compute_image_delete,
             "gcp-compute-image-labels-set": gcp_compute_image_labels_set,
             "gcp-compute-image-insert": gcp_compute_image_insert,
-            # Legacy command name aliases (kept so existing playbooks keep working):
-            "gcp-compute-get-image-from-family": gcp_compute_image_get_from_family,
-            "gcp-compute-list-images": gcp_compute_images_list,
-            "gcp-compute-delete-image": gcp_compute_image_delete,
-            "gcp-compute-set-image-labels": gcp_compute_image_labels_set,
-            "gcp-compute-insert-image": gcp_compute_image_insert,
             "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
             "gcp-compute-region-get": gcp_compute_region_get,
             "gcp-compute-zone-get": gcp_compute_zone_get,

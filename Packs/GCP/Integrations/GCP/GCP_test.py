@@ -6735,7 +6735,7 @@ def test_gcp_compute_images_list_with_pagination(mocker):
     args = {
         "project_id": "p1",
         "limit": "2",
-        "page_token": "t0",
+        "next_token": "t0",
         "filter": "name eq image-*",
         "order_by": "creationTimestamp desc",
     }
