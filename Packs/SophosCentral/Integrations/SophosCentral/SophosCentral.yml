@@ -100,6 +100,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: The unified console for managing Sophos products.
 display: Sophos Central
 name: Sophos Central

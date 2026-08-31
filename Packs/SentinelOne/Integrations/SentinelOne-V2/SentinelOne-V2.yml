@@ -3394,7 +3394,7 @@ script:
     - contextPath: SentinelOne.Export.Events.Filename
       description: The name of the file containing the Timeline.
       type: Boolean
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   ismappable: true
   isremotesyncin: true
