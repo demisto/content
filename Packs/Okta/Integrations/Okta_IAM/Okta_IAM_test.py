@@ -574,3 +574,98 @@ def test_get_logs_command(mocker, requests_mock, limit, logs_amount):
     args = {"limit": limit}
     results = get_logs_command(client=mock_client(), args=args)
     assert len(results.outputs) == logs_amount
+
+
+def test_apply_ucp_api_key_uses_ssws_scheme():
+    """
+    Given: An Okta IAM Client and a brokered api_key credential envelope.
+    When: BaseClient applies the credential via the overridden _apply_ucp_api_key.
+    Then: The Authorization header uses Okta's 'SSWS' scheme, not the default 'Bearer'.
+    """
+    from CommonServerPython import UcpRequestContext
+
+    client = mock_client()
+    ctx = UcpRequestContext({}, {}, None, None, None)
+
+    client._apply_ucp_api_key({"api_key": {"key": "my-token"}}, ctx)
+
+    assert ctx.headers["Authorization"] == "SSWS my-token"
+
+
+def test_apply_ucp_api_key_empty_key_raises():
+    """
+    Given: An Okta IAM Client and a brokered api_key envelope with an empty key.
+    When: _apply_ucp_api_key is applied.
+    Then: A UcpException is raised (no silent empty credential).
+    """
+    from CommonServerPython import UcpException, UcpRequestContext
+
+    client = mock_client()
+    ctx = UcpRequestContext({}, {}, None, None, None)
+
+    with pytest.raises(UcpException):
+        client._apply_ucp_api_key({"api_key": {"key": ""}}, ctx)
+
+
+def test_main_no_legacy_auth_header_under_ucp(mocker):
+    """
+    Given: UCP is enabled (the platform brokers the credential; the legacy token is absent from params).
+    When: main() builds the Client.
+    Then: No 'Missing API token' ValueError is raised and the Client is built WITHOUT a legacy SSWS
+        Authorization header (BaseClient injects the brokered one instead).
+    """
+    import Okta_IAM
+
+    mocker.patch.object(Okta_IAM, "should_use_ucp_auth", return_value=True)
+    mocker.patch.object(demisto, "params", return_value={"url": "https://test.com", "credentials": {}})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    test_module_mock = mocker.patch.object(Okta_IAM, "test_module")
+    client_init_spy = mocker.spy(Okta_IAM, "Client")
+
+    Okta_IAM.main()
+
+    assert test_module_mock.call_count == 1
+    passed_headers = client_init_spy.call_args.kwargs["headers"]
+    assert "Authorization" not in passed_headers
+
+
+def test_main_legacy_auth_header_when_ucp_off(mocker):
+    """
+    Given: UCP is disabled (legacy path / coexisting grouped connector).
+    When: main() builds the Client with a configured API token.
+    Then: The legacy SSWS Authorization header is built and passed to the Client, unchanged.
+    """
+    import Okta_IAM
+
+    mocker.patch.object(Okta_IAM, "should_use_ucp_auth", return_value=False)
+    mocker.patch.object(
+        demisto, "params", return_value={"url": "https://test.com", "credentials": {"password": "my-token"}}
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(Okta_IAM, "test_module")
+    client_init_spy = mocker.spy(Okta_IAM, "Client")
+
+    Okta_IAM.main()
+
+    passed_headers = client_init_spy.call_args.kwargs["headers"]
+    assert passed_headers["Authorization"] == "SSWS my-token"
+
+
+def test_main_missing_token_raises_when_ucp_off(mocker):
+    """
+    Given: UCP is disabled and no API token is configured.
+    When: main() runs.
+    Then: The legacy 'Missing API token.' ValueError gate still fires (behavior preserved).
+    """
+    import Okta_IAM
+
+    mocker.patch.object(Okta_IAM, "should_use_ucp_auth", return_value=False)
+    mocker.patch.object(demisto, "params", return_value={"url": "https://test.com", "credentials": {}})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+
+    with pytest.raises(ValueError) as e:
+        Okta_IAM.main()
+
+    assert str(e.value) == "Missing API token."

@@ -383,6 +383,112 @@ def test_http_request_oauth_auth(mocker):
     }
 
 
+def test_init_skips_legacy_param_validation_under_ucp(mocker):
+    """
+    Given: UCP is enabled (the platform brokers the credential, so legacy auth params are absent).
+    When: An OktaClient is initialized with API_TOKEN auth and no api_token.
+    Then: No ValueError is raised (the presence gate is skipped under UCP).
+    """
+    import OktaApiModule
+
+    mocker.patch.object(OktaApiModule, "should_use_ucp_auth", return_value=True)
+
+    OktaClient(base_url="https://test.url", auth_type=AuthType.API_TOKEN, api_token=None)
+
+
+def test_init_raises_missing_api_token_when_ucp_off(mocker):
+    """
+    Given: UCP is disabled (legacy self-managed auth path).
+    When: An OktaClient is initialized with API_TOKEN auth and no api_token.
+    Then: A ValueError is raised, preserving the legacy behavior for the grouped connector.
+    """
+    import OktaApiModule
+
+    mocker.patch.object(OktaApiModule, "should_use_ucp_auth", return_value=False)
+
+    with pytest.raises(ValueError) as e:
+        OktaClient(base_url="https://test.url", auth_type=AuthType.API_TOKEN, api_token=None)
+
+    assert str(e.value) == "API token is missing"
+
+
+def test_http_request_no_legacy_auth_header_under_ucp(mocker):
+    """
+    Given: UCP is enabled; BaseClient injects the brokered credential at request time.
+    When: Making an API call.
+    Then: http_request does NOT write a legacy Authorization header (so it can't overwrite the
+        brokered one). Only the caller-supplied headers are passed through.
+    """
+    import OktaApiModule
+
+    mocker.patch.object(OktaApiModule, "should_use_ucp_auth", return_value=True)
+    client = OktaClient(base_url="https://test.url", api_token="X", auth_type=AuthType.API_TOKEN)
+
+    base_client_http_request_mock = mocker.patch.object(client, "_http_request")
+    client.http_request(
+        auth_type=AuthType.API_TOKEN,
+        full_url="https://test.url",
+        method="GET",
+        headers={"test_header": "test_value"},
+    )
+
+    assert base_client_http_request_mock.call_count == 1
+    assert base_client_http_request_mock.call_args.kwargs["headers"] == {"test_header": "test_value"}
+    assert "Authorization" not in base_client_http_request_mock.call_args.kwargs["headers"]
+
+
+def test_http_request_legacy_auth_header_when_ucp_off(mocker):
+    """
+    Given: UCP is disabled (grouped connector / legacy path).
+    When: Making an API call with API token authentication.
+    Then: The legacy SSWS Authorization header is written, unchanged from prior behavior.
+    """
+    import OktaApiModule
+
+    mocker.patch.object(OktaApiModule, "should_use_ucp_auth", return_value=False)
+    client = OktaClient(base_url="https://test.url", api_token="X", auth_type=AuthType.API_TOKEN)
+
+    base_client_http_request_mock = mocker.patch.object(client, "_http_request")
+    client.http_request(
+        auth_type=AuthType.API_TOKEN,
+        full_url="https://test.url",
+        method="GET",
+        headers={"test_header": "test_value"},
+    )
+
+    assert base_client_http_request_mock.call_args.kwargs["headers"] == {
+        "Authorization": "SSWS X",
+        "test_header": "test_value",
+    }
+
+
+def test_apply_ucp_api_key_uses_ssws_scheme(mocker):
+    """
+    Given: An OktaClient and a brokered api_key credential envelope.
+    When: BaseClient applies the credential via the overridden _apply_ucp_api_key.
+    Then: The Authorization header uses Okta's 'SSWS' scheme, not the default 'Bearer'.
+    """
+    client = OktaClient(base_url="https://test.url", api_token="X", auth_type=AuthType.API_TOKEN)
+    ctx = UcpRequestContext({}, {}, None, None, None)
+
+    client._apply_ucp_api_key({"api_key": {"key": "my-token"}}, ctx)
+
+    assert ctx.headers["Authorization"] == "SSWS my-token"
+
+
+def test_apply_ucp_api_key_empty_key_raises(mocker):
+    """
+    Given: An OktaClient and a brokered api_key envelope with an empty key.
+    When: _apply_ucp_api_key is applied.
+    Then: A UcpException is raised (no silent empty credential).
+    """
+    client = OktaClient(base_url="https://test.url", api_token="X", auth_type=AuthType.API_TOKEN)
+    ctx = UcpRequestContext({}, {}, None, None, None)
+
+    with pytest.raises(UcpException):
+        client._apply_ucp_api_key({"api_key": {"key": ""}}, ctx)
+
+
 def test_reset_integration_context(mocker):
     """
     Given: A user want to reset the integration context

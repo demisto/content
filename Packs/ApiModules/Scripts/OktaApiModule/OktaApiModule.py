@@ -62,24 +62,30 @@ class OktaClient(BaseClient):
 
         missing_required_params = []
 
-        if self.auth_type == AuthType.API_TOKEN and not api_token:
-            raise ValueError("API token is missing")
+        # Under UCP the platform brokers the credential; the legacy auth params
+        # (api_token / client_id / private_key / ...) are not populated in
+        # demisto.params(), so these presence checks must be skipped or they
+        # would raise before any request is made. BaseClient injects the
+        # brokered credential at request time instead.
+        if not should_use_ucp_auth():
+            if self.auth_type == AuthType.API_TOKEN and not api_token:
+                raise ValueError("API token is missing")
 
-        if self.auth_type == AuthType.OAUTH:
-            if not self.client_id:
-                missing_required_params.append("Client ID")
+            if self.auth_type == AuthType.OAUTH:
+                if not self.client_id:
+                    missing_required_params.append("Client ID")
 
-            if not self.scopes:
-                missing_required_params.append("Scopes")
+                if not self.scopes:
+                    missing_required_params.append("Scopes")
 
-            if not self.jwt_algorithm:
-                missing_required_params.append("JWT algorithm")
+                if not self.jwt_algorithm:
+                    missing_required_params.append("JWT algorithm")
 
-            if not self.private_key:
-                missing_required_params.append("Private key")
+                if not self.private_key:
+                    missing_required_params.append("Private key")
 
-            if missing_required_params:
-                raise ValueError(f'Required OAuth parameters are missing: {", ".join(missing_required_params)}')
+                if missing_required_params:
+                    raise ValueError(f'Required OAuth parameters are missing: {", ".join(missing_required_params)}')
 
     def assign_app_role(self, client_id: str, role: str, auth_type: AuthType) -> dict:
         """
@@ -222,6 +228,22 @@ class OktaClient(BaseClient):
         headers = raw_response.headers
         self.request_metadata = self.get_rate_limit_context(headers)
 
+    def _apply_ucp_api_key(self, credentials, ctx):
+        """
+        Override BaseClient._apply_ucp_api_key to place the brokered API token using Okta's
+        ``SSWS`` scheme instead of the default ``Bearer`` scheme.
+
+        Args:
+            credentials (dict): The brokered credentials from getUCPCredentials().
+            ctx (UcpRequestContext): The request context to mutate.
+        """
+        api_key_data = credentials.get("api_key", credentials)
+        key = api_key_data.get("key", "")
+        if not key:
+            demisto.error("[UCP][OktaApiModule] API key is empty in UCP credentials")
+            raise UcpException()
+        ctx.headers["Authorization"] = f"SSWS {key}"
+
     def http_request(self, auth_type: AuthType | None = None, resp_type: str = "json", **kwargs):
         """
         Override BaseClient._http_request() to automatically add authentication headers.
@@ -233,11 +255,18 @@ class OktaClient(BaseClient):
         auth_type = auth_type if auth_type is not None else self.auth_type
         auth_headers = {}
 
-        if auth_type == AuthType.OAUTH:
-            auth_headers["Authorization"] = f"Bearer {self.get_token()}"
+        # Under UCP the platform brokers the credential and BaseClient._http_request injects
+        # the Authorization header (oauth2_private_key_jwt -> Bearer via _apply_ucp_oauth2;
+        # api_key SSWS -> _apply_ucp_api_key override above). Do NOT build a legacy auth header
+        # here, or it would overwrite the brokered one and cause a 401. The legacy self-managed
+        # auth (including the OAuth token exchange in get_token) runs only when UCP is off, which
+        # includes the coexisting grouped connector (interpolation pre-injects params).
+        if not should_use_ucp_auth():
+            if auth_type == AuthType.OAUTH:
+                auth_headers["Authorization"] = f"Bearer {self.get_token()}"
 
-        elif auth_type == AuthType.API_TOKEN:
-            auth_headers["Authorization"] = f"SSWS {self.api_token}"
+            elif auth_type == AuthType.API_TOKEN:
+                auth_headers["Authorization"] = f"SSWS {self.api_token}"
 
         original_headers = kwargs.get("headers") or self._headers or {}
         kwargs["headers"] = {**auth_headers, **original_headers}
