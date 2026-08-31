@@ -2744,6 +2744,579 @@ script:
       description: ' The resource type, which is always compute#instance_group for instance groups.'
       type: string
 
+# gcp-compute-instance-groups-list
+  - name: gcp-compute-instance-groups-list
+    description: "Retrieves the list of instance groups that are located in the specified project and zone. Required permission: compute.instanceGroups.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone where the instance groups are located.
+      required: true
+    - name: limit
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      defaultValue: '50'
+    - name: filters
+      description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude an instance group named example-group specify name != example-group.
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
+    - name: page_token
+      description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.InstanceGroups.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.creationTimestamp
+      description: The creation timestamp for this instance group in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.name
+      description: The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.description
+      description: An optional description of this resource.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.namedPorts.name
+      description: The name for this named port. The name must be 1-63 characters long, and comply with RFC1035.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.namedPorts.port
+      description: The port number, which can be a value between 1 and 65535.
+      type: number
+    - contextPath: GCP.Compute.InstanceGroups.network
+      description: The URL of the network to which all instances in the instance group belong.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.fingerprint
+      description: The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.zone
+      description: The URL of the zone where the instance group is located (for zonal resources).
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.selfLink
+      description: The URL for this instance group. The server generates this URL.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.size
+      description: The total number of instances in the instance group.
+      type: number
+    - contextPath: GCP.Compute.InstanceGroups.region
+      description: The URL of the region where the instance group is located (for regional resources).
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.subnetwork
+      description: The URL of the subnetwork to which all instances in the instance group belong.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.kind
+      description: ' The resource type, which is always compute#instanceGroup for instance groups.'
+      type: string
+    - contextPath: GCP.Compute.InstanceGroupsNextPageToken
+      description: The token to use to retrieve the next page of instance group results.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroupsSelfLink
+      description: Server-defined URL for the instance groups list request.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroupsWarning
+      description: Informational warning which replaces the list of instance groups when the list is empty.
+      type: Unknown
+
+# gcp-compute-instance-groups-aggregated-list
+  - name: gcp-compute-instance-groups-aggregated-list
+    description: "Retrieves the list of instance groups in the specified project across all zones. Required permission: compute.instanceGroups.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: limit
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      defaultValue: '50'
+    - name: filters
+      description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude an instance group named example-group specify name != example-group.
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
+    - name: page_token
+      description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.InstanceGroups.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.creationTimestamp
+      description: The creation timestamp for this instance group in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.name
+      description: The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.description
+      description: An optional description of this resource.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.namedPorts.name
+      description: The name for this named port. The name must be 1-63 characters long, and comply with RFC1035.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.namedPorts.port
+      description: The port number, which can be a value between 1 and 65535.
+      type: number
+    - contextPath: GCP.Compute.InstanceGroups.network
+      description: The URL of the network to which all instances in the instance group belong.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.fingerprint
+      description: The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.zone
+      description: The URL of the zone where the instance group is located (for zonal resources).
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.selfLink
+      description: The URL for this instance group. The server generates this URL.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.size
+      description: The total number of instances in the instance group.
+      type: number
+    - contextPath: GCP.Compute.InstanceGroups.region
+      description: The URL of the region where the instance group is located (for regional resources).
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.subnetwork
+      description: The URL of the subnetwork to which all instances in the instance group belong.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroups.kind
+      description: ' The resource type, which is always compute#instanceGroup for instance groups.'
+      type: string
+    - contextPath: GCP.Compute.InstanceGroupsNextPageToken
+      description: The token to use to retrieve the next page of instance group results.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroupsSelfLink
+      description: Server-defined URL for the aggregated instance groups list request.
+      type: string
+
+# gcp-compute-instance-group-instances-list
+  - name: gcp-compute-instance-group-instances-list
+    description: "Lists the instances in the specified instance group. Required permission: compute.instanceGroups.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone where the instance group is located.
+      required: true
+    - name: instance_group
+      description: The name of the instance group from which to generate the list of included instances.
+      required: true
+    - name: instance_state
+      description: A filter for the state of the instances in the instance group. If not specified, the list includes all instances regardless of their state.
+      auto: PREDEFINED
+      predefined:
+      - ALL
+      - RUNNING
+    - name: limit
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      defaultValue: '50'
+    - name: filters
+      description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude an instance named example-instance specify name != example-instance.
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
+    - name: page_token
+      description: Specifies a page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.InstanceGroupsInstances.Group
+      description: The name of the instance group that was listed.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroupsInstances.Instances.instance
+      description: The URL of the instance.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroupsInstances.Instances.status
+      description: The status of the instance.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroupsInstances.Instances.namedPorts.name
+      description: The name for this named port. The name must be 1-63 characters long, and comply with RFC1035.
+      type: string
+    - contextPath: GCP.Compute.InstanceGroupsInstances.Instances.namedPorts.port
+      description: The port number, which can be a value between 1 and 65535.
+      type: number
+    - contextPath: GCP.Compute.InstanceGroupsInstancesNextPageToken
+      description: The token to use to retrieve the next page of instance group instances results.
+      type: string
+
+# gcp-compute-instance-group-insert
+  - name: gcp-compute-instance-group-insert
+    description: "Creates an instance group in the specified project and zone. Required permission: compute.instanceGroups.create."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone where the instance group is created.
+      required: true
+    - name: name
+      description: The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035.
+      required: true
+    - name: description
+      description: An optional description of this resource.
+    - name: named_ports
+      description: 'Assigns a name to a port number. For example: name=http,port=80;name=https,port=443.'
+    - name: network
+      description: The URL of the network to which all instances in the instance group belong.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: User who requested the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: If errors are generated during processing of the operation, this field will be populated, containing an errors array with code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: If warning messages are generated during processing of the operation, this field will be populated, containing code, message, and data fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, this field contains the HTTP error status code that was returned.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: string
+
+# gcp-compute-instance-group-delete
+  - name: gcp-compute-instance-group-delete
+    description: "Deletes the specified instance group. The instances in the group are not deleted. Note that the instance group must not belong to a backend service. Required permission: compute.instanceGroups.delete."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone where the instance group is located.
+      required: true
+    - name: instance_group
+      description: The name of the instance group to delete.
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: User who requested the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: If errors are generated during processing of the operation, this field will be populated, containing an errors array with code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: If warning messages are generated during processing of the operation, this field will be populated, containing code, message, and data fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, this field contains the HTTP error status code that was returned.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: string
+
+# gcp-compute-instance-group-instances-add
+  - name: gcp-compute-instance-group-instances-add
+    description: "Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network or subnetwork. Required permission: compute.instanceGroups.update."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone where the instance group is located.
+      required: true
+    - name: instance_group
+      description: The name of the instance group where the instances are added.
+      required: true
+    - name: instances
+      description: A comma-separated list of URLs of the instances to add to the instance group.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: User who requested the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: If errors are generated during processing of the operation, this field will be populated, containing an errors array with code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: If warning messages are generated during processing of the operation, this field will be populated, containing code, message, and data fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, this field contains the HTTP error status code that was returned.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: string
+
+# gcp-compute-instance-group-instances-remove
+  - name: gcp-compute-instance-group-instances-remove
+    description: "Removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted. Required permission: compute.instanceGroups.update."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone where the instance group is located.
+      required: true
+    - name: instance_group
+      description: The name of the instance group from which the instances are removed.
+      required: true
+    - name: instances
+      description: A comma-separated list of URLs of the instances to remove from the instance group.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: User who requested the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: If errors are generated during processing of the operation, this field will be populated, containing an errors array with code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: If warning messages are generated during processing of the operation, this field will be populated, containing code, message, and data fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, this field contains the HTTP error status code that was returned.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: string
+
+# gcp-compute-instance-group-named-ports-set
+  - name: gcp-compute-instance-group-named-ports-set
+    description: "Sets the named ports for the specified instance group. Required permission: compute.instanceGroups.update."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone where the instance group is located.
+      required: true
+    - name: instance_group
+      description: The name of the instance group where the named ports are updated.
+      required: true
+    - name: named_ports
+      description: 'The list of named ports to set for this instance group. For example: name=http,port=80;name=https,port=443.'
+      required: true
+    - name: fingerprint
+      description: The fingerprint of the named ports information for this instance group. Use this optional argument to prevent conflicts when multiple users change the named ports settings concurrently. Obtain the fingerprint with the gcp-compute-instance-group-get command. A request with an incorrect fingerprint fails with error 412 conditionNotMet.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: User who requested the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed. This value is in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: If errors are generated during processing of the operation, this field will be populated, containing an errors array with code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: If warning messages are generated during processing of the operation, this field will be populated, containing code, message, and data fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, this field contains the HTTP error status code that was returned.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource. Always compute#operation for Operation resources.
+      type: string
+
 # gcp-compute-zone-get
   - arguments:
     - description: Name of the zone resource to return.

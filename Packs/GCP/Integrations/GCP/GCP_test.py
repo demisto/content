@@ -6652,3 +6652,599 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# Instance group commands
+# ---------------------------------------------------------------------------
+
+
+def _mock_instance_groups_resource(mocker, method_name: str, response):
+    """
+    Builds a mocked Compute client whose instanceGroups().<method_name>().execute() returns response.
+
+    Args:
+        mocker: The pytest-mock fixture.
+        method_name (str): The instanceGroups method to mock, e.g. "list" or "addInstances".
+        response: The value returned by execute(), or an Exception instance to raise.
+
+    Returns:
+        tuple: The mocked instanceGroups resource and the mocked credentials.
+    """
+    from GCP import GCPServices
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_instance_groups = mocker.Mock()
+    mock_request = mocker.Mock()
+
+    if isinstance(response, Exception):
+        mock_request.execute.side_effect = response
+    else:
+        mock_request.execute.return_value = response
+
+    getattr(mock_instance_groups, method_name).return_value = mock_request
+    mock_compute.instanceGroups.return_value = mock_instance_groups
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    return mock_instance_groups, mock_creds
+
+
+class TestParseNamedPorts:
+    def test_parse_named_ports_multiple_ports(self):
+        """
+        Given: A semicolon-separated named ports string with two entries.
+        When: parse_named_ports is called.
+        Then: It returns a list of dictionaries with lowercase names and numeric ports.
+        """
+        from GCP import parse_named_ports
+
+        assert parse_named_ports("name=HTTP,port=80;name=https,port=443") == [
+            {"name": "http", "port": 80},
+            {"name": "https", "port": 443},
+        ]
+
+    def test_parse_named_ports_invalid_format_raises(self):
+        """
+        Given: A named ports string that does not match the expected format.
+        When: parse_named_ports is called.
+        Then: It raises a ValueError explaining the expected format.
+        """
+        from GCP import parse_named_ports
+
+        with pytest.raises(ValueError, match="Could not parse field"):
+            parse_named_ports("http:80")
+
+
+class TestGCPComputeInstanceGroupsList:
+    def test_gcp_compute_instance_groups_list_success(self, mocker):
+        """
+        Given: A mocked Compute API returning two instance groups without a next page token.
+        When: gcp_compute_instance_groups_list is called with project_id and zone.
+        Then: It returns the instance groups in the context outputs and calls the API with the expected parameters.
+        """
+        from GCP import gcp_compute_instance_groups_list
+
+        response = {
+            "items": [
+                {"id": "1", "name": "group-a", "zone": "us-central1-a", "size": 2},
+                {"id": "2", "name": "group-b", "zone": "us-central1-a", "size": 0},
+            ],
+            "selfLink": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a/instanceGroups",
+        }
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "list", response)
+
+        args = {"project_id": "test-project", "zone": "us-central1-a"}
+        result = gcp_compute_instance_groups_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == response["items"]
+        assert "group-a" in result.readable_output
+        mock_instance_groups.list.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            filter=None,
+            maxResults=50,
+            orderBy=None,
+            pageToken=None,
+        )
+
+    def test_gcp_compute_instance_groups_list_with_next_page_token(self, mocker):
+        """
+        Given: A mocked Compute API returning a nextPageToken.
+        When: gcp_compute_instance_groups_list is called.
+        Then: The next page token is returned in the outputs and the readable output explains how to fetch the next batch.
+        """
+        from GCP import gcp_compute_instance_groups_list
+
+        response = {"items": [{"id": "1", "name": "group-a"}], "nextPageToken": "token-123"}
+        _mock_instance_groups_resource(mocker, "list", response)
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a"}
+        result = gcp_compute_instance_groups_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsNextPageToken"] == "token-123"
+        assert "token-123" in result.readable_output
+
+    def test_gcp_compute_instance_groups_list_empty_response(self, mocker):
+        """
+        Given: A mocked Compute API returning no instance groups.
+        When: gcp_compute_instance_groups_list is called.
+        Then: The outputs contain no instance groups entry and the readable output reports no results.
+        """
+        from GCP import gcp_compute_instance_groups_list
+
+        _mock_instance_groups_resource(mocker, "list", {})
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a"}
+        result = gcp_compute_instance_groups_list(mock_creds, args)
+
+        assert "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)" not in result.outputs
+        assert "**No entries.**" in result.readable_output
+
+    def test_gcp_compute_instance_groups_list_invalid_limit_raises(self, mocker):
+        """
+        Given: A limit argument above the maximum allowed value.
+        When: gcp_compute_instance_groups_list is called.
+        Then: A DemistoException is raised before any API call is made.
+        """
+        from GCP import gcp_compute_instance_groups_list
+        from CommonServerPython import DemistoException
+
+        mock_creds = mocker.Mock()
+        args = {"project_id": "test-project", "zone": "us-central1-a", "limit": "501"}
+
+        with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+            gcp_compute_instance_groups_list(mock_creds, args)
+
+
+class TestGCPComputeInstanceGroupsAggregatedList:
+    def test_gcp_compute_instance_groups_aggregated_list_success(self, mocker):
+        """
+        Given: A mocked Compute API returning instance groups scoped by zone, including a scope with no groups.
+        When: gcp_compute_instance_groups_aggregated_list is called.
+        Then: The groups from every scope are flattened into a single list in the outputs.
+        """
+        from GCP import gcp_compute_instance_groups_aggregated_list
+
+        response = {
+            "items": {
+                "zones/us-central1-a": {"instanceGroups": [{"id": "1", "name": "group-a"}]},
+                "zones/us-east1-b": {"instanceGroups": [{"id": "2", "name": "group-b"}]},
+                "zones/europe-west1-c": {"warning": {"code": "NO_RESULTS_ON_PAGE"}},
+            }
+        }
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "aggregatedList", response)
+
+        args = {"project_id": "test-project"}
+        result = gcp_compute_instance_groups_aggregated_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == [
+            {"id": "1", "name": "group-a"},
+            {"id": "2", "name": "group-b"},
+        ]
+        mock_instance_groups.aggregatedList.assert_called_once_with(
+            project="test-project", filter=None, maxResults=50, orderBy=None, pageToken=None
+        )
+
+    def test_gcp_compute_instance_groups_aggregated_list_empty_response(self, mocker):
+        """
+        Given: A mocked Compute API returning no aggregated items.
+        When: gcp_compute_instance_groups_aggregated_list is called.
+        Then: The outputs contain no instance groups entry and the readable output reports no results.
+        """
+        from GCP import gcp_compute_instance_groups_aggregated_list
+
+        _mock_instance_groups_resource(mocker, "aggregatedList", {})
+        mock_creds = mocker.Mock()
+
+        result = gcp_compute_instance_groups_aggregated_list(mock_creds, {"project_id": "test-project"})
+
+        assert "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)" not in result.outputs
+        assert "**No entries.**" in result.readable_output
+
+    def test_gcp_compute_instance_groups_aggregated_list_api_error(self, mocker):
+        """
+        Given: A mocked Compute API that fails when listing the instance groups.
+        When: gcp_compute_instance_groups_aggregated_list is called.
+        Then: The exception propagates so main() can map it to a permission error.
+        """
+        from GCP import gcp_compute_instance_groups_aggregated_list
+
+        _mock_instance_groups_resource(mocker, "aggregatedList", Exception("Permission denied"))
+        mock_creds = mocker.Mock()
+
+        with pytest.raises(Exception, match="Permission denied"):
+            gcp_compute_instance_groups_aggregated_list(mock_creds, {"project_id": "test-project"})
+
+
+class TestGCPComputeInstanceGroupInstancesList:
+    def test_gcp_compute_instance_group_instances_list_success(self, mocker):
+        """
+        Given: A mocked Compute API returning the instances of an instance group and an instance_state filter.
+        When: gcp_compute_instance_group_instances_list is called.
+        Then: The instances are nested under the group in the outputs and the state filter is sent in the request body.
+        """
+        from GCP import gcp_compute_instance_group_instances_list
+
+        response = {
+            "items": [
+                {"instance": "https://compute/v1/projects/p/zones/z/instances/vm-1", "status": "RUNNING"},
+                {"instance": "https://compute/v1/projects/p/zones/z/instances/vm-2", "status": "RUNNING"},
+            ]
+        }
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "listInstances", response)
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instance_state": "RUNNING",
+        }
+        result = gcp_compute_instance_group_instances_list(mock_creds, args)
+
+        outputs = result.outputs["GCP.Compute.InstanceGroupsInstances(val.Group && val.Group == obj.Group)"]
+        assert outputs["Group"] == "group-a"
+        assert outputs["Instances"] == response["items"]
+        mock_instance_groups.listInstances.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            instanceGroup="group-a",
+            filter=None,
+            maxResults=50,
+            orderBy=None,
+            pageToken=None,
+            body={"instanceState": "RUNNING"},
+        )
+
+    def test_gcp_compute_instance_group_instances_list_without_instance_state(self, mocker):
+        """
+        Given: A mocked Compute API and no instance_state argument.
+        When: gcp_compute_instance_group_instances_list is called.
+        Then: An empty body is sent so the API returns instances in every state.
+        """
+        from GCP import gcp_compute_instance_group_instances_list
+
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "listInstances", {"items": []})
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+        gcp_compute_instance_group_instances_list(mock_creds, args)
+
+        assert mock_instance_groups.listInstances.call_args.kwargs["body"] == {}
+
+    def test_gcp_compute_instance_group_instances_list_with_next_page_token(self, mocker):
+        """
+        Given: A mocked Compute API returning a nextPageToken.
+        When: gcp_compute_instance_group_instances_list is called.
+        Then: The next page token is returned in the outputs.
+        """
+        from GCP import gcp_compute_instance_group_instances_list
+
+        response = {"items": [{"instance": "vm-1", "status": "RUNNING"}], "nextPageToken": "token-456"}
+        _mock_instance_groups_resource(mocker, "listInstances", response)
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+        result = gcp_compute_instance_group_instances_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsInstancesNextPageToken"] == "token-456"
+
+
+class TestGCPComputeInstanceGroupInsert:
+    def test_gcp_compute_instance_group_insert_success(self, mocker):
+        """
+        Given: A mocked Compute API and all optional instance group arguments.
+        When: gcp_compute_instance_group_insert is called.
+        Then: The operation is returned and the body contains the lowercase name, description, named ports and network.
+        """
+        from GCP import gcp_compute_instance_group_insert
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "insert"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "insert", response)
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "name": "Group-A",
+            "description": "test group",
+            "named_ports": "name=http,port=80",
+            "network": "global/networks/default",
+        }
+        result = gcp_compute_instance_group_insert(mock_creds, args)
+
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs == response
+        mock_instance_groups.insert.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            body={
+                "name": "group-a",
+                "description": "test group",
+                "namedPorts": [{"name": "http", "port": 80}],
+                "network": "global/networks/default",
+            },
+        )
+
+    def test_gcp_compute_instance_group_insert_minimal_args(self, mocker):
+        """
+        Given: A mocked Compute API and only the required name argument.
+        When: gcp_compute_instance_group_insert is called.
+        Then: The body contains only the name, with all empty optional fields removed.
+        """
+        from GCP import gcp_compute_instance_group_insert
+
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "insert", {"id": "op-1"})
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "name": "group-a"}
+        gcp_compute_instance_group_insert(mock_creds, args)
+
+        assert mock_instance_groups.insert.call_args.kwargs["body"] == {"name": "group-a"}
+
+    def test_gcp_compute_instance_group_insert_missing_name_raises(self, mocker):
+        """
+        Given: A command call without the required name argument.
+        When: gcp_compute_instance_group_insert is called.
+        Then: A ValueError is raised before any API call is made.
+        """
+        from GCP import gcp_compute_instance_group_insert
+
+        mock_creds = mocker.Mock()
+
+        with pytest.raises(ValueError, match="The 'name' argument is required"):
+            gcp_compute_instance_group_insert(mock_creds, {"project_id": "test-project", "zone": "us-central1-a"})
+
+
+class TestGCPComputeInstanceGroupDelete:
+    def test_gcp_compute_instance_group_delete_success(self, mocker):
+        """
+        Given: A mocked Compute API returning a delete operation.
+        When: gcp_compute_instance_group_delete is called.
+        Then: The operation is returned and the API is called with the expected parameters.
+        """
+        from GCP import gcp_compute_instance_group_delete
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "delete"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "delete", response)
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+        result = gcp_compute_instance_group_delete(mock_creds, args)
+
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs == response
+        mock_instance_groups.delete.assert_called_once_with(project="test-project", zone="us-central1-a", instanceGroup="group-a")
+
+    def test_gcp_compute_instance_group_delete_extracts_zone_from_url(self, mocker):
+        """
+        Given: A zone argument provided as a full GCP zone URL.
+        When: gcp_compute_instance_group_delete is called.
+        Then: Only the zone name is sent to the API.
+        """
+        from GCP import gcp_compute_instance_group_delete
+
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "delete", {"id": "op-1"})
+
+        args = {
+            "project_id": "test-project",
+            "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+            "instance_group": "group-a",
+        }
+        gcp_compute_instance_group_delete(mock_creds, args)
+
+        assert mock_instance_groups.delete.call_args.kwargs["zone"] == "us-central1-a"
+
+    def test_gcp_compute_instance_group_delete_api_error(self, mocker):
+        """
+        Given: A mocked Compute API that fails when deleting the instance group.
+        When: gcp_compute_instance_group_delete is called.
+        Then: The exception propagates so main() can map it to a permission error.
+        """
+        from GCP import gcp_compute_instance_group_delete
+
+        _mock_instance_groups_resource(mocker, "delete", Exception("Instance group not found"))
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "missing-group"}
+
+        with pytest.raises(Exception, match="Instance group not found"):
+            gcp_compute_instance_group_delete(mock_creds, args)
+
+
+class TestGCPComputeInstanceGroupInstancesAdd:
+    def test_gcp_compute_instance_group_instances_add_success(self, mocker):
+        """
+        Given: A mocked Compute API and a comma-separated list of instance URLs.
+        When: gcp_compute_instance_group_instances_add is called.
+        Then: Each instance is wrapped in an instance object in the request body and the operation is returned.
+        """
+        from GCP import gcp_compute_instance_group_instances_add
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "addInstances"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "addInstances", response)
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instances": "zones/us-central1-a/instances/vm-1,zones/us-central1-a/instances/vm-2",
+        }
+        result = gcp_compute_instance_group_instances_add(mock_creds, args)
+
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        mock_instance_groups.addInstances.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            instanceGroup="group-a",
+            body={
+                "instances": [
+                    {"instance": "zones/us-central1-a/instances/vm-1"},
+                    {"instance": "zones/us-central1-a/instances/vm-2"},
+                ]
+            },
+        )
+
+    def test_gcp_compute_instance_group_instances_add_missing_instances_raises(self, mocker):
+        """
+        Given: A command call without the required instances argument.
+        When: gcp_compute_instance_group_instances_add is called.
+        Then: A ValueError is raised before any API call is made.
+        """
+        from GCP import gcp_compute_instance_group_instances_add
+
+        mock_creds = mocker.Mock()
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+
+        with pytest.raises(ValueError, match="The 'instances' argument is required"):
+            gcp_compute_instance_group_instances_add(mock_creds, args)
+
+    def test_gcp_compute_instance_group_instances_add_api_error(self, mocker):
+        """
+        Given: A mocked Compute API that fails when adding instances.
+        When: gcp_compute_instance_group_instances_add is called.
+        Then: The exception propagates so main() can map it to a permission error.
+        """
+        from GCP import gcp_compute_instance_group_instances_add
+
+        _mock_instance_groups_resource(mocker, "addInstances", Exception("Permission denied"))
+        mock_creds = mocker.Mock()
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instances": "vm-1",
+        }
+
+        with pytest.raises(Exception, match="Permission denied"):
+            gcp_compute_instance_group_instances_add(mock_creds, args)
+
+
+class TestGCPComputeInstanceGroupInstancesRemove:
+    def test_gcp_compute_instance_group_instances_remove_success(self, mocker):
+        """
+        Given: A mocked Compute API and a single instance URL.
+        When: gcp_compute_instance_group_instances_remove is called.
+        Then: The instance is wrapped in an instance object in the request body and the operation is returned.
+        """
+        from GCP import gcp_compute_instance_group_instances_remove
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "removeInstances"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "removeInstances", response)
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instances": "zones/us-central1-a/instances/vm-1",
+        }
+        result = gcp_compute_instance_group_instances_remove(mock_creds, args)
+
+        assert result.outputs == response
+        mock_instance_groups.removeInstances.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            instanceGroup="group-a",
+            body={"instances": [{"instance": "zones/us-central1-a/instances/vm-1"}]},
+        )
+
+    def test_gcp_compute_instance_group_instances_remove_missing_instances_raises(self, mocker):
+        """
+        Given: A command call without the required instances argument.
+        When: gcp_compute_instance_group_instances_remove is called.
+        Then: A ValueError is raised before any API call is made.
+        """
+        from GCP import gcp_compute_instance_group_instances_remove
+
+        mock_creds = mocker.Mock()
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+
+        with pytest.raises(ValueError, match="The 'instances' argument is required"):
+            gcp_compute_instance_group_instances_remove(mock_creds, args)
+
+    def test_gcp_compute_instance_group_instances_remove_api_error(self, mocker):
+        """
+        Given: A mocked Compute API that fails when removing instances.
+        When: gcp_compute_instance_group_instances_remove is called.
+        Then: The exception propagates so main() can map it to a permission error.
+        """
+        from GCP import gcp_compute_instance_group_instances_remove
+
+        _mock_instance_groups_resource(mocker, "removeInstances", Exception("Permission denied"))
+        mock_creds = mocker.Mock()
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "instances": "vm-1",
+        }
+
+        with pytest.raises(Exception, match="Permission denied"):
+            gcp_compute_instance_group_instances_remove(mock_creds, args)
+
+
+class TestGCPComputeInstanceGroupNamedPortsSet:
+    def test_gcp_compute_instance_group_named_ports_set_success(self, mocker):
+        """
+        Given: A mocked Compute API, a named ports string and a fingerprint.
+        When: gcp_compute_instance_group_named_ports_set is called.
+        Then: The parsed named ports and the fingerprint are sent in the request body and the operation is returned.
+        """
+        from GCP import gcp_compute_instance_group_named_ports_set
+
+        response = {"id": "op-1", "name": "operation-1", "status": "RUNNING", "operationType": "setNamedPorts"}
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "setNamedPorts", response)
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "named_ports": "name=http,port=80;name=https,port=443",
+            "fingerprint": "abc123",
+        }
+        result = gcp_compute_instance_group_named_ports_set(mock_creds, args)
+
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        mock_instance_groups.setNamedPorts.assert_called_once_with(
+            project="test-project",
+            zone="us-central1-a",
+            instanceGroup="group-a",
+            body={
+                "namedPorts": [{"name": "http", "port": 80}, {"name": "https", "port": 443}],
+                "fingerprint": "abc123",
+            },
+        )
+
+    def test_gcp_compute_instance_group_named_ports_set_without_fingerprint(self, mocker):
+        """
+        Given: A mocked Compute API and no fingerprint argument.
+        When: gcp_compute_instance_group_named_ports_set is called.
+        Then: The request body contains only the named ports.
+        """
+        from GCP import gcp_compute_instance_group_named_ports_set
+
+        mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "setNamedPorts", {"id": "op-1"})
+
+        args = {
+            "project_id": "test-project",
+            "zone": "us-central1-a",
+            "instance_group": "group-a",
+            "named_ports": "name=http,port=80",
+        }
+        gcp_compute_instance_group_named_ports_set(mock_creds, args)
+
+        assert mock_instance_groups.setNamedPorts.call_args.kwargs["body"] == {"namedPorts": [{"name": "http", "port": 80}]}
+
+    def test_gcp_compute_instance_group_named_ports_set_missing_named_ports_raises(self, mocker):
+        """
+        Given: A command call without the required named_ports argument.
+        When: gcp_compute_instance_group_named_ports_set is called.
+        Then: A ValueError is raised before any API call is made.
+        """
+        from GCP import gcp_compute_instance_group_named_ports_set
+
+        mock_creds = mocker.Mock()
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+
+        with pytest.raises(ValueError, match="The 'named_ports' argument is required"):
+            gcp_compute_instance_group_named_ports_set(mock_creds, args)
