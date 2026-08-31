@@ -74,8 +74,6 @@ def make_response(status_code: int, body: dict | None = None) -> requests.Respon
     response = requests.Response()
     response.status_code = status_code
     if body is not None:
-        import json
-
         response._content = json.dumps(body).encode("utf-8")
         response.headers["Content-Type"] = "application/json"
     return response
