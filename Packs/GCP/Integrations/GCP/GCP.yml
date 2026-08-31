@@ -2071,7 +2071,7 @@ script:
       - 'false'
       defaultValue: 'false'
     - name: limit
-      description: The maximum number of key rings to return per location. Valid range 1-500.
+      description: The maximum number of key rings to return per location. Valid range is 1-500.
       required: false
       defaultValue: '50'
     - name: page_token
@@ -2111,7 +2111,7 @@ script:
       description: The ID of the key ring that holds the crypto keys.
       required: true
     - name: key_state
-      description: 'Returns only keys whose primary crypto key version is in this state. Leave empty to return all keys.'
+      description: 'The state of the primary crypto key version to filter by. Leave empty to return all keys.'
       required: false
       auto: PREDEFINED
       predefined:
@@ -2123,7 +2123,7 @@ script:
       - PENDING_IMPORT
       - IMPORT_FAILED
     - name: limit
-      description: The maximum number of crypto keys to return. Valid range 1-500.
+      description: The maximum number of crypto keys to return. Valid range is 1-500.
       required: false
       defaultValue: '50'
     - name: page_token
@@ -2155,7 +2155,7 @@ script:
         description: The time at which the next scheduled rotation is due to run.
         type: Date
       - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
-        description: The period between automatic key rotations.
+        description: The time period between automatic key rotations.
         type: String
       - contextPath: GCP.KMS.CryptoKeys.labels
         description: The labels with user-defined metadata.
@@ -2201,7 +2201,7 @@ script:
       - PENDING_IMPORT
       - IMPORT_FAILED
     - name: limit
-      description: The maximum number of crypto keys to return per key ring. Valid range 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-keys-list to page through a single key ring.
+      description: The maximum number of crypto keys to return per key ring. Valid range is 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-keys-list to page through a single key ring.
       required: false
       defaultValue: '50'
     outputs:
@@ -2284,7 +2284,7 @@ script:
         description: The time at which the next scheduled rotation is due to run.
         type: Date
       - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
-        description: The period between automatic key rotations.
+        description: The time period between automatic key rotations.
         type: String
       - contextPath: GCP.KMS.CryptoKeys.labels
         description: The labels with user-defined metadata.
@@ -2351,7 +2351,7 @@ script:
       - HSM
       defaultValue: SOFTWARE
     - name: rotation_period
-      description: The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. Supported only for keys whose purpose is ENCRYPT_DECRYPT.
+      description: The time period between automatic key rotations, in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. Supported only for keys whose purpose is ENCRYPT_DECRYPT.
       required: false
     - name: next_rotation_time
       description: The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). Supported only for keys whose purpose is ENCRYPT_DECRYPT.
@@ -2428,7 +2428,7 @@ script:
       description: The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days").
       required: false
     - name: rotation_period
-      description: The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours.
+      description: The time period between automatic key rotations, in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours.
       required: false
     - name: algorithm
       description: The algorithm to use when creating a crypto key version based on this template.
@@ -2483,7 +2483,7 @@ script:
         description: The time at which the next scheduled rotation is due to run.
         type: Date
       - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
-        description: The period between automatic key rotations.
+        description: The time period between automatic key rotations.
         type: String
       - contextPath: GCP.KMS.CryptoKeys.labels
         description: The labels with user-defined metadata.
@@ -2529,7 +2529,7 @@ script:
         description: The algorithm that the crypto key version supports.
         type: String
       - contextPath: GCP.KMS.CryptoKeyVersions.createTime
-        description: The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
+        description: The date and time when the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
         type: Date
   - name: gcp-kms-key-version-disable
     description: "Disables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get."
@@ -2566,7 +2566,7 @@ script:
         description: The algorithm that the crypto key version supports.
         type: String
       - contextPath: GCP.KMS.CryptoKeyVersions.createTime
-        description: The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
+        description: The date and time when the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
         type: Date
   - name: gcp-kms-key-version-destroy
     description: "Schedules a crypto key version for destruction. The key material is destroyed 24 hours later. Required Permissions: cloudkms.cryptoKeyVersions.destroy, cloudkms.cryptoKeys.get."
@@ -2598,7 +2598,7 @@ script:
         description: The current state of the crypto key version.
         type: String
       - contextPath: GCP.KMS.CryptoKeyVersions.destroyTime
-        description: The time at which the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
+        description: The date and time when the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
         type: Date
   - name: gcp-kms-key-version-restore
     description: "Restores a crypto key version that is scheduled for destruction. Required Permissions: cloudkms.cryptoKeyVersions.restore, cloudkms.cryptoKeys.get."
@@ -2695,11 +2695,11 @@ script:
       description: The ID of the crypto key to encrypt with.
       required: true
     - name: plaintext
-      description: The plaintext to encrypt. Must be no larger than 64KiB. Mutually exclusive with base64_plaintext and entry_id.
+      description: The plain text to encrypt. Must be no larger than 64KB. Mutually exclusive with base64_plaintext and entry_id.
       required: false
       secret: true
     - name: base64_plaintext
-      description: The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id.
+      description: The Base64-encoded plain text to encrypt. Mutually exclusive with plaintext and entry_id.
       required: false
       secret: true
     - name: entry_id
@@ -2752,7 +2752,7 @@ script:
       required: false
       secret: true
     - name: entry_id
-      description: The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext.
+      description: The War Room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
       required: false
     - name: additional_authenticated_data
       description: The Base64-encoded additional authenticated data (AAD) that was supplied during encryption.
@@ -2765,7 +2765,7 @@ script:
         description: The full resource name of the crypto key used for the decryption.
         type: String
       - contextPath: GCP.KMS.SymmetricDecrypt.Plaintext
-        description: The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
+        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
         type: String
       - contextPath: GCP.KMS.SymmetricDecrypt.FullResponse
         description: The full API response returned by the decrypt operation.
@@ -2792,7 +2792,7 @@ script:
       required: false
       defaultValue: '1'
     - name: plaintext
-      description: The plaintext to encrypt. Mutually exclusive with base64_plaintext and entry_id.
+      description: The plain text to encrypt. Mutually exclusive with base64_plaintext and entry_id.
       required: false
       secret: true
     - name: base64_plaintext
@@ -2810,7 +2810,7 @@ script:
         description: The resource name of the crypto key version used for the encryption.
         type: String
       - contextPath: GCP.KMS.AsymmetricEncrypt.Ciphertext
-        description: The Base64-encoded encrypted ciphertext.
+        description: The Base64-encoded encrypted cipher text.
         type: String
       - contextPath: GCP.KMS.AsymmetricEncrypt.pem
         description: The public key, in PEM format, that was used for the encryption.
@@ -2846,11 +2846,11 @@ script:
       required: false
       defaultValue: '1'
     - name: ciphertext
-      description: The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id.
+      description: The Base64-encoded cipher text to decrypt. Mutually exclusive with entry_id.
       required: false
       secret: true
     - name: entry_id
-      description: The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext.
+      description: The War Room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
       required: false
     outputs:
       - contextPath: GCP.KMS.AsymmetricDecrypt.CryptoKey
@@ -2860,7 +2860,7 @@ script:
         description: The resource name of the crypto key version used for the decryption.
         type: String
       - contextPath: GCP.KMS.AsymmetricDecrypt.Plaintext
-        description: The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
+        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
         type: String
       - contextPath: GCP.KMS.AsymmetricDecrypt.plaintextCrc32c
         description: The CRC32C checksum of the returned plaintext.
